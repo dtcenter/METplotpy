@@ -66,21 +66,23 @@ def generate_plot():
     print("pair_prop_k: {}".format(pair_prop_k))
     print("latmax: ", lat_t)
     print("lonmax: ", lon_t)
+    print("grib path temp: ", GRIB_PATH_TEMP)
+    print("mtd file: ", MTDfile_new)
     
     # print('lat_t[fcst_p]: ', np.nanmax(lat_t[fcst_p[:,:,0].data]))
 
     # errors when checking for data > 0, so check for equality to 0, which will probably result in something bad because
     # we don't understand what's going on here... looking for min/max value in matrix, ignoring np.nan values...
-    latmin = np.nanmin(lat_t[fcst_p[:, :, 0].data != 0])
-    latmax = np.nanmax(lat_t[fcst_p[:, :, 0 ].data != 0])
-    lonmin = np.nanmin(lon_t[fcst_p[:, :, 0].data != 0])
-    lonmax = np.nanmax(lon_t[fcst_p[:, :, 0].data != 0])
-
-    # Visually inspect the lon, lat dimensions and compare them to the latlon_dims to see if they vary significantly
-    print("GRIB_PATH_TEMP: ", GRIB_PATH_TEMP)
-    print("MTDfile_new: ", MTDfile_new)
     
-   
+    
+    # northern hemisphere (CONUS actually), so all latitudes are >0
+    #latmin = np.nanmin(lat_t[fcst_p[:, :, 0].data > 0])
+    #latmax = np.nanmax(lat_t[fcst_p[:, :, 0 ].data > 0])
+    
+    # dealing with western hemisphere, with negative values for longitude
+    #lonmin = np.nanmin(lon_t[fcst_p[:, :, 0].data > 0])
+    #lonmax = np.nanmax(lon_t[fcst_p[:, :, 0].data > 0])
+
     # set hrs_all to this, the other option is
     # hrs_all = np.arange(hrs[0] - 1, hrs[-1] + pre_acc, pre_acc)
     # data_success = np.concatenate((data_success, np.ones([1, len(load_data)])), axis=0) for the condition:
@@ -89,8 +91,11 @@ def generate_plot():
 
     # Get remaining input variables from METLoadEnsembleNEW.setupData, such as load_data_nc,
 
-    # invoke the MTDRetro plotting function
-    #METPlotEnsemble.MTDPlotRetro(GRIB_PATH_DES,FIG_PATH,latlon_dims, pre_acc, hrs_all, thres, curdate, data_success_p,)
+    # invoke the MTDRetro plotting function 
+    #hard-code to the available data files
+    load_data_nc = ['mtd_20190409_h12_f48_HIRESWARW2_lag12_p1_t0.1_obj.nc', 'mtd_20190409_h12_f48_HIRESWARW_lag12_p1_t0.1_obj.nc',
+		    'mtd_20190409_h12_f48_HIRESWNMB_lag12_p1_t0.1_obj.nc', 'mtd_20190409_h18_f42_HIRESNAM_lag06_p1_t0.1_obj.nc']
+    METPlotEnsemble.MTDPlotRetro(GRIB_PATH_DES,FIG_PATH,latlon_dims, pre_acc, hrs_all, thres, curdate, data_success_p, load_data_nc, lat_t, lon_t, fcst_p, obs_p, clus_bin_p, pair_prop_k)
 
 
 def get_curdate(beg_date, end_date):
