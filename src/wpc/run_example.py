@@ -23,11 +23,20 @@ def generate_plot():
     GRIB_PATH_DES = 'MTD_RETRO_NEWSe15min_t'+str(thres)
     FIG_PATH = '/d1/minnawin/wpc/figures/MET/RETRO'
     pre_acc = 1.0/4.0
-    load_qpe = 'MRMS15min_lag00'
-    load_model = 'NEWSe5min_mem02_lag00'
+    load_qpe = 'HIRESNAM_lag06'
+    load_model = 'WRF'
     plot_allhours = 'TRUE'
     total_fcst_hrs = 6.0
+    start_hrs = 0.0
+    # Set the proper forecast hours load depending on the initialization
     hrs = np.arange(0.0, total_fcst_hrs + 1, pre_acc)
+    hrs = hrs[hrs > 0]
+
+    # Set hours to be loaded conditional on starting time
+    hrs = hrs + start_hrs
+    hrs = hrs[hrs >= start_hrs]
+    hrs = hrs[hrs <= total_fcst_hrs]
+
     hrs_all = np.arange(hrs[0] - 1, hrs[1] + pre_acc, pre_acc)
 
     # Beginning time of retrospective runs (datetime element)
@@ -38,37 +47,47 @@ def generate_plot():
 
     # this is input to the METLoadEnsemble_NEW.loadDataMTD() function to
     # retrieve the lon_t, lat_t, fcst_p and obs_p needed by the MTDRetro plotting function
-    GRIB_PATH_TEMP = '/d1/minnawin/METplotpy/data/20190409'
+    GRIB_PATH_TEMP = '/d1/minnawin/METplotpy/data/netcdf/20190409'
     MTDfile_new = 'mtd_20190409_h12_f48_HIRESWARW_lag12_p1_t0.1'
+    
+    # hard code this to 1, to for the MTD output using WRF data, as verified
+    # via ncdump on the MTD netCDF output file.
     ismodel = 1
     latlon_dims = [-126, 23, -65, 50]
-    latmax = 50
-    latmin = 23
-    lonmax = -65
-    lonmin = -126
 
     (lat_t, lon_t, fcst_p, obs_p, simp_bin_p, clus_bin_p, simp_prop_k, pair_prop_k, data_success_p) = \
         METLoadEnsemble_NEW.loadDataMTD(GRIB_PATH_TEMP, MTDfile_new, ismodel, latlon_dims)
 
-    #latmin = np.nanmin(lat_t[fcst_p[:, :, 0].data > 0])
     print("lat_t: {}".format(lat_t))
     print("lon_t: {}".format(lon_t))
     print("fcst_p: {}".format(fcst_p))
     print("obs_p: {}".format(obs_p))
     print("simp_bin_p: {}".format(simp_bin_p))
     print("pair_prop_k: {}".format(pair_prop_k))
-    latmax = np.nanmax(lat_t[fcst_p[:, :, 0].data > 0])
-    lonmin = np.nanmin(lon_t[fcst_p[:, :, 0].data > 0])
-    lonmin = np.nanmin(lon_t[fcst_p[:, :, 0].data > 0])
-    lonmax = np.nanmax(lon_t[fcst_p[:, :, 0].data > 0])
-    # lonmax = -65
-    # lonmin = -126
-    print("latmax: ", latmax)
-    print("latmin: ", latmin)
-    print("lonmax: ", lonmax)
-    print("lonmin: ", lonmin)
+    print("latmax: ", lat_t)
+    print("lonmax: ", lon_t)
+    
+    # print('lat_t[fcst_p]: ', np.nanmax(lat_t[fcst_p[:,:,0].data]))
 
-    # Get remaining input variables from METLoadEnsembleNEW.setupData, such as load_data_nc
+    # errors when checking for data > 0, so check for equality to 0, which will probably result in something bad because
+    # we don't understand what's going on here... looking for min/max value in matrix, ignoring np.nan values...
+    latmin = np.nanmin(lat_t[fcst_p[:, :, 0].data != 0])
+    latmax = np.nanmax(lat_t[fcst_p[:, :, 0 ].data != 0])
+    lonmin = np.nanmin(lon_t[fcst_p[:, :, 0].data != 0])
+    lonmax = np.nanmax(lon_t[fcst_p[:, :, 0].data != 0])
+
+    # Visually inspect the lon, lat dimensions and compare them to the latlon_dims to see if they vary significantly
+    print("GRIB_PATH_TEMP: ", GRIB_PATH_TEMP)
+    print("MTDfile_new: ", MTDfile_new)
+    
+   
+    # set hrs_all to this, the other option is
+    # hrs_all = np.arange(hrs[0] - 1, hrs[-1] + pre_acc, pre_acc)
+    # data_success = np.concatenate((data_success, np.ones([1, len(load_data)])), axis=0) for the condition:
+    # if 'NEWSe60min' in load_data[model] and mod_lag > 0
+    hrs_all = np.arange(hrs[0], hrs[-1] + pre_acc, pre_acc)
+
+    # Get remaining input variables from METLoadEnsembleNEW.setupData, such as load_data_nc,
 
     # invoke the MTDRetro plotting function
     #METPlotEnsemble.MTDPlotRetro(GRIB_PATH_DES,FIG_PATH,latlon_dims, pre_acc, hrs_all, thres, curdate, data_success_p,)
