@@ -6,11 +6,32 @@ import numpy as np
 import matplotlib.pyplot as plt
 from netCDF4 import Dataset
 
+def read_tcrmw(filename):
+
+    try:
+        file_id = Dataset(filename, 'r')
+        logging.info('reading ' + filename)
+    except IOError:
+        logging.error('failed to open ' + filename)
+        sys.exit()
+
+    lat_grid = file_id.variables['lat'][:]
+    lon_grid = file_id.variables['lon'][:]
+
+    logging.debug('lat_grid.shape=' + str(lat_grid.shape))
+    logging.debug('lon_grid.shape=' + str(lon_grid.shape))
+
+    file_id.close()
+
+    return lat_grid, lon_grid
+
 def plot_tracks(datadir, plotdir, filename):
 
     logging.info(datadir)
     logging.info(plotdir)
-    logging.info(filename)
+
+    lat_grid, lon_grid = \
+        read_tcrmw(os.path.join(datadir, filename))
 
 if __name__ == '__main__':
 
