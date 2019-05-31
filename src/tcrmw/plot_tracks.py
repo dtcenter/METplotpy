@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cartopy
 import cartopy.crs as ccrs
+import shapely.geometry as sgeom
 from netCDF4 import Dataset
 
 def read_tcrmw(filename):
@@ -37,14 +38,31 @@ def plot_tracks(datadir, plotdir, filename):
 
     lat_grid, lon_grid = \
         read_tcrmw(os.path.join(datadir, filename))
+    lat_track, lon_track = lat_grid[0, 0, :], lon_grid[0, 0, :]
+    lat_min, lat_max = lat_track.min(), lat_track.max()
+    lon_min, lon_max = lon_track.min(), lon_track.max()
+    lat_mid = (lat_min + lat_max) / 2
+    lon_mid = (lon_min + lon_max) / 2
 
-    proj = ccrs.NearsidePerspective(
-        central_longitude=-60, central_latitude=30,
-        satellite_height=2000 * 1000)
+    # define projection and map
+    # proj = ccrs.Orthographic(
+    #     central_latitude=lat_mid,
+    #     central_longitude=lon_mid)
+    proj = ccrs.LambertConformal()
+    # proj = ccrs.PlateCarree()
     ax = plt.axes(projection=proj)
+    ax.set_extent(
+        [lon_min - 10, lon_max + 10, lat_min - 10, lat_max + 10])
     ax.add_feature(cartopy.feature.LAND)
     ax.add_feature(cartopy.feature.OCEAN)
     ax.gridlines()
+
+    # plot track
+    track = sgeom.LineString(zip(lon_track, lat_track))
+    ax.add_geometries([track], ccrs.PlateCarree(),
+        edgecolor='black', facecolor='none')
+
+    # display
     plt.tight_layout()
     plt.show()
 
