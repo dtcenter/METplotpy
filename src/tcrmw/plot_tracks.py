@@ -50,6 +50,7 @@ def plot_tracks(datadir, plotdir, filename):
     #     central_longitude=lon_mid)
     proj = ccrs.LambertConformal()
     # proj = ccrs.PlateCarree()
+    plt.figure(figsize=(15,15))
     ax = plt.axes(projection=proj)
     ax.set_extent(
         [lon_min - 10, lon_max + 10, lat_min - 10, lat_max + 10])
@@ -57,10 +58,30 @@ def plot_tracks(datadir, plotdir, filename):
     ax.add_feature(cartopy.feature.OCEAN)
     ax.gridlines()
 
+    n_range, n_azimuth, n_track = lat_grid.shape
+
     # plot track
     track = sgeom.LineString(zip(lon_track, lat_track))
     ax.add_geometries([track], ccrs.PlateCarree(),
-        edgecolor='black', facecolor='none')
+        edgecolor='black', facecolor='none', linewidth=4)
+
+    # plot grid
+    for i in range(0, n_track, 20):
+        scale = float(i) / n_track
+        for j in range(0, n_range, 10):
+            circle = sgeom.LineString(
+                zip(lon_grid[j,:,i], lat_grid[j,:,i]))
+            ax.add_geometries([circle], ccrs.PlateCarree(),
+                edgecolor=(0, scale**2, scale), facecolor='none')
+        circle = sgeom.LineString(
+            zip(lon_grid[-1,:,i], lat_grid[-1,:,i]))
+        ax.add_geometries([circle], ccrs.PlateCarree(),
+            edgecolor=(0, scale**2, scale), facecolor='none')
+        for j in range(0, n_azimuth, 15):
+            line = sgeom.LineString(
+                zip(lon_grid[:,j,i], lat_grid[:,j,i]))
+            ax.add_geometries([line], ccrs.PlateCarree(),
+                edgecolor=(0, scale**2, scale), facecolor='none')
 
     # display
     plt.tight_layout()
