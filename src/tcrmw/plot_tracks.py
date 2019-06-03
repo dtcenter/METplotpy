@@ -48,8 +48,8 @@ def plot_tracks(datadir, plotdir, filename):
     # proj = ccrs.Orthographic(
     #     central_latitude=lat_mid,
     #     central_longitude=lon_mid)
-    proj = ccrs.LambertConformal()
-    # proj = ccrs.PlateCarree()
+    # proj = ccrs.LambertConformal()
+    proj = ccrs.PlateCarree()
     plt.figure(figsize=(15,15))
     ax = plt.axes(projection=proj)
     ax.set_extent(
@@ -62,7 +62,7 @@ def plot_tracks(datadir, plotdir, filename):
 
     # plot track
     track = sgeom.LineString(zip(lon_track, lat_track))
-    ax.add_geometries([track], ccrs.PlateCarree(),
+    ax.add_geometries([track], proj,
         edgecolor='black', facecolor='none', linewidth=4)
 
     # plot grid
@@ -71,11 +71,11 @@ def plot_tracks(datadir, plotdir, filename):
         for j in range(0, n_range, 10):
             circle = sgeom.LineString(
                 zip(lon_grid[j,:,i], lat_grid[j,:,i]))
-            ax.add_geometries([circle], ccrs.PlateCarree(),
+            ax.add_geometries([circle], proj,
                 edgecolor=(0, scale**2, scale), facecolor='none')
         circle = sgeom.LineString(
             zip(lon_grid[-1,:,i], lat_grid[-1,:,i]))
-        ax.add_geometries([circle], ccrs.PlateCarree(),
+        ax.add_geometries([circle], proj,
             edgecolor=(0, scale**2, scale), facecolor='none')
         for j in range(0, n_azimuth, 15):
             line = sgeom.LineString(
