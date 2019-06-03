@@ -21,6 +21,7 @@ def read_tcrmw(filename):
         logging.error('failed to open ' + filename)
         sys.exit()
 
+    valid_time = file_id.variables['valid_time'][:]
     lat_grid = file_id.variables['lat'][:]
     lon_grid = file_id.variables['lon'][:]
 
@@ -29,14 +30,14 @@ def read_tcrmw(filename):
 
     file_id.close()
 
-    return lat_grid, lon_grid
+    return valid_time, lat_grid, lon_grid
 
 def plot_tracks(datadir, plotdir, filename):
 
     logging.info(datadir)
     logging.info(plotdir)
 
-    lat_grid, lon_grid = \
+    valid_time, lat_grid, lon_grid = \
         read_tcrmw(os.path.join(datadir, filename))
     lat_track, lon_track = lat_grid[0, 0, :], lon_grid[0, 0, :]
     lat_min, lat_max = lat_track.min(), lat_track.max()
@@ -48,9 +49,10 @@ def plot_tracks(datadir, plotdir, filename):
     # proj = ccrs.Orthographic(
     #     central_latitude=lat_mid,
     #     central_longitude=lon_mid)
-    # proj = ccrs.LambertConformal()
-    proj = ccrs.PlateCarree()
-    plt.figure(figsize=(15,15))
+    proj = ccrs.LambertConformal()
+    # proj = ccrs.PlateCarree()
+    proj_geom = ccrs.PlateCarree()
+    plt.figure(figsize=(10,10))
     ax = plt.axes(projection=proj)
     ax.set_extent(
         [lon_min - 10, lon_max + 10, lat_min - 10, lat_max + 10])
@@ -62,7 +64,7 @@ def plot_tracks(datadir, plotdir, filename):
 
     # plot track
     track = sgeom.LineString(zip(lon_track, lat_track))
-    ax.add_geometries([track], proj,
+    ax.add_geometries([track], proj_geom,
         edgecolor='black', facecolor='none', linewidth=4)
 
     # plot grid
@@ -71,16 +73,16 @@ def plot_tracks(datadir, plotdir, filename):
         for j in range(0, n_range, 10):
             circle = sgeom.LineString(
                 zip(lon_grid[j,:,i], lat_grid[j,:,i]))
-            ax.add_geometries([circle], proj,
+            ax.add_geometries([circle], proj_geom,
                 edgecolor=(0, scale**2, scale), facecolor='none')
         circle = sgeom.LineString(
             zip(lon_grid[-1,:,i], lat_grid[-1,:,i]))
-        ax.add_geometries([circle], proj,
+        ax.add_geometries([circle], proj_geom,
             edgecolor=(0, scale**2, scale), facecolor='none')
         for j in range(0, n_azimuth, 15):
             line = sgeom.LineString(
                 zip(lon_grid[:,j,i], lat_grid[:,j,i]))
-            ax.add_geometries([line], ccrs.PlateCarree(),
+            ax.add_geometries([line], proj_geom,
                 edgecolor=(0, scale**2, scale), facecolor='none')
 
     # display
