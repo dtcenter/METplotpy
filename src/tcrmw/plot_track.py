@@ -55,7 +55,7 @@ def plot_track(datadir, plotdir, trackfile, params):
     proj = ccrs.LambertConformal()
     # proj = ccrs.PlateCarree()
     proj_geom = ccrs.PlateCarree()
-    plt.figure(figsize=(10,10))
+    plt.figure(figsize=(params['figsize'],params['figsize']))
     ax = plt.axes(projection=proj)
     ax.set_extent(
         [lon_min - params['buffer'],
@@ -101,7 +101,7 @@ def plot_track(datadir, plotdir, trackfile, params):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-        description='Cyclone Track Plots')
+        description='Cyclone Track Plot')
     parser.add_argument(
         '--datadir', type=str, dest='datadir', required=True)
     parser.add_argument(
@@ -120,6 +120,9 @@ if __name__ == '__main__':
     parser.add_argument(
         '--buffer', type=int, dest='buffer', required=False,
         default=10)
+    parser.add_argument(
+        '--figsize', type=int, dest='figsize', required=False,
+        default=10)
 
     args = parser.parse_args()
 
@@ -128,7 +131,8 @@ if __name__ == '__main__':
     params = {'step' : args.step,
               'range_step' : args.range_step,
               'azimuth_step' : args.azimuth_step,
-              'buffer' : args.buffer}
+              'buffer' : args.buffer,
+              'figsize' : args.figsize}
 
     plot_track(args.datadir,
                args.plotdir,
