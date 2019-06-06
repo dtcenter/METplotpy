@@ -4,13 +4,14 @@
 #MASTER MTD SCRIPT TO BE RUN IN OPERATIONAL OR RETROSPECTIVE MODE. HAS MULTIPLE MODEL/ENSEMBLE
 #OPTIONS. CAN ONLY SPECIFY ONE THRESHOLD AT A TIME. WHEN RUN IN RETROSPECTIVE MODE, CAN ONLY
 #USE ONE MODEL AT A TIME. SEVERAL CODES HAVE BEEN WRITTEN OVER TIME AND ALL WERE
-#FINALLY MERGED INTO THIS CODE ON 20190508. MJE. 201708-20190508.
+#FINALLY MERGED INTO THIS CODE ON 20190606. MJE. 201708-20190606.
 
 #Some specifics, 1) This code considers accumulation intervals with a resolution of one minute. 
 #                2) This code considers model initializations with a resolution of one hour.
 ################################################################################################
 
 import pygrib
+import sys
 import subprocess
 import os
 import numpy as np
@@ -26,6 +27,7 @@ from netCDF4 import Dataset
 from scipy import ndimage
 
 #Load predefined functions
+sys.path.append('/export/hpc-lw-dtbdev5/merickson/code/python/MET')
 import METConFigGen
 import METLoadEnsemble
 import METPlotEnsemble
@@ -33,35 +35,39 @@ reload(METConFigGen)
 reload(METLoadEnsemble)
 reload(METPlotEnsemble)
 
+print datetime.datetime.now()
+
 ################################################################################
 #########################1)MATRIX OF VARIABLES#################################
 ################################################################################
-MET_PATH       = '/opt/MET/80/bin/'                                     #Location of MET software
+MET_PATH       = '/opt/MET/81/bin/'                                     #Location of MET software
 CON_PATH       = '/usr1/wpc_cpgffh/METv6.0/'                            #Location of MET config files
 GRIB_PATH      = '/usr1/wpc_cpgffh/gribs/'                              #Location of model GRIB files
 FIG_PATH       = '/usr1/wpc_cpgffh/figures/MET/'                        #Location for figure generation
 TRACK_PATH     = '/usr1/wpc_cpgffh/tracks/'                             #Location for saving track files
-beg_date       = datetime.datetime(2018,7,17,18,0,0)                    #Beginning time of retrospective runs (datetime element)
-end_date       = datetime.datetime(2018,7,17,18,0,0)                    #Ending time of retrospective runs (datetime element)
+beg_date       = datetime.datetime(2019,5,30,21,0,0)                     #Beginning time of retrospective runs (datetime element)
+end_date       = datetime.datetime(2019,5,30,22,0,0)                     #Ending time of retrospective runs (datetime element)
 latlon_dims    = [-126,23,-65,50]                                       #Latitude/longitude dimensions for plotting [WLON,SLAT,ELON,NLAT]
 pre_acc        = 1.0/4.0                                                #Precipitation accumulation total
 total_fcst_hrs = 6.0                                                    #Last forecast hour to be considered
 start_hrs      = 0.0                                                    #Skip hours ahead before running MET                                                                                                                             
-thres          = 0.2                                                    #Precip. threshold for defining objects (inches) (specifiy single value)
-plot_allhours  = 'TRUE'                                                 #Plot every track figure hour-by-hour (good for comparing tracker to eye)     
-snow_mask      = 'TRUE'                                                #Keep only regions that are snow 'TRUE' or no masking 'FALSE'
-mtd_mode       = 'Retro'                                                #'Operational' to run live data for plotting or 'Retro' for retroruns
-ops_check      = 120                                                    #If in 'Operational' mode, how many seconds to wait before exiting 
+thres          = 0.05                                                   #Precip. threshold for defining objects (inches) (specifiy single value)
+sigma          = 0.5                                                    #Gaussian Filter for smoothing ensemble probabilities in some plots (grid points)
+plot_allhours  = 'FALSE'                                                #Plot every track figure hour-by-hour (good for comparing tracker to eye)     
+snow_mask      = 'FALSE'                                                #Keep only regions that are snow 'TRUE' or no masking 'FALSE'
+mtd_mode       = 'Operational'                                          #'Operational' to run live data for plotting or 'Retro' for retroruns
+ops_check      = 60*60*3                                                #If in 'Operational' mode, how many seconds to wait before exiting 
 conv_radius    = 2                                                      #Radius of the smoothing (grid squares)
 min_volume     = 20                                                     #Area threshold (grid squares) to keep an object
 ti_thresh      = 0.7                                                    #Total interest threshold for determining matches   
-load_model     = ['NEWSe5min_mem02_lag00']
-load_qpe       = ['MRMS15min_lag00']                                    #'ST4','MRMS',or 'NONE' (NOTE: NEWS-E and HRRRe DOES NOT WORK FOR ANYTHING OTHER THAN LAG = 00)
-GRIB_PATH_DES  = 'MTD_RETRO_NEWSe15min_t'+str(thres)                    #An appended string label for the temporary directory name
-#domain_sub     = ['_NW','_SW','_NC','_SC','_NE','_SE','_ALL']           #Sub-domain names for plotting
-#latlon_sub     = [[-130,36,-100,52],[-128,26,-98,42],[-112,34,-82,50], \
-#                     [-115,24,-85,40],[-93,34,-63,50],[-100,22,-70,40], \
-#                     [-130,20,-64,52]]                                  #Sub-domain lat/lon sizes for plotting                             
+load_model     = ['NEWSe5min_mem00_lag00','NEWSe5min_mem01_lag00','NEWSe5min_mem02_lag00','NEWSe5min_mem03_lag00','NEWSe5min_mem04_lag00','NEWSe5min_mem05_lag00', \
+    'NEWSe5min_mem06_lag00','NEWSe5min_mem07_lag00','NEWSe5min_mem08_lag00','NEWSe5min_mem09_lag00','NEWSe5min_mem10_lag00',\
+    'NEWSe5min_mem11_lag00','NEWSe5min_mem12_lag00','NEWSe5min_mem13_lag00','NEWSe5min_mem14_lag00','NEWSe5min_mem15_lag00',\
+    'NEWSe5min_mem16_lag00','NEWSe5min_mem17_lag00']
+load_qpe       = ['None']                                    #'ST4','MRMS',or 'NONE' (NOTE: NEWS-E and HRRRe DOES NOT WORK FOR ANYTHING OTHER THAN LAG = 00)
+GRIB_PATH_DES  = 'MTD_RETRO_NEWSe15min_t'+str(thres)+'_'                    #An appended string label for the temporary directory name
+#domain_sub     = ['_ALL']           #Sub-domain names for plotting
+#latlon_sub     = [-130,20,-64,52]                                  #Sub-domain lat/lon sizes for plotting                             
 ################################################################################
 
 #If mtd_mode='Operational' then there should be no verification and only one cycle analyzed
@@ -112,16 +118,11 @@ log_file = '/export/hpc-lw-dtbdev5/merickson/log/'+GRIB_PATH_DES+'_s'+snow_mask+
 target = open(log_file,'w')
 target.close()
 
-#Set environment for MET properly
-#os.environ["LD_LIBRARY_PATH"] = '/lib:/usr/lib:/lib:/opt/MET7/external_libs/lib:'+ \
-#    '/export/hpc-lw-dtbdev5/merickson/Canopy/appdata/canopy-1.7.2.3327.rh5-x86_64/lib'
-#os.environ["LIBS"] = '/opt/MET7/external_libs'
-
-os.environ["LD_LIBRARY_PATH"] ='/opt/MET/80/external_libs/lib:/export-5/ncosrvnfs-cp/'+ \
+os.environ["LD_LIBRARY_PATH"] ='/opt/MET/81/external_libs/lib:/export-5/ncosrvnfs-cp/'+ \
     'nawips2/os/linux2.6.32_x86_64/lib:/lib:/usr/lib:/export-5/ncosrvnfs-cp/nawips3/'+ \
-    'os/linux2.6.32_x86_64/lib:/opt/MET6/external_libs/lib:/export/hpc-lw-dtbdev5/'+ \
+    'os/linux2.6.32_x86_64/lib:/export/hpc-lw-dtbdev5/'+ \
     'merickson/Canopy/appdata/canopy-1.7.2.3327.rh5-x86_64/lib:/usr/lib64/openmpi/lib/'
-os.environ["LIBS"] = '/opt/MET/80/external_libs'
+os.environ["LIBS"] = '/opt/MET/81/external_libs'
 
 #Record the current date
 datetime_now = datetime.datetime.now()
@@ -152,9 +153,7 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
         
         #Edit datetime element to reflect proper hour
         datetime_curdate = datetime_curdate.replace(hour = inits)
-        
-        print datetime_curdate
-        
+
         #Given the variables, create metadata for loading models and lots of things under the hood
         (GRIB_PATH_TEMP,FIG_PATH_s,curdate,init_yrmondayhr,hrs,offset_fcsthr,load_data_nc,acc_int,lat,lon) = \
             METLoadEnsemble.setupData(GRIB_PATH,FIG_PATH,GRIB_PATH_DES,load_data,pre_acc,total_fcst_hrs,latlon_dims,datetime_curdate,thres)
@@ -175,6 +174,8 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
         data_name_nc_all = []
         
         for model in range(len(load_data)): #Through the 1 model and observation
+            
+            print datetime.datetime.now()    
             
             #Create APCP string (e.g. pre_acc = 1, APCP_str_beg = 'A010000'; pre_acc = 0.25, APCP_str_beg = 'A001500')
             time_inc_beg = datetime.timedelta(hours=acc_int[model])
@@ -269,53 +270,49 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
                         
                     pcp_combine_str_end = yrmonday_ahead+'_'+hrmin_ahead+'00 '
     
-                    print pcp_combine_str_beg
-                    print pcp_combine_str_end
-                    
                     os.chdir(GRIB_PATH_TEMP)
                     
                     ##########?) USE MET PCP_COMBINE TO CONVERT DATA TO NETCDF AND SUM PRECIPITATION WHEN APPLICABLE############
-                    #!!!!!!!!!!!!!!! CONVERT TO FUNCTION!!!!!!!!!!!!!!!1
-                    
+
                     #stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),
-                    
+
                     #Use MET pcp_combine to sum, except for 1 hr acc from NAM, which contains either 1, 2, 3 hr acc. precip
                     if 'HIRESNAM' in load_data[model] and pre_acc == 1:
                         if ((fcst_hr - 1) % 3) == 0:   #Every 3rd hour contains 1 hr acc. precip
                             output = subprocess.call(MET_PATH+'/pcp_combine -sum '+pcp_combine_str_beg+' '+APCP_str_beg[1::]+' '+ \
                                 pcp_combine_str_end+APCP_str_end[1::]+' '+GRIB_PATH_TEMP+'/'+load_data_nc[model]+' -pcpdir '+ \
-                                GRIB_PATH_TEMP+'/ -name "'+APCP_str_end+'"',shell=True)
+                                GRIB_PATH_TEMP+'/ -name "'+APCP_str_end+'"',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                         elif ((fcst_hr - 2) % 3) == 0: #2nd file contains 2 hr  acc. precip
                             output = subprocess.call(MET_PATH+'/pcp_combine -subtract '+GRIB_PATH_TEMP+'/'+data_name_grib[fcst_hr_count]+' 020000 '+ \
                                 GRIB_PATH_TEMP+'/'+data_name_grib[fcst_hr_count-1]+' 010000 '+GRIB_PATH_TEMP+'/'+load_data_nc[model]+ \
-                                ' -name "'+APCP_str_end+'"', shell=True)
+                                ' -name "'+APCP_str_end+'"',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                         elif ((fcst_hr - 3) % 3) == 0: #3rd file contains 3 hr  acc. precip
                             output = subprocess.call(MET_PATH+'/pcp_combine -subtract '+GRIB_PATH_TEMP+'/'+data_name_grib[fcst_hr_count]+' 030000 '+ \
                                 GRIB_PATH_TEMP+'/'+data_name_grib[fcst_hr_count-1]+' 020000 '+GRIB_PATH_TEMP+'/'+load_data_nc[model]+ \
-                                ' -name "'+APCP_str_end+'"', shell=True)
+                                ' -name "'+APCP_str_end+'"',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                     elif 'HIRESNAM' in load_data[model] and pre_acc % 3 == 0: #NAM increments divisible by 3
                         
                         output = subprocess.call(MET_PATH+'/pcp_combine -sum '+pcp_combine_str_beg+' 030000 '+ \
                             pcp_combine_str_end+' '+APCP_str_end[1::]+' '+GRIB_PATH_TEMP+'/'+ load_data_nc[model]+ \
-                            ' -pcpdir '+GRIB_PATH_TEMP+'/  -name "'+APCP_str_end+'"',shell=True)     
+                            ' -pcpdir '+GRIB_PATH_TEMP+'/  -name "'+APCP_str_end+'"',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)     
                     elif 'HIRESNAM' in load_data[model] and pre_acc % 3 == 1: #Error if desired interval is not 1 or divisible by 3
                         raise ValueError('NAM pre_acc variable can only be 1 or divisible by 3')
                     elif 'NEWSe60min' in load_data[model]:
                         if fcst_hr_load == 1: #If using fcst hour 1, no need to subtract data
                             output = subprocess.call(MET_PATH+'/pcp_combine -sum '+pcp_combine_str_beg+' '+APCP_str_beg[1::]+' '+pcp_combine_str_end+' '+ \
-                                APCP_str_end[1::]+' '+GRIB_PATH_TEMP+'/'+load_data_nc[model]+' -name "'+APCP_str_end+'"',shell=True)
+                                APCP_str_end[1::]+' '+GRIB_PATH_TEMP+'/'+load_data_nc[model]+' -name "'+APCP_str_end+'"',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'), shell=True)
                         elif fcst_hr_load > 1: #If not first hour, subtract current from previous hour
                             output = subprocess.call(MET_PATH+"/pcp_combine -subtract "+GRIB_PATH_TEMP+"/"+data_name_grib[fcst_hr_count]+" "+last_fcst_hr_str+" "+ \
                                 GRIB_PATH_TEMP+"/"+data_name_grib[fcst_hr_count-1]+" "+'{:02d}'.format(int(last_fcst_hr_str)-1)+" "+GRIB_PATH_TEMP+"/"+ \
-                                load_data_nc[model]+' -name "'+APCP_str_end+'"',shell=True)
+                                load_data_nc[model]+' -name "'+APCP_str_end+'"',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                     elif 'NEWSe5min' in load_data[model]:
                         output = subprocess.call(MET_PATH+'/pcp_combine -sum  '+pcp_combine_str_beg+' '+APCP_str_beg[1::]+' '+pcp_combine_str_end+' '+ \
                             APCP_str_end[1::]+' '+GRIB_PATH_TEMP+'/'+load_data_nc[model]+' -field \'name="'+APCP_str_beg+'"; level="Surface";\''+ \
-                            ' -name "'+APCP_str_end+'"',shell=True)
+                            ' -name "'+APCP_str_end+'"',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                     elif 'MRMS15min' in load_data[model]:
                         call_str = [data_name_grib[i]+' \'name="'+APCP_str_beg+'" ; level="(*,*)" ; \'' for i in range(int((fcst_hr_count)*(pre_acc/acc_int[model])),int((fcst_hr_count+1)*(pre_acc/acc_int[model])))]
                         output = subprocess.call(MET_PATH+'/pcp_combine -add  '+' '.join(call_str)+' '+ \
-                            GRIB_PATH_TEMP+'/'+load_data_nc[model]+' -name "'+APCP_str_end+'"',shell=True)
+                            GRIB_PATH_TEMP+'/'+load_data_nc[model]+' -name "'+APCP_str_end+'"',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                     elif 'HRRRe' in load_data[model]:
                         
                         if pre_acc != 1:
@@ -325,30 +322,42 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
                         if fcst_hr == 1:
                             output = subprocess.call(MET_PATH+'/pcp_combine -sum '+pcp_combine_str_beg+' '+APCP_str_beg[1::]+' '+ \
                                 pcp_combine_str_end+APCP_str_end[1::]+' '+GRIB_PATH_TEMP+'/'+load_data_nc[model]+' -pcpdir '+ \
-                                GRIB_PATH_TEMP+'/ -name "'+APCP_str_end+'"',shell=True)
+                                GRIB_PATH_TEMP+'/ -name "'+APCP_str_end+'"',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                         else:
                             output = subprocess.call(MET_PATH+'/pcp_combine -subtract '+GRIB_PATH_TEMP+'/'+data_name_grib[fcst_hr_count]+ \
                                 ' '+'{:02d}'.format(fcst_hr_count+1)+'0000 '+GRIB_PATH_TEMP+'/'+data_name_grib[fcst_hr_count-1]+' '+ \
                                 '{:02d}'.format(fcst_hr_count)+'0000 '+GRIB_PATH_TEMP+'/'+load_data_nc[model]+ ' -name "'+APCP_str_end+ \
-                                '"', shell=True)
+                                '"',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                                 
                     else:
                         output = subprocess.call(MET_PATH+'/pcp_combine -sum  '+pcp_combine_str_beg+' '+APCP_str_beg[1::]+' '+pcp_combine_str_end+' '+ \
-                            APCP_str_end[1::]+' '+GRIB_PATH_TEMP+'/'+load_data_nc[model]+' -name "'+APCP_str_end+'"',shell=True)
+                            APCP_str_end[1::]+' '+GRIB_PATH_TEMP+'/'+load_data_nc[model]+' -name "'+APCP_str_end+'"',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
     
+                    #For NEWSe/WoF the domain changes so determine domain here
+                    if mtd_mode == 'Operational':
+                        if 'NEWSe' in load_model[model] and not 'latlon_dims_keep' in locals():
+                            try:
+                                f = Dataset(GRIB_PATH_TEMP+"/"+load_data_nc[model], "a", format="NETCDF4")
+                                latlon_sub = [[np.nanmin(np.array(f.variables['lon'][:]))-0.5,np.nanmin(np.array(f.variables['lat'][:]))-0.1,\
+                                    np.nanmax(np.array(f.variables['lon'][:])),np.nanmax(np.array(f.variables['lat'][:]))+0.5]]
+                                domain_sub = ['ALL']
+                                f.close()
+                            except:
+                                pass
+                    
                     #Regrid to ST4 grid using regrid_data_plane
                     data_success[fcst_hr_count,model] = subprocess.call(MET_PATH+"/regrid_data_plane "+GRIB_PATH_TEMP+"/"+ \
                         load_data_nc[model]+" "+GRIB_PATH+"/temp/ensmean_sample_NODELETE "+GRIB_PATH_TEMP+"/"+load_data_nc[model]+"2 "+ \
                         "-field 'name=\""+APCP_str_end+"\"; level=\""+APCP_str_end+ \
-                        "\";' -name "+APCP_str_end, shell=True)
+                        "\";' -name "+APCP_str_end,stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                     
                     #Remove original netcdf files
-                    output=subprocess.call("rm -rf "+GRIB_PATH_TEMP+"/"+load_data_nc[model], shell=True)
+                    output=subprocess.call("rm -rf "+GRIB_PATH_TEMP+"/"+load_data_nc[model],stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
     
                     #Rename netcdf file
                     data_name_nc = np.append(data_name_nc,GRIB_PATH_TEMP+"/"+load_data_nc[model][0:-3]+"_f"+fcst_hr_str+fcst_min_str+".nc")
                     output=subprocess.call("mv "+GRIB_PATH_TEMP+"/"+load_data_nc[model]+"2 "+data_name_nc[fcst_hr_count], \
-                        shell=True)
+                        stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                         
                     #Construct an array of lagged OBS files corresponding to the lagged model
                     if (load_qpe[0] != 'None') and (load_qpe[0] not in load_data[model]):
@@ -358,8 +367,7 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
                         
                     #If csnow_mask is 'TRUE' 1) interpolate to common domain (regrid_data plane), 2) mask out non-snow data mask
                     if snow_mask == 'TRUE':
-    
-                        cows
+
                         #Determine masking string
                         if 'NSSL' in GRIB_PATH_DES:
                             masking_str = 'WEASD'
@@ -379,41 +387,41 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
                             mask_file_ou_prev = GRIB_PATH_TEMP+'/'+data_name_grib[fcst_hr_count-1]+'.nc'
                             
                             output = subprocess.call(MET_PATH+'/pcp_combine -subtract '+mask_file_ou+' \'name="WEASD_L0"; level="L0";\' '+ \
-                                mask_file_ou_prev+' \'name="WEASD_L0"; level="L0";\' '+mask_file_ou+'2',shell=True)
+                                mask_file_ou_prev+' \'name="WEASD_L0"; level="L0";\' '+mask_file_ou+'2',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                                 
                             #Mask out all non-snow data
                             subprocess.call(MET_PATH+'/gen_vx_mask '+data_name_nc[fcst_hr_count]+' '+mask_file_ou+'2 '+data_name_nc[fcst_hr_count]+ \
                                 '_2 -type data -input_field \'name="'+APCP_str_end+ \
-                                '"; level="(*,*)";\' -mask_field \'name="'+APCP_str_end+'"; level="(*,*)";\' -thresh le0 -value 0 -name '+APCP_str_end,shell=True)
+                                '"; level="(*,*)";\' -mask_field \'name="'+APCP_str_end+'"; level="(*,*)";\' -thresh le0 -value 0 -name '+APCP_str_end, \
+                                stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                         else:
-                            output = subprocess.call("cp "+mask_file_ou+' '+mask_file_ou+'2',shell=True)
+                            output = subprocess.call("cp "+mask_file_ou+' '+mask_file_ou+'2',stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'), shell=True)
                             
                             #Mask out all non-snow data
                             subprocess.call(MET_PATH+'/gen_vx_mask '+data_name_nc[fcst_hr_count]+' '+mask_file_ou+'2 '+data_name_nc[fcst_hr_count]+ \
                                 '_2 -type data -input_field \'name="'+APCP_str_end+ \
-                                '"; level="(*,*)";\' -mask_field \'name="'+APCP_str_end+'"; level="(*,*)";\' -thresh le0 -value 0 -name '+APCP_str_end,shell=True)
+                                '"; level="(*,*)";\' -mask_field \'name="'+APCP_str_end+'"; level="(*,*)";\' -thresh le0 -value 0 -name '+APCP_str_end, \
+                                stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                         
                         #Replace old file with properly masked file
                         subprocess.call("mv "+data_name_nc[fcst_hr_count]+"_2 "+data_name_nc[fcst_hr_count], stdout=open(os.devnull, 'wb'), \
-                            stderr=open(os.devnull, 'wb'), shell=True)
-                                        
-                        ##Remove actual mask
-                        #subprocess.call('rm -rf '+mask_file_ou, stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'), shell=True)
-    
+                            stderr=open(os.devnull, 'wb'),shell=True)
+ 
                     #END snow mask check
-    #############?) MTD DOES NOT ALLOW MASKING INTERNALLY SO MASK MODEL/OBS FIELD IF EITHER HAS MISSING DATA###################
+                    
+    #############MTD DOES NOT ALLOW MASKING INTERNALLY SO MASK MODEL/OBS FIELD IF EITHER HAS MISSING DATA###################
                                
                     if (load_qpe[0] != 'None') and (load_qpe[0] not in load_data[model]):
                         #First mask observation with model
                         subprocess.call(MET_PATH+'/gen_vx_mask '+data_name_nc_lagQPE[fcst_hr_count]+' '+data_name_nc[fcst_hr_count]+' '+data_name_nc_lagQPE[fcst_hr_count]+'2 '+ \
                             ' -type data -input_field \'name="'+APCP_str_end+'" ; level="(*,*)" ;\' -mask_field \'name="'+APCP_str_end+ \
-                            '" ; level="(*,*)" ;\' -thresh eq-9999 -value -9999 -name '+APCP_str_end,shell=True)
+                            '" ; level="(*,*)" ;\' -thresh eq-9999 -value -9999 -name '+APCP_str_end,stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                         subprocess.call('mv '+data_name_nc_lagQPE[fcst_hr_count]+'2 '+data_name_nc_lagQPE[fcst_hr_count], stdout=open(os.devnull, 'wb'), \
                             stderr=open(os.devnull, 'wb'), shell=True)
                         #Second mask model with observation
                         subprocess.call(MET_PATH+'/gen_vx_mask '+data_name_nc[fcst_hr_count]+' '+data_name_nc_lagQPE[fcst_hr_count]+' '+data_name_nc[fcst_hr_count]+'2 '+ \
                             ' -type data -input_field \'name="'+APCP_str_end+'" ; level="(*,*)" ;\' -mask_field \'name="'+APCP_str_end+ \
-                            '" ; level="(*,*)" ;\' -thresh eq-9999 -value -9999 -name '+APCP_str_end,shell=True)
+                            '" ; level="(*,*)" ;\' -thresh eq-9999 -value -9999 -name '+APCP_str_end,stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
                         subprocess.call('mv '+data_name_nc[fcst_hr_count]+'2 '+data_name_nc[fcst_hr_count], stdout=open(os.devnull, 'wb'), \
                             stderr=open(os.devnull, 'wb'), shell=True)
                             
@@ -421,7 +429,6 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
                         output=subprocess.call("rm -rf "+GRIB_PATH_TEMP+"/"+load_data_nc[model],stdout=open(os.devnull, 'wb'), \
                             stderr=open(os.devnull, 'wb'), shell=True)
                         
-                        print str(fcst_hr_count)     
                     fcst_hr_count += 1
                 #END through forecast hour
 
@@ -435,15 +442,16 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
                 elif (load_qpe[0] not in load_data[model]): #No OBS, compare model to itself 
                     hour_success = data_success[:,model] == 0
                 
-                #If not all of the data is in during operational mode, then pause for 5 minutes and try again. Repeat for one hour
+                #If not all of the data is in during operational mode, then pause for 2 minutes and try again. Repeat for one hour
                 if np.nanmean(data_success[:,model]) != 0 and mtd_mode == 'Operational':
                     if (datetime.datetime.now() - datetime_now).seconds > ops_check:
                         #Delete the source files to save hard drive space and exit
                         output=subprocess.call('rm -rf '+GRIB_PATH_TEMP,stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'), shell=True)
-                        raise SystemExit('Missing Model Data; Program Ending')
+                        print 'Missing Model Data; Plotting What We Have'
+                        break
                     else:
                         print 'There is missing Model Data; Pausing'
-                        time.sleep(300)
+                        time.sleep(120)
                 elif np.nanmean(data_success[:,model]) == 0 and mtd_mode == 'Operational':
                     break
                 else:
@@ -477,13 +485,15 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
                 print MET_PATH+'/mtd -fcst '+' '.join(data_name_nc[hour_success])+ \
                     ' -obs '+' '.join(data_name_nc_lagQPE[hour_success])+' -config '+config_name+' -outdir '+GRIB_PATH_TEMP
                 mtd_success = subprocess.call(MET_PATH+'/mtd -fcst '+' '.join(data_name_nc[hour_success])+ \
-                    ' -obs '+' '.join(data_name_nc_lagQPE[hour_success])+' -config '+config_name+' -outdir '+GRIB_PATH_TEMP, shell=True)
+                    ' -obs '+' '.join(data_name_nc_lagQPE[hour_success])+' -config '+config_name+' -outdir '+GRIB_PATH_TEMP, \
+                    stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
             elif (load_qpe[0] not in load_data[model]): #No QPE, compare model to itself
                 mtd_success = subprocess.call(MET_PATH+'/mtd -single '+' '.join(data_name_nc[hour_success])+' -config '+ \
-                    config_name+' -outdir '+GRIB_PATH_TEMP, shell=True)
+                    config_name+' -outdir '+GRIB_PATH_TEMP, stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'), shell=True)
+            
             #Matrix to gather all netcdf file strings
             data_name_nc_all = np.append(data_name_nc_all,data_name_nc)
-            
+
             #Rename cluster file and 2d text file (QPE is handled later)
             if load_qpe[0] not in load_data[model]:
                 output = subprocess.call('mv '+GRIB_PATH_TEMP+'/'+MTDfile_old[model]+'_obj.nc '+ GRIB_PATH_TEMP+'/'+MTDfile_new[model]+ \
@@ -511,7 +521,7 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
 
         #Find model index location to load MTD data
         mod_loc = [i for i in range(0,len(MTDfile_new)) if load_model[0] in MTDfile_new[i]][0]
-        
+               
         #Function to read in MTD data
         for model in range(len(load_data)): #Through the 1 model and observation
             
@@ -560,13 +570,12 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
                 latmax = np.nanmax(lat_t[fcst_p[:,:,0].data>0])
                 lonmin = np.nanmin(lon_t[fcst_p[:,:,0].data>0])
                 lonmax = np.nanmax(lon_t[fcst_p[:,:,0].data>0])
-
                 METPlotEnsemble.MTDPlotRetroJustPrecip(GRIB_PATH_DES,FIG_PATH,[lonmin,latmin,lonmax,latmax],pre_acc,hrs_all,thres,curdate, \
                     data_success,load_data_nc,lat,lon,fcst_p,obs_p)
             
             del fcst_p
             del obs_p
-            
+          
         #If running in retro mode, save the data and remove the old files        
         if mtd_mode == 'Retro':        
             #Save the simple and paired model/obs track files specifying simp/pair, start/end time, hour acc. interval, and threshold
@@ -603,18 +612,18 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
                 for subsets in range(0,len(domain_sub)):
                     #Plot the smoothed ensemble probabilities with object centroids
                     METPlotEnsemble.MTDPlotAllFcst(GRIB_PATH_DES+domain_sub[subsets],FIG_PATH_s,latlon_sub[subsets],pre_acc,hrs,thres,curdate, \
-                        data_success,load_data_nc,lat,lon,simp_bin,simp_prop)  
+                        data_success,load_data_nc,lat,lon,simp_bin,simp_prop,sigma)
+                    #Did this create files with proper naming of 
         
                     #Plot the objects for each TLE
                     METPlotEnsemble.MTDPlotTLEFcst(GRIB_PATH_DES+domain_sub[subsets],FIG_PATH_s,latlon_sub[subsets],pre_acc,hrs,thres,curdate, \
-                        data_success,load_data_nc,lat,lon,simp_bin,simp_prop)  
+                        data_success,load_data_nc,lat,lon,simp_bin,simp_prop,sigma)  
             elif snow_mask == 'TRUE':        
                 #Loop through domain subset specifications to plot specific regions
                 for subsets in range(0,len(domain_sub)):
                     #Plot the smoothed ensemble probabilities with object centroids
                     METPlotEnsemble.MTDPlotAllSnowFcst(GRIB_PATH_DES+domain_sub[subsets],FIG_PATH_s,latlon_sub[subsets],pre_acc,hrs,thres,curdate, \
                         data_success,load_data_nc,lat,lon,simp_bin,simp_prop)
-                    
 
         #Delete workspace variables
         del simp_prop 
@@ -634,26 +643,37 @@ for dates in range(int(round(beg_date_jul)),int(round(end_date_jul))+1): #throug
 if mtd_mode == 'Operational':
     if snow_mask == 'FALSE':
         for subsets in range(0,len(domain_sub)):
-            filename_o = GRIB_PATH_DES+domain_sub[subsets]+'_TOTENS_objprob_bymodel_'+'{:04d}'.format(curdate.year)+ \
-                '{:02d}'.format(curdate.month)+'{:02d}'.format(curdate.day)+ '{:02d}'.format(curdate.hour)+ \
-                '_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(thres)+'.png'
-            filename_n = GRIB_PATH_DES+domain_sub[subsets]+'_TOTENS_objprob_bymodel_p'+ \
-                '{0:.2f}'.format(pre_acc)+'_t'+str(thres)+'.png'
-            subprocess.call('cp '+FIG_PATH_s+'/'+filename_o+' '+FIG_PATH_s+'/'+filename_n,stdout=open(os.devnull, 'wb'), \
-                stderr=open(os.devnull, 'wb'), shell=True)
-            subprocess.call('scp '+FIG_PATH_s+'/'+filename_n+' hpc@vm-lnx-rzdm05:/home/people/hpc/www/'+ \
-                'htdocs/verification/mtd/images/'+filename_n,stdout=open(os.devnull, 'wb'),stderr=open(os.devnull, 'wb'), shell=True)
-    
-            filename_o = GRIB_PATH_DES+domain_sub[subsets]+'_TOTENS_objprob_byhour_'+'{:04d}'.format(curdate.year)+ \
-                '{:02d}'.format(curdate.month)+'{:02d}'.format(curdate.day)+ '{:02d}'.format(curdate.hour)+ \
-                '_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(thres)+'.gif'
-            filename_n = GRIB_PATH_DES+domain_sub[subsets]+'_TOTENS_objprob_byhour_p'+ \
-                '{0:.2f}'.format(pre_acc)+'_t'+str(thres)+'.gif'
-            subprocess.call('cp '+FIG_PATH_s+'/'+filename_o+' '+FIG_PATH_s+'/'+filename_n,stdout=open(os.devnull, 'wb'), \
-                stderr=open(os.devnull, 'wb'), shell=True)
-            subprocess.call('scp '+FIG_PATH_s+'/'+filename_n+' hpc@vm-lnx-rzdm05:/home/people/hpc/www/'+ \
-                'htdocs/verification/mtd/images/'+filename_n,stdout=open(os.devnull, 'wb'),stderr=open(os.devnull, 'wb'), shell=True)
-                
+            if 'NEWSe' in ''.join(load_data):
+                hrs_count = 1
+                for hours in hrs:
+                    filename_o = GRIB_PATH_DES+domain_sub[subsets]+'_TOTENS_objprob_byhour_'+'{:04d}'.format(curdate.year)+ \
+                        '{:02d}'.format(curdate.month)+'{:02d}'.format(curdate.day)+ '{:02d}'.format(curdate.hour)+ \
+                        '_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(thres)+'_f'+'{:02d}'.format(int(hrs_count))+'.png'
+                    print filename_o
+                    subprocess.call('scp '+FIG_PATH_s+'/'+filename_o+' hpc@vm-lnx-rzdm05:/home/people/hpc/www/'+ \
+                        'htdocs/WoF/images/'+filename_o,stdout=open(os.devnull, 'wb'),stderr=open(os.devnull, 'wb'), shell=True)
+                    hrs_count += 1
+            else:
+                filename_o = GRIB_PATH_DES+domain_sub[subsets]+'_TOTENS_objprob_bymodel_'+'{:04d}'.format(curdate.year)+ \
+                    '{:02d}'.format(curdate.month)+'{:02d}'.format(curdate.day)+ '{:02d}'.format(curdate.hour)+ \
+                    '_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(thres)+'.png'
+                filename_n = GRIB_PATH_DES+domain_sub[subsets]+'_TOTENS_objprob_bymodel_p'+ \
+                    '{0:.2f}'.format(pre_acc)+'_t'+str(thres)+'.png'
+                subprocess.call('cp '+FIG_PATH_s+'/'+filename_o+' '+FIG_PATH_s+'/'+filename_n,stdout=open(os.devnull, 'wb'), \
+                    stderr=open(os.devnull, 'wb'), shell=True)
+                subprocess.call('scp '+FIG_PATH_s+'/'+filename_n+' hpc@vm-lnx-rzdm05:/home/people/hpc/www/'+ \
+                    'htdocs/verification/mtd/images/'+filename_n,stdout=open(os.devnull, 'wb'),stderr=open(os.devnull, 'wb'), shell=True)
+
+                filename_o = GRIB_PATH_DES+domain_sub[subsets]+'_TOTENS_objprob_byhour_'+'{:04d}'.format(curdate.year)+ \
+                    '{:02d}'.format(curdate.month)+'{:02d}'.format(curdate.day)+ '{:02d}'.format(curdate.hour)+ \
+                    '_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(thres)+'.gif'
+                filename_n = GRIB_PATH_DES+domain_sub[subsets]+'_TOTENS_objprob_byhour_p'+ \
+                    '{0:.2f}'.format(pre_acc)+'_t'+str(thres)+'.gif'
+                subprocess.call('cp '+FIG_PATH_s+'/'+filename_o+' '+FIG_PATH_s+'/'+filename_n,stdout=open(os.devnull, 'wb'), \
+                    stderr=open(os.devnull, 'wb'), shell=True)
+                subprocess.call('scp '+FIG_PATH_s+'/'+filename_n+' hpc@vm-lnx-rzdm05:/home/people/hpc/www/'+ \
+                    'htdocs/verification/mtd/images/'+filename_n,stdout=open(os.devnull, 'wb'),stderr=open(os.devnull, 'wb'), shell=True)
+             
     elif snow_mask == 'TRUE':  
 
         #Copy over relevant images to  http://origin.wpc.ncep.noaa.gov/verification/mtd/images/ for website
@@ -672,7 +692,7 @@ if mtd_mode == 'Operational':
         subprocess.call("ssh hpc@vm-lnx-rzdm05 'rm /home/people/hpc/www/htdocs/snowbands/images/*"+GRIB_PATH_DES+"*"+yrmonday_old+"*png'", \
             stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'),shell=True)
         
-        
+datetime.datetime.now()      
 ###SAMPLE PLOTTING SCRIPT####
 #fid          = Dataset('/export/hpc-lw-dtbdev5/merickson/temp/2018071218_preacc_0.5_MTD_RETRO_NEWSe15min_t0.01/mtd_20180712_183000V_obj.nc', 'a', format='NETCDF4')
 #lat          = (np.array(fid.variables['lat'][:]))*1
