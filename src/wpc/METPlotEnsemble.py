@@ -4,6 +4,7 @@
 #SEIRES OF FUNCTIONS TO CREATE A VARIETY OF PLOTS FROM MET GENERATED DATA. MJE. 20161213
 #UPDATE: ADD ADDITIONAL FUNCTIONS AND STREAMLINE. 20170510. MJE.
 #UPDATE: ADDED DYNAMIC LEGEND GENERATION BASED ON USER SPECIFIED MODELS. 201700608. MJE.
+#UPDATE: ADJUST FUNCTIONS AND ADD MTD FEATURES. 20190606. MJE.
 ################################################################################################
 
 import sys
@@ -22,7 +23,7 @@ mpl.use('Agg') #So plots can be saved in cron
 import matplotlib.pyplot as plt
 import warnings
 from matplotlib.mlab import griddata
-from scipy import ndimage
+from scipy.ndimage.filters import gaussian_filter
 
 ###################################################################################
 #MODEPlotAllFcst creates a plot of forecast ensemble object probability (shading) and 
@@ -30,6 +31,7 @@ from scipy import ndimage
 #QPE, and is useful when making forecasts in realtime.
 #
 #Created by MJE. 20161213.
+#Updated to include adjustable smoother. 20190604. MJE
 #####################INPUT FILES FOR MODEPlotAll####################################
 #GRIB_PATH_DES   = unique identifier assigned to figure name
 #FIG_PATH_s      = path where figures are to be saved
@@ -45,12 +47,13 @@ from scipy import ndimage
 #lon             = gridded longitude data
 #clus_bin        = gridded cluster data
 #simp_prop       = simple cluster centroid info of lat,lon,max
+#sigma           = sigma value for Gaussian smoother (radius of smoothing in grid points)
 ####################OUTPUT FILES FOR MODEPlotAllFcst####################################
 #Note: "Simple" means unmerged while "cluster" refers to merged
 #"Single" refers to unmatched objects while "pair" refers to matched objects.
 #
 ###################################################################################
-def MODEPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,fcst_hr,start_hrs,raw_thres,curdate,data_success,load_data_nc,lat,lon,clus_bin,simp_prop):
+def MODEPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,fcst_hr,start_hrs,raw_thres,curdate,data_success,load_data_nc,lat,lon,clus_bin,simp_prop,sigma):
           
     #data_success=data_success[fcst_hr_count,:,thres_count]
     #clus_bin=clus_bin[:,:,:,fcst_hr_count]
@@ -118,7 +121,7 @@ def MODEPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,fcst_hr,start_h
         transform=ax.transAxes, fontsize=12,verticalalignment='top', horizontalalignment='center', bbox=props)
     norm = mpl.colors.BoundaryNorm(values, len(colorlist))
     
-    cs = m.contourf(lon, lat, ndimage.filters.gaussian_filter(ens_mean, 2), latlon=True, levels=values, extend='min', cmap=my_cmap2, antialiased=False, markerstyle='o', vmin=np.spacing(0.0),vmax=1)
+    cs = m.contourf(lon, lat, gaussian_filter(ens_mean, sigma), latlon=True, levels=values, extend='min', cmap=my_cmap2, antialiased=False, markerstyle='o', vmin=np.spacing(0.0),vmax=1)
     cb = m.colorbar(cs,"right", ticks=values, size="5%", pad="2%", extend='min')
     
     #Scatter plot includes intensity (color) and member (symbol)
@@ -170,12 +173,12 @@ def MODEPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,fcst_hr,start_h
         line_str   = np.hstack((line_str, legend_name[x]))
     plt.legend(line_label, line_str, fontsize=7, numpoints=1, loc=4, framealpha=1)
     
-    ax.set_title("Ensemble Object Probabilities - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{:02d}'.format(int(pre_acc))+ \
+    ax.set_title("Ensemble Object Probabilities - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
         " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H'),fontsize=13)
     #Show and save the plot
     #plt.hold(True)
     plt.show()
-    plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_TOTENS_objprob_'+curdate_currn.strftime('%Y%m%d%H')+'_f'+'{:02d}'.format(fcst_hr)+'_p'+'{:02d}'.format(int(pre_acc))+ \
+    plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_TOTENS_objprob_'+curdate_currn.strftime('%Y%m%d%H')+'_f'+'{:02d}'.format(fcst_hr)+'_p'+'{0:.2f}'.format(pre_acc)+ \
         '_t'+str(raw_thres)+'.png', bbox_inches='tight',dpi=150)
     plt.close()
       
@@ -363,11 +366,11 @@ def MODEPlotTLEFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,fcst_hr,start_h
         line_str   = np.hstack((line_str, classes[x]))
     second_legend = plt.legend(line_label, line_str, fontsize=7, numpoints=1, loc=3, framealpha=1)
     
-    ax.set_title("Objects/Max. Locations - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{:02d}'.format(int(pre_acc))+ \
+    ax.set_title("Objects/Max. Locations - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
         " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H'),fontsize=13)
     #plt.hold(True)
     plt.show()
-    plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_TLE_obj_'+curdate_currn.strftime('%Y%m%d%H')+'_f'+'{:02d}'.format(fcst_hr)+'_p'+'{:02d}'.format(int(pre_acc))+ \
+    plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_TLE_obj_'+curdate_currn.strftime('%Y%m%d%H')+'_f'+'{:02d}'.format(fcst_hr)+'_p'+'{0:.2f}'.format(pre_acc)+ \
     '_t'+str(raw_thres)+'.png', bbox_inches='tight',dpi=150)
     plt.close()
     
@@ -517,11 +520,11 @@ def MODEPlotFcstObjObsObj(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,fcst_hr,s
         
         ax.text(0.5, 0.06, "Valid Time: "+curdate_start.strftime('%Y%m%d%H')+" - "+curdate_stop.strftime('%Y%m%d%H'),
             transform=ax.transAxes, fontsize=12,verticalalignment='top', horizontalalignment='center', bbox=props)
-        ax.set_title(load_data_nc[model][0:-9]+" Vs Stage IV Objects >= "+str(raw_thres)+"\" \n "+'{:02d}'.format(int(pre_acc))+ \
+        ax.set_title(load_data_nc[model][0:-9]+" Vs Stage IV Objects >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
             " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H'),fontsize=12)
         #plt.hold(True)
         plt.show()
-        plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_'+load_data_nc[model][0:-9]+'vsOBS_obj'+curdate_currn.strftime('%Y%m%d%H')+'_f'+'{:02d}'.format(fcst_hr)+'_p'+'{:02d}'.format(int(pre_acc))+ \
+        plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_'+load_data_nc[model][0:-9]+'vsOBS_obj'+curdate_currn.strftime('%Y%m%d%H')+'_f'+'{:02d}'.format(fcst_hr)+'_p'+'{0:.2f}'.format(pre_acc)+ \
             '_t'+str(raw_thres)+'.png', bbox_inches='tight',dpi=150)
         plt.close() 
                
@@ -535,6 +538,7 @@ def MODEPlotFcstObjObsObj(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,fcst_hr,s
 #to better convey temporal details of the objects.
 #
 #Created by MJE. 20170327-20170420
+#Updated to include adjustable smoother. 20190604. MJE
 #####################INPUT FILES FOR MODEPlotAll####################################
 #GRIB_PATH_DES   = unique identifier assigned to figure name
 #FIG_PATH_s      = path where figures are to be saved
@@ -549,20 +553,26 @@ def MODEPlotFcstObjObsObj(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,fcst_hr,s
 #lon             = gridded longitude data
 #simp_bin        = gridded simple data
 #simp_prop       = simple cluster centroid info of lat,lon,max. Takes the form of [model][attributes]
+#sigma           = sigma value for Gaussian smoother (radius of smoothing in grid points)
 ####################OUTPUT FILES FOR MODEPlotAllFcst####################################
 #Note: "Simple" means unmerged while "cluster" refers to merged
 #"Single" refers to unmatched objects while "pair" refers to matched objects.
 #
 ###################################################################################
-def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curdate,data_success,load_data_nc,lat,lon,simp_bin,simp_prop):
-          
-    #data_success  = data_success_new[:,:,thres_count]
-    #simp_bin      = simp_bin[:,:,:,:,thres_count]
-    #simp_prop     = simp_prop[thres_count]
+def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curdate,data_success,load_data_nc,lat,lon,simp_bin,simp_prop,sigma):
+    
     #latlon_dims   = latlon_sub[subsets]
     #GRIB_PATH_DES = GRIB_PATH_DES+domain_sub[subsets]
-    #raw_thres     = raw_thres[0]
+    #raw_thres     = thres
 
+    #Set proper time index depending on ensemble
+    if 'NEWSe' in ''.join(load_data_nc):
+        for model in range(0,len(load_data_nc)):
+            simp_prop[model][2] = (simp_prop[model][2] / 4.0) + 0.25
+    else:
+        for model in range(0,len(load_data_nc)):
+            simp_prop[model][2] = simp_prop[model][2] + 1
+    
     #Find and isolate ST4 data
     isolate_st4=[]
     for i in range(0,len(load_data_nc),1):
@@ -602,24 +612,24 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
     my_cmap1 = mpl.colors.ListedColormap(colorlist)
 
     #Given a default model name list, build a list based on user specified models
-    leg_nam_bymod_default = ['ST4'  ,'HIRESNAM','HIRESW','HRRR','NSSL-OP','NSSL-ARW','NSSL-NMB','HRAM']
-    leg_sym_bymod_default = ['s','d','*','^','<','>','v','o']
+    leg_nam_bymod_default = ['ST4'  ,'HIRESNAM','HIRESW','HRRR','NSSL-OP','NSSL-ARW','NSSL-NMB','HRAM','NEWSe']
+    leg_sym_bymod_default = ['s','d','*','^','<','>','v','o','8']
     
     if len(load_data_nc) <= 8: #If list is small enough, specific markers for individual models
         leg_nam_bymod  = load_data_nc
         leg_sym_bymod  = leg_sym_bymod_default[0:len(load_data_nc)]
     else:                      #Create markers by model type
         leg_nam_bymod = []
-        leg_sym_bymod = []
-        for bymod in range(0,len(leg_nam_bymod_default)):
-            if np.sum([leg_nam_bymod_default[bymod] in i for i in load_data_nc]) > 0:
-                leg_nam_bymod = np.append(leg_nam_bymod,leg_nam_bymod_default[bymod])
-                leg_sym_bymod = np.append(leg_sym_bymod,leg_sym_bymod_default[bymod])
+        leg_sym_bymod = ['d']
+#        for bymod in range(0,len(leg_nam_bymod_default)):
+#            if np.sum([leg_nam_bymod_default[bymod] in i for i in load_data_nc]) > 0:
+#                leg_nam_bymod = np.append(leg_nam_bymod,leg_nam_bymod_default[bymod])
+#                leg_sym_bymod = np.append(leg_sym_bymod,'d')
     
     leg_nam_byint  = ['>='+str(x)+"\"" for x in np.round(np.linspace(0,np.array(raw_thres)*10,len(colorlist)),2)]
-    leg_nam_bytime = ['Hours '+str(i)+' - '+str(i+int(round(len(hrs)/len(colorlist)))) \
-        for i in range(0,len(hrs),int(round(len(hrs)/len(colorlist))+1))]
-    
+    leg_nam_bytime = ['Hours '+str(hrs[i])+' - '+str(hrs[i+int(round(len(hrs)/len(colorlist)))]) \
+        for i in range(0,len(hrs)-1,int(round(len(hrs)/len(colorlist))+1))]
+        
     #Shorten initial colorlist for bytime plots
     my_cmap1_short = mpl.colors.ListedColormap(colorlist[0:len(leg_nam_bytime)])
        
@@ -649,9 +659,9 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
     if '_ALL' not in GRIB_PATH_DES: #Simplify 'ALL' plot of CONUS
         ax.text(0.5, 0.03, str(int(np.sum(np.mean(data_success[:,isolate_st4],axis=0)<1)))+' Members Found', 
             transform=ax.transAxes, fontsize=12,verticalalignment='bottom', horizontalalignment='center', bbox=props)
-        ax.text(0.5, 0.97, "Valid Time: "+curdate_start.strftime('%Y%m%d%H')+" - "+curdate_stop.strftime('%Y%m%d%H'),
+        ax.text(0.5, 0.97, "Valid Time: "+curdate_start.strftime('%Y%m%d%H%M')+" - "+curdate_stop.strftime('%Y%m%d%H%M'),
             transform=ax.transAxes, fontsize=12,verticalalignment='top', horizontalalignment='center', bbox=props)
-    cs = m.contourf(lon, lat, ndimage.filters.gaussian_filter(ens_mean, 2), latlon=True, levels=values, extend='min', cmap=my_cmap2, antialiased=False, markerstyle='o', vmin=np.spacing(0.0),vmax=1)
+    cs = m.contourf(lon, lat, gaussian_filter(ens_mean, sigma), latlon=True, levels=values, extend='min', cmap=my_cmap2, antialiased=False, markerstyle='o', vmin=np.spacing(0.0),vmax=1)
     cb = m.colorbar(cs,"right", ticks=values, size="5%", pad="2%", extend='min') 
     
     #Outline the observation if it exists
@@ -665,6 +675,8 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
         #Specify marker properly 
         if len(load_data_nc) == len(leg_nam_bymod):
             marker = leg_sym_bymod[model]    
+        elif len(leg_sym_bymod) == 1:
+            marker = leg_sym_bymod[0]
         else:
             for bymod in range(0,len(leg_nam_bymod)):
                 if leg_nam_bymod[bymod] in load_data_nc[model]:
@@ -693,11 +705,11 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
   
                 if len(simp_prop[model][4][ind]) > 2:
                     cs2= m.plot(simp_prop[model][5][ind], simp_prop[model][4][ind], color=linecolor, linewidth=linewidth, zorder=zorder, latlon=True)
-                    cs = m.scatter(simp_prop[model][5][ind], simp_prop[model][4][ind], c = simp_prop[model][7][ind], \
+                    cs = m.scatter(simp_prop[model][5][ind], simp_prop[model][4][ind], c = simp_prop[model][9][ind], \
                         marker=marker, vmin=0, vmax=np.array(raw_thres)*10, s=markersize, linewidth=0.25, cmap=my_cmap1, zorder=zorder, alpha=1, latlon=True)  
                 else:
                     cs2= m.plot(simp_prop[model][5][ind][0], simp_prop[model][4][ind][0], color=linecolor, linewidth=linewidth, zorder=zorder, latlon=True)
-                    cs = m.scatter(simp_prop[model][5][ind][0], simp_prop[model][4][ind][0], c = simp_prop[model][7][ind][0], \
+                    cs = m.scatter(simp_prop[model][5][ind][0], simp_prop[model][4][ind][0], c = simp_prop[model][9][ind][0], \
                         marker=marker, vmin=0, vmax=np.array(raw_thres)*10, s=markersize, linewidth=0.25, cmap=my_cmap1, zorder=zorder, alpha=0.8, latlon=True)
                         
             #END model VS obs check
@@ -715,15 +727,16 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
         ax2 = plt.gca().add_artist(first_legend)
         
         #Pass line instances to a legend denoting member-type by markersize
-        line_label=[]
-        line_str=[];
-        for x in range(len(leg_sym_bymod)):
-            line_label = np.hstack((line_label, mpl.lines.Line2D(range(1), range(1), color='k', linestyle='None', marker=leg_sym_bymod[x], markersize=7)))
-            line_str   = np.hstack((line_str, leg_nam_bymod[x]))
-        plt.legend(line_label, line_str, fontsize=7, numpoints=1, loc=4, framealpha=1)
+        if len(leg_nam_bymod) > 0: #Only plot name legend if > 1 unique name exists
+            line_label=[]
+            line_str=[];
+            for x in range(len(leg_sym_bymod)):
+                line_label = np.hstack((line_label, mpl.lines.Line2D(range(1), range(1), color='k', linestyle='None', marker=leg_sym_bymod[x], markersize=7)))
+                line_str   = np.hstack((line_str, leg_nam_bymod[x]))
+            plt.legend(line_label, line_str, fontsize=7, numpoints=1, loc=4, framealpha=1)
     
     #Create the title
-    ax.set_title("Ensemble Object Probabilities - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{:02d}'.format(int(pre_acc))+ \
+    ax.set_title("Ensemble Object Probabilities - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
         " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H'),fontsize=13)
         
     #Special condition, when plotting 'ALL' of CONUS, draw lines to show distinct regions
@@ -749,7 +762,7 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
     #Show and save the plot
     #plt.hold(True)
     plt.show()
-    plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_TOTENS_objprob_bymodel_'+curdate_currn.strftime('%Y%m%d%H')+'_p'+'{:02d}'.format(int(pre_acc))+ \
+    plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_TOTENS_objprob_bymodel_'+curdate_currn.strftime('%Y%m%d%H')+'_p'+'{0:.2f}'.format(pre_acc)+ \
         '_t'+str(raw_thres)+'.png', bbox_inches='tight',dpi=150)
     plt.close()
     
@@ -773,9 +786,9 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
     props = dict(boxstyle='round', facecolor='wheat', alpha=1)
     ax.text(0.5, 0.03, str(int(np.sum(np.mean(data_success[:,isolate_st4],axis=0)<1)))+' Members Found', 
         transform=ax.transAxes, fontsize=12,verticalalignment='bottom', horizontalalignment='center', bbox=props)
-    ax.text(0.5, 0.97, "Valid Time: "+curdate_start.strftime('%Y%m%d%H')+" - "+curdate_stop.strftime('%Y%m%d%H'),
+    ax.text(0.5, 0.97, "Valid Time: "+curdate_start.strftime('%Y%m%d%H%M')+" - "+curdate_stop.strftime('%Y%m%d%H%M'),
         transform=ax.transAxes, fontsize=12,verticalalignment='top', horizontalalignment='center', bbox=props)
-    cs = m.contourf(lon, lat, ndimage.filters.gaussian_filter(ens_mean, 2), latlon=True, levels=values, extend='min', cmap=my_cmap2, antialiased=False, markerstyle='o', vmin=np.spacing(0.0),vmax=1)
+    cs = m.contourf(lon, lat, gaussian_filter(ens_mean, sigma), latlon=True, levels=values, extend='min', cmap=my_cmap2, antialiased=False, markerstyle='o', vmin=np.spacing(0.0),vmax=1)
     cb = m.colorbar(cs,"right", ticks=values, size="5%", pad="2%", extend='min') 
         
     #Outline the observation if it exists
@@ -789,6 +802,8 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
         #Specify marker properly 
         if len(load_data_nc) == len(leg_nam_bymod):
             marker = leg_sym_bymod[model]    
+        elif len(leg_sym_bymod) == 1:
+            marker = leg_sym_bymod[0]
         else:
             for bymod in range(0,len(leg_nam_bymod)):
                 if leg_nam_bymod[bymod] in load_data_nc[model]:
@@ -817,11 +832,11 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
                 
                 if len(simp_prop[model][5][ind]) > 2:
                     cs2= m.plot(simp_prop[model][5][ind], simp_prop[model][4][ind], color='k', linewidth=linewidth, zorder=zorder, latlon=True)
-                    cs = m.scatter(simp_prop[model][5][ind], simp_prop[model][4][ind], c = simp_prop[model][2][ind]+1, \
+                    cs = m.scatter(simp_prop[model][5][ind], simp_prop[model][4][ind], c = simp_prop[model][2][ind], \
                         marker=marker, vmin=0, vmax=hrs[-1], s=markersize, linewidth=0.25, cmap=my_cmap1_short, zorder=zorder, alpha=2, latlon=True)  
                 else:
                     cs2= m.plot(simp_prop[model][5][ind][0], simp_prop[model][4][ind][0], color='k', linewidth=linewidth, zorder=zorder, latlon=True)
-                    cs = m.scatter(simp_prop[model][5][ind][0], simp_prop[model][4][ind][0], c = simp_prop[model][2][ind][0]+1, \
+                    cs = m.scatter(simp_prop[model][5][ind][0], simp_prop[model][4][ind][0], c = simp_prop[model][2][ind][0], \
                         marker=marker, vmin=0, vmax=hrs[-1], s=markersize, linewidth=0.25, cmap=my_cmap1_short, zorder=zorder, alpha=2, latlon=True)
         #END through each track
     #END through the models
@@ -838,19 +853,20 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
     #Pass line instances to a legend denoting member-type by markersize
     line_label=[]
     line_str=[];
-    for x in range(len(leg_sym_bymod)):
-        line_label = np.hstack((line_label, mpl.lines.Line2D(range(1), range(1), color='k', linestyle='None', marker=leg_sym_bymod[x], markersize=7)))
-        line_str   = np.hstack((line_str, leg_nam_bymod[x]))
-    plt.legend(line_label, line_str, fontsize=7, numpoints=1, loc=4, framealpha=1)
+    if len(leg_nam_bymod) > 0: #Only plot name legend if > 1 unique name exists
+        for x in range(len(leg_sym_bymod)):
+            line_label = np.hstack((line_label, mpl.lines.Line2D(range(1), range(1), color='k', linestyle='None', marker=leg_sym_bymod[x], markersize=7)))
+            line_str   = np.hstack((line_str, leg_nam_bymod[x]))
+        plt.legend(line_label, line_str, fontsize=7, numpoints=1, loc=4, framealpha=1)
     
     #Create the title
-    ax.set_title("Ensemble Object Probabilities - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{:02d}'.format(int(pre_acc))+ \
+    ax.set_title("Ensemble Object Probabilities - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
         " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H'),fontsize=13)
         
     #Show and save the plot
     #plt.hold(True)
     plt.show()
-    plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_TOTENS_objprob_bytime_'+curdate_currn.strftime('%Y%m%d%H')+'_p'+'{:02d}'.format(int(pre_acc))+ \
+    plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_TOTENS_objprob_bytime_'+curdate_currn.strftime('%Y%m%d%H')+'_p'+'{0:.2f}'.format(pre_acc)+ \
         '_t'+str(raw_thres)+'.png', bbox_inches='tight',dpi=150)
     plt.close()
 
@@ -859,16 +875,17 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
     #############################################################################################
     fig_name=[];
     
-    for hr_inc in range(len(hrs)):
+    hr_count = 0
+    for hr_inc in hrs:
         
         #Determine time stamp for hour
-        curdate_curr = curdate_currn + datetime.timedelta(hours=hr_inc+1)
+        curdate_curr = curdate_currn + datetime.timedelta(hours=hr_inc)
         
         #Determine hour matrix that isolates models existing for that hour
-        isolate_hr = np.array(isolate_st4 == 1) & np.array(data_success[hr_inc,:] == 0)
-        
+        isolate_hr = np.array(isolate_st4 == 1) & np.array(data_success[hr_count,:] == 0)
+       
         #Determine hourly object probabilities
-        ens_mean = np.nanmean(simp_bin[:,:,hr_inc,isolate_hr == 1], axis = 2)
+        ens_mean = np.nanmean(simp_bin[:,:,hr_count,isolate_hr == 1], axis = 2)
         ens_mean[ens_mean > 0.95] = 0.95
         
         #Create range of values to plot
@@ -887,15 +904,15 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
         props = dict(boxstyle='round', facecolor='wheat', alpha=1)
         ax.text(0.5, 0.03, str(int(np.sum(isolate_hr == 1)))+' Members Found', 
             transform=ax.transAxes, fontsize=12,verticalalignment='bottom', horizontalalignment='center', bbox=props)
-        ax.text(0.5, 0.97, "Valid Time: "+curdate_curr.strftime('%Y%m%d%H')+" - "+str(int(pre_acc))+' Hour Accumulation ',
+        ax.text(0.5, 0.97, "Valid Time: "+curdate_curr.strftime('%Y%m%d%H%M')+" - "+'{0:.2f}'.format(pre_acc)+' Hour Accumulation ',
             transform=ax.transAxes, fontsize=12,verticalalignment='top', horizontalalignment='center', bbox=props)
-        cs = m.contourf(lon, lat, ndimage.filters.gaussian_filter(ens_mean, 2), latlon=True, levels=values, extend='min', cmap=my_cmap2, antialiased=False, markerstyle='o', vmin=np.spacing(0.0),vmax=1)
+        cs = m.contourf(lon, lat, gaussian_filter(ens_mean, sigma), latlon=True, levels=values, extend='min', cmap=my_cmap2, antialiased=False, markerstyle='o', vmin=np.spacing(0.0),vmax=1)
         cb = m.colorbar(cs,"right", ticks=values, size="5%", pad="2%", extend='min') 
         
         #Outline the observation if it exists
         str_inc = [i for i in range(len(isolate_st4)) if isolate_st4[i] == 0]
         if sum(isolate_st4 == 0) > 0:
-            m.contour(lon, lat, np.squeeze(simp_bin[:,:,hr_inc,str_inc],axis=2) > 0, latlon=True, levels=values, cmap=mpl.colors.ListedColormap(["#000000"]), linewidths=2)
+            m.contour(lon, lat, np.squeeze(simp_bin[:,:,hr_count,str_inc],axis=2) > 0, latlon=True, levels=values, cmap=mpl.colors.ListedColormap(["#000000"]), linewidths=2)
             
         #Create two plots: 1) includes intensity (color) and member (symbol) at time of concern
         #                  2) total track of object throughout time
@@ -903,7 +920,9 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
       
             #Specify marker properly 
             if len(load_data_nc) == len(leg_nam_bymod):
-                marker = leg_sym_bymod[model]    
+                marker = leg_sym_bymod[model]   
+            elif len(leg_sym_bymod) == 1:
+                marker = leg_sym_bymod[0] 
             else:
                 for bymod in range(0,len(leg_nam_bymod)):
                     if leg_nam_bymod[bymod] in load_data_nc[model]:
@@ -940,11 +959,11 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
                         
                         if len(simp_prop[model][5][ind_snap]) > 2:
                             m.plot(simp_prop[model][5][ind_snap], simp_prop[model][4][ind_snap], color=linecolor, linewidth=linewidth, zorder=zorder, latlon=True)
-                            m.scatter(simp_prop[model][5][ind_snap], simp_prop[model][4][ind_snap], c = simp_prop[model][7][ind_snap], \
+                            m.scatter(simp_prop[model][5][ind_snap], simp_prop[model][4][ind_snap], c = simp_prop[model][9][ind_snap], \
                                 marker=marker, vmin=0, vmax=np.array(raw_thres)*10, s=markersize, linewidth=0.25, cmap=my_cmap1, zorder=zorder, alpha=1, latlon=True)  
                         else:
                             m.plot(simp_prop[model][5][ind_snap][0], simp_prop[model][4][ind_snap][0], color=linecolor, linewidth=linewidth, zorder=zorder, latlon=True)
-                            m.scatter(simp_prop[model][5][ind_snap][0], simp_prop[model][4][ind_snap][0], c = simp_prop[model][7][ind_snap][0], \
+                            m.scatter(simp_prop[model][5][ind_snap][0], simp_prop[model][4][ind_snap][0], c = simp_prop[model][9][ind_snap][0], \
                                 marker=marker, vmin=0, vmax=np.array(raw_thres)*10, s=markersize, linewidth=0.25, cmap=my_cmap1, zorder=zorder, alpha=0.8, latlon=True)
                                 
                         if len(simp_prop[model][5][ind_all]) > 2:
@@ -969,31 +988,42 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
         #Pass line instances to a legend denoting member-type by markersize
         line_label=[]
         line_str=[];
-        for x in range(len(leg_sym_bymod)):
-            line_label = np.hstack((line_label, mpl.lines.Line2D(range(1), range(1), color='k', linestyle='None', marker=leg_sym_bymod[x], markersize=7)))
-            line_str   = np.hstack((line_str, leg_nam_bymod[x]))
-        plt.legend(line_label, line_str, fontsize=7, numpoints=1, loc=4, framealpha=1)
+        if len(leg_nam_bymod) > 0: #Only plot name legend if > 1 unique name exists
+            for x in range(len(leg_sym_bymod)):
+                line_label = np.hstack((line_label, mpl.lines.Line2D(range(1), range(1), color='k', linestyle='None', marker=leg_sym_bymod[x], markersize=7)))
+                line_str   = np.hstack((line_str, leg_nam_bymod[x]))
+            plt.legend(line_label, line_str, fontsize=7, numpoints=1, loc=4, framealpha=1)
         
         #Create the title
-        ax.set_title("Ensemble Object Probabilities - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{:02d}'.format(int(pre_acc))+ \
+        ax.set_title("Ensemble Object Probabilities - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
             " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H'),fontsize=13)
             
         #Show and save the plot
         #plt.hold(True)
         plt.show()
-        plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_TOTENS_objprob_byhour_'+curdate_currn.strftime('%Y%m%d%H')+'_p'+'{:02d}'.format(int(pre_acc))+ \
-            '_t'+str(raw_thres)+'_f'+str(int(hr_inc+1))+'.png', bbox_inches='tight',dpi=150)
+        plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_TOTENS_objprob_byhour_'+curdate_currn.strftime('%Y%m%d%H')+'_p'+'{0:.2f}'.format(pre_acc)+ \
+            '_t'+str(raw_thres)+'_f'+'{:02d}'.format(int(hr_count)+1)+'.png', bbox_inches='tight',dpi=150)
         plt.close()
         
         #Update figure names to create animated figure
-        fig_name=np.append(fig_name,FIG_PATH_s+'/'+GRIB_PATH_DES+'_TOTENS_objprob_byhour_'+curdate_currn.strftime('%Y%m%d%H')+'_p'+'{:02d}'.format(int(pre_acc))+ \
-            '_t'+str(raw_thres)+'_f'+str(int(hr_inc+1))+'.png')
-    
+        fig_name=np.append(fig_name,FIG_PATH_s+'/'+GRIB_PATH_DES+'_TOTENS_objprob_byhour_'+curdate_currn.strftime('%Y%m%d%H')+'_p'+'{0:.2f}'.format(pre_acc)+ \
+            '_t'+str(raw_thres)+'_f'+'{:02d}'.format(int(hr_count)+1)+'.png')
+   
+        hr_count += 1
+ 
     #Create an animation from the figures previously saved
     subprocess.call('convert -delay 100 '+' '.join(fig_name)+' -loop 0 '+FIG_PATH_s+'/'+GRIB_PATH_DES+'_TOTENS_objprob_byhour_'+ \
-        curdate_currn.strftime('%Y%m%d%H')+'_p'+'{:02d}'.format(int(pre_acc))+'_t'+str(raw_thres)+'.gif', \
+        curdate_currn.strftime('%Y%m%d%H')+'_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(raw_thres)+'.gif', \
         stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'), shell=True) 
 
+    if 'NEWSe' in ''.join(load_data_nc):
+        for model in range(0,len(load_data_nc)):
+            simp_prop[model][2] = (simp_prop[model][2] - 0.25) * 4
+    else:
+        for model in range(0,len(load_data_nc)):
+            simp_prop[model][2] = simp_prop[model][2] - 1
+            
+    return None
 ###################################################################################
 #MTDPlotTLEFcst identifies any time lagged ensembles and plots each one separately
 #with color/location representing centroid location/magnitude, and marker type representing
@@ -1003,7 +1033,7 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
 #black outline and color/location representing centroid location/magnitude.
 #
 #Created by MJE. 20170328-20170420
-#
+#Updated to include adjustable smoother. 20190604. MJE
 #####################INPUT FILES FOR MODEPlotAll####################################
 #GRIB_PATH_DES   = unique identifier assigned to figure name
 #FIG_PATH_s      = path where figures are to be saved
@@ -1018,17 +1048,26 @@ def MTDPlotAllFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
 #lon             = gridded longitude data
 #simp_bin        = gridded simple data
 #simp_prop       = simple cluster centroid info of lat,lon,max. Takes the form of [model][attributes]
+#sigma           = sigma value for Gaussian smoother (radius of smoothing in grid points)
 ####################OUTPUT FILES FOR MODEPlotAllFcst####################################
 #Note: "Simple" means unmerged while "cluster" refers to merged
 #"Single" refers to unmatched objects while "pair" refers to matched objects.
 #
 ###################################################################################
-def MTDPlotTLEFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curdate,data_success,load_data_nc,lat,lon,simp_bin,simp_prop):
+def MTDPlotTLEFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curdate,data_success,load_data_nc,lat,lon,simp_bin,simp_prop,sigma):
     
-    #data_success=data_success[:,:,thres_count]
-    #simp_bin=simp_bin[:,:,:,:,thres_count]
-    #simp_prop=simp_prop[thres_count]
+    #latlon_dims   = latlon_sub[subsets]
+    #GRIB_PATH_DES = GRIB_PATH_DES+domain_sub[subsets]
+    #raw_thres     = thres
     
+    #Set proper time index depending on ensemble
+    if 'NEWSe' in ''.join(load_data_nc):
+        for model in range(0,len(load_data_nc)):
+            simp_prop[model][2] = (simp_prop[model][2] / 4.0) + 0.25
+    else:
+        for model in range(0,len(load_data_nc)):
+            simp_prop[model][2] = simp_prop[model][2] + 1
+        
     #Remove ST4 data since ST4 objects are not plotted here
     isolate_st4=[]
     for i in range(0,len(load_data_nc),1):
@@ -1142,11 +1181,11 @@ def MTDPlotTLEFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
             props = dict(boxstyle='round', facecolor='wheat', alpha=1)
             ax.text(0.5, 0.03, load_data_nc_k[0][:-9]+' - '+str(int(np.sum(np.mean(data_success_k==0,axis=0)>0)))+' Members Found', 
                 transform=ax.transAxes, fontsize=12,verticalalignment='bottom', horizontalalignment='center', bbox=props)
-            ax.text(0.5, 0.97, "Valid Time: "+curdate_start.strftime('%Y%m%d%H')+" - "+curdate_stop.strftime('%Y%m%d%H'),
+            ax.text(0.5, 0.97, "Valid Time: "+curdate_start.strftime('%Y%m%d%H%M')+" - "+curdate_stop.strftime('%Y%m%d%H%M'),
                 transform=ax.transAxes, fontsize=12,verticalalignment='top', horizontalalignment='center', bbox=props)
             norm = mpl.colors.BoundaryNorm(values, 0)
 
-            cs = m.contourf(lon, lat, ndimage.filters.gaussian_filter(ens_mean, 2), latlon=True, \
+            cs = m.contourf(lon, lat, gaussian_filter(ens_mean, sigma), latlon=True, \
                 levels=values, extend='min', cmap=my_cmap2, antialiased=False, markerstyle='o', vmin=np.spacing(0.0),vmax=1)
             cb = m.colorbar(cs,"right", ticks=values, size="5%", pad="2%", extend='min')
             
@@ -1179,11 +1218,11 @@ def MTDPlotTLEFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
                         
                         if len(simp_prop[obs_inc][5][obj]) > 2:
                             m.plot(simp_prop[obs_inc][5][obj], simp_prop[obs_inc][4][obj], color='b', linewidth=1.5, zorder = 3, latlon=True)
-                            m.scatter(simp_prop[obs_inc][5][obj], simp_prop[obs_inc][4][obj], c = simp_prop[obs_inc][7][obj], \
+                            m.scatter(simp_prop[obs_inc][5][obj], simp_prop[obs_inc][4][obj], c = simp_prop[obs_inc][9][obj], \
                                 marker=leg_sym_bymem[obs_inc], vmin=0, vmax=np.array(raw_thres)*10, s=50, linewidth=0.25, cmap=my_cmap1, zorder = 3, alpha = 0.8, latlon=True)  
                         else:
                             m.plot(simp_prop[obs_inc][5][obj][0], simp_prop[obs_inc][4][obj][0], color='b', linewidth=1.5, zorder = 3, latlon=True)
-                            m.scatter(simp_prop[obs_inc][5][obj][0], simp_prop[obs_inc][4][obj][0], c = simp_prop[obs_inc][7][obj][0], \
+                            m.scatter(simp_prop[obs_inc][5][obj][0], simp_prop[obs_inc][4][obj][0], c = simp_prop[obs_inc][9][obj][0], \
                                 marker=leg_sym_bymem[obs_inc], vmin=0, vmax=np.array(raw_thres)*10, s=50, linewidth=0.25, cmap=my_cmap1, zorder = 3, alpha = 0.8, latlon=True)
                     leg_sym_use = np.append(leg_sym_use,leg_sym_bymem[obs_inc])  
 
@@ -1201,11 +1240,11 @@ def MTDPlotTLEFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
                         
                         if len(simp_prop_k[model][5][obj]) > 2:
                             m.plot(simp_prop_k[model][5][obj], simp_prop_k[model][4][obj], color='k', linewidth=0.5, zorder = 2, latlon=True)
-                            m.scatter(simp_prop_k[model][5][obj], simp_prop_k[model][4][obj], c = simp_prop_k[model][7][obj], \
+                            m.scatter(simp_prop_k[model][5][obj], simp_prop_k[model][4][obj], c = simp_prop_k[model][9][obj], \
                                 marker=leg_sym_bymem[marker_inc[model]+mod_inc], vmin=0, vmax=np.array(raw_thres)*10, s=25, linewidth=0.25, cmap=my_cmap1, zorder = 2, alpha = 0.8, latlon=True)  
                         else:
                             m.plot(simp_prop_k[model][5][obj][0], simp_prop_k[model][4][obj][0], color='k', linewidth=0.5, zorder = 2, latlon=True)
-                            m.scatter(simp_prop_k[model][5][obj][0], simp_prop_k[model][4][obj][0], c = simp_prop_k[model][7][obj][0], \
+                            m.scatter(simp_prop_k[model][5][obj][0], simp_prop_k[model][4][obj][0], c = simp_prop_k[model][9][obj][0], \
                                 marker=leg_sym_bymem[marker_inc[model]+mod_inc], vmin=0, vmax=np.array(raw_thres)*10, s=25, linewidth=0.25, cmap=my_cmap1, zorder = 2, alpha = 0.8, latlon=True)
                 leg_sym_use = np.append(leg_sym_use,leg_sym_bymem[marker_inc[model]+mod_inc])
             #END through model to create scatterplot
@@ -1231,16 +1270,23 @@ def MTDPlotTLEFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
             second_legend = plt.legend(line_label, line_str, fontsize=7, numpoints=1, loc=4, framealpha=1)
             plt.gca().add_artist(second_legend)
             
-            ax.set_title("Objects/Max. Locations - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{:02d}'.format(int(pre_acc))+ \
+            ax.set_title("Objects/Max. Locations - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
                 " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H'),fontsize=13)
             #plt.hold(True)
             plt.show()
-            plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_TLE_obj_'+curdate_currn.strftime('%Y%m%d%H')+'_p'+'{:02d}'.format(int(pre_acc))+ \
+            plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_TLE_obj_'+curdate_currn.strftime('%Y%m%d%H')+'_p'+'{0:.2f}'.format(pre_acc)+ \
             '_t'+str(raw_thres)+'_group'+str(ind_count)+'.png', bbox_inches='tight',dpi=150)
             plt.close()
             
             ind_count += 1
-         
+            
+    if 'NEWSe' in ''.join(load_data_nc):
+        for model in range(0,len(load_data_nc)):
+            simp_prop[model][2] = (simp_prop[model][2] - 0.25) * 4
+    else:
+        for model in range(0,len(load_data_nc)):
+            simp_prop[model][2] = simp_prop[model][2] - 1
+                  
 ###################################################################################
 #MTDPlotAllSnowFcst creates three plots: 1) forecast ensemble object probability (shading) and 
 #object centroid location/magnitude/model type (marker). If observation exists then the
@@ -1272,13 +1318,21 @@ def MTDPlotTLEFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,cu
 ###################################################################################
 def MTDPlotAllSnowFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curdate,data_success,load_data_nc,lat,lon,simp_bin,simp_prop):
           
-    #data_success  = data_success_new[:,:,thres_count]
-    #simp_bin      = simp_bin[:,:,:,:,thres_count]
-    #simp_prop     = simp_prop[thres_count]
+    #data_success  = data_success_new
+    #simp_bin      = simp_bin
+    #simp_prop     = simp_prop
     #latlon_dims   = latlon_sub[subsets]
     #GRIB_PATH_DES = GRIB_PATH_DES+domain_sub[subsets]
     #raw_thres     = raw_thres[0]
-    
+
+    #Set proper time index depending on ensemble
+    if 'NEWSe' in ''.join(load_data_nc):
+        for model in range(0,len(load_data_nc)):
+            simp_prop[model][2] = (simp_prop[model][2] / 4.0) + 0.25
+    else:
+        for model in range(0,len(load_data_nc)):
+            simp_prop[model][2] = simp_prop[model][2] + 1
+        
     #Find and isolate ST4 data
     isolate_st4=[]
     for i in range(0,len(load_data_nc),1):
@@ -1320,15 +1374,11 @@ def MTDPlotAllSnowFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thre
         leg_sym_bymod  = leg_sym_bymod_default[0:len(load_data_nc)]
     else:                      #Create markers by model type
         leg_nam_bymod = []
-        leg_sym_bymod = []
-        for bymod in range(0,len(leg_nam_bymod_default)):
-            if np.sum([leg_nam_bymod_default[bymod] in i for i in load_data_nc]) > 0:
-                leg_nam_bymod = np.append(leg_nam_bymod,leg_nam_bymod_default[bymod])
-                leg_sym_bymod = np.append(leg_sym_bymod,leg_sym_bymod_default[bymod])
+        leg_sym_bymod = ['d']
     
     leg_nam_byint  = ['>='+str(x)+"\"" for x in np.round(np.linspace(0,np.array(raw_thres)*10,len(colorlist)),2)]
-    leg_nam_bytime = ['Hours '+str(i)+' - '+str(i+int(round(len(hrs)/len(colorlist)))) \
-        for i in range(0,len(hrs),int(round(len(hrs)/len(colorlist))+1))]
+    leg_nam_bytime = ['Hours '+str(hrs[i])+' - '+str(hrs[i+int(round(len(hrs)/len(colorlist)))]) \
+        for i in range(0,len(hrs)-1,int(round(len(hrs)/len(colorlist))+1))]
     
     #Shorten initial colorlist for bytime plots
     my_cmap1_short = mpl.colors.ListedColormap(colorlist[0:len(leg_nam_bytime)])
@@ -1342,10 +1392,11 @@ def MTDPlotAllSnowFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thre
     ##########################################################################################
     #['OBJ_ID','CLUS_ID','TIME_INDEX','AREA','CENTROID_LAT','CENTROID_LON','AXIS_ANG','INTENSITY_90'] 
     
-    for hr_inc in range(len(hrs)):
+    hr_count = 0
+    for hr_inc in hrs:
 
         #Create datestring for forecast hour
-        curdate_cur = curdate + datetime.timedelta(hours=hr_inc+1)
+        curdate_cur = curdate + datetime.timedelta(hours=hr_inc)
         
         #Create range of values to plot
         values = np.linspace(0,1,11)
@@ -1362,20 +1413,20 @@ def MTDPlotAllSnowFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thre
         m.drawmeridians(np.arange(-180,0,10),labels=[0,0,0,1],fontsize=12,linewidth=0.5) #labels=[left,right,top,bottom]
         props  = dict(boxstyle='round', facecolor='wheat', alpha=1)
         props2 = dict(boxstyle='round', facecolor='tan', alpha=1)
-        ax.text(0.5, 0.03, str(int(np.sum((data_success[hr_inc,isolate_st4]==0)*1,axis=0)))+' Members Found', 
+        ax.text(0.5, 0.03, str(int(np.sum((data_success[hr_count,isolate_st4]==0)*1,axis=0)))+' Members Found', 
             transform=ax.transAxes, fontsize=12,verticalalignment='bottom', horizontalalignment='center', bbox=props)
-        ax.text(0.5, 0.97, "Valid Time: "+curdate_cur.strftime('%Y%m%d%H'),
+        ax.text(0.5, 0.97, "Valid Time: "+curdate_cur.strftime('%Y%m%d%H%M'),
             transform=ax.transAxes, fontsize=12,verticalalignment='top', horizontalalignment='center', bbox=props)
        
         for model in range(0,simp_bin_mod.shape[3]):
             
-            if np.sum(simp_bin_mod[:,:,hr_inc,model]) == 0: #If no data, insert single value point
-                simp_bin_mod[0,0,hr_inc,model] = 1
+            if np.sum(simp_bin_mod[:,:,hr_count,model]) == 0: #If no data, insert single value point
+                simp_bin_mod[0,0,hr_count,model] = 1
                     
             #Capture 90th percentile of object intensity through time matching
             try:
-                inten  = simp_prop[model][7][simp_prop[model][2] == hr_inc]
-                obj_id = np.unique(simp_bin_mod[:,:,hr_inc,model])
+                inten  = simp_prop[model][9][simp_prop[model][2] == hr_inc]
+                obj_id = np.unique(simp_bin_mod[:,:,hr_count,model])
                 
             except TypeError:
                 inten  = [0]
@@ -1416,27 +1467,36 @@ def MTDPlotAllSnowFcst(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thre
                        
                 try: #Catch error if plotting objects outside of regional subset
                     #Contour creates bad legends, so use contour plot outline but contourf attributes for legend
-                    cs1 = m.contourf(lon, lat, (simp_bin_mod[:,:,hr_inc,model]==obj_id[obj_count]*1)*0, latlon=True, levels=values,  cmap=my_cmap1, \
+                    cs1 = m.contourf(lon, lat, (simp_bin_mod[:,:,hr_count,model]==obj_id[obj_count]*1)*0, latlon=True, levels=values,  cmap=my_cmap1, \
                         antialiased=False, vmin=np.spacing(0.0),vmax=1)
                     cb = m.colorbar(cs1,"right", ticks=values, size="5%", pad="5%", filled=True, extend='min') 
                     
-                    cs2 = m.contour(lon, lat, (simp_bin_mod[:,:,hr_inc,model]==obj_id[obj_count]*1), latlon=True, antialiased=False, colors=c_outline,linewidths=0.8)
+                    cs2 = m.contour(lon, lat, (simp_bin_mod[:,:,hr_count,model]==obj_id[obj_count]*1), latlon=True, antialiased=False, colors=c_outline,linewidths=0.8)
                 except:
                     pass
                     
                 obj_count += 1
 
         #Create the title
-        ax.set_title("All Snow Precip. Objects >= "+str(raw_thres)+"\" \n "+'{:02d}'.format(int(pre_acc))+ \
-            " Hour Acc. Precip. at Hour "+'{:02d}'.format(int(hrs[hr_inc]))+" - Initialized "+curdate.strftime('%Y%m%d%H'),fontsize=13)
+        ax.set_title("All Snow Precip. Objects >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
+            " Hour Acc. Precip. at Hour "+'{0:.2f}'.format(hr_inc)+" - Initialized "+curdate.strftime('%Y%m%d%H'),fontsize=13)
             
         #Show and save the plot
         #plt.hold(True)
         plt.show()
-        plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_snowobj_byhour_'+curdate_currn.strftime('%Y%m%d%H')+'_p'+'{:02d}'.format(int(pre_acc))+ \
-            '_t'+str(raw_thres)+'_h'+'{:02d}'.format(int(hrs[hr_inc]))+'.png', bbox_inches='tight',dpi=150)
+        plt.savefig(FIG_PATH_s+'/'+GRIB_PATH_DES+'_snowobj_byhour_'+curdate_currn.strftime('%Y%m%d%H')+'_p'+'{0:.2f}'.format(pre_acc)+ \
+            '_t'+str(raw_thres)+'_h'+'{:02d}'.format(int(hr_count)+1)+'.png', bbox_inches='tight',dpi=150)
         plt.close()
 
+        hr_count += 1
+        
+    if 'NEWSe' in ''.join(load_data_nc):
+        for model in range(0,len(load_data_nc)):
+            simp_prop[model][2] = (simp_prop[model][2] - 0.25) * 4
+    else:
+        for model in range(0,len(load_data_nc)):
+            simp_prop[model][2] = simp_prop[model][2] - 1
+            
 ###################################################################################
 #THIS FUNCTION IS DESGINED TO LOAD AND PLOT ALL PAIRED MODEL/OBS FUNCTION ATTRIBUTES 
 #AND PRECIPITATION BY MODEL INITIALIZATION FOR JUST A SINGLE SPECIFIED RUN. IT IS 
@@ -1473,7 +1533,15 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
     #raw_thres  = thres
     #FIG_PATH_s = FIG_PATH
     #latlon_dims = [lonmin,latmin,lonmax,latmax]
-    
+
+    #Set proper time index depending on ensemble
+    if 'NEWSe' in ''.join(load_data_nc):
+        for model in range(0,len(load_data_nc)):
+            pair_prop[model][2] = (pair_prop[model][2] / 4.0) + 0.25
+    else:
+         for model in range(0,len(load_data_nc)):
+            pair_prop[model][2] = pair_prop[model][2] + 1
+            
     #Find and isolate ST4 data
     isolate_analy=[]
     for i in range(0,len(load_data_nc),1):
@@ -1516,11 +1584,7 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
         leg_sym_bymod  = leg_sym_bymod_default[0:len(load_data_nc)]
     else:                      #Create markers by model type
         leg_nam_bymod = []
-        leg_sym_bymod = []
-        for bymod in range(0,len(leg_nam_bymod_default)):
-            if np.sum([leg_nam_bymod_default[bymod] in i for i in load_data_nc]) > 0:
-                leg_nam_bymod = np.append(leg_nam_bymod,leg_nam_bymod_default[bymod])
-                leg_sym_bymod = np.append(leg_sym_bymod,leg_sym_bymod_default[bymod])
+        leg_sym_bymod = ['d']
     
     leg_nam_byint  = ['>='+str(x)+"\"" for x in np.round(np.linspace(0,np.array(raw_thres)*10,len(colorlist)),2)]
 
@@ -1555,7 +1619,7 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
             m.drawparallels(np.arange(0,90,5),labels=[1,0,0,0],fontsize=12,linewidth=0.5) #labels=[left,right,top,bottom]
             m.drawmeridians(np.arange(-180,0,10),labels=[0,0,0,1],fontsize=12,linewidth=0.5) #labels=[left,right,top,bottom]
             props = dict(boxstyle='round', facecolor='wheat', alpha=1)
-            ax.text(0.5, 0.97, "Valid Time: "+curdate_curr.strftime('%Y%m%d%H%M')+" - "+str(pre_acc)+' Hour Accumulation ',
+            ax.text(0.5, 0.97, "Valid Time: "+curdate_curr.strftime('%Y%m%d%H%M')+" - "+'{0:.2f}'.format(pre_acc)+' Hour Accumulation ',
                 transform=ax.transAxes, fontsize=12,verticalalignment='top', horizontalalignment='center', bbox=props)
             #Plot the model object outline in grey
             print clus_bin.shape
@@ -1587,7 +1651,7 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
             if np.mean(np.isnan(pair_prop[model])) != 1:
                 
                 #Isolate/identify specific hour object attributes
-                hr_loc = pair_prop[model][2] == hr_count
+                hr_loc = pair_prop[model][2] == hr_inc
                 
                 #If data exists for that hour, isolate and plot
                 if len(hr_loc) > 0:
@@ -1609,7 +1673,7 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
             
                     for tot_obj in elements: #Through each track
                         #Tracks for instantaneous time and total time
-                        ind_snap = np.asarray(pair_prop[model][0] == tot_obj) & np.asarray(pair_prop[model][2] == hr_count)
+                        ind_snap = np.asarray(pair_prop[model][0] == tot_obj) & np.asarray(pair_prop[model][2] == hr_inc)
                         ind_all  = np.asarray(pair_prop[model][0] == tot_obj)
                         
                         if len(pair_prop[model][5][ind_snap]) > 2:
@@ -1649,25 +1713,25 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
         plt.legend(line_label, line_str, fontsize=7, numpoints=1, loc=4, framealpha=1)
         
         #Create the title
-        ax.set_title("Ensemble Object Probabilities - "+"Precip. >= "+str(raw_thres)+"\" \n "+str(pre_acc)+ \
-            " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H%M'),fontsize=13)
+        ax.set_title("Ensemble Object Probabilities - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
+            " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H'),fontsize=13)
             
         #Show and save the plot
         #plt.hold(True)
         plt.show()
         plt.savefig(FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_TOTENS_objshape_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+ \
-            '_p'+str(pre_acc)+'_t'+str(raw_thres)+'_f'+str(hr_inc)+'.png', bbox_inches='tight',dpi=150)
+            '_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(raw_thres)+'_f'+'{:02d}'.format(int(hr_count)+1)+'.png', bbox_inches='tight',dpi=150)
         plt.close()
         
         #Update figure names to create animated figure
         fig_name=np.append(fig_name,FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_TOTENS_objshape_byhour_'+ \
-            curdate_currn.strftime('%Y%m%d%H%M')+'_p'+str(pre_acc)+'_t'+str(raw_thres)+'_f'+str(hr_inc)+'.png')
+            curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(raw_thres)+'_f'+'{:02d}'.format(int(hr_count)+1)+'.png')
             
         hr_count += 1
 
     #Create an animation from the figures previously saved
     subprocess.call('convert -delay 100 '+' '.join(fig_name)+' -loop 0 '+FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+ \
-        GRIB_PATH_DES+'_TOTENS_objshape_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+str(pre_acc)+'_t'+str(raw_thres)+'.gif', \
+        GRIB_PATH_DES+'_TOTENS_objshape_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(raw_thres)+'.gif', \
         stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'), shell=True) 
   
     #############################################################################################
@@ -1698,7 +1762,7 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
             m.drawparallels(np.arange(0,90,5),labels=[1,0,0,0],fontsize=12,linewidth=0.5) #labels=[left,right,top,bottom]
             m.drawmeridians(np.arange(-180,0,10),labels=[0,0,0,1],fontsize=12,linewidth=0.5) #labels=[left,right,top,bottom]
             props = dict(boxstyle='round', facecolor='wheat', alpha=1)
-            ax.text(0.5, 0.97, "Valid Time: "+curdate_curr.strftime('%Y%m%d%H%M')+" - "+str(pre_acc)+' Hour Accumulation ',
+            ax.text(0.5, 0.97, "Valid Time: "+curdate_curr.strftime('%Y%m%d%H%M')+" - "+'{0:.2f}'.format(pre_acc)+' Hour Accumulation ',
                 transform=ax.transAxes, fontsize=12,verticalalignment='top', horizontalalignment='center', bbox=props)
             #Plot the model object outline in grey
             if np.nansum(fcst[:,:,hr_count]) > 0:
@@ -1720,7 +1784,7 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
         if np.mean(np.isnan(pair_prop[fcst_loc])) != 1:
             
             #Isolate/identify specific hour object attributes
-            hr_loc = pair_prop[fcst_loc][2] == hr_count
+            hr_loc = pair_prop[fcst_loc][2] == hr_inc
             
             #If data exists for that hour, isolate and plot
             if len(hr_loc) > 0:
@@ -1736,7 +1800,7 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
 
                 for tot_obj in elements: #Through each track
                     #Tracks for instantaneous time and total time
-                    ind_snap = np.asarray(pair_prop[fcst_loc][0] == tot_obj) & np.asarray(pair_prop[fcst_loc][2] == hr_count)
+                    ind_snap = np.asarray(pair_prop[fcst_loc][0] == tot_obj) & np.asarray(pair_prop[fcst_loc][2] == hr_inc)
                     ind_all  = np.asarray(pair_prop[fcst_loc][0] == tot_obj)
                     
                     if len(pair_prop[fcst_loc][5][ind_snap]) > 2:
@@ -1775,24 +1839,24 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
         plt.legend(line_label, line_str, fontsize=7, numpoints=1, loc=4, framealpha=1)
         
         #Create the title
-        ax.set_title("Model Object and Raw Precipitation - "+"Precip. >= "+str(raw_thres)+"\" \n "+str(pre_acc)+ \
+        ax.set_title("Model Object and Raw Precipitation - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
             " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H%M'),fontsize=13)
             
         #Show and save the plot
         #plt.hold(True)
         plt.show()
-        plt.savefig(FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_fcst_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+str(pre_acc)+ \
-            '_t'+str(raw_thres)+'_f'+str(hr_inc)+'.png', bbox_inches='tight',dpi=150)
+        plt.savefig(FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_fcst_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{0:.2f}'.format(pre_acc)+ \
+            '_t'+str(raw_thres)+'_f'+'{:02d}'.format(int(hr_count)+1)+'.png', bbox_inches='tight',dpi=150)
         plt.close()
         
         #Update figure names to create animated figure
-        fig_name=np.append(fig_name,FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_fcst_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+str(pre_acc)+ \
-            '_t'+str(raw_thres)+'_f'+str(hr_inc)+'.png')
+        fig_name=np.append(fig_name,FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_fcst_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{0:.2f}'.format(pre_acc)+ \
+            '_t'+str(raw_thres)+'_f'+'{:02d}'.format(int(hr_count)+1)+'.png')
 
         hr_count += 1
     #Create an animation from the figures previously saved
     subprocess.call('convert -delay 50 '+' '.join(fig_name)+' -loop 0 '+FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+ \
-        GRIB_PATH_DES+'_fcst_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+str(pre_acc)+'_t'+str(raw_thres)+'.gif', \
+        GRIB_PATH_DES+'_fcst_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(raw_thres)+'.gif', \
         stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'), shell=True) 
         
     #############################################################################################
@@ -1801,7 +1865,6 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
 
     fig_name=[];
     hr_count = 0
-    
     for hr_inc in hrs:
         
         if np.isnan(NaN_loc[hr_count]) != 1:
@@ -1823,7 +1886,7 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
             m.drawparallels(np.arange(0,90,5),labels=[1,0,0,0],fontsize=12,linewidth=0.5) #labels=[left,right,top,bottom]
             m.drawmeridians(np.arange(-180,0,10),labels=[0,0,0,1],fontsize=12,linewidth=0.5) #labels=[left,right,top,bottom]
             props = dict(boxstyle='round', facecolor='wheat', alpha=1)
-            ax.text(0.5, 0.97, "Valid Time: "+curdate_curr.strftime('%Y%m%d%H%M')+" - "+str(pre_acc)+' Hour Accumulation ',
+            ax.text(0.5, 0.97, "Valid Time: "+curdate_curr.strftime('%Y%m%d%H%M')+" - "+'{0:.2f}'.format(pre_acc)+' Hour Accumulation ',
                 transform=ax.transAxes, fontsize=12,verticalalignment='top', horizontalalignment='center', bbox=props)
             #Plot the obs object outline in grey
             if np.nansum(obs[:,:,hr_count]) > 0:
@@ -1845,7 +1908,7 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
         if np.mean(np.isnan(pair_prop[obs_loc])) != 1:
             
             #Isolate/identify specific hour object attributes
-            hr_loc = pair_prop[obs_loc][2] == hr_count
+            hr_loc = pair_prop[obs_loc][2] == hr_inc
             
             #If data exists for that hour, isolate and plot
             if len(hr_loc) > 0:
@@ -1861,7 +1924,7 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
 
                 for tot_obj in elements: #Through each track
                     #Tracks for instantaneous time and total time
-                    ind_snap = np.asarray(pair_prop[obs_loc][0] == tot_obj) & np.asarray(pair_prop[obs_loc][2] == hr_count)
+                    ind_snap = np.asarray(pair_prop[obs_loc][0] == tot_obj) & np.asarray(pair_prop[obs_loc][2] == hr_inc)
                     ind_all  = np.asarray(pair_prop[obs_loc][0] == tot_obj)
                     
                     if len(pair_prop[obs_loc][5][ind_snap]) > 2:
@@ -1900,26 +1963,33 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
         plt.legend(line_label, line_str, fontsize=7, numpoints=1, loc=4, framealpha=1)
         
         #Create the title
-        ax.set_title("Observed Object and Raw Precipitation - "+"Precip. >= "+str(raw_thres)+"\" \n "+str(pre_acc)+ \
+        ax.set_title("Observed Object and Raw Precipitation - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
             " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H%M'),fontsize=13)
             
         #Show and save the plot
         #plt.hold(True)
         plt.show()
         plt.savefig(FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_obs_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+ \
-            '_p'+str(pre_acc)+'_t'+str(raw_thres)+'_f'+str(hr_inc)+'.png', bbox_inches='tight',dpi=150)
+            '_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(raw_thres)+'_f'+'{:02d}'.format(int(hr_count)+1)+'.png', bbox_inches='tight',dpi=150)
         plt.close()
         
         #Update figure names to create animated figure
         fig_name=np.append(fig_name,FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_obs_precipAobjs_byhour_'+ \
-            curdate_currn.strftime('%Y%m%d%H%M')+'_p'+str(pre_acc)+'_t'+str(raw_thres)+'_f'+str(hr_inc)+'.png')
+            curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(raw_thres)+'_f'+'{:02d}'.format(int(hr_count)+1)+'.png')
 
         hr_count += 1
     #Create an animation from the figures previously saved
     subprocess.call('convert -delay 50 '+' '.join(fig_name)+' -loop 0 '+FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+ \
-        GRIB_PATH_DES+'_obs_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+str(pre_acc)+'_t'+str(raw_thres)+'.gif', \
+        GRIB_PATH_DES+'_obs_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(raw_thres)+'.gif', \
         stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'), shell=True) 
-     
+        
+    if 'NEWSe' in ''.join(load_data_nc):
+        for model in range(0,len(load_data_nc)):
+            pair_prop[model][2] = (pair_prop[model][2] - 0.25) * 4
+    else:
+        for model in range(0,len(load_data_nc)):
+            pair_prop[model][2] = pair_prop[model][2] - 1
+            
 ###################################################################################
 #THIS FUNCTION IS DESGINED TO LOAD AND PLOT ALL PAIRED MODEL/OBS PRECIPITATION BY MODEL 
 #INITIALIZATION FOR JUST A SINGLE SPECIFIED RUN. THIS VERSION ONLY PLOTS PRECIPITATION 
@@ -1940,14 +2010,12 @@ def MTDPlotRetro(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curd
 #lon             = gridded longitude data
 #fcst            = raw forecast field
 #obs             = raw observation field
-#clus_bin        = gridded cluster data
-#pair_prop       = paired cluster centroid info of lat,lon,max. Takes the form of [model][attributes]
 ####################OUTPUT FILES FOR MTDPlotRetroJustPrecip####################################
 #Note: "Simple" means unmerged while "cluster" refers to merged
 #"Single" refers to unmatched objects while "pair" refers to matched objects.
 #
 ###################################################################################
-def MTDPlotRetroJustPrecip(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curdate,data_success,load_data_nc,lat,lon,fcst,obs,clus_bin,pair_prop):
+def MTDPlotRetroJustPrecip(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_thres,curdate,data_success,load_data_nc,lat,lon,fcst,obs):
     
     #fcst = fcst_p
     #obs  = obs_p
@@ -1963,19 +2031,10 @@ def MTDPlotRetroJustPrecip(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_
             isolate_st4 = np.append(isolate_st4,True)
     isolate_st4       = isolate_st4 == 1
 
-    #Currently this function only requires a logical matrix
-    clus_bin = clus_bin > 0
-    
     #Add NaNs to missing data in binary matrix. Convert to float
-    clus_bin=clus_bin.astype(float)
     NaN_loc = (np.mean(data_success,axis=1)>0)*1.0
     NaN_loc[NaN_loc == 1] = np.NaN
     
-    for j in range(clus_bin.shape[0]):
-        for i in range(clus_bin.shape[1]):
-            for m in range(clus_bin.shape[3]):
-                clus_bin[j,i,:,m] = clus_bin[j,i,:,m] + NaN_loc
-
     #Compute the proper forecast hour strings
     curdate_currn = curdate + datetime.timedelta(hours=0)
     
@@ -1992,8 +2051,7 @@ def MTDPlotRetroJustPrecip(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_
     #############################################################################################
 
     fig_name=[];
-    hr_count = 0
-        
+    hr_count = 0  
     for hr_inc in hrs:
         
         if np.isnan(NaN_loc[hr_count]) != 1:
@@ -2015,7 +2073,7 @@ def MTDPlotRetroJustPrecip(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_
             m.drawparallels(np.arange(0,90,0.5),labels=[1,0,0,0],fontsize=12,linewidth=0.5) #labels=[left,right,top,bottom]
             m.drawmeridians(np.arange(-180,0,0.5),labels=[0,0,0,1],fontsize=12,linewidth=0.5) #labels=[left,right,top,bottom]
             props = dict(boxstyle='round', facecolor='wheat', alpha=1)
-            ax.text(0.5, 0.97, "Valid Time: "+curdate_curr.strftime('%Y%m%d%H%M')+" - "+str(int(pre_acc))+' Hour Accumulation ',
+            ax.text(0.5, 0.97, "Valid Time: "+curdate_curr.strftime('%Y%m%d%H%M')+" - "+'{0:.2f}'.format(pre_acc)+' Hour Accumulation ',
                 transform=ax.transAxes, fontsize=12,verticalalignment='top', horizontalalignment='center', bbox=props)
             #Plot the model object outline in grey
             if np.nansum(fcst[:,:,hr_count]) > 0:
@@ -2023,24 +2081,24 @@ def MTDPlotRetroJustPrecip(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_
             cb = m.colorbar(cs,"right", ticks=values, size="5%", pad="2%", extend='min')
                 
         #Create the title
-        ax.set_title("Model Object and Raw Precipitation - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{:02d}'.format(int(pre_acc))+ \
+        ax.set_title("Model Object and Raw Precipitation - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
             " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H%M'),fontsize=13)
             
         #Show and save the plot
         #plt.hold(True)
         plt.show()
-        plt.savefig(FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_fcst_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{:02d}'.format(int(pre_acc))+ \
-            '_t'+str(raw_thres)+'_f'+str(hr_inc)+'_PRECIPONLY.png', bbox_inches='tight',dpi=150)
+        plt.savefig(FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_fcst_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{0:.2f}'.format(pre_acc)+ \
+            '_t'+str(raw_thres)+'_f'+'{0:.2f}'.format(hr_inc)+'_PRECIPONLY.png', bbox_inches='tight',dpi=150)
         plt.close()
  
         #Update figure names to create animated figure
-        fig_name=np.append(fig_name,FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_fcst_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{:02d}'.format(int(pre_acc))+ \
-            '_t'+str(raw_thres)+'_f'+str(hr_inc)+'_PRECIPONLY.png')
+        fig_name=np.append(fig_name,FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_fcst_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{0:.2f}'.format(pre_acc)+ \
+            '_t'+str(raw_thres)+'_f'+'{0:.2f}'.format(hr_inc)+'_PRECIPONLY.png')
             
         hr_count += 1
     #Create an animation from the figures previously saved
     subprocess.call('convert -delay 50 '+' '.join(fig_name)+' -loop 0 '+FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+ \
-        GRIB_PATH_DES+'_fcst_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{:02d}'.format(int(pre_acc))+'_t'+str(raw_thres)+'_PRECIPONLY.gif', \
+        GRIB_PATH_DES+'_fcst_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(raw_thres)+'_PRECIPONLY.gif', \
         stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'), shell=True) 
         
     #############################################################################################
@@ -2049,7 +2107,6 @@ def MTDPlotRetroJustPrecip(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_
 
     fig_name=[];
     hr_count = 0
-        
     for hr_inc in hrs:
         
         if np.isnan(NaN_loc[hr_count]) != 1:
@@ -2071,7 +2128,7 @@ def MTDPlotRetroJustPrecip(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_
             m.drawparallels(np.arange(0,90,0.5),labels=[1,0,0,0],fontsize=12,linewidth=0.5) #labels=[left,right,top,bottom]
             m.drawmeridians(np.arange(-180,0,0.5),labels=[0,0,0,1],fontsize=12,linewidth=0.5) #labels=[left,right,top,bottom]
             props = dict(boxstyle='round', facecolor='wheat', alpha=1)
-            ax.text(0.5, 0.97, "Valid Time: "+curdate_curr.strftime('%Y%m%d%H%M')+" - "+str(int(pre_acc))+' Hour Accumulation ',
+            ax.text(0.5, 0.97, "Valid Time: "+curdate_curr.strftime('%Y%m%d%H%M')+" - "+'{0:.2f}'.format(pre_acc)+' Hour Accumulation ',
                 transform=ax.transAxes, fontsize=12,verticalalignment='top', horizontalalignment='center', bbox=props)
             #Plot the obs object outline in grey
             if np.nansum(obs[:,:,hr_count]) > 0:
@@ -2079,22 +2136,22 @@ def MTDPlotRetroJustPrecip(GRIB_PATH_DES,FIG_PATH_s,latlon_dims,pre_acc,hrs,raw_
             cb = m.colorbar(cs,"right", ticks=values, size="5%", pad="2%", extend='min')
 
         #Create the title
-        ax.set_title("Observed Object and Raw Precipitation - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{:02d}'.format(int(pre_acc))+ \
+        ax.set_title("Observed Object and Raw Precipitation - "+"Precip. >= "+str(raw_thres)+"\" \n "+'{0:.2f}'.format(pre_acc)+ \
             " Hour Acc. Precip. - Initialized "+curdate.strftime('%Y%m%d%H%M'),fontsize=13)
             
         #Show and save the plot
         #plt.hold(True)
         plt.show()
         plt.savefig(FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_obs_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+ \
-            '_p'+'{:02d}'.format(int(pre_acc))+'_t'+str(raw_thres)+'_f'+str(hr_inc)+'_PRECIPONLY.png', bbox_inches='tight',dpi=150)
+            '_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(raw_thres)+'_f'+'{0:.2f}'.format(hr_inc)+'_PRECIPONLY.png', bbox_inches='tight',dpi=150)
         plt.close()
         
         #Update figure names to create animated figure
         fig_name=np.append(fig_name,FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+GRIB_PATH_DES+'_obs_precipAobjs_byhour_'+ \
-            curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{:02d}'.format(int(pre_acc))+'_t'+str(raw_thres)+'_f'+str(hr_inc)+'_PRECIPONLY.png')
+            curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(raw_thres)+'_f'+'{0:.2f}'.format(hr_inc)+'_PRECIPONLY.png')
 
         hr_count += 1
     #Create an animation from the figures previously saved
     subprocess.call('convert -delay 50 '+' '.join(fig_name)+' -loop 0 '+FIG_PATH_s+'/'+curdate_currn.strftime('%Y%m%d%H')+'/'+ \
-        GRIB_PATH_DES+'_obs_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{:02d}'.format(int(pre_acc))+'_t'+str(raw_thres)+'_PRECIPONLY.gif', \
+        GRIB_PATH_DES+'_obs_precipAobjs_byhour_'+curdate_currn.strftime('%Y%m%d%H%M')+'_p'+'{0:.2f}'.format(pre_acc)+'_t'+str(raw_thres)+'_PRECIPONLY.gif', \
         stdout=open(os.devnull, 'wb'), stderr=open(os.devnull, 'wb'), shell=True) 

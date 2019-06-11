@@ -26,12 +26,12 @@ from netCDF4 import Dataset
 from scipy import ndimage
 
 #Load predefined functions
-import METConFigGen_NEW
+import METConFigGen
 import METLoadEnsemble_NEW
 import METPlotEnsemble
-reload(METConFigGen_NEW)
-reload(METLoadEnsemble_NEW)
-reload(METPlotEnsemble)
+#reload(METConFigGen)
+#reload(METLoadEnsemble_NEW)
+#reload(METPlotEnsemble)
 
 ################################################################################
 #########################1)MATRIX OF VARIABLES#################################
@@ -88,14 +88,14 @@ for mod in load_data:
         ismodel = np.append(ismodel,1)
       
 #Create log file for writting
-log_file = '/export/hpc-lw-dtbdev5/merickson/log/'+GRIB_PATH_DES+'_s'+snow_mask+'_f'+ \
+log_file = '/tmp/minnawin/log/'+GRIB_PATH_DES+'_s'+snow_mask+'_f'+ \
     str(int(total_fcst_hrs))+'_p'+str(int(pre_acc))+'_t'+str(thres)+'.log'
 target = open(log_file,'w')
 target.close()
 
 #Set environment for MET properly
-os.environ["LD_LIBRARY_PATH"] = '/lib:/usr/lib:/lib:/opt/MET7/external_libs/lib:'+ \
-    '/export/hpc-lw-dtbdev5/merickson/Canopy/appdata/canopy-1.7.2.3327.rh5-x86_64/lib'
+os.environ["LD_LIBRARY_PATH"] = '/d1/CODE/MET/MET_releases/external_libs/lib:/usr/local/netcdf/lib:'+ \
+    '/d1/minnawin/Canopy/appdata/canopy-2.1.9.3717rh6-x86_64/lib'
 os.environ["LIBS"] = '/opt/MET7/external_libs'
 
 ################################################################################
