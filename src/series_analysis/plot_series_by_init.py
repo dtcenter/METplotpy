@@ -1,5 +1,4 @@
 import os
-import numpy as np
 from netCDF4 import Dataset
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
@@ -8,7 +7,7 @@ from cmocean import cm as cmo
 from matplotlib import cm
 
 
-def read_netcdf(input_nc_file_dir, input_nc_filename, variable_name, level, storm_number, output_filename,
+def create_plot(input_nc_file_dir, input_nc_filename, variable_name, level, storm_number, output_filename,
                 background_on=False):
     '''
         Reads the input netcdf file and gathers the lat, lon, FBAR and OBAR values into numpy arrays
@@ -119,6 +118,5 @@ if __name__ == "__main__":
     # By default, this is set to False, set to True if you want the coastlines plotted.
     include_background = True
     # Invoke the function that generates the plot
-
-    read_netcdf(nc_input_dir, nc_input_filename, variable_name, level, storm_number, obar_fbar_output,
+    create_plot(nc_input_dir, nc_input_filename, variable_name, level, storm_number, obar_fbar_output,
                 include_background)
