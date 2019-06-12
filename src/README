@@ -1,4 +1,7 @@
-This directory houses the Weather Prediction Center (WPC) sample scripts to be used to develop the METplus python plotting for the MET Mode Time Domain output.
-
+This directory houses various visualization scripts, such as the followiing:
+-The Weather Prediction Center (WPC) sample scripts to be used to develop the METplus python plotting for the MET Mode Time    
+ Domain output.
+-The scripts for plotting FBAR and OBAR results from the METplus feature relative (series analysis by init and series analysis 
+ by lead) netcdf output.
 
 
