@@ -3,11 +3,13 @@ import sys
 import argparse
 import logging
 import numpy as np
+from grib_utils import read_grib_times
 
 def tc_data(datadir, filelist):
 
     logging.info(datadir)
-    logging.info(filelist)
+
+    read_grib_times(datadir, filelist)
 
 if __name__ == '__main__':
 
@@ -24,5 +26,7 @@ if __name__ == '__main__':
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-    filelist = args.filelist
+    f = open(args.filelist)
+    filelist = f.readlines()
+
     tc_data(args.datadir, filelist)
