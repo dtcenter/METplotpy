@@ -3,7 +3,7 @@ import sys
 import logging
 import numpy as np
 from netCDF4 import Dataset
-import pygrib
+from grib_utils import read_grib_times
 
 def read_tcrmw(trackfile):
     """
@@ -27,3 +27,10 @@ def read_tcrmw(trackfile):
     file_id.close()
 
     return valid_time, lat_grid, lon_grid
+
+def read_tc_data(filelist):
+    """
+    Read TC grib files.
+    """
+    pass
+
