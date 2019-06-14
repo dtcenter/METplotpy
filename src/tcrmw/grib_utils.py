@@ -8,6 +8,8 @@ def read_grib_times(datadir, filelist):
     """
     Read times from a list of grib files.
     """
+    lead_times = []
+    valid_times = []
     for filename in filelist:
         filename = os.path.join(datadir, filename.rstrip())
         try:
@@ -15,7 +17,12 @@ def read_grib_times(datadir, filelist):
                 backend_kwargs={
                 'filter_by_keys' : {'typeOfLevel' : 'atmosphere'}})
             logging.info('reading ' + filename)
-            logging.info(ds)
         except IOError:
             logging.error('failed to open ' + filename)
             sys.exit()
+
+        logging.info(ds)
+        lead_times.append(ds['time'])
+        valid_times.append(ds['valid_time'])
+
+    return lead_times, valid_times

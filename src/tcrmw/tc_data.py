@@ -9,7 +9,11 @@ def tc_data(datadir, filelist):
 
     logging.info(datadir)
 
-    read_grib_times(datadir, filelist)
+    lead_times, valid_times = read_grib_times(datadir, filelist)
+
+    for t in range(len(lead_times)):
+        logging.info(lead_times[t])
+        logging.info(valid_times[t])
 
 if __name__ == '__main__':
 
