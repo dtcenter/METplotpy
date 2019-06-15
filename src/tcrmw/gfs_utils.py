@@ -15,7 +15,7 @@ def read_gfs_times(datadir, filelist):
         try:
             ds = xr.open_dataset(filename, engine='cfgrib',
                 backend_kwargs={
-                'filter_by_keys' : {'typeOfLevel' : 'atmosphere'}})
+                'filter_by_keys' : {'typeOfLevel' : 'sigma'}})
             logging.info('reading ' + filename)
         except IOError:
             logging.error('failed to open ' + filename)
@@ -43,4 +43,4 @@ def read_gfs_winds(datadir, filename):
 
     logging.info(ds)
 
-    return ds['u'].values, ds['v'].values, ds['w'].values 
+    return ds['u'].values, ds['v'].values
