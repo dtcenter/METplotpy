@@ -22,7 +22,7 @@ def read_grib_times(datadir, filelist):
             sys.exit()
 
         logging.info(ds)
-        lead_times.append(ds['time'])
-        valid_times.append(ds['valid_time'])
+        lead_times.append(ds['time'].values)
+        valid_times.append(ds['valid_time'].values)
 
     return lead_times, valid_times
