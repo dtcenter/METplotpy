@@ -4,9 +4,9 @@ import logging
 import numpy as np
 import xarray as xr
 
-def read_grib_times(datadir, filelist):
+def read_gfs_times(datadir, filelist):
     """
-    Read times from a list of grib files.
+    Read times from a list of GFS grib files.
     """
     lead_times = []
     valid_times = []
@@ -26,3 +26,21 @@ def read_grib_times(datadir, filelist):
         valid_times.append(ds['valid_time'].values)
 
     return lead_times, valid_times
+
+def read_gfs_winds(datadir, filename):
+    """
+    Read wind fields from a GFS grib file.
+    """
+    filename = os.path.join(datadir, filename.rstrip())
+    try:
+        ds = xr.open_dataset(filename, engine='cfgrib',
+            backend_kwargs={
+            'filter_by_keys' : {'typeOfLevel' : 'sigma'}})
+        logging.info('reading ' + filename)
+    except IOError:
+        logging.error('failed to open ' + filename)
+        sys.exit()
+
+    logging.info(ds)
+
+    return ds['u'].values, ds['v'].values, ds['w'].values 

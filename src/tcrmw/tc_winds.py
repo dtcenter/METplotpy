@@ -3,17 +3,21 @@ import sys
 import argparse
 import logging
 import numpy as np
-from grib_utils import read_grib_times
+from grib_utils import read_gfs_times, read_gfs_winds
 
-def tc_data(datadir, filelist):
+def tc_winds(datadir, filelist):
 
     logging.info(datadir)
 
-    lead_times, valid_times = read_grib_times(datadir, filelist)
+    lead_times, valid_times = read_gfs_times(datadir, filelist)
 
     for t in range(len(lead_times)):
         logging.info(lead_times[t])
         logging.info(valid_times[t])
+
+    for filename in filelist:
+        u, v, w = read_gfs_winds(datadir, filename)
+        logging.debug((u.shape, v.shape, w.shape))
 
 if __name__ == '__main__':
 
@@ -33,4 +37,4 @@ if __name__ == '__main__':
     f = open(args.filelist)
     filelist = f.readlines()
 
-    tc_data(args.datadir, filelist)
+    tc_winds(args.datadir, filelist)
