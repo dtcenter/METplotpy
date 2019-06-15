@@ -33,14 +33,21 @@ def read_gfs_winds(datadir, filename):
     """
     filename = os.path.join(datadir, filename.rstrip())
     try:
+        logging.info('reading ' + filename)
         ds = xr.open_dataset(filename, engine='cfgrib',
             backend_kwargs={
-            'filter_by_keys' : {'typeOfLevel' : 'sigma'}})
-        logging.info('reading ' + filename)
+            'filter_by_keys' :
+            {'typeOfLevel' : 'isobaricInhPa', 'shortName' : 'u'}})
+        logging.info(ds)
+        UGRD = ds['u'].values
+        ds = xr.open_dataset(filename, engine='cfgrib',
+            backend_kwargs={
+            'filter_by_keys' :
+            {'typeOfLevel' : 'isobaricInhPa', 'shortName' : 'v'}})
+        logging.info(ds)
+        VGRD = ds['v'].values
     except IOError:
         logging.error('failed to open ' + filename)
         sys.exit()
 
-    logging.info(ds)
-
-    return ds['u'].values, ds['v'].values
+    return UGRD, VGRD

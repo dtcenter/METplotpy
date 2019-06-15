@@ -9,11 +9,11 @@ def tc_winds(datadir, filelist):
 
     logging.info(datadir)
 
-    lead_times, valid_times = read_gfs_times(datadir, filelist)
+    # lead_times, valid_times = read_gfs_times(datadir, filelist)
 
-    for t in range(len(lead_times)):
-        logging.info(lead_times[t])
-        logging.info(valid_times[t])
+    # for t in range(len(lead_times)):
+    #     logging.info(lead_times[t])
+    #     logging.info(valid_times[t])
 
     for filename in filelist:
         u, v = read_gfs_winds(datadir, filename)
