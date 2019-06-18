@@ -7,16 +7,19 @@ from cartopy.util import add_cyclic_point
 from matplotlib import cm
 from collections import namedtuple
 import re
+import animate_series_analysis
 
 
-def generate_plot(input_nc_file_dir, input_nc_filename, variable_name, level_type, level, output_filename,
+def generate_plot(input_nc_file_dir, input_nc_filename, fhr,  variable_name, level_type, level, output_filename,
                   background_on=False):
     '''
 
     :param input_file:  netcdf input directory
     :param input_nc_filename  netcdf input filename
+    :param fhr  The forecast hour in format Fhhh
     :param variable_name  name of the variable from the netcdf file
-    :param output_filename
+    :param level_type :  the letter indicating the type of level (ie P for pressure level, Z for height above ground)
+    :param output_filename:  The full filepath of the png output file
     :return:
     '''
 
@@ -83,7 +86,7 @@ def generate_plot(input_nc_file_dir, input_nc_filename, variable_name, level_typ
             sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(minimum, maximum))
             sm._A = []
             plt.colorbar(sm, ax=geo_ax)
-            title = var_in_title + " from series by init for " + variable_name + " " + level_type + level
+            title = " series by init " + var_in_title + " for fhr " + fhr + " " + variable_name + " " + level_type + level
             plt.title(title)
 
             # output file will be saved as png
@@ -169,4 +172,4 @@ if __name__ == "__main__":
         input_file = os.path.join(input_dir, input_filename)
         output_filename = file_info.output_filename
 
-        generate_plot(input_dir, input_file, variable_name, level_type, level, output_filename, plot_background_map )
+        generate_plot(input_dir, input_file, hr, variable_name, level_type, level, output_filename, plot_background_map )
