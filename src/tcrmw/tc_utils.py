@@ -3,7 +3,7 @@ import sys
 import logging
 import numpy as np
 from netCDF4 import Dataset
-from grib_utils import read_grib_times
+from gfs_utils import read_gfs_times
 
 def read_tcrmw(trackfile):
     """
