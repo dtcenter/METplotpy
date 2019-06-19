@@ -2,7 +2,7 @@ import imageio
 import re
 import os
 import errno
-
+import animate_utilities as au
 
 def create_gif(duration_secs, files_to_animate, output_dir, filename_regex):
     '''Logic modified from the sample code found on the website "How To Create GIF Animation with Python"
@@ -19,6 +19,14 @@ def create_gif(duration_secs, files_to_animate, output_dir, filename_regex):
         same output directory specified by the user and the output filename format is a variation of the input filename:
         series_<var>_<level_type><level>_<stat>.gif  The filename_regex is used to extract the var, level_type, level,
         stat from the input file to create the output filename.
+
+        :param duration_secs:  The time in seconds to view a frame in the animation
+        :param files_to_animate: A list of files to animate, the order in which the files are listed is the order
+                                 in which the frames will be ordered in the animation.
+        :param output_dir:     The directory where the final gif (animation) file will be saved.
+        :param filename_regex:  The regular expression defining the format of the png file from which the final
+                                output file will be created.
+
     '''
 
     images = [imageio.imread(filename) for filename in files_to_animate]
@@ -29,7 +37,13 @@ def create_gif(duration_secs, files_to_animate, output_dir, filename_regex):
 
 def create_output_filename(output_dir, file_to_animate, filename_regex):
     ''' Create an output file using the directory specified by the user, and based on one of the input files (minus
-         the Fxyz portion, hence only one sampe is needed), '''
+         the Fxyz portion, hence only one sampe is needed)
+
+         :param output_dir:  The directory where the final gif (animation) file is to be saved
+         :param file_to_animate: The name of a png file, to be used to create the .gif output filename.
+         :param filename_regex:  The regular expression which defines the format of the png file, used to
+                                 create the output gif (animation) file.
+    '''
 
     # filename_regex = "series_F([0-9]{3})_([A-Z]{3})_((P|Z)[0-9]{1,3})_(obar|fbar).png"
     print("file to animate: ", file_to_animate)
