@@ -3,7 +3,6 @@ from netCDF4 import Dataset
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
-from cmocean import cm as cmo
 from matplotlib import cm
 
 
