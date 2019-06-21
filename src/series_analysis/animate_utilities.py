@@ -1,10 +1,7 @@
 import imageio
-import re
-import os
-import errno
-import animate_utilities as au
 
-def create_gif(duration_secs, files_to_animate, output_dir, filename_regex):
+
+def create_gif(duration_secs, files_to_animate, output_filename):
     '''Logic modified from the sample code found on the website "How To Create GIF Animation with Python"
         http://www.idiotinside.com/2017/06/06/create-gif-animation-with-python
 
@@ -30,42 +27,6 @@ def create_gif(duration_secs, files_to_animate, output_dir, filename_regex):
     '''
 
     images = [imageio.imread(filename) for filename in files_to_animate]
-
-    output_file = create_output_filename(output_dir, files_to_animate[0], filename_regex)
-    imageio.mimsave(output_file, images, duration=duration_secs)
+    imageio.mimsave(output_filename, images, duration=duration_secs)
 
 
-def create_output_filename(output_dir, file_to_animate, filename_regex):
-    ''' Create an output file using the directory specified by the user, and based on one of the input files (minus
-         the Fxyz portion, hence only one sampe is needed)
-
-         :param output_dir:  The directory where the final gif (animation) file is to be saved
-         :param file_to_animate: The name of a png file, to be used to create the .gif output filename.
-         :param filename_regex:  The regular expression which defines the format of the png file, used to
-                                 create the output gif (animation) file.
-    '''
-
-    # filename_regex = "series_F([0-9]{3})_([A-Z]{3})_((P|Z)[0-9]{1,3})_(obar|fbar).png"
-    print("file to animate: ", file_to_animate)
-    match = re.match(filename_regex, file_to_animate)
-    if match:
-        variable = match.group(2)
-        full_level = match.group(3)
-        statistic = match.group(5)
-
-    else:
-        raise ValueError(
-            "Input file's format does not match expected format, please check the input filename regular expression")
-
-    output_name = "series_" + variable + "_" + full_level + "_" + statistic + ".gif"
-
-    # create the output directory if it doesn't exist (equivalent of mkdir -p)
-    try:
-        os.makedirs(output_dir)
-    except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(output_dir):
-            pass
-    output_filename = os.path.join(output_dir, output_name)
-
-
-    return output_filename
