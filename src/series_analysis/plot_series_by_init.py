@@ -9,6 +9,7 @@ from matplotlib import cm
 def create_plot(input_nc_file_dir, input_nc_filename, variable_name, level, storm_number, output_filename,
                 background_on=False):
     '''
+        Generates the plots (png) for each var-level-stat combination created by the series analysis by init.
         Reads the input netcdf file and gathers the lat, lon, FBAR and OBAR values into numpy arrays
     :param input_nc_file_dir The directory where the netcdf input file resides
     :param input_nc_file:  The name of the netcdf input file containing the variable of interest
@@ -107,7 +108,7 @@ if __name__ == "__main__":
     nc_input_dir = \
         '/d1/METplus_Plotting_Data/series_by_init/20141214_00/' + storm_number
 
-    # The name of the netccdf file of interest
+    # The name of the netcdf file of interest
     nc_input_filename = 'series_TMP_Z2.nc'
     variable_name = 'TMP'
     level = 'Z2'
