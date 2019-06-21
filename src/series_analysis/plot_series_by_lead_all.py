@@ -7,7 +7,6 @@ from cartopy.util import add_cyclic_point
 from matplotlib import cm
 from collections import namedtuple
 import re
-import animate_series_analysis
 
 
 def generate_plot(input_nc_file_dir, input_nc_filename, fhr,  variable_name, level_type, level, output_filename,
