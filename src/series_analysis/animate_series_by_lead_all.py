@@ -1,4 +1,4 @@
-import imageio
+import re
 import os
 import errno
 import animate_utilities as au
@@ -58,6 +58,41 @@ def collect_files_to_animate(input_dir, filename_regex, forecast_hours, variable
 
     return sorted_var_level_stat_paths
 
+def create_output_filename(output_dir, file_to_animate, filename_regex):
+    ''' Create an output file using the directory specified by the user, and based on one of the input files (minus
+         the Fxyz portion, hence only one sampe is needed)
+
+         :param output_dir:  The directory where the final gif (animation) file is to be saved
+         :param file_to_animate: The name of a png file, to be used to create the .gif output filename.
+         :param filename_regex:  The regular expression which defines the format of the png file, used to
+                                 create the output gif (animation) file.
+    '''
+
+    # filename_regex = "series_F([0-9]{3})_([A-Z]{3})_((P|Z)[0-9]{1,3})_(obar|fbar).png"
+    print("file to animate: ", file_to_animate)
+    match = re.match(filename_regex, file_to_animate)
+    if match:
+        variable = match.group(2)
+        full_level = match.group(3)
+        statistic = match.group(5)
+
+    else:
+        raise ValueError(
+            "Input file's format does not match expected format, please check the input filename regular expression")
+
+    output_name = "series_" + variable + "_" + full_level + "_" + statistic + ".gif"
+
+    # create the output directory if it doesn't exist (equivalent of mkdir -p)
+    try:
+        os.makedirs(output_dir)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(output_dir):
+            pass
+    output_filename = os.path.join(output_dir, output_name)
+
+
+    return output_filename
+
 
 if __name__ == "__main__":
     input_dir = "/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output"
@@ -73,9 +108,21 @@ if __name__ == "__main__":
     statistic = 'obar'
     obar_files = collect_files_to_animate(input_dir, filename_regex, fhrs_list, variable, level_type, level, statistic,
                                           animation_duration_secs)
+
+    #Animate the obar plots
     stat = 'obar'
-    obar_output_gif = au.create_gif(animation_duration_secs, obar_files, output_dir, filename_regex)
-    # stat = 'fbar'
-    # fbar_files = collect_files_to_animate(input_dir, filename_regex, fhrs_list, level_type, level, statistic,
-    #                                       animation_duration_secs)
-    # fbar_output_gif = au.create_gif(animation_duration_secs, fbar_files, output_dir, filename_regex)
+    # create output filename for obar animation (gif) file
+    output_filename = create_output_filename(output_dir, obar_files[0], filename_regex)
+
+    obar_output_gif = au.create_gif(animation_duration_secs, obar_files, output_filename)
+
+    # Animate the fbar plots
+    statistic = 'fbar'
+    fbar_files = collect_files_to_animate(input_dir, filename_regex, fhrs_list, variable, level_type, level, statistic,
+                                          animation_duration_secs)
+    # create output filename for fbar animation (gif) file
+    output_filename = create_output_filename(output_dir, fbar_files[0], filename_regex)
+    fbar_output_gif = au.create_gif(animation_duration_secs, fbar_files, output_filename)
+
+
+
