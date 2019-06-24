@@ -8,7 +8,7 @@ from cartopy.util import add_cyclic_point
 from matplotlib import cm
 
 
-def create_plots(input_dir, variable_name, nc_var_name, title, type, output_dir, background_on=False):
+def create_plots(input_dir, variable_name, nc_var_name, title, nc_flag_type, output_dir, background_on=False):
     '''
     Creates plots of output from grid_to_grid METplus wrapper use case, where the nc_pair_flags raw and diff are
     set to TRUE to generate the output for the raw variables for fcst and obs, and their corresponding difference.
@@ -17,7 +17,7 @@ def create_plots(input_dir, variable_name, nc_var_name, title, type, output_dir,
     :param variable_name: The variable of interest: tmp, ugrd, hgt, etc
     :param nc_var_name: The variable name as described in the netcdf file
     :param title:  The title for this plot
-    :param type:  Corresponds *somewhat* to the nc_pairs_flag  FCST, OBS correspond to raw, DIFF corresponds to diff
+    :param nc_flag_type:  Corresponds *somewhat* to the nc_pairs_flag: FCST&OBS correspond to raw, DIFF corresponds to diff
     :param output_dir:  The directory where the png files will be saved.
     :return:
     '''
@@ -94,7 +94,7 @@ def create_plots(input_dir, variable_name, nc_var_name, title, type, output_dir,
         plt.title(title)
 
         # output file will be saved as png
-        output_png_file = variable_name + "_" + type + "_" + os.path.splitext(nc_file)[0] + ".png"
+        output_png_file = variable_name + "_" + nc_flag_type + "_" + os.path.splitext(nc_file)[0] + ".png"
         print("output png file: ", output_png_file)
         plt.savefig(os.path.join(output_dir,output_png_file))
 
@@ -152,10 +152,11 @@ if __name__ == "__main__":
     # set to True if you want to draw the coastlines on the plot
     background_on = True
 
-    # type refers to the type of file: ie FCST, OBS, or DIFF
-    type="FCST"
-    create_plots(input_dir, var, nc_fcst_var, nc_fcst_title, type, output_dir, background_on)
-    type="OBS"
-    create_plots(input_dir, var, nc_obs_var, nc_obs_title, type, output_dir, background_on)
-    type="DIFF"
-    create_plots(input_dir, var, nc_diff_var, nc_diff_title, type, output_dir, background_on)
+    # nc_flag_type corresponds to the nc_flag in the MET grid-stat config file: ie  FCST or OBS corresponds to raw=TRUE,
+    # and DIFF corresponds to diff=TRUE
+    nc_flag_type="FCST"
+    create_plots(input_dir, var, nc_fcst_var, nc_fcst_title, nc_flag_type, output_dir, background_on)
+    nc_flag_type="OBS"
+    create_plots(input_dir, var, nc_obs_var, nc_obs_title, nc_flag_type, output_dir, background_on)
+    nc_flag_type="DIFF"
+    create_plots(input_dir, var, nc_diff_var, nc_diff_title, nc_flag_type, output_dir, background_on)
