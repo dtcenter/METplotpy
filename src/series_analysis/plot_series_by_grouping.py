@@ -234,6 +234,8 @@ def animate(duration, full_path_output_filename, sorted_pngs):
 if __name__ == "__main__":
     input_dir = '/d1/METplus_Plotting_Data/series_by_lead_grouping'
     output_dir = '/d1/METplus_Plotting_Data/series_by_lead_grouping/plots'
+
+    # Draws coastlines when set to True, by default, this is set to False.
     background_on = True
 
     # Set up regex so we can isolate the filename only (no extension),
