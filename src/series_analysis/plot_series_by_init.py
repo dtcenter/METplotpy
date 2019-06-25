@@ -97,23 +97,32 @@ def create_plot(input_nc_file_dir, input_nc_filename, variable_name, level, stor
             plt.savefig(output_png_file)
 
 
+
+
 if __name__ == "__main__":
     #
     # series by init
     #
 
+    # Read in the configuration file, the user indicates full file path and filename of the configuration file from
+    # the command line
+
+
+
     # The storm number of interest
     storm_number = 'ML1200972014'
     # The input directory where the netcdf files created by the series analysis (by initialization times) are saved
-    nc_input_dir = \
-        '/d1/METplus_Plotting_Data/series_by_init/20141214_00/' + storm_number
+
+    nc_input_dir_base = '/d1/METplus_Plotting_Data/series_by_init/20141214_00/'
+    nc_input_dir = nc_input_dir_base + storm_number
 
     # The name of the netcdf file of interest
     nc_input_filename = 'series_TMP_Z2.nc'
     variable_name = 'TMP'
     level = 'Z2'
+
     # The output file name (full path)
-    obar_fbar_output = '/d1/METplus_Plotting_Data/series_by_init/20141214_00/' + storm_number + '/TMP_Z2'
+    obar_fbar_output = nc_input_dir_base + storm_number + '/TMP_Z2'
 
     # By default, this is set to False, set to True if you want the coastlines plotted.
     include_background = True
