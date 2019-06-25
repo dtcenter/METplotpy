@@ -142,7 +142,6 @@ if __name__ == "__main__":
 
     # Generate plots for all the netcdf files found in the /d1/METplus_Plotting_Data/series_by_lead_all_fhrs:
     # series_F000/, series_F006/, series_F012, and series_F018
-    base_dir = "/d1/METplus_Plotting_Data/series_by_lead_all_fhrs"
     input_dir_base = "/d1/METplus_Plotting_Data/series_by_lead_all_fhrs"
     input_file = "series_F000_TMP_P850.nc"
     output_base_dir = '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output'
@@ -158,7 +157,7 @@ if __name__ == "__main__":
     # Default is false, set this to True only if you want to see coastlines drawn
     plot_background_map = True
 
-    file_info_list = get_info(base_dir, output_base_dir)
+    file_info_list = get_info(input_dir_base, output_base_dir)
     for file_info in file_info_list:
         hr = file_info.fhr
         fhr = 'series_F' + hr
