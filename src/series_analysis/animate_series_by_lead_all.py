@@ -90,6 +90,8 @@ def create_output_filename(output_dir, file_to_animate, filename_regex):
 
 
 if __name__ == "__main__":
+
+    # Set the values to these variables
     input_dir = "/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output"
     output_dir = "/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_animate_python"
     fhrs_list = ["F000", "F006", "F012"]
@@ -100,12 +102,11 @@ if __name__ == "__main__":
     filename_regex = ".*series_F([0-9]{3})_([A-Z]{3})_((P|Z)[0-9]{1,3})_(obar|fbar).png"
     output_gif_base = 'series_'
     animation_duration_secs = 0.8
+
+    # Animate the obar plots
     statistic = 'obar'
     obar_files = collect_files_to_animate(input_dir, filename_regex, fhrs_list, variable, level_type, level, statistic,
                                           animation_duration_secs)
-
-    #Animate the obar plots
-    stat = 'obar'
     # create output filename for obar animation (gif) file
     output_filename = create_output_filename(output_dir, obar_files[0], filename_regex)
 
