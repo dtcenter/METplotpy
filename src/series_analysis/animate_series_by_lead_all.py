@@ -105,8 +105,7 @@ if __name__ == "__main__":
 
     # Animate the obar plots
     statistic = 'obar'
-    obar_files = collect_files_to_animate(input_dir, filename_regex, fhrs_list, variable, level_type, level, statistic,
-                                          animation_duration_secs)
+    obar_files = collect_files_to_animate(input_dir, filename_regex, fhrs_list, variable, level_type, level, statistic)
     # create output filename for obar animation (gif) file
     output_filename = create_output_filename(output_dir, obar_files[0], filename_regex)
 
@@ -114,8 +113,7 @@ if __name__ == "__main__":
 
     # Animate the fbar plots
     statistic = 'fbar'
-    fbar_files = collect_files_to_animate(input_dir, filename_regex, fhrs_list, variable, level_type, level, statistic,
-                                          animation_duration_secs)
+    fbar_files = collect_files_to_animate(input_dir, filename_regex, fhrs_list, variable, level_type, level, statistic)
     # create output filename for fbar animation (gif) file
     output_filename = create_output_filename(output_dir, fbar_files[0], filename_regex)
     fbar_output_gif = au.create_gif(animation_duration_secs, fbar_files, output_filename)
