@@ -45,8 +45,9 @@ def collect_files_to_animate(input_dir, forecast_hours, variable, level_type, le
     var_level_stat_paths = []
     for fhr in forecast_hours:
         # fhr_filepath = os.path.join(input_dir, 'series_' + fhr)
-        var_level_stat_filename = 'series_' + fhr + '_' + variable + '_' + level_type + str(
-            level) + '_' + statistic + extension
+        level_str = str(level)
+        var_level_stat_filename = 'series_' + fhr + '_' + variable + '_' + level_type + \
+                                  level_str + '_' + statistic + extension
         # var_level_stat_paths.append(os.path.join(fhr_filepath, var_level_stat_filename))
         var_level_stat_paths.append(os.path.join(input_dir, var_level_stat_filename))
 
@@ -105,7 +106,7 @@ if __name__ == "__main__":
 
     # Animate the obar plots
     statistic = 'obar'
-    obar_files = collect_files_to_animate(input_dir, filename_regex, fhrs_list, variable, level_type, level, statistic)
+    obar_files = collect_files_to_animate(input_dir, fhrs_list, variable, level_type, level, statistic)
     # create output filename for obar animation (gif) file
     output_filename = create_output_filename(output_dir, obar_files[0], filename_regex)
 
@@ -113,7 +114,7 @@ if __name__ == "__main__":
 
     # Animate the fbar plots
     statistic = 'fbar'
-    fbar_files = collect_files_to_animate(input_dir, filename_regex, fhrs_list, variable, level_type, level, statistic)
+    fbar_files = collect_files_to_animate(input_dir, fhrs_list, variable, level_type, level, statistic)
     # create output filename for fbar animation (gif) file
     output_filename = create_output_filename(output_dir, fbar_files[0], filename_regex)
     fbar_output_gif = au.create_gif(animation_duration_secs, fbar_files, output_filename)
