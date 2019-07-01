@@ -24,13 +24,18 @@ def read_tcrmw(trackfile):
     logging.debug('lat_grid.shape=' + str(lat_grid.shape))
     logging.debug('lon_grid.shape=' + str(lon_grid.shape))
 
+    grid_vars = set(['lat', 'lon', 'range', 'azimuth'])
+    wind_vars = set(['U', 'V', 'UGRD', 'VGRD'])
+    wind_data = {}
+    scalar_data = {}
+
+    for var in file_id.variables:
+        logging.info(var)
+        if var in wind_vars:
+            wind_data[var] = file_id.variables[var][:]
+        if var not in grid_vars.union(wind_vars):
+            scalar_data[var] = file_id.variables[var][:]
+
     file_id.close()
 
-    return valid_time, lat_grid, lon_grid
-
-def read_tc_data(filelist):
-    """
-    Read TC grib files.
-    """
-    pass
-
+    return valid_time, lat_grid, lon_grid, wind_data, scalar_data

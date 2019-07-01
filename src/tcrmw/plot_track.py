@@ -17,7 +17,7 @@ def plot_track(datadir, plotdir, trackfile, params):
     logging.info(datadir)
     logging.info(plotdir)
 
-    valid_time, lat_grid, lon_grid = \
+    valid_time, lat_grid, lon_grid, wind_vars, scalar_vars = \
         read_tcrmw(os.path.join(datadir, trackfile))
     lat_track, lon_track = lat_grid[0, 0, :], lon_grid[0, 0, :]
     lat_min, lat_max = lat_track.min(), lat_track.max()
