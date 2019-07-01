@@ -21,7 +21,7 @@ examples/series_by_lead_all_fhrs config files.
 
 Input Required:
 ===============
-The following values need to be set in the plot_series_by_grouping.py script (towards the bottom of the script):
+The following values need to be set in the plot_series_by_grouping.py script (in the def main() section):
 -input_dir  the directory where the input netcdf files are located
 -output_dir the directory where the png plot files and animation file (gif) are located
 -filename_regex  The regular expression that describes the output file to help identify the group (eg F000_to_F006, F006_to_F012, etc),
