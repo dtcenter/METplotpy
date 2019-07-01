@@ -86,6 +86,7 @@ def create_plots(input_dir, variable_name, nc_var_name, title, nc_flag_type, out
         # print(variable)
 
         #  Allow the variable and the longitude to cycle (encircle the globe)
+        #pylint: disable=unused-variable
         variable_cyc, lon_cyc = add_cyclic_point(variable, coord=lons)
         # print("variable cyc: ", variable_cyc)
         # print("lon cyc: ", lon_cyc)
