@@ -19,7 +19,7 @@ Pre-requisite:
 
 What to specify:
 ===============
-At the bottom of the script, the user specifies the following:
+At the bottom of the script, under the 'def main()' section, the user specifies the following:
  -input directory
  -output directory
  -and for each variable of interest:
