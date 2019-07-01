@@ -21,7 +21,7 @@ Input files:
 
 Input required:
 ==============
-The user specifies the following in the plot_series_by_init.py script (in the bottom section of the code):
+The user specifies the following in the plot_series_by_init.py script (in the def main() sections):
 -storm number, which corresponds to the subdirectory under the $OUTPUT_DIR/YYYYMMDD_hh/ directory created by the METplus
 use case.
 -nc_input_dir_base, the $OUTPUT_DIR/YYYYMMDD_hh directory under which the output is saved based on the storm number.
