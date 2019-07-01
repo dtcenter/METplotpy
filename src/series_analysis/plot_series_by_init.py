@@ -1,20 +1,28 @@
+"""
+Generates static plots (png) from netcdf output from performing series analysis by init times.
+"""
+
 import os
-from netCDF4 import Dataset
 import matplotlib.pyplot as plt
+from matplotlib import cm
 import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
-from matplotlib import cm
+#pylint: disable=import-error
+from netCDF4 import Dataset
 
 
-def create_plot(input_nc_file_dir, input_nc_filename, variable_name, level, storm_number, output_filename,
-                background_on=False):
+def create_plot(input_nc_file_dir, input_nc_filename, variable_name, level,
+                storm_number, output_filename, background_on=False):
     '''
-        Generates the plots (png) for each var-level-stat combination created by the series analysis by init.
-        Reads the input netcdf file and gathers the lat, lon, FBAR and OBAR values into numpy arrays
+        Generates the plots (png) for each var-level-stat combination created
+        by the series analysis by init.
+        Reads the input netcdf file and gathers the lat, lon, FBAR and OBAR
+        values into numpy arrays
     :param input_nc_file_dir The directory where the netcdf input file resides
     :param input_nc_file:  The name of the netcdf input file containing the variable of interest
     :param variable_name:   The name of the variable of interest, e.g. TEMP.
-    :pararm level:          The level corresponding to the variable of interest, e.g. Z2, L1, P500, etc.
+    :pararm level:          The level corresponding to the variable of interest,
+                            e.g. Z2, L1, P500, etc.
     :param storm_number    The storm number, used in the title of the plot.
     :param output_filename The "base" output filename to be used for FBAR and OBAR plots.
     :param backgroung_on:  Background map with coastlines are by default turned "off".
@@ -62,29 +70,40 @@ def create_plot(input_nc_file_dir, input_nc_filename, variable_name, level, stor
 
             if key == 'OBAR':
                 var_in_title = "OBAR"
-                # Figure out the minimum and maximum values of the OBAR/FBAR temperature and use these values in the
+                # Figure out the minimum and maximum values of the OBAR/FBAR
+                # temperature and use these values in the
                 # plt.Normalize() call.
                 minimum = obar.min()
                 maximum = obar.max()
-                # Allow the temperature values (OBAR, FBAR) and the longitude to cycle (encircle the globe)
+                # Allow the temperature values (OBAR, FBAR) and the longitude
+                # to cycle (encircle the globe)
+
+                #pylint: disable=unused-variable
                 obar_cyc, lon_cyc = add_cyclic_point(obar, coord=lons)
             else:
                 var_in_title = "FBAR"
-                # Figure out the minimum and maximum values of the OBAR/FBAR temperature and use these values in the
+                # Figure out the minimum and maximum values of the OBAR/FBAR
+                # temperature and use these values in the
                 # plt.Normalize() call.
                 minimum = fbar.min()
                 maximum = fbar.max()
-                # Allow the temperature values (OBAR, FBAR) and the longitude to cycle (encircle the globe)
+                # Allow the temperature values (OBAR, FBAR) and the longitude
+                # to cycle (encircle the globe)
+                #pylint: disable=unused-variable
                 fbar_cyc, lon_cyc = add_cyclic_point(fbar, coord=lons)
 
-            # Adding a legend from Stack Overflow.  Create your own mappable object (scalar mappable) that can be
-            # passed to colorbar.  Normalize values are the min and max values normalized to 0, 1 in the
-            # solution, here we use the minimum and maximum values found in the FBAR/OBAR array.
+            # Adding a legend from Stack Overflow.  Create your own mappable object
+            # (scalar mappable) that can be passed to colorbar.  Normalize values
+            # are the min and max values normalized to 0, 1 in the
+            # solution, here we use the minimum and maximum values found in the FBAR/OBAR
+            # array.
 
-            sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(minimum, maximum))
-            sm._A = []
-            plt.colorbar(sm, ax=geo_ax)
-            title = var_in_title + " from series by init for " + variable_name + " " + level + " Storm " \
+            scalar_mappable = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(minimum, maximum))
+            #pylint: disable=protected-access
+            scalar_mappable._A = []
+            plt.colorbar(scalar_mappable, ax=geo_ax)
+            title = var_in_title + " from series by init for " + variable_name + \
+                    " " + level + " Storm " \
                     + storm_number
             plt.title(title)
 
@@ -96,22 +115,18 @@ def create_plot(input_nc_file_dir, input_nc_filename, variable_name, level, stor
             print("output filename: ", output_png_file)
             plt.savefig(output_png_file)
 
+def main():
+    """
+    Place where the user sets the input necessary to "customize" static plots to
+    reflect the storm number of interest, variable, level, and other things affecting
+    the plot.
 
-
-
-if __name__ == "__main__":
-    #
-    # series by init
-    #
-
-    # Read in the configuration file, the user indicates full file path and filename of the configuration file from
-    # the command line
-
-
-
+    :return:
+    """
     # The storm number of interest
     storm_number = 'ML1200972014'
-    # The input directory where the netcdf files created by the series analysis (by initialization times) are saved
+    # The input directory where the netcdf files created by the series analysis
+    # (by initialization times) are saved
 
     nc_input_dir_base = '/d1/METplus_Plotting_Data/series_by_init/20141214_00/'
     nc_input_dir = nc_input_dir_base + storm_number
@@ -127,5 +142,9 @@ if __name__ == "__main__":
     # By default, this is set to False, set to True if you want the coastlines plotted.
     include_background = True
     # Invoke the function that generates the plot
-    create_plot(nc_input_dir, nc_input_filename, variable_name, level, storm_number, obar_fbar_output,
-                include_background)
+    create_plot(nc_input_dir, nc_input_filename, variable_name, level,
+                storm_number, obar_fbar_output, include_background)
+
+
+if __name__ == "__main__":
+    main()
