@@ -45,6 +45,8 @@ def plot_track(datadir, plotdir, trackfile, params):
 
     n_range, n_azimuth, n_track = lat_grid.shape
 
+    # plot scalar field
+
     # plot track
     track = sgeom.LineString(zip(lon_track, lat_track))
     ax.add_geometries([track], proj_geom,
@@ -99,7 +101,10 @@ if __name__ == '__main__':
         default=10)
     parser.add_argument(
         '--figsize', type=int, dest='figsize', required=False,
-        default=10)
+        default=15)
+    parser.add_argument(
+        '--scalar_field', type=str, dest='scalar_field', required=False,
+        default='T')
 
     args = parser.parse_args()
 
@@ -109,7 +114,8 @@ if __name__ == '__main__':
               'range_step' : args.range_step,
               'azimuth_step' : args.azimuth_step,
               'buffer' : args.buffer,
-              'figsize' : args.figsize}
+              'figsize' : args.figsize,
+              'scalar_field' : args.scalar_field}
 
     plot_track(args.datadir,
                args.plotdir,
