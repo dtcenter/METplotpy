@@ -26,8 +26,8 @@ hours.
 
 Input required:
 ===============
+in the code, under the 'def main()' section, set the following:
 -input_dir_base  The base directory where all the input data resides
--input_file  The name of the netcdf input file of interest
 -output_base_dir  the base directory where output files will be saved
 
 
