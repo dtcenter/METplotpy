@@ -17,7 +17,7 @@ def plot_track(datadir, plotdir, trackfile, params):
     logging.info(datadir)
     logging.info(plotdir)
 
-    valid_time, lat_grid, lon_grid, wind_vars, scalar_vars = \
+    valid_time, lat_grid, lon_grid, wind_data, scalar_data = \
         read_tcrmw(os.path.join(datadir, trackfile))
     lat_track, lon_track = lat_grid[0, 0, :], lon_grid[0, 0, :]
     lat_min, lat_max = lat_track.min(), lat_track.max()
@@ -46,6 +46,13 @@ def plot_track(datadir, plotdir, trackfile, params):
     n_range, n_azimuth, n_track = lat_grid.shape
 
     # plot scalar field
+    ipoint = 0
+    field = scalar_data[args.scalar_field]
+    cplot = plt.contourf(
+        lon_grid[:,:,ipoint], lat_grid[:,:,ipoint], field[:,:,ipoint],
+        transform=proj_geom,
+        cmap=plt.cm.gist_ncar)
+    plt.colorbar(cplot)
 
     # plot track
     track = sgeom.LineString(zip(lon_track, lat_track))
