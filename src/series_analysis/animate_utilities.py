@@ -111,7 +111,8 @@ if __name__ == "__main__":
     output_dir = \
         '/d1/METplus_Plotting_Data/grid_to_grid/201706130000/grid_stat/plots/animation'
 
-    # The filename (with .gif extension)
+    # The filename (with .gif extension, if it is omitted, then
+    # the create_gif_from_subset will add it for you.)
     output_filename = 'TMP_DIFF_all.gif'
     create_gif_from_subset(duration, input_file_dir,
                            input_file_name_regex, output_filename, output_dir)
