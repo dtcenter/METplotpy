@@ -12,7 +12,7 @@ from netCDF4 import Dataset
 
 
 def create_plot(input_nc_file_dir, input_nc_filename, variable_name, level,
-                storm_number, output_filename, background_on=False):
+                storm_number, output_filename_base, output_dir, background_on=False):
     '''
         Generates the plots (png) for each var-level-stat combination created
         by the series analysis by init.
@@ -24,8 +24,10 @@ def create_plot(input_nc_file_dir, input_nc_filename, variable_name, level,
     :pararm level:          The level corresponding to the variable of interest,
                             e.g. Z2, L1, P500, etc.
     :param storm_number    The storm number, used in the title of the plot.
-    :param output_filename The "base" output filename to be used for FBAR and OBAR plots.
-    :param backgroung_on:  Background map with coastlines are by default turned "off".
+    :param output_filename_base The "base" output filename to be used for FBAR and OBAR plots.
+    :param output_dir      The directory where you wish to store the output plots.
+    :param background_on:  Background map with coastlines are by default turned "off".
+
     :return:
 
     '''
@@ -109,9 +111,17 @@ def create_plot(input_nc_file_dir, input_nc_filename, variable_name, level,
 
             # output file will be saved as png
             if key == 'OBAR':
-                output_png_file = output_filename + "_obar.png"
+
+                output_png_filename = output_filename_base + "_obar.png"
+                # output_png_file = output_dir + "/" + output_png_filename
+                output_png_file = os.path.join(output_dir, output_png_filename)
+
+
             else:
-                output_png_file = output_filename + "_fbar.png"
+
+                output_png_filename = output_filename_base + "_fbar.png"
+                output_png_file = os.path.join(output_dir, output_png_filename)
+
             print("output filename: ", output_png_file)
             plt.savefig(output_png_file)
 
@@ -130,20 +140,22 @@ def main():
 
     nc_input_dir_base = '/d1/METplus_Plotting_Data/series_by_init/20141214_00/'
     nc_input_dir = nc_input_dir_base + storm_number
+    output_dir = nc_input_dir
 
     # The name of the netcdf file of interest
     nc_input_filename = 'series_TMP_Z2.nc'
     variable_name = 'TMP'
     level = 'Z2'
 
-    # The output file name (full path)
-    obar_fbar_output = nc_input_dir_base + storm_number + '/TMP_Z2'
+    # The output file name base which will look something like ML1200972014/TMP_Z2, and
+    # the .png extension will be added to the filename when the plot is created.
+    obar_fbar_output = 'TMP_Z2'
 
     # By default, this is set to False, set to True if you want the coastlines plotted.
     include_background = True
     # Invoke the function that generates the plot
     create_plot(nc_input_dir, nc_input_filename, variable_name, level,
-                storm_number, obar_fbar_output, include_background)
+                storm_number, obar_fbar_output, output_dir, include_background)
 
 
 if __name__ == "__main__":
