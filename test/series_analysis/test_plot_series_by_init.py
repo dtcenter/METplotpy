@@ -53,50 +53,50 @@ def get_filesizes(input_dir):
     return file_sizes
 
 
-# def test_expected_files_created(settings):
-#     """
-#         Testing that the expected png files for OBAR and FBAR are created in
-#         the expected directory:
-#         /d1/METplus_Plotting_Data/series_by_ini20141214_00/ML1200942014/TMP_Z2_fbar.png
-#         /d1/METplus_Plotting_Data/series_by_ini20141214_00/ML1200942014/TMP_Z2_obar.png
-#
-#     :param settings:
-#     :return:
-#     """
-#
-#     nc_input_filename = settings['nc_input_filename']
-#     output_dir = settings['output_dir']
-#     variable_name = settings['var']
-#     level =  settings['level']
-#     storm_number = settings['storm_number']
-#     obar_fbar_output = settings['obar_fbar_output']
-#     include_background = True
-#     nc_input_dir = os.path.join(settings['input_dir'], storm_number)
-#
-#
-#
-#     # Generate the FBAR and OBAR plots for the TMP at level Z2
-#     background_on = True
-#     psi.create_plot(nc_input_dir, nc_input_filename, variable_name, level,
-#                 storm_number, obar_fbar_output, output_dir, include_background)
-#
-#
-#
-#
-#     # Get all the files that are in the /d1/METplus_Plotting_Data/grid_to_grid/201706130000/grid_stat/plots directory
-#     # and verify that the 6 plots we are expecting are found in that directory.
-#     all_files = []
-#     for root, dirs, files in os.walk(nc_input_dir):
-#         for cur_file in files:
-#             if cur_file.endswith('png'):
-#                all_files.append(cur_file)
-#
-#
-#     expected_files = ['TMP_Z2_fbar.png',
-#                       'TMP_Z2_obar.png']
+def test_expected_files_created(settings):
+    """
+        Testing that the expected png files for OBAR and FBAR are created in
+        the expected directory:
+        /d1/METplus_Plotting_Data/series_by_ini20141214_00/ML1200942014/TMP_Z2_fbar.png
+        /d1/METplus_Plotting_Data/series_by_ini20141214_00/ML1200942014/TMP_Z2_obar.png
 
-    # for expected in expected_files:
-    #     assert (expected in all_files)
+    :param settings:
+    :return:
+    """
+
+    nc_input_filename = settings['nc_input_filename']
+    output_dir = settings['output_dir']
+    variable_name = settings['var']
+    level =  settings['level']
+    storm_number = settings['storm_number']
+    obar_fbar_output = settings['obar_fbar_output']
+    include_background = True
+    nc_input_dir = os.path.join(settings['input_dir'], storm_number)
+
+
+
+    # Generate the FBAR and OBAR plots for the TMP at level Z2
+    background_on = True
+    psi.create_plot(nc_input_dir, nc_input_filename, variable_name, level,
+                storm_number, obar_fbar_output, output_dir, include_background)
+
+
+
+
+    # Get all the files that are in the /d1/METplus_Plotting_Data/grid_to_grid/201706130000/grid_stat/plots directory
+    # and verify that the 6 plots we are expecting are found in that directory.
+    all_files = []
+    for root, dirs, files in os.walk(nc_input_dir):
+        for cur_file in files:
+            if cur_file.endswith('png'):
+               all_files.append(cur_file)
+
+
+    expected_files = ['TMP_Z2_fbar.png',
+                      'TMP_Z2_obar.png']
+
+    for expected in expected_files:
+        assert (expected in all_files)
 
 
 def test_expected_filesizes(settings):
