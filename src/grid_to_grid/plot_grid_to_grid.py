@@ -108,7 +108,6 @@ def create_plots(input_dir, variable_name, nc_var_name, title, nc_flag_type, out
         # output file will be saved as png
         output_png_file = variable_name + "_" + nc_flag_type + "_" + \
                           os.path.splitext(nc_file)[0] + ".png"
-        print("output png file: ", output_png_file)
         plt.savefig(os.path.join(output_dir, output_png_file))
 
 
