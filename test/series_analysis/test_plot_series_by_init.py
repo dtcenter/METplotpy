@@ -57,8 +57,8 @@ def test_expected_files_created(settings):
     """
         Testing that the expected png files for OBAR and FBAR are created in
         the expected directory:
-        /d1/METplus_Plotting_Data/series_by_ini20141214_00/ML1200942014/TMP_Z2_fbar.png
-        /d1/METplus_Plotting_Data/series_by_ini20141214_00/ML1200942014/TMP_Z2_obar.png
+        /d1/METplus_Plotting_Data/series_by_init/20141214_00/ML1200942014/TMP_Z2_fbar.png
+        /d1/METplus_Plotting_Data/series_by_init/20141214_00/ML1200942014/TMP_Z2_obar.png
 
     :param settings:
     :return:
@@ -113,7 +113,7 @@ def test_expected_filesizes(settings):
     include_background = True
     nc_input_dir = os.path.join(settings['input_dir'], storm_number)
 
-    # Genearate the FBAR and OBAR plots
+    # Generate the FBAR and OBAR plots
     background_on = True
     psi.create_plot(nc_input_dir, nc_input_filename, variable_name, level,
                     storm_number, obar_fbar_output, output_dir, include_background)
