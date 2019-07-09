@@ -141,7 +141,6 @@ def get_info(base_dir, output_base_dir):
     FileInfo = namedtuple('FileInfo', 'fhr, variable,level_type, level, output_filename')
 
     # filename looks like the following: series_[fhr]_[variable]_[level].nc
-    FileInfo = namedtuple('FileInfo', 'fhr, variable_name, level_type, level, output_filename')
     file_info_list = []
 
     # pylint: disable=unused-variable
@@ -168,19 +167,19 @@ def main():
     series_F000/, series_F006/, series_F012, and series_F018
     """
     input_dir_base = "/d1/METplus_Plotting_Data/series_by_lead_all_fhrs"
-    output_base_dir = '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output'
+    output_dir_base = '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output'
 
     # create the directory if it doesn't exist (equivalent of mkdir -p)
     try:
-        os.makedirs(output_base_dir)
+        os.makedirs(output_dir_base)
     except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(output_base_dir):
+        if exc.errno == errno.EEXIST and os.path.isdir(output_dir_base):
             pass
 
     # Default is false, set this to True only if you want to see coastlines drawn
     plot_background_map = True
 
-    file_info_list = get_info(input_dir_base, output_base_dir)
+    file_info_list = get_info(input_dir_base, output_dir_base)
     for file_info in file_info_list:
         hour = file_info.fhr
         fhr = 'series_F' + hour
