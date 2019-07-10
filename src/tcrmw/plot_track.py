@@ -24,6 +24,8 @@ def plot_track(datadir, plotdir, trackfile, params):
     lon_min, lon_max = lon_track.min(), lon_track.max()
     lat_mid = (lat_min + lat_max) / 2
     lon_mid = (lon_min + lon_max) / 2
+    logging.info((lon_min, lon_max))
+    logging.info((lat_min, lat_max))
 
     # define projection and map
     # proj = ccrs.Orthographic(
@@ -46,13 +48,13 @@ def plot_track(datadir, plotdir, trackfile, params):
     n_range, n_azimuth, n_track = lat_grid.shape
 
     # plot scalar field
-    levels = np.linspace(290, 310, 21)
+    # levels = np.linspace(290, 310, 21)
     field = scalar_data[args.scalar_field]
     for i in range(0, n_track, 3 * params['step']):
         cplot = plt.contourf(
-            lon_grid[:,:,i], lat_grid[:,:,i], field[:,:,i],
+            lon_grid[:,:,i], lat_grid[:,:,i], field[::-1,:,i],
             transform=proj_geom,
-            cmap=plt.cm.coolwarm, levels=levels, alpha=0.8)
+            cmap=plt.cm.coolwarm, alpha=0.8)
     plt.colorbar(cplot)
 
     # plot track
