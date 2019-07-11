@@ -35,7 +35,7 @@ def plot_track(datadir, plotdir, trackfile, params):
     proj = ccrs.LambertConformal()
     # proj = ccrs.PlateCarree()
     proj_geom = ccrs.PlateCarree()
-    plt.figure(figsize=(params['figsize'],params['figsize']))
+    fig = plt.figure(figsize=(params['figsize'],params['figsize']))
     ax = plt.axes(projection=proj)
     ax.set_extent(
         [lon_min - params['buffer'],
@@ -49,14 +49,25 @@ def plot_track(datadir, plotdir, trackfile, params):
     n_range, n_azimuth, n_track = lat_grid.shape
 
     # plot scalar field
-    # levels = np.linspace(290, 310, 21)
     field = scalar_data[args.scalar_field]
+    u_grid = wind_data['U']
+    v_grid = wind_data['V']
+    magnitude = (u_grid**2 + v_grid**2)**0.5
     for i in range(0, n_track, 3 * params['step']):
         cplot = plt.contourf(
             lon_grid[:,:,i], lat_grid[:,:,i], field[::-1,:,i],
             transform=proj_geom,
             cmap=plt.cm.gist_ncar, alpha=0.8)
-    plt.colorbar(cplot)
+        vplot = plt.streamplot(
+            lon_grid[:,:,i], lat_grid[:,:,i],
+            u_grid[::-1,:,i], v_grid[::-1,:,i],
+            color=magnitude[::-1,:,i],
+            transform=proj_geom, density=4)
+
+    plt.colorbar(cplot, shrink=0.7,
+        pad=0.02, orientation='vertical')
+    plt.colorbar(vplot.lines, shrink=0.7,
+        pad=0.02, orientation='horizontal')
 
     # plot track
     track = sgeom.LineString(zip(lon_track, lat_track))
@@ -65,7 +76,8 @@ def plot_track(datadir, plotdir, trackfile, params):
 
     # plot grid
     for i in range(0, n_track, params['step']):
-        scale = float(i) / n_track
+        # scale = float(i) / n_track
+        scale = 0.5
         for j in range(0, n_range, params['range_step']):
             circle = sgeom.LineString(
                 zip(lon_grid[j,:,i], lat_grid[j,:,i]))
@@ -81,10 +93,13 @@ def plot_track(datadir, plotdir, trackfile, params):
             ax.add_geometries([line], proj_geom,
                 edgecolor=(scale, scale, scale), facecolor='none')
 
+    fig.canvas.draw()
     plt.tight_layout()
     # save figure
     plt.savefig(os.path.join(plotdir,
         trackfile.replace('.nc', '.png')))
+    plt.savefig(os.path.join(plotdir,
+        trackfile.replace('.nc', '.pdf')))
     # display
     plt.show()
 
