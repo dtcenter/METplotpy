@@ -54,20 +54,23 @@ def plot_track(datadir, plotdir, trackfile, params):
     v_grid = wind_data['V']
     magnitude = (u_grid**2 + v_grid**2)**0.5
     for i in range(0, n_track, 3 * params['step']):
-        cplot = plt.contourf(
+        cfplot = plt.contourf(
             lon_grid[:,:,i], lat_grid[:,:,i], field[::-1,:,i],
             transform=proj_geom,
             cmap=plt.cm.gist_ncar, alpha=0.8)
+        cplot = plt.contour(
+            lon_grid[:,:,i], lat_grid[:,:,i], field[::-1,:,i],
+            colors='k',
+            transform=proj_geom)
+        ax.clabel(cplot, colors='k', fmt='%1.0f')
         vplot = plt.streamplot(
             lon_grid[:,:,i], lat_grid[:,:,i],
             u_grid[::-1,:,i], v_grid[::-1,:,i],
             color=magnitude[::-1,:,i],
             transform=proj_geom, density=4)
 
-    plt.colorbar(cplot, shrink=0.7,
-        pad=0.02, orientation='vertical')
-    plt.colorbar(vplot.lines, shrink=0.7,
-        pad=0.02, orientation='horizontal')
+    # plt.colorbar(cplot, shrink=0.8)
+    # plt.colorbar(vplot.lines, shrink=0.8)
 
     # plot track
     track = sgeom.LineString(zip(lon_track, lat_track))
