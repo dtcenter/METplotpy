@@ -8,6 +8,7 @@ import cartopy
 import cartopy.crs as ccrs
 import shapely.geometry as sgeom
 from tc_utils import read_tcrmw
+import seaborn
 
 def plot_track(datadir, plotdir, trackfile, params):
     """
@@ -54,7 +55,7 @@ def plot_track(datadir, plotdir, trackfile, params):
         cplot = plt.contourf(
             lon_grid[:,:,i], lat_grid[:,:,i], field[::-1,:,i],
             transform=proj_geom,
-            cmap=plt.cm.coolwarm, alpha=0.8)
+            cmap=plt.cm.gist_ncar, alpha=0.8)
     plt.colorbar(cplot)
 
     # plot track

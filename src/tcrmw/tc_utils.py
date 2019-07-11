@@ -25,15 +25,18 @@ def read_tcrmw(trackfile):
     logging.debug('lon_grid.shape=' + str(lon_grid.shape))
 
     grid_vars = set(['lat', 'lon', 'range', 'azimuth'])
-    wind_vars = set(['U', 'V', 'UGRD', 'VGRD'])
+    u_vars = set(['U', 'UGRD'])
+    v_vars = set(['V', 'VGRD'])
     wind_data = {}
     scalar_data = {}
 
     for var in file_id.variables:
         logging.info(var)
-        if var in wind_vars:
-            wind_data[var] = file_id.variables[var][:]
-        if var not in grid_vars.union(wind_vars):
+        if var in u_vars:
+            wind_data['U'] = file_id.variables[var][:]
+        if var in v_vars:
+            wind_data['V'] = file_id.variables[var][:]
+        if var not in grid_vars.union(u_vars).union(v_vars):
             scalar_data[var] = file_id.variables[var][:]
 
     file_id.close()
