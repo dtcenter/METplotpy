@@ -4,11 +4,11 @@ import argparse
 import logging
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 import cartopy
 import cartopy.crs as ccrs
 import shapely.geometry as sgeom
 from tc_utils import read_tcrmw
-import seaborn
 
 def plot_track(datadir, plotdir, trackfile, params):
     """
@@ -57,7 +57,9 @@ def plot_track(datadir, plotdir, trackfile, params):
         cfplot = plt.contourf(
             lon_grid[:,:,i], lat_grid[:,:,i], field[::-1,:,i],
             transform=proj_geom,
-            cmap=plt.cm.gist_ncar, alpha=0.8)
+            # cmap=ListedColormap(plt.cm.cividis.colors[::-1]),
+            cmap=plt.cm.gist_yarg,
+            alpha=0.5)
         cplot = plt.contour(
             lon_grid[:,:,i], lat_grid[:,:,i], field[::-1,:,i],
             colors='k',
@@ -67,7 +69,7 @@ def plot_track(datadir, plotdir, trackfile, params):
             lon_grid[:,:,i], lat_grid[:,:,i],
             u_grid[::-1,:,i], v_grid[::-1,:,i],
             color=magnitude[::-1,:,i],
-            transform=proj_geom, density=4)
+            transform=proj_geom, density=6)
 
     # plt.colorbar(cplot, shrink=0.8)
     plt.colorbar(vplot.lines,
@@ -101,7 +103,7 @@ def plot_track(datadir, plotdir, trackfile, params):
     plt.tight_layout()
     # save figure
     plt.savefig(os.path.join(plotdir,
-        trackfile.replace('.nc', '.png')))
+        trackfile.replace('.nc', '.png')), dpi=300)
     plt.savefig(os.path.join(plotdir,
         trackfile.replace('.nc', '.pdf')))
     # display
