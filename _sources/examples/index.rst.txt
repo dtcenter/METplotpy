@@ -14,6 +14,8 @@ This is the gallery of examples for METplotpy
 General Examples
 ----------------
 
+Some general examples coming soon.
+
 
 .. raw:: html
 
@@ -28,7 +30,7 @@ General Examples
 Sample Example
 --------------
 
-Some text here
+A sample example in a different section than the general examples section.
 
 
 
