@@ -10,7 +10,7 @@ import cartopy.crs as ccrs
 import shapely.geometry as sgeom
 from tc_utils import read_tcrmw
 
-def plot_track(datadir, plotdir, trackfile, params):
+def plot_fields(datadir, plotdir, trackfile, params):
     """
     Plot TCRMW track and track centered range azimuth grids. 
     """
@@ -149,7 +149,7 @@ if __name__ == '__main__':
               'figsize' : args.figsize,
               'scalar_field' : args.scalar_field}
 
-    plot_track(args.datadir,
-               args.plotdir,
-               args.trackfile,
-               params)
+    plot_fields(args.datadir,
+                args.plotdir,
+                args.trackfile,
+                params)
