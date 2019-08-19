@@ -3,6 +3,8 @@ import sys
 import argparse
 import logging
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import cartopy
@@ -10,7 +12,7 @@ import cartopy.crs as ccrs
 import shapely.geometry as sgeom
 from tc_utils import read_tcrmw
 
-def plot_track(datadir, plotdir, trackfile, params):
+def plot_fields(datadir, plotdir, trackfile, params):
     """
     Plot TCRMW track and track centered range azimuth grids. 
     """
@@ -55,20 +57,24 @@ def plot_track(datadir, plotdir, trackfile, params):
     magnitude = (u_grid**2 + v_grid**2)**0.5
     for i in range(0, n_track, params['step']):
         cfplot = plt.contourf(
-            lon_grid[:,:,i], lat_grid[:,:,i], field[::-1,:,i],
+            # lon_grid[:,:,i], lat_grid[:,:,i], field[::-1,:,i],
+            lon_grid[:,:,i], lat_grid[:,:,i], field[:,:,i],
             transform=proj_geom,
             # cmap=ListedColormap(plt.cm.cividis.colors[::-1]),
             cmap=plt.cm.gist_yarg,
             alpha=0.5)
         cplot = plt.contour(
-            lon_grid[:,:,i], lat_grid[:,:,i], field[::-1,:,i],
+            # lon_grid[:,:,i], lat_grid[:,:,i], field[::-1,:,i],
+            lon_grid[:,:,i], lat_grid[:,:,i], field[:,:,i],
             colors='k',
             transform=proj_geom)
         ax.clabel(cplot, colors='k', fmt='%1.0f')
         vplot = plt.streamplot(
             lon_grid[:,:,i], lat_grid[:,:,i],
-            u_grid[::-1,:,i], v_grid[::-1,:,i],
-            color=magnitude[::-1,:,i],
+            # u_grid[::-1,:,i], v_grid[::-1,:,i],
+            u_grid[:,:,i], v_grid[:,:,i],
+            # color=magnitude[::-1,:,i],
+            color=magnitude[:,:,i],
             transform=proj_geom, density=6)
 
     # plt.colorbar(cplot, shrink=0.8)
@@ -107,7 +113,7 @@ def plot_track(datadir, plotdir, trackfile, params):
     plt.savefig(os.path.join(plotdir,
         trackfile.replace('.nc', '.pdf')))
     # display
-    plt.show()
+    # plt.show()
 
 if __name__ == '__main__':
 
@@ -149,7 +155,7 @@ if __name__ == '__main__':
               'figsize' : args.figsize,
               'scalar_field' : args.scalar_field}
 
-    plot_track(args.datadir,
-               args.plotdir,
-               args.trackfile,
-               params)
+    plot_fields(args.datadir,
+                args.plotdir,
+                args.trackfile,
+                params)
