@@ -1,0 +1,52 @@
+Background:
+===========
+This script creates animations (gif file) from the static plots (png format) that were generated from the netcdf
+output of the feature relative use case which performs a series analysis by lead time for all forecast hours.
+
+
+Pre-requisites:
+==============
+Python packages:
+    -Python 3.6
+    -imageio
+
+
+Input:
+=====
+Assign the appropriate values to the following (in the 'def main()') section of the code.
+The code can be run 'out of the box', using sample data on the host 'eyewall'.
+-input_dir  The directory where the static (png) plots to be combined into an animation
+-output_dir  The directory where the animations (gif files) are to be stored
+-fhrs_list  A list of the fhrs to include in the animation, in the format ["Faa", "Fbb", ..., "Fzz"] where
+            aa, bb, ..., zz refer to the forecast hours of interest.
+-variable  The variable of interest (e.g. TMP, UGRD, VGRD, etc.)
+-level_type  The level type (e.g. P or Z)
+-level  The level of interest, e.g. 500 in P500, Z as in Z2, etc.
+-filename_regex The regular expression that describes the format of the static files (.png file)  For the feature
+                relative use case, the files have the format of:
+                        .*series_F([0-9]{3})_([A-Z]{3})_((P|Z)[0-9]{1,3})_(obar|fbar).png
+
+                where the values in the parenthesis refer to the fhr, variable, level type, level, and statistic,
+                respectively.
+-output_gif_base  The 'base' or first part of the output filename to be created.
+-duration The time (in sec) that each frame of the animation is viewed
+
+
+Output:
+======
+Creates a gif file for each variable-level-statistic combination (as specified) in the output directory in the output/series_animate_python
+sub-directory.
+
+
+How to run:
+===========
+The script runs "out of the box" on the host 'eyewall', using data and input, etc. that corresponds to the sample
+data located in /d1/METplus_Plotting_Data/series_analysis
+
+cd to $METplotpy/src/series_analysis/
+
+from the command line, run the following command:
+python ./plot_series_by_lead_all.py
+
+
+gif files are generated in the /d1/METplus_Plotting_Data/series_by_lead_all/plots directory
