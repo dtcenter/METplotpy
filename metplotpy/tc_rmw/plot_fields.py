@@ -4,7 +4,7 @@ import argparse
 import logging
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import cartopy
@@ -55,7 +55,7 @@ def plot_fields(datadir, plotdir, trackfile, params):
     u_grid = wind_data['U']
     v_grid = wind_data['V']
     magnitude = (u_grid**2 + v_grid**2)**0.5
-    for i in range(0, n_track, params['step']):
+    for i in range(params['start'], n_track, params['step']):
         cfplot = plt.contourf(
             # lon_grid[:,:,i], lat_grid[:,:,i], field[::-1,:,i],
             lon_grid[:,:,i], lat_grid[:,:,i], field[:,:,i],
@@ -78,8 +78,9 @@ def plot_fields(datadir, plotdir, trackfile, params):
             transform=proj_geom, density=6)
 
     # plt.colorbar(cplot, shrink=0.8)
-    plt.colorbar(vplot.lines,
+    cbar = plt.colorbar(vplot.lines,
         orientation='vertical', pad=0.01)
+    cbar.set_label('Wind Speed (m s-1)')
 
     # plot track
     track = sgeom.LineString(zip(lon_track, lat_track))
@@ -87,7 +88,7 @@ def plot_fields(datadir, plotdir, trackfile, params):
         edgecolor='black', facecolor='none', linewidth=4)
 
     # plot grid
-    for i in range(0, n_track, params['step']):
+    for i in range(params['start'], n_track, params['step']):
         # scale = float(i) / n_track
         scale = 0.5
         for j in range(0, n_range, params['range_step']):
@@ -105,6 +106,8 @@ def plot_fields(datadir, plotdir, trackfile, params):
             ax.add_geometries([line], proj_geom,
                 edgecolor=(scale, scale, scale), facecolor='none')
 
+    plt.title('FV3GFS Hurricane Matthew 2016 Sep 28 - Oct 9')
+
     fig.canvas.draw()
     plt.tight_layout()
     # save figure
@@ -113,7 +116,7 @@ def plot_fields(datadir, plotdir, trackfile, params):
     plt.savefig(os.path.join(plotdir,
         trackfile.replace('.nc', '.pdf')))
     # display
-    # plt.show()
+    plt.show()
 
 if __name__ == '__main__':
 
@@ -126,8 +129,11 @@ if __name__ == '__main__':
     parser.add_argument(
         '--trackfile', type=str, dest='trackfile', required=True)
     parser.add_argument(
+        '--start', type=int, dest='start', required=False,
+        default=20)
+    parser.add_argument(
         '--step', type=int, dest='step', required=False,
-        default=32)
+        default=20)
     parser.add_argument(
         '--range_step', type=int, dest='range_step', required=False,
         default=10)
@@ -148,7 +154,8 @@ if __name__ == '__main__':
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-    params = {'step' : args.step,
+    params = {'start' : args.start,
+              'step' : args.step,
               'range_step' : args.range_step,
               'azimuth_step' : args.azimuth_step,
               'buffer' : args.buffer,
