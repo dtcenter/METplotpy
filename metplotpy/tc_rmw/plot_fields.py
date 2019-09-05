@@ -21,7 +21,8 @@ def plot_fields(datadir, plotdir, trackfile, params):
     logging.info(plotdir)
 
     valid_time, lat_grid, lon_grid, wind_data, scalar_data = \
-        read_tcrmw(os.path.join(datadir, trackfile))
+        read_tcrmw(os.path.join(datadir, trackfile),
+        levels=[args.level])
     lat_track, lon_track = lat_grid[0, 0, :], lon_grid[0, 0, :]
     lat_min, lat_max = lat_track.min(), lat_track.max()
     lon_min, lon_max = lon_track.min(), lon_track.max()
@@ -51,7 +52,7 @@ def plot_fields(datadir, plotdir, trackfile, params):
     n_range, n_azimuth, n_track = lat_grid.shape
 
     # plot scalar field
-    field = scalar_data[args.scalar_field]
+    field = scalar_data[args.scalar_field + '_' + args.level]
     u_grid = wind_data['U']
     v_grid = wind_data['V']
     magnitude = (u_grid**2 + v_grid**2)**0.5
@@ -130,10 +131,10 @@ if __name__ == '__main__':
         '--trackfile', type=str, dest='trackfile', required=True)
     parser.add_argument(
         '--start', type=int, dest='start', required=False,
-        default=20)
+        default=0)
     parser.add_argument(
         '--step', type=int, dest='step', required=False,
-        default=20)
+        default=1)
     parser.add_argument(
         '--range_step', type=int, dest='range_step', required=False,
         default=10)
@@ -149,6 +150,9 @@ if __name__ == '__main__':
     parser.add_argument(
         '--scalar_field', type=str, dest='scalar_field', required=False,
         default='T')
+    parser.add_argument(
+        '--level', type=str, dest='level', required=False,
+        default='L0')
 
     args = parser.parse_args()
 
