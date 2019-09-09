@@ -1,0 +1,118 @@
+---
+config:
+  valid_time_fmt: "%Y%m%d%H"
+  tc_pairs_config_file: "{PARM_BASE}/use_cases/feature_relative/met_config/TCPairsETCConfig"
+  tc_stat_config_file: "{PARM_BASE}/use_cases/feature_relative/met_config/TCStatConfig"
+  series_analysis_by_lead_config_file: "{PARM_BASE}/use_cases/feature_relative/met_config/SeriesAnalysisConfig_by_lead"
+  series_analysis_by_init_config_file: "{PARM_BASE}/use_cases/feature_relative/met_config/SeriesAnalysisConfig_by_init"
+  process_list: [TcPairs, ExtractTiles, SeriesByInit]
+  fcst_var1_name: TMP
+  fcst_var1_options:
+    GRIB_lvl_typ:105
+  fcst_var1_levels: Z2
+  fcst_var2_name: SOILW
+  fcst_var2_options:
+    GRIB_lvl_typ:112
+  fcst_var2_levels: Z0-10
+  stat_list: [TOTAL, FBAR, OBAR, ME]
+  loop-by: INIT
+  init_time_fmt: "%Y%m%d"
+  init_beg: 2014-12-14
+  init_end: 2014-12-14
+  init_increment: 21600
+  init_include:
+  init_exclude:
+  valid_beg:
+  valid_end:
+  nlat: 60
+  nlon: 60
+  dlat: 0.5
+  dlon: 0.5
+  lon_adj: 15
+  lat_adj: 15
+  tc_pairs_read_all_files: no
+  tc_pairs_model:
+  tc_pairs_storm_id:
+  tc_pairs_basin:
+  tc_pairs_cyclone:
+  tc_pairs_storm_name:
+  tc_pairs_dland_file: "{MET_INSTALL_DIR}/share/met/tc_data/dland_global_tenth_degree.nc"
+  tc_pairs_reformat_deck: yes
+  tc_pairs_reformat_type: SBU
+  tc_pairs_missing_val_to_replace: -99
+  tc_pairs_missing_val: -9999
+  extract_tiles_filter_opts: "-basin ML"
+  series_analysis_filter_opts: "-init_beg {INIT_BEG} -init_end {INIT_END}"
+  tc_stat_run_via:
+  tc_stat_cmd_line_job:
+  tc_stat_match_points: false
+  tc_stat_amodel:
+  tc_stat_bmodel:
+  tc_stat_desc:
+  tc_stat_storm_id:
+  tc_stat_cyclone:
+  tc_stat_storm_name:
+  tc_stat_init_beg: 2014-12-13
+  tc_stat_init_end: 2014-12-13
+  tc_stat_init_include:
+  tc_stat_init_exclude:
+  tc_stat_init_hour: 00
+  tc_stat_valid_beg:
+  tc_stat_valid_end:
+  tc_stat_valid_include:
+  tc_stat_valid_exclude:
+  tc_stat_lead_req:
+  tc_stat_init_mask:
+  tc_stat_valid_hour:
+  tc_stat_lead:
+  tc_stat_track_watch_warn:
+  tc_stat_column_thresh_name:
+  tc_stat_column_thresh_val:
+  tc_stat_column_str_name:
+  tc_stat_column_str_val:
+  tc_stat_init_str_name:
+  tc_stat_init_str_val:
+  tc_stat_water_only:
+  tc_stat_landfall:
+  tc_stat_landfall_beg: -24
+  tc_stat_landfall_end: 00
+  tc_stat_jobs_list: "-job summary -line_type TCMPR -column 'ABS(AMAX_WIND-BMAX_WIND)' -dump_row {OUTPUT_BASE}/tc_stat/tc_stat_summary.tcst"
+  overwrite_track: no
+  tc_pairs_skip_if_reformat_exists: yes
+  background_map: no
+  var_list: "TMP/Z2"
+  extract_tiles_var_list:
+filename_templates:
+  gfs_fcst_file_tmpl: "gfs_4_{init?fmt=%Y%m%d}_{init?fmt=%H}00_{lead?fmt=%HHH}.grb2"
+  gfs_anly_file_tmpl: "gfs_4_{valid?fmt=%Y%m%d}_{valid?fmt=%H}00_000.grb2"
+  tc_pairs_adeck_template: "{date?fmt=%Y%m}/a{basin?fmt=%s}q{date?fmt=%Y%m}*.gfso.{cyclone?fmt=%s}"
+  tc_pairs_bdeck_template: "{date?fmt=%Y%m}/b{basin?fmt=%s}q}date?fmt=%Y%m}*.gfso.{cyclone?fmt=%s}"
+  tc_pairs_output_template: "{date?fmt=%Y%m}/{basin?fmt=%s}q{date?fmt=%Y%m%d%H}.gfso.{cyclone?fmt=%s}"
+dir:
+  # From the default metplus_data, metplus_system, metplus_runtime config files, where /path/to is set
+  proj_dir: "/path/to"
+  model_data_dir: "{INPUT_BASE}/cyclone_track_feature/track_data"
+  tc_pairs_adeck_input_dir: &tc_pairs_adeck_input_dir "{INPUT_BASE}/cyclone_track_feature/track_data"
+  tc_pairs_bdeck_input_dir: *tc_pairs_adeck_input_dir
+  tc_pairs_reformat_dir: "{OUTPUT_BASE}/track_data_atcf"
+  tc_pairs_output_dir: "{OUTPUT_BASE}/tc_pairs"
+  tc_stat_input_dir: "{OUTPUT_BASE}/tc_pairs"
+  tc_stat_output_dir: "{OUTPUT_BASE}/tc_stat"
+  extract_tiles_output_dir: "{OUTPUT_BASE}/extract_tiles"
+  series_by_lead_filtered_output_dir: "{OUTPUT_BASE}/series_lead_filtered"
+  series_by_init_filtered_output_dir: "{OUTPUT_BASE}/series_init_filtered"
+  series_by_lead_output_dir: "{OUTPUT_BASE}/series_analysis_lead"
+  series_by_init_output_dir: "{OUTPUT_BASE/series_analysis_init}"
+regex_pattern:
+  fcst_tile_regex: ".*FCST_TILE_F.*.grb2"
+  anly_tile_regex: ".*ANLY_TILE_F.*.grb2"
+  fcst_nc_tile_regex: ".*FCST_TILE_F.*.nc"
+  anly_nc_tile_regex: ".*ANLY_FILE_F.*.nc"
+  fcst_ascii_regex_lead: "FCST_File_F.*"
+  anly_ascii_regex_lead: "ANLY_FILE_F.*"
+exe:
+
+
+
+
+
