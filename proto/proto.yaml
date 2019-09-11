@@ -111,7 +111,9 @@ regex_pattern:
   fcst_ascii_regex_lead: "FCST_File_F.*"
   anly_ascii_regex_lead: "ANLY_FILE_F.*"
 exe:
-
+  # in Python code, find rm in the user's path
+  shell: SHELL
+  path: PATH
 
 
 
