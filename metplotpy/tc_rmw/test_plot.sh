@@ -3,6 +3,7 @@ export plotdir=$HOME/Plots
 export trackfile=tc_rmw_out.nc
 export scalar_field=PRMSL
 export level=L0
+export start=2
 export step=3
 
 python plot_fields.py \
@@ -11,4 +12,6 @@ python plot_fields.py \
     --trackfile=$trackfile \
     --scalar_field=$scalar_field \
     --level=$level \
-    --step=$step
+    --step=$step \
+    --start=$start \
+    --title='FV3GFS Hurrican Matthew 2016 Oct 5 00:03Z'

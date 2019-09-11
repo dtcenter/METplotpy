@@ -23,7 +23,8 @@ def plot_fields(datadir, plotdir, trackfile, params):
     valid_time, lat_grid, lon_grid, wind_data, scalar_data = \
         read_tcrmw(os.path.join(datadir, trackfile),
         levels=[args.level])
-    lat_track, lon_track = lat_grid[0, 0, :], lon_grid[0, 0, :]
+    lat_track, lon_track \
+        = lat_grid[0, 0, :], lon_grid[0, 0, :]
     lat_min, lat_max = lat_track.min(), lat_track.max()
     lon_min, lon_max = lon_track.min(), lon_track.max()
     lat_mid = (lat_min + lat_max) / 2
@@ -69,7 +70,7 @@ def plot_fields(datadir, plotdir, trackfile, params):
             lon_grid[:,:,i], lat_grid[:,:,i], field[:,:,i],
             colors='k',
             transform=proj_geom)
-        ax.clabel(cplot, colors='k', fmt='%1.0f')
+        ax.clabel(cplot, colors='k', fmt='%1.0f', fontsize=14)
         vplot = plt.streamplot(
             lon_grid[:,:,i], lat_grid[:,:,i],
             # u_grid[::-1,:,i], v_grid[::-1,:,i],
@@ -81,7 +82,8 @@ def plot_fields(datadir, plotdir, trackfile, params):
     # plt.colorbar(cplot, shrink=0.8)
     cbar = plt.colorbar(vplot.lines,
         orientation='vertical', pad=0.01)
-    cbar.set_label('Wind Speed (m s-1)')
+    cbar.set_label('Wind Speed (m s-1)', fontsize=20)
+    cbar.ax.tick_params(labelsize=20)
 
     # plot track
     track = sgeom.LineString(zip(lon_track, lat_track))
@@ -107,7 +109,7 @@ def plot_fields(datadir, plotdir, trackfile, params):
             ax.add_geometries([line], proj_geom,
                 edgecolor=(scale, scale, scale), facecolor='none')
 
-    plt.title('FV3GFS Hurricane Matthew 2016 Sep 28 - Oct 9')
+    plt.title(params['title'], fontsize=24)
 
     fig.canvas.draw()
     plt.tight_layout()
@@ -143,7 +145,7 @@ if __name__ == '__main__':
         default=15)
     parser.add_argument(
         '--buffer', type=int, dest='buffer', required=False,
-        default=10)
+        default=7)
     parser.add_argument(
         '--figsize', type=int, dest='figsize', required=False,
         default=15)
@@ -153,6 +155,9 @@ if __name__ == '__main__':
     parser.add_argument(
         '--level', type=str, dest='level', required=False,
         default='L0')
+    parser.add_argument(
+        '--title', type=str, dest='title', required=False,
+        default='')
 
     args = parser.parse_args()
 
@@ -164,7 +169,8 @@ if __name__ == '__main__':
               'azimuth_step' : args.azimuth_step,
               'buffer' : args.buffer,
               'figsize' : args.figsize,
-              'scalar_field' : args.scalar_field}
+              'scalar_field' : args.scalar_field,
+              'title' : args.title}
 
     plot_fields(args.datadir,
                 args.plotdir,
