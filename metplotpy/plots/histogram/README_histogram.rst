@@ -1,6 +1,6 @@
 **Appendix**
 
-[config]
+**[config]**
 
 height:      The height of the final plot in pixels
 
@@ -28,80 +28,101 @@ opacity:  An integer value (1-???) to set the level of opacity of the plot.  Hig
 
 orientation: The orientation of the plot, set to 'v' for vertical, 'h' for horizontal
 
-legend_x:  
+border_width = 2
 
-legend_y:
+xanchor = center
 
-legend_font_family: The name of the font family to be used in the legend
+yanchor = top
 
 
-legend_font_size:  The size of the font in the legend, given in pixels.
 
-legend_font_color:  The color of the font in the legend, the name of the color is sufficient, e.g. Black, Blue, etc.
+**[legend]**
 
-legend_bgcolor:  The background color of the legend, leave empty if no background is desired, otherwise, indicate a
+x:
+
+y:
+
+font_family: The name of the font family to be used in the legend
+
+
+font_size:  The size of the font in the legend, given in pixels.
+
+font_color:  The color of the font in the legend, the name of the color is sufficient, e.g. Black, Blue, etc.
+
+bgcolor:  The background color of the legend, leave empty if no background is desired, otherwise, indicate a
 color name
 
-legend_bordercolor:
+border_color:
 
-legend_borderwidth:
+border_width:
 
-legend_xanchor:
+xanchor:
 
-legend_yanchor:
+yanchor:
 
-xaxis_x:
+**[xaxis]**
 
-xaxis_y:
+x:
 
-xaxis_title:
+y:
 
-xaxis_title_text:
 
-xaxis_title_text_font_family:
+linecolor:      The color of the x-axis of the plot.  Indicate the name of the color, e.g. Black, Red, etc.
 
-xaxis_title_text_font_size:
+showline:  Set to True to show the x-axis, False otherwise.
 
-xaxis_title_text_font_color: The color of the text comprising the title of the x-axis.  The name of the color is acceptable, eg. Black, Red, etc.
+linewidth:  The width of the x-axis line, in pixels
 
-xaxis_linecolor:      The color of the x-axis of the plot.  The name of the color is acceptable: Black, Red, etc.
+**[xaxis_title]**
 
-xaxis_showline:  Set to True to show the x-axis, False otherwise.
 
-xaxis_linewidth:  The width of the x-axis line, in pixels
+text:
 
-yaxis_x:
+text_font_family:
 
-yaxis_y:
+text_font_size:
 
-yaxis_title_text:
+text_font_color: The color of the text comprising the title of the x-axis.  The name of the co
 
-yaxis_title_text_font_family:
+**[yaxis]**
 
-yaxis_title_text_font_size:
+x:
 
-yaxis_title_text_font_color:  The color of the text of the y-axis of the plot.  The name of the color is acceptable, e.g. Black, Red, etc.
+y:
 
-yaxis_linecolor:
+linecolor:
 
-yaxis_linewidth:
+linewidth:
 
-yaxis_showline:
+showline:
 
-yaxis_showgrid:
+showgrid:
 
-yaxis_tick:
+ticks:
 
-yaxis_tickwidth:
+tickwidth:
 
-yaxis_tickcolor:
+tickcolor:
 
-yaxis_gridwidth:
+gridwidth:
 
-yaxis_gridcolor:
+gridcolor:
 
-xbins_start:
+**[yaxis_title]**
 
-xbins_end:
+text:
 
-xbins_size:
+text_font_family:
+
+text_font_size:
+
+text_font_color:  The color of the text of the y-axis of the plot.  The name of the color is acceptable, e.g. Black, Red, etc.
+
+
+**[xbins]**
+
+start:
+
+end:
+
+size: 10
