@@ -1,4 +1,5 @@
-**Appendix**
+***Default configuration file for histogram plots***
+
 
 **[config]**
 
