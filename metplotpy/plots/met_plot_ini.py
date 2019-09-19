@@ -46,7 +46,7 @@ class MetPlotIni:
         """
 
         # get image name from properties
-        image_name = self.get_item_value('config','image_name')
+        image_name = self.get_config_value('config','image_name')
         if image_name:
 
             # extract and validate the file extension
@@ -59,10 +59,140 @@ class MetPlotIni:
         return self.DEFAULT_IMAGE_FORMAT
 
 
-    def get_item_value(self, section_of_interest, item_of_interest):
+    def get_title(self):
+        """Creates a Plotly title dictionary with values from users and default parameters
+        If users parameters dictionary doesn't have needed values - use defaults
+
+        Args:
+
+        Returns:
+            - dictionary used by Plotly to build the title
         """
+        current_title = dict(
+            # How to get the title text from the yaml config file
+            # text=self.get_config_value('title'),  # plot's title
+            text = self.get_config_value('config', 'title'),
+            # Sets the container `x` refers to. "container" spans the entire `width` of the plot.
+            # "paper" refers to the width of the plotting area only.
+            xref="paper",
+            x=0.5  # x position with respect to `xref`
+        )
+        return current_title
+
+    def get_xaxis(self):
+        """Creates a Plotly x-axis dictionary with values from users and default parameters
+        If users parameters dictionary doesn't have needed values - use defaults
+
+        Args:
+
+        Returns:
+            - dictionary used by Plotly to build the x-axis
+        """
+        current_xaxis = dict(
+            # x-axis line color
+            linecolor = self.get_config_value('xaxis', 'linecolor'),
+            # whether or not a line bounding x-axis is drawn
+            showline = self.get_config_value('xaxis', 'showline'),
+            # width (in px) of x-axis line
+            linewidth = self.get_config_value('xaxis', 'linewidth')
+        )
+        return current_xaxis
+
+    def get_yaxis(self):
+        """Creates a Plotly y-axis dictionary with values from users and default parameters
+        If users parameters dictionary doesn't have needed values - use defaults
+
+        Args:
+
+        Returns:
+            - dictionary used by Plotly to build the y-axis
+        """
+        current_yaxis = dict(
+            # y-axis line color
+            linecolor = self.get_config_value('yaxis', 'linecolor'),
+            # width (in px) of y-axis line
+            linewidth = self.get_config_value('yaxis', 'linewidth'),
+            # whether or not a line bounding y-axis is drawn
+            showline = self.get_config_value('yaxis', 'showline'),
+            # whether or not grid lines are drawn
+            showgrid = self.get_config_value('yaxis', 'showgrid'),
+            # whether ticks are drawn or not.
+            ticks = self.get_config_value('yaxis', 'ticks'),
+            # Sets the tick width (in px).
+            tickwidth = self.get_config_value('yaxis', 'ticks_tickwidth'),
+            # Sets the tick color.
+            tickcolor=self.get_config_value('yaxis', 'tickcolor'),
+            # the width (in px) of the grid lines
+            gridwidth=self.get_config_value('yaxis', 'gridwidth'),
+            # the color of the grid lines
+            gridcolor=self.get_config_value('yaxis', 'gridcolor')
+        )
+
+        # Sets the range of the range slider. defaults to the full y-axis range
+        y_range = self.get_config_value('yaxis', 'range')
+        if y_range:
+            current_yaxis['range'] = y_range
+        return current_yaxis
+
+
+    def get_xaxis_title(self):
+        """Creates a Plotly x-axis label title dictionary with values
+        from users and default parameters.
+        If users parameters dictionary doesn't have needed values - use defaults
+
+        Args:
+
+        Returns:
+            - dictionary used by Plotly to build the x-axis label title as annotation
+        """
+        x_axis_label = dict(
+            x=self.get_config_value('xaxis', 'x'),  # x-position of label
+            y=self.get_config_value('xaxis', 'y'),  # y-position of label
+            showarrow=False,
+            text=self.get_config_value('xaxis_title', 'text'),
+            xref="paper",  # the annotation's x coordinate axis
+            yref="paper",  # the annotation's y coordinate axis
+            font=dict(
+                family=self.get_config_value('xaxis_title', 'font_family'),
+                size=self.get_config_value('xaxis_title', 'font_size'),
+                color=self.get_config_value('xaxis_title', 'font_color'),
+            )
+        )
+        return x_axis_label
+
+    def get_yaxis_title(self):
+        """Creates a Plotly y-axis label title dictionary with values
+         from users and default parameters
+        If users parameters dictionary doesn't have needed values - use defaults
+
+         Args:
+
+        Returns:
+            - dictionary used by Plotly to build the y-axis label title as annotation
+        """
+        y_axis_label = dict(
+            x=self.get_config_value('yaxis', 'x'),  # x-position of label
+            y=self.get_config_value('yaxis', 'y'),  # y-position of label
+            showarrow=False,
+            text=self.get_config_value('yaxis_title', 'text'),
+            textangle=-90,  # the angle at which the `text` is drawn with respect to the horizontal
+            xref="paper",  # the annotation's x coordinate axis
+            yref="paper",  # the annotation's y coordinate axis
+            font=dict(
+                family=self.get_config_value('yaxis_title', 'font_family'),
+                size=self.get_config_value('yaxis_title', 'font_size'),
+                color=self.get_config_value('yaxis_title', 'font_color'),
+            )
+        )
+        return y_axis_label
+
+    def get_config_value(self, section_of_interest, item_of_interest):
+        """
+        This method provides support for reading in and parsing the INI style of configuration
+        file by utilizing the produtil and METplus wrapper modules.
+
         Get the value for a key (item of interest). i.e. the value to a key-value pairing
-        from a specific section (section_of_interest)
+        from a specific section (section_of_interest).
 
 
         Input:
