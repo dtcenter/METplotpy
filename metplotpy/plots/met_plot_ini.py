@@ -221,3 +221,79 @@ class MetPlotIni:
             raise Exception("The item of interest was not found in the configuration file.  Please check your configuration file.")
 
 
+    def _get_nested(self, data, args):
+        """Recursive function that uses the tuple with keys to find a value
+        in multidimensional dictionary.
+
+        Args:
+            data - dictionary for the lookup
+            args  - a tuple with keys
+
+        Returns:
+            - a value for the parameter of None
+        """
+
+        if args and data:
+
+            # get value for the first key
+            element = args[0]
+            if element:
+                value = data.get(element)
+
+                # if the size of key tuple is 1 - the search is over
+                if len(args) == 1:
+                    return value
+
+                # if the size of key tuple is > 1 - search using other keys
+                return self._get_nested(value, args[1:])
+        return None
+
+    def get_img_bytes(self):
+        """Returns an image as a bytes object in a format specified in the config file
+
+        Args:
+
+        Returns:
+            - an image as a bytes object
+        """
+        if self.figure:
+            return self.figure.to_image(format=self.get_config_value('image_format'),
+                                        width=self.get_config_value('width'),
+                                        height=self.get_config_value('height'),
+                                        scale=self.get_config_value('scale'))
+
+        return None
+
+    def save_to_file(self):
+        """Saves the image to a file specified in the config file.
+         Prints a message if fails
+
+        Args:
+
+        Returns:
+
+        """
+        image_name = self.get_config_value('config', 'image_name')
+        if self.figure:
+            try:
+                self.figure.write_image(image_name)
+            except FileNotFoundError:
+                print("Can't save to file " + image_name)
+            except ValueError as ex:
+                print(ex)
+        else:
+            print("Oops!  The figure was not created. Can't save.")
+
+
+    def show_in_browser(self):
+        """Creates a plot and opens it in the browser.
+
+         Args:
+
+         Returns:
+
+         """
+        if self.figure:
+            self.figure.show()
+        else:
+            print("Oops!  The figure was not created. Can't show")
