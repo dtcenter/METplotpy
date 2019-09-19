@@ -227,3 +227,21 @@ def test_yaxis_title(config):
     assert expected_font_family == y_axis_title_dict['font']['family']
     assert expected_font_size == y_axis_title_dict['font']['size']
     assert expected_font_color == y_axis_title_dict['font']['color']
+
+@pytest.mark.skip
+# skip this test until we figure out how to test this method, which is called recursively
+def test_get_nested(config):
+    data = {'font': {'family': 'Monospace', 'color':'Blue', 'size':'9'}}
+    args = 'font', 'family', 'color', 'size'
+    m = MetPlotIni(config)
+    m._get_nested(data, args)
+
+
+# place holder for a test
+def test_save_to_file(config):
+    """Verifies that the plot is actually saved when requested to save."""
+    m = MetPlotIni(config)
+
+    # This method raises exceptions, so if no exceptions are raised, this evaluates
+    # to True and passes
+    m.save_to_file()
