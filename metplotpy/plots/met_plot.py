@@ -25,8 +25,12 @@ class MetPlot:
             defaults   - dictionary containing Metplotpy default parameters
         """
 
-        # merge user defined parameters into defaults
-        self.parameters = {**defaults, **parameters}
+        # merge user defined parameters into defaults if they exist
+        if parameters:
+            self.parameters = {**defaults, **parameters}
+        else:
+            self.parameters = defaults
+
         self.figure = None
 
     def get_image_format(self):
