@@ -1,18 +1,17 @@
 """
 Class Name: histogram.py
  """
-__author__ = 'Tatiana Burek'
+__author__ = 'Tatiana Burek and Minna Win'
 __email__ = 'met_help@ucar.edu'
 
 import os
 import plotly.graph_objects as go
-import yaml
 import pandas as pd
+import config_metplotpy
+from metplotpy.plots.met_plot_ini import MetPlotIni
 
-from metplotpy.plots.met_plot import MetPlot
 
-
-class Histogram(MetPlot):
+class Histogram(MetPlotIni):
     """A class that creates histogram using Plotly using a two dimensional data array
 
     To use:
@@ -30,22 +29,22 @@ class Histogram(MetPlot):
         Creates a Plotly histogram figure using the data
 
         Args:
-            parameters - dictionary containing user defined parameters
+            parameters - dictionary containing default and user defined parameters
             data       - two dimensional data array
         """
 
         # read defaults stored in YAML formated file into the dictionary
         location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-        with open(os.path.join(location, '../configs/histogram_defaults.yml'), 'r') as stream:
-            try:
-                defaults = yaml.load(stream, Loader=yaml.FullLoader)
-            except yaml.YAMLError as exc:
-                print(exc)
-
-        # init common layout
-        super().__init__(parameters, defaults)
-        # create figure
-        self.figure = self._create_figure(data)
+        # with open(os.path.join(location, 'histogram_defaults.yml'), 'r') as stream:
+        #     try:
+        #         defaults = yaml.load(stream, Loader=yaml.FullLoader)
+        #     except yaml.YAMLError as exc:
+        #         print(exc)
+        #
+        # # init common layout
+        # super().__init__(parameters, defaults)
+        # # create figure
+        # self.figure = self._create_figure(data)
 
     def _create_figure(self, data):
         """Draws histogram data on the layout
@@ -160,15 +159,15 @@ class Histogram(MetPlot):
             return self.DEFAULT_COLOR
         return self.get_config_value('colors')[i]
 
+def load_default_config():
+    """ Load the default configuration file """
+
 
 def main():
     """ Example how to use Histogram"""
-    # open user's config file
-    with open("/Users/tatiana/histogram.yml", 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
+    # open user's config file(s) via METplus and produtil modules that utilize
+    # Python's ConfigParser.
+    docs = config_metplus.setup()
 
     # read user's data from file and arrange it in the array
     input_data_file = "/Users/tatiana/Rscript/test_data.txt"
@@ -177,7 +176,7 @@ def main():
     data.append(input_data['FCST'])
     data.append(input_data['OBS'])
 
-    # create a histogram
+    # creatye a histogram
     histogram = Histogram(docs, data)
     # img_bytes = histogram.get_img_bytes()
 

@@ -21,11 +21,10 @@ class MetPlot:
         """Inits MetPlot with user defined and default dictionaries.
 
         Args:
-            parameters - dictionary containing user defined parameters
-            defaults   - dictionary containing Metplotpy default parameters
+            parameters - dictionary containing default and user defined parameters
+
         """
         self.parameters = parameters
-        self.defaults = defaults
         self.figure = None
 
     def get_image_format(self):

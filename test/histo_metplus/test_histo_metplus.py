@@ -3,9 +3,7 @@ import sys
 import collections
 import pytest
 import config_metplus
-import histo_metplus
 from met_plot_ini import MetPlotIni
-
 
 """
 Tests for the METplotpy configuration file parsing and retrieval of values to conform to the Plotly dictionaries
@@ -17,9 +15,11 @@ sets the necessary values for the [dir] section required by METplus.
 
 """
 
+
 @pytest.fixture(scope='module')
 def config():
     return config_metplus.setup()
+
 
 ## Tests that verify that the config file is correctly processed
 def test_metplus_final(config):
@@ -29,6 +29,7 @@ def test_metplus_final(config):
 
        """
     assert config
+
 
 def test_all_sections(config):
     """
@@ -47,6 +48,7 @@ def test_all_sections(config):
     else:
         assert True
 
+
 def test_exe_section(config):
     """Verify that the exe section consists of the key-value pairs that were set in an earlier config file
        (by METplus wrapper code).  We expect to see {'RM':'rm', 'CUT':'cut', 'TR':'tr', 'NCAP2':'ncap2',
@@ -54,7 +56,8 @@ def test_exe_section(config):
        [exe] section.
     """
     exe_items = config.items('exe')
-    inherited_exe_items = [('RM','rm'), ('CUT','cut'), ('TR','tr'), ('NCAP2','ncap2'),('CONVERT','convert'), ('NCDUMP','ncdump')]
+    inherited_exe_items = [('RM', 'rm'), ('CUT', 'cut'), ('TR', 'tr'), ('NCAP2', 'ncap2'), ('CONVERT', 'convert'),
+                           ('NCDUMP', 'ncdump')]
 
     # Use the count of tuples in each list of tuples to determine if our lists are
     # equivalent (have identical number of tuples).
@@ -91,9 +94,9 @@ def test_no_item_of_interest(config):
     m = MetPlotIni(config)
     section_of_interest = 'config'
     with pytest.raises(Exception) as e:
-
-       m.get_config_value(section_of_interest, nonexistant_item)
-       assert e.value.args[0] == "The item of interest was not found in the configuration file.  Please check your configuration file."
+        m.get_config_value(section_of_interest, nonexistant_item)
+        assert e.value.args[
+                   0] == "The item of interest was not found in the configuration file.  Please check your configuration file."
 
 
 def test_no_section_of_interest(config):
@@ -105,10 +108,9 @@ def test_no_section_of_interest(config):
     m = MetPlotIni(config)
     section_of_interest = 'config'
     with pytest.raises(Exception) as e:
-
-       m.get_config_value(nonexistant_section, item_of_interest)
-       assert e.value.args[0] == "The section of interest was not found in the configuration file." \
-                                 "  Please check your configuration file."
+        m.get_config_value(nonexistant_section, item_of_interest)
+        assert e.value.args[0] == "The section of interest was not found in the configuration file." \
+                                  "  Please check your configuration file."
 
 
 def test_get_image_format(config):
@@ -122,6 +124,7 @@ def test_get_image_format(config):
     expected_fmt = 'png'
     m = MetPlotIni(config)
     assert expected_fmt == m.get_image_format()
+
 
 def test_get_image_format_jpeg(config):
     """ Verify that when the image_name is set to something with a .jpeg
@@ -146,6 +149,7 @@ def test_get_title(config):
     text_dict = m.get_title()
     assert expected_title == text_dict['text']
 
+
 def test_xaxis(config):
     """Verify that the expected values to keys in the xaxis section
        match what is retrieved via the get_xaxis() method.
@@ -159,6 +163,7 @@ def test_xaxis(config):
     assert expected_linecolor == axis_dict['linecolor']
     assert expected_showline == axis_dict['showline']
     assert expected_linewidth == axis_dict['linewidth']
+
 
 def test_yaxis(config):
     """ Verify that the expected values to keys in the yaxis section
@@ -208,6 +213,7 @@ def test_xaxis_title(config):
     assert expected_font_size == x_axis_title_dict['font']['size']
     assert expected_font_color == x_axis_title_dict['font']['color']
 
+
 def test_yaxis_title(config):
     """Verify that all the values associated with the yaxis_title are correctly retrieved.
     """
@@ -228,10 +234,11 @@ def test_yaxis_title(config):
     assert expected_font_size == y_axis_title_dict['font']['size']
     assert expected_font_color == y_axis_title_dict['font']['color']
 
+
 @pytest.mark.skip
 # skip this test until we figure out how to test this method, which is called recursively
 def test_get_nested(config):
-    data = {'font': {'family': 'Monospace', 'color':'Blue', 'size':'9'}}
+    data = {'font': {'family': 'Monospace', 'color': 'Blue', 'size': '9'}}
     args = 'font', 'family', 'color', 'size'
     m = MetPlotIni(config)
     m._get_nested(data, args)
@@ -245,3 +252,15 @@ def test_save_to_file(config):
     # This method raises exceptions, so if no exceptions are raised, this evaluates
     # to True and passes
     m.save_to_file()
+
+
+def test_prodconfig(config):
+    default_config_file = \
+        '/Users/minnawin/feature_14_conf_histogram/METplotpy/metplotpy/plots/histogram/histogram_defaults.conf'
+    args_list =[default_config_file]
+    config.from_args(args=args_list)
+    dirname = os.path.dirname(os.path.abspath(__file__))
+    print("full path of this script: ", dirname)
+
+
+

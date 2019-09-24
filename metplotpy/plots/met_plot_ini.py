@@ -2,10 +2,10 @@
 Class Name: met_plot_ini.py
 Base class for METplotpy plots that use INI config files.
  """
-__author__ = 'Minna Win'
+__author__ = "Minna Win adapted from Tatiana Burek's met_plot.py"
 __email__ = 'met_help@ucar.edu'
 
-from config_launcher import METplusLauncher
+from util.config_launcher import METplotpyConfig
 
 
 
@@ -27,10 +27,8 @@ class MetPlotIni:
             parameters - dictionary representation of user defined parameters derived from
                          the INI style configuration file (parameters can be represented
                          by a configuration object).
-            # defaults   - dictionary containing Metplotpy default parameters
         """
         self.parameters = parameters
-        # self.defaults = defaults
         self.figure = None
 
 
@@ -297,3 +295,4 @@ class MetPlotIni:
             self.figure.show()
         else:
             print("Oops!  The figure was not created. Can't show")
+
