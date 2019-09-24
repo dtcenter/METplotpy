@@ -4,6 +4,8 @@ Class Name: met_plot.py
 __author__ = 'Tatiana Burek'
 __email__ = 'met_help@ucar.edu'
 
+import os
+
 
 class MetPlot:
     """A class that provides methods for building Plotly plot's common features
@@ -265,6 +267,11 @@ class MetPlot:
 
         """
         image_name = self.get_config_value('image_name')
+
+        # remove the old file if it exist
+        if os.path.exists(image_name):
+            os.remove(image_name)
+
         if self.figure:
             try:
                 self.figure.write_image(image_name)
