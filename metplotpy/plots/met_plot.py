@@ -24,8 +24,9 @@ class MetPlot:
             parameters - dictionary containing user defined parameters
             defaults   - dictionary containing Metplotpy default parameters
         """
-        self.parameters = parameters
-        self.defaults = defaults
+
+        # merge user defined parameters into defaults
+        self.parameters = {**defaults, **parameters}
         self.figure = None
 
     def get_image_format(self):
@@ -196,8 +197,7 @@ class MetPlot:
 
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
-        First it looks in the user defended dictionary and if the parameter is missing
-        looks in the defaults
+        Looks for parameter in the user parameter dictionary
 
         Args:
             *args - chain of keys that defines a key to the parameter
@@ -206,13 +206,7 @@ class MetPlot:
             - a value for the parameter of None
         """
 
-        # look in parameters
-        result = self._get_nested(self.parameters, args)
-
-        if not result:
-            # look in defaults
-            result = self._get_nested(self.defaults, args)
-        return result
+        return self._get_nested(self.parameters, args)
 
     def _get_nested(self, data, args):
         """Recursive function that uses the tuple with keys to find a value
