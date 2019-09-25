@@ -33,12 +33,24 @@ def settings():
     """
     first_marker = np.random.randn(500)
     second_marker = np.random.randn(500) + 1
-    data = []
-    data.append(first_marker)
-    data.append(second_marker)
+    data = [first_marker, second_marker]
     histogram = Histogram(None, data)
     return histogram
 
 
+def test_get_array_dimensions():
+    data = None
+    assert Histogram.get_array_dimensions(data) is None
+
+    first_marker = np.random.randn(500)
+    second_marker = np.random.randn(500) + 1
+    assert Histogram.get_array_dimensions(first_marker) == 1
+
+    data = [first_marker, second_marker]
+    assert Histogram.get_array_dimensions(data) == 2
+
+
 if __name__ == "__main__":
+    test_get_array_dimensions()
     test_histogram_show_in_browser()
+
