@@ -32,9 +32,11 @@ class Histogram(MetPlot):
         Args:
             parameters - dictionary containing user defined parameters
             data       - two dimensional data array
+        Raises:
+            ValueError: If the data array has dimension not equal 2.
         """
 
-        # read defaults stored in YAML formated file into the dictionary
+        # read defaults stored in YAML formatted file into the dictionary
         location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
         with open(os.path.join(location, 'histogram_defaults.yml'), 'r') as stream:
             try:
@@ -44,6 +46,12 @@ class Histogram(MetPlot):
 
         # init common layout
         super().__init__(parameters, defaults)
+
+        # validate the input array - should be 2-dimensional
+        dim = Histogram.get_array_dimensions(data)
+        if dim is None or dim != 2:
+            raise ValueError('Data array dimension should be 2 but it is {0}'.format(dim))
+
         # create figure
         self.figure = self._create_figure(data)
 
@@ -60,50 +68,55 @@ class Histogram(MetPlot):
         # init Figure
         fig = go.Figure()
 
-        # create layout with title, axises, legend ...
-        fig.update_layout(
-            title=self.get_title(),
-            xaxis=self.get_xaxis(),
-            yaxis=self.get_yaxis(),
-            # gap between bars of adjacent location coordinates
-            bargap=self.get_config_value('bargap'),
-            # bargroupgap=0.1  # gap between bars of the same location coordinates\
-            showlegend=self.get_config_value('showlegend'),
-            legend_orientation=self.get_config_value('legend_orientation'),
-            legend=self.get_legend(),
-            plot_bgcolor=self.get_config_value('plot_bgcolor'),
-            height=self.get_config_value('height'),
-            width=self.get_config_value('width'),
-            annotations=[
-                self.get_xaxis_title(),
-                self.get_yaxis_title()
-            ],
-        )
-        # calculate bins_size
-        xbins_size = self._get_bins_size()
-
-        # add histogram's markers
-        for i, marker_data in enumerate(data):
-            fig.add_trace(go.Histogram(
-                x=marker_data,
-                histnorm=self.get_config_value('histnorm'),
-                name=self._get_marker_title(i),  # name used in legend and hover labels
-                xbins=dict(  # bins used for histogram
-                    start=self.get_config_value('xbins', 'start'),
-                    end=self.get_config_value('xbins', 'end'),
-                    size=xbins_size
-                ),
-                marker_color=self._get_marker_color(i),
-                opacity=self.get_config_value('opacity'),
+        try:
+            # create layout with title, axises, legend ...
+            fig.update_layout(
+                title=self.get_title(),
+                xaxis=self.get_xaxis(),
+                yaxis=self.get_yaxis(),
+                # gap between bars of adjacent location coordinates
+                bargap=self.get_config_value('bargap'),
+                # bargroupgap=0.1  # gap between bars of the same location coordinates\
                 showlegend=self.get_config_value('showlegend'),
-                marker=dict(
-                    line=dict(
-                        width=self._get_line_width(i)
-                    )
-                ),
-                orientation=self.get_config_value('orientation'),
+                legend_orientation=self.get_config_value('legend_orientation'),
+                legend=self.get_legend(),
+                plot_bgcolor=self.get_config_value('plot_bgcolor'),
+                height=self.get_config_value('height'),
+                width=self.get_config_value('width'),
+                annotations=[
+                    self.get_xaxis_title(),
+                    self.get_yaxis_title()
+                ],
+            )
+            # calculate bins_size
+            xbins_size = self._get_bins_size()
 
-            ))
+            # add histogram's markers
+            for i, marker_data in enumerate(data):
+                fig.add_trace(go.Histogram(
+                    x=marker_data,
+                    histnorm=self.get_config_value('histnorm'),
+                    name=self._get_marker_title(i),  # name used in legend and hover labels
+                    xbins=dict(  # bins used for histogram
+                        start=self.get_config_value('xbins', 'start'),
+                        end=self.get_config_value('xbins', 'end'),
+                        size=xbins_size
+                    ),
+                    marker_color=self._get_marker_color(i),
+                    opacity=self.get_config_value('opacity'),
+                    showlegend=self.get_config_value('showlegend'),
+                    marker=dict(
+                        line=dict(
+                            width=self._get_line_width(i)
+                        )
+                    ),
+                    orientation=self.get_config_value('orientation'),
+
+                ))
+        except ValueError as ex:
+            raise ValueError(
+                "An exception of type {0} occurred. Check your data or config file values."
+                    .format(type(ex).__name__))
 
         return fig
 
@@ -177,13 +190,16 @@ def main():
     data.append(input_data['FCST'])
     data.append(input_data['OBS'])
 
-    # creatye a histogram
-    histogram = Histogram(docs, data)
-    # img_bytes = histogram.get_img_bytes()
+    # create a histogram
+    try:
+        histogram = Histogram(docs, data)
+        # img_bytes = histogram.get_img_bytes()
 
-    # save to file
-    histogram.save_to_file()
-    # histogram.show()
+        # save to file
+        histogram.save_to_file()
+        # histogram.show()
+    except ValueError as v_error:
+        print(v_error)
 
 
 if __name__ == "__main__":
