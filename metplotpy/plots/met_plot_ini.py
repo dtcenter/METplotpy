@@ -13,24 +13,32 @@ class MetPlotIni:
     """A class that provides methods for building Plotly plot's common features
         like title, axis, legend.
 
-        To use:
-           use as an abstract class for the common plot types
-       """
+     To use:
+        use as a abstract class for the common plot types
+    """
+
     # image formats supported by plotly
     IMAGE_FORMATS = ("png", "jpeg", "webp", "svg", "pdf", "eps")
     DEFAULT_IMAGE_FORMAT = 'png'
 
-    def __init__(self, parameters):
+    def __init__(self, parameters, defaults):
         """Inits MetPlot with user defined and default dictionaries.
+           Removes the old image it it exists
 
         Args:
             parameters - dictionary representation of user defined parameters derived from
                          the INI style configuration file (parameters can be represented
                          by a configuration object).
         """
-        self.parameters = parameters
-        self.figure = None
 
+        # merge user defined parameters into defaults if they exist
+        if parameters:
+            self.parameters = {**defaults, **parameters}
+        else:
+            self.parameters = defaults
+
+        self.figure = None
+        self.remove_file()
 
     def get_image_format(self):
         """Reads the image format type from user provided image name.
@@ -56,6 +64,31 @@ class MetPlotIni:
         print('Unrecognised image format. png will be used')
         return self.DEFAULT_IMAGE_FORMAT
 
+    def get_legend(self):
+        """Creates a Plotly legend dictionary with values from users and default parameters
+        If users parameters dictionary doesn't have needed values - use defaults
+
+        Args:
+
+        Returns:
+            - dictionary used by Plotly to build the legend
+        """
+
+        current_legend = dict(
+            x=self.get_config_value('legend', 'x'),  # x-position
+            y=self.get_config_value('legend', 'y'),  # y-position
+            font=dict(
+                family=self.get_config_value('legend', 'font', 'family'),  # font family
+                size=self.get_config_value('legend', 'font', 'size'),  # font size
+                color=self.get_config_value('legend', 'font', 'color'),  # font color
+            ),
+            bgcolor=self.get_config_value('legend', 'bgcolor'),  # background color
+            bordercolor=self.get_config_value('legend', 'bordercolor'),  # border color
+            borderwidth=self.get_config_value('legend', 'borderwidth'),  # border width
+            xanchor=self.get_config_value('legend', 'xanchor'),  # horizontal position anchor
+            yanchor=self.get_config_value('legend', 'yanchor')  # vertical position anchor
+        )
+        return current_legend
 
     def get_title(self):
         """Creates a Plotly title dictionary with values from users and default parameters
@@ -67,7 +100,7 @@ class MetPlotIni:
             - dictionary used by Plotly to build the title
         """
         current_title = dict(
-            # How to get the title text from the yaml config file
+            # How to get the title text from the config file
             # text=self.get_config_value('title'),  # plot's title
             text = self.get_config_value('config', 'title'),
             # Sets the container `x` refers to. "container" spans the entire `width` of the plot.
@@ -128,7 +161,7 @@ class MetPlotIni:
 
         # Sets the range of the range slider. defaults to the full y-axis range
         y_range = self.get_config_value('yaxis', 'range')
-        if y_range:
+        if y_range is not None:
             current_yaxis['range'] = y_range
         return current_yaxis
 
@@ -282,6 +315,14 @@ class MetPlotIni:
         else:
             print("Oops!  The figure was not created. Can't save.")
 
+    def remove_file(self):
+        """Removes previously made  image file .
+        """
+        image_name = self.get_config_value('image_name')
+
+        # remove the old file if it exist
+        if os.path.exists(image_name):
+            os.remove(image_name)
 
     def show_in_browser(self):
         """Creates a plot and opens it in the browser.

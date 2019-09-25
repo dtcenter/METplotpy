@@ -1,5 +1,5 @@
 """
-Class Name: histogram.py
+Class Name: histogram_ini.py
  """
 __author__ = 'Tatiana Burek and Minna Win'
 __email__ = 'met_help@ucar.edu'
@@ -7,11 +7,11 @@ __email__ = 'met_help@ucar.edu'
 import os
 import plotly.graph_objects as go
 import pandas as pd
-import config_metplotpy
+import util.config_metplotpy as config_metplotpy
 from metplotpy.plots.met_plot_ini import MetPlotIni
 
 
-class Histogram(MetPlotIni):
+class HistogramIni(MetPlotIni):
     """A class that creates histogram using Plotly using a two dimensional data array
 
     To use:
@@ -167,7 +167,7 @@ def main():
     """ Example how to use Histogram"""
     # open user's config file(s) via METplus and produtil modules that utilize
     # Python's ConfigParser.
-    docs = config_metplus.setup()
+    docs = config_metplotpy.setup()
 
     # read user's data from file and arrange it in the array
     input_data_file = "/Users/tatiana/Rscript/test_data.txt"
@@ -177,7 +177,7 @@ def main():
     data.append(input_data['OBS'])
 
     # creatye a histogram
-    histogram = Histogram(docs, data)
+    histogram = HistogramIni(docs, data)
     # img_bytes = histogram.get_img_bytes()
 
     # save to file
