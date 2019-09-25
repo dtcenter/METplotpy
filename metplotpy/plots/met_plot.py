@@ -26,6 +26,7 @@ class MetPlot:
 
         Args:
             parameters - dictionary containing default and user defined parameters
+            defaults   - dictionary containing Metplotpy default parameters
 
         """
 
