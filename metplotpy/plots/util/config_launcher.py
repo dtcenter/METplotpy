@@ -15,30 +15,35 @@ import met_util as util
 loads information into each job.
 
 This module is used to create the initial METplotpy conf file in the
-first METplus job via the metplus.config_launcher.launch().
-The metplus.config_launcher.load() then reloads that configuration.
+first METplotpy job via the metplotpy.config_launcher.launch().
+The metplotpy.config_launcher.load() then reloads that configuration.
 The launch() function does more than just create the conf file though.
 It creates several initial files and  directories and runs a sanity check
 on the whole setup.
 
 The METplotpyConfig class is used in place of a produtil.config.ProdConfig
-throughout the METplus system.  It can be used as a drop-in replacement
+throughout the METplotpy system.  It can be used as a drop-in replacement
 for a produtil.config.ProdConfig, but has additional features needed to
-support sanity checks, and initial creation of the METplus system.
+support sanity checks, and initial creation of the METplotpy system.
 """
 
 '''!@var __all__
-All symbols exported by "from metplus.launcher import *"
+All symbols exported by "from metplotpy.launcher import *"
 '''
 __all__ = ['load', 'launch', 'parse_launch_args',
            'METplotpyConfig']
 # Note: This is just a developer reference comment, in case we continue
-# extending the metplus capabilities, by following hwrf patterns.
-# These metplus configuration variables map to the following
+# extending the metplotpy capabilities, by following hwrf patterns.
+# These metplotpy configuration variables map to the following
 # HWRF variables.
 # METPLUS_BASE == HOMEmetplus, OUTPUT_BASE == WORKmetplus
 # METPLUS_CONF == CONFmetplus, METPLUS_USH == USHmetplus
 # PARM_BASE == PARMmetplus
+
+'''!@var METPLOTPY_BASE
+The METplotpy installation directory
+'''
+METPLOTPY_BASE = None
 
 '''!@var METPLUS_BASE
 The METplus installation directory
@@ -60,7 +65,8 @@ if os.environ.get('METPLUS_PARM_BASE', ''):
 
 # Based on METPLUS_BASE, Will set METPLUS_USH, or PARM_BASE if not
 # already set in the environment.
-METPLUS_BASE = dirname(dirname(realpath(__file__)))
+METPLOTPY_BASE = dirname(dirname(realpath(__file__)))
+METPLUS_BASE = os.path.join(METPLOTPY_BASE, "../../../METplus")
 USHguess = os.path.join(METPLUS_BASE, 'ush')
 PARMguess = os.path.join(METPLUS_BASE, 'parm')
 if os.path.isdir(USHguess) and os.path.isdir(PARMguess):
@@ -77,14 +83,14 @@ if METPLUS_USH not in sys.path:
 # def parse_launch_args(args,usage,logger,PARM_BASE=None):
 # This is intended to be use to gather all the conf files on the
 # command line, along with overide options on the command line.
-# This includes the default conf files metplus.conf, metplus.override.conf
+# This includes the default conf files metplotpy.conf, metplotpy.override.conf
 # along with, -c some.conf and any other conf files...
-# These are than used by def launch to create a single metplus final conf file
+# These are than used by def launch to create a single metplotpy final conf file
 # that would be used by all tasks.
 def parse_launch_args(args, usage, filename, logger, baseinputconfs):
     """!Parsed arguments to scripts that launch the METplus system.
 
-    This is the argument parser for the config_metplus.py
+    This is the argument parser for the config_metplotpy.py
     script.  It parses the arguments (in args).
     If something goes wrong, this function calls
     sys.exit(1) or sys.exit(2).
@@ -95,7 +101,7 @@ def parse_launch_args(args, usage, filename, logger, baseinputconfs):
 
     Later conf files override earlier ones.  The conf files read in
     are:
-    * metplus.conf
+    * metplotpy.conf
 
     @param args the script arguments, after script-specific ones are removed
     @param usage a function called to provide a usage message
@@ -110,12 +116,20 @@ def parse_launch_args(args, usage, filename, logger, baseinputconfs):
 
     # Files in this list, that don't exist or are empty,
     # will be silently ignored.
-    # infiles=[ os.path.join(parm, 'metplus.conf'),
-    #          os.path.join(parm, 'metplus.override.conf')
+    # infiles=[ os.path.join(parm, 'metplotpy.conf'),
+    #          os.path.join(parm, 'metplotpy.override.conf')
     #         ]
     infiles = list()
     for filename in baseinputconfs:
-        infiles.append(os.path.join(parm, filename))
+        # Check for entries that begin with metplus_config, and apply the
+        # full path
+        fname_match = re.match(r'^metplus_config.*')
+        if fname_match:
+            infiles.append(os.path.join(parm, fname_match.group(0)))
+        else:
+            # These are the METplotpy default config files which
+            # already have the full path indicated.
+            infiles.append(filename)
 
     moreopt = collections.defaultdict(dict)
 
@@ -168,7 +182,7 @@ def launch(file_list, moreopt, cycle=None, init_dirs=True,
            prelaunch=None):
     for filename in file_list:
         if not isinstance(filename, str):
-            raise TypeError('First input to metplus.config.for_initial_job '
+            raise TypeError('First input to metplotpy.config.for_initial_job '
                             'must be a list of strings.')
 
     conf = METplotpyConfig()
@@ -214,7 +228,7 @@ def launch(file_list, moreopt, cycle=None, init_dirs=True,
     produtil.fileop.makedirs(conf.getdir('OUTPUT_BASE', logger), logger=logger)
     # A user my set the confloc METPLUS_CONF location in a subdir of OUTPUT_BASE
     # or even in another parent directory altogether, so make thedirectory
-    # so the metplus_final.conf file can be written.
+    # so the metplotpy_final.conf file can be written.
     if not os.path.exists(realpath(dirname(confloc))):
         produtil.fileop.makedirs(realpath(dirname(confloc)), logger=logger)
 
@@ -223,18 +237,18 @@ def launch(file_list, moreopt, cycle=None, init_dirs=True,
     # in their conf file
     user_metplus_base = conf.getdir('METPLUS_BASE', METPLUS_BASE)
     if realpath(user_metplus_base) != realpath(METPLUS_BASE):
-        logger.warning('METPLUS_BASE from the conf files has no effect.'+\
-                       ' Overriding to '+METPLUS_BASE)
+        logger.warning('METPLUS_BASE from the conf files has no effect.' + \
+                       ' Overriding to ' + METPLUS_BASE)
 
     conf.set('dir', 'METPLUS_BASE', METPLUS_BASE)
 
     # do the same for PARM_BASE
     user_parm_base = conf.getdir('PARM_BASE', PARM_BASE)
     if realpath(user_parm_base) != realpath(PARM_BASE):
-        logger.error('PARM_BASE from the config ({}) '.format(user_parm_base) +\
+        logger.error('PARM_BASE from the config ({}) '.format(user_parm_base) + \
                      'differs from METplus parm base ({}). '.format(PARM_BASE))
-        logger.error('Please remove PARM_BASE from any config file. Set the ' +\
-                     'environment variable METPLUS_PARM_BASE to change where ' +\
+        logger.error('Please remove PARM_BASE from any config file. Set the ' + \
+                     'environment variable METPLUS_PARM_BASE to change where ' + \
                      'the METplus wrappers look for config files.')
         exit(1)
 
@@ -256,19 +270,21 @@ def launch(file_list, moreopt, cycle=None, init_dirs=True,
 
     return conf
 
+
 def load(filename):
     """!Loads the METplusConfig created by the launch() function.
 
     Creates an METplusConfig object for a METplus workflow that was
-    previously initialized by metplus.config_launcher.launch.
+    previously initialized by metplotpy.config_launcher.launch.
     The only argument is the name of the config file produced by
     the launch command.
 
-    @param filename The metplus*.conf file created by launch()"""
+    @param filename The metplotpy*.conf file created by launch()"""
 
     conf = METplotpyConfig()
     conf.read(filename)
     return conf
+
 
 def set_conf_file_path(conf_file):
     return _set_conf_file_path(conf_file)
@@ -298,6 +314,7 @@ def _set_conf_file_path(conf_file):
         return new_conf_file
 
     return conf_file
+
 
 def _set_logvars(config, logger=None):
     """!Sets and adds the LOG_METPLUS and LOG_TIMESTAMP
@@ -354,74 +371,73 @@ def _set_logvars(config, logger=None):
 
     log_dir = config.getdir('LOG_DIR')
 
-    # NOTE: LOG_METPLUS or metpluslog is meant to include the absolute path
-    #       and the metpluslog_filename,
-    # so metpluslog = /path/to/metpluslog_filename
+    # NOTE: LOG_METPLUS or metplotpylog is meant to include the absolute path
+    #       and the metplotpylog_filename,
+    # so metplotpylog = /path/to/metplotpylog_filename
 
     # if LOG_METPLOTPY =  unset in the conf file, means NO logging.
     # Also, assumes the user has included the intended path in LOG_METPLOTPY.
     user_defined_log_file = None
     if config.has_option('config', 'LOG_METPLUS'):
         user_defined_log_file = True
-        # strinterp will set metpluslog to '' if LOG_METPLUS =  is unset.
-        metpluslog = config.strinterp('config', '{LOG_METPLUS}',
-                                      LOG_TIMESTAMP_TEMPLATE=log_filenametimestamp)
+        # strinterp will set metplotpylog to '' if LOG_METPLUS =  is unset.
+        metplotpylog = config.strinterp('config', '{LOG_METPLUS}',
+                                        LOG_TIMESTAMP_TEMPLATE=log_filenametimestamp)
 
         # test if there is any path information, if there is, assUme it is as intended,
         # if there is not, than add log_dir.
-        if metpluslog:
-            if os.path.basename(metpluslog) == metpluslog:
-                metpluslog = os.path.join(log_dir, metpluslog)
+        if metplotpylog:
+            if os.path.basename(metplotpylog) == metplotpylog:
+                metplotpylog = os.path.join(log_dir, metplotpylog)
     else:
         # No LOG_METPLUS in conf file, so let the code try to set it,
         # if the user defined the variable LOG_FILENAME_TEMPLATE.
         # LOG_FILENAME_TEMPLATE is an 'unpublished' variable - no one knows
         # about it unless you are reading this. Why does this exist ?
         # It was from my first cycle implementation. I did not want to pull
-        # it out, in case the group wanted a stand alone metplus log filename
+        # it out, in case the group wanted a stand alone metplotpy log filename
         # template variable.
 
-        # If metpluslog_filename includes a path, python joins it intelligently.
-        # Set the metplus log filename.
-        # strinterp will set metpluslog_filename to '' if LOG_FILENAME_TEMPLATE =
+        # If metplotpylog_filename includes a path, python joins it intelligently.
+        # Set the metplotpy log filename.
+        # strinterp will set metplotpylog_filename to '' if LOG_FILENAME_TEMPLATE =
         if config.has_option('config', 'LOG_FILENAME_TEMPLATE'):
-            metpluslog_filename = config.strinterp('config', '{LOG_FILENAME_TEMPLATE}',
-                                                   LOG_TIMESTAMP_TEMPLATE=log_filenametimestamp)
+            metplotpylog_filename = config.strinterp('config', '{LOG_FILENAME_TEMPLATE}',
+                                                     LOG_TIMESTAMP_TEMPLATE=log_filenametimestamp)
         else:
-            metpluslog_filename = ''
-        if metpluslog_filename:
-            metpluslog = os.path.join(log_dir, metpluslog_filename)
+            metplotpylog_filename = ''
+        if metplotpylog_filename:
+            metplotlog = os.path.join(log_dir, metplotpylog_filename)
         else:
-            metpluslog = ''
-
-
+            metplotpylog = ''
 
     # Adding LOG_TIMESTAMP to the final configuration file.
     logger.info('Adding: config.LOG_TIMESTAMP=%s' % repr(log_filenametimestamp))
     config.set('config', 'LOG_TIMESTAMP', log_filenametimestamp)
 
-    # Setting LOG_METPLUS in the configuration object
-    # At this point LOG_METPLUS will have a value or '' the empty string.
+    # Setting LOG_METPLOTPY in the configuration object
+    # At this point LOG_METPLOTPY will have a value or '' the empty string.
     if user_defined_log_file:
-        logger.info('Replace [config] LOG_METPLUS with %s' % repr(metpluslog))
+        logger.info('Replace [config] LOG_METPLOTPY with %s' % repr(metplotpylog))
     else:
-        logger.info('Adding: config.LOG_METPLUS=%s' % repr(metpluslog))
-    # expand LOG_METPLUS to ensure it is available
-    config.set('config', 'LOG_METPLUS', metpluslog)
+        logger.info('Adding: config.LOG_METPLOTPY=%s' % repr(metplotpylog))
+    # expand LOG_METPLOTPY to ensure it is available
+    config.set('config', 'LOG_METPLOTPY', metplotpylog)
+
 
 class METplotpyConfig(ProdConfig):
     """!A replacement for the produtil.config.ProdConfig used throughout
-    the METplus system.  You should never need to instantiate one of
+    the METplus and METplotpy system.  You should never need to instantiate one of
     these --- the launch() and load() functions do that for you.  This
     class is the underlying implementation of most of the
     functionality described in launch() and load()"""
 
     def __init__(self, conf=None):
-        """!Creates a new METplusConfig
+        """!Creates a new METplotpyConfig
         @param conf The configuration file."""
         super(METplotpyConfig, self).__init__(conf)
         self._cycle = None
-        self._logger = logging.getLogger('metplus')
+        self._logger = logging.getLogger('metplotpy')
         # config.logger is called in wrappers, so set this name
         # so the code doesn't break
         self.logger = self._logger
@@ -433,7 +449,7 @@ class METplotpyConfig(ProdConfig):
         logger = self._logger
 
     ##@var _cycle
-    # The cycle for this METplus run.
+    # The cycle for this METPLOTPY run.
 
     # Overrides method in ProdConfig
     def log(self, sublog=None):
@@ -441,19 +457,19 @@ class METplotpyConfig(ProdConfig):
 
         Returns a logging.Logger object.  If the sublog argument is
         provided, then the logger will be under that subdomain of the
-        "metplus" logging domain.  Otherwise, this METpluslauncher's logger
-        (usually the "metplus" domain) is returned.
+        "metplotpy" logging domain.  Otherwise, this METplotpylauncher's logger
+        (usually the "metplot" domain) is returned.
         @param sublog the logging subdomain, or None
         @returns a logging.Logger object"""
         if sublog is not None:
             with self:
-                return logging.getLogger('metplus.'+sublog)
+                return logging.getLogger('metplotpy.' + sublog)
         return self._logger
 
     def sanity_check(self):
         """!Runs nearly all sanity checks.
 
-        Runs simple sanity checks on the METplus installation directory
+        Runs simple sanity checks on the METplotpy installation directory
         and configuration to make sure everything looks okay.  May
         throw a wide variety of exceptions if sanity checks fail."""
         logger = self.log('sanity.checker')
@@ -476,7 +492,7 @@ class METplotpyConfig(ProdConfig):
         if count >= 10:
             return ''
 
-        in_template = super(METplusConfig, self).getraw(sec, opt, default)
+        in_template = super(METplotpyConfig, self).getraw(sec, opt, default)
         out_template = ""
         in_brackets = False
         for index, character in enumerate(in_template):
@@ -484,7 +500,7 @@ class METplotpyConfig(ProdConfig):
                 in_brackets = True
                 start_idx = index
             elif character == "}":
-                var_name = in_template[start_idx+1:index]
+                var_name = in_template[start_idx + 1:index]
                 var = None
                 if self.has_option(sec, var_name):
                     var = self.getraw(sec, var_name, default, count)
@@ -498,7 +514,7 @@ class METplotpyConfig(ProdConfig):
                     var = os.environ.get(var_name[4:-1])
 
                 if var is None:
-                    out_template += in_template[start_idx:index+1]
+                    out_template += in_template[start_idx:index + 1]
                 else:
                     out_template += var
                 in_brackets = False
@@ -543,7 +559,7 @@ class METplotpyConfig(ProdConfig):
                 print('ERROR: {}'.format(msg))
             exit(1)
 
-        exe_path = super(METplusConfig, self).getexe(exe_name)
+        exe_path = super(METplotpyConfig, self).getexe(exe_name)
 
         full_exe_path = shutil.which(exe_path)
         if full_exe_path is None:
@@ -558,16 +574,16 @@ class METplotpyConfig(ProdConfig):
         self.set('exe', exe_name, full_exe_path)
         return full_exe_path
 
-    def getdir(self, dir_name, default=None, morevars=None,taskvars=None):
+    def getdir(self, dir_name, default=None, morevars=None, taskvars=None):
         """!Wraps produtil getdir and reports an error if it is set to /path/to"""
         if not self.has_option('dir', dir_name):
             self.check_default('dir', dir_name, default)
             dir_path = default
         else:
-            dir_path = super(METplusConfig, self).getdir(dir_name)
+            dir_path = super(METplotpyConfig, self).getdir(dir_name)
 
         if '/path/to' in dir_path:
-            msg = 'Directory {} is set to or contains /path/to.'.format(dir_name)+\
+            msg = 'Directory {} is set to or contains /path/to.'.format(dir_name) + \
                   ' Please set this to a valid location'
             if self.logger:
                 self.logger.error(msg)
@@ -578,13 +594,14 @@ class METplotpyConfig(ProdConfig):
         return dir_path
 
     def getdir_nocheck(self, dir_name, default=None):
-        super(METplusConfig, self).getdir(dir_name, default=default)
+        super(METplotpyConfig, self).getdir(dir_name, default=default)
 
     def getstr(self, sec, name, default=None, badtypeok=False, morevars=None, taskvars=None):
         """!Wraps produtil getstr to gracefully report if variable is not set
             and no default value is specified"""
         if self.has_option(sec, name):
-            return super(METplusConfig, self).getstr(sec, name, default=default, badtypeok=badtypeok, morevars=morevars, taskvars=taskvars)
+            return super(METplotpyConfig, self).getstr(sec, name, default=default, badtypeok=badtypeok,
+                                                       morevars=morevars, taskvars=taskvars)
 
         # config item was not found
         self.check_default(sec, name, default)
@@ -594,7 +611,8 @@ class METplotpyConfig(ProdConfig):
         """!Wraps produtil getbool to gracefully report if variable is not set
             and no default value is specified"""
         if self.has_option(sec, name):
-            return super(METplusConfig, self).getbool(sec, name, default=default, badtypeok=badtypeok, morevars=morevars, taskvars=taskvars)
+            return super(METplotpyConfig, self).getbool(sec, name, default=default, badtypeok=badtypeok,
+                                                        morevars=morevars, taskvars=taskvars)
 
         # config item was not found
         self.check_default(sec, name, default)
@@ -604,7 +622,8 @@ class METplotpyConfig(ProdConfig):
         """!Wraps produtil getint to gracefully report if variable is not set
             and no default value is specified"""
         if self.has_option(sec, name):
-            return super(METplusConfig, self).getint(sec, name, default=default, badtypeok=badtypeok, morevars=morevars, taskvars=taskvars)
+            return super(METplotpyConfig, self).getint(sec, name, default=default, badtypeok=badtypeok,
+                                                       morevars=morevars, taskvars=taskvars)
 
         # config item was not found
         self.check_default(sec, name, default)
@@ -614,7 +633,8 @@ class METplotpyConfig(ProdConfig):
         """!Wraps produtil getfloat to gracefully report if variable is not set
             and no default value is specified"""
         if self.has_option(sec, name):
-            return super(METplusConfig, self).getfloat(sec, name, default=default, badtypeok=badtypeok, morevars=morevars, taskvars=taskvars)
+            return super(METplotpyConfig, self).getfloat(sec, name, default=default, badtypeok=badtypeok,
+                                                         morevars=morevars, taskvars=taskvars)
 
         # config item was not found
         self.check_default(sec, name, default)
@@ -625,11 +645,12 @@ class METplotpyConfig(ProdConfig):
         if self.has_option(sec, name):
             # convert value to seconds
             # Valid options match format 3600, 3600S, 60M, or 1H
-            value = super(METplusConfig, self).getstr(sec, name, default=default, badtypeok=badtypeok, morevars=morevars, taskvars=taskvars)
-            regex_and_multiplier = {r'(-*)(\d+)S' : 1,
-                                    r'(-*)(\d+)M' : 60,
-                                    r'(-*)(\d+)H' : 3600,
-                                    r'(-*)(\d+)' : 1}
+            value = super(METplotpyConfig, self).getstr(sec, name, default=default, badtypeok=badtypeok,
+                                                        morevars=morevars, taskvars=taskvars)
+            regex_and_multiplier = {r'(-*)(\d+)S': 1,
+                                    r'(-*)(\d+)M': 60,
+                                    r'(-*)(\d+)H': 3600,
+                                    r'(-*)(\d+)': 1}
             for reg, mult in regex_and_multiplier.items():
                 match = re.match(reg, value)
                 if match:
@@ -638,8 +659,8 @@ class METplotpyConfig(ProdConfig):
                     return int(match.group(2)) * mult
 
             # if value is not in an expected format, error and exit
-            msg = '[{}] {} does not match expected format. '.format(sec, name) +\
-              'Valid options match 3600, 3600S, 60M, or 1H'
+            msg = '[{}] {} does not match expected format. '.format(sec, name) + \
+                  'Valid options match 3600, 3600S, 60M, or 1H'
             if self.logger:
                 self.logger.error(msg)
             else:

@@ -15,22 +15,68 @@ Output Files: N/A
 import os
 import sys
 import logging
+import re
 
 import produtil.setup
 import getopt
 import config_launcher
+import met_util as util
+
+##@var __all__
+# All symbols exported by "from config_metplus import *"
+__all__ = ['usage', 'setup']
 
 # pylint:disable=pointless-string-statement
-'''!@namespace config_metplus
+'''!@namespace config_metplotpy
 The initial METplotpy configure script for parsing the command line
 options, arguments and setting up the METPLOTPY_CONF file.
 This module setup() function should be called at the start of each task to
 setup a configuration object used by all the processing tasks.
 Each task that calls this MUST have run produtil.setup
 '''
+def get_all_default_confs():
+    """ Retrieve all the METplotpy default config files
+        that are located in the ../configs/ directory.
+        There are yaml and INI config files, so we only want
+        all INI config files, which will be identified as
+        files that have the .conf extension.  Append the
+        METplus default config files: metplus/metplus_system.conf,
+        metplus/metplus_data.conf, metplus/metplus_runtime.conf, and
+        metplus/metplus_logging.conf to this list.  The full path
+        to these METplus default config files will be determined in the
+        code in config_launcher.py
+    """
+    dir = os.path.dirname(os.path.abspath(__file__))
+    path_to_configs = os.path.join(dir, "../configs")
+    conf_regex = ".*.conf"
+    metplotpy_default_configs = []
+
+    # pylint:disable=unused-variable
+    # os.walk returns a tuple. Not all returned values are needed.
+
+    # Walk the tree
+    for root, directories, files in os.walk(path_to_configs):
+        for filename in files:
+            # add it to the list only if it is a match
+            # to the specified format
+            match = re.match(conf_regex, filename)
+            if match:
+                # Join the two strings to form the full
+                # filepath.
+                filepath = os.path.join(root, filename)
+                metplotpy_default_configs.append(filepath)
+            else:
+                continue
+    metplus_defaults = ['metplus_config/metplus_system.conf',
+                  'metplus_config/metplus_data.conf',
+                  'metplus_config/metplus_runtime.conf',
+                  'metplus_config/metplus_logging.conf']
+
+    default_configs = metplotpy_default_configs + metplus_defaults
+    return default_configs
 
 ##@var __all__
-# All symbols exported by "from config_metplus import *"
+# All symbols exported by "from config_metplotpy import *"
 __all__ = ['usage', 'setup']
 
 ##@var logger
@@ -55,6 +101,7 @@ section.option=value -- override conf options on the command line
 
 '''%(filename))
     sys.exit(2)
+
 
 def setup(baseinputconfs, filename=None, logger=None):
     """!The METplotpy setup function.
@@ -136,7 +183,7 @@ def setup(baseinputconfs, filename=None, logger=None):
                                           logger,
                                           baseinputconfs)
 
-    # Currently metplus is not handling cycle.
+    # Currently metplotpy is not handling cycle.
     # Therefore can not use conf.timestrinterp and
     # some conf file settings ie. {[a|f]YMDH} time settings.
     cycle = None
@@ -159,8 +206,8 @@ if __name__ == "__main__":
         else:
             produtil.setup.setup(send_dbn=False, jobname='run-config_metplotpy')
         produtil.log.postmsg('config_metplotpy is starting')
-
-        setup()
+        baseinputconfs = get_all_default_confs()
+        setup(baseinputconfs)
         produtil.log.postmsg('config_metplotpy completed')
     except Exception as e:
         produtil.log.jlogger.critical(
