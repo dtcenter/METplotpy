@@ -5,6 +5,7 @@ __author__ = 'Tatiana Burek'
 __email__ = 'met_help@ucar.edu'
 
 import os
+import numpy as np
 
 
 class MetPlot:
@@ -21,6 +22,7 @@ class MetPlot:
 
     def __init__(self, parameters, defaults):
         """Inits MetPlot with user defined and default dictionaries.
+           Removes the old image it it exists
 
         Args:
             parameters - dictionary containing user defined parameters
@@ -34,6 +36,7 @@ class MetPlot:
             self.parameters = defaults
 
         self.figure = None
+        self.remove_file()
 
     def get_image_format(self):
         """Reads the image format type from user provided image name.
@@ -267,11 +270,6 @@ class MetPlot:
 
         """
         image_name = self.get_config_value('image_name')
-
-        # remove the old file if it exist
-        if os.path.exists(image_name):
-            os.remove(image_name)
-
         if self.figure:
             try:
                 self.figure.write_image(image_name)
@@ -281,6 +279,15 @@ class MetPlot:
                 print(ex)
         else:
             print("Oops!  The figure was not created. Can't save.")
+
+    def remove_file(self):
+        """Removes previously made  image file .
+        """
+        image_name = self.get_config_value('image_name')
+
+        # remove the old file if it exist
+        if os.path.exists(image_name):
+            os.remove(image_name)
 
     def show_in_browser(self):
         """Creates a plot and opens it in teh browser.
@@ -294,3 +301,18 @@ class MetPlot:
             self.figure.show()
         else:
             print("Oops!  The figure was not created. Can't show")
+
+    @staticmethod
+    def get_array_dimensions(data):
+        """Returns the dimension of the array
+
+        Args:
+            data - input array
+        Returns:
+            - an integer representing the array's dimension or None
+        """
+        if data is None:
+            return None
+
+        np_array = np.array(data)
+        return len(np_array.shape)
