@@ -4,6 +4,9 @@ Class Name: met_plot.py
 __author__ = 'Tatiana Burek'
 __email__ = 'met_help@ucar.edu'
 
+import os
+import numpy as np
+
 
 class MetPlot:
     """A class that provides methods for building Plotly plot's common features
@@ -19,13 +22,21 @@ class MetPlot:
 
     def __init__(self, parameters, defaults):
         """Inits MetPlot with user defined and default dictionaries.
+           Removes the old image it it exists
 
         Args:
             parameters - dictionary containing default and user defined parameters
 
         """
-        self.parameters = parameters
+
+        # merge user defined parameters into defaults if they exist
+        if parameters:
+            self.parameters = {**defaults, **parameters}
+        else:
+            self.parameters = defaults
+
         self.figure = None
+        self.remove_file()
 
     def get_image_format(self):
         """Reads the image format type from user provided image name.
@@ -195,8 +206,7 @@ class MetPlot:
 
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
-        First it looks in the user defended dictionary and if the parameter is missing
-        looks in the defaults
+        Looks for parameter in the user parameter dictionary
 
         Args:
             *args - chain of keys that defines a key to the parameter
@@ -205,13 +215,7 @@ class MetPlot:
             - a value for the parameter of None
         """
 
-        # look in parameters
-        result = self._get_nested(self.parameters, args)
-
-        if not result:
-            # look in defaults
-            result = self._get_nested(self.defaults, args)
-        return result
+        return self._get_nested(self.parameters, args)
 
     def _get_nested(self, data, args):
         """Recursive function that uses the tuple with keys to find a value
@@ -276,6 +280,15 @@ class MetPlot:
         else:
             print("Oops!  The figure was not created. Can't save.")
 
+    def remove_file(self):
+        """Removes previously made  image file .
+        """
+        image_name = self.get_config_value('image_name')
+
+        # remove the old file if it exist
+        if os.path.exists(image_name):
+            os.remove(image_name)
+
     def show_in_browser(self):
         """Creates a plot and opens it in teh browser.
 
@@ -288,3 +301,18 @@ class MetPlot:
             self.figure.show()
         else:
             print("Oops!  The figure was not created. Can't show")
+
+    @staticmethod
+    def get_array_dimensions(data):
+        """Returns the dimension of the array
+
+        Args:
+            data - input array
+        Returns:
+            - an integer representing the array's dimension or None
+        """
+        if data is None:
+            return None
+
+        np_array = np.array(data)
+        return len(np_array.shape)
