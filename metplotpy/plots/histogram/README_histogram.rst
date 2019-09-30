@@ -15,6 +15,8 @@ bargap:  The spacing between each bar in the plot
 
 showlegend:  Set to True if the plot legend is to be included in the plot, False otherwise
 
+legend_titles:  The title to the legend, if set
+
 legend_orientation:  Set to 'h' for horizontal, 'v' for vertical orientation for the legend
 
 plot_bgcolor:  The colors to use in the plot's background 
@@ -25,15 +27,17 @@ image_name:  A descriptive name describing this plot.
 
 scale:  An integer value depicting XXXXXX????
 
-opacity:  An integer value (1-???) to set the level of opacity of the plot.  Higher values indicate higher levels of opacity.
+opacity:  An integer value (1-???) to set the level of opacity of the plot.  Do higher values indicate higher levels of opacity???
 
 orientation: The orientation of the plot, set to 'v' for vertical, 'h' for horizontal
 
-border_width = 2
+border_width = width of the border, in pixels
 
-xanchor = center
+xanchor = The position of the x anchor: center, bottom, top
 
-yanchor = top
+yanchor = The position of the y anchor: center, bottom, top
+
+marker_color = The name of the color to assign to the marker in the plot
 
 
 
@@ -79,7 +83,7 @@ linewidth:  The width of the x-axis line, in pixels
 
 text:
 
-text_font_family:
+text_font_family: The name of the font family to be applied to any text in the plot
 
 text_font_size:
 
@@ -122,8 +126,4 @@ text_font_color:  The color of the text of the y-axis of the plot.  The name of 
 
 **[xbins]**
 
-start:
-
-end:
-
-size: 10
+size: The size of the bins in pixels
