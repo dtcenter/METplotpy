@@ -39,6 +39,7 @@ class MetPlot:
         self.figure = None
         self.remove_file()
 
+
     def get_image_format(self):
         """Reads the image format type from user provided image name.
         Uses file extension as a type. If the file extension is not valid -
