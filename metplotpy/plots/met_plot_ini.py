@@ -5,9 +5,9 @@ Base class for METplotpy plots that use INI config files.
 __author__ = "Minna Win adapted from Tatiana Burek's met_plot.py"
 __email__ = 'met_help@ucar.edu'
 
-from util.config_launcher import METplotpyConfig
 
 
+import os
 
 class MetPlotIni:
     """A class that provides methods for building Plotly plot's common features
@@ -26,9 +26,9 @@ class MetPlotIni:
            Removes the old image it it exists
 
         Args:
-            parameters - dictionary representation of user defined parameters derived from
-                         the INI style configuration file (parameters can be represented
-                         by a configuration object).
+            parameters - dictionary containing default and user defined parameters
+            defaults   - dictionary containing Metplotpy default parameters
+
         """
 
         # merge user defined parameters into defaults if they exist
@@ -39,6 +39,7 @@ class MetPlotIni:
 
         self.figure = None
         self.remove_file()
+
 
     def get_image_format(self):
         """Reads the image format type from user provided image name.
@@ -75,16 +76,16 @@ class MetPlotIni:
         """
 
         current_legend = dict(
-            x=self.get_config_value('legend', 'x'),  # x-position
-            y=self.get_config_value('legend', 'y'),  # y-position
+            x=float(self.get_config_value('legend', 'x')),  # x-position
+            y=float(self.get_config_value('legend', 'y')),  # y-position
             font=dict(
-                family=self.get_config_value('legend', 'font', 'family'),  # font family
-                size=self.get_config_value('legend', 'font', 'size'),  # font size
-                color=self.get_config_value('legend', 'font', 'color'),  # font color
+                family=self.get_config_value('legend', 'font_family'),  # font family
+                size=int(self.get_config_value('legend', 'font_size')),  # font size
+                color=self.get_config_value('legend', 'font_color'),  # font color
             ),
             bgcolor=self.get_config_value('legend', 'bgcolor'),  # background color
-            bordercolor=self.get_config_value('legend', 'bordercolor'),  # border color
-            borderwidth=self.get_config_value('legend', 'borderwidth'),  # border width
+            bordercolor=self.get_config_value('legend', 'border_color'),  # border color
+            borderwidth=int(self.get_config_value('legend', 'border_width')),  # border width
             xanchor=self.get_config_value('legend', 'xanchor'),  # horizontal position anchor
             yanchor=self.get_config_value('legend', 'yanchor')  # vertical position anchor
         )
@@ -100,9 +101,7 @@ class MetPlotIni:
             - dictionary used by Plotly to build the title
         """
         current_title = dict(
-            # How to get the title text from the config file
-            # text=self.get_config_value('title'),  # plot's title
-            text = self.get_config_value('config', 'title'),
+            text=self.get_config_value('config', 'title'),  # plot's title
             # Sets the container `x` refers to. "container" spans the entire `width` of the plot.
             # "paper" refers to the width of the plotting area only.
             xref="paper",
@@ -120,12 +119,11 @@ class MetPlotIni:
             - dictionary used by Plotly to build the x-axis
         """
         current_xaxis = dict(
-            # x-axis line color
-            linecolor = self.get_config_value('xaxis', 'linecolor'),
+            linecolor = self.get_config_value('xaxis', 'linecolor'),  # x-axis line color
             # whether or not a line bounding x-axis is drawn
-            showline = self.get_config_value('xaxis', 'showline'),
-            # width (in px) of x-axis line
-            linewidth = self.get_config_value('xaxis', 'linewidth')
+            showline = self.convert_str_to_bool(self.get_config_value('xaxis', 'showline')),
+            # width (in px) of x-axis line, convert to int
+            linewidth = int(self.get_config_value('xaxis', 'linewidth'))
         )
         return current_xaxis
 
@@ -141,26 +139,29 @@ class MetPlotIni:
         current_yaxis = dict(
             # y-axis line color
             linecolor = self.get_config_value('yaxis', 'linecolor'),
-            # width (in px) of y-axis line
-            linewidth = self.get_config_value('yaxis', 'linewidth'),
-            # whether or not a line bounding y-axis is drawn
-            showline = self.get_config_value('yaxis', 'showline'),
-            # whether or not grid lines are drawn
-            showgrid = self.get_config_value('yaxis', 'showgrid'),
+            # width (in px) of y-axis line, convert to int
+            linewidth = int(self.get_config_value('yaxis', 'linewidth')),
+            # whether or not a line bounding y-axis is drawn, convert from string to bool value
+            showline = self.convert_str_to_bool(self.get_config_value('yaxis', 'showline')),
+            # whether or not grid lines are drawn, convert to bool
+            showgrid = self.convert_str_to_bool(self.get_config_value('yaxis', 'showgrid')),
             # whether ticks are drawn or not.
             ticks = self.get_config_value('yaxis', 'ticks'),
+            # ticks = self.convert_str_to_bool(self.get_config_value('yaxis', 'ticks')),
             # Sets the tick width (in px).
-            tickwidth = self.get_config_value('yaxis', 'ticks_tickwidth'),
+            tickwidth = int(self.get_config_value('yaxis', 'ticks_tickwidth')),
             # Sets the tick color.
             tickcolor=self.get_config_value('yaxis', 'tickcolor'),
             # the width (in px) of the grid lines
-            gridwidth=self.get_config_value('yaxis', 'gridwidth'),
+            gridwidth=int(self.get_config_value('yaxis', 'gridwidth')),
             # the color of the grid lines
             gridcolor=self.get_config_value('yaxis', 'gridcolor')
         )
 
         # Sets the range of the range slider. defaults to the full y-axis range
-        y_range = self.get_config_value('yaxis', 'range')
+        y_range_start = self.get_config_value('yaxis', 'range_start')
+        y_range_end = self.get_config_value('yaxis', 'range_end')
+        y_range = [y_range_start, y_range_end]
         if y_range is not None:
             current_yaxis['range'] = y_range
         return current_yaxis
@@ -185,7 +186,7 @@ class MetPlotIni:
             yref="paper",  # the annotation's y coordinate axis
             font=dict(
                 family=self.get_config_value('xaxis_title', 'font_family'),
-                size=self.get_config_value('xaxis_title', 'font_size'),
+                size=int(self.get_config_value('xaxis_title', 'font_size')),
                 color=self.get_config_value('xaxis_title', 'font_color'),
             )
         )
@@ -211,7 +212,7 @@ class MetPlotIni:
             yref="paper",  # the annotation's y coordinate axis
             font=dict(
                 family=self.get_config_value('yaxis_title', 'font_family'),
-                size=self.get_config_value('yaxis_title', 'font_size'),
+                size=int(self.get_config_value('yaxis_title', 'font_size')),
                 color=self.get_config_value('yaxis_title', 'font_color'),
             )
         )
@@ -240,16 +241,21 @@ class MetPlotIni:
         """
 
         config = self.parameters
-        all_items = self.parameters.items(section_of_interest)
+        all_items = self.parameters.items()
 
         # Get a list of (option, value) tuple representing the key-value pairs found in the
         # section of interest.
         for item in all_items:
-            if item[0] == item_of_interest:
-                return item[1]
+            if item[0] == section_of_interest:
+                # Retrieve the keys for this section
+                keys = config[item[0]].keys()
+                for key in keys:
+                    if key == item_of_interest:
+                        return config[item[0]][key]
         else:
             # If we got here, we didn't find the item_of_interest in the configuration file
-            raise Exception("The item of interest was not found in the configuration file.  Please check your configuration file.")
+            # set the value to None so that the default value will be used instead.
+            config[section_of_interest][item_of_interest] = None
 
 
     def _get_nested(self, data, args):
@@ -318,7 +324,7 @@ class MetPlotIni:
     def remove_file(self):
         """Removes previously made  image file .
         """
-        image_name = self.get_config_value('image_name')
+        image_name = self.get_config_value('config', 'image_name')
 
         # remove the old file if it exist
         if os.path.exists(image_name):
@@ -336,4 +342,37 @@ class MetPlotIni:
             self.figure.show()
         else:
             print("Oops!  The figure was not created. Can't show")
+
+    def convert_str_to_bool(self, str):
+        """ Converts a string value of true/True/etc and false/False/etc to the corresponding
+            boolean values.  All values in the INI config file are read in as strings.  Some
+            of these values need to be converted to boolean.
+
+            Input:
+                @param str:  The input string to convert to it's corresponding boolean value
+
+            Return:
+               a boolean value: True or False
+        """
+        if str.upper() == 'TRUE':
+            return True
+        elif str.upper() == 'FALSE':
+            return False
+        else:
+            raise ValueError("True or False expected but not set, please check configuration file.")
+
+    def is_conf_missing_section(self, section_of_interest):
+        """ Checks if the configuration file is missing the section of interest.
+            If the section of interest is missing, we will get an error because the
+            configuration is a dictionary, and the section of interest is the outer key in
+            the configuration dictionary.
+
+            Input:
+            @param section_of_interest:  The section (outer key) of a dictionary representation of a configuration
+                                         file.
+
+            Returns:
+            boolean value True if the section of interest is missing, False otherwise
+
+        """
 
