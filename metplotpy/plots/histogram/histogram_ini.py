@@ -7,9 +7,10 @@ __email__ = 'met_help@ucar.edu'
 import os
 import plotly.graph_objects as go
 import pandas as pd
-import util.config_metplotpy as config_metplotpy
-from metplotpy.plots.met_plot_ini import MetPlotIni
-
+import numpy as np
+from plots.met_plot_ini import MetPlotIni
+import config_metplus
+import util.config_utils as cu
 
 class HistogramIni(MetPlotIni):
     """A class that creates histogram using Plotly using a two dimensional data array
@@ -33,18 +34,25 @@ class HistogramIni(MetPlotIni):
             data       - two dimensional data array
         """
 
-        # read defaults stored in YAML formated file into the dictionary
-        location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-        # with open(os.path.join(location, 'histogram_defaults.yml'), 'r') as stream:
-        #     try:
-        #         defaults = yaml.load(stream, Loader=yaml.FullLoader)
-        #     except yaml.YAMLError as exc:
-        #         print(exc)
-        #
-        # # init common layout
-        # super().__init__(parameters, defaults)
-        # # create figure
-        # self.figure = self._create_figure(data)
+        # read defaults stored in INI formatted file into the dictionary
+        # location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+        # location of the histogram_defaults.conf file
+        if os.environ['METPLOTPY_BASE']:
+            location = os.path.join(os.environ['METPLOTPY_BASE'], "plots/configs")
+        else:
+            location = os.path.realpath(os.path.join(os.getcwd(),"../../metplotpy/plots/configs"))
+
+
+        # a list of default configs is the expected input arg by config_metplus.setup(). Here, we
+        # create a list of one default config file for the histogram plot.
+        histogram_default_path = [os.path.join(location, 'histogram_defaults.conf')]
+        histo_default_config = config_metplus.setup(histogram_default_path)
+        histogram_default = cu.get_config_dict(histo_default_config)
+
+        # init common layout
+        super().__init__(histogram_default, parameters)
+        # create figure
+        self.figure = self._create_figure(data)
 
     def _create_figure(self, data):
         """Draws histogram data on the layout
@@ -59,50 +67,55 @@ class HistogramIni(MetPlotIni):
         # init Figure
         fig = go.Figure()
 
-        # create layout with title, axises, legend ...
-        fig.update_layout(
-            title=self.get_title(),
-            xaxis=self.get_xaxis(),
-            yaxis=self.get_yaxis(),
-            # gap between bars of adjacent location coordinates
-            bargap=self.get_config_value('bargap'),
-            # bargroupgap=0.1  # gap between bars of the same location coordinates\
-            showlegend=self.get_config_value('showlegend'),
-            legend_orientation=self.get_config_value('legend_orientation'),
-            legend=self.get_legend(),
-            plot_bgcolor=self.get_config_value('plot_bgcolor'),
-            height=self.get_config_value('height'),
-            width=self.get_config_value('width'),
-            annotations=[
-                self.get_xaxis_title(),
-                self.get_yaxis_title()
-            ],
-        )
-        # calculate bins_size
-        xbins_size = self._get_bins_size()
+        try:
+            # create layout with title, axises, legend ...
+            fig.update_layout(
+                title=self.get_title(),
+                xaxis=self.get_xaxis(),
+                yaxis=self.get_yaxis(),
+                # gap between bars of adjacent location coordinates
+                bargap=float(self.get_config_value('config','bargap')),
+                # bargroupgap=0.1  # gap between bars of the same location coordinates\
+                showlegend=self.convert_str_to_bool(self.get_config_value('config', 'show_legend')),
+                legend_orientation=self.get_config_value('legend', 'orientation'),
+                legend=self.get_legend(),
+                plot_bgcolor=self.get_config_value('config', 'plot_bgcolor'),
+                height=int(self.get_config_value('config', 'height')),
+                width=int(self.get_config_value('config', 'width')),
+                annotations=[
+                    self.get_xaxis_title(),
+                    self.get_yaxis_title()
+                ],
+            )
+            # calculate bins_size
+            xbins_size = self._get_bins_size()
 
-        # add histogram's markers
-        for i, marker_data in enumerate(data):
-            fig.add_trace(go.Histogram(
-                x=marker_data,
-                histnorm=self.get_config_value('histnorm'),
-                name=self._get_marker_title(i),  # name used in legend and hover labels
-                xbins=dict(  # bins used for histogram
-                    start=self.get_config_value('xbins', 'start'),
-                    end=self.get_config_value('xbins', 'end'),
-                    size=xbins_size
-                ),
-                marker_color=self._get_marker_color(i),
-                opacity=self.get_config_value('opacity'),
-                showlegend=self.get_config_value('showlegend'),
-                marker=dict(
-                    line=dict(
-                        width=self._get_line_width(i)
-                    )
-                ),
-                orientation=self.get_config_value('orientation'),
+            # add histogram's markers
+            for i, marker_data in enumerate(data):
+                fig.add_trace(go.Histogram(
+                    x=marker_data,
+                    histnorm=self.get_config_value('config', 'histnorm'),
+                    name=self._get_marker_title(i),  # name used in legend and hover labels
+                    xbins=dict(  # bins used for histogram
+                        start=self.get_config_value('xbins', 'start'),
+                        end=self.get_config_value('xbins', 'end'),
+                        size=xbins_size
+                    ),
+                    marker_color=self._get_marker_color(i),
+                    opacity=int(self.get_config_value('config', 'opacity')),
+                    showlegend=self.convert_str_to_bool(self.get_config_value('config', 'show_legend')),
+                    marker=dict(
+                        line=dict(
+                            width=self._get_line_width(i)
+                        )
+                    ),
+                    orientation=self.get_config_value('config', 'orientation'),
 
-            ))
+                ))
+        except ValueError as ex:
+            raise ValueError(
+                "An exception of type {0} occurred. Check your data or config file values."
+                    .format(type(ex).__name__))
 
         return fig
 
@@ -127,10 +140,11 @@ class HistogramIni(MetPlotIni):
         Returns:
             name of the marker
         """
-        legend_titles = self.get_config_value('legend_titles')
+        legend_titles = self.get_config_value('config', 'legend_titles')
         if legend_titles is None or len(legend_titles) <= i:
             return self.DEFAULT_TITLE_FORMAT.format(i + 1)
-        return self.get_config_value('legend_titles')[i]
+        return self.get_config_value('config', 'legend_titles')[i]
+
 
     def _get_line_width(self, i):
         """Returns user defined marker line width or a default value.
@@ -140,7 +154,35 @@ class HistogramIni(MetPlotIni):
         Returns:
             line width
         """
-        line_width = self.get_config_value('line_width')
+        line_width = self.get_config_value('config', 'line_width')
+        if line_width is None or len(line_width) <= i:
+            return self.DEFAULT_LINE_WIDTH
+
+        return line_width[i]
+
+    def _get_xline_width(self, i):
+        """Returns user defined marker line width or a default value.
+
+        Args:
+            i - the index if the marker data in the input array
+        Returns:
+            line width
+        """
+        line_width = self.get_config_value('xaxis', 'line_width')
+        if line_width is None or len(line_width) <= i:
+            return self.DEFAULT_LINE_WIDTH
+
+        return line_width[i]
+
+    def _get_yline_width(self, i):
+        """Returns user defined marker line width or a default value.
+
+        Args:
+            i - the index if the marker data in the input array
+        Returns:
+            line width
+        """
+        line_width = self.get_config_value('yaxis', 'line_width')
         if line_width is None or len(line_width) <= i:
             return self.DEFAULT_LINE_WIDTH
 
@@ -154,36 +196,47 @@ class HistogramIni(MetPlotIni):
         Returns:
             color
         """
-        hist_marker_colors = self.get_config_value('colors')
+        hist_marker_colors = self.get_config_value('config', 'marker_color')
         if hist_marker_colors is None or len(hist_marker_colors) <= i:
             return self.DEFAULT_COLOR
-        return self.get_config_value('colors')[i]
-
-def load_default_config():
-    """ Load the default configuration file """
+        return self.get_config_value('config', 'marker_color')[i]
 
 
 def main():
     """ Example how to use Histogram"""
     # open user's config file(s) via METplus and produtil modules that utilize
-    # Python's ConfigParser.
-    docs = config_metplotpy.setup()
+    # Python's ConfigParser. Use the default histogram default
+    config_list = ['../configs/histogram_defaults.conf']
+    config = config_metplus.setup(config_list)
+    config_dict = cu.get_config_dict(config)
+
 
     # read user's data from file and arrange it in the array
-    input_data_file = "/Users/tatiana/Rscript/test_data.txt"
-    input_data = pd.read_csv(input_data_file, header=[0], sep=' ')
-    data = []
-    data.append(input_data['FCST'])
-    data.append(input_data['OBS'])
+    # input_data_file = "/Users/tatiana/Rscript/test_data.txt"
+    # input_data = pd.read_csv(input_data_file, header=[0], sep=' ')
+    # data = []
+    # data.append(input_data['FCST'])
+    # data.append(input_data['OBS'])
+    data = [np.random.randn(500), np.random.randn(500) + 1]
 
-    # creatye a histogram
-    histogram = HistogramIni(docs, data)
-    # img_bytes = histogram.get_img_bytes()
+    # create a histogram
+    try:
+        histogram = HistogramIni(config_dict, data)
+        # img_bytes = histogram.get_img_bytes()
 
-    # save to file
-    histogram.save_to_file()
-    # histogram.show()
+        # save to file
+        histogram.save_to_file()
+        # histogram.show()
+    except ValueError as v_error:
+        print(v_error)
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    data = [np.random.randn(500), np.random.randn(500) + 1]
+    config_list = ['../configs/histogram_defaults.conf']
+    config = config_metplus.setup(config_list)
+    config_dict = cu.get_config_dict(config)
+
+    histogram = HistogramIni(config_dict, dat       a)
+    histogram.show_in_browser()
