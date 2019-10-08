@@ -8,7 +8,7 @@ plot_bgcolor: rgba(0,0,0,0)
 #['', 'percent', 'probability', 'density', 'probability','density']
 histnorm:
 
-image_name: histogram
+image_name: histogram.png
 scale: 2
 
 opacity: 1
