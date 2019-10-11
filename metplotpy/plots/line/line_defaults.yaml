@@ -1,0 +1,19 @@
+---
+title: Line plot of point data
+connect_data_gaps: True
+xaxis_title: x-values
+yaxis_title: y-values
+trace1:
+  name: Line 1
+  line:
+    color: brickred
+    width: 4
+    dash:
+
+trace2:
+  name: Line 2
+  line:
+    color: green
+    width: 4
+    dash: dash
+

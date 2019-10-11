@@ -8,8 +8,9 @@ import os
 import plotly.graph_objects as go
 import yaml
 import pandas as pd
+import numpy as np
 
-from metplotpy.plots.met_plot import MetPlot
+from plots.met_plot import MetPlot
 
 
 class Histogram(MetPlot):
@@ -203,4 +204,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    data = [np.random.randn(500), np.random.randn(500) + 1]
+    histogram = Histogram(None, data)
+    histogram.show_in_browser()
