@@ -1,8 +1,10 @@
 ---
 image_name: lineplot.png
 title: Line plot of point data (APCP)
-xaxis_title: X
-yaxis_title: accumulated precip amounts (cm)
+xaxis:
+  title: X
+yaxis:
+  title: accumulated precip amounts (cm)
 lines:
   - name: Data1 Trace
     data_file: /Users/minnawin/feature_19_line/METplotpy/metplotpy/plots/line/line1_plot_data.txt
