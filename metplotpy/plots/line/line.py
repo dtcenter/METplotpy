@@ -8,11 +8,18 @@ import os
 import plotly.graph_objects as go
 import yaml
 import pandas as pd
-import numpy as np
 from plots.met_plot import MetPlot
 
 class Line(MetPlot):
-    def __init__(self, parameters, data1, data2):
+    """  Generates a Plotly line plot for 1 or more traces (lines),
+         where each line is represented by a text point data file.
+         A default config file for two lines is provided, along with
+         sample/dummy data (line1_plot_data.txt and line2_plot_data.txt).
+         A setting is over-ridden in the default configuration file if
+         it is defined in the custom configuration file.
+
+    """
+    def __init__(self, parameters):
         """ Creates a line plot consisting of one or more lines (traces), based on
             settings indicated by the parameters.
 
@@ -27,50 +34,73 @@ class Line(MetPlot):
 
         # init common layout
         super().__init__(parameters, defaults)
-        # create figure
-        self.figure = self._create_figure(data1, data2)
 
-    def _create_figure(self, data1, data2):
-        """ Create a line plot"""
+        # create figure
+        self._create_figure()
+
+    def _get_all_lines(self):
+        """ Retrieve a list of all lines.  Each line is a dictionary comprised of
+            key-values that represent the necessary settings to create a line plot.
+
+            Returns:
+                lines :  a list of dictionaries representing settings for each line plot
+        """
+
+        return self.get_config_value('lines')
+
+
+    def _create_figure(self):
+        """ Create a line plot from default and custom parameters"""
         fig = go.Figure()
 
-        # Data comprising the first line
-        line1_x = data1['x']
-        print(line1_x)
-        line1_y = data1['y']
-        fig.add_trace(go.Scatter(x=line1_x, y=line1_y, name='Line1', line=dict(color='firebrick', width=4)))
+        # Generate each trace/line based on settings in the default and
+        # custom parameters specified in the YAML files.
+        lines = self._get_all_lines()
+        title = self.parameters['title']
+        x_axis_title = self.parameters['xaxis_title']
+        y_axis_title = self.parameters['yaxis_title']
+        connect_gap = self.parameters['connect_data_gaps']
+        for line in lines:
+            name = line['name']
+            input_data_file = line['data_file']
+            data = pd.read_csv(input_data_file, delim_whitespace=True)
+            color = line['color']
+            width = line['width']
+            dash = line['dash']
+            line_x = data['x']
+            line_y = data['y']
+            fig.add_trace(go.Scatter(
+                x=line_x, y=line_y, name=name, connectgaps=connect_gap,
+                line=dict(color=color, width=width, dash=dash)
+            ))
 
-        # Data comprising the second line
-        line2_x = data2['x']
-        line2_y = data2['y']
-        fig.add_trace(go.Scatter(x=line2_x, y=line2_y, name='Line2', connectgaps=True,line=dict(color='green', width=4, dash='dash')))
 
-
-        # Edit the layout
-        fig.update_layout(title='Sample data', xaxis_title="x-values", yaxis_title='y-values')
+        # Edit the final layout
+        fig.update_layout(title=title, xaxis_title=x_axis_title, yaxis_title=y_axis_title)
 
         fig.show()
 
 
 def main():
-    # read user's data from file and arrange it in the array
-    input_data_file1 = "/Users/minnawin/feature_19_line/METplotpy/metplotpy/plots/line/line1_plot_data.txt"
-    data1 = pd.read_csv(input_data_file1, delim_whitespace=True)
-
-    # Dropping rows with NaN:
-    data1 = data1.dropna()
-    print(data1)
-
-    input_data_file2 = "/Users/minnawin/feature_19_line/METplotpy/metplotpy/plots/line/line2_plot_data.txt"
-    data2 = pd.read_csv(input_data_file2, delim_whitespace=True)
-    data2_none = data2.where((pd.notnull(data2)), None)
-    data2_dropna = data2.dropna()
-    print(data2_none)
-
-    lplot = Line(data1, data2_none)
-    # lplot = Line(data1, data2_dropna)
+    """
+        Generates a sample, two-trace line plot using default and custom config files,
+        and sample data found in this directory.  The location of the input
+        data is defined in either the default or custom config file.
 
 
+    """
+
+    # Generate a sample two-trace line plot on
+    # example data found in this directory.
+    # Use the custom config file and default config files
+    # found in this directory.
+    with open("./custom_line.yaml", 'r') as stream:
+        try:
+            docs = yaml.load(stream, Loader=yaml.FullLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    Line(docs)
 
 
 if __name__ == "__main__":
