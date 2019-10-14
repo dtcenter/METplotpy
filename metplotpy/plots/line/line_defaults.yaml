@@ -1,8 +1,11 @@
 ---
+# Values specific to line plot
 title: Line plot of point data
 connect_data_gaps: True
-xaxis_title: x-values
-yaxis_title: y-values
+xaxis:
+  title: x-values
+yaxis:
+  title: y-values
 lines:
   - name: Line 1
     data_file: ./line1_plot_data.txt
