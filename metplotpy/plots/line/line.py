@@ -60,8 +60,8 @@ class Line(MetPlot):
         # custom parameters specified in the YAML files.
         lines = self._get_all_lines()
         title = self.parameters['title']
-        x_axis_title = self.parameters['xaxis_title']
-        y_axis_title = self.parameters['yaxis_title']
+        x_axis_title = self.parameters['xaxis']['title']
+        y_axis_title = self.parameters['yaxis']['title']
         connect_gap = self.parameters['connect_data_gaps']
 
         # Retrieve the settings for the n-lines/traces specified
