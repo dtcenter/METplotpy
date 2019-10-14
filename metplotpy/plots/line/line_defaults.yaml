@@ -1,7 +1,7 @@
 ---
 # Values specific to line plot
 title: Line plot of point data
-connect_data_gaps: True
+connect_data_gaps: true
 xaxis:
   title: x-values
 yaxis:
@@ -18,4 +18,3 @@ lines:
     color: black
     width: 1
     dash:
-
