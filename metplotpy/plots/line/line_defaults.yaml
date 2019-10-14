@@ -3,17 +3,16 @@ title: Line plot of point data
 connect_data_gaps: True
 xaxis_title: x-values
 yaxis_title: y-values
-trace1:
-  name: Line 1
-  line:
-    color: brickred
-    width: 4
+lines:
+  - name: Line 1
+    data_file: ./line1_plot_data.txt
+    color: black
+    width: 1
     dash:
 
-trace2:
-  name: Line 2
-  line:
-    color: green
-    width: 4
-    dash: dash
+  - name: Line 2
+    data_file: ./line2_plot_data.txt
+    color: black
+    width: 1
+    dash:
 
