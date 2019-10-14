@@ -41,9 +41,11 @@ class Line(MetPlot):
     def _get_all_lines(self):
         """ Retrieve a list of all lines.  Each line is a dictionary comprised of
             key-values that represent the necessary settings to create a line plot.
+            Each line has an associated text data file containing point data.
 
             Returns:
-                lines :  a list of dictionaries representing settings for each line plot
+                lines :  a list of dictionaries representing settings for each line plot.
+
         """
 
         return self.get_config_value('lines')
@@ -51,6 +53,7 @@ class Line(MetPlot):
 
     def _create_figure(self):
         """ Create a line plot from default and custom parameters"""
+
         fig = go.Figure()
 
         # Generate each trace/line based on settings in the default and
@@ -60,6 +63,9 @@ class Line(MetPlot):
         x_axis_title = self.parameters['xaxis_title']
         y_axis_title = self.parameters['yaxis_title']
         connect_gap = self.parameters['connect_data_gaps']
+
+        # Retrieve the settings for the n-lines/traces specified
+        # in the default or custom config file.
         for line in lines:
             name = line['name']
             input_data_file = line['data_file']
@@ -75,7 +81,7 @@ class Line(MetPlot):
             ))
 
 
-        # Edit the final layout
+        # Edit the final layout, set the plot title and axis labels
         fig.update_layout(title=title, xaxis_title=x_axis_title, yaxis_title=y_axis_title)
 
         fig.show()
@@ -83,17 +89,14 @@ class Line(MetPlot):
 
 def main():
     """
-        Generates a sample, two-trace line plot using default and custom config files,
-        and sample data found in this directory.  The location of the input
-        data is defined in either the default or custom config file.
-
-
+        Generates a sample, default, two-trace line plot using a combination of
+        default and custom config files on sample data found in this directory.
+        The location of the input data is defined in either the default or
+        custom config file.
     """
 
-    # Generate a sample two-trace line plot on
-    # example data found in this directory.
-    # Use the custom config file and default config files
-    # found in this directory.
+    # Retrieve the contents of the custom config file to over-ride
+    # or augment settings defined by the default config file.
     with open("./custom_line.yaml", 'r') as stream:
         try:
             docs = yaml.load(stream, Loader=yaml.FullLoader)
