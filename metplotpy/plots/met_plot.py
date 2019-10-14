@@ -22,7 +22,7 @@ class MetPlot:
 
     def __init__(self, parameters, defaults):
         """Inits MetPlot with user defined and default dictionaries.
-           Removes the old image it it exists
+           Removes the old image if it exists
 
         Args:
             parameters - dictionary containing user defined parameters
