@@ -60,6 +60,21 @@ class Line(MetPlot):
 
         return self.get_config_value('lines')
 
+    def get_xaxis_title(self):
+        """ Override the method in the parent class, MetPlot, as this is located
+            in a different location in the config file.
+        """
+
+        return self.parameters['xaxis']['title']
+
+
+    def get_yaxis_title(self):
+        """ Override the method in the parent class, MetPlot, as this is located
+            in a different location in the config file.
+        """
+
+        return self.parameters['yaxis']['title']
+
 
     def _create_figure(self):
         """ Create a line plot from default and custom parameters"""
@@ -70,8 +85,8 @@ class Line(MetPlot):
         # custom parameters specified in the YAML files.
         lines = self._get_all_lines()
         title = self.parameters['title']
-        x_axis_title = self.parameters['xaxis']['title']
-        y_axis_title = self.parameters['yaxis']['title']
+        x_axis_title = self.get_xaxis_title()
+        y_axis_title = self.get_yaxis_title()
         connect_gap = self.parameters['connect_data_gaps']
 
         # Retrieve the settings for the n-lines/traces specified
