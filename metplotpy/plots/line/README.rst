@@ -12,6 +12,19 @@ Each line (also referred to as 'trace') must have an accompanying setting in the
 The default config file has dummy data for two lines and provides an example of a simple line plot with both lines
 possessing the same text color, width, and line style.
 
+** How to Run **
+
+Set your *PYTHONPATH* to path-where-source-is-located/METplotpy/metplotpy and
+
+*METPLOTPY_BASE* to path-where-source-is-located/METPlotpy
+
+There are two sample data files and a sample custom config file already available in the directory
+where the line.py script resides.
+
+Then from the command line, run python line.py
+
+In your default browser, you will see a sample line plot containing two lines.
+
 **Required configuration values:**
 
 *title*: Title of the plot
@@ -39,12 +52,12 @@ the data_file, color, width, and dash indentation to match that of the *-name*.
 
 *-name*: The nth line corresponding to the nth data file.
 
-*data_file* : The full path to the nth data file corresponding to the nth line/trace to be plotted
+*data_file*: The full path to the nth data file corresponding to the nth line/trace to be plotted
 
 *color*: The specific name of the color to be applied to the line (e.g. brickred, black, blue, red)
 
-*width*: The width of the line, in pixels.  An integer value greater or equal to 0, with larger numbers indicating
-    thicker line.
+*width*: The width of the line, in pixels.  An integer value greater or equal to 0,
+ wlarger numbers indicate a thicker line.
 
-*dash*: The style of the line connecting the data points, if left empty/un-specified, a solid
+*dash*: The style of the line connecting the data points, if left empty or is unspecified, a solid
     line will be drawn.  Other options: dash, dot
