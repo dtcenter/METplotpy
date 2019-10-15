@@ -38,7 +38,11 @@ class Histogram(MetPlot):
         """
 
         # read defaults stored in YAML formatted file into the dictionary
-        location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+        if 'METPLOTPY_BASE' in os.environ:
+            location = os.path.join(os.environ['METPLOTPY_BASE'], 'metplotpy/plots/config')
+        else:
+            location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
         with open(os.path.join(location, 'histogram_defaults.yml'), 'r') as stream:
             try:
                 defaults = yaml.load(stream, Loader=yaml.FullLoader)
