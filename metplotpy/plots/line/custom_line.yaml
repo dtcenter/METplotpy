@@ -8,7 +8,7 @@ yaxis:
 lines:
   - name: Data1 Trace
     data_file:
-      /Users/minnawin/feature_19_line/METplotpy/metplotpy/plots/line/line1_plot_data.txt
+      ./line1_plot_data.txt
     color: blue
     width: 2
     dash:
