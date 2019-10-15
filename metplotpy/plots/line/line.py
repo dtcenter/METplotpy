@@ -25,7 +25,10 @@ class Line(MetPlot):
 
         """
         # read defaults stored in YAML formatted file into the dictionary
-        location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+        if 'METPLOTPY_BASE' in os.environ:
+            location = os.path.join(os.environ['METPLOTPY_BASE'], 'config')
+        else:
+            location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
         with open(os.path.join(location, 'line_defaults.yaml'), 'r') as stream:
             try:
                 defaults = yaml.load(stream, Loader=yaml.FullLoader)
@@ -37,6 +40,13 @@ class Line(MetPlot):
 
         # create figure
         self._create_figure()
+
+    def __repr__(self):
+        """ Implement repr which can be useful for debugging this
+            class.
+        """
+
+        return f'Line({self.parameters!r})'
 
     def _get_all_lines(self):
         """ Retrieve a list of all lines.  Each line is a dictionary comprised of
@@ -104,6 +114,7 @@ def main():
             print(exc)
 
     Line(docs)
+
 
 
 if __name__ == "__main__":
