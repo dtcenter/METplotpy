@@ -26,7 +26,7 @@ class Line(MetPlot):
         """
         # read defaults stored in YAML formatted file into the dictionary
         if 'METPLOTPY_BASE' in os.environ:
-            location = os.path.join(os.environ['METPLOTPY_BASE'], 'config')
+            location = os.path.join(os.environ['METPLOTPY_BASE'], 'metplotpy/plots/config')
         else:
             location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
         with open(os.path.join(location, 'line_defaults.yaml'), 'r') as stream:
