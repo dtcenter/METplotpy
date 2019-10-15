@@ -78,8 +78,13 @@ class Line(MetPlot):
         # in the default or custom config file.
         for line in lines:
             name = line['name']
+
+            # Extract the data defined in the custom config file
+            # A list of 1..n entries, with each data file corresponding
+            # to a line/trace on the plot.
             input_data_file = line['data_file']
             data = pd.read_csv(input_data_file, delim_whitespace=True)
+
             color = line['color']
             width = line['width']
             dash = line['dash']
