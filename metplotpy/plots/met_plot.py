@@ -26,8 +26,8 @@ class MetPlot:
            Removes the old image if it exists
 
         Args:
-            @parameters - dictionary containing user defined parameters
-            @default_conf_filename - the name of the default config file
+            @param parameters - dictionary containing user defined parameters
+            @param default_conf_filename - the name of the default config file
                                      for the plot type that is a subclass.
         """
 
@@ -197,7 +197,7 @@ class MetPlot:
          from users and default parameters
         If users parameters dictionary doesn't have needed values - use defaults
 
-         Args:
+        Args:
 
         Returns:
             - dictionary used by Plotly to build the y-axis label title as annotation
@@ -223,7 +223,7 @@ class MetPlot:
         Looks for parameter in the user parameter dictionary
 
         Args:
-            *args - chain of keys that defines a key to the parameter
+            @ param args - chain of keys that defines a key to the parameter
 
         Returns:
             - a value for the parameter of None
@@ -321,7 +321,7 @@ class MetPlot:
         """Returns the dimension of the array
 
         Args:
-            @data - input array
+            @param data - input array
         Returns:
             - an integer representing the array's dimension or None
         """
