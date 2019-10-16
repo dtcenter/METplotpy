@@ -29,8 +29,12 @@ class MetPlot:
             @param parameters - dictionary containing user defined parameters
             @param default_conf_filename - the name of the default config file
                                      for the plot type that is a subclass.
+
+
         """
 
+
+        # Determine location of the default YAML config files and then
         # read defaults stored in YAML formatted file into the dictionary
         if 'METPLOTPY_BASE' in os.environ:
             location = os.path.join(os.environ['METPLOTPY_BASE'], 'plots/config')
