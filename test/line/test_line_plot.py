@@ -3,16 +3,19 @@ import os
 import yaml
 from plots.line.line import Line
 
+""" Tests the line.py script which generates the Plotly line plot given the
+    settings in the line_defaults.yaml and/or user-defined custom config file
+    
+    **********************************************************************
+    *NOTE:  in order for the tests to function properly (ie. utilize the
+           appropriate default config file, set the METPLOTPY_BASE dir to:
+           <install_dir>/METplotpy/metplotpy 
+"""
 
 @pytest.fixture(scope='module')
 def line():
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    if 'METPLOTPY_BASE' in os.environ:
-        location = os.path.join(os.environ['METPLOTPY_BASE'], 'test/line')
-    else:
-        location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-    with open(os.path.join(location, 'test_custom_line.yaml'), 'r') as stream:
+    full_path_conf = os.path.join(os.getcwd(), 'test_custom_line.yaml')
+    with open(full_path_conf, 'r') as stream:
         try:
             docs = yaml.load(stream, Loader=yaml.FullLoader)
         except yaml.YAMLError as exc:
@@ -20,11 +23,12 @@ def line():
 
     return Line(docs)
 
+
+
 def test_config_file(line):
     """
         Verifies that the test_custom_line.yaml config file is read in as
         expected.
-        :param line:
 
     """
 
@@ -66,6 +70,6 @@ def test_plot_created(line):
     # Using the fixture, which is based on the settings
     # (and data) specified in the test_custom_line.yaml
     # config file.
-    assert (line._create_figure() == None)
+    assert (line._create_figure())
 
 
