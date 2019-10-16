@@ -31,26 +31,16 @@ class Histogram(MetPlot):
         Creates a Plotly histogram figure using the data
 
         Args:
-            parameters - dictionary containing user defined parameters
-            data       - two dimensional data array
+            @param parameters - dictionary containing user defined parameters
+            @param data       - two dimensional data array
         Raises:
             ValueError: If the data array has dimension not equal 2.
         """
 
-        # read defaults stored in YAML formatted file into the dictionary
-        if 'METPLOTPY_BASE' in os.environ:
-            location = os.path.join(os.environ['METPLOTPY_BASE'], 'metplotpy/plots/config')
-        else:
-            location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-
-        with open(os.path.join(location, 'histogram_defaults.yml'), 'r') as stream:
-            try:
-                defaults = yaml.load(stream, Loader=yaml.FullLoader)
-            except yaml.YAMLError as exc:
-                print(exc)
-
+        default_conf_filename = "histogram_defaults.yml"
         # init common layout
-        super().__init__(parameters, defaults)
+        super().__init__(parameters, default_conf_filename)
+
 
         # validate the input array - should be 2-dimensional
         dim = Histogram.get_array_dimensions(data)
@@ -64,7 +54,7 @@ class Histogram(MetPlot):
         """Draws histogram data on the layout
 
         Args:
-            data - two dimensional data array
+            @param data - two dimensional data array
 
         Returns:
             Figure
@@ -142,7 +132,7 @@ class Histogram(MetPlot):
         """Returns user defined marker title or a default value.
 
         Args:
-            i - the index if the marker data in the input array
+            @param i - the index if the marker data in the input array
         Returns:
             name of the marker
         """
@@ -155,7 +145,7 @@ class Histogram(MetPlot):
         """Returns user defined marker line width or a default value.
 
         Args:
-            i - the index if the marker data in the input array
+            @param i - the index if the marker data in the input array
         Returns:
             line width
         """
@@ -169,7 +159,7 @@ class Histogram(MetPlot):
         """Returns user defined marker color or a default value.
 
         Args:
-            i - the index if the marker data in the input array
+            @param i - the index if the marker data in the input array
         Returns:
             color
         """
