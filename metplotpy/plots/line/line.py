@@ -4,7 +4,6 @@ Class Name: line.py
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
-import os
 import plotly.graph_objects as go
 import yaml
 import pandas as pd
@@ -26,15 +25,17 @@ class Line(MetPlot):
             Args:
             @param parameters: dictionary containing user defined parameters
 
-
-
         """
 
         default_conf_filename = "line_defaults.yaml"
         # init common layout
-        super().__init__(parameters,default_conf_filename )
+        super().__init__(parameters, default_conf_filename)
 
         # create figure
+        # pylint:disable=assignment-from-no-return
+        # Need to have a self.figure that we can pass along to
+        # the methods in met_plot.py (MetPlot class methods) to
+        # create binary versions of the plot.
         self.figure = self._create_figure()
 
     def __repr__(self):
@@ -75,6 +76,10 @@ class Line(MetPlot):
     def _create_figure(self):
         """ Create a line plot from default and custom parameters"""
 
+        # pylint:disable=too-many-locals
+        # Need to have all these local variables input
+        # to Plotly to generate a line plot.
+
         fig = go.Figure()
 
         # Generate each trace/line based on settings in the default and
@@ -110,7 +115,7 @@ class Line(MetPlot):
         # Edit the final layout, set the plot title and axis labels
         fig.update_layout(title=title, xaxis_title=x_axis_title, yaxis_title=y_axis_title)
 
-        fig.show()
+        return fig
 
 
 def main():
@@ -129,7 +134,8 @@ def main():
         except yaml.YAMLError as exc:
             print(exc)
 
-    Line(docs)
+    l = Line(docs)
+    l.show_in_browser()
 
 
 
