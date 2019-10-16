@@ -21,25 +21,21 @@ class Line(MetPlot):
     """
     def __init__(self, parameters):
         """ Creates a line plot consisting of one or more lines (traces), based on
-            settings indicated by the parameters.
+            settings indicated by parameters.
+
+            Args:
+            @param parameters: dictionary containing user defined parameters
+
+
 
         """
-        # read defaults stored in YAML formatted file into the dictionary
-        if 'METPLOTPY_BASE' in os.environ:
-            location = os.path.join(os.environ['METPLOTPY_BASE'], 'metplotpy/plots/config')
-        else:
-            location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-        with open(os.path.join(location, 'line_defaults.yaml'), 'r') as stream:
-            try:
-                defaults = yaml.load(stream, Loader=yaml.FullLoader)
-            except yaml.YAMLError as exc:
-                print(exc)
 
+        default_conf_filename = "line_defaults.yaml"
         # init common layout
-        super().__init__(parameters, defaults)
+        super().__init__(parameters,default_conf_filename )
 
         # create figure
-        self._create_figure()
+        self.figure = self._create_figure()
 
     def __repr__(self):
         """ Implement repr which can be useful for debugging this
