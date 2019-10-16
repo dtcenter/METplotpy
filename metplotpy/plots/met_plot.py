@@ -6,6 +6,7 @@ __email__ = 'met_help@ucar.edu'
 
 import os
 import numpy as np
+import yaml
 
 
 class MetPlot:
@@ -13,21 +14,34 @@ class MetPlot:
      like title, axis, legend.
 
      To use:
-        use as a abstract class for the common plot types
+        use as an abstract class for the common plot types
     """
 
     # image formats supported by plotly
     IMAGE_FORMATS = ("png", "jpeg", "webp", "svg", "pdf", "eps")
     DEFAULT_IMAGE_FORMAT = 'png'
 
-    def __init__(self, parameters, defaults):
+    def __init__(self, parameters, default_conf_filename):
         """Inits MetPlot with user defined and default dictionaries.
            Removes the old image if it exists
 
         Args:
-            parameters - dictionary containing user defined parameters
-            defaults   - dictionary containing Metplotpy default parameters
+            @parameters - dictionary containing user defined parameters
+            @default_conf_filename - the name of the default config file
+                                     for the plot type that is a subclass.
         """
+
+        # read defaults stored in YAML formatted file into the dictionary
+        if 'METPLOTPY_BASE' in os.environ:
+            location = os.path.join(os.environ['METPLOTPY_BASE'], 'plots/config')
+        else:
+            location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+        with open(os.path.join(location, default_conf_filename), 'r') as stream:
+            try:
+                defaults = yaml.load(stream, Loader=yaml.FullLoader)
+            except yaml.YAMLError as exc:
+                print(exc)
 
         # merge user defined parameters into defaults if they exist
         if parameters:
@@ -222,8 +236,8 @@ class MetPlot:
         in multidimensional dictionary.
 
         Args:
-            data - dictionary for the lookup
-            args  - a tuple with keys
+            @data - dictionary for the lookup
+            @args  - a tuple with keys
 
         Returns:
             - a value for the parameter of None
@@ -290,7 +304,7 @@ class MetPlot:
             os.remove(image_name)
 
     def show_in_browser(self):
-        """Creates a plot and opens it in teh browser.
+        """Creates a plot and opens it in the browser.
 
          Args:
 
@@ -307,7 +321,7 @@ class MetPlot:
         """Returns the dimension of the array
 
         Args:
-            data - input array
+            @data - input array
         Returns:
             - an integer representing the array's dimension or None
         """
