@@ -1,5 +1,18 @@
 ---
-image_name: lineplot.png
+image_name: /tmp/lineplot.png
+
+legend:
+  x: 0.5
+  y: -0.3
+  font:
+    family: sans-serif
+    size: 12
+    color: black
+  bgcolor: # set to white in default config
+  bordercolor: # black in default config
+  borderwidth: 2
+
+connect_data_gaps: true
 title: Line plot of point data (APCP)
 xaxis:
   title: X
@@ -19,3 +32,4 @@ lines:
     color: firebrick
     width: 4
     dash: dash
+
