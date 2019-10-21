@@ -85,25 +85,23 @@ class Line(MetPlot):
         # Generate each trace/line based on settings in the default and
         # custom parameters specified in the YAML files.
         lines = self._get_all_lines()
-        title = self.parameters['title']
-        x_axis_title = self.get_xaxis_title()
-        y_axis_title = self.get_yaxis_title()
+
         connect_gap = self.parameters['connect_data_gaps']
 
         # Retrieve the settings for the n-lines/traces specified
         # in the default or custom config file.
-        for line in lines:
-            name = line['name']
+        for line_dict in lines:
+            name = line_dict['name']
 
             # Extract the data defined in the custom config file
             # A list of 1..n entries, with each data file corresponding
             # to a line/trace on the plot.
-            input_data_file = line['data_file']
+            input_data_file = line_dict['data_file']
             data = pd.read_csv(input_data_file, delim_whitespace=True)
 
-            color = line['color']
-            width = line['width']
-            dash = line['dash']
+            color = line_dict['color']
+            width = line_dict['width']
+            dash = line_dict['dash']
             line_x = data['x']
             line_y = data['y']
             fig.add_trace(go.Scatter(
@@ -113,7 +111,7 @@ class Line(MetPlot):
 
 
         # Edit the final layout, set the plot title and axis labels
-        fig.update_layout(title=title, xaxis_title=x_axis_title, yaxis_title=y_axis_title)
+        fig.update_layout(legend=self.get_legend(), title=self.get_title(), xaxis_title=self.get_xaxis_title(), yaxis_title=self.get_yaxis_title())
 
         return fig
 
@@ -134,9 +132,13 @@ def main():
         except yaml.YAMLError as exc:
             print(exc)
 
-    l = Line(docs)
-    l.show_in_browser()
 
+    try:
+      l = Line(docs)
+      l.save_to_file()
+      l.show_in_browser()
+    except ValueError as ve:
+        print(ve)
 
 
 if __name__ == "__main__":
