@@ -200,5 +200,9 @@ def main():
 if __name__ == "__main__":
     # main()
     data = [np.random.randn(500), np.random.randn(500) + 1]
-    histogram = Histogram(None, data)
-    histogram.show_in_browser()
+    try:
+        histogram = Histogram(None, data)
+        histogram.show_in_browser()
+        histogram.save_to_file()
+    except ValueError as ve:
+        print(ve)
