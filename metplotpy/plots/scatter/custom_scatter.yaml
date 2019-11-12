@@ -1,0 +1,35 @@
+---
+image_name: /tmp/scatterplot.png
+
+legend:
+  x: 0.5
+  y: -0.3
+  font:
+    family: sans-serif
+    size: 12
+    color: black
+  bgcolor: # set to white in default config
+  bordercolor: # black in default config
+  borderwidth: 2
+
+connect_data_gaps: true
+title: Scatter plot of point data
+xaxis:
+  title: X
+yaxis:
+  title: accumulated precip amounts (cm)
+lines:
+  - name: Data1 Trace
+    data_file:
+      ./scatter1_plot_data.txt
+    color: blue
+    width: 2
+    dash:
+
+  - name: Data2 Trace
+    data_file:
+      ./scatter2_plot_data.txt
+    color: firebrick
+    width: 4
+    dash: dash
+

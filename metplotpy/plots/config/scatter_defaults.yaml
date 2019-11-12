@@ -1,0 +1,20 @@
+---
+# Values specific to scatter plot
+title: Scatter plot of point data
+connect_data_gaps: false
+xaxis:
+  title: x-values
+yaxis:
+  title: y-values
+scatters:
+  - name: Scatter 1
+    data_file: ./scatter1_plot_data.txt
+    color: black
+    width: 1
+    dash:
+
+  - name: Scatter 2
+    data_file: ./scatter2_plot_data.txt
+    color: black
+    width: 1
+    dash:

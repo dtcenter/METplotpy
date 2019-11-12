@@ -1,0 +1,12 @@
+---
+# Values specific to Box and Whisker plot
+title: Box plot of point data
+connect_data_gaps: false
+xaxis:
+  title: x-values
+yaxis:
+  title: y-values
+Boxes:
+  - name: Box 2
+    data_file: ./box2_plot_data.txt
+    color: blue
