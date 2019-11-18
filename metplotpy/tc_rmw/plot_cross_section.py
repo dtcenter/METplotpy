@@ -26,4 +26,6 @@ if __name__ == '__main__':
     logging.basicConfig(stream=sys.stdout,
         level=logging.DEBUG)
 
-    read_tcrmw(os.path.join(args.datadir, args.filename))
+    valid_time, lat_grid, lon_grid, pressure, \
+        track_data, wind_data, scalar_data \
+        = read_tcrmw(os.path.join(args.datadir, args.filename))

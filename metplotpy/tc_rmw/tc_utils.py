@@ -4,6 +4,9 @@ import logging
 import numpy as np
 from netCDF4 import Dataset
 
+# nautical miles to kilometers conversion factor
+nm_to_km = 1.852
+
 def read_tcrmw(filename):
     """
     Read pressure level variables from
@@ -20,9 +23,39 @@ def read_tcrmw(filename):
     valid_time = file_id.variables['valid_time'][:]
     lat_grid = file_id.variables['lat'][:]
     lon_grid = file_id.variables['lon'][:]
+    pressure = file_id.variables['pressure'][:]
 
     logging.debug('lat_grid.shape=' + str(lat_grid.shape))
     logging.debug('lon_grid.shape=' + str(lon_grid.shape))
+
+    # read track center and cyclone radius
+    track_data = {}
+    track_data['Lat'] = file_id.variables['Lat'][:]
+    track_data['Lon'] = file_id.variables['Lon'][:]
+    track_data['RMW'] = file_id.variables['RMW'][:] * nm_to_km
+
+    # possible U, V variable names
+    u_vars = set(['U', 'UGRD'])
+    v_vars = set(['V', 'VGRD'])
+
+    grid_vars = set(['lat', 'lon', 'range', 'azimuth'])
+    wind_data = {}
+    scalar_data = {}
+
+    # read all variables and group as either wind or scalar
+    for var in file_id.variables:
+        logging.info(var)
+        if var in u_vars:
+            wind_data['U'] = file_id.variables[var][:]
+        if var in v_vars:
+            wind_data['V'] = file_id.variables[var][:]
+        if var not in grid_vars.union(u_vars).union(v_vars):
+            scalar_data[var] = file_id.variables[var][:]
+
+    file_id.close()
+
+    return valid_time, lat_grid, lon_grid, pressure, \
+        track_data, wind_data, scalar_data
 
 def read_tcrmw_levels(filename, levels=['L0']):
     """
