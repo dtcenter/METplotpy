@@ -21,9 +21,12 @@ def read_tcrmw(filename):
         sys.exit()
 
     valid_time = file_id.variables['valid_time'][:]
+    # read grid variables
     lat_grid = file_id.variables['lat'][:]
     lon_grid = file_id.variables['lon'][:]
-    pressure = file_id.variables['pressure'][:]
+    range_grid = file_id.variables['range'][:]
+    azimuth_grid = file_id.variables['azimuth'][:]
+    pressure_grid = file_id.variables['pressure'][:]
 
     logging.debug('lat_grid.shape=' + str(lat_grid.shape))
     logging.debug('lon_grid.shape=' + str(lon_grid.shape))
@@ -38,7 +41,7 @@ def read_tcrmw(filename):
     u_vars = set(['U', 'UGRD'])
     v_vars = set(['V', 'VGRD'])
 
-    grid_vars = set(['lat', 'lon', 'range', 'azimuth'])
+    grid_vars = set(['lat', 'lon', 'range', 'azimuth', 'pressure'])
     wind_data = {}
     scalar_data = {}
 
@@ -54,7 +57,8 @@ def read_tcrmw(filename):
 
     file_id.close()
 
-    return valid_time, lat_grid, lon_grid, pressure, \
+    return valid_time, lat_grid, lon_grid, \
+        range_grid, azimuth_grid, pressure_grid, \
         track_data, wind_data, scalar_data
 
 def read_tcrmw_levels(filename, levels=['L0']):

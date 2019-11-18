@@ -26,6 +26,7 @@ if __name__ == '__main__':
     logging.basicConfig(stream=sys.stdout,
         level=logging.DEBUG)
 
-    valid_time, lat_grid, lon_grid, pressure, \
+    valid_time, lat_grid, lon_grid, \
+        range_grid, azimuth_grid, pressure_grid, \
         track_data, wind_data, scalar_data \
         = read_tcrmw(os.path.join(args.datadir, args.filename))
