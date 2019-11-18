@@ -10,9 +10,9 @@ from matplotlib.colors import ListedColormap
 import cartopy
 import cartopy.crs as ccrs
 import shapely.geometry as sgeom
-from tc_utils import read_tcrmw
+from tc_utils import read_tcrmw_levels
 
-def plot_fields(datadir, plotdir, trackfile, params):
+def plot_fields(datadir, plotdir, filename, params):
     """
     Plot TCRMW track and track centered range azimuth grids. 
     """
@@ -21,7 +21,7 @@ def plot_fields(datadir, plotdir, trackfile, params):
     logging.info(plotdir)
 
     valid_time, lat_grid, lon_grid, wind_data, scalar_data = \
-        read_tcrmw(os.path.join(datadir, trackfile),
+        read_tcrmw_levels(os.path.join(datadir, filename),
         levels=[args.level])
     lat_track, lon_track \
         = lat_grid[0, 0, :], lon_grid[0, 0, :]
@@ -115,22 +115,22 @@ def plot_fields(datadir, plotdir, trackfile, params):
     plt.tight_layout()
     # save figure
     plt.savefig(os.path.join(plotdir,
-        trackfile.replace('.nc', '.png')), dpi=300)
+        filename.replace('.nc', '.png')), dpi=300)
     plt.savefig(os.path.join(plotdir,
-        trackfile.replace('.nc', '.pdf')))
+        filename.replace('.nc', '.pdf')))
     # display
     plt.show()
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
-        description='Cyclone Track Plot')
+        description='Tropical Cyclone Track Plot')
     parser.add_argument(
         '--datadir', type=str, dest='datadir', required=True)
     parser.add_argument(
         '--plotdir', type=str, dest='plotdir', required=True)
     parser.add_argument(
-        '--trackfile', type=str, dest='trackfile', required=True)
+        '--filename', type=str, dest='filename', required=True)
     parser.add_argument(
         '--start', type=int, dest='start', required=False,
         default=0)
@@ -174,5 +174,5 @@ if __name__ == '__main__':
 
     plot_fields(args.datadir,
                 args.plotdir,
-                args.trackfile,
+                args.filename,
                 params)
