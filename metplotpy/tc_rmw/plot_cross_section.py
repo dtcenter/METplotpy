@@ -30,3 +30,7 @@ if __name__ == '__main__':
         range_grid, azimuth_grid, pressure_grid, \
         track_data, wind_data, scalar_data \
         = read_tcrmw(os.path.join(args.datadir, args.filename))
+
+    logging.debug(track_data.keys())
+    logging.debug(wind_data.keys())
+    logging.debug(scalar_data.keys())

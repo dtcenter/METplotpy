@@ -36,12 +36,15 @@ def read_tcrmw(filename):
     track_data['Lat'] = file_id.variables['Lat'][:]
     track_data['Lon'] = file_id.variables['Lon'][:]
     track_data['RMW'] = file_id.variables['RMW'][:] * nm_to_km
+    track_data['TrackLines'] = file_id.variables['TrackLines'][:]
 
     # possible U, V variable names
     u_vars = set(['U', 'UGRD'])
     v_vars = set(['V', 'VGRD'])
 
-    grid_vars = set(['lat', 'lon', 'range', 'azimuth', 'pressure'])
+    grid_vars = set(['valid_time', 'lat', 'lon',
+        'range', 'azimuth', 'pressure'])
+    track_vars = set(['Lat', 'Lon', 'RMW', 'TrackLines'])
     wind_data = {}
     scalar_data = {}
 
@@ -52,7 +55,7 @@ def read_tcrmw(filename):
             wind_data['U'] = file_id.variables[var][:]
         if var in v_vars:
             wind_data['V'] = file_id.variables[var][:]
-        if var not in grid_vars.union(u_vars).union(v_vars):
+        if var not in grid_vars.union(track_vars).union(u_vars).union(v_vars):
             scalar_data[var] = file_id.variables[var][:]
 
     file_id.close()
