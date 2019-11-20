@@ -4,13 +4,40 @@ import argparse
 import logging
 import numpy as np
 import matplotlib
-# matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from tc_utils import read_tcrmw, radial_tangential_winds
 
-def plot_cross_section(plotdir):
-    pass
+def plot_cross_section(plotdir,
+    valid_time, range_grid, pressure_grid,
+    wind_data, scalar_data,
+    field='TMP', track_index=0):
+    '''
+    '''
+
+    fig = plt.figure(1, figsize=(8., 4.5))
+    ax = plt.axes()
+    ax.plot([1, 1], [1000, 50], color='lightgrey')
+
+    # azimuthal mean
+    wind_radial = np.mean(wind_data['radial'], axis=1)
+    wind_tangential = np.mean(wind_data['tangential'], axis=1)
+    scalar_field = np.mean(scalar_data[field], axis=1)
+    logging.debug(wind_radial.shape)
+    logging.debug(wind_tangential.shape)
+    logging.debug(scalar_field.shape)
+
+    wind_contour = ax.contour(range_grid, pressure_grid,
+        wind_tangential[:,:,track_index].transpose(),
+        levels=np.arange(5, 40, 5), colors='darkgreen', linewidths=1)
+    ax.clabel(wind_contour, colors='darkgreen', fmt='%1.0f')
+
+    scalar_contour = ax.contour(range_grid, pressure_grid,
+        scalar_field[:,:,track_index].transpose(),
+        levels=np.arange(250, 300, 10), colors='darkblue',
+        linewidths=1)
+    ax.clabel(scalar_contour, colors='darkblue', fmt='%1.0f')
 
 if __name__ == '__main__':
 
@@ -46,4 +73,5 @@ if __name__ == '__main__':
 
     logging.debug(wind_data.keys())
 
-    plot_cross_section(args.plotdir)
+    plot_cross_section(args.plotdir, valid_time, range_grid, pressure_grid,
+        wind_data, scalar_data)
