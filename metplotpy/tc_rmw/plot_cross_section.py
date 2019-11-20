@@ -39,6 +39,21 @@ def plot_cross_section(plotdir,
         linewidths=1)
     ax.clabel(scalar_contour, colors='darkblue', fmt='%1.0f')
 
+    ax.annotate('Tangential Wind (m s-1)', xy=(6, 270), color='darkgreen')
+    ax.annotate('Temperature (K)', xy=(6, 300), color='darkblue')
+
+    ax.set_xlabel('Range (RMW)')
+    ax.set_xticks(np.arange(1, 10))
+
+    ax.set_ylabel('Pressure (hPa)')
+    ax.set_yscale('symlog')
+    ax.set_ylim(1000, 250)
+    ax.set_yticks(np.arange(1000, 250, -100))
+    ax.set_yticklabels(np.arange(1000, 250, -100))
+
+    plt.savefig(os.path.join(plotdir, 'tc_cross_section.png'), dpi=300)
+    plt.savefig(os.path.join(plotdir, 'tc_cross_section.pdf'))
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
