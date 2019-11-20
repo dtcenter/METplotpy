@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from tc_utils import read_tcrmw, radial_tangential_winds
 
+def plot_cross_section(plotdir):
+    pass
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
@@ -16,6 +19,9 @@ if __name__ == '__main__':
 
     parser.add_argument(
         '--datadir', type=str, dest='datadir',
+        required=True)
+    parser.add_argument(
+        '--plotdir', type=str, dest='plotdir',
         required=True)
     parser.add_argument(
         '--filename', type=str, dest='filename',
@@ -37,3 +43,7 @@ if __name__ == '__main__':
 
     radial_tangential_winds(
         valid_time, range_grid, azimuth_grid, pressure_grid, wind_data)
+
+    logging.debug(wind_data.keys())
+
+    plot_cross_section(args.plotdir)
