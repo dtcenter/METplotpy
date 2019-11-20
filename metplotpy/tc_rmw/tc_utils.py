@@ -129,3 +129,8 @@ def radial_tangential_winds(
     mask = np.greater(theta, 2 * math.pi)
     theta[mask] = theta[mask] - 2 * math.pi
 
+    wind_radial = np.cos(theta) * wind_data['U'] + np.sin(theta) * wind_data['V']
+    wind_tangential = - np.sin(theta) * wind_data['U'] + np.cos(theta) * wind_data['V']
+    wind_data['radial'] = wind_radial
+    wind_data['tangential'] = wind_tangential
+
