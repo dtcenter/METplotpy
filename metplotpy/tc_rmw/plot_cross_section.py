@@ -7,7 +7,7 @@ import matplotlib
 # matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
-from tc_utils import read_tcrmw
+from tc_utils import read_tcrmw, radial_tangential_winds
 
 if __name__ == '__main__':
 
@@ -34,3 +34,6 @@ if __name__ == '__main__':
     logging.debug(track_data.keys())
     logging.debug(wind_data.keys())
     logging.debug(scalar_data.keys())
+
+    radial_tangential_winds(
+        valid_time, range_grid, azimuth_grid, pressure_grid, wind_data)
