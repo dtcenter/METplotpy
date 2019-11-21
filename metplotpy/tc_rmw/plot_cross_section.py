@@ -23,6 +23,7 @@ def plot_cross_section(plotdir,
     ax = plt.axes()
     ax.plot([1, 1], [1000, 50], color='lightgrey')
 
+
     # azimuthal mean
     wind_radial = np.mean(wind_data['radial'], axis=1)
     wind_tangential = np.mean(wind_data['tangential'], axis=1)
@@ -41,7 +42,12 @@ def plot_cross_section(plotdir,
         height = height_from_pressure(surface_pressure[0, track_index],
             temperature[0, :, track_index], mb_to_Pa * pressure_grid) \
             * m_to_km
-        logging.debug(height)
+        height = np.clip(height, 0, 20)
+        logging.info(height)
+        for k in range(len(pressure_grid)):
+            p = pressure_grid[k]
+            ax.plot([0, 20], [p, p], color='k', linewidth=1)
+            ax.annotate('%3.1f km' % height[k], xy=(19, 0.99 * p), color='k')
 
     wind_contour = ax.contour(range_grid, pressure_grid,
         wind_tangential[:,:,track_index].transpose(),
@@ -53,6 +59,7 @@ def plot_cross_section(plotdir,
         levels=np.arange(250, 300, 10), colors='darkblue',
         linewidths=1)
     ax.clabel(scalar_contour, colors='darkblue', fmt='%1.0f')
+
 
     ax.annotate('Tangential Wind (m s-1)', xy=(14, 350), color='darkgreen')
     ax.annotate('Temperature (K)', xy=(14, 370), color='darkblue')
@@ -87,7 +94,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     logging.basicConfig(stream=sys.stdout,
-        level=logging.DEBUG)
+        level=logging.INFO)
 
     valid_time, lat_grid, lon_grid, \
         range_grid, azimuth_grid, pressure_grid, \
