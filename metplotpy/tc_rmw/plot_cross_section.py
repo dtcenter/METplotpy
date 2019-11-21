@@ -17,7 +17,7 @@ def plot_cross_section(plotdir,
     """
     """
 
-    find_height = True
+    plot_height = True
 
     fig = plt.figure(1, figsize=(8., 4.5))
     ax = plt.axes()
@@ -31,7 +31,7 @@ def plot_cross_section(plotdir,
     logging.debug(wind_tangential.shape)
     logging.debug(scalar_field.shape)
 
-    if find_height:
+    if plot_height:
         mb_to_Pa = 100  # millibar to Pascal
         m_to_km = 0.001 # meter to kilometer
         temperature = np.mean(scalar_data['TMP'], axis=1)
