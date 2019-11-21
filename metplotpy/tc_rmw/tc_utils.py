@@ -134,3 +134,20 @@ def radial_tangential_winds(
     wind_data['radial'] = wind_radial
     wind_data['tangential'] = wind_tangential
 
+def height_from_pressure(surface_pressure, virtual_temperature, pressure):
+    """
+    Z_2 - Z_1 = (R_d / g) <T_v> log(p_1 / p_2)
+    R_d / g = 29.3
+    <T_v> = integral_p_2^p_1 T_v(p) (dp / p) / log(p_1 / p_2)
+    """
+    logging.debug(surface_pressure)
+    logging.debug(virtual_temperature)
+    logging.debug(pressure)
+    nlev = len(pressure)
+    height = np.empty(nlev)
+    height[0] = 29.3 * virtual_temperature[0] * np.log(surface_pressure / pressure[0])
+    for k in range(1, nlev):
+        height[k] = height[k - 1] \
+        + 29.3 * (virtual_temperature[k - 1] + virtual_temperature[k]) / 2 \
+        * np.log(pressure[k - 1] / pressure[k])
+    return height

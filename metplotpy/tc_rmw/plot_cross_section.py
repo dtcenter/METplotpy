@@ -7,14 +7,17 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
-from tc_utils import read_tcrmw, radial_tangential_winds
+from tc_utils import read_tcrmw, \
+    radial_tangential_winds, height_from_pressure
 
 def plot_cross_section(plotdir,
     valid_time, range_grid, pressure_grid,
     wind_data, scalar_data,
     field='TMP', track_index=0):
-    '''
-    '''
+    """
+    """
+
+    find_height = True
 
     fig = plt.figure(1, figsize=(8., 4.5))
     ax = plt.axes()
@@ -27,6 +30,18 @@ def plot_cross_section(plotdir,
     logging.debug(wind_radial.shape)
     logging.debug(wind_tangential.shape)
     logging.debug(scalar_field.shape)
+
+    if find_height:
+        mb_to_Pa = 100  # millibar to Pascal
+        m_to_km = 0.001 # meter to kilometer
+        temperature = np.mean(scalar_data['TMP'], axis=1)
+        surface_pressure = np.mean(scalar_data['PRMSL'], axis=1)
+        logging.debug(temperature.shape)
+        logging.debug(surface_pressure.shape)
+        height = height_from_pressure(surface_pressure[0, track_index],
+            temperature[0, :, track_index], mb_to_Pa * pressure_grid) \
+            * m_to_km
+        logging.debug(height)
 
     wind_contour = ax.contour(range_grid, pressure_grid,
         wind_tangential[:,:,track_index].transpose(),
