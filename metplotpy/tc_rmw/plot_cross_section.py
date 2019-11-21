@@ -54,11 +54,11 @@ def plot_cross_section(plotdir,
         linewidths=1)
     ax.clabel(scalar_contour, colors='darkblue', fmt='%1.0f')
 
-    ax.annotate('Tangential Wind (m s-1)', xy=(6, 270), color='darkgreen')
-    ax.annotate('Temperature (K)', xy=(6, 300), color='darkblue')
+    ax.annotate('Tangential Wind (m s-1)', xy=(14, 350), color='darkgreen')
+    ax.annotate('Temperature (K)', xy=(14, 370), color='darkblue')
 
     ax.set_xlabel('Range (RMW)')
-    ax.set_xticks(np.arange(1, 10))
+    ax.set_xticks(np.arange(1, 20))
 
     ax.set_ylabel('Pressure (hPa)')
     ax.set_yscale('symlog')
