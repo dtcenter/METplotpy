@@ -7,7 +7,7 @@ The script plot_grid_to_grid.py generates png plots of the raw variables and the
 Pre-requisite:
 =============
         1) The user must configure the following nc_pair_flags to the following:
-           -lalon=TRUE
+           -latlon=TRUE
            -raw=TRUE
            -diff=TRUE
            to generate the output netcdf files that contain the expected matched
