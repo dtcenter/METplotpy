@@ -10,7 +10,7 @@ from matplotlib.colors import ListedColormap
 import cartopy
 import cartopy.crs as ccrs
 import shapely.geometry as sgeom
-from tc_utils import read_tcrmw_levels
+from tc_utils import read_tcrmw
 
 def plot_fields(datadir, plotdir, filename, params):
     """
@@ -20,9 +20,12 @@ def plot_fields(datadir, plotdir, filename, params):
     logging.info(datadir)
     logging.info(plotdir)
 
-    valid_time, lat_grid, lon_grid, wind_data, scalar_data = \
-        read_tcrmw_levels(os.path.join(datadir, filename),
-        levels=[args.level])
+    # valid_time, lat_grid, lon_grid, wind_data, scalar_data = \
+    #     read_tcrmw(os.path.join(datadir, filename))
+    valid_time, lat_grid, lon_grid, \
+        range_grid, azimuth_grid, pressure_grid, \
+        track_data, wind_data, scalar_data \
+        = read_tcrmw(os.path.join(datadir, filename))
     lat_track, lon_track \
         = lat_grid[0, 0, :], lon_grid[0, 0, :]
     lat_min, lat_max = lat_track.min(), lat_track.max()
@@ -53,7 +56,7 @@ def plot_fields(datadir, plotdir, filename, params):
     n_range, n_azimuth, n_track = lat_grid.shape
 
     # plot scalar field
-    field = scalar_data[args.scalar_field + '_' + args.level]
+    field = scalar_data[args.scalar_field]
     u_grid = wind_data['U']
     v_grid = wind_data['V']
     magnitude = (u_grid**2 + v_grid**2)**0.5
@@ -71,6 +74,7 @@ def plot_fields(datadir, plotdir, filename, params):
             colors='k',
             transform=proj_geom)
         ax.clabel(cplot, colors='k', fmt='%1.0f', fontsize=14)
+        """
         vplot = plt.streamplot(
             lon_grid[:,:,i], lat_grid[:,:,i],
             # u_grid[::-1,:,i], v_grid[::-1,:,i],
@@ -78,12 +82,15 @@ def plot_fields(datadir, plotdir, filename, params):
             # color=magnitude[::-1,:,i],
             color=magnitude[:,:,i],
             transform=proj_geom, density=6)
+        """
 
     # plt.colorbar(cplot, shrink=0.8)
+    """
     cbar = plt.colorbar(vplot.lines,
         orientation='vertical', pad=0.01)
     cbar.set_label('Wind Speed (m s-1)', fontsize=20)
     cbar.ax.tick_params(labelsize=20)
+    """
 
     # plot track
     track = sgeom.LineString(zip(lon_track, lat_track))
@@ -136,7 +143,7 @@ if __name__ == '__main__':
         default=0)
     parser.add_argument(
         '--step', type=int, dest='step', required=False,
-        default=1)
+        default=3)
     parser.add_argument(
         '--range_step', type=int, dest='range_step', required=False,
         default=10)
@@ -152,9 +159,6 @@ if __name__ == '__main__':
     parser.add_argument(
         '--scalar_field', type=str, dest='scalar_field', required=False,
         default='T')
-    parser.add_argument(
-        '--level', type=str, dest='level', required=False,
-        default='L0')
     parser.add_argument(
         '--title', type=str, dest='title', required=False,
         default='')
