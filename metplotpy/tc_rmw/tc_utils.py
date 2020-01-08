@@ -1,12 +1,24 @@
 import os
 import sys
 import logging
+import calendar
 import math
 import numpy as np
 from netCDF4 import Dataset
 
 # nautical miles to kilometers conversion factor
 nm_to_km = 1.852
+
+def format_valid_time(valid_time):
+    """
+    Format valid time.
+    """
+    year = valid_time // 1000000
+    month = valid_time // 10000 - 100 * year
+    day = valid_time // 100 - 10000 * year - 100 * month
+    hour = valid_time - 1000000 * year - 10000 * month - 100 * day
+    valid_time_str = '%d %2.2d %2.2d %2.2d:00Z' % (year, month, day, hour)
+    return valid_time_str
 
 def read_tcrmw(filename):
     """
@@ -151,3 +163,6 @@ def height_from_pressure(surface_pressure, virtual_temperature, pressure):
         + 29.3 * (virtual_temperature[k - 1] + virtual_temperature[k]) / 2 \
         * np.log(pressure[k - 1] / pressure[k])
     return height
+
+if __name__ == '__main__':
+    print(format_valid_time(2019050123))
