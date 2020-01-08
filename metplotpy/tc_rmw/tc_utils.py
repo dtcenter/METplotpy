@@ -17,7 +17,8 @@ def format_valid_time(valid_time):
     month = valid_time // 10000 - 100 * year
     day = valid_time // 100 - 10000 * year - 100 * month
     hour = valid_time - 1000000 * year - 10000 * month - 100 * day
-    valid_time_str = '%d %2.2d %2.2d %2.2d:00Z' % (year, month, day, hour)
+    month_name = calendar.month_name[month]
+    valid_time_str = '%d %s %2.2d %2.2d:00Z' % (year, month_name, day, hour)
     return valid_time_str
 
 def read_tcrmw(filename):

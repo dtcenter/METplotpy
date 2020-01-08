@@ -10,7 +10,7 @@ from matplotlib.colors import ListedColormap
 import cartopy
 import cartopy.crs as ccrs
 import shapely.geometry as sgeom
-from tc_utils import read_tcrmw
+from tc_utils import read_tcrmw, format_valid_time
 
 def plot_fields(datadir, plotdir, filename, params):
     """
@@ -116,7 +116,11 @@ def plot_fields(datadir, plotdir, filename, params):
             ax.add_geometries([line], proj_geom,
                 edgecolor=(scale, scale, scale), facecolor='none')
 
-    plt.title(params['title'], fontsize=24)
+    logging.debug(int(valid_time[0]))
+    logging.debug(format_valid_time(int(valid_time[0])))
+    plt.title(params['title']
+        + ' ' + format_valid_time(int(valid_time[params['start']])),
+        fontsize=24)
 
     fig.canvas.draw()
     plt.tight_layout()
