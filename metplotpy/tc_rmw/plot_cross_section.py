@@ -7,7 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
-from tc_utils import read_tcrmw, \
+from tc_utils import read_tcrmw, format_valid_time, \
     radial_tangential_winds, height_from_pressure
 
 def plot_cross_section(plotdir,
@@ -17,12 +17,14 @@ def plot_cross_section(plotdir,
     """
     """
 
-    plot_height = True
+    plot_height = False
 
     fig = plt.figure(1, figsize=(8., 4.5))
     ax = plt.axes()
     ax.plot([1, 1], [1000, 50], color='lightgrey')
 
+    plt.title(
+        format_valid_time(int(valid_time[track_index])))
 
     # azimuthal mean
     wind_radial = np.mean(wind_data['radial'], axis=1)
@@ -64,17 +66,23 @@ def plot_cross_section(plotdir,
     ax.annotate('Tangential Wind (m s-1)', xy=(14, 350), color='darkgreen')
     ax.annotate('Temperature (K)', xy=(14, 370), color='darkblue')
 
-    ax.set_xlabel('Range (RMW)')
+    ax.set_xlabel(
+        'Range (RMW = %4.1f km)' % track_data['RMW'][track_index])
     ax.set_xticks(np.arange(1, 20))
 
-    ax.set_ylabel('Pressure (hPa)')
+    ax.set_ylabel('Pressure (mb)')
     ax.set_yscale('symlog')
     ax.set_ylim(1000, 250)
     ax.set_yticks(np.arange(1000, 250, -100))
     ax.set_yticklabels(np.arange(1000, 250, -100))
 
-    plt.savefig(os.path.join(plotdir, 'tc_cross_section.png'), dpi=300)
-    plt.savefig(os.path.join(plotdir, 'tc_cross_section.pdf'))
+    outfile = os.path.join(plotdir,
+        'cross_section_' + str(valid_time[track_index]))
+    # plt.savefig(os.path.join(plotdir, 'tc_cross_section.png'), dpi=300)
+    # plt.savefig(os.path.join(plotdir, 'tc_cross_section.pdf'))
+
+    plt.savefig(outfile + '.png', dpi=300)
+    plt.savefig(outfile + '.pdf')
 
 if __name__ == '__main__':
 
