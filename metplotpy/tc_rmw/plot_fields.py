@@ -56,7 +56,7 @@ def plot_fields(datadir, plotdir, filename, params):
     n_range, n_azimuth, n_track = lat_grid.shape
 
     # plot scalar field
-    field = scalar_data[args.scalar_field]
+    field = scalar_data[args.scalar_field] * args.scalar_field_scale
     u_grid = wind_data['U']
     v_grid = wind_data['V']
     magnitude = (u_grid**2 + v_grid**2)**0.5
@@ -116,8 +116,7 @@ def plot_fields(datadir, plotdir, filename, params):
             ax.add_geometries([line], proj_geom,
                 edgecolor=(scale, scale, scale), facecolor='none')
 
-    logging.debug(int(valid_time[0]))
-    logging.debug(format_valid_time(int(valid_time[0])))
+    logging.debug(int(valid_time[params['start']]))
     plt.title(params['title']
         + ' ' + format_valid_time(int(valid_time[params['start']])),
         fontsize=24)
@@ -125,10 +124,14 @@ def plot_fields(datadir, plotdir, filename, params):
     fig.canvas.draw()
     plt.tight_layout()
     # save figure
-    plt.savefig(os.path.join(plotdir,
-        filename.replace('.nc', '.png')), dpi=300)
-    plt.savefig(os.path.join(plotdir,
-        filename.replace('.nc', '.pdf')))
+    outfile = os.path.join(plotdir,
+        args.scalar_field + '_' + str(valid_time[params['start']]))
+    # plt.savefig(os.path.join(plotdir,
+    #     filename.replace('.nc', '.png')), dpi=300)
+    # plt.savefig(os.path.join(plotdir,
+    #     filename.replace('.nc', '.pdf')))
+    plt.savefig(outfile + '.png', dpi=300)
+    plt.savefig(outfile + '.pdf')
     # display
     plt.show()
 
@@ -156,13 +159,17 @@ if __name__ == '__main__':
         default=15)
     parser.add_argument(
         '--buffer', type=int, dest='buffer', required=False,
-        default=7)
+        default=12)
     parser.add_argument(
         '--figsize', type=int, dest='figsize', required=False,
         default=15)
     parser.add_argument(
         '--scalar_field', type=str, dest='scalar_field', required=False,
         default='T')
+    parser.add_argument(
+        '--scalar_field_scale', type=float, dest='scalar_field_scale',
+        required=False,
+        default=1)
     parser.add_argument(
         '--title', type=str, dest='title', required=False,
         default='')
@@ -178,6 +185,7 @@ if __name__ == '__main__':
               'buffer' : args.buffer,
               'figsize' : args.figsize,
               'scalar_field' : args.scalar_field,
+              'scalar_field_scale' : args.scalar_field_scale,
               'title' : args.title}
 
     plot_fields(args.datadir,
