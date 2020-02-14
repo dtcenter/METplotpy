@@ -1,7 +1,7 @@
 
 **Line plot README**
 
-This file describes the informaton pertaining to generating line plots in Python Plotly.  The user must supply
+This file describes the information pertaining to generating line plots in Python Plotly.  The user must supply
 a custom configuration file indicating the text files that correspond to each line.  One file per line, where
 each file is a list of x- and y-point values.
 
