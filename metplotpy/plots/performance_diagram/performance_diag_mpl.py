@@ -6,7 +6,7 @@ def performance_diagram(perf_data):
     '''
         A preliminary script that generates performance diagram of one fictitious model of data with POD and FAR
         values.  Hard-coding of labels for x-axis, y-axis, CSI lines and bias lines, contour colors for the CSI
-        curves.  
+        curves.
 
 
         Args:
@@ -19,6 +19,9 @@ def performance_diagram(perf_data):
     figsize = (9, 8)
     markers = ['.', '*']
     colors = ['r', 'k']
+    fig = plt.figure()
+    # ax1 = fig.add_subplot(111)
+
     xlabel = "Success Ratio (1-FAR)"
     ylabel = "Probability of Detection"
     ticks = np.arange(0.1, 1.1, 0.1)
@@ -31,10 +34,18 @@ def performance_diagram(perf_data):
     sr_g, pod_g = np.meshgrid(grid_ticks, grid_ticks)
     bias = pod_g / sr_g
     csi = 1.0 / (1.0 / sr_g + 1.0 / pod_g - 1.0)
+    # CSI lines are filled contour, so that they aren't overwritten by the contour plot lines of the bias
     csi_contour = plt.contourf(sr_g, pod_g, csi, np.arange(0.1, 1.1, 0.1), extend="max", cmap=csi_cmap)
-    # csi_contour = plt.contourf(sr_g, pod_g, csi, np.arange(0.1, 1.1, 0.1), extend="max")
-    b_contour = plt.contour(sr_g, pod_g, bias, [0.5, 1, 1.5, 2, 4], colors="k", linestyles="dashed")
-    plt.clabel(b_contour, fmt="%1.1f", manual=[(0.2, 0.9), (0.4, 0.9), (0.6, 0.9), (0.7, 0.7)])
+
+    # This will get overwritten by the b_contour plot, that's why we need to create a filled contour plot of the CSI
+    # lines
+    # csi_contour = plt.contour(csi, np.arange(0.1, 1.1, 0.1), extend="max", cmap="binary")
+    b_contour = plt.contour(sr_g, pod_g, bias, [0.3, 0.5, 0.8,1, 1.3, 1.5, 2.0, 3.0,  5.0, 10.0], colors="k", linestyles="dashed")
+    # b_contour = plt.contour(sr_g, pod_g, bias, [0.5, 1, 1.5, 2, 4], colors="k", linestyles="dashed")
+
+    # coordinate location of where to put the label for the contour
+    plt.clabel(b_contour, fmt="%1.1f", manual=[(0.9, 0.225),(0.97, 0.415),(0.9,0.7),(0.7,0.7),(0.6, 0.9),(0.7, 0.9), (0,1.0),(0, 2.0),(0,5.0),(0,10.) ])
+    # plt.clabel(b_contour, fmt="%1.1f", manual=[(0.2, 0.9), (0.4, 0.9), (0.6, 0.9), (0.7, 0.7)])
     cbar = plt.colorbar(csi_contour)
     cbar.set_label(csi_label, fontsize=14)
     plt.xlabel(xlabel, fontsize=14)
