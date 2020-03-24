@@ -39,7 +39,9 @@ class PerformanceDiagram(MetPlot):
         # create binary versions of the plot.
         # self.figure = self._create_figure()
 
-        self.plot_legend = False
+        self.plot_contour_legend = False
+        self.output_file = "./performance_diagram.png"
+
     def __repr__(self):
         """ Implement repr which can be useful for debugging this
             class.
@@ -55,7 +57,7 @@ class PerformanceDiagram(MetPlot):
 
 
         Args:
-            perf_data: A list of performance data in the form of dictionary with keys of POD and SUCCESS_RATE
+            perf_data: A dictionary, keys= POD, SR (Success Rate) values=lists of POD and SR respectively
 
         Returns:
             Generates a performance diagram with equal lines of CSI (Critical Success Index) and equal lines
@@ -70,7 +72,7 @@ class PerformanceDiagram(MetPlot):
         ax1 = fig.add_subplot(111)
         ax2 = ax1.twinx()
 
-        xlabel = "Success Ratio (1-FAR)"
+        xlabel = "Success Ratio"
         ylabel = "Probability of Detection"
 
         ticks = np.arange(0.1, 1.1, 0.1)
@@ -108,29 +110,30 @@ class PerformanceDiagram(MetPlot):
 
         # Optional: plot the legend for the contour lines representing the
         # equal lines of CSI.
-        plot_legend = self.plot_legend
-        if plot_legend:
+        plot_contour_legend = self.plot_contour_legend
+        if plot_contour_legend:
              cbar = plt.colorbar(csi_contour)
-             cbar.set_label(csi_label, fontsize=14)
+             cbar.set_label(csi_label, fontsize=9)
         else:
-            ax2.set_ylabel(csi_label, fontsize=14)
+            ax2.set_ylabel(csi_label, fontsize=9)
 
-        # plt.xlabel(xlabel, fontsize=14)
-        ax1.set_xlabel(xlabel, fontsize=14)
-        # plt.ylabel(ylabel, fontsize=14)
-        ax1.set_ylabel(ylabel, fontsize=14)
         plt.xticks(ticks)
         plt.yticks(ticks)
         plt.title(title, fontsize=14, fontweight="bold")
-        plt.text(0.48, 0.6, "Frequency Bias", fontdict=dict(fontsize=14, rotation=45))
-        legend_params = dict(loc=4, fontsize=12, framealpha=1, frameon=True)
-        # plt.legend(**legend_params)
+        plt.text(0.48, 0.6, "Frequency Bias", fontdict=dict(fontsize=10, rotation=45), alpha=.5)
+        legend_params = dict(loc=4, fontsize=7, framealpha=.8, frameon=True)
+        plt.legend(**legend_params)
         # plt.figure(figsize=figsize)
-        for perf in perf_data:
-            # plt.plot(perf["SUCCESS_RATIO"], perf["POD"], marker=".", color='r',
-            #          label="label")
-            plt.plot(perf["SUCCESS_RATIO"], perf["POD"], marker=".", color='r',
-                     label="label")
+        sr_array = perf_data['SR']
+        pod_array = perf_data['POD']
+
+        plt.plot(sr_array, pod_array, linestyle = '--', marker=".", color='r', label="Model A", alpha=0.5)
+        # ax2.legend(bbox_to_anchor=(0., -.12, 1., -.12), loc='lower left', mode='expand',  borderaxespad=0., ncol=5)
+        ax2.legend(bbox_to_anchor=(0, -.14, 1,-.14), loc='lower left', mode='expand',  borderaxespad=0., ncol=5)
+        ax1.xaxis.set_label_coords(-0.01, -0.02)
+        ax1.set_xlabel(xlabel, fontsize=9)
+        ax1.set_ylabel(ylabel, fontsize=9)
+        plt.savefig(self.output_file)
         plt.show()
 
 def generate_random_data(n):
@@ -144,7 +147,8 @@ def generate_random_data(n):
             perf_data: A list of POD and FAR values represented as a dictionary
     '''
 
-    perf_data = []
+    sr_data = []
+    pod_data = []
     # create n-sets of POD, FAR dataset
     far = np.random.randint(size=n, low=1, high=9)
     np.random.seed(seed=234)
@@ -157,12 +161,14 @@ def generate_random_data(n):
     # to convert to the success ratio
     success_ratio = [1-x*0.1 for x in far]
 
+    perf_data = {}
     for i in range(n):
-        cur_perf = {}
-        cur_perf["POD"] = pod_values[i]
-        cur_perf["SUCCESS_RATIO"] =success_ratio[i]
-        perf_data.append(cur_perf)
 
+        pod_data.append(pod_values[i])
+        sr_data.append(success_ratio[i])
+
+    perf_data['SR'] = sr_data
+    perf_data['POD'] = pod_data
     return perf_data
 
 def get_parameters():
@@ -184,12 +190,8 @@ def get_parameters():
 if __name__ == "__main__":
 
     # number of POD, 1-FAR
-    num = 7
-    perf_list = generate_random_data(num)
-    for perf in perf_list:
-        pod = perf["POD"]
-        success = perf['SUCCESS_RATIO']
-        # print(f'pod: {pod}| success ratio:{success}')
+    num = 5
+    perf_dict = generate_random_data(num)
 
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
@@ -201,7 +203,7 @@ if __name__ == "__main__":
 
     try:
       p = PerformanceDiagram(docs)
-      p.generate_diagram(perf_list)
+      p.generate_diagram(perf_dict)
     except ValueError as ve:
         print(ve)
 
