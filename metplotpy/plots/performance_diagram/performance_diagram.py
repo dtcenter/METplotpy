@@ -1,4 +1,3 @@
-
 """
 Class Name: performance_diagram.py
  """
@@ -41,6 +40,9 @@ class PerformanceDiagram(MetPlot):
 
         self.plot_contour_legend = False
         self.output_file = "./performance_diagram.png"
+        # NOTE:  Support for only 5 models/series
+        self.marker_list = ['.', 'o', '*', '+', 's']
+        self.color_list = ['deepskyblue', 'r', 'darkorange', 'g', 'b']
 
     def __repr__(self):
         """ Implement repr which can be useful for debugging this
@@ -48,6 +50,34 @@ class PerformanceDiagram(MetPlot):
         """
 
         return f'PerformanceDiagram({self.parameters!r})'
+
+    def get_xaxis_title(self):
+        """ Override the method in the parent class, MetPlot, as this is located
+            in a different location in the config file.
+        """
+
+        return self.parameters['xaxis']['title']
+
+    def get_yaxis_title(self):
+        """ Override the method in the parent class, MetPlot, as this is located
+            in a different location in the config file.
+        """
+
+        return self.parameters['yaxis']['title']
+
+    def show_in_browser(self):
+        """For implementation in plotly only:
+           Creates a plot and opens it in the browser.
+
+                 Args:
+
+                 Returns:
+
+                 """
+        if self.figure:
+            self.figure.show()
+        else:
+            print("Matplotlib implementation of this plot, therefore not viewable in browser.")
 
     def generate_diagram(self, perf_data):
         '''
@@ -57,63 +87,72 @@ class PerformanceDiagram(MetPlot):
 
 
         Args:
-            perf_data: A dictionary, keys= POD, SR (Success Rate) values=lists of POD and SR respectively
+            perf_data: A list of dictionaries, with keys=model, POD, SR (Success Rate) values=name of model/series, lists of POD and SR respectively
 
         Returns:
             Generates a performance diagram with equal lines of CSI (Critical Success Index) and equal lines
             of bias
         '''
 
-        figsize = (9, 8)
-        markers = ['.', '*']
-
-        colors = ['r', 'k']
         fig = plt.figure()
+
+        #
+        # plot the "template" that creates the equal lines of CSI and equal lines of Bias that
+        # are characteristic of a performance diagram.
+        #
+
+        # add an extra y-axis to indicate tick marks for the equal lines of CSI
         ax1 = fig.add_subplot(111)
         ax2 = ax1.twinx()
 
-        xlabel = "Success Ratio"
-        ylabel = "Probability of Detection"
-
+        # Use the numpy meshgrid to assist in generating the equal lines of BIAS and CSI, based on
+        # David John Gagne's approach: https://gist.github.com/djgagne/64516e3ea268ec31fb34
         ticks = np.arange(0.1, 1.1, 0.1)
-        dpi = 300
-        # csi_cmap = "Blues"
+
+        # use a grayscale color map for the filled contour
         csi_cmap = "binary"
-        csi_label = "Critical Success Index"
 
-
-        # Retrieve settings from the config file
-        title = p.get_title()['text']
-        # set the start value to a non-zero number to avoid the runtime divide-by-zero error
+        # set the start value to a miniscule, non-zero number to avoid the runtime divide-by-zero error
         grid_ticks = np.arange(0.000001, 1.01, 0.01)
+
         sr_g, pod_g = np.meshgrid(grid_ticks, grid_ticks)
         bias = pod_g / sr_g
         csi = 1.0 / (1.0 / sr_g + 1.0 / pod_g - 1.0)
-        # CSI lines are filled contour, so that they aren't overwritten by the contour plot lines of the bias
-        csi_contour = plt.contourf(sr_g, pod_g, csi, np.arange(0.1, 1.1, 0.1), extend="max", cmap=csi_cmap, alpha=.25)
+        csi_label = "Critical Success Index"
 
-        # This will get overwritten by the b_contour plot, that's why we need to create a filled contour plot of the CSI
-        # lines
-        b_contour = plt.contour(sr_g, pod_g, bias, [0.3, 0.5, 0.8, 1, 1.3, 1.5, 2.0, 3.0, 5.0, 10.0], colors="k",
-                            linestyles="dashed")
+        # CSI lines are filled contour, so they won't be overwritten by the contour plot lines of the bias
+        csi_contour = ax1.contourf(sr_g, pod_g, csi, np.arange(0.1, 1.1, 0.1), extend="max", cmap=csi_cmap, alpha=.25)
 
-        # original 4 contour lines used by John David Gagne
-        # b_contour = plt.contour(sr_g, pod_g, bias, [0.5, 1, 1.5, 2, 4], colors="k", linestyles="dashed")
+        # The b_contour plot will be plotted on top of the filled contour plot representing the equal lines of CSI
+        b_contour = ax1.contour(sr_g, pod_g, bias, [0.3, 0.5, 0.8, 1, 1.3, 1.5, 2.0, 3.0, 5.0, 10.0], colors="k",
+                                linestyles="dashed")
 
-        # coordinate location of where to put the label for the equal bias contour lines
-        plt.clabel(b_contour, fmt="%1.1f",fontsize=6,
-                   manual=[(0.9, 0.225), (0.97, 0.415), (0.9, 0.7), (0.7, 0.7), (0.6, 0.9), (0.7, 0.9), (0, 1.), (0, 2.0),
+        # coordinate location of where to put the label for the equal bias contour lines, since we haven't
+        # created a second x-axis (at the top of the plot)
+        plt.clabel(b_contour, fmt="%1.1f", fontsize=6,
+                   manual=[(0.9, 0.225), (0.97, 0.415), (0.9, 0.7), (0.7, 0.7), (0.6, 0.9), (0.7, 0.9), (0, 1.),
+                           (0, 2.0),
                            (0., 5), (0.1, 10.)])
 
-        # Original locations used by John David Gagne
-        # plt.clabel(b_contour, fmt="%1.1f", manual=[(0.2, 0.9), (0.4, 0.9), (0.6, 0.9), (0.7, 0.7)])
+        #
+        # Retrieve settings from the config file
+        #
+        title = self.get_title()['text']
 
+        # Format the underlying performance diagram axes, labels, equal lines of CSI, equal lines of bias.
+        xlabel = "Success Ratio (1-FAR)"
+        ylabel = "Probability of Detection"
+        # xlabel = self.get_x_axis_title()
+        # ylabel = self.get_yaxis_title()
+
+        #
         # Optional: plot the legend for the contour lines representing the
         # equal lines of CSI.
+        #
         plot_contour_legend = self.plot_contour_legend
         if plot_contour_legend:
-             cbar = plt.colorbar(csi_contour)
-             cbar.set_label(csi_label, fontsize=9)
+            cbar = plt.colorbar(csi_contour)
+            cbar.set_label(csi_label, fontsize=9)
         else:
             ax2.set_ylabel(csi_label, fontsize=9)
 
@@ -121,77 +160,78 @@ class PerformanceDiagram(MetPlot):
         plt.yticks(ticks)
         plt.title(title, fontsize=14, fontweight="bold")
         plt.text(0.48, 0.6, "Frequency Bias", fontdict=dict(fontsize=10, rotation=45), alpha=.5)
-        legend_params = dict(loc=4, fontsize=7, framealpha=.8, frameon=True)
-        plt.legend(**legend_params)
-        # plt.figure(figsize=figsize)
-        sr_array = perf_data['SR']
-        pod_array = perf_data['POD']
 
-        plt.plot(sr_array, pod_array, linestyle = '--', marker=".", color='r', label="Model A", alpha=0.5)
-        # ax2.legend(bbox_to_anchor=(0., -.12, 1., -.12), loc='lower left', mode='expand',  borderaxespad=0., ncol=5)
-        ax2.legend(bbox_to_anchor=(0, -.14, 1,-.14), loc='lower left', mode='expand',  borderaxespad=0., ncol=5)
-        ax1.xaxis.set_label_coords(-0.01, -0.02)
-        ax1.set_xlabel(xlabel, fontsize=9)
-        ax1.set_ylabel(ylabel, fontsize=9)
+        #
+        # plot the statistics data for each model/series
+        #
+        for idx, data in enumerate(perf_data):
+            model = data['model']
+            sr_array = data['SUCCESS_RATIO']
+            pod_array = data['POD']
+
+            # Select the marker and color based on the index of the
+            plt.plot(sr_array, pod_array, linestyle='-', marker=self.marker_list[idx], color=self.color_list[idx],
+                     label=model, alpha=0.5)
+            ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
+                       prop={'size': 6})
+            ax1.xaxis.set_label_coords(0.5, -0.066)
+            ax1.set_xlabel(xlabel, fontsize=9)
+            ax1.set_ylabel(ylabel, fontsize=9)
         plt.savefig(self.output_file)
         plt.show()
 
-def generate_random_data(n):
-    ''' return a list of dictionaries containing the Performance data:
-        perf_data[i] = {'SUCCESS_RATIO': .xyz, 'POD': .lmn}
-        Where the success ratio=1- FAR
+
+def generate_sample_data(n, model_names):
+    '''
+
 
         Args:
             n:  The number of POD, Success ratio performance point "pairs"
+            model_names:  A list of model names
         Returns:
-            perf_data: A list of POD and FAR values represented as a dictionary
+            model_stat_data: A list of dictionaries, where the keys are model, SUCCESS_RATE, and POD
     '''
 
-    sr_data = []
-    pod_data = []
-    # create n-sets of POD, FAR dataset
-    far = np.random.randint(size=n, low=1, high=9)
-    np.random.seed(seed=234)
-    pod = np.random.randint(size=n, low=1, high=9)
+    model_stat_data_list = []
+    model_stat_dict = {}
 
-    # Realistic values are between 0 and 1.0 let's multiply each value by 0.1
-    pod_values = [x*.01 for x in pod]
+    for i, model in enumerate(model_names):
+        # create a list of FAR and POD statistics, consisting of n-points.
+        far = np.random.randint(size=n, low=1, high=8)
+        np.random.seed(seed=234)
+        pod = np.random.randint(size=n, low=1, high=8)
 
-    # success ratio, 1-FAR; multiply each FAR value by 0.1 then do arithmetic
-    # to convert to the success ratio
-    success_ratio = [1-x*0.1 for x in far]
+        # Realistic values are between 0 and 1.0 let's multiply each value by 0.1
+        if i % 5 == 0:
+            pod_values = [x * .05 for x in pod]
+        elif i % 4 == 0:
+            pod_values = [x * .04 for x in pod]
+        elif i % 3 == 0:
+            pod_values = [x * .03 for x in pod]
+        elif i % 2 == 0:
+            pod_values = [x * 0.2 for x in pod]
+        else:
+            pod_values = [x * 0.01 for x in pod]
 
-    perf_data = {}
-    for i in range(n):
+        # success ratio, 1-FAR; multiply each FAR value by 0.1 then do arithmetic
+        # to convert to the success ratio
+        success_ratio = [1 - x * 0.1 for x in far]
 
-        pod_data.append(pod_values[i])
-        sr_data.append(success_ratio[i])
+        model_stat_dict['model'] = model
+        model_stat_dict['SUCCESS_RATIO'] = success_ratio
+        model_stat_dict['POD'] = pod_values
+        model_stat_data_list.append(model_stat_dict)
+        model_stat_dict = {}
+    return model_stat_data_list
 
-    perf_data['SR'] = sr_data
-    perf_data['POD'] = pod_data
-    return perf_data
 
-def get_parameters():
-    ''' Temporary function to return parameters (configuration values)
-        needed to generate the performance diagram.
-
-        Args:
-
-        Returns:
-            params:  a dictionary that contains the keywords and their corresponding values
-                     representing the user's settings for the performance diagram
-    '''
-
-    params = {}
-    params['title'] = "Example performance diagram"
-
-    return params
-
-if __name__ == "__main__":
-
-    # number of POD, 1-FAR
-    num = 5
-    perf_dict = generate_random_data(num)
+def main():
+    """
+            Generates a sample, default, two-trace line plot using a combination of
+            default and custom config files on sample data found in this directory.
+            The location of the input data is defined in either the default or
+            custom config file.
+        """
 
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
@@ -202,8 +242,16 @@ if __name__ == "__main__":
             print(exc)
 
     try:
-      p = PerformanceDiagram(docs)
-      p.generate_diagram(perf_dict)
+        # number of POD, 1-FAR
+        num_points = 7
+        model_names = ['Model 1', 'Model 2', 'Model 3', 'Series for GFS', 'Series for HRRR']
+        perf_dict = generate_sample_data(num_points, model_names)
+        pd = PerformanceDiagram(docs)
+        pd.generate_diagram(perf_dict)
+        pd.save_to_file()
     except ValueError as ve:
         print(ve)
 
+
+if __name__ == "__main__":
+    main()
