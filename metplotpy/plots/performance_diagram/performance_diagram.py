@@ -43,6 +43,8 @@ class PerformanceDiagram(MetPlot):
         # NOTE:  Support for only 5 models/series
         self.marker_list = ['.', 'o', '*', '+', 's']
         self.color_list = ['deepskyblue', 'r', 'darkorange', 'g', 'b']
+        self.xaxis = self.get_xaxis_title()
+        self.yaxis = self.get_yaxis_title()
 
     def __repr__(self):
         """ Implement repr which can be useful for debugging this
@@ -79,7 +81,7 @@ class PerformanceDiagram(MetPlot):
         else:
             print("Matplotlib implementation of this plot, therefore not viewable in browser.")
 
-    def generate_diagram(self, perf_data):
+    def _create_figure(self, perf_data):
         '''
         Generate the performance diagram of up to five models with POD and FAR
         values.  Hard-coding of labels for x-axis, y-axis, CSI lines and bias lines, contour colors for the CSI
@@ -140,10 +142,10 @@ class PerformanceDiagram(MetPlot):
         title = self.get_title()['text']
 
         # Format the underlying performance diagram axes, labels, equal lines of CSI, equal lines of bias.
-        xlabel = "Success Ratio (1-FAR)"
-        ylabel = "Probability of Detection"
-        # xlabel = self.get_x_axis_title()
-        # ylabel = self.get_yaxis_title()
+        # xlabel = "Success Ratio (1-FAR)"
+        # ylabel = "Probability of Detection"
+        xlabel = self.xaxis
+        ylabel = self.yaxis
 
         #
         # Optional: plot the legend for the contour lines representing the
@@ -181,48 +183,48 @@ class PerformanceDiagram(MetPlot):
         plt.show()
 
 
-def generate_sample_data(n, model_names):
-    '''
+    def generate_sample_data(self, n, model_names):
+        '''
 
 
-        Args:
-            n:  The number of POD, Success ratio performance point "pairs"
-            model_names:  A list of model names
-        Returns:
-            model_stat_data: A list of dictionaries, where the keys are model, SUCCESS_RATE, and POD
-    '''
+            Args:
+                n:  The number of POD, Success ratio performance point "pairs"
+                model_names:  A list of model names
+            Returns:
+                model_stat_data: A list of dictionaries, where the keys are model, SUCCESS_RATE, and POD
+        '''
 
-    model_stat_data_list = []
-    model_stat_dict = {}
-
-    for i, model in enumerate(model_names):
-        # create a list of FAR and POD statistics, consisting of n-points.
-        far = np.random.randint(size=n, low=1, high=8)
-        np.random.seed(seed=234)
-        pod = np.random.randint(size=n, low=1, high=8)
-
-        # Realistic values are between 0 and 1.0 let's multiply each value by 0.1
-        if i % 5 == 0:
-            pod_values = [x * .05 for x in pod]
-        elif i % 4 == 0:
-            pod_values = [x * .04 for x in pod]
-        elif i % 3 == 0:
-            pod_values = [x * .03 for x in pod]
-        elif i % 2 == 0:
-            pod_values = [x * 0.2 for x in pod]
-        else:
-            pod_values = [x * 0.01 for x in pod]
-
-        # success ratio, 1-FAR; multiply each FAR value by 0.1 then do arithmetic
-        # to convert to the success ratio
-        success_ratio = [1 - x * 0.1 for x in far]
-
-        model_stat_dict['model'] = model
-        model_stat_dict['SUCCESS_RATIO'] = success_ratio
-        model_stat_dict['POD'] = pod_values
-        model_stat_data_list.append(model_stat_dict)
+        model_stat_data_list = []
         model_stat_dict = {}
-    return model_stat_data_list
+
+        for i, model in enumerate(model_names):
+            # create a list of FAR and POD statistics, consisting of n-points.
+            far = np.random.randint(size=n, low=1, high=8)
+            np.random.seed(seed=234)
+            pod = np.random.randint(size=n, low=1, high=8)
+
+            # Realistic values are between 0 and 1.0 let's multiply each value by 0.1
+            if i % 5 == 0:
+                pod_values = [x * .05 for x in pod]
+            elif i % 4 == 0:
+                pod_values = [x * .04 for x in pod]
+            elif i % 3 == 0:
+                pod_values = [x * .03 for x in pod]
+            elif i % 2 == 0:
+                pod_values = [x * 0.2 for x in pod]
+            else:
+                pod_values = [x * 0.01 for x in pod]
+
+            # success ratio, 1-FAR; multiply each FAR value by 0.1 then do arithmetic
+            # to convert to the success ratio
+            success_ratio = [1 - x * 0.1 for x in far]
+
+            model_stat_dict['model'] = model
+            model_stat_dict['SUCCESS_RATIO'] = success_ratio
+            model_stat_dict['POD'] = pod_values
+            model_stat_data_list.append(model_stat_dict)
+            model_stat_dict = {}
+        return model_stat_data_list
 
 
 def main():
@@ -245,9 +247,9 @@ def main():
         # number of POD, 1-FAR
         num_points = 7
         model_names = ['Model 1', 'Model 2', 'Model 3', 'Series for GFS', 'Series for HRRR']
-        perf_dict = generate_sample_data(num_points, model_names)
         pd = PerformanceDiagram(docs)
-        pd.generate_diagram(perf_dict)
+        perf_dict = pd.generate_sample_data(num_points, model_names)
+        pd._create_figure(perf_dict)
         pd.save_to_file()
     except ValueError as ve:
         print(ve)
