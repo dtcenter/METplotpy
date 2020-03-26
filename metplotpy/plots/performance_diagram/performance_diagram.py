@@ -199,22 +199,23 @@ class PerformanceDiagram(MetPlot):
 
         for i, model in enumerate(model_names):
             # create a list of FAR and POD statistics, consisting of n-points.
-            far = np.random.randint(size=n, low=1, high=8)
+            far = np.random.randint(size=n, low=1, high=9)
             np.random.seed(seed=234)
-            pod = np.random.randint(size=n, low=1, high=8)
+            pod = np.random.randint(size=n, low=1, high=9)
 
             # Realistic values are between 0 and 1.0 let's multiply each value by 0.1
             if i % 5 == 0:
-                pod_values = [x * .05 for x in pod]
+                pod_values = [x * .125 for x in pod]
             elif i % 4 == 0:
-                pod_values = [x * .04 for x in pod]
+                pod_values = [x * .12 for x in pod]
             elif i % 3 == 0:
-                pod_values = [x * .03 for x in pod]
+                pod_values = [x * .115 for x in pod]
             elif i % 2 == 0:
-                pod_values = [x * 0.2 for x in pod]
+                pod_values = [x * 0.11 for x in pod]
             else:
-                pod_values = [x * 0.01 for x in pod]
+                pod_values = [x * 0.1 for x in pod]
 
+            # pod_values = [x * 0.1 for x in pod]
             # success ratio, 1-FAR; multiply each FAR value by 0.1 then do arithmetic
             # to convert to the success ratio
             success_ratio = [1 - x * 0.1 for x in far]
