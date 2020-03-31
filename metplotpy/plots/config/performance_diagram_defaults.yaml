@@ -1,0 +1,47 @@
+---
+# Values specific to performance diagram plot
+# Line and marker plots of model/series data of Success Rate (1-FAR) on x-axis vs. CSI on y-axis.
+#       model.  Models are differentiated from one another by marker symbol and/or color
+title: Default title
+
+connect_data_gaps: true
+image_name: /tmp/performance_diagram.png
+legend:
+  on: false
+  x: 0.5
+  y: -0.3
+  font:
+    family: sans-serif
+    size: 12
+    color: black
+  bgcolor: White
+  bordercolor: Black
+  borderwidth: 2
+  xanchor: center # horizontal position anchor: (“auto” | “left” | “center” | “right” )
+  yanchor: top    # vertical position anchor: (“auto” | “left” | “center” | “right” )
+
+xaxis:
+  title: Success Rate (1 - FAR)
+yaxis:
+  title: Probability of Detection
+data_file: ./performance_stats_data.txt
+lines:
+  - name: Model 1
+    color: red
+    width: 1
+
+  - name: Model 2
+    color: blue
+    width: 1
+
+  - name: Model 3
+    color: yellow
+    width: 1
+
+  - name: Model 4
+    color: green
+    width: 1
+
+  - name: Model 5
+    color: orange
+    width: 1
