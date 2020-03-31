@@ -1,0 +1,45 @@
+---
+image_name: /tmp/performance_diagram.png
+
+legend:
+  on: false
+  x: 0.5
+  y: -0.3
+  font:
+    family: sans-serif
+    size: 12
+    color: black
+  bgcolor: # set to white in default config
+  bordercolor: # black in default config
+  borderwidth: 2
+
+connect_data_gaps: true
+title: Performance diagram - Dummy points
+xaxis:
+  title:  SUCCESS RATE (1 - FAR)
+yaxis:
+  title: Probability of Detection (POD)
+
+datafile: ./dummy.txt
+
+lines:
+
+  - name: Model 1
+    color: blue
+    width: 1
+
+  - name: Model 2
+    color: firebrick
+    width: 1
+
+  - name: Model 3
+    color: orange
+    width: 2
+
+  - name: Model4
+    color: limegreen
+    width: 1
+
+  - name: Model_C
+    color: pink
+    width: 2
