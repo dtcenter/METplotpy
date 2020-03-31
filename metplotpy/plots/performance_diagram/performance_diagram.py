@@ -28,6 +28,9 @@ class PerformanceDiagram(MetPlot):
     DEFAULT_MARKER_LIST = ['.', 'o', '*', '+', 's']
     DEFAULT_COLOR_LIST = ['deepskyblue', 'red', 'darkorange', 'green', 'blue']
     DEFAULT_LINE_WIDTH = [2,2,2,2,2]
+    DEFAULT_TITLE_FONT = 'sans-serif'
+    DEFAULT_TITLE_COLOR = 'blue'
+    DEFAULT_TITLE_FONTSIZE = 10
 
     def __init__(self, parameters, data):
         """ Creates a line plot consisting of one or more lines (traces), based on
@@ -46,7 +49,9 @@ class PerformanceDiagram(MetPlot):
         self.output_file = "./performance_diagram.png"
         self.xaxis = self.get_xaxis_title()
         self.yaxis = self.get_yaxis_title()
-
+        self.title = self.get_title()['text']
+        self.title_font = self.DEFAULT_TITLE_FONT
+        self.title_color = self.DEFAULT_TITLE_COLOR
         self.model_list = self._get_all_models()
         self.colors_list = self._get_all_colors()
         self.marker_list = self.DEFAULT_MARKER_LIST
@@ -78,6 +83,31 @@ class PerformanceDiagram(MetPlot):
         """
         # Invoke method from metcalcpy package to assist in retrieving data
         return []
+
+    def _get_title_font(self):
+        """
+           Retrieve the font family from a configuration file (either default or custom config file).
+
+           Args:
+
+           Returns:
+               title_font:  The name of the font family (string) to be applied to the title
+
+        """
+        return self.parameters['title']['font']
+
+    def _get_title_color(self):
+        """
+           Retrieve the text color for the title from a configuration file (either default or custom config file).
+
+           Args:
+
+           Returns:
+               title_color:  The name of the font color (string) to be applied to the title
+
+        """
+        return self.parameters['title']['color']
+
 
     def _get_all_colors(self):
 
@@ -233,7 +263,6 @@ class PerformanceDiagram(MetPlot):
         #
         # RETRIEVE SETTINGS FROM THE CONFIG FILE
         #
-        title = self.get_title()['text']
 
         # Format the underlying performance diagram axes, labels, equal lines of CSI, equal lines of bias.
         # xlabel = "Success Ratio (1-FAR)"
@@ -254,8 +283,8 @@ class PerformanceDiagram(MetPlot):
 
         plt.xticks(ticks)
         plt.yticks(ticks)
-        plt.title(title, fontsize=14, fontweight="bold")
-        plt.text(0.48, 0.6, "Frequency Bias", fontdict=dict(fontsize=10, rotation=45), alpha=.5)
+        plt.title(self.title, fontsize=11, fontweight="bold", fontfamily=self.DEFAULT_TITLE_FONT)
+        plt.text(0.48, 0.6, "Frequency Bias", fontdict=dict(fontsize=8, rotation=45), alpha=.3)
 
         #
         # PLOT THE STATISTICS DATA FOR EACH MODEL/SERIES (i.e. GENERATE THE LINES ON THE  the statistics data for each model/series
