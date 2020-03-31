@@ -6,19 +6,30 @@ __email__ = 'met_help@ucar.edu'
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
-import pandas as pd
+import metcalcpy
 from plots.met_plot import MetPlot
 
 
 class PerformanceDiagram(MetPlot):
-    """  Generates a performance diagram (multi line line plot)
-             where each line
-             A setting is over-ridden in the default configuration file if
-             it is defined in the custom configuration file.
+    """  Generates a performance diagram (multi-line line plot)
+         where each line represents a model/time series of Success ratio vs POD
+         A setting is over-ridden in the default configuration file if
+         it is defined in the custom configuration file.
 
-        """
 
-    def __init__(self, parameters):
+        To use:
+        >>> data = generate_sample_data()
+        >>> perf_diag = PerformanceDiagram(None, data)
+
+    """
+
+    # Default marker symbols and line colors. Colors can be chosen in config files.  For now, markers are hard-coded.
+    # Currently support maximum of five models (lines) in diagram.
+    DEFAULT_MARKER_LIST = ['.', 'o', '*', '+', 's']
+    DEFAULT_COLOR_LIST = ['deepskyblue', 'red', 'darkorange', 'green', 'blue']
+    DEFAULT_LINE_WIDTH = [2,2,2,2,2]
+
+    def __init__(self, parameters, data):
         """ Creates a line plot consisting of one or more lines (traces), based on
             settings indicated by parameters.
 
@@ -31,20 +42,22 @@ class PerformanceDiagram(MetPlot):
         # init common layout
         super().__init__(parameters, default_conf_filename)
 
+        self.plot_contour_legend = False
+        self.output_file = "./performance_diagram.png"
+        self.xaxis = self.get_xaxis_title()
+        self.yaxis = self.get_yaxis_title()
+
+        self.model_list = self._get_all_models()
+        self.colors_list = self._get_all_colors()
+        self.marker_list = self.DEFAULT_MARKER_LIST
+        self.linewidth_list = self._get_all_linewidths()
+
         # create figure
         # pylint:disable=assignment-from-no-return
         # Need to have a self.figure that we can pass along to
         # the methods in met_plot.py (MetPlot class methods) to
         # create binary versions of the plot.
-        # self.figure = self._create_figure()
-
-        self.plot_contour_legend = False
-        self.output_file = "./performance_diagram.png"
-        # NOTE:  Support for only 5 models/series
-        self.marker_list = ['.', 'o', '*', '+', 's']
-        self.color_list = ['deepskyblue', 'r', 'darkorange', 'g', 'b']
-        self.xaxis = self.get_xaxis_title()
-        self.yaxis = self.get_yaxis_title()
+        self.figure = self._create_figure(data)
 
     def __repr__(self):
         """ Implement repr which can be useful for debugging this
@@ -52,6 +65,77 @@ class PerformanceDiagram(MetPlot):
         """
 
         return f'PerformanceDiagram({self.parameters!r})'
+
+    def get_data(self):
+        """
+            Invokes the appropriate file reader from the metcalcpy package.
+            Args:
+                input_filename:  The name of the input filename to be read
+
+            Return:
+                plotting_data:  A list of dictionaries that have keys corresponding to the model/series name, init time, valid time,
+                                forecast lead, probability of detection (POD), and false alarm rate (FAR)
+        """
+        # Invoke method from metcalcpy package to assist in retrieving data
+        return []
+
+    def _get_all_colors(self):
+
+        """
+           Retrieves the colors for lines and markers, from the config file or use the defaults if undefined in config.
+           Args:
+
+           Returns:
+               colors_list or colors_from_config: a list of the colors to be used for the lines (
+               and their corresponding marker symbols)
+        """
+
+        lines = self.parameters['lines']
+        color_list = []
+        for line in lines:
+            color_list.append(line['color'])
+        if len(color_list) != len(lines) or color_list is None:
+            # Not all lines have color (no way to guess what the user intended)
+            # or no colors are specified in the config file, use default values
+            return self.DEFAULT_COLOR_LIST
+        else:
+            return color_list
+
+
+    def _get_all_models(self):
+        """
+            Get a list of the models specified in the configuration file.
+
+            Args:
+
+            Returns:
+                a list of models specified in the default or custom config file.
+        """
+
+        lines = self.parameters['lines']
+        model_list = []
+        for line in lines:
+            model_list.append(line['name'])
+
+        return model_list
+
+    def _get_all_linewidths(self):
+        """ Retrieve all the linewidths from the configuration file, if not specified in any config file, use
+            the default values of 2
+
+            Args:
+
+            Returns:
+                linewidth_list: a list of linewidths corresponding to each line (model)
+        """
+
+        linewidths_list = []
+        lines = self.parameters['lines']
+        for line in lines:
+            linewidth = line['width']
+            linewidths_list.append(linewidth)
+        return linewidths_list
+
 
     def get_xaxis_title(self):
         """ Override the method in the parent class, MetPlot, as this is located
@@ -67,9 +151,18 @@ class PerformanceDiagram(MetPlot):
 
         return self.parameters['yaxis']['title']
 
+    def save_to_file(self, plt_obj):
+        """
+          This is the matplotlib-friendly implementation, which overrides the parent class'
+          version (which is a Python Plotly implementation).
+
+        """
+        plt_obj.savefig(self.output_file)
+
+
     def show_in_browser(self):
-        """For implementation in plotly only:
-           Creates a plot and opens it in the browser.
+        """***NOTE***: This method is required for implementation in plotly.
+           In a plotly implrmentation, this creates a plot and opens it in the browser.
 
                  Args:
 
@@ -79,12 +172,13 @@ class PerformanceDiagram(MetPlot):
         if self.figure:
             self.figure.show()
         else:
-            print("Matplotlib implementation of this plot, therefore not viewable in browser.")
+            #
+            print("Matplotlib implementation of this plot, this plot won't be visable in browser.")
 
     def _create_figure(self, perf_data):
         '''
-        Generate the performance diagram of up to five models with POD and FAR
-        values.  Hard-coding of labels for x-axis, y-axis, CSI lines and bias lines, contour colors for the CSI
+        Generate the performance diagram of up to five models with POD and 1-FAR (Success Rate)
+        values.  Hard-coding of labels for CSI lines and bias lines, and contour colors for the CSI
         curves.
 
 
@@ -99,8 +193,8 @@ class PerformanceDiagram(MetPlot):
         fig = plt.figure()
 
         #
-        # plot the "template" that creates the equal lines of CSI and equal lines of Bias that
-        # are characteristic of a performance diagram.
+        # PLOT THE "TEMPLATE" THAT CREATES THE EQUAL LINES OF CSI AND EQUAL LINES OF BIAS
+        # THAT COMPRISE THE PERFORMANCE DIAGRAM
         #
 
         # add an extra y-axis to indicate tick marks for the equal lines of CSI
@@ -122,22 +216,22 @@ class PerformanceDiagram(MetPlot):
         csi = 1.0 / (1.0 / sr_g + 1.0 / pod_g - 1.0)
         csi_label = "Critical Success Index"
 
-        # CSI lines are filled contour, so they won't be overwritten by the contour plot lines of the bias
+        # CSI lines are filled contour lines
         csi_contour = ax1.contourf(sr_g, pod_g, csi, np.arange(0.1, 1.1, 0.1), extend="max", cmap=csi_cmap, alpha=.25)
 
-        # The b_contour plot will be plotted on top of the filled contour plot representing the equal lines of CSI
-        b_contour = ax1.contour(sr_g, pod_g, bias, [0.3, 0.5, 0.8, 1, 1.3, 1.5, 2.0, 3.0, 5.0, 10.0], colors="k",
+        # The equal lines of CSI are represented by ordinary contour lines
+        bias_contour = ax1.contour(sr_g, pod_g, bias, [0.3, 0.5, 0.8, 1, 1.3, 1.5, 2.0, 3.0, 5.0, 10.0], colors="k",
                                 linestyles="dashed")
 
         # coordinate location of where to put the label for the equal bias contour lines, since we haven't
         # created a second x-axis (at the top of the plot)
-        plt.clabel(b_contour, fmt="%1.1f", fontsize=6,
+        plt.clabel(bias_contour, fmt="%1.1f", fontsize=6,
                    manual=[(0.9, 0.225), (0.97, 0.415), (0.9, 0.7), (0.7, 0.7), (0.6, 0.9), (0.7, 0.9), (0, 1.),
                            (0, 2.0),
                            (0., 5), (0.1, 10.)])
 
         #
-        # Retrieve settings from the config file
+        # RETRIEVE SETTINGS FROM THE CONFIG FILE
         #
         title = self.get_title()['text']
 
@@ -164,16 +258,18 @@ class PerformanceDiagram(MetPlot):
         plt.text(0.48, 0.6, "Frequency Bias", fontdict=dict(fontsize=10, rotation=45), alpha=.5)
 
         #
-        # plot the statistics data for each model/series
+        # PLOT THE STATISTICS DATA FOR EACH MODEL/SERIES (i.e. GENERATE THE LINES ON THE  the statistics data for each model/series
         #
         for idx, data in enumerate(perf_data):
-            model = data['model']
+            # model = data['model']
             sr_array = data['SUCCESS_RATIO']
             pod_array = data['POD']
 
             # Select the marker and color based on the index of the
-            plt.plot(sr_array, pod_array, linestyle='-', marker=self.marker_list[idx], color=self.color_list[idx],
-                     label=model, alpha=0.5)
+            # plt.plot(sr_array, pod_array, linestyle='-', marker=self.marker_list[idx], color=self.color_list[idx],
+            #          label=model, alpha=0.5)
+            plt.plot(sr_array, pod_array, linestyle='-', linewidth=self.linewidth_list[idx], marker=self.marker_list[idx], color=self.colors_list[idx],
+                     label=self.model_list[idx], alpha=0.5)
             ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
                        prop={'size': 6})
             ax1.xaxis.set_label_coords(0.5, -0.066)
@@ -181,51 +277,94 @@ class PerformanceDiagram(MetPlot):
             ax1.set_ylabel(ylabel, fontsize=9)
         plt.savefig(self.output_file)
         plt.show()
+        self.save_to_file(plt)
 
-
-    def generate_sample_data(self, n, model_names):
-        '''
-
+    def read_input_data(self):
+        """
+            Based on the input filename, invoke method from the metcalcpy package to
+            open and create a list of dictionaries containing the following keys: model, fcst_valid_beg, fcst_lead, vx_mask,
+             stat_name, stat_value.  The value for stat_value is a list of statistics (either PODY or FAR values) for
+             each model-vx_mask combination.
 
             Args:
-                n:  The number of POD, Success ratio performance point "pairs"
-                model_names:  A list of model names
+
+            Return:
+
+        """
+
+        stat_data_list = []
+
+        return stat_data_list
+
+    def create_series_data(self, stat_data_list):
+        """
+            From the input data, create the series data for model-vx_mask pairings to be plotted on the
+            performance diagram.
+
+            Args:
+                stat_data_list: The input data containing the model, vx-mask region, PODY and FAR statistics
+                                values used in creating the performance diagram of interest.
             Returns:
-                model_stat_data: A list of dictionaries, where the keys are model, SUCCESS_RATE, and POD
-        '''
 
-        model_stat_data_list = []
+        """
+
+        series_data = []
+
+        return series_data
+
+
+
+def generate_sample_data(params):
+    '''
+        Args:
+            params:  Input parameters read in from the custom configuration file.
+        Returns:
+            model_stat_data: A list of dictionaries, where the keys are model, SUCCESS_RATE, and POD
+    '''
+
+    all_lines = params['lines']
+    model_names = []
+    for line in all_lines:
+        model_names.append(line['name'])
+
+    num_points = 7
+
+    # Test invocation of metcalcpy package's method
+    # if metcalcpy.represents_int(num_points):
+    #     print(f"metcalcpy's event equalization function works")
+
+    model_stat_data_list = []
+    model_stat_dict = {}
+
+    for i, model in enumerate(model_names):
+        # create a list of FAR and POD statistics, consisting of n-points.
+        far = np.random.randint(size=num_points, low=1, high=9)
+        np.random.seed(seed=234)
+        pod = np.random.randint(size=num_points, low=1, high=9)
+
+        # Realistic values are between 0 and 1.0 let's multiply each value by 0.1
+        if i % 5 == 0:
+            pod_values = [x * .125 for x in pod]
+        elif i % 4 == 0:
+            pod_values = [x * .12 for x in pod]
+        elif i % 3 == 0:
+            pod_values = [x * .115 for x in pod]
+        elif i % 2 == 0:
+            pod_values = [x * 0.11 for x in pod]
+        else:
+            pod_values = [x * 0.1 for x in pod]
+
+        # pod_values = [x * 0.1 for x in pod]
+        # success ratio, 1-FAR; multiply each FAR value by 0.1 then do arithmetic
+        # to convert to the success ratio
+        success_ratio = [1 - x * 0.1 for x in far]
+
+        model_stat_dict['model'] = model
+        model_stat_dict['SUCCESS_RATIO'] = success_ratio
+        model_stat_dict['POD'] = pod_values
+        model_stat_data_list.append(model_stat_dict)
         model_stat_dict = {}
-
-        for i, model in enumerate(model_names):
-            # create a list of FAR and POD statistics, consisting of n-points.
-            far = np.random.randint(size=n, low=1, high=9)
-            np.random.seed(seed=234)
-            pod = np.random.randint(size=n, low=1, high=9)
-
-            # Realistic values are between 0 and 1.0 let's multiply each value by 0.1
-            if i % 5 == 0:
-                pod_values = [x * .125 for x in pod]
-            elif i % 4 == 0:
-                pod_values = [x * .12 for x in pod]
-            elif i % 3 == 0:
-                pod_values = [x * .115 for x in pod]
-            elif i % 2 == 0:
-                pod_values = [x * 0.11 for x in pod]
-            else:
-                pod_values = [x * 0.1 for x in pod]
-
-            # pod_values = [x * 0.1 for x in pod]
-            # success ratio, 1-FAR; multiply each FAR value by 0.1 then do arithmetic
-            # to convert to the success ratio
-            success_ratio = [1 - x * 0.1 for x in far]
-
-            model_stat_dict['model'] = model
-            model_stat_dict['SUCCESS_RATIO'] = success_ratio
-            model_stat_dict['POD'] = pod_values
-            model_stat_data_list.append(model_stat_dict)
-            model_stat_dict = {}
-        return model_stat_data_list
+    return model_stat_data_list
 
 
 def main():
@@ -245,13 +384,14 @@ def main():
             print(exc)
 
     try:
-        # number of POD, 1-FAR
-        num_points = 7
-        model_names = ['Model 1', 'Model 2', 'Model 3', 'Series for GFS', 'Series for HRRR']
-        pd = PerformanceDiagram(docs)
-        perf_dict = pd.generate_sample_data(num_points, model_names)
-        pd._create_figure(perf_dict)
-        pd.save_to_file()
+        sample_data = generate_sample_data(docs)
+        # alternatively, read in data from a text file
+        # via one or more methods in the metcalcpy package
+        # input_filename = 'path/to/input_filename'
+        # sample_data = metcalcpy.read_model_stat_data(input_filename)
+        pd = PerformanceDiagram(docs, sample_data)
+
+
     except ValueError as ve:
         print(ve)
 
