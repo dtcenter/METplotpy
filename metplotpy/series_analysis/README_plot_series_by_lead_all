@@ -39,8 +39,8 @@ for each netcdf file, there will be a corresponding .png file in the output dire
 How to run:
 ==========
 
-cd to the $METplotpy/src/series_analysis directory.  On the host 'eyewall', the script is set up to run "out of the
-box" using the sample data in the /d1/METplus_Plotting_Data/series_by_lead_all directory.
+cd to the $METplotpy/src/series_analysis directory.  On the host 'kiowa', the script is set up to run "out of the
+box" using the sample data in the /d1/projects/METplus/METplus_Plotting_Data/series_by_lead_all directory.
 
 from the command line, run the following command:
 
