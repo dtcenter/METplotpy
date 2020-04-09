@@ -42,8 +42,8 @@ same subdirectory.  The process is repeated for the fbar files.
 
 How to run:
 ==========
-The script runs "out of the box" on the host 'eyewall', using data and input, etc. that corresponds to the sample
-data located in /d1/METplus_Plotting_Data/series_analysis
+The script runs "out of the box" on the host 'kiowa', using data and input, etc. that corresponds to the sample
+data located in /d1/projects/METplus/METplus_Plotting_Data/series_analysis
 
 cd to $METplotpy/src/series_analysis/
 
@@ -51,4 +51,4 @@ from the command line, run the following command:
 python ./plot_series_by_grouping.py
 
 
-png and gif files are generated in the /d1/METplus_Plotting_Data/series_by_lead_grouing/plots directory
+png and gif files are generated in the /d1/projects/METplus/METplus_Plotting_Data/series_by_lead_grouing/plots directory
