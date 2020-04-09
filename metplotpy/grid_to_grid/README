@@ -40,8 +40,8 @@ For each variable-level combination, three plots are generated:
 
 Example data:
 ============
-for the host 'eyewall', there is data that exists to run this script "as checked out"
-The sample data is located at /d1/METplus_Plotting_Data/grid_to_grid
+for the host 'kiowa', there is data that exists to run this script "as checked out"
+The sample data is located at /d1/projects/METplus/METplus_Plotting_Data/grid_to_grid
 
 How to run:
 ==========
