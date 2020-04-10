@@ -1,47 +1,74 @@
 ---
-# Values specific to performance diagram plot
-# Line and marker plots of model/series data of Success Rate (1-FAR) on x-axis vs. CSI on y-axis.
-#       model.  Models are differentiated from one another by marker symbol and/or color
-title: Default title
+# Default settings specific to performance diagram plot
+# Line and marker plots of series data of Success Rate (1-FAR) on x-axis vs. PODY on y-axis.
+title: Performance Diagram "Default title"
+xaxis: Success Rate (1 - FAR)
+yaxis: Probability of Detection (PODY)
+plot_ci:
+  - None
+  - None
+  - None
+plot_disp:
+  - True
+  - True
+  - True
+series_order:
+  - 1
+  - 2
+  - 3
+indy_var: fcst_valid_beg
+indy_vals:
+  - 2016-08-12 06:00:00
+  - 2016-08-12 12:00:00
+  - 2016-08-12 18:00:00
+  - 2016-08-13 00:00:00
+  - 2016-08-13 06:00:00
+  - 2016-08-13 12:00:00
+  - 2016-08-13 18:00:00
+  - 2016-08-14 00:00:00
+  - 2016-08-14 06:00:00
+  - 2016-08-14 12:00:00
+  - 2016-08-14 18:00:00
+  - 2016-08-15 00:00:00
+  - 2016-08-15 12:00:00
+  - 2016-08-15 18:00:00
+  - 2016-08-16 00:00:00
+  - 2016-08-16 06:00:00
+  - 2016-08-16 12:00:00
+  - 2016-08-16 18:00:00
+  - 2016-08-17 00:00:00
+fcst_var_val:
+  APCP_06:
+    - FAR
+    - PODY
+series_val:
+  model:
+    - GFS_0p25_G193
+  vx_mask:
+    - NH_CMORPH_G193
+    - SH_CMORPH_G193
+    - TROP_CMORPH_G193
+user_legend:
+  - NH
+  - SN
+  - TROP
+plot_stat: median
+colors:
+  # red
+  - "#ff0000"
+  # spring green
+  - "#00ff7f"
+  # electric indigo/vivid purple
+  - "#8000ff"
+series_line_width:
+  - 1
+  - 1
+  - 3
+series_symbols:
+  - "o"
+  - "s"
+  - "^"
+stat_input:  /d2/www/dtcenter/met/metviewer_output/data/plot_20200317_151252.data
+plot_output: /tmp/performance_diagram_default.png
 
-connect_data_gaps: true
-image_name: /tmp/performance_diagram.png
-legend:
-  on: false
-  x: 0.5
-  y: -0.3
-  font:
-    family: sans-serif
-    size: 12
-    color: black
-  bgcolor: White
-  bordercolor: Black
-  borderwidth: 2
-  xanchor: center # horizontal position anchor: (“auto” | “left” | “center” | “right” )
-  yanchor: top    # vertical position anchor: (“auto” | “left” | “center” | “right” )
 
-xaxis:
-  title: Success Rate (1 - FAR)
-yaxis:
-  title: Probability of Detection
-data_file: ./performance_stats_data.txt
-lines:
-  - name: Model 1
-    color: red
-    width: 1
-
-  - name: Model 2
-    color: blue
-    width: 1
-
-  - name: Model 3
-    color: yellow
-    width: 1
-
-  - name: Model 4
-    color: green
-    width: 1
-
-  - name: Model 5
-    color: orange
-    width: 1
