@@ -115,8 +115,8 @@ class PerformanceDiagram(MetPlot):
         Returns:
             - the title
         """
-        current_title = self.parameters['title'],  # plot's title
-        return current_title[0]
+        current_title = self.get_config_value('title')
+        return current_title
 
     def _get_plot_ci(self):
         """
