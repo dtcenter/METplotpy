@@ -31,9 +31,10 @@ class PerformanceDiagram(MetPlot):
 
     # Default values...
     DEFAULT_TITLE_FONT = 'sans-serif'
-    DEFAULT_TITLE_COLOR = 'blue'
+    DEFAULT_TITLE_COLOR = 'darkblue'
     DEFAULT_TITLE_FONTSIZE = 10
     AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", "."]
+    ACCEPTABLE_CI_VALS = ['NONE', 'BOOT', 'NORM']
 
     def __init__(self, parameters, data):
         """ Creates a line plot consisting of one or more lines (traces), based on
@@ -54,27 +55,28 @@ class PerformanceDiagram(MetPlot):
 
         # Do not plot the legend for the equal lines of CSI (critical success index)
         self.plot_contour_legend = False
-        self.plot_output = "./performance_diagram.png"
+        self.output_image = self.get_config_value('plot_output')
+        self.title_font = self.DEFAULT_TITLE_FONT
+        self.title_color = self.DEFAULT_TITLE_COLOR
         self.xaxis = self._get_xaxis_title()
         self.yaxis = self._get_yaxis_title()
         self.title = self._get_title()
         self.plot_ci = self._get_plot_ci()
         self.plot_disp = self._get_plot_disp()
-        self.title_font = self.DEFAULT_TITLE_FONT
-        self.title_color = self.DEFAULT_TITLE_COLOR
         self.series_ordering = self._get_series_order()
-        self.colors_list = self._get_all_colors()
+        self.colors_list = self._get_colors()
         self.marker_list = self._get_markers()
-        self.linewidth_list = self._get_all_linewidths()
+        self.linewidth_list = self._get_linewidths()
+        self.linestyles_list = self._get_linestyles()
         self.symbols_list = self._get_series_symbols()
         self.user_legends = self._get_user_legends()
         self.series = self._create_series_objs()
         is_config_consistent = self._config_consistency_check()
         if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val is inconsistent with number of settings"
+            raise ValueError("The number of series defined by series_val is inconsistent with the number of settings"
                              " required for describing each series. Please check"
-                             " the number of your config file's plot_i, plot_disp, series_order, user_legend, colors, and"
-                             " series_symbols settings.")
+                             " the number of your configuration file's plot_i, plot_disp, series_order, user_legend,"
+                             " colors, and series_symbols settings.")
 
         # create figure
         # pylint:disable=assignment-from-no-return
@@ -114,7 +116,7 @@ class PerformanceDiagram(MetPlot):
             - the title
         """
         current_title = self.parameters['title'],  # plot's title
-        return current_title
+        return current_title[0]
 
     def _get_plot_ci(self):
         """
@@ -123,11 +125,18 @@ class PerformanceDiagram(MetPlot):
 
             Returns:
                 list of values to indicate whether or not to plot the confidence interval for
-                a particular series.
+                a particular series, and which confidence iterval (bootstrap or normal).
 
         """
         plot_ci_list = self.parameters['plot_ci']
-        ci_settings_list = [ci for ci in plot_ci_list]
+        ci_settings_list = [ci.upper() for ci in plot_ci_list]
+
+        # Do some checking to make sure that the values are valid (case-insensitive): None, boot, or norm
+        for ci in ci_settings_list:
+            if ci not in self.ACCEPTABLE_CI_VALS:
+                raise ValueError("A plot_ci value is set to an invalid value. Accepted values are (case insensitive): "
+                                 "None, norm, or boot. Please check your config file.")
+
         return ci_settings_list
 
     def _get_plot_disp(self):
@@ -158,7 +167,7 @@ class PerformanceDiagram(MetPlot):
         series_order_list = [ord for ord in ordinals]
         return series_order_list
 
-    def _get_all_colors(self):
+    def _get_colors(self):
         """
            Retrieves the colors used for lines and markers, from the config file (default or custom).
            Args:
@@ -186,7 +195,7 @@ class PerformanceDiagram(MetPlot):
         markers_list = [m for m in markers]
         return markers_list
 
-    def _get_all_linewidths(self):
+    def _get_linewidths(self):
         """ Retrieve all the linewidths from the configuration file, if not specified in any config file, use
             the default values of 2
 
@@ -198,6 +207,19 @@ class PerformanceDiagram(MetPlot):
         linewidths = self.parameters['series_line_width']
         linewidths_list = [l for l in linewidths]
         return linewidths_list
+
+    def _get_linestyles(self):
+        """
+            Retrieve all the linestyles from the config file.
+
+            Args:
+
+            Returns:
+                list of line styles, each line style corresponds to a particular series
+        """
+        linestyles = self.parameters['series_line_style']
+        linestyle_list = [l for l in linestyles]
+        return linestyle_list
 
     def _get_series_symbols(self):
         """
@@ -232,7 +254,7 @@ class PerformanceDiagram(MetPlot):
     def _create_series_objs(self):
         """
             Generate series objects, where each series object is a named tuple of unique model and vx_mask
-            combinations.
+            combinations, color, marker, user_legend label, plot_display value (True/False), .
 
             Args:
 
@@ -241,8 +263,12 @@ class PerformanceDiagram(MetPlot):
         """
 
         # Define the series object (named tuple)
-        Series = collections.namedtuple('Series', 'model, vx_mask')
+        Series = collections.namedtuple('Series', 'model, vx_mask, color, marker, linewidth, linestyle, '
+                                                  'user_legend, plot_disp_value, series_order, series_ci_value')
         series_values = self.get_config_value('series_val')
+
+        # Separate the model from the vx_mask portion of the series object so we can create
+        # these attributes of a series object
         all_models = series_values['model']
         all_vx_masks = series_values['vx_mask']
         series_combo = [s for s in itertools.product(all_models, all_vx_masks)]
@@ -250,11 +276,16 @@ class PerformanceDiagram(MetPlot):
         series_obj_list = []
 
         # Create a named tuple that represents the series object which consists
-        # of a unique pairing of model with vx_mask region.
-        for single_series in series_combo:
+        # of a unique pairing of model with vx_mask region, marker, linewidth, symbol,
+        # series_order, user_legend, plot_display_val, color.
+        for idx, single_series in enumerate(series_combo):
             model_val = single_series[0]
             vx_mask_val = single_series[1]
-            series_obj = Series(model=model_val, vx_mask=vx_mask_val)
+            series_obj = Series(model=model_val, vx_mask=vx_mask_val, color=self.colors_list[idx],
+                                marker=self.marker_list[idx],linewidth=self.linewidth_list[idx],
+                                linestyle=self.linestyles_list[idx],
+                                user_legend=self.user_legends[idx], plot_disp_value=self.plot_disp[idx],
+                                series_order=self.series_ordering[idx], series_ci_value=self.plot_ci[idx])
             series_obj_list.append(series_obj)
 
         return series_obj_list
@@ -281,13 +312,25 @@ class PerformanceDiagram(MetPlot):
         num_symbols = len(self.symbols_list)
         num_legends = len(self.user_legends)
         num_line_widths = len(self.linewidth_list)
+        num_linestyles = len(self.linestyles_list)
 
         if self.num_series == num_ci_settings == num_plot_disp == \
                 num_markers == num_series_ord == num_colors == num_symbols\
-                == num_legends == num_line_widths:
+                == num_legends == num_line_widths == num_linestyles:
             return True
         else:
             return False
+
+    def _get_output_file(self):
+        """
+            Retrieve the name and path for the output file (output plot).
+
+            Args:
+
+            Returns:
+                the path and filename of the output plot
+        """
+        return self.get_config_value('plot_output')
 
     def save_to_file(self):
         """
@@ -295,12 +338,14 @@ class PerformanceDiagram(MetPlot):
           version (which is a Python Plotly implementation).
 
         """
-        image_name = self.get_config_value('plot_output')
-        plt.savefig(image_name)
+        plt.savefig(self.output_file)
 
     def remove_file(self):
-        """Removes previously made  image file .
         """
+           Removes previously made image file .  Invoked by the parent class before self.output_file
+           attribute can be created.
+        """
+
         image_name = self.get_config_value('plot_output')
 
         # remove the old file if it exist
@@ -323,7 +368,7 @@ class PerformanceDiagram(MetPlot):
             print("Matplotlib implementation of this plot, this plot won't be visable in browser.")
 
     def _create_figure(self, perf_data):
-        '''
+        """
         Generate the performance diagram of varying number of series with POD and 1-FAR (Success Rate)
         values.  Hard-coding of labels for CSI lines and bias lines, and contour colors for the CSI
         curves.
@@ -336,7 +381,7 @@ class PerformanceDiagram(MetPlot):
         Returns:
             Generates a performance diagram with equal lines of CSI (Critical Success Index) and equal lines
             of bias
-        '''
+        """
 
         fig = plt.figure()
 
@@ -401,35 +446,37 @@ class PerformanceDiagram(MetPlot):
 
         plt.xticks(ticks)
         plt.yticks(ticks)
-        plt.title(self.title, fontsize=11, fontweight="bold", fontfamily=self.DEFAULT_TITLE_FONT)
+        plt.title(self.title, fontsize=self.DEFAULT_TITLE_FONTSIZE, color=self.DEFAULT_TITLE_COLOR, fontweight="bold", fontfamily=self.DEFAULT_TITLE_FONT)
         plt.text(0.48, 0.6, "Frequency Bias", fontdict=dict(fontsize=8, rotation=45), alpha=.3)
 
         #
         # PLOT THE STATISTICS DATA FOR EACH MODEL/SERIES (i.e. GENERATE THE LINES ON THE  the statistics data for each model/series
         #
-        for idx, data in enumerate(perf_data):
-            # model = data['model']
+        for idx, series in enumerate(self.series):
+            data = perf_data[idx]
             sr_array = data['SUCCESS_RATIO']
             pod_array = data['POD']
 
             # Select the marker and color based on the index of the
             # plt.plot(sr_array, pod_array, linestyle='-', marker=self.marker_list[idx], color=self.color_list[idx],
             #          label=model, alpha=0.5)
-            plt.plot(sr_array, pod_array, linestyle='-', linewidth=self.linewidth_list[idx], marker=self.marker_list[idx], color=self.colors_list[idx],
-                     label=self.model_list[idx], alpha=0.5)
+            plt.plot(sr_array, pod_array, linestyle=self.series[idx].linestyle, linewidth=self.series[idx].linewidth,
+                     marker=self.series[idx].marker, color=self.series[idx].color,
+                     label=self.series[idx].user_legend, alpha=0.5)
+
             ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
                        prop={'size': 6})
             ax1.xaxis.set_label_coords(0.5, -0.066)
             ax1.set_xlabel(xlabel, fontsize=9)
             ax1.set_ylabel(ylabel, fontsize=9)
-        plt.savefig(self.output_file)
+        plt.savefig(self.get_config_value('plot_output'))
         plt.show()
         self.save_to_file()
 
+
     def save_to_file(self):
-        ''' Save plot as file in directory as specified in default or custom config file.'''
-        image_name = self.get_config_value('image_name')
-        print(f"saving file as {image_name}")
+        """ Save plot as file in directory as specified in default or custom config file."""
+        print(f"saving file as {self.output_image}")
 
     def read_input_data(self):
         """
@@ -468,11 +515,11 @@ class PerformanceDiagram(MetPlot):
 
 
 def generate_sample_data():
-    '''
-        Args:
-        Returns:
-            model_stat_data: A list of dictionaries, where the keys are series name, SUCCESS_RATE, and POD
-    '''
+    """
+         Args:
+         Returns:
+             model_stat_data: A list of dictionaries, where the keys are series name, SUCCESS_RATE, and POD
+    """
 
     model_names = ['model1', 'model2', 'model 3', 'model 4', 'fifth model']
     num_points = 7
