@@ -457,18 +457,18 @@ class PerformanceDiagram(MetPlot):
             sr_array = data['SUCCESS_RATIO']
             pod_array = data['POD']
 
-            # Select the marker and color based on the index of the
-            # plt.plot(sr_array, pod_array, linestyle='-', marker=self.marker_list[idx], color=self.color_list[idx],
-            #          label=model, alpha=0.5)
-            plt.plot(sr_array, pod_array, linestyle=self.series[idx].linestyle, linewidth=self.series[idx].linewidth,
+            # Only display the points for the series of interest, as indicated by the plot_disp
+            # setting in the configuration file.
+            if self.series[idx].plot_disp_value:
+                plt.plot(sr_array, pod_array, linestyle=self.series[idx].linestyle, linewidth=self.series[idx].linewidth,
                      marker=self.series[idx].marker, color=self.series[idx].color,
                      label=self.series[idx].user_legend, alpha=0.5)
 
-            ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
+                ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
                        prop={'size': 6})
-            ax1.xaxis.set_label_coords(0.5, -0.066)
-            ax1.set_xlabel(xlabel, fontsize=9)
-            ax1.set_ylabel(ylabel, fontsize=9)
+                ax1.xaxis.set_label_coords(0.5, -0.066)
+                ax1.set_xlabel(xlabel, fontsize=9)
+                ax1.set_ylabel(ylabel, fontsize=9)
         plt.savefig(self.get_config_value('plot_output'))
         plt.show()
         self.save_to_file()
