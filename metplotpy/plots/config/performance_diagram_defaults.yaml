@@ -39,7 +39,9 @@ indy_vals:
   - 2016-08-17 00:00:00
 fcst_var_val:
   APCP_06:
+    # x-axis/independent variable
     - FAR
+    # y-axis/dependent variable
     - PODY
 series_val:
   model:
