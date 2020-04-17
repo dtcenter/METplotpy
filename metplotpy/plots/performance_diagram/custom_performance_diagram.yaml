@@ -4,10 +4,7 @@
 title: Performance Diagram ("Custom title")
 xaxis: Success Rate (1 - FAR)
 yaxis: Probability of Detection (PODY)
-plot_ci:
-  - None
-  - None
-  - None
+
 plot_disp:
   - True
   - True
