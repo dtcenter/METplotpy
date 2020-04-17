@@ -11,6 +11,7 @@ import os
 import collections
 import metcalcpy
 import pandas as pd
+from datetime import datetime
 from plots.met_plot import MetPlot
 
 
@@ -62,6 +63,7 @@ class PerformanceDiagram(MetPlot):
         self.yaxis = self._get_yaxis_title()
         self.title = self._get_title()
         self.plot_ci = self._get_plot_ci()
+        self.plot_stat = self._get_plot_stat()
         self.plot_disp = self._get_plot_disp()
         self.series_ordering = self._get_series_order()
         self.colors_list = self._get_colors()
@@ -138,6 +140,26 @@ class PerformanceDiagram(MetPlot):
                                  "None, norm, or boot. Please check your config file.")
 
         return ci_settings_list
+
+    def _get_plot_stat(self):
+        """
+            Retrieves the plot_stat setting from the config file.  There will be many statistics values
+            (ie stat_name=PODY or stat_name=FAR in data file) that correspond to a specific time
+            (init or valid, as specified in the config file), for a combination of
+            model, vx_mask, fcst_var,etc.  We require a single value to represent this combination.
+            Acceptable values are sum, mean, and median.
+
+            Returns:
+                 stat_to_plot: one of the following values for the plot_stat: MEAN, MEDIAN, or SUM
+        """
+
+        accepted_stats = ['MEAN', 'MEDIAN', 'SUM']
+        stat_to_plot = self.get_config_value('plot_stat').upper()
+
+        if stat_to_plot not in accepted_stats:
+            raise ValueError("An unsupported statistic was set for the plot_stat setting. "
+                             " Supported values are sum, mean, and median")
+        return stat_to_plot
 
     def _get_plot_disp(self):
         """
@@ -264,7 +286,8 @@ class PerformanceDiagram(MetPlot):
 
         # Define the series object (named tuple)
         Series = collections.namedtuple('Series', 'model, vx_mask, color, marker, linewidth, linestyle, '
-                                                  'user_legend, plot_disp_value, series_order, series_ci_value')
+                                                  'user_legend, plot_disp_value, series_order, '
+                                                  'series_ci_value, plot_stat')
         series_values = self.get_config_value('series_val')
 
         # Separate the model from the vx_mask portion of the series object so we can create
@@ -285,7 +308,8 @@ class PerformanceDiagram(MetPlot):
                                 marker=self.marker_list[idx],linewidth=self.linewidth_list[idx],
                                 linestyle=self.linestyles_list[idx],
                                 user_legend=self.user_legends[idx], plot_disp_value=self.plot_disp[idx],
-                                series_order=self.series_ordering[idx], series_ci_value=self.plot_ci[idx])
+                                series_order=self.series_ordering[idx], series_ci_value=self.plot_ci[idx],
+                                plot_stat=self.plot_stat)
             series_obj_list.append(series_obj)
 
         return series_obj_list
@@ -320,6 +344,45 @@ class PerformanceDiagram(MetPlot):
             return True
         else:
             return False
+
+    def _get_indy_variable(self):
+        """
+           Retrieve the independent variable of interest such as fcst_valid_beg or fcst_init_beg
+
+
+           Returns:
+               value of the indy_var
+        """
+        return self.get_config_value('indy_var')
+
+    def _get_fcst_vars(self):
+        """
+           Retrieve the independent and dependent statistics variables (ie statistic for x-axis, and statistic
+           for the y-axis).  In this case, this should be PODY for dependent statistic variable, and FAR as the
+           independent statistic variable, which is used to calculate the Success Ratio (1-FAR).
+
+           Returns:
+               stat_var_indy and stat_var_dep: the independent statistics variable (x-axis) and the
+                                               dependent statistics variable (y-axis)
+        """
+
+        # retrieve the independent and dependent variables set in the configuration file under the fcst_var_val key.
+        fcst_var_dict = self.parameters['fcst_var_val']
+        fcst_vars = list(fcst_var_dict.values())
+        # We retrieve the first key of the fctst_var_val dictionary, since we don't know the name of the key
+        indy_var = fcst_vars[0][0]
+        dep_var = fcst_vars[0][1]
+
+        return indy_var, dep_var
+
+    def _get_indy_values(self):
+        """
+           Retrieve the list of times (independent values) that are used to create the series data
+
+           Returns:
+                a list of the times as Python datetime objects
+        """
+        return self.parameters['indy_vals']
 
     def _get_output_file(self):
         """
@@ -572,8 +635,8 @@ def main():
 
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
-    # with open("./custom_performance_diagram.yaml", 'r') as stream:
-    with open("../config/performance_diagram_defaults.yaml", 'r') as stream:
+    with open("./custom_performance_diagram.yaml", 'r') as stream:
+    # with open("../config/performance_diagram_defaults.yaml", 'r') as stream:
         try:
             docs = yaml.load(stream, Loader=yaml.FullLoader)
         except yaml.YAMLError as exc:
