@@ -8,12 +8,10 @@ import numpy as np
 import itertools
 import yaml
 import os
-import collections
-import metcalcpy
 import pandas as pd
-from datetime import datetime
 from plots.met_plot import MetPlot
 import config
+import series
 
 
 
@@ -51,6 +49,14 @@ class PerformanceDiagram(MetPlot):
         # instantiate a Config object, which holds all the necessary settings from the
         # config file.
         self.config_obj = config.Config(parameters)
+
+        # Read in input data, location specified in config file
+        self.input_df = self.read_input_data()
+
+        # Create a list of series objects.
+        # Each series object contains all the necessary information for plotting, such as line color, marker symbol,
+        # line width, and criteria needed to subset the input dataframe.
+        self.series_list = self._create_series()
 
         # create figure
         # pylint:disable=assignment-from-no-return
@@ -99,10 +105,12 @@ class PerformanceDiagram(MetPlot):
 
     def _get_indy_values(self):
         """
-           Retrieve the list of times (independent values) that are used to create the series data
+           Retrieve the list of datetimes (independent values) that are used to create the series data
+
+           Args:
 
            Returns:
-                a list of the times as Python datetime objects
+                a list of the datetimes of interest as strings
         """
         return self.parameters['indy_vals']
 
@@ -116,6 +124,34 @@ class PerformanceDiagram(MetPlot):
                 the path and filename of the output plot
         """
         return self.get_config_value('plot_output')
+
+    def read_input_data(self):
+        """
+            Read in the input data as set in the config file as stat_input as a pandas dataframe.
+
+            Args:
+
+            Return:
+                 the pandas dataframe representation of the input data file
+
+        """
+        return pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
+
+    def _create_series(self):
+        """
+           Generate all the series objects, which contain the data specific to datetime range of interest, all ordered
+           by datetime.  Each series object is represented by a line in the performance diagram, so they also contain
+           information for line width, line and marker colors, line style, and other plot-related/appearance-related
+           settings (which were defined in the config file).
+
+           Args:
+
+           Returns:
+               a list of series objects
+
+
+        """
+        pass
 
     def save_to_file(self):
         """
@@ -268,45 +304,18 @@ class PerformanceDiagram(MetPlot):
         """ Save plot as file in directory as specified in default or custom config file."""
         print(f"saving file as {self.output_image}")
 
-    def read_input_data(self):
-        """
-            Based on the input filename, invoke method from the metcalcpy package to
-            open and create a list of dictionaries containing the following keys: model, fcst_valid_beg, fcst_lead, vx_mask,
-             stat_name, stat_value.  The value for stat_value is a list of statistics (either PODY or FAR values) for
-             each model-vx_mask combination.
 
-            Args:
 
-            Return:
 
-        """
-
-        stat_data_list = []
-
-        return stat_data_list
-
-    def _create_series_data(self, stat_data_list):
-        """
-            From the input data, create the series data for model-vx_mask pairings to be plotted on the
-            performance diagram.
-
-            Args:
-                stat_data_list: The input data containing the model, vx-mask region, PODY and FAR statistics
-                                values used in creating the performance diagram of interest.
-            Returns:
-
-        """
-
-        models = self.parameters['series_val']['model']
-        vx_masks = self.parameters['series_val']['vx_mask']
-        series_data = [s for s in itertools.product(models, vx_masks)]
-
-        return series_data
 
 def create_permutations(self):
     """
        Create all permutations (ie cartesian products) between the elements in the lists
-       of dictionaries under the series_val dictionary:
+       of dictionaries under the series_val dictionary (representing the columns in the input data upon which to
+       subset the datetime data of interest) and the inner keys of the fcst_var_val dictionary
+       (which represent the fcst variables of interest):
+
+       for example:
 
        series_val:
           model:
@@ -316,22 +325,69 @@ def create_permutations(self):
             - SH_CMORPH_G193
             - TROP_CMORPH_G193
 
-        So for the above case, we have two lists, one for model and another for vx_mask:
+        fcst_var_val:
+           APCP_O6:
+              -FAR
+              -PODY
+
+        So for the above case, we have two lists in the series_val dictionary, one for model and another for vx_mask:
         model_list = ["GFS_0p25_G193"]
         vx_mask_list = ["NH_CMORPH_G193", "SH_CMORPH_G193", "TROP_CMORPH_G193"]
 
-        and a cartesian product representing all permutations results in the following:
+        and a list for the fcst variables: ["APCP_06"]
 
-       ("GFS_0p25_G193", "NH_CMORPH_G193")
-       ("GFS_0p25_G193", "SH_CMORPH_G193")
-       ("GFS_0p25_G193", "TROP_CMORPH_G193")
+        and a cartesian product representing all permutations of the lists above results in the following:
 
-       There is no a priori knowledge of what or how many "values" of variables (e.g. model, vx_mask, xyz, etc.)
+       ("GFS_0p25_G193", "NH_CMORPH_G193", "APCP_06")
+       ("GFS_0p25_G193", "SH_CMORPH_G193", "APCP_06)
+       ("GFS_0p25_G193", "TROP_CMORPH_G193", "APCP_06")
+
+       This is useful for subsetting the input data to retrieve the FAR and PODY stat values that represent each datetime.
+       *********
+       **NOTE**
+       ********
+         There is no a priori knowledge of what or how many "values" of series_var and fcst_var variables
+         (e.g. model, vx_mask, xyz, etc.) Therefore we use the following nomenclature:
+
+         fcst_var_val:
+             fcst_var1:
+                 -indy_fcst_stat
+                 -dep_fcst_stat
+             fcst_var2:
+                 -indy_fcst_stat
+                 -dep_fcst_stat
+        *Since we are only supporting one x-axis (independent vars) vs y-axis (dependent vars), we will always expect
+         the indy_fcst_stat (independent stat value) and dep_fcst_stat (dependent stat value) to be the same for all
+         fcst_var values selected.
+
+         series_val:
+            series_var1:
+               -series_var1_val1
+            series_var2:
+               -series_var2_val1
+               -series_var2_val2
+               -series_var2_val3
+            series_var3:
+               -series_var3_val1
+               -series_var3_val2
 
        Args:
 
        Returns:
     """
+
+
+    # Retrieve the lists from the series_val dictionary
+
+
+
+    # Retrieve the lists from the fcst_var_val dictionary
+
+
+    # Utilize itertools' product() to create the cartesian product of all elements in the lists to produce all
+    # permutations of the series_val values and the fcst_var_val values.
+
+    pass
 
 def main():
     """
@@ -363,4 +419,3 @@ def main():
 if __name__ == "__main__":
 
     main()
-    print(f'{PerformanceDiagram}')
