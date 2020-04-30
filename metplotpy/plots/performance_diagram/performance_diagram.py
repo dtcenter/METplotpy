@@ -10,8 +10,8 @@ import yaml
 import os
 import pandas as pd
 from plots.met_plot import MetPlot
-import config
-import series
+from config import Config
+from series import Series
 
 
 
@@ -48,7 +48,7 @@ class PerformanceDiagram(MetPlot):
 
         # instantiate a Config object, which holds all the necessary settings from the
         # config file.
-        self.config_obj = config.Config(parameters)
+        self.config_obj = Config(parameters)
 
         # Read in input data, location specified in config file
         self.input_df = self.read_input_data()
@@ -56,7 +56,7 @@ class PerformanceDiagram(MetPlot):
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting, such as line color, marker symbol,
         # line width, and criteria needed to subset the input dataframe.
-        self.series_list = self._create_series()
+        self.series_list = self._create_series(self.input_df)
 
         # create figure
         # pylint:disable=assignment-from-no-return
@@ -137,21 +137,35 @@ class PerformanceDiagram(MetPlot):
         """
         return pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
 
-    def _create_series(self):
+    def _create_series(self, input_data):
         """
-           Generate all the series objects, which contain the data specific to datetime range of interest, all ordered
-           by datetime.  Each series object is represented by a line in the performance diagram, so they also contain
-           information for line width, line and marker colors, line style, and other plot-related/appearance-related
-           settings (which were defined in the config file).
+           Generate all the series objects that are to be displayed as specified by the plot_disp setting in the config
+           file.  The points are all ordered by datetime.  Each series object is represented by a line in the
+           performance diagram, so they also contain information for line width, line- and marker-colors,
+           line style, and other plot-related/appearance-related settings (which were defined in the config file).
 
            Args:
+               input_data:  The input data in the form of a Pandas dataframe.  This data will be subset to
+                          reflect the series data of interest.
 
            Returns:
-               a list of series objects
+               a list of series objects that are to be displayed
 
 
         """
-        pass
+        series_list = []
+
+        # use the list of series ordering values to determine how many series objects we need.
+        num_series = len(self.config_obj.series_ordering)
+
+        for i, series in enumerate(range(num_series)):
+            # Check if this series is to be displayed (i.e. plot_disp is set to True)
+            if self.config_obj.plot_disp[series]:
+                # Create a Series object
+                # idx = self.config_obj.series_ordering_zb[i]
+                series_obj = Series(self.config_obj, i, input_data)
+                series_list.append(series_obj)
+        return series_list
 
     def save_to_file(self):
         """
@@ -267,29 +281,33 @@ class PerformanceDiagram(MetPlot):
         plt.xticks(ticks)
         plt.yticks(ticks)
         plt.title(self.config_obj.title, fontsize=self.config_obj.DEFAULT_TITLE_FONTSIZE, color=self.config_obj.DEFAULT_TITLE_COLOR, fontweight="bold", fontfamily=self.config_obj.DEFAULT_TITLE_FONT)
-        plt.text(0.48, 0.6, "Frequency Bias", fontdict=dict(fontsize=8, rotation=45), alpha=.3)
+        # plt.text(0.48, 0.6, "Frequency Bias", fontdict=dict(fontsize=8, rotation=45), alpha=.3)
 
         #
         # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE  the statistics data for each model/series
         #
-        # for idx, series in enumerate(self.series):
-        #     data = perf_data[idx]
-        #     sr_array = data['SUCCESS_RATIO']
-        #     pod_array = data['POD']
-        #
-        #     # Only display the points for the series of interest, as indicated by the plot_disp
-        #     # setting in the configuration file.
-        #     if self.series[idx].plot_disp_value:
-        #         plt.plot(sr_array, pod_array, linestyle=self.series[idx].linestyle, linewidth=self.series[idx].linewidth,
-        #              marker=self.series[idx].marker, color=self.series[idx].color,
-        #              label=self.series[idx].user_legend, alpha=0.5)
-        #
-        #         ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
-        #                prop={'size': 6})
-        #         ax1.xaxis.set_label_coords(0.5, -0.066)
-        #         ax1.set_xlabel(xlabel, fontsize=9)
-        #         ax1.set_ylabel(ylabel, fontsize=9)
-        #         print(f"****Number of series: {(data['POD'][0])}")
+        for idx, series in enumerate(self.series_list):
+            pody_points = series.series_points[1]
+            sr_points = series.series_points[0]
+            # plt.plot(sr_points, pody_points, linestyle=series.linestyle, linewidth=series.linewidth, marker=series.marker,
+            #          color=series.color, label=series.user_legends, alpha=0.5)
+            plt.plot(sr_points, pody_points, linestyle=series.linestyle, linewidth=series.linewidth,
+                     color=series.color, label=series.user_legends, alpha=0.5)
+            plt.plot(sr_points, pody_points, marker=series.marker,
+                      color=series.color)
+
+            # Annotate the points with their PODY (i.e. dependent variable value)
+            for idx, pody in enumerate(pody_points):
+                plt.annotate(str(pody), (sr_points[idx], pody_points[idx]), fontsize=10)
+
+
+
+            ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
+                       prop={'size': 6})
+            ax1.xaxis.set_label_coords(0.5, -0.066)
+            ax1.set_xlabel(xlabel, fontsize=9)
+            ax1.set_ylabel(ylabel, fontsize=9)
+            # print(f"****Number of series: {(data['POD'][0])}")
         ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
                                   prop={'size': 6})
         ax1.xaxis.set_label_coords(0.5, -0.066)
@@ -308,86 +326,6 @@ class PerformanceDiagram(MetPlot):
 
 
 
-def create_permutations(self):
-    """
-       Create all permutations (ie cartesian products) between the elements in the lists
-       of dictionaries under the series_val dictionary (representing the columns in the input data upon which to
-       subset the datetime data of interest) and the inner keys of the fcst_var_val dictionary
-       (which represent the fcst variables of interest):
-
-       for example:
-
-       series_val:
-          model:
-            - GFS_0p25_G193
-          vx_mask:
-            - NH_CMORPH_G193
-            - SH_CMORPH_G193
-            - TROP_CMORPH_G193
-
-        fcst_var_val:
-           APCP_O6:
-              -FAR
-              -PODY
-
-        So for the above case, we have two lists in the series_val dictionary, one for model and another for vx_mask:
-        model_list = ["GFS_0p25_G193"]
-        vx_mask_list = ["NH_CMORPH_G193", "SH_CMORPH_G193", "TROP_CMORPH_G193"]
-
-        and a list for the fcst variables: ["APCP_06"]
-
-        and a cartesian product representing all permutations of the lists above results in the following:
-
-       ("GFS_0p25_G193", "NH_CMORPH_G193", "APCP_06")
-       ("GFS_0p25_G193", "SH_CMORPH_G193", "APCP_06)
-       ("GFS_0p25_G193", "TROP_CMORPH_G193", "APCP_06")
-
-       This is useful for subsetting the input data to retrieve the FAR and PODY stat values that represent each datetime.
-       *********
-       **NOTE**
-       ********
-         There is no a priori knowledge of what or how many "values" of series_var and fcst_var variables
-         (e.g. model, vx_mask, xyz, etc.) Therefore we use the following nomenclature:
-
-         fcst_var_val:
-             fcst_var1:
-                 -indy_fcst_stat
-                 -dep_fcst_stat
-             fcst_var2:
-                 -indy_fcst_stat
-                 -dep_fcst_stat
-        *Since we are only supporting one x-axis (independent vars) vs y-axis (dependent vars), we will always expect
-         the indy_fcst_stat (independent stat value) and dep_fcst_stat (dependent stat value) to be the same for all
-         fcst_var values selected.
-
-         series_val:
-            series_var1:
-               -series_var1_val1
-            series_var2:
-               -series_var2_val1
-               -series_var2_val2
-               -series_var2_val3
-            series_var3:
-               -series_var3_val1
-               -series_var3_val2
-
-       Args:
-
-       Returns:
-    """
-
-
-    # Retrieve the lists from the series_val dictionary
-
-
-
-    # Retrieve the lists from the fcst_var_val dictionary
-
-
-    # Utilize itertools' product() to create the cartesian product of all elements in the lists to produce all
-    # permutations of the series_val values and the fcst_var_val values.
-
-    pass
 
 def main():
     """
