@@ -297,8 +297,12 @@ class PerformanceDiagram(MetPlot):
                       color=series.color)
 
             # Annotate the points with their PODY (i.e. dependent variable value)
-            for idx, pody in enumerate(pody_points):
-                plt.annotate(str(pody), (sr_points[idx], pody_points[idx]), fontsize=10)
+            if self.config_obj.anno_var == 'y':
+                for idx, pody in enumerate(pody_points):
+                    plt.annotate(str(pody) + self.config_obj.anno_units, (sr_points[idx], pody_points[idx]), fontsize=10)
+            elif self.config_obj.anno_var == 'x':
+                for idx, sr in enumerate(sr_points):
+                    plt.annotate(str(sr) + self.config_obj.anno_units, (sr_points[idx], pody_points[idx]), fontsize=10)
 
 
 
