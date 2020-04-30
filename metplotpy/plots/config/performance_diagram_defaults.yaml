@@ -98,11 +98,10 @@ series_line_style:
 # Perform event equalization to check for missing data
 event_equalize: True
 
-#annotation_template: %y in  annotates each y-value with the  units 'in' for inches, preserving the whitespace between the
+# annotation_template: "%y in"  annotates each y-value with the  units 'in' for inches, preserving the whitespace between the
 # y-value and the units
-# annotate with the y-value at this point with units, inches
-# assumes the formatting that you used to define your template, i.e. if you leave a whitespace
-# between the %y and your units, your whitespace will be preserved
+# "%x <units>" will annotate each x-value (success ratio/independent variable value) with units, preserving the whitespace between the 
+# annotation and the units.
 annotation_template: "%y in."
 
 
