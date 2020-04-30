@@ -4,20 +4,22 @@
 title: Performance Diagram ("Default title")
 xaxis: Success Rate (1 - FAR)
 yaxis: Probability of Detection (PODY)
+
 plot_ci:
+  - boot
   - None
-  - None
-  - None
+  - Norm
 plot_disp:
   - True
   - True
   - True
 series_order:
+  - 3
   - 1
   - 2
-  - 3
 indy_var: fcst_valid_beg
 indy_vals:
+  # defining the datetimes of interest
   - 2016-08-12 06:00:00
   - 2016-08-12 12:00:00
   - 2016-08-12 18:00:00
@@ -37,18 +39,29 @@ indy_vals:
   - 2016-08-16 12:00:00
   - 2016-08-16 18:00:00
   - 2016-08-17 00:00:00
+
 fcst_var_val:
+  # Name of the variables of interest, the independent and dependent variables
+  # will be the same across all fcst_var values
+
+  # fcst_var1
   APCP_06:
     # x-axis/independent variable
     - FAR
     # y-axis/dependent variable
     - PODY
 series_val:
+  # series_var1
   model:
+    # series_val1
     - GFS_0p25_G193
+  # series_var2
   vx_mask:
+    # series_val1
     - NH_CMORPH_G193
+    # series_val2
     - SH_CMORPH_G193
+    # series_val3
     - TROP_CMORPH_G193
 user_legend:
   - NH
@@ -82,8 +95,19 @@ series_line_style:
   # dotted line
   - ":"
 
+# Perform event equalization to check for missing data
+event_equalize: True
 
-stat_input:  /d2/www/dtcenter/met/metviewer_output/data/plot_20200317_151252.data
+#annotation_template: %y in  annotates each y-value with the  units 'in' for inches, preserving the whitespace between the
+# y-value and the units
+# annotate with the y-value at this point with units, inches
+# assumes the formatting that you used to define your template, i.e. if you leave a whitespace
+# between the %y and your units, your whitespace will be preserved
+annotation_template: "%y in."
+
+
+#stat_input:  /d2/www/dtcenter/met/metviewer_output/data/plot_20200317_151252.data
+stat_input:  /Users/minnawin/skunk_performance_diag/plot_20200317_151252.data
 plot_output: /tmp/performance_diagram_default.png
 
 
