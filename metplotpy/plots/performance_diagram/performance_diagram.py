@@ -3,18 +3,16 @@ Class Name: performance_diagram.py
  """
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
+import os
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
-import itertools
 import yaml
-import os
 import pandas as pd
 from plots.met_plot import MetPlot
 from config import Config
 from series import Series
-
 
 
 class PerformanceDiagram(MetPlot):
@@ -31,8 +29,6 @@ class PerformanceDiagram(MetPlot):
         >>> perf_diag = PerformanceDiagram(None)
 
     """
-
-
 
     def __init__(self, parameters):
         """ Creates a line plot consisting of one or more lines (traces), based on
@@ -56,7 +52,8 @@ class PerformanceDiagram(MetPlot):
         self.input_df = self._read_input_data()
 
         # Create a list of series objects.
-        # Each series object contains all the necessary information for plotting, such as line color, marker symbol,
+        # Each series object contains all the necessary information for plotting,
+        # such as line color, marker symbol,
         # line width, and criteria needed to subset the input dataframe.
         self.series_list = self._create_series(self.input_df)
 
@@ -74,7 +71,6 @@ class PerformanceDiagram(MetPlot):
 
         return f'PerformanceDiagram({self.parameters!r})'
 
-
     def _read_input_data(self):
         """
             Read in the input data as set in the config file as stat_input as a pandas dataframe.
@@ -89,14 +85,15 @@ class PerformanceDiagram(MetPlot):
 
     def _create_series(self, input_data):
         """
-           Generate all the series objects that are to be displayed as specified by the plot_disp setting in the config
-           file.  The points are all ordered by datetime.  Each series object is represented by a line in the
-           performance diagram, so they also contain information for line width, line- and marker-colors,
-           line style, and other plot-related/appearance-related settings (which were defined in the config file).
+           Generate all the series objects that are to be displayed as specified by the plot_disp
+           setting in the config file.  The points are all ordered by datetime.  Each series object
+           is represented by a line in the performance diagram, so they also contain information
+           for line width, line- and marker-colors, line style, and other plot-related/
+           appearance-related settings (which were defined in the config file).
 
            Args:
-               input_data:  The input data in the form of a Pandas dataframe.  This data will be subset to
-                          reflect the series data of interest.
+               input_data:  The input data in the form of a Pandas dataframe.
+                            This data will be subset to reflect the series data of interest.
 
            Returns:
                a list of series objects that are to be displayed
@@ -123,7 +120,7 @@ class PerformanceDiagram(MetPlot):
           version (which is a Python Plotly implementation).
 
         """
-        plt.savefig(self.output_file)
+        plt.savefig(self.config_obj.output_image)
 
     def remove_file(self):
         """
@@ -154,17 +151,17 @@ class PerformanceDiagram(MetPlot):
 
     def _create_figure(self):
         """
-        Generate the performance diagram of varying number of series with POD and 1-FAR (Success Rate)
-        values.  Hard-coding of labels for CSI lines and bias lines, and contour colors for the CSI
-        curves.
+        Generate the performance diagram of varying number of series with POD and 1-FAR
+        (Success Rate) values.  Hard-coding of labels for CSI lines and bias lines,
+        and contour colors for the CSI curves.
 
 
         Args:
 
 
         Returns:
-            Generates a performance diagram with equal lines of CSI (Critical Success Index) and equal lines
-            of bias
+            Generates a performance diagram with equal lines of CSI (Critical Success Index)
+            and equal lines of bias
         """
 
         # This creates a figure size that is of a "reasonable" size
@@ -185,34 +182,34 @@ class PerformanceDiagram(MetPlot):
 
         # Using Logan Dawson's template for the performance diagram, which is
         # easier to read and maintain than the previous implementation.
-        x = y = np.arange(0.01, 1.01, 0.01)
-        X, Y = np.meshgrid(x, y)
+        x_axis = y_axis = np.arange(0.01, 1.01, 0.01)
+        x_mesh, y_mesh = np.meshgrid(x_axis, y_axis)
         bounds = np.arange(0, 1.10, 0.10)
-        norm = BoundaryNorm(bounds, len(bounds))
-        colors = ['#ffffff', '#f0f0f0', '#e3e3e3', '#d6d6d6', '#c9c9c9', '#bdbdbd', '#b0b0b0', '#a3a3a3', '#969696',
-                  '#8a8a8a']
-        cm = LinearSegmentedColormap.from_list('percentdiff_cbar', colors, N=len(bounds))
+        BoundaryNorm(bounds, len(bounds))
+        colors = ['#ffffff', '#f0f0f0', '#e3e3e3', '#d6d6d6', '#c9c9c9', '#bdbdbd', '#b0b0b0',
+                  '#a3a3a3', '#969696', '#8a8a8a']
+        colormap = LinearSegmentedColormap.from_list('percentdiff_cbar', colors, N=len(bounds))
 
-        CSI = ((1 / X) + (1 / Y) - 1) ** -1
-        CS_var = ax1.contourf(X, Y, CSI, np.arange(0.0, 1.1, 0.1), cmap=cm)
+        csi = ((1 / x_mesh) + (1 / y_mesh) - 1) ** -1
+        cs_var = ax1.contourf(x_mesh, y_mesh, csi, np.arange(0.0, 1.1, 0.1), cmap=colormap)
         csi_label = "Critical Success Index"
 
         biases = [0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 4.0, 10.0]
         bias_loc_x = [0.94, 0.935, 0.94, 0.935, 0.9, 0.58, 0.42, 0.18, 0.03]
         bias_loc_y = [0.12, 0.2625, 0.5, 0.74, 0.95, 0.95, 0.95, 0.95, 0.95]
 
-        Bias = Y / X
-        ax1.contour(X, Y, Bias, biases, colors='black', linestyles='--')
+        bias = y_mesh / x_mesh
+        ax1.contour(x_mesh, y_mesh, bias, biases, colors='black', linestyles='--')
 
         for i, j in enumerate(biases):
             ax1.annotate(j, (bias_loc_x[i], bias_loc_y[i]), fontsize=12)
-
 
         #
         # RETRIEVE SETTINGS FROM THE CONFIG FILE
         #
 
-        # Format the underlying performance diagram axes, labels, equal lines of CSI, equal lines of bias.
+        # Format the underlying performance diagram axes, labels, equal lines of CSI,
+        # equal lines of bias.
         xlabel = self.config_obj.xaxis
         ylabel = self.config_obj.yaxis
 
@@ -222,59 +219,54 @@ class PerformanceDiagram(MetPlot):
         #
         plot_contour_legend = self.config_obj.plot_contour_legend
         if plot_contour_legend:
-            cbar = plt.colorbar(CS_var)
+            cbar = plt.colorbar(cs_var)
             cbar.set_label(csi_label, fontsize=9)
-        # else:
-            # ax1.set_ylabel(csi_label, fontsize=9)
 
-        plt.title(self.config_obj.title, fontsize=self.config_obj.DEFAULT_TITLE_FONTSIZE, color=self.config_obj.DEFAULT_TITLE_COLOR, fontweight="bold", fontfamily=self.config_obj.DEFAULT_TITLE_FONT)
+        plt.title(self.config_obj.title, fontsize=self.config_obj.DEFAULT_TITLE_FONTSIZE,
+                  color=self.config_obj.DEFAULT_TITLE_COLOR, fontweight="bold",
+                  fontfamily=self.config_obj.DEFAULT_TITLE_FONT)
 
         #
-        # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE  the statistics data for each model/series
+        # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE
+        # the statistics data for each model/series
         #
         for i, series in enumerate(self.series_list):
             pody_points = series.series_points[1]
             sr_points = series.series_points[0]
             plt.plot(sr_points, pody_points, linestyle=series.linestyle, linewidth=series.linewidth,
-                     color=series.color, marker=series.marker,label=series.user_legends, alpha=0.5, ms=3)
+                     color=series.color, marker=series.marker, label=series.user_legends,
+                     alpha=0.5, ms=3)
 
             # Annotate the points with their PODY (i.e. dependent variable value)
             if self.config_obj.anno_var == 'y':
                 for idx, pody in enumerate(pody_points):
-                    plt.annotate(str(pody) + self.config_obj.anno_units, (sr_points[idx], pody_points[idx]), fontsize=9)
+                    plt.annotate(str(pody) + self.config_obj.anno_units,
+                                 (sr_points[idx], pody_points[idx]), fontsize=9)
             elif self.config_obj.anno_var == 'x':
-                for idx, sr in enumerate(sr_points):
-                    plt.annotate(str(sr) + self.config_obj.anno_units, (sr_points[idx], pody_points[idx]), fontsize=9)
+                for idx, succ_ratio in enumerate(sr_points):
+                    plt.annotate(str(succ_ratio) + self.config_obj.anno_units,
+                                 (sr_points[idx], pody_points[idx]), fontsize=9)
 
             # Plot error bars if they were requested:
             if self.config_obj.plot_ci[i] != "NONE":
                 pody_errs = series.series_points[2]
-                plt.errorbar(sr_points, pody_points, yerr=pody_errs, capsize=4, ecolor='black', ms=2 )
+                plt.errorbar(sr_points, pody_points, yerr=pody_errs, capsize=4,
+                             ecolor='black', ms=2)
 
-
-            ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
+            ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left',
+                       mode='expand', borderaxespad=0., ncol=5,
                        prop={'size': 6})
             ax1.xaxis.set_label_coords(0.5, -0.066)
             ax1.set_xlabel(xlabel, fontsize=9)
             ax1.set_ylabel(ylabel, fontsize=9)
-        ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
-                                  prop={'size': 6}, fancybox=True)
+        ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand',
+                   borderaxespad=0., ncol=5, prop={'size': 6}, fancybox=True)
         ax1.xaxis.set_label_coords(0.5, -0.066)
         ax1.set_xlabel(xlabel, fontsize=9)
         ax1.set_ylabel(ylabel, fontsize=9)
         plt.savefig(self.get_config_value('plot_output'))
         plt.show()
-        self.save_to_file(plt)
-
-
-    def save_to_file(self, plot):
-        """ Save plot as file in directory as specified in default or custom config file."""
-        print(f"saving file as {self.config_obj.output_image}")
-        plt.savefig(self.config_obj.output_image, format='png')
-
-
-
-
+        self.save_to_file()
 
 
 def main():
@@ -294,16 +286,13 @@ def main():
         except yaml.YAMLError as exc:
             print(exc)
 
-
     try:
         # create a performance diagram
-        pd = PerformanceDiagram(docs)
+        PerformanceDiagram(docs)
 
-    except ValueError as ve:
-        print(ve)
-
+    except ValueError as value_error:
+        print(value_error)
 
 
 if __name__ == "__main__":
-
     main()
