@@ -6,6 +6,8 @@ Holds values set in the config file(s)
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
+import re
+
 class Config:
     # Default values...
     DEFAULT_TITLE_FONT = 'sans-serif'
@@ -22,35 +24,73 @@ class Config:
         # Configuration settings that apply to the plot
         #
 
-        # Do not plot the legend for the equal lines of CSI (critical success index)
-        self.plot_contour_legend = False
-        self.output_image = self.parameters['plot_output']
+        self.plot_contour_legend = self.get_config_value('plot_contour_legend')
+        self.output_image = self.get_config_value('plot_output')
         self.title_font = self.DEFAULT_TITLE_FONT
         self.title_color = self.DEFAULT_TITLE_COLOR
-        self.xaxis = self._get_xaxis_title()
-        self.yaxis = self._get_yaxis_title()
-        self.title = self._get_title()
+        self.xaxis = self.get_config_value('xaxis')
+        self.yaxis = self.get_config_value('yaxis')
+        self.title = self.get_config_value('title')
+        self.anno_var, self.anno_units = self._get_annotation_template()
 
         #
         # Configuration settings that apply to each series (line)
         #
-        self.stat_input = self._get_stat_input()
+
+        # use this setting to determine the ordering of colors, lines, and markers
+        self.series_ordering = self._get_series_order()
+
+        # employ event equalization if requested
+        self.use_ee = self.get_config_value('event_equalization')
+        #for now, we will print out a message indicating that event equalization is requested
+        if self.use_ee:
+            print("Event equalization requested")
+        else:
+            print("Event equalization turned off.")
+
+
+        # Make the series ordering zero-based to be consistent with Python's zero-based
+        # counting/numbering
+        self.series_ordering_zb = [sorder-1 for sorder in self.series_ordering]
+        self.stat_input = self.get_config_value('stat_input')
         self.plot_ci = self._get_plot_ci()
         self.plot_stat = self._get_plot_stat()
         self.plot_disp = self._get_plot_disp()
-        self.series_ordering = self._get_series_order()
         self.colors_list = self._get_colors()
         self.marker_list = self._get_markers()
         self.linewidth_list = self._get_linewidths()
         self.linestyles_list = self._get_linestyles()
         self.symbols_list = self._get_series_symbols()
         self.user_legends = self._get_user_legends()
+        self.indy_vals = self.get_config_value('indy_vals')
+        self.indy_var = self.get_config_value('indy_var')
         is_config_consistent = self._config_consistency_check()
         if not is_config_consistent:
             raise ValueError("The number of series defined by series_val is inconsistent with the number of settings"
                              " required for describing each series. Please check"
                              " the number of your configuration file's plot_i, plot_disp, series_order, user_legend,"
                              " colors, and series_symbols settings.")
+
+        # now that all the config values for the series are consistent, pick any series-related config,
+        # such as plot_disp config value to determine how many series are to be considered for the diagram.
+        self.num_of_series = len(self.plot_disp)
+
+        # Config settings for each "series object", that are useful to subset the input data relevant
+        # to each series.
+
+        # These are the inner keys to the series_val setting, and they represent the series variables of
+        # interest.  The keys correspond to the column names in the input dataframe.
+        self.series_vals = self._get_series_vals()
+
+        # Represent the names of the forecast variables (inner keys) to the fcst_var_val setting.
+        # These are the names of the columns in the input dataframe.
+        self.fcst_vars = self._get_fcst_vars()
+
+        # These are the inner values to the series_val setting (these correspond to the
+        # keys returned in self.series_vals above).  These are the specific variable values to
+        # be used in subsetting the input dataframe (e.g. for key='model', and value='SH_CMORPH',
+        # we want to subset data where column name is 'model', with coincident rows of 'SH_CMORPH'.
+        self.series_val_names = self._get_series_val_names()
 
 
     def get_config_value(self, *args):
@@ -93,41 +133,74 @@ class Config:
                 return self._get_nested(value, args[1:])
         return None
 
-    def _get_stat_input(self):
+    def create_list_by_series_ordering(self, setting_to_order):
         """
-            Retrieve the input data file containing the statistics of interest.
+            Generate a list of series plotting settings based on what is set in series_order in the config file.
+            If the series_order is specified:
+               series_order:
+                -3
+                -1
+                -2
+
+                and color is set:
+               color:
+                -red
+                -blue
+                -green
+
+               and the line widths are:
+               line_width:
+                  -1
+                  -3
+                  -2
+               then the first series has a line width=3,
+               the second series has a line width=2,
+               and the third series has a line width=1
+
+            Then the following is expected:
+              the first series' color is 'blue'
+              the second series' color is 'green'
+              the third series' color is 'red'
+
+            This allows the user the flexibility to change marker symbols, colors, and other line qualities between
+            the series (lines) without having to re-order *all* the values.
+
+            Args:
+
+                setting_to_order:  the name of the setting (eg line_width) to be ordered based on the order indicated
+                                   in the config file under the series_order setting.
 
             Returns:
-                location and name of the input data file with statistics of interest.
+                a list reflecting the order that is consistent with what was set in series_order
 
         """
-        return self.get_config_value('stat_input')
 
-    def _get_xaxis_title(self):
+        # order the ci list according to the series_order setting
+        ordered_settings_list = []
+
+        # Make the series ordering list zero-based to sync with Python's zero-based counting
+        series_ordered_zb = [sorder - 1 for sorder in self.series_ordering]
+        for idx in range(len(setting_to_order)):
+            # find the current index's value in the zero-based series_ordering list
+            loc = series_ordered_zb.index(idx)
+            ordered_settings_list.append(setting_to_order[loc])
+
+        return ordered_settings_list
+
+
+    def _get_annotation_template(self):
+        """ Retrieve the annotation template, and then extract the units and the variable
+
         """
-            The label for the xaxis
-        """
+        anno_tmpl = self.get_config_value('annotation_template')
+        m = re.match(r'^%([a-z|A-Z])(.*)', anno_tmpl)
+        if m:
+            anno_var = m.group(1)
+            anno_units = m.group(2)
+        else:
+            raise ValueError("Non-conforming annotation template specified in config file.  Expecting format of %y <units> or %x <units>")
+        return anno_var, anno_units
 
-        return self.get_config_value('xaxis')
-
-    def _get_yaxis_title(self):
-        """
-            The label for the y-axis
-        """
-
-        return self.get_config_value('yaxis')
-
-    def _get_title(self):
-        """Creates a  title dictionary with values from users and default parameters
-        If users parameters dictionary doesn't have needed values - use defaults
-
-        Args:
-
-        Returns:
-            - the title
-        """
-        current_title = self.get_config_value('title')
-        return current_title
 
     def _get_plot_ci(self):
         """
@@ -148,7 +221,10 @@ class Config:
                 raise ValueError("A plot_ci value is set to an invalid value. Accepted values are (case insensitive): "
                                  "None, norm, or boot. Please check your config file.")
 
-        return ci_settings_list
+        # order the ci list according to the series_order setting (e.g. 1 2 3, 2 1 3,..., etc.)
+        ordered_ci_settings_list = self.create_list_by_series_ordering(plot_ci_list)
+
+        return ordered_ci_settings_list
 
     def _get_plot_stat(self):
         """
@@ -182,7 +258,8 @@ class Config:
 
         plot_display_vals = self.get_config_value('plot_disp')
         plot_display_bools = [pd for pd in plot_display_vals]
-        return plot_display_bools
+        plot_display_bools_ordered = self.create_list_by_series_ordering(plot_display_bools)
+        return plot_display_bools_ordered
 
     def _get_series_order(self):
         """
@@ -210,7 +287,8 @@ class Config:
 
         colors_settings = self.get_config_value('colors')
         color_list = [color for color in colors_settings]
-        return color_list
+        color_list_ordered = self.create_list_by_series_ordering(color_list)
+        return color_list_ordered
 
     def _get_markers(self):
         """
@@ -224,7 +302,8 @@ class Config:
         """
         markers = self.get_config_value('series_symbols')
         markers_list = [m for m in markers]
-        return markers_list
+        markers_list_ordered = self.create_list_by_series_ordering(markers_list)
+        return markers_list_ordered
 
     def _get_linewidths(self):
         """ Retrieve all the linewidths from the configuration file, if not specified in any config file, use
@@ -237,7 +316,8 @@ class Config:
         """
         linewidths = self.get_config_value('series_line_width')
         linewidths_list = [l for l in linewidths]
-        return linewidths_list
+        linewidths_list_ordered = self.create_list_by_series_ordering(linewidths_list)
+        return linewidths_list_ordered
 
     def _get_linestyles(self):
         """
@@ -250,7 +330,8 @@ class Config:
         """
         linestyles = self.get_config_value('series_line_style')
         linestyle_list = [l for l in linestyles]
-        return linestyle_list
+        linestyle_list_ordered = self.create_list_by_series_ordering(linestyle_list)
+        return linestyle_list_ordered
 
     def _get_series_symbols(self):
         """
@@ -265,7 +346,8 @@ class Config:
         """
         symbols = self.get_config_value('series_symbols')
         symbols_list = [symbol for symbol in symbols]
-        return symbols_list
+        symbols_list_ordered = self.create_list_by_series_ordering(symbols_list)
+        return symbols_list_ordered
 
     def _get_user_legends(self):
         """
@@ -280,30 +362,31 @@ class Config:
         """
         all_legends = self.get_config_value('user_legend')
         legends_list = [legend for legend in all_legends]
-        return legends_list
+        legends_list_ordered = self.create_list_by_series_ordering(legends_list)
+        return legends_list_ordered
 
-    # def _get_event_equalization_value(self):
-    #     """
-    #         Retrieve the boolean value from the config file which determines whether or
-    #         not event equalization should be used.
-    #
-    #         Args:
-    #
-    #         Returns:
-    #             True or False
-    #
-    #     """
-    #     ee_val = self.parameters.getattribute('event_equalization').upper()
-    #
-    #     if ee_val == 'TRUE':
-    #         return True
-    #     else:
-    #         return False
+    def _get_event_equalization_value(self):
+        """
+            Retrieve the boolean value from the config file which determines whether or
+            not event equalization should be used.
+
+            Args:
+
+            Returns:
+                True or False
+
+        """
+        ee_val = self.parameters.getattribute('event_equalization').upper()
+
+        if ee_val == 'TRUE':
+            return True
+        else:
+            return False
 
     def _config_consistency_check(self):
         """
             Checks that the number of settings defined for plot_ci, plot_disp, series_order, user_legend
-            colors, and series_symbols is consistent with the
+            colors, and series_symbols are consistent.
 
             Args:
 
@@ -324,12 +407,67 @@ class Config:
         num_line_widths = len(self.linewidth_list)
         num_linestyles = len(self.linestyles_list)
 
-        # if self.num_series == num_ci_settings == num_plot_disp == \
-        #         num_markers == num_series_ord == num_colors == num_symbols\
-        #         == num_legends == num_line_widths == num_linestyles:
         if  num_plot_disp == \
                     num_markers == num_series_ord == num_colors == num_symbols \
                     == num_legends == num_line_widths == num_linestyles:
             return True
         else:
             return False
+
+    def _get_series_vals(self):
+        """
+            Get a list of all the variable values that correspond to the inner key of the series_val dictionary.
+            These values will be used with lists of other config values to
+            create filtering criteria.  This is useful to subset the input data to assist in identifying
+            the data points for this series.
+
+            Args:
+
+            Returns:
+                a "list of lists" of *all* the values of the inner dictionary of the series_val dictionary
+
+        """
+
+
+        series_val_dict = self.get_config_value('series_val')
+
+        # Unpack and access the values corresponding to the inner keys
+        # (series_var1, series_var2, ..., series_varn).
+        return [*series_val_dict.values()]
+
+    def _get_fcst_vars(self):
+        """
+           Retrieve a list of the inner keys (fcst_vars) to the fcst_var_val dictionary.
+
+           Args:
+
+           Returns:
+               a list containing all the fcst variables requested in the fcst_var_val setting in the
+               config file.  This will be used to subset the input data that corresponds to a particular series.
+
+        """
+        fcst_var_val_dict = self.get_config_value('fcst_var_val')
+        all_fcst_vars = [*fcst_var_val_dict.keys()]
+        return all_fcst_vars
+
+    def _get_series_val_names(self):
+        """
+            Get a list of all the variable value names (i.e. inner key of the series_val dictionary).
+            These values will be used with lists of other config values to
+            create filtering criteria.  This is useful to subset the input data to assist in identifying
+            the data points for this series.
+
+            Args:
+
+            Returns:
+                a "list of lists" of *all* the keys to the inner dictionary of the series_val dictionary
+
+        """
+
+
+        series_val_dict = self.get_config_value('series_val')
+
+        # Unpack and access the values corresponding to the inner keys
+        # (series_var1, series_var2, ..., series_varn).
+        return [*series_val_dict.keys()]
+
