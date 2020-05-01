@@ -232,11 +232,11 @@ class PerformanceDiagram(MetPlot):
         #
         # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE  the statistics data for each model/series
         #
-        for idx, series in enumerate(self.series_list):
+        for i, series in enumerate(self.series_list):
             pody_points = series.series_points[1]
             sr_points = series.series_points[0]
             plt.plot(sr_points, pody_points, linestyle=series.linestyle, linewidth=series.linewidth,
-                     color=series.color, marker=series.marker,label=series.user_legends, alpha=0.5)
+                     color=series.color, marker=series.marker,label=series.user_legends, alpha=0.5, ms=3)
 
             # Annotate the points with their PODY (i.e. dependent variable value)
             if self.config_obj.anno_var == 'y':
@@ -246,6 +246,10 @@ class PerformanceDiagram(MetPlot):
                 for idx, sr in enumerate(sr_points):
                     plt.annotate(str(sr) + self.config_obj.anno_units, (sr_points[idx], pody_points[idx]), fontsize=9)
 
+            # Plot error bars if they were requested:
+            if self.config_obj.plot_ci[i] != "NONE":
+                pody_errs = series.series_points[2]
+                plt.errorbar(sr_points, pody_points, yerr=pody_errs, capsize=4, ecolor='black', ms=2 )
 
 
             ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
