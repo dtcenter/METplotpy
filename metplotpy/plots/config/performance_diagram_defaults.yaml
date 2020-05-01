@@ -105,9 +105,7 @@ event_equalize: True
 # annotation and the units.
 annotation_template: "%y in."
 
-
-#stat_input:  /d2/www/dtcenter/met/metviewer_output/data/plot_20200317_151252.data
-stat_input:  /Users/minnawin/skunk_performance_diag/plot_20200317_151252.data
+stat_input:  ../performance_diagram/plot_20200317_151252.data
 plot_output: /tmp/performance_diagram_default.png
 
 
