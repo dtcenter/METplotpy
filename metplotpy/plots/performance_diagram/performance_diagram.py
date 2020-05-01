@@ -4,6 +4,8 @@ Class Name: performance_diagram.py
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 import matplotlib.pyplot as plt
+from matplotlib.colors import BoundaryNorm
+from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import itertools
 import yaml
@@ -217,7 +219,8 @@ class PerformanceDiagram(MetPlot):
             of bias
         """
 
-        fig = plt.figure()
+        # This creates a figure size that is of a "reasonable" size
+        fig = plt.figure(figsize=[8.5, 8])
 
         #
         # PLOT THE "TEMPLATE" THAT CREATES THE EQUAL LINES OF CSI AND EQUAL LINES OF BIAS
@@ -227,61 +230,56 @@ class PerformanceDiagram(MetPlot):
         # add an extra y-axis to indicate tick marks for the equal lines of CSI
         ax1 = fig.add_subplot(111)
         ax2 = ax1.twinx()
+        ax1.set_xlim([0, 1])
+        ax1.set_ylim([0, 1])
+        ax2.set_xlim([0, 1])
+        ax2.set_ylim([0, 1])
 
-        # Use the numpy meshgrid to assist in generating the equal lines of BIAS and CSI, based on
-        # David John Gagne's approach: https://gist.github.com/djgagne/64516e3ea268ec31fb34
-        ticks = np.arange(0.1, 1.1, 0.1)
+        # Using Logan Dawson's template for the performance diagram, which is
+        # easier to read and maintain than the previous implementation.
+        x = y = np.arange(0.01, 1.01, 0.01)
+        X, Y = np.meshgrid(x, y)
+        bounds = np.arange(0, 1.10, 0.10)
+        norm = BoundaryNorm(bounds, len(bounds))
+        colors = ['#ffffff', '#f0f0f0', '#e3e3e3', '#d6d6d6', '#c9c9c9', '#bdbdbd', '#b0b0b0', '#a3a3a3', '#969696',
+                  '#8a8a8a']
+        cm = LinearSegmentedColormap.from_list('percentdiff_cbar', colors, N=len(bounds))
 
-        # use a grayscale color map for the filled contour
-        csi_cmap = "binary"
-
-        # set the start value to a miniscule, non-zero number to avoid the runtime divide-by-zero error
-        grid_ticks = np.arange(0.000001, 1.01, 0.01)
-
-        sr_g, pod_g = np.meshgrid(grid_ticks, grid_ticks)
-        bias = pod_g / sr_g
-        csi = 1.0 / (1.0 / sr_g + 1.0 / pod_g - 1.0)
+        CSI = ((1 / X) + (1 / Y) - 1) ** -1
+        CS_var = ax1.contourf(X, Y, CSI, np.arange(0.0, 1.1, 0.1), cmap=cm)
         csi_label = "Critical Success Index"
 
-        # CSI lines are filled contour lines
-        csi_contour = ax1.contourf(sr_g, pod_g, csi, np.arange(0.1, 1.1, 0.1), extend="max", cmap=csi_cmap, alpha=.25)
+        biases = [0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 4.0, 10.0]
+        bias_loc_x = [0.94, 0.935, 0.94, 0.935, 0.9, 0.58, 0.42, 0.18, 0.03]
+        bias_loc_y = [0.12, 0.2625, 0.5, 0.74, 0.95, 0.95, 0.95, 0.95, 0.95]
 
-        # The equal lines of CSI are represented by ordinary contour lines
-        bias_contour = ax1.contour(sr_g, pod_g, bias, [0.3, 0.5, 0.8, 1, 1.3, 1.5, 2.0, 3.0, 5.0, 10.0], colors="k",
-                                linestyles="dashed")
+        Bias = Y / X
+        ax1.contour(X, Y, Bias, biases, colors='black', linestyles='--')
 
-        # coordinate location of where to put the label for the equal bias contour lines, since we haven't
-        # created a second x-axis (at the top of the plot)
-        plt.clabel(bias_contour, fmt="%1.1f", fontsize=6,
-                   manual=[(0.9, 0.225), (0.97, 0.415), (0.9, 0.7), (0.7, 0.7), (0.6, 0.9), (0.7, 0.9), (0, 1.),
-                           (0, 2.0),
-                           (0., 5), (0.1, 10.)])
+        for i, j in enumerate(biases):
+            ax1.annotate(j, (bias_loc_x[i], bias_loc_y[i]), fontsize=12)
+
 
         #
         # RETRIEVE SETTINGS FROM THE CONFIG FILE
         #
 
         # Format the underlying performance diagram axes, labels, equal lines of CSI, equal lines of bias.
-        # xlabel = "Success Ratio (1-FAR)"
-        # ylabel = "Probability of Detection"
         xlabel = self.config_obj.xaxis
         ylabel = self.config_obj.yaxis
 
-        #
+        # From original implementation, replace this with Logan's for now
         # Optional: plot the legend for the contour lines representing the
         # equal lines of CSI.
         #
         plot_contour_legend = self.config_obj.plot_contour_legend
         if plot_contour_legend:
-            cbar = plt.colorbar(csi_contour)
+            cbar = plt.colorbar(CS_var)
             cbar.set_label(csi_label, fontsize=9)
-        else:
-            ax2.set_ylabel(csi_label, fontsize=9)
+        # else:
+            # ax1.set_ylabel(csi_label, fontsize=9)
 
-        plt.xticks(ticks)
-        plt.yticks(ticks)
         plt.title(self.config_obj.title, fontsize=self.config_obj.DEFAULT_TITLE_FONTSIZE, color=self.config_obj.DEFAULT_TITLE_COLOR, fontweight="bold", fontfamily=self.config_obj.DEFAULT_TITLE_FONT)
-        # plt.text(0.48, 0.6, "Frequency Bias", fontdict=dict(fontsize=8, rotation=45), alpha=.3)
 
         #
         # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE  the statistics data for each model/series
@@ -289,20 +287,16 @@ class PerformanceDiagram(MetPlot):
         for idx, series in enumerate(self.series_list):
             pody_points = series.series_points[1]
             sr_points = series.series_points[0]
-            # plt.plot(sr_points, pody_points, linestyle=series.linestyle, linewidth=series.linewidth, marker=series.marker,
-            #          color=series.color, label=series.user_legends, alpha=0.5)
             plt.plot(sr_points, pody_points, linestyle=series.linestyle, linewidth=series.linewidth,
-                     color=series.color, label=series.user_legends, alpha=0.5)
-            plt.plot(sr_points, pody_points, marker=series.marker,
-                      color=series.color)
+                     color=series.color, marker=series.marker,label=series.user_legends, alpha=0.5)
 
             # Annotate the points with their PODY (i.e. dependent variable value)
             if self.config_obj.anno_var == 'y':
                 for idx, pody in enumerate(pody_points):
-                    plt.annotate(str(pody) + self.config_obj.anno_units, (sr_points[idx], pody_points[idx]), fontsize=10)
+                    plt.annotate(str(pody) + self.config_obj.anno_units, (sr_points[idx], pody_points[idx]), fontsize=9)
             elif self.config_obj.anno_var == 'x':
                 for idx, sr in enumerate(sr_points):
-                    plt.annotate(str(sr) + self.config_obj.anno_units, (sr_points[idx], pody_points[idx]), fontsize=10)
+                    plt.annotate(str(sr) + self.config_obj.anno_units, (sr_points[idx], pody_points[idx]), fontsize=9)
 
 
 
@@ -313,7 +307,7 @@ class PerformanceDiagram(MetPlot):
             ax1.set_ylabel(ylabel, fontsize=9)
             # print(f"****Number of series: {(data['POD'][0])}")
         ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
-                                  prop={'size': 6})
+                                  prop={'size': 6}, fancybox=True)
         ax1.xaxis.set_label_coords(0.5, -0.066)
         ax1.set_xlabel(xlabel, fontsize=9)
         ax1.set_ylabel(ylabel, fontsize=9)
