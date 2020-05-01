@@ -68,6 +68,7 @@ user_legend:
   - SH
   - TROP
 plot_stat: median
+plot_contour_legend: False
 colors:
   # red
   - "#ff0000"
