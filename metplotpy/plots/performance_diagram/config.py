@@ -222,7 +222,7 @@ class Config:
                                  "None, norm, or boot. Please check your config file.")
 
         # order the ci list according to the series_order setting (e.g. 1 2 3, 2 1 3,..., etc.)
-        ordered_ci_settings_list = self.create_list_by_series_ordering(plot_ci_list)
+        ordered_ci_settings_list = self.create_list_by_series_ordering(ci_settings_list)
 
         return ordered_ci_settings_list
 
