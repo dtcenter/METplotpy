@@ -53,7 +53,7 @@ class PerformanceDiagram(MetPlot):
         self.config_obj = Config(parameters)
 
         # Read in input data, location specified in config file
-        self.input_df = self.read_input_data()
+        self.input_df = self._read_input_data()
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting, such as line color, marker symbol,
@@ -75,59 +75,7 @@ class PerformanceDiagram(MetPlot):
         return f'PerformanceDiagram({self.parameters!r})'
 
 
-    def _get_indy_variable(self):
-        """
-           Retrieve the independent variable of interest such as fcst_valid_beg or fcst_init_beg
-
-
-           Returns:
-               value of the indy_var
-        """
-        return self.get_config_value('indy_var')
-
-    def _get_fcst_vars(self):
-        """
-           Retrieve the independent and dependent statistics variables (ie statistic for x-axis, and statistic
-           for the y-axis).  In this case, this should be PODY for dependent statistic variable, and FAR as the
-           independent statistic variable, which is used to calculate the Success Ratio (1-FAR).
-
-           Returns:
-               stat_var_indy and stat_var_dep: the independent statistics variable (x-axis) and the
-                                               dependent statistics variable (y-axis)
-        """
-
-        # retrieve the independent and dependent variables set in the configuration file under the fcst_var_val key.
-        fcst_var_dict = self.parameters['fcst_var_val']
-        fcst_vars = list(fcst_var_dict.values())
-        # We retrieve the first key of the fctst_var_val dictionary, since we don't know the name of the key
-        indy_var = fcst_vars[0][0]
-        dep_var = fcst_vars[0][1]
-
-        return indy_var, dep_var
-
-    def _get_indy_values(self):
-        """
-           Retrieve the list of datetimes (independent values) that are used to create the series data
-
-           Args:
-
-           Returns:
-                a list of the datetimes of interest as strings
-        """
-        return self.parameters['indy_vals']
-
-    def _get_output_file(self):
-        """
-            Retrieve the name and path for the output file (output plot).
-
-            Args:
-
-            Returns:
-                the path and filename of the output plot
-        """
-        return self.get_config_value('plot_output')
-
-    def read_input_data(self):
+    def _read_input_data(self):
         """
             Read in the input data as set in the config file as stat_input as a pandas dataframe.
 
@@ -191,7 +139,7 @@ class PerformanceDiagram(MetPlot):
 
     def show_in_browser(self):
         """***NOTE***: This method is required for implementation in plotly.
-           In a plotly implrmentation, this creates a plot and opens it in the browser.
+           In a plotly implementation, this creates a plot and opens it in the browser.
 
                  Args:
 
@@ -305,7 +253,6 @@ class PerformanceDiagram(MetPlot):
             ax1.xaxis.set_label_coords(0.5, -0.066)
             ax1.set_xlabel(xlabel, fontsize=9)
             ax1.set_ylabel(ylabel, fontsize=9)
-            # print(f"****Number of series: {(data['POD'][0])}")
         ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand', borderaxespad=0., ncol=5,
                                   prop={'size': 6}, fancybox=True)
         ax1.xaxis.set_label_coords(0.5, -0.066)
@@ -313,12 +260,13 @@ class PerformanceDiagram(MetPlot):
         ax1.set_ylabel(ylabel, fontsize=9)
         plt.savefig(self.get_config_value('plot_output'))
         plt.show()
-        # self.save_to_file()
+        self.save_to_file(plt)
 
 
-    def save_to_file(self):
+    def save_to_file(self, plot):
         """ Save plot as file in directory as specified in default or custom config file."""
-        print(f"saving file as {self.output_image}")
+        print(f"saving file as {self.config_obj.output_image}")
+        plt.savefig(self.config_obj.output_image, format='png')
 
 
 
