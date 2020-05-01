@@ -6,9 +6,9 @@ xaxis: Success Rate (1 - FAR)
 yaxis: Probability of Detection (PODY)
 
 plot_ci:
-  - boot
+  - none
+  - norm
   - None
-  - Norm
 plot_disp:
   - True
   - True
