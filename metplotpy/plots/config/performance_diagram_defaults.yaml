@@ -103,7 +103,27 @@ event_equalize: True
 # y-value and the units
 # "%x <units>" will annotate each x-value (success ratio/independent variable value) with units, preserving the whitespace between the 
 # annotation and the units.
-annotation_template: "%y in."
+# if you want to annotate the independent variable:
+#       annotation_template: "%y in."
+# leave empty if no annotation is desired:
+#       annotation_template:
+annotation_template:
+
+
+
+
+# proposed annotation_template
+#
+# annotation_template:
+#    %x or %y indicates the independent or dependent variable
+#    or enter a variable name of interest (i.e. column name in data file)
+#    variable: <variable>
+#    units: <units with leading whitespace preserved, enclosed in double quotes>
+
+#  example:
+#  annotation_template:
+#      variable: threshold
+#      units:  " in."
 
 stat_input:  ../performance_diagram/plot_20200317_151252.data
 plot_output: /tmp/performance_diagram_default.png
