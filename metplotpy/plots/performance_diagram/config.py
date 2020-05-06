@@ -204,6 +204,8 @@ class Config:
 
         """
         anno_tmpl = self.get_config_value('annotation_template')
+        if not anno_tmpl:
+            return None, None
         match = re.match(r'^%([a-z|A-Z])(.*)', anno_tmpl)
         if match:
             anno_var = match.group(1)
@@ -221,7 +223,7 @@ class Config:
 
             Returns:
                 list of values to indicate whether or not to plot the confidence interval for
-                a particular series, and which confidence iterval (bootstrap or normal).
+                a particular series, and which confidence interval (bootstrap or normal).
 
         """
         plot_ci_list = self.get_config_value('plot_ci')
@@ -382,21 +384,6 @@ class Config:
         legends_list = [legend for legend in all_legends]
         legends_list_ordered = self.create_list_by_series_ordering(legends_list)
         return legends_list_ordered
-
-    def _get_event_equalization_value(self):
-        """
-            Retrieve the boolean value from the config file which determines whether or
-            not event equalization should be used.
-
-            Args:
-
-            Returns:
-                True or False
-
-        """
-        ee_val = self.parameters.getattribute('event_equalization').upper()
-
-        return ee_val
 
 
     def _config_consistency_check(self):
