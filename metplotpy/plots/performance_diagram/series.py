@@ -129,13 +129,12 @@ class Series:
                 # pody_err = pody_ncu - pody_ncl
                 pody_err = pody_ncu - pody_ncl
 
-                # Round final values to 2-sig figs
+                # Round final PODY and Success ratio values to 2-sig figs
                 pody_val_2sig = round(pody_val, 2)
                 sr_val_2sig = round(sr_val, 2)
                 pody_list.append(pody_val_2sig)
                 sr_list.append(sr_val_2sig)
-                pody_err_2sig = round(pody_err, 2)
-                pody_err_list.append(pody_err_2sig)
+                pody_err_list.append(pody_err)
 
         return sr_list, pody_list, pody_err_list
 
