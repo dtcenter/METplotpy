@@ -11,8 +11,8 @@ import numpy as np
 import yaml
 import pandas as pd
 from plots.met_plot import MetPlot
-from config import Config
-from series import Series
+from plots.config import Config
+from plots.series import Series
 
 
 class PerformanceDiagram(MetPlot):
