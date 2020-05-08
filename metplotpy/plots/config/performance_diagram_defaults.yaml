@@ -2,7 +2,7 @@
 # Default settings specific to performance diagram plot
 # Line and marker plots of series data of Success Rate (1-FAR) on x-axis vs. PODY on y-axis.
 title: Performance Diagram ("Default title")
-xaxis: Success Rate (1 - FAR)
+xaxis: Success Ratio (1 - FAR)
 yaxis: Probability of Detection (PODY)
 
 plot_ci:
