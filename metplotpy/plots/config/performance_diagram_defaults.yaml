@@ -97,7 +97,7 @@ series_line_style:
   - ":"
 
 # Perform event equalization to check for missing data
-event_equalize: True
+event_equalize: False
 
 # annotation_template: "%y in"  annotates each y-value with the  units 'in' for inches, preserving the whitespace between the
 # y-value and the units
@@ -107,23 +107,10 @@ event_equalize: True
 #       annotation_template: "%y in."
 # leave empty if no annotation is desired:
 #       annotation_template:
-annotation_template:
+# example use:
+#    annotation_template: "%y in."
+annotation_template: 
 
-
-
-
-# proposed annotation_template
-#
-# annotation_template:
-#    %x or %y indicates the independent or dependent variable
-#    or enter a variable name of interest (i.e. column name in data file)
-#    variable: <variable>
-#    units: <units with leading whitespace preserved, enclosed in double quotes>
-
-#  example:
-#  annotation_template:
-#      variable: threshold
-#      units:  " in."
 
 stat_input:  ../performance_diagram/plot_20200317_151252.data
 plot_output: /tmp/performance_diagram_default.png
