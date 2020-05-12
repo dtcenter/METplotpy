@@ -59,7 +59,6 @@ class PerformanceDiagramConfig(Config):
                              " colors, and series_symbols settings.")
 
 
-
     def _get_markers(self):
         """
            Retrieve all the markers, the order and number correspond to the number
@@ -74,6 +73,7 @@ class PerformanceDiagramConfig(Config):
         markers_list = [m for m in markers]
         markers_list_ordered = self.create_list_by_series_ordering(markers_list)
         return markers_list_ordered
+
 
     def _get_colors(self):
         """
@@ -91,6 +91,7 @@ class PerformanceDiagramConfig(Config):
         color_list_ordered = self.create_list_by_series_ordering(color_list)
         return color_list_ordered
 
+
     def _get_linewidths(self):
         """ Retrieve all the linewidths from the configuration file, if not
             specified in any config file, use the default values of 2
@@ -105,6 +106,7 @@ class PerformanceDiagramConfig(Config):
         linewidths_list_ordered = self.create_list_by_series_ordering(linewidths_list)
         return linewidths_list_ordered
 
+
     def _get_linestyles(self):
         """
             Retrieve all the linestyles from the config file.
@@ -118,6 +120,7 @@ class PerformanceDiagramConfig(Config):
         linestyle_list = [l for l in linestyles]
         linestyle_list_ordered = self.create_list_by_series_ordering(linestyle_list)
         return linestyle_list_ordered
+
 
     def _get_series_symbols(self):
         """
@@ -135,6 +138,7 @@ class PerformanceDiagramConfig(Config):
         symbols_list_ordered = self.create_list_by_series_ordering(symbols_list)
         return symbols_list_ordered
 
+
     def _get_user_legends(self):
         """
            Retrieve the text that is to be displayed in the legend at the bottom of the plot.
@@ -151,6 +155,7 @@ class PerformanceDiagramConfig(Config):
         legends_list_ordered = self.create_list_by_series_ordering(legends_list)
         return legends_list_ordered
 
+
     def _get_series_order(self):
         """
             Get the order number for each series
@@ -164,6 +169,7 @@ class PerformanceDiagramConfig(Config):
         ordinals = self.get_config_value('series_order')
         series_order_list = [ord for ord in ordinals]
         return series_order_list
+
 
     def _get_plot_disp(self):
         """
@@ -180,6 +186,7 @@ class PerformanceDiagramConfig(Config):
         plot_display_bools = [pd for pd in plot_display_vals]
         plot_display_bools_ordered = self.create_list_by_series_ordering(plot_display_bools)
         return plot_display_bools_ordered
+
 
     def _get_plot_stat(self):
         """
@@ -202,6 +209,7 @@ class PerformanceDiagramConfig(Config):
             raise ValueError("An unsupported statistic was set for the plot_stat setting. "
                              " Supported values are sum, mean, and median.")
         return stat_to_plot
+
 
     def _config_consistency_check(self):
         """
@@ -237,6 +245,7 @@ class PerformanceDiagramConfig(Config):
             status = True
         return status
 
+
     def _get_plot_ci(self):
         """
 
@@ -262,6 +271,7 @@ class PerformanceDiagramConfig(Config):
         ordered_ci_settings_list = self.create_list_by_series_ordering(ci_settings_list)
 
         return ordered_ci_settings_list
+
 
     def create_list_by_series_ordering(self, setting_to_order):
         """
@@ -319,8 +329,3 @@ class PerformanceDiagramConfig(Config):
             ordered_settings_list.append(setting_to_order[loc])
 
         return ordered_settings_list
-
-
-
-
-
