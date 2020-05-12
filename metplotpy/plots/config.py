@@ -79,6 +79,7 @@ class Config:
 
         return self._get_nested(self.parameters, args)
 
+
     def _get_nested(self, data, args):
         """Recursive function that uses the tuple with keys to find a value
         in multidimensional dictionary.
@@ -107,7 +108,6 @@ class Config:
         return None
 
 
-
     def _get_annotation_template(self):
         """ Retrieve the annotation template, and then extract the units and the variable
 
@@ -123,8 +123,6 @@ class Config:
             raise ValueError("Non-conforming annotation template specified in "
                              "config file.  Expecting format of %y <units> or %x <units>")
         return anno_var, anno_units
-
-
 
 
     def _get_series_vals(self):
