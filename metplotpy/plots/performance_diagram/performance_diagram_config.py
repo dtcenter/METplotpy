@@ -6,6 +6,7 @@ Holds values set in the Performance Diagram config file(s)
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
+import re
 from plots.config import Config
 
 class PerformanceDiagramConfig(Config):
@@ -32,6 +33,7 @@ class PerformanceDiagramConfig(Config):
         # Make the series ordering zero-based to be consistent with Python's zero-based
         # counting/numbering
         self.series_ordering_zb = [sorder - 1 for sorder in self.series_ordering]
+        self.plot_contour_legend = self.get_config_value('plot_contour_legend')
         self.stat_input = self.get_config_value('stat_input')
         self.plot_ci = self._get_plot_ci()
         self.plot_stat = self._get_plot_stat()
@@ -329,3 +331,20 @@ class PerformanceDiagramConfig(Config):
             ordered_settings_list.append(setting_to_order[loc])
 
         return ordered_settings_list
+
+    def _get_annotation_template(self):
+        """ Retrieve the annotation template, and then extract the units and the variable
+
+        """
+        anno_tmpl = self.get_config_value('annotation_template')
+        if not anno_tmpl:
+            return None, None
+        match = re.match(r'^%([a-z|A-Z])(.*)', anno_tmpl)
+        if match:
+            anno_var = match.group(1)
+            anno_units = match.group(2)
+        else:
+            raise ValueError("Non-conforming annotation template specified in "
+                             "config file.  Expecting format of %y <units> or %x <units>")
+        return anno_var, anno_units
+
