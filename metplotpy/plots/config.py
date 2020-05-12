@@ -6,7 +6,6 @@ Holds values set in the config file(s)
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
-import re
 
 class Config:
     """
@@ -25,8 +24,6 @@ class Config:
         #
         # Configuration settings that apply to the plot
         #
-
-        self.plot_contour_legend = self.get_config_value('plot_contour_legend')
         self.output_image = self.get_config_value('plot_output')
         self.title_font = self.DEFAULT_TITLE_FONT
         self.title_color = self.DEFAULT_TITLE_COLOR
@@ -43,11 +40,8 @@ class Config:
         else:
             print("Event equalization turned off.")
 
-
-
         self.indy_vals = self.get_config_value('indy_vals')
         self.indy_var = self.get_config_value('indy_var')
-
 
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
@@ -106,23 +100,6 @@ class Config:
                 # if the size of key tuple is > 1 - search using other keys
                 return self._get_nested(value, args[1:])
         return None
-
-
-    def _get_annotation_template(self):
-        """ Retrieve the annotation template, and then extract the units and the variable
-
-        """
-        anno_tmpl = self.get_config_value('annotation_template')
-        if not anno_tmpl:
-            return None, None
-        match = re.match(r'^%([a-z|A-Z])(.*)', anno_tmpl)
-        if match:
-            anno_var = match.group(1)
-            anno_units = match.group(2)
-        else:
-            raise ValueError("Non-conforming annotation template specified in "
-                             "config file.  Expecting format of %y <units> or %x <units>")
-        return anno_var, anno_units
 
 
     def _get_series_vals(self):
