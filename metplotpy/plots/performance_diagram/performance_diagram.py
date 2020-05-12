@@ -11,8 +11,8 @@ import numpy as np
 import yaml
 import pandas as pd
 from plots.met_plot import MetPlot
-from plots.config import Config
-from plots.series import Series
+from performance_diagram_config import PerformanceDiagramConfig
+from series import Series
 
 
 class PerformanceDiagram(MetPlot):
@@ -44,9 +44,9 @@ class PerformanceDiagram(MetPlot):
         # init common layout
         super().__init__(parameters, default_conf_filename)
 
-        # instantiate a Config object, which holds all the necessary settings from the
+        # instantiate a PerformanceDiagramConfig object, which holds all the necessary settings from the
         # config file.
-        self.config_obj = Config(parameters)
+        self.config_obj = PerformanceDiagramConfig(parameters)
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
@@ -64,12 +64,6 @@ class PerformanceDiagram(MetPlot):
         # create binary versions of the plot.
         self.figure = self._create_figure()
 
-    def __repr__(self):
-        """ Implement repr which can be useful for debugging this
-            class.
-        """
-
-        return f'PerformanceDiagram({self.parameters!r})'
 
     def _read_input_data(self):
         """
