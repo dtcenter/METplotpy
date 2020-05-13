@@ -6,6 +6,7 @@ Holds values set in the config file(s)
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
+import itertools
 
 class Config:
     """
@@ -163,3 +164,25 @@ class Config:
         # Unpack and access the values corresponding to the inner keys
         # (series_var1, series_var2, ..., series_varn).
         return [*series_val_dict.keys()]
+
+    def calculate_number_of_series(self):
+        """
+           From the series_val setting in the config file,
+           determine how many series "objects" are to be plotted.
+
+           Args:
+
+           Returns:
+               the number of series
+
+        """
+
+        # Retrieve the lists from the series_val dictionary
+        series_vals_list = self.series_vals
+
+        # Utilize itertools' product() to create the cartesian product of all elements
+        # in the lists to produce all permutations of the series_val values and the
+        # fcst_var_val values.
+        permutations = [p for p in itertools.product(*series_vals_list)]
+
+        return len(permutations)
