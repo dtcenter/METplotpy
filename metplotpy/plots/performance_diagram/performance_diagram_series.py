@@ -4,7 +4,7 @@ Class Name: PerformanceDiagramSeries
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
-import itertools
+import metcalcpy.util.utils as utils
 from datetime import datetime
 from plots.series import Series
 
@@ -110,8 +110,10 @@ class PerformanceDiagramSeries(Series):
                 pody_err = pody_ncu - pody_ncl
 
                 # Round final PODY and Success ratio values to 2-sig figs
-                pody_val_2sig = round(pody_val, 2)
-                sr_val_2sig = round(sr_val, 2)
+                # pody_val_2sig = round(pody_val, 2)
+                pody_val_2sig = utils.round_half_up(pody_val, 2)
+                # sr_val_2sig = round(sr_val, 2)
+                sr_val_2sig = utils.round_half_up(sr_val, 2)
                 pody_list.append(pody_val_2sig)
                 sr_list.append(sr_val_2sig)
                 pody_err_list.append(pody_err)
