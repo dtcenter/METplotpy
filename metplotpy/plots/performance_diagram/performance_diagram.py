@@ -12,7 +12,7 @@ import yaml
 import pandas as pd
 from plots.met_plot import MetPlot
 from performance_diagram_config import PerformanceDiagramConfig
-from series import Series
+from performance_diagram_series import PerformanceDiagramSeries
 
 
 class PerformanceDiagram(MetPlot):
@@ -102,9 +102,9 @@ class PerformanceDiagram(MetPlot):
         for i, series in enumerate(range(num_series)):
             # Check if this series is to be displayed (i.e. plot_disp is set to True)
             if self.config_obj.plot_disp[series]:
-                # Create a Series object
+                # Create a PerformanceDiagramSeries object
                 # idx = self.config_obj.series_ordering_zb[i]
-                series_obj = Series(self.config_obj, i, input_data)
+                series_obj = PerformanceDiagramSeries(self.config_obj, i, input_data)
                 series_list.append(series_obj)
         return series_list
 
