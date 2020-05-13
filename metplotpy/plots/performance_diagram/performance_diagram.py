@@ -100,12 +100,9 @@ class PerformanceDiagram(MetPlot):
         num_series = len(self.config_obj.series_ordering)
 
         for i, series in enumerate(range(num_series)):
-            # Check if this series is to be displayed (i.e. plot_disp is set to True)
-            if self.config_obj.plot_disp[series]:
-                # Create a PerformanceDiagramSeries object
-                # idx = self.config_obj.series_ordering_zb[i]
-                series_obj = PerformanceDiagramSeries(self.config_obj, i, input_data)
-                series_list.append(series_obj)
+            # Create a PerformanceDiagramSeries object
+            series_obj = PerformanceDiagramSeries(self.config_obj, i, input_data)
+            series_list.append(series_obj)
         return series_list
 
     def save_to_file(self):
@@ -221,29 +218,34 @@ class PerformanceDiagram(MetPlot):
         # the statistics data for each model/series
         #
         for i, series in enumerate(self.series_list):
-            pody_points = series.series_points[1]
-            sr_points = series.series_points[0]
-            plt.plot(sr_points, pody_points, linestyle=series.linestyle, linewidth=series.linewidth,
-                     color=series.color, marker=series.marker, label=series.user_legends,
-                     alpha=0.5, ms=3)
+            # Don't generate the plot for this series if
+            # it isn't requested (as set in the config file)
+            if series.plot_disp:
+                pody_points = series.series_points[1]
+                sr_points = series.series_points[0]
+                plt.plot(sr_points, pody_points, linestyle=series.linestyle,
+                         linewidth=series.linewidth,
+                         color=series.color, marker=series.marker,
+                         label=series.user_legends,
+                         alpha=0.5, ms=3)
 
-            # Annotate the points with their PODY (i.e. dependent variable value)
-            if not self.config_obj.anno_var :
-                pass
-            elif self.config_obj.anno_var == 'y':
-                for idx, pody in enumerate(pody_points):
-                    plt.annotate(str(pody) + self.config_obj.anno_units,
-                                 (sr_points[idx], pody_points[idx]), fontsize=9)
-            elif self.config_obj.anno_var == 'x':
-                for idx, succ_ratio in enumerate(sr_points):
-                    plt.annotate(str(succ_ratio) + self.config_obj.anno_units,
-                                 (sr_points[idx], pody_points[idx]), fontsize=9)
+                # Annotate the points with their PODY (i.e. dependent variable value)
+                if not self.config_obj.anno_var :
+                    pass
+                elif self.config_obj.anno_var == 'y':
+                    for idx, pody in enumerate(pody_points):
+                        plt.annotate(str(pody) + self.config_obj.anno_units,
+                                    (sr_points[idx], pody_points[idx]), fontsize=9)
+                elif self.config_obj.anno_var == 'x':
+                    for idx, succ_ratio in enumerate(sr_points):
+                        plt.annotate(str(succ_ratio) + self.config_obj.anno_units,
+                                    (sr_points[idx], pody_points[idx]), fontsize=9)
 
-            # Plot error bars if they were requested:
-            if self.config_obj.plot_ci[i] != "NONE":
-                pody_errs = series.series_points[2]
-                plt.errorbar(sr_points, pody_points, yerr=pody_errs,
-                             color=series.color, ecolor="black", ms=1, capsize=2)
+                # Plot error bars if they were requested:
+                if self.config_obj.plot_ci[i] != "NONE":
+                    pody_errs = series.series_points[2]
+                    plt.errorbar(sr_points, pody_points, yerr=pody_errs,
+                                 color=series.color, ecolor="black", ms=1, capsize=2)
 
             ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left',
                        mode='expand', borderaxespad=0., ncol=5,
