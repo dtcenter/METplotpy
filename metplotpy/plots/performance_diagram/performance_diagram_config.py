@@ -8,6 +8,7 @@ __email__ = 'met_help@ucar.edu'
 
 import re
 from plots.config import Config
+from performance_diagram_series import PerformanceDiagramSeries
 
 class PerformanceDiagramConfig(Config):
     ACCEPTABLE_CI_VALS = ['NONE', 'BOOT', 'NORM']
@@ -46,11 +47,7 @@ class PerformanceDiagramConfig(Config):
         self.user_legends = self._get_user_legends()
         self.anno_var, self.anno_units = self._get_annotation_template()
 
-        # now that all the config values for the series are consistent,
-        # pick any series-related config, such as plot_disp config value
-        # to determine how many series are to be considered for the diagram.
-        self.num_of_series = len(self.plot_disp)
-
+        # Check that the config file has all the settings for each series
         is_config_consistent = self._config_consistency_check()
         if not is_config_consistent:
             raise ValueError("The number of series defined by series_val is"
@@ -59,6 +56,11 @@ class PerformanceDiagramConfig(Config):
                              " the number of your configuration file's plot_i,"
                              " plot_disp, series_order, user_legend,"
                              " colors, and series_symbols settings.")
+
+        # now that all the config values for the series are consistent,
+        # pick any series-related config, such as plot_disp config value
+        # to determine how many series are to be considered for the diagram.
+        self.num_of_series = len(self.plot_disp)
 
 
     def _get_markers(self):
@@ -228,6 +230,10 @@ class PerformanceDiagramConfig(Config):
                 and vx_mask defined in the series_val setting)
 
         """
+        # Determine the number of series based on the number of
+        # permutations from the series_var setting in the
+        # config file
+        num_series = self.calculate_number_of_series()
 
         # Numbers of values for other settings for series
         # num_ci_settings = len(self.plot_ci)
@@ -241,7 +247,7 @@ class PerformanceDiagramConfig(Config):
         num_linestyles = len(self.linestyles_list)
         status = False
 
-        if num_plot_disp == \
+        if num_series == num_plot_disp == \
                     num_markers == num_series_ord == num_colors == num_symbols \
                     == num_legends == num_line_widths == num_linestyles:
             status = True
