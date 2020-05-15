@@ -1,0 +1,118 @@
+---
+# Default settings specific to performance diagram plot
+# Line and marker plots of series data of Success Rate (1-FAR) on x-axis vs. PODY on y-axis.
+title: Performance Diagram ("Default title")
+xaxis: Success Ratio (1 - FAR)
+yaxis: Probability of Detection (PODY)
+
+plot_ci:
+  - none
+  - norm
+  - None
+plot_disp:
+  - True
+  - True
+  - True
+series_order:
+  - 3
+  - 1
+  - 2
+indy_var: fcst_valid_beg
+indy_vals:
+  # defining the datetimes of interest
+  - 2016-08-12 06:00:00
+  - 2016-08-12 12:00:00
+  - 2016-08-12 18:00:00
+  - 2016-08-13 00:00:00
+  - 2016-08-13 06:00:00
+  - 2016-08-13 12:00:00
+  - 2016-08-13 18:00:00
+  - 2016-08-14 00:00:00
+  - 2016-08-14 06:00:00
+  - 2016-08-14 12:00:00
+  - 2016-08-14 18:00:00
+  - 2016-08-15 00:00:00
+  - 2016-08-15 12:00:00
+  - 2016-08-15 18:00:00
+  - 2016-08-16 00:00:00
+  - 2016-08-16 06:00:00
+  - 2016-08-16 12:00:00
+  - 2016-08-16 18:00:00
+  - 2016-08-17 00:00:00
+
+fcst_var_val:
+  # Name of the variables of interest, the independent and dependent variables
+  # will be the same across all fcst_var values
+
+  # fcst_var1
+  APCP_06:
+    # x-axis/independent variable
+    - FAR
+    # y-axis/dependent variable
+    - PODY
+series_val:
+  # series_var1
+  model:
+    # series_val1
+    - GFS_0p25_G193
+  # series_var2
+  vx_mask:
+    # series_val1
+    - NH_CMORPH_G193
+    # series_val2
+    - SH_CMORPH_G193
+    # series_val3
+    - TROP_CMORPH_G193
+user_legend:
+  - NH
+  - SH
+  - TROP
+plot_stat: median
+plot_contour_legend: False
+colors:
+  # red
+  - "#ff0000"
+  # spring green
+  - "#00ff7f"
+  # electric indigo/vivid purple
+  - "#8000ff"
+series_line_width:
+  - 1
+  - 1
+  - 3
+series_symbols:
+  # Other supported symbols: small circle = ".", ring/hexagon = "H", rhombus/diamond="d"
+  # Circle
+  - "o"
+  # square
+  - "s"
+  # triangle
+  - "^"
+series_line_style:
+  # solid line
+  - "-"
+  # dashed line
+  - "--"
+  # dotted line
+  - ":"
+
+# Perform event equalization to check for missing data
+event_equalize: False
+
+# annotation_template: "%y in"  annotates each y-value with the  units 'in' for inches, preserving the whitespace between the
+# y-value and the units
+# "%x <units>" will annotate each x-value (success ratio/independent variable value) with units, preserving the whitespace between the 
+# annotation and the units.
+# if you want to annotate the independent variable:
+#       annotation_template: "%y in."
+# leave empty if no annotation is desired:
+#       annotation_template:
+# example use:
+#    annotation_template: "%y in."
+annotation_template: 
+
+
+stat_input:  ../performance_diagram/plot_20200317_151252.data
+plot_output: /tmp/performance_diagram_default.png
+
+
