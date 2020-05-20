@@ -4,6 +4,7 @@ Class Name: performance_diagram.py
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 import os
+import argparse
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from matplotlib.colors import LinearSegmentedColormap
@@ -46,7 +47,7 @@ class PerformanceDiagram(MetPlot):
 
         # instantiate a PerformanceDiagramConfig object, which holds all the necessary settings from the
         # config file.
-        self.config_obj = PerformanceDiagramConfig(parameters)
+        self.config_obj = PerformanceDiagramConfig(self.parameters)
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
@@ -262,6 +263,21 @@ class PerformanceDiagram(MetPlot):
         plt.show()
         self.save_to_file()
 
+def read_config_from_command_line():
+        """
+            Read the "custom" config file from the command line
+        """
+        # Create Parser
+        parser = argparse.ArgumentParser(description='Generates a performance diagram')
+
+        # Add arguments
+        parser.add_argument('Path', metavar='path', type=str,
+                            help='the full path to config file')
+
+        # Execute the parse_args() method
+        args = parser.parse_args()
+        return args.Path
+
 
 def main():
     """
@@ -274,7 +290,8 @@ def main():
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
     # with open("./custom_performance_diagram.yaml", 'r') as stream:
-    with open("../config/performance_diagram_defaults.yaml", 'r') as stream:
+    config_file = read_config_from_command_line()
+    with open(config_file, 'r') as stream:
         try:
             docs = yaml.load(stream, Loader=yaml.FullLoader)
         except yaml.YAMLError as exc:
