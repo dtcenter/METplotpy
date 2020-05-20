@@ -4,7 +4,6 @@ Class Name: performance_diagram.py
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 import os
-import argparse
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from matplotlib.colors import LinearSegmentedColormap
@@ -14,6 +13,7 @@ import pandas as pd
 from plots.met_plot import MetPlot
 from performance_diagram_config import PerformanceDiagramConfig
 from performance_diagram_series import PerformanceDiagramSeries
+import util
 
 
 class PerformanceDiagram(MetPlot):
@@ -263,21 +263,6 @@ class PerformanceDiagram(MetPlot):
         plt.show()
         self.save_to_file()
 
-def read_config_from_command_line():
-        """
-            Read the "custom" config file from the command line
-        """
-        # Create Parser
-        parser = argparse.ArgumentParser(description='Generates a performance diagram')
-
-        # Add arguments
-        parser.add_argument('Path', metavar='path', type=str,
-                            help='the full path to config file')
-
-        # Execute the parse_args() method
-        args = parser.parse_args()
-        return args.Path
-
 
 def main():
     """
@@ -290,7 +275,7 @@ def main():
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
     # with open("./custom_performance_diagram.yaml", 'r') as stream:
-    config_file = read_config_from_command_line()
+    config_file = util.read_config_from_command_line()
     with open(config_file, 'r') as stream:
         try:
             docs = yaml.load(stream, Loader=yaml.FullLoader)
