@@ -29,7 +29,8 @@ class Config:
         self.title_font = self.DEFAULT_TITLE_FONT
         self.title_color = self.DEFAULT_TITLE_COLOR
         self.xaxis = self.get_config_value('xaxis')
-        self.yaxis = self.get_config_value('yaxis')
+        self.yaxis_1 = self.get_config_value('yaxis_1')
+        self.yaxis_2 = self.get_config_value('yaxis_2')
         self.title = self.get_config_value('title')
 
         # employ event equalization if requested
@@ -48,7 +49,8 @@ class Config:
         # they represent the series variables of
         # interest.  The keys correspond to the column names
         # in the input dataframe.
-        self.series_vals = self._get_series_vals()
+        self.series_vals_1 = self._get_series_vals(1)
+        self.series_vals_2 = self._get_series_vals(2)
 
         # Represent the names of the forecast variables (inner keys) to the fcst_var_val setting.
         # These are the names of the columns in the input dataframe.
@@ -103,28 +105,39 @@ class Config:
         return None
 
 
-    def _get_series_vals(self):
+    def _get_series_vals(self, index):
         """
-            Get a list of all the variable values that correspond to the inner
-            key of the series_val dictionary.
+            Get a tuple of lists of all the variable values that correspond to the inner
+            key of the series_val dictionaries (series_val_1 and series_val_2).
             These values will be used with lists of other config values to
             create filtering criteria.  This is useful to subset the input data
             to assist in identifying the data points for this series.
 
             Args:
+                index:  The number defining which of series_vals_1 or series_vals_2 to consider
 
             Returns:
-                a "list of lists" of *all* the values of the inner dictionary
-                of the series_val dictionary
+                lists of *all* the values of the inner dictionary
+                of the series_vals dictionaries
 
         """
 
-
-        series_val_dict = self.get_config_value('series_val')
+        if index == 1:
+            # evaluate series_val_1 setting
+            series_val_dict = self.get_config_value('series_val_1')
+            val_dict_list = [*series_val_dict.values()]
+        elif index == 2:
+            # evaluate series_val_2 setting
+            # check for empty setting. If so, return an empty list
+            series_val_dict_2 = self.get_config_value('series_val_2')
+            if series_val_dict_2:
+                val_dict_list = [*series_val_dict_2.values()]
+            else:
+                val_dict_list = []
 
         # Unpack and access the values corresponding to the inner keys
         # (series_var1, series_var2, ..., series_varn).
-        return [*series_val_dict.values()]
+        return val_dict_list
 
     def _get_fcst_vars(self):
         """
@@ -167,7 +180,7 @@ class Config:
 
     def calculate_number_of_series(self):
         """
-           From the series_val setting in the config file,
+           From the series_val_1 setting in the config file,
            determine how many series "objects" are to be plotted.
 
            Args:
@@ -177,8 +190,8 @@ class Config:
 
         """
 
-        # Retrieve the lists from the series_val dictionary
-        series_vals_list = self.series_vals
+        # Retrieve the lists from the series_val_1 dictionary
+        series_vals_list = self.series_vals_1
 
         # Utilize itertools' product() to create the cartesian product of all elements
         # in the lists to produce all permutations of the series_val values and the
