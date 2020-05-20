@@ -199,7 +199,7 @@ class PerformanceDiagram(MetPlot):
         # Format the underlying performance diagram axes, labels, equal lines of CSI,
         # equal lines of bias.
         xlabel = self.config_obj.xaxis
-        ylabel = self.config_obj.yaxis
+        ylabel = self.config_obj.yaxis_1
 
         # From original implementation, replace this with Logan's for now
         # Optional: plot the legend for the contour lines representing the
