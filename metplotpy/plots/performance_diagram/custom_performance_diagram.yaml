@@ -75,7 +75,5 @@ series_line_style:
   - "--"
   # dotted line
   - ":"
-
-
-stat_input:  /d2/www/dtcenter/met/metviewer_output/data/plot_20200317_151252.data
+stat_input:  ./plot_20200317_151252.data
 plot_output: /tmp/performance_diagram_default.png
