@@ -29,8 +29,9 @@ class Series:
         self.series_order = config.series_ordering_zb[idx]
 
         # Variables used for subsetting the input dataframe
-        # series variable names defined in the series_val setting
-        self.series_vals = config.series_vals
+        # series variable names defined in the series_val_1 setting
+        self.series_vals_1 = config.series_vals_1
+
         # forecast variable names defined in the fcst_var_val setting
         self.fcst_vars = config.fcst_vars
 
@@ -113,7 +114,7 @@ class Series:
         """
 
         # Retrieve the lists from the series_val dictionary
-        series_vals_list = self.series_vals
+        series_vals_list = self.series_vals_1
 
         # Utilize itertools' product() to create the cartesian product of all elements
         # in the lists to produce all permutations of the series_val values and the
