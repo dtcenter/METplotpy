@@ -50,17 +50,12 @@ class PerformanceDiagramConfig(Config):
         # Check that the config file has all the settings for each series
         is_config_consistent = self._config_consistency_check()
         if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val is"
+            raise ValueError("The number of series defined by series_val_1 is"
                              "inconsistent with the number of settings"
                              " required for describing each series. Please check"
                              " the number of your configuration file's plot_i,"
                              " plot_disp, series_order, user_legend,"
                              " colors, and series_symbols settings.")
-
-        # now that all the config values for the series are consistent,
-        # pick any series-related config, such as plot_disp config value
-        # to determine how many series are to be considered for the diagram.
-        self.num_of_series = len(self.plot_disp)
 
 
     def _get_markers(self):
@@ -227,7 +222,7 @@ class PerformanceDiagramConfig(Config):
                 True if the number of settings for each of the above
                 settings is consistent with the number of
                 series (as defined by the cross product of the model
-                and vx_mask defined in the series_val setting)
+                and vx_mask defined in the series_val_1 setting)
 
         """
         # Determine the number of series based on the number of
