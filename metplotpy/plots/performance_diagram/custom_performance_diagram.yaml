@@ -3,7 +3,9 @@
 # Line and marker plots of series data of Success Rate (1-FAR) on x-axis vs. PODY on y-axis.
 title: Performance Diagram ("Custom title")
 xaxis: Success Ratio (1 - FAR)
-yaxis: Probability of Detection (PODY)
+# support two y-axes
+yaxis_1: Probability of Detection (PODY)
+yaxis_2:
 
 plot_disp:
   - True
@@ -35,13 +37,16 @@ indy_vals:
   - 2016-08-16 18:00:00
   - 2016-08-17 00:00:00
 
-series_val:
+# support two series values
+series_val_1:
   model:
     - GFS_0p25_G193
-  vx_mask:
+  vx_model:
     - NH_CMORPH_G193
     - SH_CMORPH_G193
     - TROP_CMORPH_G193
+series_val_2:
+
 user_legend:
   - NH
   - SH
