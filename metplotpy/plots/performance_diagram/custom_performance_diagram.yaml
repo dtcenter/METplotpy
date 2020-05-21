@@ -2,7 +2,7 @@
 # Custom settings specific to performance diagram plot
 # Line and marker plots of series data of Success Rate (1-FAR) on x-axis vs. PODY on y-axis.
 title: Performance Diagram ("Custom title")
-xaxis: Success Ratio (1 - FAR)
+xaxis: ''
 # support two y-axes
 yaxis_1: Probability of Detection (PODY)
 yaxis_2:
@@ -17,6 +17,7 @@ series_order:
   - 3
 indy_var: fcst_valid_beg
 indy_vals:
+  # defining the datetimes of interest
   - 2016-08-12 06:00:00
   - 2016-08-12 12:00:00
   - 2016-08-12 18:00:00
@@ -92,3 +93,4 @@ series_line_style:
   - ":"
 stat_input:  ./plot_20200317_151252.data
 plot_output: /tmp/performance_diagram_default.png
+event_equalize: True
