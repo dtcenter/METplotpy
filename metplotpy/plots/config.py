@@ -32,16 +32,7 @@ class Config:
         self.yaxis_1 = self.get_config_value('yaxis_1')
         self.yaxis_2 = self.get_config_value('yaxis_2')
         self.title = self.get_config_value('title')
-
-        # employ event equalization if requested
         self.use_ee = self.get_config_value('event_equalization')
-
-        #for now, we will print out a message indicating that event equalization is requested
-        if self.use_ee:
-            print("Event equalization requested")
-        else:
-            print("Event equalization turned off.")
-
         self.indy_vals = self.get_config_value('indy_vals')
         self.indy_var = self.get_config_value('indy_var')
 
