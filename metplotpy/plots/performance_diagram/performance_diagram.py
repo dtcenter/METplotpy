@@ -13,7 +13,7 @@ import pandas as pd
 from plots.met_plot import MetPlot
 from performance_diagram_config import PerformanceDiagramConfig
 from performance_diagram_series import PerformanceDiagramSeries
-import util
+import plots.util as util
 
 
 class PerformanceDiagram(MetPlot):
