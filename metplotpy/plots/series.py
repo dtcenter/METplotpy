@@ -33,7 +33,8 @@ class Series:
         self.series_vals_1 = config.series_vals_1
 
         # forecast variable names defined in the fcst_var_val setting
-        self.fcst_vars = config.fcst_vars
+        self.fcst_vars_1 = config.fcst_vars_1
+        self.fcst_vars_2 = config.fcst_vars_2
 
         # Column names corresponding to the series variable names
         self.series_val_names = config.series_val_names
