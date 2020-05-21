@@ -4,7 +4,6 @@ Class Name: series.py
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 import itertools
-from datetime import datetime
 
 class Series:
     """
