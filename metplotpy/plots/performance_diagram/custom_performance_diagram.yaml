@@ -41,12 +41,22 @@ indy_vals:
 series_val_1:
   model:
     - GFS_0p25_G193
-  vx_model:
+  vx_mask:
     - NH_CMORPH_G193
     - SH_CMORPH_G193
     - TROP_CMORPH_G193
 series_val_2:
+fcst_var_val_1:
+  # Name of the variables of interest, the independent and dependent variables
+  # will be the same across all fcst_var values
 
+  # fcst_var1
+  APCP_06:
+    # x-axis/independent variable
+    - FAR
+    # y-axis/dependent variable
+    - PODY
+fcst_var_val_2:
 user_legend:
   - NH
   - SH
