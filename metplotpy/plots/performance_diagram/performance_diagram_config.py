@@ -8,7 +8,6 @@ __email__ = 'met_help@ucar.edu'
 
 import re
 from plots.config import Config
-from performance_diagram_series import PerformanceDiagramSeries
 
 class PerformanceDiagramConfig(Config):
     ACCEPTABLE_CI_VALS = ['NONE', 'BOOT', 'NORM']
