@@ -11,6 +11,7 @@ import numpy as np
 import yaml
 import pandas as pd
 from plots.met_plot import MetPlot
+import metcalcpy.util.utils as calc_util
 from performance_diagram_config import PerformanceDiagramConfig
 from performance_diagram_series import PerformanceDiagramSeries
 import plots.util as util
@@ -51,6 +52,10 @@ class PerformanceDiagram(MetPlot):
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
+
+        # Apply event equalization, if requested
+        if self.config_obj.use_ee:
+            self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
