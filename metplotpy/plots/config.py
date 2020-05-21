@@ -54,7 +54,8 @@ class Config:
 
         # Represent the names of the forecast variables (inner keys) to the fcst_var_val setting.
         # These are the names of the columns in the input dataframe.
-        self.fcst_vars = self._get_fcst_vars()
+        self.fcst_vars_1 = self._get_fcst_vars(1)
+        self.fcst_vars_2 = self._get_fcst_vars(2)
 
         # These are the inner values to the series_val setting (these correspond to the
         # keys returned in self.series_vals above).  These are the specific variable values to
@@ -139,20 +140,29 @@ class Config:
         # (series_var1, series_var2, ..., series_varn).
         return val_dict_list
 
-    def _get_fcst_vars(self):
+    def _get_fcst_vars(self, index):
         """
            Retrieve a list of the inner keys (fcst_vars) to the fcst_var_val dictionary.
 
            Args:
-
+              index: identifier used to differentiate between fcst_var_val_1 and
+                     fcst_var_val_2 config settings
            Returns:
                a list containing all the fcst variables requested in the
                fcst_var_val setting in the config file.  This will be
                used to subset the input data that corresponds to a particular series.
 
         """
-        fcst_var_val_dict = self.get_config_value('fcst_var_val')
-        all_fcst_vars = [*fcst_var_val_dict.keys()]
+        if index == 1:
+            fcst_var_val_dict = self.get_config_value('fcst_var_val_1')
+            all_fcst_vars = [*fcst_var_val_dict.keys()]
+        elif index == 2:
+            fcst_var_val_dict = self.get_config_value('fcst_var_val_2')
+            if fcst_var_val_dict:
+                all_fcst_vars = [*fcst_var_val_dict.keys()]
+            else:
+                all_fcst_vars = []
+
         return all_fcst_vars
 
     def _get_series_val_names(self):
@@ -172,7 +182,7 @@ class Config:
         """
 
 
-        series_val_dict = self.get_config_value('series_val')
+        series_val_dict = self.get_config_value('series_val_1')
 
         # Unpack and access the values corresponding to the inner keys
         # (series_var1, series_var2, ..., series_varn).
