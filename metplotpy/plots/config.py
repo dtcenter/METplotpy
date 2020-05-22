@@ -16,6 +16,8 @@ class Config:
     DEFAULT_TITLE_FONT = 'sans-serif'
     DEFAULT_TITLE_COLOR = 'darkblue'
     DEFAULT_TITLE_FONTSIZE = 10
+    # Default size used in plotly legend text
+    DEFAULT_LEGEND_FONTSIZE = 12
     AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", "."]
 
     def __init__(self, parameters):
@@ -96,6 +98,30 @@ class Config:
                 return self._get_nested(value, args[1:])
         return None
 
+    def _get_legend_style(self):
+        """
+            Retrieve the legend style settings that are set
+            in the METviewer tool
+
+            Args:
+
+            Returns:
+                - a dictionary that holds the legend settings that
+                  are set in METviewer
+        """
+        legend_box = self.get_config_value('legend_box').lower()
+        legend_ncol = self.get_config_value('legend_ncol')
+        legend_inset = self.get_config_value('legend_inset')
+        legend_bbox_x = legend_inset['x']
+        legend_bbox_y = legend_inset['y']
+        legend_size = self.get_config_value('legend_size')
+        legend_settings = dict(bbox_x=legend_bbox_x,
+                               bbox_y=legend_bbox_y,
+                               legend_size=legend_size,
+                               legend_ncol=legend_ncol,
+                               legend_box=legend_box)
+
+        return legend_settings
 
     def _get_series_vals(self, index):
         """
