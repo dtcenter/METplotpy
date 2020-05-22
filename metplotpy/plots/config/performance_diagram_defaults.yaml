@@ -73,6 +73,14 @@ user_legend:
   - NH
   - SH
   - TROP
+# two types supported, 'n' for none and 'o' for box
+legend_box: 'n'
+# number of columns in legend
+legend_ncol: 3
+legend_inset:
+  x: 0.
+  y: -0.14
+legend_size: 0.8
 plot_stat: median
 plot_contour_legend: False
 colors:
