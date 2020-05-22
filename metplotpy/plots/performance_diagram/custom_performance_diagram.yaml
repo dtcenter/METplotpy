@@ -2,10 +2,10 @@
 # Custom settings specific to performance diagram plot
 # Line and marker plots of series data of Success Rate (1-FAR) on x-axis vs. PODY on y-axis.
 title: Performance Diagram ("Custom title")
-xaxis: ''
+xaxis: Success Ratio
 # support two y-axes
 yaxis_1: Probability of Detection (PODY)
-yaxis_2:
+yaxis_2: ''
 
 plot_disp:
   - True
@@ -46,7 +46,7 @@ series_val_1:
     - NH_CMORPH_G193
     - SH_CMORPH_G193
     - TROP_CMORPH_G193
-series_val_2:
+series_val_2: {}
 fcst_var_val_1:
   # Name of the variables of interest, the independent and dependent variables
   # will be the same across all fcst_var values
@@ -62,6 +62,7 @@ user_legend:
   - NH
   - SH
   - TROP
+
 plot_stat: median
 colors:
   # red
