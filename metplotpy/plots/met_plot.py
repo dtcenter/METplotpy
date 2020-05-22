@@ -106,6 +106,42 @@ class MetPlot:
         )
         return current_legend
 
+    def get_legend_style(self):
+        """
+            Retrieve the legend style settings that are set
+            in the METviewer tool
+
+            Args:
+
+            Returns:
+                - a dictionary that holds the legend settings that
+                  are set in METviewer
+        """
+        legend_box = self.get_config_value('legend_box').lower()
+        if legend_box == 'o':
+            # Draws a box around the legend
+            borderwidth = 1
+        elif legend_box == 'n':
+            # Do not draw border around the legend labels.
+            borderwidth = 0
+
+
+        legend_ncol = self.get_config_value('legend_ncol')
+        if legend_ncol > 1:
+            legend_orientation = "h"
+        else:
+            legend_orientation = "v"
+        legend_inset = self.get_config_value('legend_inset')
+        legend_size = self.get_config_value('legend_size')
+        legend_settings = dict(border_width=borderwidth,
+                               orientation=legend_orientation,
+                               legend_inset=dict(x=legend_inset['x'],
+                                                 y=legend_inset['y']),
+                               legend_size=legend_size)
+
+        return legend_settings
+
+
     def get_title(self):
         """Creates a Plotly title dictionary with values from users and default parameters
         If users parameters dictionary doesn't have needed values - use defaults
