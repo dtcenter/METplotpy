@@ -8,6 +8,7 @@ __email__ = 'met_help@ucar.edu'
 
 import re
 from plots.config import Config
+from plots.met_plot import MetPlot
 
 class PerformanceDiagramConfig(Config):
     ACCEPTABLE_CI_VALS = ['NONE', 'BOOT', 'NORM']
@@ -44,6 +45,28 @@ class PerformanceDiagramConfig(Config):
         self.linestyles_list = self._get_linestyles()
         self.symbols_list = self._get_series_symbols()
         self.user_legends = self._get_user_legends()
+
+        # legend style settings as defined in METviewer
+        user_settings = self._get_legend_style()
+
+        # list of the x, y, and loc values for the
+        # bbox_to_anchor() setting used in determining
+        # the location of the bounding box which defines
+        # the legend.
+        self.bbox_x = float(user_settings['bbox_x'])
+        self.bbox_y = float(user_settings['bbox_y'])
+        legend_magnification = user_settings['legend_size']
+        self.legend_size = int(self.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
+        self.legend_ncol = self.get_config_value('legend_ncol')
+        legend_box = self.get_config_value('legend_box').lower()
+        if legend_box == 'n':
+            # Don't draw a box around legend labels
+            self.draw_box = False
+        else:
+            # Other choice is 'o'
+            # Enclose legend labels in a box
+            self.draw_box = True
+
         self.anno_var, self.anno_units = self._get_annotation_template()
 
         # Check that the config file has all the settings for each series
@@ -152,6 +175,8 @@ class PerformanceDiagramConfig(Config):
         legends_list = [legend for legend in all_legends]
         legends_list_ordered = self.create_list_by_series_ordering(legends_list)
         return legends_list_ordered
+
+
 
 
     def _get_series_order(self):
