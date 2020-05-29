@@ -45,7 +45,7 @@ class PerformanceDiagramSeries(Series):
         fcst_var_colname = 'fcst_var'
 
         # subset input data based on the forecast variables set in the config file
-        for fcst_var in self.fcst_vars:
+        for fcst_var in self.fcst_vars_1:
             subset_fcst_var = input_df[input_df[fcst_var_colname] == fcst_var]
 
         # subset based on the permutation of series_val values set in the config file.

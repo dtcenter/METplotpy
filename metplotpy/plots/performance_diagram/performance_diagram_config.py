@@ -8,7 +8,7 @@ __email__ = 'met_help@ucar.edu'
 
 import re
 from plots.config import Config
-from performance_diagram_series import PerformanceDiagramSeries
+from plots.met_plot import MetPlot
 
 class PerformanceDiagramConfig(Config):
     ACCEPTABLE_CI_VALS = ['NONE', 'BOOT', 'NORM']
@@ -45,22 +45,39 @@ class PerformanceDiagramConfig(Config):
         self.linestyles_list = self._get_linestyles()
         self.symbols_list = self._get_series_symbols()
         self.user_legends = self._get_user_legends()
+
+        # legend style settings as defined in METviewer
+        user_settings = self._get_legend_style()
+
+        # list of the x, y, and loc values for the
+        # bbox_to_anchor() setting used in determining
+        # the location of the bounding box which defines
+        # the legend.
+        self.bbox_x = float(user_settings['bbox_x'])
+        self.bbox_y = float(user_settings['bbox_y'])
+        legend_magnification = user_settings['legend_size']
+        self.legend_size = int(self.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
+        self.legend_ncol = self.get_config_value('legend_ncol')
+        legend_box = self.get_config_value('legend_box').lower()
+        if legend_box == 'n':
+            # Don't draw a box around legend labels
+            self.draw_box = False
+        else:
+            # Other choice is 'o'
+            # Enclose legend labels in a box
+            self.draw_box = True
+
         self.anno_var, self.anno_units = self._get_annotation_template()
 
         # Check that the config file has all the settings for each series
         is_config_consistent = self._config_consistency_check()
         if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val is"
+            raise ValueError("The number of series defined by series_val_1 is"
                              "inconsistent with the number of settings"
                              " required for describing each series. Please check"
                              " the number of your configuration file's plot_i,"
                              " plot_disp, series_order, user_legend,"
                              " colors, and series_symbols settings.")
-
-        # now that all the config values for the series are consistent,
-        # pick any series-related config, such as plot_disp config value
-        # to determine how many series are to be considered for the diagram.
-        self.num_of_series = len(self.plot_disp)
 
 
     def _get_markers(self):
@@ -160,6 +177,8 @@ class PerformanceDiagramConfig(Config):
         return legends_list_ordered
 
 
+
+
     def _get_series_order(self):
         """
             Get the order number for each series
@@ -227,7 +246,7 @@ class PerformanceDiagramConfig(Config):
                 True if the number of settings for each of the above
                 settings is consistent with the number of
                 series (as defined by the cross product of the model
-                and vx_mask defined in the series_val setting)
+                and vx_mask defined in the series_val_1 setting)
 
         """
         # Determine the number of series based on the number of

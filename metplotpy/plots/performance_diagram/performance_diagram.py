@@ -11,8 +11,10 @@ import numpy as np
 import yaml
 import pandas as pd
 from plots.met_plot import MetPlot
+import metcalcpy.util.utils as calc_util
 from performance_diagram_config import PerformanceDiagramConfig
 from performance_diagram_series import PerformanceDiagramSeries
+import plots.util as util
 
 
 class PerformanceDiagram(MetPlot):
@@ -46,10 +48,14 @@ class PerformanceDiagram(MetPlot):
 
         # instantiate a PerformanceDiagramConfig object, which holds all the necessary settings from the
         # config file.
-        self.config_obj = PerformanceDiagramConfig(parameters)
+        self.config_obj = PerformanceDiagramConfig(self.parameters)
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
+
+        # Apply event equalization, if requested
+        if self.config_obj.use_ee:
+            self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -198,7 +204,7 @@ class PerformanceDiagram(MetPlot):
         # Format the underlying performance diagram axes, labels, equal lines of CSI,
         # equal lines of bias.
         xlabel = self.config_obj.xaxis
-        ylabel = self.config_obj.yaxis
+        ylabel = self.config_obj.yaxis_1
 
         # From original implementation, replace this with Logan's for now
         # Optional: plot the legend for the contour lines representing the
@@ -247,14 +253,18 @@ class PerformanceDiagram(MetPlot):
                     plt.errorbar(sr_points, pody_points, yerr=pody_errs,
                                  color=series.color, ecolor="black", ms=1, capsize=2)
 
-            ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left',
-                       mode='expand', borderaxespad=0., ncol=5,
-                       prop={'size': 6})
             ax1.xaxis.set_label_coords(0.5, -0.066)
             ax1.set_xlabel(xlabel, fontsize=9)
             ax1.set_ylabel(ylabel, fontsize=9)
-        ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand',
-                   borderaxespad=0., ncol=5, prop={'size': 6}, fancybox=True)
+
+        # example settings, legend is outside of plot along the bottom
+        # ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand',
+        #            borderaxespad=0., ncol=5, prop={'size': 6}, fancybox=True)
+
+        # Legend based on the style settings in the config file.
+        ax2.legend(bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y), loc='lower left',
+                               ncol=self.config_obj.legend_ncol,
+                   prop={'size': self.config_obj.legend_size})
         ax1.xaxis.set_label_coords(0.5, -0.066)
         ax1.set_xlabel(xlabel, fontsize=9)
         ax1.set_ylabel(ylabel, fontsize=9)
@@ -274,7 +284,8 @@ def main():
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
     # with open("./custom_performance_diagram.yaml", 'r') as stream:
-    with open("../config/performance_diagram_defaults.yaml", 'r') as stream:
+    config_file = util.read_config_from_command_line()
+    with open(config_file, 'r') as stream:
         try:
             docs = yaml.load(stream, Loader=yaml.FullLoader)
         except yaml.YAMLError as exc:
