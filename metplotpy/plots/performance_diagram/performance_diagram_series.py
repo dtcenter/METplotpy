@@ -68,15 +68,10 @@ class PerformanceDiagramSeries(Series):
         sr_list = []
         pody_err_list = []
 
-        for indy_val in self.config.indy_vals:
-
-            # Convert the datetimes in the indy_val list (from the config file)
-            # to strings so we can compare them to the string representation of
-            # the datetimes in the data file
-            indy_val_str = datetime.strftime(indy_val, "%Y-%m-%d %H:%M:%S")
-
-            # Now we can subset based on the current datetime in the list of
-            # indy_vals specified in the config file.
+        for indy_val_str in self.config.indy_vals:
+            # Now we can subset based on the current independent
+            # variable in the list of indy_vals specified
+            # in the config file.
             pody_indy = pody_df[pody_df[self.config.indy_var] == indy_val_str]
             far_indy = far_df[far_df[self.config.indy_var] == indy_val_str]
 
