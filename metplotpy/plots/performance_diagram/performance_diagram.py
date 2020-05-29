@@ -268,7 +268,7 @@ class PerformanceDiagram(MetPlot):
         ax1.set_xlabel(xlabel, fontsize=9)
         ax1.set_ylabel(ylabel, fontsize=9)
         plt.savefig(self.get_config_value('plot_output'))
-        plt.show()
+        # plt.show()
         self.save_to_file()
 
 
