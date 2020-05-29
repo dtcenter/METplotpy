@@ -143,8 +143,7 @@ class PerformanceDiagram(MetPlot):
         if self.figure:
             self.figure.show()
         else:
-            #
-            print("Matplotlib implementation of this plot, this plot won't be visable in browser.")
+            print("Matplotlib implementation of this plot, this plot won't be visible in browser.")
 
     def _create_figure(self):
         """
@@ -279,7 +278,7 @@ def main():
             default and custom config files on sample data found in this directory.
             The location of the input data is defined in either the default or
             custom config file.
-        """
+    """
 
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
