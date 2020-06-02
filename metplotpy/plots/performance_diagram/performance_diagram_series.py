@@ -5,8 +5,11 @@ __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
 import metcalcpy.util.utils as utils
-from datetime import datetime
 from plots.series import Series
+import numpy as np
+
+print(np.__version__)
+'x' in np.arange(5)
 
 class PerformanceDiagramSeries(Series):
     """
@@ -68,10 +71,11 @@ class PerformanceDiagramSeries(Series):
         sr_list = []
         pody_err_list = []
 
-        for indy_val_str in self.config.indy_vals:
+        for indy_val in self.config.indy_vals:
             # Now we can subset based on the current independent
             # variable in the list of indy_vals specified
             # in the config file.
+            indy_val_str = str(indy_val)
             pody_indy = pody_df[pody_df[self.config.indy_var] == indy_val_str]
             far_indy = far_df[far_df[self.config.indy_var] == indy_val_str]
 
