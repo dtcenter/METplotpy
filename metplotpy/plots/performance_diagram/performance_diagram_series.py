@@ -4,12 +4,21 @@ Class Name: PerformanceDiagramSeries
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
+import warnings
 import metcalcpy.util.utils as utils
 from plots.series import Series
-import numpy as np
 
-print(np.__version__)
-'x' in np.arange(5)
+# To suppress FutureWarning raised by pandas due to
+# standoff between numpy and Python with respect to
+# comparing a string to scalar.  Note, this is also
+# an issue observed in Scikit, matplotlib, and TensorFlow.
+# Workaround solution from Stack Overflow:
+# https://stackoverflow.com/questions/40659212/
+# futurewarning-elementwise-comparison-failed-
+# returning-scalar-but-in-the-futur#46721064
+# and GitHub issue in numpy repo:
+# https://github.com/numpy/numpy/issues/6784
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 class PerformanceDiagramSeries(Series):
     """
