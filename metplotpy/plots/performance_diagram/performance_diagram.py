@@ -274,7 +274,7 @@ class PerformanceDiagram(MetPlot):
 
 def main():
     """
-            Generates a sample, default, two-trace line plot using a combination of
+            Generates a sample, default, line plot using a combination of
             default and custom config files on sample data found in this directory.
             The location of the input data is defined in either the default or
             custom config file.
