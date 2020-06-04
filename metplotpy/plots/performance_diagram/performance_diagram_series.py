@@ -31,6 +31,8 @@ class PerformanceDiagramSeries(Series):
     """
     def __init__(self, config, idx, input_data):
         super().__init__(config, idx, input_data)
+        self.plot_ci = config.plot_ci[idx]
+
 
     def _create_series_points(self):
         """
