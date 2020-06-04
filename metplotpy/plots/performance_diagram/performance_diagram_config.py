@@ -8,9 +8,9 @@ __email__ = 'met_help@ucar.edu'
 
 import re
 from plots.config import Config
+import plots.constants as constants
 
 class PerformanceDiagramConfig(Config):
-    ACCEPTABLE_CI_VALS = ['NONE', 'BOOT', 'NORM']
 
     def __init__(self, parameters):
         """ Reads in the plot settings from a performance diagram config file.
@@ -77,105 +77,6 @@ class PerformanceDiagramConfig(Config):
                              " the number of your configuration file's plot_i,"
                              " plot_disp, series_order, user_legend,"
                              " colors, and series_symbols settings.")
-
-
-    def _get_markers(self):
-        """
-           Retrieve all the markers, the order and number correspond to the number
-           of series_order, user_legends, and number of series.
-
-           Args:
-
-           Returns:
-               markers: a list of the markers
-        """
-        markers = self.get_config_value('series_symbols')
-        markers_list = [m for m in markers]
-        markers_list_ordered = self.create_list_by_series_ordering(markers_list)
-        return markers_list_ordered
-
-
-    def _get_colors(self):
-        """
-           Retrieves the colors used for lines and markers, from the
-           config file (default or custom).
-           Args:
-
-           Returns:
-               colors_list or colors_from_config: a list of the colors to be used for the lines
-               (and their corresponding marker symbols)
-        """
-
-        colors_settings = self.get_config_value('colors')
-        color_list = [color for color in colors_settings]
-        color_list_ordered = self.create_list_by_series_ordering(color_list)
-        return color_list_ordered
-
-
-    def _get_linewidths(self):
-        """ Retrieve all the linewidths from the configuration file, if not
-            specified in any config file, use the default values of 2
-
-            Args:
-
-            Returns:
-                linewidth_list: a list of linewidths corresponding to each line (model)
-        """
-        linewidths = self.get_config_value('series_line_width')
-        linewidths_list = [l for l in linewidths]
-        linewidths_list_ordered = self.create_list_by_series_ordering(linewidths_list)
-        return linewidths_list_ordered
-
-
-    def _get_linestyles(self):
-        """
-            Retrieve all the linestyles from the config file.
-
-            Args:
-
-            Returns:
-                list of line styles, each line style corresponds to a particular series
-        """
-        linestyles = self.get_config_value('series_line_style')
-        linestyle_list = [l for l in linestyles]
-        linestyle_list_ordered = self.create_list_by_series_ordering(linestyle_list)
-        return linestyle_list_ordered
-
-
-    def _get_series_symbols(self):
-        """
-           Retrieve all the symbols that represent each series
-
-           Args:
-
-           Returns:
-               a list of all the symbols, order is preserved.  That is, the first
-               symbol corresponds to the first symbol defined.
-
-        """
-        symbols = self.get_config_value('series_symbols')
-        symbols_list = [symbol for symbol in symbols]
-        symbols_list_ordered = self.create_list_by_series_ordering(symbols_list)
-        return symbols_list_ordered
-
-
-    def _get_user_legends(self):
-        """
-           Retrieve the text that is to be displayed in the legend at the bottom of the plot.
-           Each entry corresponds to a series.
-
-           Args:
-
-           Returns:
-               a list consisting of the series label to be displayed in the plot legend.
-
-        """
-        all_legends = self.get_config_value('user_legend')
-        legends_list = [legend for legend in all_legends]
-        legends_list_ordered = self.create_list_by_series_ordering(legends_list)
-        return legends_list_ordered
-
-
 
 
     def _get_series_order(self):
@@ -288,7 +189,7 @@ class PerformanceDiagramConfig(Config):
         # Do some checking to make sure that the values are valid (case-insensitive):
         # None, boot, or norm
         for ci_setting in ci_settings_list:
-            if ci_setting not in self.ACCEPTABLE_CI_VALS:
+            if ci_setting not in constants.ACCEPTABLE_CI_VALS:
                 raise ValueError("A plot_ci value is set to an invalid value. "
                                  "Accepted values are (case insensitive): "
                                  "None, norm, or boot. Please check your config file.")
