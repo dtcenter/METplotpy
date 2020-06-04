@@ -38,6 +38,7 @@ class Config:
         self.indy_vals = self.get_config_value('indy_vals')
         self.indy_var = self.get_config_value('indy_var')
 
+
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
         # interest.  The keys correspond to the column names
@@ -172,13 +173,18 @@ class Config:
         """
         if index == 1:
             fcst_var_val_dict = self.get_config_value('fcst_var_val_1')
-            all_fcst_vars = [*fcst_var_val_dict.keys()]
+            if fcst_var_val_dict:
+                all_fcst_vars = [*fcst_var_val_dict.keys()]
+            else:
+                all_fcst_vars = []
         elif index == 2:
             fcst_var_val_dict = self.get_config_value('fcst_var_val_2')
             if fcst_var_val_dict:
                 all_fcst_vars = [*fcst_var_val_dict.keys()]
             else:
                 all_fcst_vars = []
+        else:
+            all_fcst_vars = []
 
         return all_fcst_vars
 
@@ -318,3 +324,60 @@ class Config:
         legends_list = [legend for legend in all_legends]
         legends_list_ordered = self.create_list_by_series_ordering(legends_list)
         return legends_list_ordered
+
+    def create_list_by_series_ordering(self, setting_to_order):
+        """
+            Generate a list of series plotting settings based on what is set
+            in series_order in the config file.
+            If the series_order is specified:
+               series_order:
+                -3
+                -1
+                -2
+
+                and color is set:
+               color:
+                -red
+                -blue
+                -green
+
+               and the line widths are:
+               line_width:
+                  -1
+                  -3
+                  -2
+               then the first series has a line width=3,
+               the second series has a line width=2,
+               and the third series has a line width=1
+
+            Then the following is expected:
+              the first series' color is 'blue'
+              the second series' color is 'green'
+              the third series' color is 'red'
+
+            This allows the user the flexibility to change marker symbols, colors, and
+            other line qualities between the series (lines) without having to re-order
+            *all* the values.
+
+            Args:
+
+                setting_to_order:  the name of the setting (eg line_width) to be
+                                   ordered based on the order indicated
+                                   in the config file under the series_order setting.
+
+            Returns:
+                a list reflecting the order that is consistent with what was set in series_order
+
+        """
+
+        # order the ci list according to the series_order setting
+        ordered_settings_list = []
+
+        # Make the series ordering list zero-based to sync with Python's zero-based counting
+        series_ordered_zb = [sorder - 1 for sorder in self.series_ordering]
+        for idx in range(len(setting_to_order)):
+            # find the current index's value in the zero-based series_ordering list
+            loc = series_ordered_zb.index(idx)
+            ordered_settings_list.append(setting_to_order[loc])
+
+        return ordered_settings_list
