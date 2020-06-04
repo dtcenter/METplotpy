@@ -34,7 +34,7 @@ class Config:
         self.yaxis_1 = self.get_config_value('yaxis_1')
         self.yaxis_2 = self.get_config_value('yaxis_2')
         self.title = self.get_config_value('title')
-        self.use_ee = self.get_config_value('event_equalization')
+        self.use_ee = self.get_config_value('event_equalize')
         self.indy_vals = self.get_config_value('indy_vals')
         self.indy_var = self.get_config_value('indy_var')
 
@@ -226,3 +226,95 @@ class Config:
         permutations = [p for p in itertools.product(*series_vals_list)]
 
         return len(permutations)
+
+    def _get_colors(self):
+        """
+           Retrieves the colors used for lines and markers, from the
+           config file (default or custom).
+           Args:
+
+           Returns:
+               colors_list or colors_from_config: a list of the colors to be used for the lines
+               (and their corresponding marker symbols)
+        """
+
+        colors_settings = self.get_config_value('colors')
+        color_list = [color for color in colors_settings]
+        color_list_ordered = self.create_list_by_series_ordering(color_list)
+        return color_list_ordered
+
+    def _get_markers(self):
+        """
+           Retrieve all the markers, the order and number correspond to the number
+           of series_order, user_legends, and number of series.
+
+           Args:
+
+           Returns:
+               markers: a list of the markers
+        """
+        markers = self.get_config_value('series_symbols')
+        markers_list = [m for m in markers]
+        markers_list_ordered = self.create_list_by_series_ordering(markers_list)
+        return markers_list_ordered
+
+    def _get_linewidths(self):
+        """ Retrieve all the linewidths from the configuration file, if not
+            specified in any config file, use the default values of 2
+
+            Args:
+
+            Returns:
+                linewidth_list: a list of linewidths corresponding to each line (model)
+        """
+        linewidths = self.get_config_value('series_line_width')
+        linewidths_list = [l for l in linewidths]
+        linewidths_list_ordered = self.create_list_by_series_ordering(linewidths_list)
+        return linewidths_list_ordered
+
+    def _get_linestyles(self):
+        """
+            Retrieve all the linestyles from the config file.
+
+            Args:
+
+            Returns:
+                list of line styles, each line style corresponds to a particular series
+        """
+        linestyles = self.get_config_value('series_line_style')
+        linestyle_list = [l for l in linestyles]
+        linestyle_list_ordered = self.create_list_by_series_ordering(linestyle_list)
+        return linestyle_list_ordered
+
+    def _get_series_symbols(self):
+        """
+           Retrieve all the symbols that represent each series
+
+           Args:
+
+           Returns:
+               a list of all the symbols, order is preserved.  That is, the first
+               symbol corresponds to the first symbol defined.
+
+        """
+        symbols = self.get_config_value('series_symbols')
+        symbols_list = [symbol for symbol in symbols]
+        symbols_list_ordered = self.create_list_by_series_ordering(symbols_list)
+        return symbols_list_ordered
+
+
+    def _get_user_legends(self):
+        """
+           Retrieve the text that is to be displayed in the legend at the bottom of the plot.
+           Each entry corresponds to a series.
+
+           Args:
+
+           Returns:
+               a list consisting of the series label to be displayed in the plot legend.
+
+        """
+        all_legends = self.get_config_value('user_legend')
+        legends_list = [legend for legend in all_legends]
+        legends_list_ordered = self.create_list_by_series_ordering(legends_list)
+        return legends_list_ordered
