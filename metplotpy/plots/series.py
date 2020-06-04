@@ -16,7 +16,6 @@ class Series:
         self.config = config
         self.idx = idx
         self.input_data = input_data
-        self.plot_ci = config.plot_ci[idx]
         self.plot_disp = config.plot_disp[idx]
         self.plot_stat = config.plot_stat[idx]
         self.color = config.colors_list[idx]
