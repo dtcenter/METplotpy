@@ -42,7 +42,7 @@ class PerformanceDiagramConfig(Config):
         self.marker_list = self._get_markers()
         self.linewidth_list = self._get_linewidths()
         self.linestyles_list = self._get_linestyles()
-        self.symbols_list = self._get_series_symbols()
+        # self.symbols_list = self._get_series_symbols()
         self.user_legends = self._get_user_legends()
 
         # legend style settings as defined in METviewer
@@ -160,14 +160,13 @@ class PerformanceDiagramConfig(Config):
         num_markers = len(self.marker_list)
         num_series_ord = len(self.series_ordering)
         num_colors = len(self.colors_list)
-        num_symbols = len(self.symbols_list)
         num_legends = len(self.user_legends)
         num_line_widths = len(self.linewidth_list)
         num_linestyles = len(self.linestyles_list)
         status = False
 
         if num_series == num_plot_disp == \
-                    num_markers == num_series_ord == num_colors == num_symbols \
+                    num_markers == num_series_ord == num_colors  \
                     == num_legends == num_line_widths == num_linestyles:
             status = True
         return status
