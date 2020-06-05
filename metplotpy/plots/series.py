@@ -22,7 +22,6 @@ class Series:
         self.marker = config.marker_list[idx]
         self.linewidth = config.linewidth_list[idx]
         self.linestyle = config.linestyles_list[idx]
-        self.symbol = config.symbols_list[idx]
         self.user_legends = config.user_legends[idx]
         self.series_order = config.series_ordering_zb[idx]
 
