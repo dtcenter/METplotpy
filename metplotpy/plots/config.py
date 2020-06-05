@@ -292,22 +292,6 @@ class Config:
         linestyle_list_ordered = self.create_list_by_series_ordering(linestyle_list)
         return linestyle_list_ordered
 
-    def _get_series_symbols(self):
-        """
-           Retrieve all the symbols that represent each series
-
-           Args:
-
-           Returns:
-               a list of all the symbols, order is preserved.  That is, the first
-               symbol corresponds to the first symbol defined.
-
-        """
-        symbols = self.get_config_value('series_symbols')
-        symbols_list = [symbol for symbol in symbols]
-        symbols_list_ordered = self.create_list_by_series_ordering(symbols_list)
-        return symbols_list_ordered
-
 
     def _get_user_legends(self):
         """
