@@ -42,7 +42,6 @@ class PerformanceDiagramConfig(Config):
         self.marker_list = self._get_markers()
         self.linewidth_list = self._get_linewidths()
         self.linestyles_list = self._get_linestyles()
-        # self.symbols_list = self._get_series_symbols()
         self.user_legends = self._get_user_legends()
 
         # legend style settings as defined in METviewer
