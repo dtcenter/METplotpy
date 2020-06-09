@@ -5,6 +5,7 @@ __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
 import metcalcpy.util.utils as cp_utils
+import metcalcpy.util.pstd_statistics as pstats
 from plots.series import Series
 
 class ROCDiagramSeries(Series):
@@ -26,14 +27,25 @@ class ROCDiagramSeries(Series):
            Args:
 
            Returns:
+               tuple of three lists:
+                                   pody (Probability of detection) and
+                                   pofd (probability of false detection/
+                                         false alarm rate)
+                                   thresh (threshold value, used to annotate)
 
 
         """
         if self.config.linetype_ctc:
-            print('do stuff for ctc')
+            print('do stuff for ctc using calcpy util')
+
 
 
         elif self.config.linetype_pct:
-            print('do stuff for pct')
+            roc_df = pstats._calc_pct_roc(self.input_data)
+
+            pody = roc_df['pody']
+            podf = roc_df['pofd']
+            thresh = roc_df['thresh']
+            return podf, pody, thresh
         else:
             raise ValueError('error neither ctc or pct linetype ')
