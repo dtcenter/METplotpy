@@ -305,7 +305,17 @@ class Config:
 
         """
         all_legends = self.get_config_value('user_legend')
-        legends_list = [legend for legend in all_legends]
+
+        # work around to legend label set to '' and
+        # matplotlib error "No handles with labels found to put in legend."
+        # Note, this error apparently does not appear with the latest
+        # version of matplotlib. As of this implementation, we are using
+        # matplotlib that is compatible wit Python 3.6.
+        legends_list = []
+        for legend in all_legends:
+            if len(legend) == 0:
+                legend = ' '
+            legends_list.append(legend)
         legends_list_ordered = self.create_list_by_series_ordering(legends_list)
         return legends_list_ordered
 
