@@ -252,10 +252,6 @@ class PerformanceDiagram(MetPlot):
                     plt.errorbar(sr_points, pody_points, yerr=pody_errs,
                                  color=series.color, ecolor="black", ms=1, capsize=2)
 
-            ax1.xaxis.set_label_coords(0.5, -0.066)
-            ax1.set_xlabel(xlabel, fontsize=9)
-            ax1.set_ylabel(ylabel, fontsize=9)
-
         # example settings, legend is outside of plot along the bottom
         # ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand',
         #            borderaxespad=0., ncol=5, prop={'size': 6}, fancybox=True)
@@ -267,6 +263,9 @@ class PerformanceDiagram(MetPlot):
         ax1.xaxis.set_label_coords(0.5, -0.066)
         ax1.set_xlabel(xlabel, fontsize=9)
         ax1.set_ylabel(ylabel, fontsize=9)
+        if self.config_obj.yaxis_2:
+            ax2.set_ylabel(self.config_obj.yaxis_2, fontsize=9)
+
         plt.savefig(self.get_config_value('plot_output'))
         # plt.show()
         self.save_to_file()
