@@ -15,6 +15,7 @@ import metcalcpy.util.utils as calc_util
 from performance_diagram_config import PerformanceDiagramConfig
 from performance_diagram_series import PerformanceDiagramSeries
 import plots.util as util
+import plots.constants as constants
 
 
 class PerformanceDiagram(MetPlot):
@@ -214,9 +215,9 @@ class PerformanceDiagram(MetPlot):
             cbar = plt.colorbar(cs_var)
             cbar.set_label(csi_label, fontsize=9)
 
-        plt.title(self.config_obj.title, fontsize=self.config_obj.DEFAULT_TITLE_FONTSIZE,
-                  color=self.config_obj.DEFAULT_TITLE_COLOR, fontweight="bold",
-                  fontfamily=self.config_obj.DEFAULT_TITLE_FONT)
+        plt.title(self.config_obj.title, fontsize=constants.DEFAULT_TITLE_FONTSIZE,
+                  color=constants.DEFAULT_TITLE_COLOR, fontweight="bold",
+                  fontfamily=constants.DEFAULT_TITLE_FONT)
 
         #
         # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE
