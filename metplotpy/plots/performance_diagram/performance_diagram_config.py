@@ -9,6 +9,7 @@ __email__ = 'met_help@ucar.edu'
 import re
 from plots.config import Config
 import plots.constants as constants
+import metcalcpy.util.utils as utils
 
 class PerformanceDiagramConfig(Config):
 
@@ -54,7 +55,7 @@ class PerformanceDiagramConfig(Config):
         self.bbox_x = float(user_settings['bbox_x'])
         self.bbox_y = float(user_settings['bbox_y'])
         legend_magnification = user_settings['legend_size']
-        self.legend_size = int(self.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
+        self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
         self.legend_ncol = self.get_config_value('legend_ncol')
         legend_box = self.get_config_value('legend_box').lower()
         if legend_box == 'n':
@@ -71,7 +72,7 @@ class PerformanceDiagramConfig(Config):
         is_config_consistent = self._config_consistency_check()
         if not is_config_consistent:
             raise ValueError("The number of series defined by series_val_1 is"
-                             "inconsistent with the number of settings"
+                             " inconsistent with the number of settings"
                              " required for describing each series. Please check"
                              " the number of your configuration file's plot_i,"
                              " plot_disp, series_order, user_legend,"
@@ -135,8 +136,8 @@ class PerformanceDiagramConfig(Config):
 
     def _config_consistency_check(self):
         """
-            Checks that the number of settings defined for plot_ci,
-            plot_disp, series_order, user_legend colors, and series_symbols
+            Checks that the number of settings defined for
+            plot_disp, series_order, colors, and series_symbols
             are consistent.
 
             Args:
@@ -154,19 +155,17 @@ class PerformanceDiagramConfig(Config):
         num_series = self.calculate_number_of_series()
 
         # Numbers of values for other settings for series
-        # num_ci_settings = len(self.plot_ci)
         num_plot_disp = len(self.plot_disp)
         num_markers = len(self.marker_list)
         num_series_ord = len(self.series_ordering)
         num_colors = len(self.colors_list)
-        num_legends = len(self.user_legends)
         num_line_widths = len(self.linewidth_list)
         num_linestyles = len(self.linestyles_list)
         status = False
 
         if num_series == num_plot_disp == \
                     num_markers == num_series_ord == num_colors  \
-                    == num_legends == num_line_widths == num_linestyles:
+                    == num_line_widths == num_linestyles:
             status = True
         return status
 
