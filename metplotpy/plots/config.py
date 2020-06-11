@@ -7,18 +7,13 @@ __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
 import itertools
+import metcalcpy.util.utils as utils
+import metplotpy.plots.constants as constants
 
 class Config:
     """
        Handles reading in and organizing configuration settings in the yaml configuration file.
     """
-    # Default values...
-    DEFAULT_TITLE_FONT = 'sans-serif'
-    DEFAULT_TITLE_COLOR = 'darkblue'
-    DEFAULT_TITLE_FONTSIZE = 10
-    # Default size used in plotly legend text
-    DEFAULT_LEGEND_FONTSIZE = 12
-    AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", "."]
 
     def __init__(self, parameters):
 
@@ -28,8 +23,8 @@ class Config:
         # Configuration settings that apply to the plot
         #
         self.output_image = self.get_config_value('plot_output')
-        self.title_font = self.DEFAULT_TITLE_FONT
-        self.title_color = self.DEFAULT_TITLE_COLOR
+        self.title_font = constants.DEFAULT_TITLE_FONT
+        self.title_color = constants.DEFAULT_TITLE_COLOR
         self.xaxis = self.get_config_value('xaxis')
         self.yaxis_1 = self.get_config_value('yaxis_1')
         self.yaxis_2 = self.get_config_value('yaxis_2')
@@ -306,17 +301,37 @@ class Config:
         """
         all_legends = self.get_config_value('user_legend')
 
-        # work around to legend label set to '' and
-        # matplotlib error "No handles with labels found to put in legend."
-        # Note, this error apparently does not appear with the latest
-        # version of matplotlib. As of this implementation, we are using
-        # matplotlib that is compatible wit Python 3.6.
+        # for legend labels that aren't set (ie in conf file they are set to '')
+        # create a legend label based on the permutation of the series names
+        # appended by 'Performance'.  For example, for:
+        #     series_val_1:
+        #        model:
+        #          - NoahMPv3.5.1_d01
+        #        vx_mask:
+        #          - CONUS
+        # The constructed legend label will be "NoahMPv3.5.1_d01 CONUS Performance"
         legends_list = []
         for legend in all_legends:
             if len(legend) == 0:
                 legend = ' '
             legends_list.append(legend)
-        legends_list_ordered = self.create_list_by_series_ordering(legends_list)
+
+        ll_list = []
+        series_list = self.series_vals_1
+        perms = utils.create_permutations(series_list)
+        for idx,ll in enumerate(legends_list):
+            if ll == ' ':
+                if len(series_list) > 1:
+                    label_parts = [perms[idx][0], ' ', perms[idx][1], " Performance"]
+                else:
+                    label_parts = [perms[idx][0], ' Performance']
+                legend_label = ''.join(label_parts)
+
+                ll_list.append(legend_label)
+            else:
+                ll_list = all_legends.copy()
+
+        legends_list_ordered = self.create_list_by_series_ordering(ll_list)
         return legends_list_ordered
 
     def create_list_by_series_ordering(self, setting_to_order):
