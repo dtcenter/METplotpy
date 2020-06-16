@@ -18,7 +18,10 @@ from plots.series import Series
 # returning-scalar-but-in-the-futur#46721064
 # and GitHub issue in numpy repo:
 # https://github.com/numpy/numpy/issues/6784
-warnings.simplefilter(action='ignore', category=FutureWarning)
+# warnings.simplefilter(action='ignore', category=FutureWarning)
+# Instead, use pandas' astype to convert what you are comparing
+# to a string, otherwise, you might end up with an empty
+# dataframe and then an empty plot.
 
 class PerformanceDiagramSeries(Series):
     """
@@ -47,12 +50,15 @@ class PerformanceDiagramSeries(Series):
         """
 
         input_df = self.input_data
+        series_num = self.series_order
 
         # Calculate the cartesian product of all series_val values as
         # defined in the config file.  These will be used to subset the pandas
         # dataframe input data.  Each permutation corresponds to a series.
         # This permutation corresponds to this series instance.
-        perm = self._create_permutations()
+        # perm = self._create_permutations()
+        perm = utils.create_permutations(self.all_series_vals)
+        cur_perm = perm[series_num]
 
         # We know that for performance diagrams, we are interested in the
         # fcst_var column of the input data.
@@ -63,8 +69,22 @@ class PerformanceDiagramSeries(Series):
             subset_fcst_var = input_df[input_df[fcst_var_colname] == fcst_var]
 
         # subset based on the permutation of series_val values set in the config file.
-        for i, series_val_name in enumerate(self.series_val_names):
-            subset_series = subset_fcst_var[subset_fcst_var[series_val_name] == perm[i]]
+        # work on a copy of the dataframe
+        subsetted = subset_fcst_var.copy()
+
+        # same number of items in tuple, so sufficient to get
+        # the number of the items in the first tuple.
+        for i, svn in enumerate(self.series_val_names):
+            # match the series value name to
+            # its corresponding permutation value
+            col_str = svn
+            mask_val_str = cur_perm[i]
+            if i == 0:
+                query_str =  col_str + " == " + '"' + mask_val_str + '"'
+            else:
+                query_str = query_str + " and " + col_str +  " == " + '"' + mask_val_str + '"'
+
+        subset_series = subsetted.query(query_str)
 
         # subset based on the stat
         pody_df = subset_series[subset_series['stat_name'] == 'PODY']
@@ -87,8 +107,14 @@ class PerformanceDiagramSeries(Series):
             # variable in the list of indy_vals specified
             # in the config file.
             indy_val_str = str(indy_val)
-            pody_indy = pody_df[pody_df[self.config.indy_var] == indy_val_str]
-            far_indy = far_df[far_df[self.config.indy_var] == indy_val_str]
+
+            # Convert the indy var values into strings using pandas' astype()
+            pody_df_copy = pody_df.copy()
+            far_df_copy = far_df.copy()
+            pody_df_copy[self.config.indy_var] = pody_df_copy[self.config.indy_var].astype(str)
+            far_df_copy[self.config.indy_var] = far_df_copy[self.config.indy_var].astype(str)
+            pody_indy = pody_df_copy[pody_df_copy[self.config.indy_var] == indy_val_str]
+            far_indy = far_df_copy[far_df_copy[self.config.indy_var] == indy_val_str]
 
             if not pody_indy.empty and not far_indy.empty:
                 # For this time step, use either the sum, mean, or median to
