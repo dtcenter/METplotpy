@@ -4,6 +4,7 @@ Class Name: series.py
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 import itertools
+import metcalcpy.util.utils as utils
 
 class Series:
     """
@@ -28,6 +29,8 @@ class Series:
         # Variables used for subsetting the input dataframe
         # series variable names defined in the series_val_1 setting
         self.series_vals_1 = config.series_vals_1
+        self.series_vals_2 = config.series_vals_2
+        self.all_series_vals = self.series_vals_1 + self.series_vals_2
 
         # forecast variable names defined in the fcst_var_val setting
         self.fcst_vars_1 = config.fcst_vars_1
@@ -113,6 +116,7 @@ class Series:
 
         # Retrieve the lists from the series_val dictionary
         series_vals_list = self.series_vals_1
+        series_vals_list = self.all_series_vals
 
         # Utilize itertools' product() to create the cartesian product of all elements
         # in the lists to produce all permutations of the series_val values and the
