@@ -12,8 +12,8 @@ plot_disp:
   - True
   - True
 series_order:
-  - 1
   - 2
+  - 1
   - 3
 indy_var: fcst_valid_beg
 indy_vals:
@@ -59,9 +59,12 @@ fcst_var_val_1:
     - PODY
 fcst_var_val_2:
 user_legend:
-  - NH
-  - SH
-  - TROP
+#  - NH
+#  - SH
+#  - TROP
+   - NH
+   - ''
+   - TROP
 
 plot_stat: median
 colors:
