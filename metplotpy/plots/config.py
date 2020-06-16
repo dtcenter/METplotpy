@@ -311,11 +311,18 @@ class Config:
         #        vx_mask:
         #          - CONUS
         # The constructed legend label will be "NoahMPv3.5.1_d01 CONUS Performance"
+
+        # Check for empty list as setting in the config file
         legends_list = []
-        for legend in all_legends:
-            if len(legend) == 0:
-                legend = ' '
-            legends_list.append(legend)
+        num_series = self.calculate_number_of_series()
+        if len(all_legends) == 0:
+            for i in range(num_series):
+                legends_list.append(' ')
+        else:
+            for legend in all_legends:
+                if len(legend) == 0:
+                    legend = ' '
+                legends_list.append(legend)
 
         ll_list = []
         series_list = self.all_series_vals
