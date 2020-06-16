@@ -8,7 +8,7 @@ __email__ = 'met_help@ucar.edu'
 
 import itertools
 import metcalcpy.util.utils as utils
-import metplotpy.plots.constants as constants
+import plots.constants as constants
 
 class Config:
     """
