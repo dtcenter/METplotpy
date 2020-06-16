@@ -40,6 +40,7 @@ class Config:
         # in the input dataframe.
         self.series_vals_1 = self._get_series_vals(1)
         self.series_vals_2 = self._get_series_vals(2)
+        self.all_series_vals = self.series_vals_1 + self.series_vals_2
 
         # Represent the names of the forecast variables (inner keys) to the fcst_var_val setting.
         # These are the names of the columns in the input dataframe.
@@ -317,7 +318,7 @@ class Config:
             legends_list.append(legend)
 
         ll_list = []
-        series_list = self.series_vals_1
+        series_list = self.all_series_vals
         perms = utils.create_permutations(series_list)
         for idx,ll in enumerate(legends_list):
             if ll == ' ':
@@ -329,7 +330,7 @@ class Config:
 
                 ll_list.append(legend_label)
             else:
-                ll_list = all_legends.copy()
+                ll_list.append(ll)
 
         legends_list_ordered = self.create_list_by_series_ordering(ll_list)
         return legends_list_ordered
