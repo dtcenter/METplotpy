@@ -16,6 +16,8 @@ from performance_diagram_config import PerformanceDiagramConfig
 from performance_diagram_series import PerformanceDiagramSeries
 import plots.util as util
 import plots.constants as constants
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 class PerformanceDiagram(MetPlot):
@@ -233,7 +235,7 @@ class PerformanceDiagram(MetPlot):
                          linewidth=series.linewidth,
                          color=series.color, marker=series.marker,
                          label=series.user_legends,
-                         alpha=0.5, ms=3)
+                         alpha=0.5, ms=6)
 
                 # Annotate the points with their PODY (i.e. dependent variable value)
                 if not self.config_obj.anno_var :
