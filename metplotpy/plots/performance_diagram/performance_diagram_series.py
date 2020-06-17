@@ -56,8 +56,18 @@ class PerformanceDiagramSeries(Series):
         # defined in the config file.  These will be used to subset the pandas
         # dataframe input data.  Each permutation corresponds to a series.
         # This permutation corresponds to this series instance.
-        # perm = self._create_permutations()
         perm = utils.create_permutations(self.all_series_vals)
+
+        # Check that the config file has all the settings for each series
+        is_config_consistent = self.config._config_consistency_check()
+        if not is_config_consistent:
+            raise ValueError("The number of series defined by series_val_1 is"
+                             " inconsistent with the number of settings"
+                             " required for describing each series. Please check"
+                             " the number of your configuration file's plot_i,"
+                             " plot_disp, series_order, user_legend,"
+                             " colors, and series_symbols settings.")
+
         cur_perm = perm[series_num]
 
         # We know that for performance diagrams, we are interested in the
