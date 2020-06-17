@@ -4,6 +4,7 @@ Class Name: performance_diagram.py
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 import os
+import re
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from matplotlib.colors import LinearSegmentedColormap
@@ -106,7 +107,8 @@ class PerformanceDiagram(MetPlot):
         series_list = []
 
         # use the list of series ordering values to determine how many series objects we need.
-        num_series = len(self.config_obj.series_ordering)
+        n = len(self.config_obj.series_ordering)
+        num_series = self.config_obj.calculate_number_of_series()
 
         for i, series in enumerate(range(num_series)):
             # Create a PerformanceDiagramSeries object
@@ -164,7 +166,8 @@ class PerformanceDiagram(MetPlot):
         """
 
         # This creates a figure size that is of a "reasonable" size
-        fig = plt.figure(figsize=[8.5, 8])
+        fig = plt.figure(figsize=[self.config_obj.plot_height, self.config_obj.plot_width])
+        # fig = plt.figure(figsize=[8.5, 8])
 
         #
         # PLOT THE "TEMPLATE" THAT CREATES THE EQUAL LINES OF CSI AND EQUAL LINES OF BIAS
@@ -219,7 +222,7 @@ class PerformanceDiagram(MetPlot):
 
         plt.title(self.config_obj.title, fontsize=constants.DEFAULT_TITLE_FONTSIZE,
                   color=constants.DEFAULT_TITLE_COLOR, fontweight="bold",
-                  fontfamily=constants.DEFAULT_TITLE_FONT)
+                  fontfamily=constants.DEFAULT_TITLE_FONT, pad=20)
 
         #
         # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE
@@ -228,9 +231,15 @@ class PerformanceDiagram(MetPlot):
         for i, series in enumerate(self.series_list):
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
+
             if series.plot_disp:
                 pody_points = series.series_points[1]
                 sr_points = series.series_points[0]
+
+                # "Dump" success ratio and PODY points to an output
+                # file based on the output image filename (useful in debugging)
+                self.write_output_file(sr_points, pody_points)
+
                 plt.plot(sr_points, pody_points, linestyle=series.linestyle,
                          linewidth=series.linewidth,
                          color=series.color, marker=series.marker,
@@ -272,6 +281,39 @@ class PerformanceDiagram(MetPlot):
         plt.savefig(self.get_config_value('plot_output'))
         # plt.show()
         self.save_to_file()
+
+
+    def write_output_file(self, list1, list2):
+        """
+            Writes the 1-FAR and PODY data points that are
+            being plotted
+
+
+
+        """
+
+        # Open file, name it based on the plot_output config setting, except
+        # use the .txt extension
+        image_filename = self.config_obj.output_image
+        match = re.match(r'(.*)(.png)', image_filename)
+        if match:
+            filename_only = match.group(1)
+            output_file = filename_only + ".txt"
+            fileobj = open(output_file, 'w')
+            # header
+            fileobj.write( '1-far \t pody \n')
+            # use zip to combine the success ratio and pody lists into one
+            # for easier writing
+            points = zip(list1, list2)
+            for idx, curpoint in enumerate(points):
+                point = str(curpoint[0]) + "\t" + str(curpoint[1]) + "\n"
+                fileobj.write(point)
+
+            fileobj.close()
+
+
+
+
 
 
 def main():
