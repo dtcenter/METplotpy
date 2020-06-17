@@ -323,6 +323,8 @@ class Config:
                 if len(legend) == 0:
                     legend = ' '
                     legends_list.append(legend)
+                else:
+                    legends_list.append(legend)
 
         ll_list = []
         series_list = self.all_series_vals
