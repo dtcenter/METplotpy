@@ -107,7 +107,6 @@ class PerformanceDiagram(MetPlot):
         series_list = []
 
         # use the list of series ordering values to determine how many series objects we need.
-        n = len(self.config_obj.series_ordering)
         num_series = self.config_obj.calculate_number_of_series()
 
         for i, series in enumerate(range(num_series)):
@@ -228,6 +227,11 @@ class PerformanceDiagram(MetPlot):
         # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE
         # the statistics data for each model/series
         #
+
+        # "Dump" success ratio and PODY points to an output
+        # file based on the output image filename (useful in debugging)
+        self.write_output_file()
+
         for i, series in enumerate(self.series_list):
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
@@ -235,11 +239,6 @@ class PerformanceDiagram(MetPlot):
             if series.plot_disp:
                 pody_points = series.series_points[1]
                 sr_points = series.series_points[0]
-
-                # "Dump" success ratio and PODY points to an output
-                # file based on the output image filename (useful in debugging)
-                self.write_output_file(sr_points, pody_points)
-
                 plt.plot(sr_points, pody_points, linestyle=series.linestyle,
                          linewidth=series.linewidth,
                          color=series.color, marker=series.marker,
@@ -283,12 +282,10 @@ class PerformanceDiagram(MetPlot):
         self.save_to_file()
 
 
-    def write_output_file(self, list1, list2):
+    def write_output_file(self):
         """
             Writes the 1-FAR and PODY data points that are
             being plotted
-
-
 
         """
 
@@ -299,21 +296,36 @@ class PerformanceDiagram(MetPlot):
         if match:
             filename_only = match.group(1)
             output_file = filename_only + ".txt"
-            fileobj = open(output_file, 'w')
-            # header
-            fileobj.write( '1-far \t pody \n')
-            # use zip to combine the success ratio and pody lists into one
-            # for easier writing
-            points = zip(list1, list2)
-            for idx, curpoint in enumerate(points):
-                point = str(curpoint[0]) + "\t" + str(curpoint[1]) + "\n"
-                fileobj.write(point)
+
+
+            # make sure this file doesn't already
+            # exit, delete it if it does
+            try:
+                if os.stat(output_file).st_size == 0:
+                    fileobj = open(output_file, 'a')
+                else:
+                  os.remove(output_file)
+            except FileNotFoundError as fnfe:
+                # OK if no file was found
+                pass
+
+            fileobj = open(output_file, 'a')
+            header_str = "1-far\t pody\n"
+            fileobj.write(header_str)
+            all_pody = []
+            all_sr = []
+            for series in self.series_list:
+                pody_points = series.series_points[1]
+                sr_points = series.series_points[0]
+                all_pody.extend(pody_points)
+                all_sr.extend(sr_points)
+
+            all_points = zip(all_sr, all_pody)
+            for idx, pts in enumerate(all_points):
+                data_str = str(pts[0]) + "\t" + str(pts[1]) + "\n"
+                fileobj.write(data_str)
 
             fileobj.close()
-
-
-
-
 
 
 def main():
