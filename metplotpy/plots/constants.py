@@ -32,9 +32,12 @@ LINESTYLE_DICT = {'p': ':', 'l': '--', 'o': '-.', 'b': '-',
 ACCEPTABLE_CI_VALS = ['NONE', 'BOOT', 'NORM']
 
 DEFAULT_TITLE_FONT = 'sans-serif'
-DEFAULT_TITLE_COLOR = 'darkblue'
+DEFAULT_TITLE_COLOR = 'black'
 DEFAULT_TITLE_FONTSIZE = 10
+
 # Default size used in plotly legend text
 DEFAULT_LEGEND_FONTSIZE = 12
 AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", "."]
+PCH_TO_MATPLOTLIB_MARKER = {'20':'.', '19':'o', '17':'^', '1':'H', '18':'d', '15':'s'}
+
 
