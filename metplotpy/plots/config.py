@@ -209,7 +209,7 @@ class Config:
 
     def calculate_number_of_series(self):
         """
-           From the series_val_1 setting in the config file,
+           From the number of items in the permutation list,
            determine how many series "objects" are to be plotted.
 
            Args:
@@ -322,7 +322,7 @@ class Config:
             for legend in all_legends:
                 if len(legend) == 0:
                     legend = ' '
-                legends_list.append(legend)
+                    legends_list.append(legend)
 
         ll_list = []
         series_list = self.all_series_vals
