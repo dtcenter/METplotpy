@@ -166,7 +166,6 @@ class PerformanceDiagram(MetPlot):
 
         # This creates a figure size that is of a "reasonable" size
         fig = plt.figure(figsize=[self.config_obj.plot_height, self.config_obj.plot_width])
-        # fig = plt.figure(figsize=[8.5, 8])
 
         #
         # PLOT THE "TEMPLATE" THAT CREATES THE EQUAL LINES OF CSI AND EQUAL LINES OF BIAS
@@ -268,7 +267,10 @@ class PerformanceDiagram(MetPlot):
         #            borderaxespad=0., ncol=5, prop={'size': 6}, fancybox=True)
 
         # Legend based on the style settings in the config file.
-        ax2.legend(bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y), loc='lower left',
+        # Use half the y-value of the box position that corresponds
+        # to the legend_inset y value in the yaml config file
+        bbox_y = self.config_obj.bbox_y / 2.0
+        ax2.legend(bbox_to_anchor=(self.config_obj.bbox_x, bbox_y), loc='lower left',
                                ncol=self.config_obj.legend_ncol,
                    prop={'size': self.config_obj.legend_size})
         ax1.xaxis.set_label_coords(0.5, -0.066)
