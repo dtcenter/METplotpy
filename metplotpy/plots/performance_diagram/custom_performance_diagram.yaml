@@ -6,7 +6,7 @@ xaxis: Success Ratio
 # support two y-axes
 yaxis_1: Probability of Detection (PODY)
 yaxis_2: ''
-
+legend_ncol: 1
 plot_disp:
   - True
   - True
