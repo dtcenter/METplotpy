@@ -221,7 +221,7 @@ class PerformanceDiagram(MetPlot):
 
         plt.title(self.config_obj.title, fontsize=constants.DEFAULT_TITLE_FONTSIZE,
                   color=constants.DEFAULT_TITLE_COLOR, fontweight="bold",
-                  fontfamily=constants.DEFAULT_TITLE_FONT, pad=20)
+                  fontfamily=constants.DEFAULT_TITLE_FONT, pad=28)
 
         #
         # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE
