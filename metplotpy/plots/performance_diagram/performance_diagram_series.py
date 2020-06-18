@@ -157,9 +157,9 @@ class PerformanceDiagramSeries(Series):
 
                 # Round final PODY and Success ratio values to 2-sig figs
                 # pody_val_2sig = round(pody_val, 2)
-                pody_val_2sig = utils.round_half_up(pody_val, 2)
+                pody_val_2sig = utils.round_half_up(pody_val, 4)
                 # sr_val_2sig = round(sr_val, 2)
-                sr_val_2sig = utils.round_half_up(sr_val, 2)
+                sr_val_2sig = utils.round_half_up(sr_val, 4)
                 pody_list.append(pody_val_2sig)
                 sr_list.append(sr_val_2sig)
                 pody_err_list.append(pody_err)
