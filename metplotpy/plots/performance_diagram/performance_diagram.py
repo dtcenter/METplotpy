@@ -267,10 +267,7 @@ class PerformanceDiagram(MetPlot):
         #            borderaxespad=0., ncol=5, prop={'size': 6}, fancybox=True)
 
         # Legend based on the style settings in the config file.
-        # Use half the y-value of the box position that corresponds
-        # to the legend_inset y value in the yaml config file
-        bbox_y = self.config_obj.bbox_y / 2.0
-        ax2.legend(bbox_to_anchor=(self.config_obj.bbox_x, bbox_y), loc='lower left',
+        ax2.legend(bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y), loc='lower left',
                                ncol=self.config_obj.legend_ncol,
                    prop={'size': self.config_obj.legend_size})
         ax1.xaxis.set_label_coords(0.5, -0.066)
@@ -279,8 +276,9 @@ class PerformanceDiagram(MetPlot):
         if self.config_obj.yaxis_2:
             ax2.set_ylabel(self.config_obj.yaxis_2, fontsize=9)
 
+        # use plt.tight_layout() to prevent label box from scrolling off the figure
+        plt.tight_layout()
         plt.savefig(self.get_config_value('plot_output'))
-        # plt.show()
         self.save_to_file()
 
 
