@@ -5,7 +5,8 @@ title: Performance Diagram ("Default title")
 xaxis: Success Ratio (1 - FAR)
 yaxis_1: Probability of Detection (PODY)
 yaxis_2:
-
+plot_width: 11
+plot_height: 8.5
 plot_ci:
   - none
   - norm
@@ -76,7 +77,7 @@ user_legend:
 # two types supported, 'n' for none and 'o' for box
 legend_box: 'n'
 # number of columns in legend
-legend_ncol: 3
+legend_ncol: 1
 legend_inset:
   x: 0.
   y: -0.14

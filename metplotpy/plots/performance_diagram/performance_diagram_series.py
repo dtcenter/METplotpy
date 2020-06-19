@@ -4,9 +4,24 @@ Class Name: PerformanceDiagramSeries
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
+import warnings
 import metcalcpy.util.utils as utils
-from datetime import datetime
 from plots.series import Series
+
+# To suppress FutureWarning raised by pandas due to
+# standoff between numpy and Python with respect to
+# comparing a string to scalar.  Note, this is also
+# an issue observed in Scikit, matplotlib, and TensorFlow.
+# Workaround solution from Stack Overflow:
+# https://stackoverflow.com/questions/40659212/
+# futurewarning-elementwise-comparison-failed-
+# returning-scalar-but-in-the-futur#46721064
+# and GitHub issue in numpy repo:
+# https://github.com/numpy/numpy/issues/6784
+# warnings.simplefilter(action='ignore', category=FutureWarning)
+# Instead, use pandas' astype to convert what you are comparing
+# to a string, otherwise, you might end up with an empty
+# dataframe and then an empty plot.
 
 class PerformanceDiagramSeries(Series):
     """
@@ -19,6 +34,8 @@ class PerformanceDiagramSeries(Series):
     """
     def __init__(self, config, idx, input_data):
         super().__init__(config, idx, input_data)
+        self.plot_ci = config.plot_ci[idx]
+
 
     def _create_series_points(self):
         """
@@ -33,12 +50,25 @@ class PerformanceDiagramSeries(Series):
         """
 
         input_df = self.input_data
+        series_num = self.series_order
 
         # Calculate the cartesian product of all series_val values as
         # defined in the config file.  These will be used to subset the pandas
         # dataframe input data.  Each permutation corresponds to a series.
         # This permutation corresponds to this series instance.
-        perm = self._create_permutations()
+        perm = utils.create_permutations(self.all_series_vals)
+
+        # Check that the config file has all the settings for each series
+        is_config_consistent = self.config._config_consistency_check()
+        if not is_config_consistent:
+            raise ValueError("The number of series defined by series_val_1 is"
+                             " inconsistent with the number of settings"
+                             " required for describing each series. Please check"
+                             " the number of your configuration file's plot_i,"
+                             " plot_disp, series_order, user_legend,"
+                             " colors, and series_symbols settings.")
+
+        cur_perm = perm[series_num]
 
         # We know that for performance diagrams, we are interested in the
         # fcst_var column of the input data.
@@ -49,8 +79,22 @@ class PerformanceDiagramSeries(Series):
             subset_fcst_var = input_df[input_df[fcst_var_colname] == fcst_var]
 
         # subset based on the permutation of series_val values set in the config file.
-        for i, series_val_name in enumerate(self.series_val_names):
-            subset_series = subset_fcst_var[subset_fcst_var[series_val_name] == perm[i]]
+        # work on a copy of the dataframe
+        subsetted = subset_fcst_var.copy()
+
+        # same number of items in tuple, so sufficient to get
+        # the number of the items in the first tuple.
+        for i, svn in enumerate(self.series_val_names):
+            # match the series value name to
+            # its corresponding permutation value
+            col_str = svn
+            mask_val_str = cur_perm[i]
+            if i == 0:
+                query_str =  col_str + " == " + '"' + mask_val_str + '"'
+            else:
+                query_str = query_str + " and " + col_str +  " == " + '"' + mask_val_str + '"'
+
+        subset_series = subsetted.query(query_str)
 
         # subset based on the stat
         pody_df = subset_series[subset_series['stat_name'] == 'PODY']
@@ -69,16 +113,18 @@ class PerformanceDiagramSeries(Series):
         pody_err_list = []
 
         for indy_val in self.config.indy_vals:
+            # Now we can subset based on the current independent
+            # variable in the list of indy_vals specified
+            # in the config file.
+            indy_val_str = str(indy_val)
 
-            # Convert the datetimes in the indy_val list (from the config file)
-            # to strings so we can compare them to the string representation of
-            # the datetimes in the data file
-            indy_val_str = datetime.strftime(indy_val, "%Y-%m-%d %H:%M:%S")
-
-            # Now we can subset based on the current datetime in the list of
-            # indy_vals specified in the config file.
-            pody_indy = pody_df[pody_df[self.config.indy_var] == indy_val_str]
-            far_indy = far_df[far_df[self.config.indy_var] == indy_val_str]
+            # Convert the indy var values into strings using pandas' astype()
+            pody_df_copy = pody_df.copy()
+            far_df_copy = far_df.copy()
+            pody_df_copy[self.config.indy_var] = pody_df_copy[self.config.indy_var].astype(str)
+            far_df_copy[self.config.indy_var] = far_df_copy[self.config.indy_var].astype(str)
+            pody_indy = pody_df_copy[pody_df_copy[self.config.indy_var] == indy_val_str]
+            far_indy = far_df_copy[far_df_copy[self.config.indy_var] == indy_val_str]
 
             if not pody_indy.empty and not far_indy.empty:
                 # For this time step, use either the sum, mean, or median to
@@ -111,9 +157,9 @@ class PerformanceDiagramSeries(Series):
 
                 # Round final PODY and Success ratio values to 2-sig figs
                 # pody_val_2sig = round(pody_val, 2)
-                pody_val_2sig = utils.round_half_up(pody_val, 2)
+                pody_val_2sig = utils.round_half_up(pody_val, 4)
                 # sr_val_2sig = round(sr_val, 2)
-                sr_val_2sig = utils.round_half_up(sr_val, 2)
+                sr_val_2sig = utils.round_half_up(sr_val, 4)
                 pody_list.append(pody_val_2sig)
                 sr_list.append(sr_val_2sig)
                 pody_err_list.append(pody_err)
