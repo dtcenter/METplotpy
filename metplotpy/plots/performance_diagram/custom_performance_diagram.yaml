@@ -6,14 +6,14 @@ xaxis: Success Ratio
 # support two y-axes
 yaxis_1: Probability of Detection (PODY)
 yaxis_2: ''
-
+legend_ncol: 1
 plot_disp:
   - True
   - True
   - True
 series_order:
-  - 1
   - 2
+  - 1
   - 3
 indy_var: fcst_valid_beg
 indy_vals:
@@ -59,9 +59,12 @@ fcst_var_val_1:
     - PODY
 fcst_var_val_2:
 user_legend:
-  - NH
-  - SH
-  - TROP
+#  - NH
+#  - SH
+#  - TROP
+   - NH
+   - ''
+   - TROP
 
 plot_stat: median
 colors:
@@ -93,5 +96,5 @@ series_line_style:
   # dotted line
   - ":"
 stat_input:  ./plot_20200317_151252.data
-plot_output: /tmp/performance_diagram_default.png
-event_equalize: True
+plot_output: ./performance_diagram_default.png
+event_equalize: False
