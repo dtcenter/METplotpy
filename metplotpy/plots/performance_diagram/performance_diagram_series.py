@@ -161,8 +161,8 @@ class PerformanceDiagramSeries(Series):
                 elif self.config.plot_stat == 'SUM':
                     pody_val = pody_indy['stat_value'].sum()
                     sr_val = 1 - far_indy['stat_value'].sum()
-                    pody_ncl = pody_indy['stat_ncl'].sum()
-                    pody_ncu = pody_indy['stat_ncu'].sum()
+                    pody_ncl = pody_indy[cl_varname].sum()
+                    pody_ncu = pody_indy[cu_varname].sum()
 
 
                 # Calculate the yerr list needed by matplotlib.pyplot's
