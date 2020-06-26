@@ -53,8 +53,9 @@ class PerformanceDiagramSeries(Series):
 
         input_df = self.input_data
         series_num = self.series_order
+
         # Assume we do have confidence data (either
-        # stat_ncl/stat_ncu or stat_bcl/stat_bcu values
+        # stat_ncl/stat_ncu or stat_bcl/stat_bcu values)
         # that are NOT 'NaN'.
         no_confidence_data = False
 
@@ -64,7 +65,7 @@ class PerformanceDiagramSeries(Series):
         # This permutation corresponds to this series instance.
         perm = utils.create_permutations(self.all_series_vals)
 
-        # Check that the config file has all the settings for each series
+        # Check that we have all the necessary settings for each series
         is_config_consistent = self.config._config_consistency_check()
         if not is_config_consistent:
             raise ValueError("The number of series defined by series_val_1 is"
