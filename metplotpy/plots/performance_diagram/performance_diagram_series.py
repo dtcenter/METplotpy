@@ -5,6 +5,7 @@ __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
 import warnings
+import re
 import metcalcpy.util.utils as utils
 from plots.series import Series
 
@@ -101,9 +102,23 @@ class PerformanceDiagramSeries(Series):
 
         subset_series = subsetted.query(query_str)
 
-        # subset based on the stat
-        pody_df = subset_series[subset_series['stat_name'] == 'PODY']
-        far_df = subset_series[subset_series['stat_name'] == 'FAR']
+        # subset based on the stat, since we are generating a performance diagram,
+        # the only two stats we are interested in are PODY and FAR (or NBR_PODY and
+        # NBR_FAR if neighborhood contingency table data is available instead).
+        list_stat = self.config.list_stat_1
+        for i, cur_stat in enumerate(list_stat):
+            # Subset by PODY/NBR_PODY and FAR/NBR_FAR
+            pody_stat_match = re.match(r'.*PODY',cur_stat )
+            far_stat_match = re.match(r'.*FAR', cur_stat)
+            if pody_stat_match:
+                pody_stat = pody_stat_match.group(0)
+                pody_df = subset_series[subset_series['stat_name'] == pody_stat]
+            if far_stat_match:
+                far_stat = far_stat_match.group(0)
+                far_df = subset_series[subset_series['stat_name'] == far_stat]
+
+        # pody_df = subset_series[subset_series['stat_name'] == 'PODY']
+        # far_df = subset_series[subset_series['stat_name'] == 'FAR']
 
         # for Normal Confidence intervals, get the upper and lower confidence
         # interval values and use these to calculate a list of error values to
@@ -123,7 +138,7 @@ class PerformanceDiagramSeries(Series):
             # in the config file.
             indy_val_str = str(indy_val)
 
-            # Convert the indy var values into strings using pandas' astype()
+            # Convert the indy var values into strings using pandas astype()
             pody_df_copy = pody_df.copy()
             far_df_copy = far_df.copy()
             pody_df_copy[self.config.indy_var] = pody_df_copy[self.config.indy_var].astype(str)
