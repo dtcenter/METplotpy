@@ -279,11 +279,11 @@ class PerformanceDiagram(MetPlot):
                     pody_errs = series.series_points[2]
                     # ecolor=None uses the same line color used to connect
                     # the markers
-                    # elinewidth=None uses the same linewidth of the
-                    # current style
+                    # elinewidth explicitly set it to the current linewidth of this
+                    # series line
                     plt.errorbar(sr_points, pody_points, yerr=pody_errs,
                                  color=series.color, ecolor=None, ms=1, capsize=2,
-                                 elinewidth=None)
+                                 elinewidth=self.config_obj.linewidth_list[i])
 
         # example settings, legend is outside of plot along the bottom
         # ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand',
