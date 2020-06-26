@@ -126,6 +126,22 @@ class PerformanceDiagramSeries(Series):
             pody_indy = pody_df_copy[pody_df_copy[self.config.indy_var] == indy_val_str]
             far_indy = far_df_copy[far_df_copy[self.config.indy_var] == indy_val_str]
 
+            # Determine whether we are using aggregated statistics data,
+            # which have stat_bcl and stat_bcu columns, rather than
+            # stat_ncl and stat_ncu columns.
+            # Check for the presence of the stat_bcl column in the
+            # dataframe. If it exists, then we have aggregated
+            # statistics data and we use the stat_bcl and stat_bcu
+            # columns.  Otherwise, we use stat_ncl and stat_ncu
+            # column data.
+            if 'stat_bcl' in subsetted:
+                # aggregated statistics
+                cl_varname = 'stat_bcl'
+                cu_varname = 'stat_bcu'
+            else:
+                cl_varname = 'stat_ncl'
+                cu_varname = 'stat_ncu'
+
             if not pody_indy.empty and not far_indy.empty:
                 # For this time step, use either the sum, mean, or median to
                 # represent the singular value for the
@@ -133,20 +149,20 @@ class PerformanceDiagramSeries(Series):
                 if self.config.plot_stat == 'MEDIAN':
                     pody_val = pody_indy['stat_value'].median()
                     sr_val = 1 - far_indy['stat_value'].median()
-                    pody_ncl = pody_indy['stat_ncl'].median()
-                    pody_ncu = pody_indy['stat_ncu'].median()
+                    pody_ncl = pody_indy[cl_varname].median()
+                    pody_ncu = pody_indy[cu_varname].median()
 
                 elif self.config.plot_stat == 'MEAN':
                     pody_val = pody_indy['stat_value'].mean()
                     sr_val = 1 - far_indy['stat_value'].mean()
-                    pody_ncl = pody_indy['stat_ncl'].mean()
-                    pody_ncu = pody_indy['stat_ncu'].mean()
+                    pody_ncl = pody_indy[cl_varname].mean()
+                    pody_ncu = pody_indy[cu_varname].mean()
 
                 elif self.config.plot_stat == 'SUM':
                     pody_val = pody_indy['stat_value'].sum()
                     sr_val = 1 - far_indy['stat_value'].sum()
-                    pody_ncl = pody_indy['stat_ncl'].sum()
-                    pody_ncu = pody_indy['stat_ncu'].sum()
+                    pody_ncl = pody_indy[cl_varname].sum()
+                    pody_ncu = pody_indy[cu_varname].sum()
 
 
                 # Calculate the yerr list needed by matplotlib.pyplot's

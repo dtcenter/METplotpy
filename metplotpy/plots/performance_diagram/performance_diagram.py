@@ -85,7 +85,15 @@ class PerformanceDiagram(MetPlot):
                  the pandas dataframe representation of the input data file
 
         """
-        return pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
+        df_full = pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
+
+        # Remove any columns that are entirely 'NaN' this will be helpful
+        # in determining whether we have aggregated statistics (stat_bcl and
+        # stat_bcu columns with valid values), or not (stat_ncl and
+        # stat_ncu with valid values).
+        df = df_full.dropna(axis=1, how="all")
+        return df
+
 
     def _create_series(self, input_data):
         """
