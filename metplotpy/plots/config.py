@@ -47,6 +47,10 @@ class Config:
         self.fcst_vars_1 = self._get_fcst_vars(1)
         self.fcst_vars_2 = self._get_fcst_vars(2)
 
+        # Get the list of the statistics of interest
+        self.list_stat_1 = self.get_config_value('list_stat_1')
+        self.list_stat_2 = self.get_config_value('list_stat_2')
+
         # These are the inner values to the series_val setting (these correspond to the
         # keys returned in self.series_vals above).  These are the specific variable values to
         # be used in subsetting the input dataframe (e.g. for key='model', and value='SH_CMORPH',
