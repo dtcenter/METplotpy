@@ -18,7 +18,7 @@ class Series:
         self.idx = idx
         self.input_data = input_data
         self.plot_disp = config.plot_disp[idx]
-        self.plot_stat = config.plot_stat[idx]
+        self.plot_stat = config.plot_stat
         self.color = config.colors_list[idx]
         self.marker = config.marker_list[idx]
         self.linewidth = config.linewidth_list[idx]
