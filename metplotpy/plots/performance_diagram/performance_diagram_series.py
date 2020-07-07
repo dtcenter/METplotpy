@@ -5,8 +5,10 @@ __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
 import warnings
+import re
 import metcalcpy.util.utils as utils
 from plots.series import Series
+
 
 # To suppress FutureWarning raised by pandas due to
 # standoff between numpy and Python with respect to
@@ -32,10 +34,10 @@ class PerformanceDiagramSeries(Series):
         performance diagram.
 
     """
+
     def __init__(self, config, idx, input_data):
         super().__init__(config, idx, input_data)
         self.plot_ci = config.plot_ci[idx]
-
 
     def _create_series_points(self):
         """
@@ -52,13 +54,18 @@ class PerformanceDiagramSeries(Series):
         input_df = self.input_data
         series_num = self.series_order
 
+        # Assume we do have confidence data (either
+        # stat_ncl/stat_ncu or stat_bcl/stat_bcu values)
+        # that are NOT 'NaN'.
+        no_confidence_data = False
+
         # Calculate the cartesian product of all series_val values as
         # defined in the config file.  These will be used to subset the pandas
         # dataframe input data.  Each permutation corresponds to a series.
         # This permutation corresponds to this series instance.
         perm = utils.create_permutations(self.all_series_vals)
 
-        # Check that the config file has all the settings for each series
+        # Check that we have all the necessary settings for each series
         is_config_consistent = self.config._config_consistency_check()
         if not is_config_consistent:
             raise ValueError("The number of series defined by series_val_1 is"
@@ -90,15 +97,29 @@ class PerformanceDiagramSeries(Series):
             col_str = svn
             mask_val_str = cur_perm[i]
             if i == 0:
-                query_str =  col_str + " == " + '"' + mask_val_str + '"'
+                query_str = col_str + " == " + '"' + mask_val_str + '"'
             else:
-                query_str = query_str + " and " + col_str +  " == " + '"' + mask_val_str + '"'
+                query_str = query_str + " and " + col_str + " == " + '"' + mask_val_str + '"'
 
         subset_series = subsetted.query(query_str)
 
-        # subset based on the stat
-        pody_df = subset_series[subset_series['stat_name'] == 'PODY']
-        far_df = subset_series[subset_series['stat_name'] == 'FAR']
+        # subset based on the stat, since we are generating a performance diagram,
+        # the only two stats we are interested in are PODY and FAR (or NBR_PODY and
+        # NBR_FAR if neighborhood contingency table data is available instead).
+        list_stat = self.config.list_stat_1
+        for i, cur_stat in enumerate(list_stat):
+            # Subset by PODY/NBR_PODY and FAR/NBR_FAR
+            pody_stat_match = re.match(r'.*PODY',cur_stat )
+            far_stat_match = re.match(r'.*FAR', cur_stat)
+            if pody_stat_match:
+                pody_stat = pody_stat_match.group(0)
+                pody_df = subset_series[subset_series['stat_name'] == pody_stat]
+            if far_stat_match:
+                far_stat = far_stat_match.group(0)
+                far_df = subset_series[subset_series['stat_name'] == far_stat]
+
+        # pody_df = subset_series[subset_series['stat_name'] == 'PODY']
+        # far_df = subset_series[subset_series['stat_name'] == 'FAR']
 
         # for Normal Confidence intervals, get the upper and lower confidence
         # interval values and use these to calculate a list of error values to
@@ -118,7 +139,7 @@ class PerformanceDiagramSeries(Series):
             # in the config file.
             indy_val_str = str(indy_val)
 
-            # Convert the indy var values into strings using pandas' astype()
+            # Convert the indy var values into strings using pandas astype()
             pody_df_copy = pody_df.copy()
             far_df_copy = far_df.copy()
             pody_df_copy[self.config.indy_var] = pody_df_copy[self.config.indy_var].astype(str)
@@ -142,28 +163,52 @@ class PerformanceDiagramSeries(Series):
                 cl_varname = 'stat_ncl'
                 cu_varname = 'stat_ncu'
 
+            # Check if we are missing the stat_bcl and stat_ncl
+            # columns.  These will be missing if all values
+            # in these columns are NaN.
+            if ('stat_bcl' not in pody_indy) and ('stat_ncl' not in pody_indy):
+                no_confidence_data = True
+
+            # the stat_value column can consist of some NA values.
+            # drop the rows that have NA so they don't get treated
+            # as NaN's by python.
+            pody_indy = pody_indy.dropna(axis=0, how='any')
+            far_indy = far_indy.dropna(axis=0, how='any')
             if not pody_indy.empty and not far_indy.empty:
                 # For this time step, use either the sum, mean, or median to
                 # represent the singular value for the
                 # statistic of interest.
+
                 if self.config.plot_stat == 'MEDIAN':
                     pody_val = pody_indy['stat_value'].median()
                     sr_val = 1 - far_indy['stat_value'].median()
-                    pody_ncl = pody_indy[cl_varname].median()
-                    pody_ncu = pody_indy[cu_varname].median()
+                    if no_confidence_data:
+                        pody_ncl = pody_ncu = 0.
+                        print("No available confidence level data")
+                    else:
+                        pody_ncl = pody_indy[cl_varname].median()
+                        pody_ncu = pody_indy[cu_varname].median()
+
 
                 elif self.config.plot_stat == 'MEAN':
                     pody_val = pody_indy['stat_value'].mean()
                     sr_val = 1 - far_indy['stat_value'].mean()
-                    pody_ncl = pody_indy[cl_varname].mean()
-                    pody_ncu = pody_indy[cu_varname].mean()
+                    if no_confidence_data:
+                        pody_ncl = pody_ncu = 0.
+                        print("No available confidence level data")
+                    else:
+                        pody_ncl = pody_indy[cl_varname].mean()
+                        pody_ncu = pody_indy[cu_varname].mean()
 
                 elif self.config.plot_stat == 'SUM':
                     pody_val = pody_indy['stat_value'].sum()
                     sr_val = 1 - far_indy['stat_value'].sum()
-                    pody_ncl = pody_indy[cl_varname].sum()
-                    pody_ncu = pody_indy[cu_varname].sum()
-
+                    if no_confidence_data:
+                        pody_ncl = pody_ncu = 0.
+                        print("No available confidence level data")
+                    else:
+                        pody_ncl = pody_indy[cl_varname].sum()
+                        pody_ncu = pody_indy[cu_varname].sum()
 
                 # Calculate the yerr list needed by matplotlib.pyplot's
                 # errorbar() method. These values are the lengths of the error bars,
