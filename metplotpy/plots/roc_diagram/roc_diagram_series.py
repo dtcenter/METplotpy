@@ -4,7 +4,7 @@ Class Name: ROCDiagramSeries
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
-import metcalcpy.util.utils as cp_utils
+import metcalcpy.util.ctc_statistics as cstats
 import metcalcpy.util.pstd_statistics as pstats
 from plots.series import Series
 
@@ -37,15 +37,20 @@ class ROCDiagramSeries(Series):
         """
         if self.config.linetype_ctc:
             print('do stuff for ctc using calcpy util')
-
+            df_roc = cstats.calculate_ctc_roc(self.input_data)
+            pody = df_roc['pody']
+            pofd = df_roc['pofd']
+            thresh = df_roc['thresh']
+            return pofd, pody, thresh
 
 
         elif self.config.linetype_pct:
             roc_df = pstats._calc_pct_roc(self.input_data)
 
             pody = roc_df['pody']
-            podf = roc_df['pofd']
+            print(f'type of pody for PCT: {type(pody)}')
+            pofd = roc_df['pofd']
             thresh = roc_df['thresh']
-            return podf, pody, thresh
+            return pofd, pody, thresh
         else:
             raise ValueError('error neither ctc or pct linetype ')
