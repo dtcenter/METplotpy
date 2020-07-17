@@ -133,13 +133,13 @@ class PerformanceDiagram(MetPlot):
 
     def remove_file(self):
         """
-           Removes previously made image file .  Invoked by the parent class before self.output_file
+           Removes previously made image file.  Invoked by the parent class before self.output_file
            attribute can be created.
         """
 
-        image_name = self.get_config_value('plot_output')
+        image_name = self.get_config_value('plot_filename')
 
-        # remove the old file if it exist
+        # remove the old file if it exists
         if os.path.exists(image_name):
             os.remove(image_name)
 
@@ -301,7 +301,7 @@ class PerformanceDiagram(MetPlot):
 
         # use plt.tight_layout() to prevent label box from scrolling off the figure
         plt.tight_layout()
-        plt.savefig(self.get_config_value('plot_output'))
+        plt.savefig(self.get_config_value('plot_filename'))
         self.save_to_file()
 
 
