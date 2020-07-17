@@ -335,7 +335,7 @@ class MetPlot:
             print("Oops!  The figure was not created. Can't save.")
 
     def remove_file(self):
-        """Removes previously made  image file .
+        """Removes previously made image file .
         """
         image_name = self.get_config_value('image_name')
 
