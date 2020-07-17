@@ -111,7 +111,7 @@ class ROCDiagram(MetPlot):
            attribute can be created, but overridden here.
         """
 
-        image_name = self.get_config_value('plot_output')
+        image_name = self.get_config_value('plot_filename')
 
         # remove the old file if it exist
         if os.path.exists(image_name):
@@ -131,25 +131,12 @@ class ROCDiagram(MetPlot):
              ROC diagram
         """
 
-        # This creates a figure of height and width as specified by the user
-        # fig = plt.figure(figsize=[self.config_obj.plot_height, self.config_obj.plot_width],
-        #                  dpi=self.config_obj.plot_resolution)
-        #
-        # ax1 = fig.add_subplot()
-        # ax2 = ax1.twinx()
-        # ax1.set_ylim(0.0, 1.0)
-        # ax2.set_ylim(0.0, 1.0)
-        # ax1.set_xlim(0.0, 1.0)
-        # plt.title(self.config_obj.title, fontsize=constants.DEFAULT_TITLE_FONTSIZE,
-        #           color=constants.DEFAULT_TITLE_COLOR, fontweight="bold",
-        #           fontfamily=constants.DEFAULT_TITLE_FONT)
-        # ax1.set_xlabel(self.config_obj.xaxis)
-        # ax1.set_ylabel(self.config_obj.yaxis_1)
-        # ax2.set_ylabel(self.config_obj.yaxis_2)
-        #
-
         fig = make_subplots(specs=[[{"secondary_y": True}]])
 
+        # TODO
+        # Implement support for converting height and width in inches to
+        # number of pixels
+        # fig.update_layout(width=500, height=500, paper_bgcolor="white")
         # Add figure title
         fig.update_layout(
             title={'text': self.config_obj.title,
@@ -206,6 +193,10 @@ class ROCDiagram(MetPlot):
                                       borderwidth=2
                                       ))
         thresh_list = []
+
+        # "Dump" False Detection Rate (POFD) and PODY points to an output
+        # file based on the output image filename (useful in debugging)
+        self.write_output_file()
 
         for idx, series in enumerate(self.series_list):
             for i, thresh_val in enumerate(series.series_points[2]):
