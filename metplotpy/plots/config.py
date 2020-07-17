@@ -22,7 +22,7 @@ class Config:
         #
         # Configuration settings that apply to the plot
         #
-        self.output_image = self.get_config_value('plot_output')
+        self.output_image = self.get_config_value('plot_filename')
         self.title_font = constants.DEFAULT_TITLE_FONT
         self.title_color = constants.DEFAULT_TITLE_COLOR
         self.xaxis = self.get_config_value('xaxis')
@@ -33,6 +33,26 @@ class Config:
         self.indy_vals = self.get_config_value('indy_vals')
         self.indy_var = self.get_config_value('indy_var')
 
+        # legend style settings as defined in METviewer
+        user_settings = self._get_legend_style()
+
+        # list of the x, y, and loc values for the
+        # bbox_to_anchor() setting used in determining
+        # the location of the bounding box which defines
+        # the legend.
+        self.bbox_x = float(user_settings['bbox_x'])
+        self.bbox_y = float(user_settings['bbox_y'])
+        legend_magnification = user_settings['legend_size']
+        self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
+        self.legend_ncol = self.get_config_value('legend_ncol')
+        legend_box = self.get_config_value('legend_box').lower()
+        if legend_box == 'n':
+            # Don't draw a box around legend labels
+            self.draw_box = False
+        else:
+            # Other choice is 'o'
+            # Enclose legend labels in a box
+            self.draw_box = True
 
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
@@ -251,8 +271,7 @@ class Config:
 
     def _get_markers(self):
         """
-           Retrieve all the markers, the order and number correspond to the number
-           of series_order, user_legends, and number of series.
+           Retrieve all the markers.
 
            Args:
 
@@ -260,9 +279,19 @@ class Config:
                markers: a list of the markers
         """
         markers = self.get_config_value('series_symbols')
-        markers_list = [m for m in markers]
+        markers_list = []
+        for marker in markers:
+            if marker in constants.AVAILABLE_MARKERS_LIST:
+                # markers is the matplotlib symbol: .,o, ^, d, H, or s
+                markers_list.append(marker)
+            else:
+                # markers are indicated by name: small circle, circle, triangle,
+                # diamond, hexagon, square
+                m = marker.lower()
+                markers_list.append(constants.PCH_TO_MATPLOTLIB_MARKER[m])
         markers_list_ordered = self.create_list_by_series_ordering(markers_list)
         return markers_list_ordered
+
 
     def _get_linewidths(self):
         """ Retrieve all the linewidths from the configuration file, if not
@@ -347,6 +376,47 @@ class Config:
 
         legends_list_ordered = self.create_list_by_series_ordering(ll_list)
         return legends_list_ordered
+
+    def _get_plot_resolution(self):
+        """
+            Retrieve the plot_res and plot_unit to determine the dpi
+            setting in matplotlib.
+
+            Args:
+
+            Returns:
+                plot resolution in units of dpi (dots per inch)
+
+        """
+        # Initialize to the default resolution
+        # set by matplotlib
+        dpi = 100
+
+        # first check if plot_res is set in config file
+        if self.get_config_value('plot_res'):
+            resolution = self.get_config_value('plot_res')
+
+            # check if the units value has been set in the config file
+            if self.get_config_value('plot_units'):
+                units = self.get_config_value('plot_units').lower()
+                if units == 'in':
+                    return resolution
+                elif units == 'mm':
+                    # convert mm to inches so we can
+                    # set dpi value
+                    return resolution * constants.MM_TO_INCHES
+                else:
+                    # units not supported, assume inches
+                    return resolution
+            else:
+                # units not indicated, assume
+                # we are dealing with inches
+                return resolution
+        else:
+            # no plot_res value is set, return the default
+            # dpi used by matplotlib
+            return dpi
+
 
     def create_list_by_series_ordering(self, setting_to_order):
         """
