@@ -148,7 +148,6 @@ class ROCDiagram(MetPlot):
         # ax2.set_ylabel(self.config_obj.yaxis_2)
         #
 
-
         fig = make_subplots(specs=[[{"secondary_y": True}]])
 
         # Add figure title
@@ -170,9 +169,9 @@ class ROCDiagram(MetPlot):
         # Set y-axes titles
         # fig.update_yaxes(title_text="<b>primary</b> yaxis title", secondary_y=False)
         fig.update_yaxes(title_text=self.config_obj.yaxis_1, secondary_y=False, linecolor="black", linewidth=2,
-                         showgrid=False, zeroline=False, range=[0.0,1.0])
+                         showgrid=False, zeroline=False, range=[0.0, 1.0])
         fig.update_yaxes(title_text=self.config_obj.yaxis_2, secondary_y=True, linecolor="black", linewidth=2,
-                         showgrid=False, zeroline=False, range=[0.0,1.0])
+                         showgrid=False, zeroline=False, range=[0.0, 1.0])
 
         # plot the no-skill line
         x = [0., 1.]
@@ -200,23 +199,13 @@ class ROCDiagram(MetPlot):
 
         # can't support number of columns in legend, can only choose
         # between horizontal or vertical alignment of legend labels
-        if self.config_obj.legend_ncol > 1:
-            # horizontal (multiple columns)
-            fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
-                                          y=self.config_obj.bbox_y,
-                                          bordercolor="black",
-                                          orientation="h",
-                                          borderwidth=2
-                                          ))
-        else:
-            # vertical (one column)
-            fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
-                                          y=self.config_obj.bbox_y,
-                                          bordercolor="black",
-                                          borderwidth=2
-                                          ))
+        # so only support vertical legends (ie num columns = 1)
+        fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
+                                      y=self.config_obj.bbox_y,
+                                      bordercolor="black",
+                                      borderwidth=2
+                                      ))
         thresh_list = []
-
 
         for idx, series in enumerate(self.series_list):
             for i, thresh_val in enumerate(series.series_points[2]):
@@ -227,30 +216,14 @@ class ROCDiagram(MetPlot):
             if series.plot_disp:
                 pofd_points = series.series_points[0]
                 pody_points = series.series_points[1]
+                legend_label = self.config_obj.user_legends[idx]
                 fig.add_trace(
-                    go.Scatter(x=pofd_points, y=pody_points, mode="lines+markers+text", showlegend=True,text=thresh_list, textposition="top right"),
+                    go.Scatter(x=pofd_points, y=pody_points, mode="lines+markers+text", showlegend=True,
+                               text=thresh_list, textposition="top right", name=legend_label),
                     secondary_y=False
                 )
 
-
-                # for idx, thresh_val in enumerate(thresh):
-                #     plt.annotate(str(thresh_val),
-                #                  (pofd_points[idx], pody_points[idx]), fontsize=9)
-
-            # plt.plot(pofd_points, pody_points)
             return fig
-
-    def abline(self, slope, intercept, axes):
-        """
-            R has abline(), matplotlib does not have this function.
-            This is a solution from StackOverflow...
-            Plot a line from slope and intercept
-        """
-        # axes = plt.gca()
-        x_vals = np.array(axes.get_xlim())
-        y_vals = intercept + slope * x_vals
-        # plt.plot(x_vals, y_vals, '--')
-        # plt.plot(x_vals, y_vals, color='grey', linestyle='--', alpha=0.3, linewidth=1.2)
 
     def save_to_file(self):
         """Saves the image to a file specified in the config file.
