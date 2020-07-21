@@ -228,6 +228,7 @@ class ROCDiagram(MetPlot):
         if self.figure:
             try:
                 self.figure.write_image(image_name)
+
             except FileNotFoundError:
                 print("Can't save to file " + image_name)
             except ValueError as ex:
@@ -302,7 +303,7 @@ def main():
     try:
         r = ROCDiagram(docs)
         r.save_to_file()
-        r.show_in_browser()
+        # r.show_in_browser()
     except ValueError as ve:
         print(ve)
 
