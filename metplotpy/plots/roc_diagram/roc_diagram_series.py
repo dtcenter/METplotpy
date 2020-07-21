@@ -36,7 +36,6 @@ class ROCDiagramSeries(Series):
 
         """
         if self.config.linetype_ctc:
-            print('do stuff for ctc using calcpy util')
             df_roc = cstats.calculate_ctc_roc(self.input_data)
             pody = df_roc['pody']
             pofd = df_roc['pofd']
@@ -48,7 +47,6 @@ class ROCDiagramSeries(Series):
             roc_df = pstats._calc_pct_roc(self.input_data)
 
             pody = roc_df['pody']
-            print(f'type of pody for PCT: {type(pody)}')
             pofd = roc_df['pofd']
             thresh = roc_df['thresh']
             return pofd, pody, thresh
