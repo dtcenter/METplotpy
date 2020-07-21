@@ -5,6 +5,7 @@ __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
 import os
+import re
 import yaml
 import pandas as pd
 import numpy as np
@@ -108,7 +109,7 @@ class ROCDiagram(MetPlot):
            attribute can be created, but overridden here.
         """
 
-        image_name = self.get_config_value('plot_output')
+        image_name = self.get_config_value('plot_filename')
 
         # remove the old file if it exist
         if os.path.exists(image_name):
@@ -151,6 +152,10 @@ class ROCDiagram(MetPlot):
         self.abline(1.0, 0.0, ax1)
         plt.tight_layout()
 
+        # "Dump" False Detection Rate (POFD) and PODY points to an output
+        # file based on the output image filename (useful in debugging)
+        self.write_output_file()
+
         for idx, series in enumerate(self.series_list):
 
             # Don't generate the plot for this series if
@@ -174,6 +179,7 @@ class ROCDiagram(MetPlot):
 
         self.save_to_file()
 
+
     def abline(self, slope, intercept, axes):
         """
             R has abline(), matplotlib does not have this function.
@@ -186,6 +192,7 @@ class ROCDiagram(MetPlot):
         # plt.plot(x_vals, y_vals, '--')
         plt.plot(x_vals, y_vals, color='grey', linestyle='--', alpha=0.3, linewidth=1.2)
 
+
     def save_to_file(self):
         """
           This is the matplotlib-friendly implementation, which overrides the parent class'
@@ -193,6 +200,52 @@ class ROCDiagram(MetPlot):
 
         """
         plt.savefig(self.config_obj.output_image)
+
+    def write_output_file(self):
+        """
+            Writes the POFD (False alarm ratio) and PODY data points that are
+            being plotted
+
+        """
+
+        # Open file, name it based on the stat_input config setting,
+        # (the input data file) except replace the .data
+        # extension with .points1 extension
+        input_filename = self.config_obj.stat_input
+        match = re.match(r'(.*)(.data)', input_filename)
+        if match:
+            filename_only = match.group(1)
+            output_file = filename_only + ".points1"
+
+            # make sure this file doesn't already
+            # exit, delete it if it does
+            try:
+                if os.stat(output_file).st_size == 0:
+                    fileobj = open(output_file, 'a')
+                else:
+                    os.remove(output_file)
+            except FileNotFoundError as fnfe:
+                # OK if no file was found
+                pass
+
+            fileobj = open(output_file, 'a')
+            header_str = "pofd\t pody\n"
+            fileobj.write(header_str)
+            all_pody = []
+            all_pofd = []
+            for series in self.series_list:
+                pody_points = series.series_points[1]
+                pofd_points = series.series_points[0]
+                all_pody.extend(pody_points)
+                all_pofd.extend(pofd_points)
+
+            all_points = zip(all_pofd, all_pody)
+            for idx, pts in enumerate(all_points):
+                data_str = str(pts[0]) + "\t" + str(pts[1]) + "\n"
+                fileobj.write(data_str)
+
+            fileobj.close()
+
 
 def main():
     """
