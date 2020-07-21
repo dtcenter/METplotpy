@@ -8,11 +8,10 @@ import os
 import yaml
 import re
 import pandas as pd
-import numpy as np
 import plotly
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import constants
+
 
 import plots.util as util
 from plots.met_plot import MetPlot
@@ -225,7 +224,7 @@ class ROCDiagram(MetPlot):
         Returns:
 
         """
-        image_name = self.get_config_value('plot_output')
+        image_name = self.get_config_value('plot_filename')
         if self.figure:
             try:
                 self.figure.write_image(image_name)
