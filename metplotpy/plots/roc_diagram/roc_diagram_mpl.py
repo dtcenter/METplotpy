@@ -10,7 +10,7 @@ import yaml
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import constants
+import plots.constants as constants
 
 import plots.util as util
 from plots.met_plot import MetPlot
