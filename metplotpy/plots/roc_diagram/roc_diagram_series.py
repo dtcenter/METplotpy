@@ -54,8 +54,14 @@ class ROCDiagramSeries(Series):
             roc_df = pstats._calc_pct_roc(self.input_data)
 
             pody = roc_df['pody']
+            pody = pd.Series([1]).append(pody, ignore_index=True)
+            pody = pody.append(pd.Series([0]), ignore_index=True)
             pofd = roc_df['pofd']
+            pofd = pd.Series([1]).append(pofd, ignore_index=True)
+            pofd = pofd.append(pd.Series([0]), ignore_index=True)
             thresh = roc_df['thresh']
+            thresh = pd.Series(['']).append(thresh, ignore_index=True)
+            thresh = thresh.append(pd.Series(['']), ignore_index=True)
             return pofd, pody, thresh
         else:
             raise ValueError('error neither ctc or pct linetype ')
