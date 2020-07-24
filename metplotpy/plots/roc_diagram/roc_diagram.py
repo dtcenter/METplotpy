@@ -42,7 +42,7 @@ class ROCDiagram(MetPlot):
         # init common layout
         super().__init__(parameters, default_conf_filename)
 
-        # instantiate a PerformanceDiagramConfig object, which holds all the necessary settings from the
+        # instantiate a ROCDiagramConfig object, which holds all the necessary settings from the
         # config file.
         self.config_obj = ROCDiagramConfig(parameters)
 
@@ -158,6 +158,10 @@ class ROCDiagram(MetPlot):
                          showgrid=False, zeroline=False, range=[0.0, 1.0])
         fig.update_yaxes(title_text=self.config_obj.yaxis_2, secondary_y=True, linecolor="black", linewidth=2,
                          showgrid=False, zeroline=False, range=[0.0, 1.0])
+
+        # set the range of the x-axis and y-axis to range from 0 to 1
+        fig.update_layout(xaxis=dict(range=[0., 1.]))
+        fig.update_layout(yaxis=dict(range=[0., 1.]))
 
         # plot the no-skill line
         x = [0., 1.]
@@ -303,7 +307,7 @@ def main():
     try:
         r = ROCDiagram(docs)
         r.save_to_file()
-        # r.show_in_browser()
+        r.show_in_browser()
     except ValueError as ve:
         print(ve)
 
