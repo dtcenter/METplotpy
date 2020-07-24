@@ -4,6 +4,7 @@ Class Name: ROCDiagramSeries
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
+import pandas as pd
 import metcalcpy.util.ctc_statistics as cstats
 import metcalcpy.util.pstd_statistics as pstats
 from plots.series import Series
@@ -38,8 +39,14 @@ class ROCDiagramSeries(Series):
         if self.config.linetype_ctc:
             df_roc = cstats.calculate_ctc_roc(self.input_data)
             pody = df_roc['pody']
+            pody = pd.Series([1]).append(pody, ignore_index=True)
+            pody = pody.append(pd.Series([0]), ignore_index=True)
             pofd = df_roc['pofd']
+            pofd = pd.Series([1]).append(pofd, ignore_index=True)
+            pofd = pofd.append(pd.Series([0]), ignore_index=True)
             thresh = df_roc['thresh']
+            thresh = pd.Series(['']).append(thresh, ignore_index=True)
+            thresh = thresh.append(pd.Series(['']), ignore_index=True)
             return pofd, pody, thresh
 
 
@@ -47,8 +54,14 @@ class ROCDiagramSeries(Series):
             roc_df = pstats._calc_pct_roc(self.input_data)
 
             pody = roc_df['pody']
+            pody = pd.Series([1]).append(pody, ignore_index=True)
+            pody = pody.append(pd.Series([0]), ignore_index=True)
             pofd = roc_df['pofd']
+            pofd = pd.Series([1]).append(pofd, ignore_index=True)
+            pofd = pofd.append(pd.Series([0]), ignore_index=True)
             thresh = roc_df['thresh']
+            thresh = pd.Series(['']).append(thresh, ignore_index=True)
+            thresh = thresh.append(pd.Series(['']), ignore_index=True)
             return pofd, pody, thresh
         else:
             raise ValueError('error neither ctc or pct linetype ')
