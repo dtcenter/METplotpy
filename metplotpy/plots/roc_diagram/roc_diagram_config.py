@@ -56,7 +56,7 @@ class ROCDiagramConfig(Config):
         self.marker_list = self._get_markers()
         self.linewidth_list = self._get_linewidths()
         self.linestyles_list = self._get_linestyles()
-        self.user_legends = self._get_user_legends()
+        self.user_legends = self._get_user_legends("ROC Curve")
         self.add_point_thresholds = self._get_point_thresh()
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
