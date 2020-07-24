@@ -483,3 +483,48 @@ class Config:
             ordered_settings_list.append(setting_to_order[loc])
 
         return ordered_settings_list
+
+
+    def calculate_plot_dimension(self, config_value, output_units):
+        '''
+           To calculate the width or height that defines the size of the plot.
+           Matplotlib defines these values in inches, Python plotly defines these
+           in terms of pixels.  METviewer accepts units of inches or mm for width and
+           height, so conversion from mm to inches or mm to pixels is necessary, depending
+           on the requested output units, output_units.
+
+           Args:
+              @param config_value:  The plot dimension to convert, either a width or height, in inches or mm
+              @param output_units: pixels or in (inches) to indicate which
+                                   units to use to define plot size. Python plotly uses pixels and
+                                   Matplotlib uses inches.
+           Returns:
+             converted_value : converted value from in/mm to pixels or mm to inches based on input values
+        '''
+        value2convert = self.get_config_value(config_value)
+        resolution = self.get_config_value('plot_res')
+        units = self.get_config_value('plot_units')
+
+        # convert to pixels
+        # plotly uses pixels for setting plot size (width and height)
+        if output_units.lower() == 'pixels':
+            if units.lower() == 'in':
+                # value in pixels
+                converted_value = int(resolution * value2convert)
+            elif units.lower() == 'mm':
+                # Convert mm to pixels
+                converted_value = int(resolution * value2convert * constants.MM_TO_INCHES)
+
+        # Matplotlib uses inches (in) for setting plot size (width and height)
+        elif output_units.lower() == 'in':
+            if units.lower() == 'mm':
+                # Convert mm to inches
+                converted_value = value2convert * constants.MM_TO_INCHES
+            else:
+                converted_value = value2convert
+
+        # plotly does not allow any value smaller than 10 pixels
+        if output_units.lower() == 'pixels' and converted_value < 10:
+            converted_value = 10
+
+        return converted_value
