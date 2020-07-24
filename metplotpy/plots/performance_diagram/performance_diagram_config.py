@@ -43,7 +43,7 @@ class PerformanceDiagramConfig(Config):
         self.marker_list = self._get_markers()
         self.linewidth_list = self._get_linewidths()
         self.linestyles_list = self._get_linestyles()
-        self.user_legends = self._get_user_legends()
+        self.user_legends = self._get_user_legends("Performance")
         self.plot_width = self.get_config_value('plot_width')
         self.plot_height = self.get_config_value('plot_height')
 
