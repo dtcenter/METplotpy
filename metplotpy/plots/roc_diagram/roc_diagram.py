@@ -43,8 +43,8 @@ class ROCDiagram(MetPlot):
         super().__init__(parameters, default_conf_filename)
 
         # instantiate a ROCDiagramConfig object, which holds all the necessary settings from the
-        # config file.
-        self.config_obj = ROCDiagramConfig(parameters)
+        # config file that represents the MetPlot object (ROC diagram).
+        self.config_obj = ROCDiagramConfig(self.parameters)
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
@@ -132,10 +132,12 @@ class ROCDiagram(MetPlot):
 
         fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-        # TODO
-        # Implement support for converting height and width in inches to
-        # number of pixels
-        # fig.update_layout(width=500, height=500, paper_bgcolor="white")
+        # Set plot height and width in pixel value
+        width = self.config_obj.plot_width
+        height = self.config_obj.plot_height
+        # fig.update_layout(width=width, height=height, paper_bgcolor="white")
+        fig.update_layout(width=width, height=height)
+
         # Add figure title
         fig.update_layout(
             title={'text': self.config_obj.title,
