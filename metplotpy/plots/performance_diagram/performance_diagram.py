@@ -172,7 +172,7 @@ class PerformanceDiagram(MetPlot):
             and equal lines of bias
         """
 
-        # This creates a figure size that is of a "reasonable" size
+        # This creates a figure size that is of a "reasonable" size, in inches
         fig = plt.figure(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
 
