@@ -32,6 +32,9 @@ class Config:
         self.use_ee = self.get_config_value('event_equalize')
         self.indy_vals = self.get_config_value('indy_vals')
         self.indy_var = self.get_config_value('indy_var')
+        self.show_plot_in_browser = self.get_config_value('show_plot_in_browser')
+        self.plot_width = self.get_config_value('plot_width')
+        self.plot_height = self.get_config_value('plot_height')
 
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
@@ -322,12 +325,15 @@ class Config:
         return linestyle_list_ordered
 
 
-    def _get_user_legends(self):
+    def _get_user_legends(self, legend_label_type):
         """
            Retrieve the text that is to be displayed in the legend at the bottom of the plot.
            Each entry corresponds to a series.
 
            Args:
+               @parm legend_label_type:  The legend label, such as 'Performance' that indicates
+                                    the type of series line. Used when the user hasn't
+                                    indicated a legend.
 
            Returns:
                a list consisting of the series label to be displayed in the plot legend.
@@ -337,13 +343,14 @@ class Config:
 
         # for legend labels that aren't set (ie in conf file they are set to '')
         # create a legend label based on the permutation of the series names
-        # appended by 'Performance'.  For example, for:
+        # appended by 'user_legend label'.  For example, for:
         #     series_val_1:
         #        model:
         #          - NoahMPv3.5.1_d01
         #        vx_mask:
         #          - CONUS
         # The constructed legend label will be "NoahMPv3.5.1_d01 CONUS Performance"
+
 
         # Check for empty list as setting in the config file
         legends_list = []
@@ -365,9 +372,11 @@ class Config:
         for idx,ll in enumerate(legends_list):
             if ll == ' ':
                 if len(series_list) > 1:
-                    label_parts = [perms[idx][0], ' ', perms[idx][1], " Performance"]
+                    # label_parts = [perms[idx][0], ' ', perms[idx][1], " Performance"]
+                    label_parts = [perms[idx][0], ' ', perms[idx][1], ' ', legend_label_type]
+
                 else:
-                    label_parts = [perms[idx][0], ' Performance']
+                    label_parts = [perms[idx][0], ' ', legend_label_type]
                 legend_label = ''.join(label_parts)
 
                 ll_list.append(legend_label)
