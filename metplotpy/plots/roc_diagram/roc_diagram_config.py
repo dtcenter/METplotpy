@@ -42,8 +42,8 @@ class ROCDiagramConfig(Config):
         # Supported values for stat_curve are none, mean, and median
         self.stat_curve = self.get_config_value('stat_curve')
         self.add_threshold_pts = self.get_config_value('add_pt_thresh')
-        self.plot_width = self.get_config_value('plot_width')
-        self.plot_height = self.get_config_value('plot_height')
+        self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
+        self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
         self.plot_resolution = self._get_plot_resolution()
         self.caption = self.get_config_value('plot_caption')
         self.caption_weight = self.get_config_value('caption_weight')
@@ -78,6 +78,8 @@ class ROCDiagramConfig(Config):
             # Other choice is 'o'
             # Enclose legend labels in a box
             self.draw_box = True
+
+
 
     def _get_series_order(self):
         """
@@ -125,7 +127,7 @@ class ROCDiagramConfig(Config):
 
         """
         if self.get_config_value('add_point_thresholds'):
-            response = self.get_config_value('add_point_thresholds').lower()
+            response = self.get_config_value('add_point_thresholds')
             if response == "true":
                 return True
             else:
