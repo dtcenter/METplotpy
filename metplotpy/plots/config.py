@@ -167,7 +167,10 @@ class Config:
         if index == 1:
             # evaluate series_val_1 setting
             series_val_dict = self.get_config_value('series_val_1')
-            val_dict_list = [*series_val_dict.values()]
+            if series_val_dict:
+               val_dict_list = [*series_val_dict.values()]
+            else:
+                val_dict_list = []
         elif index == 2:
             # evaluate series_val_2 setting
             # check for empty setting. If so, return an empty list
@@ -230,9 +233,13 @@ class Config:
 
         series_val_dict = self.get_config_value('series_val_1')
 
+
         # Unpack and access the values corresponding to the inner keys
         # (series_var1, series_var2, ..., series_varn).
-        return [*series_val_dict.keys()]
+        if series_val_dict:
+           return [*series_val_dict.keys()]
+        else:
+           return []
 
     def calculate_number_of_series(self):
         """
@@ -368,6 +375,13 @@ class Config:
 
         ll_list = []
         series_list = self.all_series_vals
+
+        # Some diagrams don't require a series_val1 value, hence
+        # resulting in a zero-sized series_list.  In this case,
+        # the legend label will just be the legend_label_type.
+        if len(series_list) == 0:
+            return [legend_label_type]
+
         perms = utils.create_permutations(series_list)
         for idx,ll in enumerate(legends_list):
             if ll == ' ':
