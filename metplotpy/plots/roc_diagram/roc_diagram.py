@@ -12,7 +12,6 @@ import plotly
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-
 import plots.util as util
 from plots.met_plot import MetPlot
 from roc_diagram_config import ROCDiagramConfig
@@ -213,12 +212,27 @@ class ROCDiagram(MetPlot):
                 pofd_points = series.series_points[0]
                 pody_points = series.series_points[1]
                 legend_label = self.config_obj.user_legends[idx]
+
+                # add the plot
                 fig.add_trace(
-                    go.Scatter(x=pofd_points, y=pody_points, mode="lines+markers+text", showlegend=True,
+                    go.Scatter(x=pofd_points, y=pody_points, showlegend=True,
                                text=thresh_list, textposition="top right", name=legend_label),
                     secondary_y=False
                 )
 
+            def add_trace_copy(trace):
+                """Adds separate traces for markers and a legend.
+                   This is a fix for not printing 'Aa' in the legend
+                    Args:
+                    Returns:
+                """
+                fig.add_traces(trace)
+                new_trace = fig.data[-1]
+                new_trace.update(textfont_color=trace.marker.color, textposition='top center',
+                                 mode="text", showlegend=False)
+                trace.update(mode="lines+markers")
+
+            fig.for_each_trace(add_trace_copy)
             return fig
 
     def save_to_file(self):
