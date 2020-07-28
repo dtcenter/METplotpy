@@ -228,7 +228,8 @@ class ROCDiagram(MetPlot):
                 """
                 fig.add_traces(trace)
                 new_trace = fig.data[-1]
-                new_trace.update(textfont_color=trace.marker.color, textposition='top center',
+                if self.config_obj.add_point_thresholds:
+                    new_trace.update(textfont_color=trace.marker.color, textposition='top center',
                                  mode="text", showlegend=False)
                 trace.update(mode="lines+markers")
 
