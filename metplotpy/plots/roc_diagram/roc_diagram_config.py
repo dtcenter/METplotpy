@@ -128,7 +128,7 @@ class ROCDiagramConfig(Config):
         """
         if self.get_config_value('add_point_thresholds'):
             response = self.get_config_value('add_point_thresholds')
-            if response == "true":
+            if response:
                 return True
             else:
                 return False
