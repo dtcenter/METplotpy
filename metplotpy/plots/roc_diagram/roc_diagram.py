@@ -16,6 +16,7 @@ import plots.util as util
 from plots.met_plot import MetPlot
 from roc_diagram_config import ROCDiagramConfig
 from roc_diagram_series import ROCDiagramSeries
+import metcalcpy.util.utils as calc_util
 
 
 class ROCDiagram(MetPlot):
@@ -47,6 +48,10 @@ class ROCDiagram(MetPlot):
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
+
+        # Apply event equalization, if requested
+        if self.config_obj.use_ee:
+            self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
