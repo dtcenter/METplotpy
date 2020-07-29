@@ -126,7 +126,7 @@ class ROCDiagramConfig(Config):
 
         """
         if self.get_config_value('add_point_thresholds'):
-            response = self.get_config_value('add_point_thresholds').lower()
+            response = str(self.get_config_value('add_point_thresholds')).lower()
             # Treat the value as a string, as this is what we
             # will get from METviewer
             if response == 'true':
