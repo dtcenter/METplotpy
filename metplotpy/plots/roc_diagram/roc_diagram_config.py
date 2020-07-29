@@ -40,7 +40,7 @@ class ROCDiagramConfig(Config):
         # Probability contingency table count line type
         self.linetype_pct = self.get_config_value('roc_pct')
         # Supported values for stat_curve are none, mean, and median
-        self.stat_curve = self.get_config_value('stat_curve')
+        self.plot_stat = self.get_config_value('stat_curve')
         self.add_threshold_pts = self.get_config_value('add_pt_thresh')
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
@@ -51,7 +51,6 @@ class ROCDiagramConfig(Config):
         self.caption_size = self.get_config_value('caption_size')
         self.caption_offset = self.get_config_value('caption_offset')
         self.caption_align = self.get_config_value('caption_align')
-        self.plot_stat = self.stat_curve
         self.colors_list = self._get_colors()
         self.marker_list = self._get_markers()
         self.linewidth_list = self._get_linewidths()
@@ -127,8 +126,10 @@ class ROCDiagramConfig(Config):
 
         """
         if self.get_config_value('add_point_thresholds'):
-            response = self.get_config_value('add_point_thresholds')
-            if response:
+            response = self.get_config_value('add_point_thresholds').lower()
+            # Treat the value as a string, as this is what we
+            # will get from METviewer
+            if response == 'true':
                 return True
             else:
                 return False
