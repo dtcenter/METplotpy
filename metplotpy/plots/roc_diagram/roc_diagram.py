@@ -221,7 +221,9 @@ class ROCDiagram(MetPlot):
                 # add the plot
                 fig.add_trace(
                     go.Scatter(x=pofd_points, y=pody_points, showlegend=True,
-                               text=thresh_list, textposition="top right", name=legend_label),
+                               text=thresh_list, textposition="top right", name=legend_label,
+                               line=dict(color=self.config_obj.colors_list[idx],
+                                         width=self.config_obj.linewidth_list[idx])),
                     secondary_y=False
                 )
 
