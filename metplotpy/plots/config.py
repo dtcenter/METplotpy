@@ -167,22 +167,22 @@ class Config:
         if index == 1:
             # evaluate series_val_1 setting
             series_val_dict = self.get_config_value('series_val_1')
-            if series_val_dict:
-               val_dict_list = [*series_val_dict.values()]
-            else:
-                val_dict_list = []
         elif index == 2:
             # evaluate series_val_2 setting
-            # check for empty setting. If so, return an empty list
-            series_val_dict_2 = self.get_config_value('series_val_2')
-            if series_val_dict_2:
-                val_dict_list = [*series_val_dict_2.values()]
-            else:
-                val_dict_list = []
+            series_val_dict = self.get_config_value('series_val_2')
+
+        # check for empty setting. If so, return an empty list
+        if series_val_dict:
+            val_dict_list = [*series_val_dict.values()]
+        else:
+            val_dict_list = []
 
         # Unpack and access the values corresponding to the inner keys
         # (series_var1, series_var2, ..., series_varn).
         return val_dict_list
+
+    def _get_series_columns(self, index):
+        ''' Retrieve the column name that corresponds to this '''
 
     def _get_fcst_vars(self, index):
         """
@@ -361,6 +361,10 @@ class Config:
 
         # Check for empty list as setting in the config file
         legends_list = []
+
+        # set a flag indicating when a legend label is specified
+        legend_label_unspecified = True
+
         num_series = self.calculate_number_of_series()
         if len(all_legends) == 0:
             for i in range(num_series):
@@ -371,6 +375,7 @@ class Config:
                     legend = ' '
                     legends_list.append(legend)
                 else:
+                    legend_label_specified = True
                     legends_list.append(legend)
 
         ll_list = []
@@ -379,20 +384,17 @@ class Config:
         # Some diagrams don't require a series_val1 value, hence
         # resulting in a zero-sized series_list.  In this case,
         # the legend label will just be the legend_label_type.
-        if len(series_list) == 0:
+        if len(series_list) == 0 and legend_label_unspecified:
             return [legend_label_type]
 
         perms = utils.create_permutations(series_list)
         for idx,ll in enumerate(legends_list):
             if ll == ' ':
                 if len(series_list) > 1:
-                    # label_parts = [perms[idx][0], ' ', perms[idx][1], " Performance"]
                     label_parts = [perms[idx][0], ' ', perms[idx][1], ' ', legend_label_type]
-
                 else:
                     label_parts = [perms[idx][0], ' ', legend_label_type]
                 legend_label = ''.join(label_parts)
-
                 ll_list.append(legend_label)
             else:
                 ll_list.append(ll)
@@ -518,6 +520,9 @@ class Config:
         value2convert = self.get_config_value(config_value)
         resolution = self.get_config_value('plot_res')
         units = self.get_config_value('plot_units')
+
+        # initialize converted_value to some small value
+        converted_value = 0
 
         # convert to pixels
         # plotly uses pixels for setting plot size (width and height)
