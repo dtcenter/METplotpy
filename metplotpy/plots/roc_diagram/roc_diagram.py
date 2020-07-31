@@ -84,7 +84,7 @@ class ROCDiagram(MetPlot):
         """
            Generate all the series objects that are to be displayed as specified by the plot_disp
            setting in the config file.  The points are all ordered by datetime.  Each series object
-           is represented by a line in the performance diagram, so they also contain information
+           is represented by a line in the diagram, so they also contain information
            for line width, line- and marker-colors, line style, and other plot-related/
            appearance-related settings (which were defined in the config file).
 
@@ -154,16 +154,16 @@ class ROCDiagram(MetPlot):
         )
         # Set x-axis title
         fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="black", linewidth=2, showgrid=False,
-                         range=[0.0, 1.0])
-        fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="black", linewidth=2, showgrid=False,
-                         range=[0.0, 1.0])
+                         dtick=0.1, tickmode='linear', tick0=0.0)
+        # fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="black", linewidth=2, showgrid=False,
+        #                  range=[0.0, 1.0], dtick=0.1)
 
         # Set y-axes titles
         # fig.update_yaxes(title_text="<b>primary</b> yaxis title", secondary_y=False)
         fig.update_yaxes(title_text=self.config_obj.yaxis_1, secondary_y=False, linecolor="black", linewidth=2,
-                         showgrid=False, zeroline=False, range=[0.0, 1.0])
-        fig.update_yaxes(title_text=self.config_obj.yaxis_2, secondary_y=True, linecolor="black", linewidth=2,
-                         showgrid=False, zeroline=False, range=[0.0, 1.0])
+                         showgrid=False, zeroline=False, range=[0.0, 1.0],dtick=0.1)
+        # fig.update_yaxes(title_text=self.config_obj.yaxis_2, secondary_y=True, linecolor="black", linewidth=2,
+        #                  showgrid=False, zeroline=False, range=[0.0, 1.0], dtick=0.1)
 
         # set the range of the x-axis and y-axis to range from 0 to 1
         fig.update_layout(xaxis=dict(range=[0., 1.]))
@@ -225,6 +225,7 @@ class ROCDiagram(MetPlot):
                     secondary_y=False
                 )
 
+
             def add_trace_copy(trace):
                 """Adds separate traces for markers and a legend.
                    This is a fix for not printing 'Aa' in the legend
@@ -233,13 +234,15 @@ class ROCDiagram(MetPlot):
                 """
                 fig.add_traces(trace)
                 new_trace = fig.data[-1]
-                if self.config_obj.add_point_thresholds:
-                    new_trace.update(textfont_color=trace.marker.color, textposition='top center',
-                                 mode="text", showlegend=False)
+                # if self.config_obj.add_point_thresholds:
+                #     new_trace.update(textfont_color=trace.marker.color, textposition='top center',
+                #                  mode="text", showlegend=False)
+                new_trace.update(textfont_color=trace.marker.color, textposition='top center',
+                                         mode="text", showlegend=False)
                 trace.update(mode="lines+markers")
-
-            fig.for_each_trace(add_trace_copy)
-            return fig
+            if self.config_obj.add_point_thresholds:
+                fig.for_each_trace(add_trace_copy)
+        return fig
 
     def save_to_file(self):
         """Saves the image to a file specified in the config file.
