@@ -47,7 +47,16 @@ DEFAULT_TITLE_FONTSIZE = 10
 # Default size used in plotly legend text
 DEFAULT_LEGEND_FONTSIZE = 12
 AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", "."]
+AVAILABLE_PLOTLY_MARKERS_LIST = ["open-circle", "circle",
+                                 "square", "diamond",
+                                 "hexagon", "triangle-up"]
+
 PCH_TO_MATPLOTLIB_MARKER = {'20': '.', '19': 'o', '17': '^', '1': 'H',
                             '18': 'd', '15': 's', 'small circle': '.',
                             'circle': 'o', 'square': 's',
                             'triangle': '^', 'rhombus': 'd', 'ring': 'h'}
+PCH_TO_PLOTLY_MARKER = {'0':'circle-open', '19':'circle',
+                        '17':'triangle-up', '15':'square', '18':'diamond',
+                        '1':'hexagon2', 'small circle': 'circle-open',
+                        'circle': 'circle', 'square':'square', 'triangle':'triangle-up',
+                        'rhombus':'diamond', 'ring':'hexagon2'}
