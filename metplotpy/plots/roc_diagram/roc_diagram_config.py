@@ -239,3 +239,31 @@ class ROCDiagramConfig(Config):
             all_fcst_vars = []
 
         return all_fcst_vars
+
+    def _get_markers(self):
+        """
+           Retrieve all the markers. Convert marker names from
+           the config file into plotly python's marker names.
+
+           Args:
+
+           Returns:
+               markers: a list of the plotly markers
+        """
+        markers = self.get_config_value('series_symbols')
+        markers_list = []
+        for marker in markers:
+            if marker in constants.AVAILABLE_PLOTLY_MARKERS_LIST:
+                # the recognized plotly marker names:
+                # circle-open (for small circle), circle, triangle-up,
+                # square, diamond, or hexagon
+                markers_list.append(marker)
+            else:
+                # markers are indicated by name: circle-open (for small circle),
+                # circle, triangle-up,
+                # diamond, hexagon, square
+                m = marker.lower()
+                markers_list.append(constants.PCH_TO_PLOTLY_MARKER[m])
+        markers_list_ordered = self.create_list_by_series_ordering(markers_list)
+        return markers_list_ordered
+
