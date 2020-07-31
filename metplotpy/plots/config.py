@@ -170,6 +170,8 @@ class Config:
         elif index == 2:
             # evaluate series_val_2 setting
             series_val_dict = self.get_config_value('series_val_2')
+        else:
+            raise ValueError('Index value must be either 1 or 2.')
 
         # check for empty setting. If so, return an empty list
         if series_val_dict:
