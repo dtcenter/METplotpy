@@ -59,4 +59,6 @@ PCH_TO_PLOTLY_MARKER = {'0':'circle-open', '19':'circle',
                         '17':'triangle-up', '15':'square', '18':'diamond',
                         '1':'hexagon2', 'small circle': 'circle-open',
                         'circle': 'circle', 'square':'square', 'triangle':'triangle-up',
-                        'rhombus':'diamond', 'ring':'hexagon2', '.':'circle-open'}
+                        'rhombus':'diamond', 'ring':'hexagon2', '.':'circle-open',
+                        'o': 'circle', '^':'triangle-up', 'd':'diamond', 'H':'hexagon2',
+                        'h': 'hexagon2','s':'square'}
