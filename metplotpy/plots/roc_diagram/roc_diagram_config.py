@@ -184,8 +184,14 @@ class ROCDiagramConfig(Config):
                 display the corresponding series
         """
 
-        plot_display_vals = self.get_config_value('plot_disp')
-        plot_display_bools = [pd for pd in plot_display_vals]
+        plot_display_config_vals = self.get_config_value('plot_disp')
+        plot_display_bools = []
+        for p in plot_display_config_vals:
+            if str(p).upper() == "TRUE":
+                plot_display_bools.append(True)
+            else:
+                plot_display_bools.append(False)
+
         plot_display_bools_ordered = self.create_list_by_series_ordering(plot_display_bools)
         return plot_display_bools_ordered
 
