@@ -490,15 +490,13 @@ class Config:
 
         """
 
-        # order the ci list according to the series_order setting
+        # order the input list according to the series_order setting
         ordered_settings_list = []
 
         # Make the series ordering list zero-based to sync with Python's zero-based counting
         series_ordered_zb = [sorder - 1 for sorder in self.series_ordering]
-        for idx in range(len(setting_to_order)):
-            # find the current index's value in the zero-based series_ordering list
-            loc = series_ordered_zb.index(idx)
-            ordered_settings_list.append(setting_to_order[loc])
+        for series in series_ordered_zb:
+            ordered_settings_list.append(setting_to_order[series])
 
         return ordered_settings_list
 
