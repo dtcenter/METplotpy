@@ -66,7 +66,9 @@ class ROCDiagramConfig(Config):
         # the location of the bounding box which defines
         # the legend.
         self.bbox_x = float(user_settings['bbox_x'])
-        self.bbox_y = float(user_settings['bbox_y'])
+        # set legend box lower by .18 pixels of the default value
+        # set in METviewer to prevent obstructing the x-axis.
+        self.bbox_y = float(user_settings['bbox_y']) - 0.18
         legend_magnification = user_settings['legend_size']
         self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
         self.legend_ncol = self.get_config_value('legend_ncol')
