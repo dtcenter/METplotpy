@@ -1,5 +1,5 @@
 ---
-image_name: /tmp/boxplot.png
+plot_filename: /tmp/boxplot.png
 
 legend:
   x: 0.5

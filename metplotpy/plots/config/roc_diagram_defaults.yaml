@@ -1,0 +1,86 @@
+---
+# Default settings specific to ROC diagram plot
+# Line and marker plots of false alarm rate (x-axis) vs probability of detection (y-axis).
+title: ROC CTC
+xaxis: test x_label
+yaxis_1: test y_label
+yaxis_2:
+
+plot_width: 11
+plot_height: 8.5
+plot_res: 200
+plot_units: cm
+
+roc_pct: False
+roc_ctc: True
+
+add_point_thresholds: true
+
+series_val_1:
+    model:
+     - WRF
+    vx_mask:
+      - EAST
+      - FILL
+series_val_2:
+fcst_var_val1:
+fcst_var_val2:
+
+indy_vars:
+indy_vals:
+
+user_legend:
+  - ' '
+  - ' '
+# two types supported, 'n' for none and 'o' for box
+legend_box: 'n'
+# number of columns in legend
+legend_ncol: 3
+legend_inset:
+  x: 0.
+  y: -0.14
+legend_size: 0.8
+
+plot_disp:
+  - True
+  - True
+series_order:
+  - 1
+  - 2
+stat_curve: 'None'
+add_pt_thresh: True
+
+colors:
+  - "#ff0000"
+  - "#8000ff"
+series_symbols:
+  - "Small circle"
+  - "Small circle"
+series_line_width:
+  - 1
+  - 1
+series_type:
+  - "joined lines"
+  - "joined lines"
+
+series_line_style:
+  # solid line
+  - "-"
+  # solid line
+  - "-"
+
+# Perform event equalization to check for missing data
+event_equalize: False
+
+plot_caption: "This is caption"
+caption_weight: "plain text"
+caption_color: "#333333"
+caption_size: "0.8" # relative magnification
+caption_offset: 3  # axis perpendicular location adjustment
+caption_align: 0, # axis parallel location adjustment
+
+stat_input:  ./plot_20200507_074426.data
+plot_filename: ./roc_diagram_default.png
+show_plot_in_browser: True
+
+

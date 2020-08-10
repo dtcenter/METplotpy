@@ -128,6 +128,6 @@ annotation_template:
 
 
 stat_input:  ../performance_diagram/plot_20200317_151252.data
-plot_output: /tmp/performance_diagram_default.png
+plot_filename: /tmp/performance_diagram_default.png
 
 
