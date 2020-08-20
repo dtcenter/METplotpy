@@ -53,9 +53,6 @@ fcst_var_val_1:
     - FAR
     # y-axis/dependent variable
     - PODY
-list_stat_1:
-  - FAR
-  - PODY
 fcst_var_val_2:
 
 series_val_1:
