@@ -1,5 +1,5 @@
 ---
-image_name: /tmp/scatterplot.png
+plot_filename: /tmp/scatterplot.png
 
 legend:
   x: 0.5

@@ -1,12 +1,11 @@
----
-# Custom settings specific to performance diagram plot
-# Line and marker plots of series data of Success Rate (1-FAR) on x-axis vs. PODY on y-axis.
-title: Performance Diagram ("Custom title")
-xaxis: Success Ratio
+title: ROC Diagram ("Custom title")
+xaxis: False Alarm Rate
 # support two y-axes
 yaxis_1: Probability of Detection (PODY)
 yaxis_2: ''
 legend_ncol: 1
+# draw the specified series lines in the
+# plot
 plot_disp:
   - True
   - True
@@ -98,3 +97,4 @@ series_line_style:
 stat_input:  ./plot_20200317_151252.data
 plot_filename: ./performance_diagram_default.png
 event_equalize: False
+show_plot_in_browser: True

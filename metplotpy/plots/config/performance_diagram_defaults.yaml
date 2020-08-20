@@ -73,7 +73,10 @@ series_val_1:
     - TROP_CMORPH_G193
 
 series_val2:
-
+list_stat_1:
+  - FAR
+  - PODY
+list_stat_2: []
 user_legend:
   - NH
   - SH
@@ -132,6 +135,6 @@ annotation_template:
 
 
 stat_input:  ../performance_diagram/plot_20200317_151252.data
-plot_output: /tmp/performance_diagram_default.png
+plot_filename: /tmp/performance_diagram_default.png
 
 

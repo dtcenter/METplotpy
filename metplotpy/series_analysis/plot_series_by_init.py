@@ -138,7 +138,7 @@ def main():
     # The input directory where the netcdf files created by the series analysis
     # (by initialization times) are saved
 
-    nc_input_dir_base = '/d1/METplus_Plotting_Data/series_by_init/20141214_00/'
+    nc_input_dir_base = '/d1/projects/METplus/METplus_Plotting_Data/series_by_init/20141214_00/'
     nc_input_dir = nc_input_dir_base + storm_number
     output_dir = nc_input_dir
 

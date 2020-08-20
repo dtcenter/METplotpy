@@ -43,9 +43,9 @@ class PerformanceDiagramConfig(Config):
         self.marker_list = self._get_markers()
         self.linewidth_list = self._get_linewidths()
         self.linestyles_list = self._get_linestyles()
-        self.user_legends = self._get_user_legends()
-        self.plot_width = self.get_config_value('plot_width')
-        self.plot_height = self.get_config_value('plot_height')
+        self.user_legends = self._get_user_legends("Performance")
+        self.plot_width = self.calculate_plot_dimension('plot_width', 'in')
+        self.plot_height = self.calculate_plot_dimension('plot_height', 'in')
 
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()

@@ -22,7 +22,7 @@ class Config:
         #
         # Configuration settings that apply to the plot
         #
-        self.output_image = self.get_config_value('plot_output')
+        self.output_image = self.get_config_value('plot_filename')
         self.title_font = constants.DEFAULT_TITLE_FONT
         self.title_color = constants.DEFAULT_TITLE_COLOR
         self.xaxis = self.get_config_value('xaxis')
@@ -32,7 +32,30 @@ class Config:
         self.use_ee = self.get_config_value('event_equalize')
         self.indy_vals = self.get_config_value('indy_vals')
         self.indy_var = self.get_config_value('indy_var')
+        self.show_plot_in_browser = self.get_config_value('show_plot_in_browser')
+        self.plot_width = self.get_config_value('plot_width')
+        self.plot_height = self.get_config_value('plot_height')
 
+        # legend style settings as defined in METviewer
+        user_settings = self._get_legend_style()
+
+        # list of the x, y, and loc values for the
+        # bbox_to_anchor() setting used in determining
+        # the location of the bounding box which defines
+        # the legend.
+        self.bbox_x = float(user_settings['bbox_x'])
+        self.bbox_y = float(user_settings['bbox_y'])
+        legend_magnification = user_settings['legend_size']
+        self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
+        self.legend_ncol = self.get_config_value('legend_ncol')
+        legend_box = self.get_config_value('legend_box').lower()
+        if legend_box == 'n':
+            # Don't draw a box around legend labels
+            self.draw_box = False
+        else:
+            # Other choice is 'o'
+            # Enclose legend labels in a box
+            self.draw_box = True
 
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
@@ -144,19 +167,24 @@ class Config:
         if index == 1:
             # evaluate series_val_1 setting
             series_val_dict = self.get_config_value('series_val_1')
-            val_dict_list = [*series_val_dict.values()]
         elif index == 2:
             # evaluate series_val_2 setting
-            # check for empty setting. If so, return an empty list
-            series_val_dict_2 = self.get_config_value('series_val_2')
-            if series_val_dict_2:
-                val_dict_list = [*series_val_dict_2.values()]
-            else:
-                val_dict_list = []
+            series_val_dict = self.get_config_value('series_val_2')
+        else:
+            raise ValueError('Index value must be either 1 or 2.')
+
+        # check for empty setting. If so, return an empty list
+        if series_val_dict:
+            val_dict_list = [*series_val_dict.values()]
+        else:
+            val_dict_list = []
 
         # Unpack and access the values corresponding to the inner keys
         # (series_var1, series_var2, ..., series_varn).
         return val_dict_list
+
+    def _get_series_columns(self, index):
+        ''' Retrieve the column name that corresponds to this '''
 
     def _get_fcst_vars(self, index):
         """
@@ -207,9 +235,13 @@ class Config:
 
         series_val_dict = self.get_config_value('series_val_1')
 
+
         # Unpack and access the values corresponding to the inner keys
         # (series_var1, series_var2, ..., series_varn).
-        return [*series_val_dict.keys()]
+        if series_val_dict:
+           return [*series_val_dict.keys()]
+        else:
+           return []
 
     def calculate_number_of_series(self):
         """
@@ -251,8 +283,7 @@ class Config:
 
     def _get_markers(self):
         """
-           Retrieve all the markers, the order and number correspond to the number
-           of series_order, user_legends, and number of series.
+           Retrieve all the markers.
 
            Args:
 
@@ -260,9 +291,19 @@ class Config:
                markers: a list of the markers
         """
         markers = self.get_config_value('series_symbols')
-        markers_list = [m for m in markers]
+        markers_list = []
+        for marker in markers:
+            if marker in constants.AVAILABLE_MARKERS_LIST:
+                # markers is the matplotlib symbol: .,o, ^, d, H, or s
+                markers_list.append(marker)
+            else:
+                # markers are indicated by name: small circle, circle, triangle,
+                # diamond, hexagon, square
+                m = marker.lower()
+                markers_list.append(constants.PCH_TO_MATPLOTLIB_MARKER[m])
         markers_list_ordered = self.create_list_by_series_ordering(markers_list)
         return markers_list_ordered
+
 
     def _get_linewidths(self):
         """ Retrieve all the linewidths from the configuration file, if not
@@ -293,12 +334,15 @@ class Config:
         return linestyle_list_ordered
 
 
-    def _get_user_legends(self):
+    def _get_user_legends(self, legend_label_type):
         """
            Retrieve the text that is to be displayed in the legend at the bottom of the plot.
            Each entry corresponds to a series.
 
            Args:
+               @parm legend_label_type:  The legend label, such as 'Performance' that indicates
+                                    the type of series line. Used when the user hasn't
+                                    indicated a legend.
 
            Returns:
                a list consisting of the series label to be displayed in the plot legend.
@@ -308,7 +352,7 @@ class Config:
 
         # for legend labels that aren't set (ie in conf file they are set to '')
         # create a legend label based on the permutation of the series names
-        # appended by 'Performance'.  For example, for:
+        # appended by 'user_legend label'.  For example, for:
         #     series_val_1:
         #        model:
         #          - NoahMPv3.5.1_d01
@@ -316,8 +360,13 @@ class Config:
         #          - CONUS
         # The constructed legend label will be "NoahMPv3.5.1_d01 CONUS Performance"
 
+
         # Check for empty list as setting in the config file
         legends_list = []
+
+        # set a flag indicating when a legend label is specified
+        legend_label_unspecified = True
+
         num_series = self.calculate_number_of_series()
         if len(all_legends) == 0:
             for i in range(num_series):
@@ -328,25 +377,73 @@ class Config:
                     legend = ' '
                     legends_list.append(legend)
                 else:
+                    legend_label_specified = True
                     legends_list.append(legend)
 
         ll_list = []
         series_list = self.all_series_vals
+
+        # Some diagrams don't require a series_val1 value, hence
+        # resulting in a zero-sized series_list.  In this case,
+        # the legend label will just be the legend_label_type.
+        if len(series_list) == 0 and legend_label_unspecified:
+            return [legend_label_type]
+
         perms = utils.create_permutations(series_list)
         for idx,ll in enumerate(legends_list):
             if ll == ' ':
                 if len(series_list) > 1:
-                    label_parts = [perms[idx][0], ' ', perms[idx][1], " Performance"]
+                    label_parts = [perms[idx][0], ' ', perms[idx][1], ' ', legend_label_type]
                 else:
-                    label_parts = [perms[idx][0], ' Performance']
+                    label_parts = [perms[idx][0], ' ', legend_label_type]
                 legend_label = ''.join(label_parts)
-
                 ll_list.append(legend_label)
             else:
                 ll_list.append(ll)
 
         legends_list_ordered = self.create_list_by_series_ordering(ll_list)
         return legends_list_ordered
+
+    def _get_plot_resolution(self):
+        """
+            Retrieve the plot_res and plot_unit to determine the dpi
+            setting in matplotlib.
+
+            Args:
+
+            Returns:
+                plot resolution in units of dpi (dots per inch)
+
+        """
+        # Initialize to the default resolution
+        # set by matplotlib
+        dpi = 100
+
+        # first check if plot_res is set in config file
+        if self.get_config_value('plot_res'):
+            resolution = self.get_config_value('plot_res')
+
+            # check if the units value has been set in the config file
+            if self.get_config_value('plot_units'):
+                units = self.get_config_value('plot_units').lower()
+                if units == 'in':
+                    return resolution
+                elif units == 'mm':
+                    # convert mm to inches so we can
+                    # set dpi value
+                    return resolution * constants.MM_TO_INCHES
+                else:
+                    # units not supported, assume inches
+                    return resolution
+            else:
+                # units not indicated, assume
+                # we are dealing with inches
+                return resolution
+        else:
+            # no plot_res value is set, return the default
+            # dpi used by matplotlib
+            return dpi
+
 
     def create_list_by_series_ordering(self, setting_to_order):
         """
@@ -393,14 +490,60 @@ class Config:
 
         """
 
-        # order the ci list according to the series_order setting
+        # order the input list according to the series_order setting
         ordered_settings_list = []
 
         # Make the series ordering list zero-based to sync with Python's zero-based counting
         series_ordered_zb = [sorder - 1 for sorder in self.series_ordering]
-        for idx in range(len(setting_to_order)):
-            # find the current index's value in the zero-based series_ordering list
-            loc = series_ordered_zb.index(idx)
-            ordered_settings_list.append(setting_to_order[loc])
+        for series in series_ordered_zb:
+            ordered_settings_list.append(setting_to_order[series])
 
         return ordered_settings_list
+
+
+    def calculate_plot_dimension(self, config_value, output_units):
+        '''
+           To calculate the width or height that defines the size of the plot.
+           Matplotlib defines these values in inches, Python plotly defines these
+           in terms of pixels.  METviewer accepts units of inches or mm for width and
+           height, so conversion from mm to inches or mm to pixels is necessary, depending
+           on the requested output units, output_units.
+
+           Args:
+              @param config_value:  The plot dimension to convert, either a width or height, in inches or mm
+              @param output_units: pixels or in (inches) to indicate which
+                                   units to use to define plot size. Python plotly uses pixels and
+                                   Matplotlib uses inches.
+           Returns:
+             converted_value : converted value from in/mm to pixels or mm to inches based on input values
+        '''
+        value2convert = self.get_config_value(config_value)
+        resolution = self.get_config_value('plot_res')
+        units = self.get_config_value('plot_units')
+
+        # initialize converted_value to some small value
+        converted_value = 0
+
+        # convert to pixels
+        # plotly uses pixels for setting plot size (width and height)
+        if output_units.lower() == 'pixels':
+            if units.lower() == 'in':
+                # value in pixels
+                converted_value = int(resolution * value2convert)
+            elif units.lower() == 'mm':
+                # Convert mm to pixels
+                converted_value = int(resolution * value2convert * constants.MM_TO_INCHES)
+
+        # Matplotlib uses inches (in) for setting plot size (width and height)
+        elif output_units.lower() == 'in':
+            if units.lower() == 'mm':
+                # Convert mm to inches
+                converted_value = value2convert * constants.MM_TO_INCHES
+            else:
+                converted_value = value2convert
+
+        # plotly does not allow any value smaller than 10 pixels
+        if output_units.lower() == 'pixels' and converted_value < 10:
+            converted_value = 10
+
+        return converted_value
