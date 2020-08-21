@@ -35,6 +35,17 @@ class Config:
         self.show_plot_in_browser = self.get_config_value('show_plot_in_browser')
         self.plot_width = self.get_config_value('plot_width')
         self.plot_height = self.get_config_value('plot_height')
+        self.plot_caption = self.get_config_value('plot_caption')
+        # plain text, bold, italic, bold italic are choices in METviewer UI
+        self.caption_weight = self.get_config_value('caption_weight')
+        self.caption_color = self.get_config_value('caption_color')
+        # relative magnification
+        self.caption_size = self.get_caption_size()
+
+        # up-down location relative to the x-axis line
+        self.caption_offset = self.get_config_value('caption_offset')
+        # left-right position
+        self.caption_align = self.get_config_value('caption_align')
 
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
@@ -547,3 +558,16 @@ class Config:
             converted_value = 10
 
         return converted_value
+
+    def get_caption_size(self):
+        '''
+            Get the caption_size. Override this for Matplotlib and Pyplot implementations.
+
+            Args:
+
+            Returns:
+
+        '''
+
+
+        self.caption_size = self.get_config_value('caption_size')
