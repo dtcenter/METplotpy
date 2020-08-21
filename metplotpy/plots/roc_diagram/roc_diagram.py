@@ -201,6 +201,10 @@ class ROCDiagram(MetPlot):
                                       bordercolor="black",
                                       borderwidth=2
                                       ))
+
+        # x1 axis label formatting
+        fig.update_layout(xaxis=dict(tickangle=0, tickfont=dict(size=9)))
+
         thresh_list = []
 
         # "Dump" False Detection Rate (POFD) and PODY points to an output
@@ -335,7 +339,7 @@ def main():
     try:
         r = ROCDiagram(docs)
         r.save_to_file()
-        r.show_in_browser()
+        # r.show_in_browser()
     except ValueError as ve:
         print(ve)
 
