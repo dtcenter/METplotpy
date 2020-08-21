@@ -215,3 +215,23 @@ class PerformanceDiagramConfig(Config):
                              "config file.  Expecting format of %y <units> or %x <units>")
         return anno_var, anno_units
 
+    def get_caption_size(self):
+        '''
+            Get the caption_size. Override this for Matplotlib and Pyplot implementations.
+
+            Args:
+
+            Returns:
+
+        '''
+        # by default, the caption will be located on the lower right side
+        # of the plot, below the x-axis.  METviewer has default value of
+        # 0.8 (80% magnification)  For this implementation (Matplotlib), set the
+        # base caption size to 9, and calculate the font size (in pointsize/pixel)
+
+        caption_size = float(self.get_config_value('caption_size'))
+        matplotlib_default_size = 12.0
+        adj_caption_size = caption_size * matplotlib_default_size
+        return adj_caption_size
+
+
