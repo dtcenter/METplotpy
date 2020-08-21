@@ -367,6 +367,10 @@ class Config:
         # set a flag indicating when a legend label is specified
         legend_label_unspecified = True
 
+        # Check if a stat curve was requested, if so, then the number
+        # of series_val_1 values will be inconsistent with the number of
+        # legend labels 'specified' (either with actual labels or whitespace)
+
         num_series = self.calculate_number_of_series()
         if len(all_legends) == 0:
             for i in range(num_series):
@@ -377,7 +381,7 @@ class Config:
                     legend = ' '
                     legends_list.append(legend)
                 else:
-                    legend_label_specified = True
+                    legend_label_unspecified = False
                     legends_list.append(legend)
 
         ll_list = []
