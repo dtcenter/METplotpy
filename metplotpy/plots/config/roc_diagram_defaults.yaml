@@ -8,13 +8,13 @@ yaxis_2:
 
 plot_width: 11
 plot_height: 8.5
-plot_res: 200
-plot_units: cm
+plot_res: 72
+plot_units: in
 
 roc_pct: False
 roc_ctc: True
 
-add_point_thresholds: true
+add_point_thresholds: True
 
 series_val_1:
     model:
@@ -48,7 +48,6 @@ series_order:
   - 1
   - 2
 stat_curve: 'None'
-add_pt_thresh: True
 
 colors:
   - "#ff0000"
