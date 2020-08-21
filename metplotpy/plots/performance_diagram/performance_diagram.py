@@ -18,6 +18,7 @@ from performance_diagram_series import PerformanceDiagramSeries
 import plots.util as util
 import plots.constants as constants
 import warnings
+
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
@@ -74,7 +75,6 @@ class PerformanceDiagram(MetPlot):
         # create binary versions of the plot.
         self.figure = self._create_figure()
 
-
     def _read_input_data(self):
         """
             Read in the input data as set in the config file as stat_input as a pandas dataframe.
@@ -93,7 +93,6 @@ class PerformanceDiagram(MetPlot):
         # stat_ncu with valid values).
         df = df_full.dropna(axis=1, how="all")
         return df
-
 
     def _create_series(self, input_data):
         """
@@ -175,7 +174,6 @@ class PerformanceDiagram(MetPlot):
         # This creates a figure size that is of a "reasonable" size, in inches
         fig = plt.figure(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
-
         #
         # PLOT THE "TEMPLATE" THAT CREATES THE EQUAL LINES OF CSI AND EQUAL LINES OF BIAS
         # THAT COMPRISE THE PERFORMANCE DIAGRAM
@@ -231,6 +229,10 @@ class PerformanceDiagram(MetPlot):
                   color=constants.DEFAULT_TITLE_COLOR, fontweight="bold",
                   fontfamily=constants.DEFAULT_TITLE_FONT, pad=28)
 
+        # Plot the caption
+        plt.figtext(self.config_obj.caption_align, self.config_obj.caption_offset, self.config_obj.plot_caption,
+                    size=self.config_obj.caption_size)
+
         #
         # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE
         # the statistics data for each model/series
@@ -263,16 +265,16 @@ class PerformanceDiagram(MetPlot):
                              alpha=0.5, ms=6)
 
                 # Annotate the points with their PODY (i.e. dependent variable value)
-                if not self.config_obj.anno_var :
+                if not self.config_obj.anno_var:
                     pass
                 elif self.config_obj.anno_var == 'y':
                     for idx, pody in enumerate(pody_points):
                         plt.annotate(str(pody) + self.config_obj.anno_units,
-                                    (sr_points[idx], pody_points[idx]), fontsize=9)
+                                     (sr_points[idx], pody_points[idx]), fontsize=9)
                 elif self.config_obj.anno_var == 'x':
                     for idx, succ_ratio in enumerate(sr_points):
                         plt.annotate(str(succ_ratio) + self.config_obj.anno_units,
-                                    (sr_points[idx], pody_points[idx]), fontsize=9)
+                                     (sr_points[idx], pody_points[idx]), fontsize=9)
 
                 # Plot error bars if they were requested:
                 if self.config_obj.plot_ci[i] != "NONE":
@@ -291,7 +293,7 @@ class PerformanceDiagram(MetPlot):
 
         # Legend based on the style settings in the config file.
         ax2.legend(bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y), loc='lower left',
-                               ncol=self.config_obj.legend_ncol,
+                   ncol=self.config_obj.legend_ncol,
                    prop={'size': self.config_obj.legend_size})
         ax1.xaxis.set_label_coords(0.5, -0.066)
         ax1.set_xlabel(xlabel, fontsize=9)
@@ -303,7 +305,6 @@ class PerformanceDiagram(MetPlot):
         plt.tight_layout()
         plt.savefig(self.get_config_value('plot_filename'))
         self.save_to_file()
-
 
     def write_output_file(self):
         """
@@ -321,14 +322,13 @@ class PerformanceDiagram(MetPlot):
             filename_only = match.group(1)
             output_file = filename_only + ".points1"
 
-
             # make sure this file doesn't already
             # exit, delete it if it does
             try:
                 if os.stat(output_file).st_size == 0:
                     fileobj = open(output_file, 'a')
                 else:
-                  os.remove(output_file)
+                    os.remove(output_file)
             except FileNotFoundError as fnfe:
                 # OK if no file was found
                 pass
