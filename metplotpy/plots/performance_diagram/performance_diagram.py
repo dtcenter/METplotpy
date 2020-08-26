@@ -4,6 +4,7 @@ Class Name: performance_diagram.py
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 import os
+import re
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from matplotlib.colors import LinearSegmentedColormap
@@ -15,6 +16,9 @@ import metcalcpy.util.utils as calc_util
 from performance_diagram_config import PerformanceDiagramConfig
 from performance_diagram_series import PerformanceDiagramSeries
 import plots.util as util
+import plots.constants as constants
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 class PerformanceDiagram(MetPlot):
@@ -81,7 +85,15 @@ class PerformanceDiagram(MetPlot):
                  the pandas dataframe representation of the input data file
 
         """
-        return pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
+        df_full = pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
+
+        # Remove any columns that are entirely 'NaN' this will be helpful
+        # in determining whether we have aggregated statistics (stat_bcl and
+        # stat_bcu columns with valid values), or not (stat_ncl and
+        # stat_ncu with valid values).
+        df = df_full.dropna(axis=1, how="all")
+        return df
+
 
     def _create_series(self, input_data):
         """
@@ -103,7 +115,7 @@ class PerformanceDiagram(MetPlot):
         series_list = []
 
         # use the list of series ordering values to determine how many series objects we need.
-        num_series = len(self.config_obj.series_ordering)
+        num_series = self.config_obj.calculate_number_of_series()
 
         for i, series in enumerate(range(num_series)):
             # Create a PerformanceDiagramSeries object
@@ -121,13 +133,13 @@ class PerformanceDiagram(MetPlot):
 
     def remove_file(self):
         """
-           Removes previously made image file .  Invoked by the parent class before self.output_file
+           Removes previously made image file.  Invoked by the parent class before self.output_file
            attribute can be created.
         """
 
-        image_name = self.get_config_value('plot_output')
+        image_name = self.get_config_value('plot_filename')
 
-        # remove the old file if it exist
+        # remove the old file if it exists
         if os.path.exists(image_name):
             os.remove(image_name)
 
@@ -160,8 +172,9 @@ class PerformanceDiagram(MetPlot):
             and equal lines of bias
         """
 
-        # This creates a figure size that is of a "reasonable" size
-        fig = plt.figure(figsize=[8.5, 8])
+        # This creates a figure size that is of a "reasonable" size, in inches
+        fig = plt.figure(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
+
 
         #
         # PLOT THE "TEMPLATE" THAT CREATES THE EQUAL LINES OF CSI AND EQUAL LINES OF BIAS
@@ -214,25 +227,40 @@ class PerformanceDiagram(MetPlot):
             cbar = plt.colorbar(cs_var)
             cbar.set_label(csi_label, fontsize=9)
 
-        plt.title(self.config_obj.title, fontsize=self.config_obj.DEFAULT_TITLE_FONTSIZE,
-                  color=self.config_obj.DEFAULT_TITLE_COLOR, fontweight="bold",
-                  fontfamily=self.config_obj.DEFAULT_TITLE_FONT)
+        plt.title(self.config_obj.title, fontsize=constants.DEFAULT_TITLE_FONTSIZE,
+                  color=constants.DEFAULT_TITLE_COLOR, fontweight="bold",
+                  fontfamily=constants.DEFAULT_TITLE_FONT, pad=28)
 
         #
         # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE
         # the statistics data for each model/series
         #
+
+        # "Dump" success ratio and PODY points to an output
+        # file based on the output image filename (useful in debugging)
+        self.write_output_file()
+
         for i, series in enumerate(self.series_list):
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
+
             if series.plot_disp:
                 pody_points = series.series_points[1]
                 sr_points = series.series_points[0]
-                plt.plot(sr_points, pody_points, linestyle=series.linestyle,
-                         linewidth=series.linewidth,
-                         color=series.color, marker=series.marker,
-                         label=series.user_legends,
-                         alpha=0.5, ms=3)
+                # small circle and circle symbols render very small
+                # increase the marker size for these two.
+                if series.marker == '.' or series.marker == 'o':
+                    plt.plot(sr_points, pody_points, linestyle=series.linestyle,
+                             linewidth=series.linewidth,
+                             color=series.color, marker=series.marker,
+                             label=series.user_legends,
+                             alpha=0.5, ms=9)
+                else:
+                    plt.plot(sr_points, pody_points, linestyle=series.linestyle,
+                             linewidth=series.linewidth,
+                             color=series.color, marker=series.marker,
+                             label=series.user_legends,
+                             alpha=0.5, ms=6)
 
                 # Annotate the points with their PODY (i.e. dependent variable value)
                 if not self.config_obj.anno_var :
@@ -249,12 +277,13 @@ class PerformanceDiagram(MetPlot):
                 # Plot error bars if they were requested:
                 if self.config_obj.plot_ci[i] != "NONE":
                     pody_errs = series.series_points[2]
+                    # ecolor=None uses the same line color used to connect
+                    # the markers
+                    # elinewidth explicitly set it to the current linewidth of this
+                    # series line
                     plt.errorbar(sr_points, pody_points, yerr=pody_errs,
-                                 color=series.color, ecolor="black", ms=1, capsize=2)
-
-            ax1.xaxis.set_label_coords(0.5, -0.066)
-            ax1.set_xlabel(xlabel, fontsize=9)
-            ax1.set_ylabel(ylabel, fontsize=9)
+                                 color=series.color, ecolor=None, ms=1, capsize=2,
+                                 elinewidth=self.config_obj.linewidth_list[i])
 
         # example settings, legend is outside of plot along the bottom
         # ax2.legend(bbox_to_anchor=(0, -.14, 1, -.14), loc='lower left', mode='expand',
@@ -267,9 +296,60 @@ class PerformanceDiagram(MetPlot):
         ax1.xaxis.set_label_coords(0.5, -0.066)
         ax1.set_xlabel(xlabel, fontsize=9)
         ax1.set_ylabel(ylabel, fontsize=9)
-        plt.savefig(self.get_config_value('plot_output'))
-        # plt.show()
+        if self.config_obj.yaxis_2:
+            ax2.set_ylabel(self.config_obj.yaxis_2, fontsize=9)
+
+        # use plt.tight_layout() to prevent label box from scrolling off the figure
+        plt.tight_layout()
+        plt.savefig(self.get_config_value('plot_filename'))
         self.save_to_file()
+
+
+    def write_output_file(self):
+        """
+            Writes the 1-FAR and PODY data points that are
+            being plotted
+
+        """
+
+        # Open file, name it based on the stat_input config setting,
+        # (the input data file) except replace the .data
+        # extension with .points1 extension
+        input_filename = self.config_obj.stat_input
+        match = re.match(r'(.*)(.data)', input_filename)
+        if match:
+            filename_only = match.group(1)
+            output_file = filename_only + ".points1"
+
+
+            # make sure this file doesn't already
+            # exit, delete it if it does
+            try:
+                if os.stat(output_file).st_size == 0:
+                    fileobj = open(output_file, 'a')
+                else:
+                  os.remove(output_file)
+            except FileNotFoundError as fnfe:
+                # OK if no file was found
+                pass
+
+            fileobj = open(output_file, 'a')
+            header_str = "1-far\t pody\n"
+            fileobj.write(header_str)
+            all_pody = []
+            all_sr = []
+            for series in self.series_list:
+                pody_points = series.series_points[1]
+                sr_points = series.series_points[0]
+                all_pody.extend(pody_points)
+                all_sr.extend(sr_points)
+
+            all_points = zip(all_sr, all_pody)
+            for idx, pts in enumerate(all_points):
+                data_str = str(pts[0]) + "\t" + str(pts[1]) + "\n"
+                fileobj.write(data_str)
+
+            fileobj.close()
 
 
 def main():
