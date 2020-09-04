@@ -19,12 +19,12 @@ above with your conda env name)
 
 **GET the netCDF input file**
 
-*on host 'eyewall', under the directory:
+on host 'eyewall', under the directory:
 
-**/d1/blocking_S2S_METplotpy/CBL**
+    **/d1/blocking_S2S_METplotpy/CBL**
 
-get the file:
+    get the file:
 
-**Z500dayDJF.nc**
+    **Z500dayDJF.nc**
 
-and save it under the test/data/cbl directory
+    and save it under the test/data/cbl directory
