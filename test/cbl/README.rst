@@ -25,6 +25,6 @@ above with your conda env name)
 
 get the file:
 
-Z500dayDJF.nc
+**Z500dayDJF.nc**
 
 and save it under the test/data/cbl directory
