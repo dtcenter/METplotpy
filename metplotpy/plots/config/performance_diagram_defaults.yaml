@@ -7,6 +7,7 @@ yaxis_1: Probability of Detection (PODY)
 yaxis_2:
 plot_width: 11
 plot_height: 8.5
+plot_units: cm
 plot_ci:
   - none
   - norm
@@ -69,7 +70,10 @@ series_val_1:
     - TROP_CMORPH_G193
 
 series_val2:
-
+list_stat_1:
+  - FAR
+  - PODY
+list_stat_2: []
 user_legend:
   - NH
   - SH
