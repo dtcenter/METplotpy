@@ -10,6 +10,7 @@ import itertools
 import metcalcpy.util.utils as utils
 import plots.constants as constants
 
+
 class Config:
     """
        Handles reading in and organizing configuration settings in the yaml configuration file.
@@ -63,7 +64,10 @@ class Config:
         # in the input dataframe.
         self.series_vals_1 = self._get_series_vals(1)
         self.series_vals_2 = self._get_series_vals(2)
-        self.all_series_vals = self.series_vals_1 + self.series_vals_2
+        self.all_series_vals = self.series_vals_1
+        if self.series_vals_2:
+            self.all_series_vals.extend(self.series_vals_2)
+
 
         # Represent the names of the forecast variables (inner keys) to the fcst_var_val setting.
         # These are the names of the columns in the input dataframe.
@@ -80,7 +84,6 @@ class Config:
         # we want to subset data where column name is 'model', with coincident rows of 'SH_CMORPH'.
         self.series_val_names = self._get_series_val_names()
 
-
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
         Looks for parameter in the user parameter dictionary
@@ -93,7 +96,6 @@ class Config:
         """
 
         return self._get_nested(self.parameters, args)
-
 
     def _get_nested(self, data, args):
         """Recursive function that uses the tuple with keys to find a value
@@ -232,16 +234,14 @@ class Config:
 
         """
 
-
         series_val_dict = self.get_config_value('series_val_1')
-
 
         # Unpack and access the values corresponding to the inner keys
         # (series_var1, series_var2, ..., series_varn).
         if series_val_dict:
-           return [*series_val_dict.keys()]
+            return [*series_val_dict.keys()]
         else:
-           return []
+            return []
 
     def calculate_number_of_series(self):
         """
@@ -262,6 +262,11 @@ class Config:
         # in the lists to produce all permutations of the series_val values and the
         # fcst_var_val values.
         permutations = [p for p in itertools.product(*series_vals_list)]
+
+        if self.series_vals_2:
+            series_vals_list_2 = self.series_vals_2
+            permutations_2 = [p for p in itertools.product(*series_vals_list_2)]
+            permutations.extend(permutations_2)
 
         return len(permutations)
 
@@ -304,7 +309,6 @@ class Config:
         markers_list_ordered = self.create_list_by_series_ordering(markers_list)
         return markers_list_ordered
 
-
     def _get_linewidths(self):
         """ Retrieve all the linewidths from the configuration file, if not
             specified in any config file, use the default values of 2
@@ -333,7 +337,6 @@ class Config:
         linestyle_list_ordered = self.create_list_by_series_ordering(linestyle_list)
         return linestyle_list_ordered
 
-
     def _get_user_legends(self, legend_label_type):
         """
            Retrieve the text that is to be displayed in the legend at the bottom of the plot.
@@ -359,7 +362,6 @@ class Config:
         #        vx_mask:
         #          - CONUS
         # The constructed legend label will be "NoahMPv3.5.1_d01 CONUS Performance"
-
 
         # Check for empty list as setting in the config file
         legends_list = []
@@ -390,7 +392,7 @@ class Config:
             return [legend_label_type]
 
         perms = utils.create_permutations(series_list)
-        for idx,ll in enumerate(legends_list):
+        for idx, ll in enumerate(legends_list):
             if ll == ' ':
                 if len(series_list) > 1:
                     label_parts = [perms[idx][0], ' ', perms[idx][1], ' ', legend_label_type]
@@ -443,7 +445,6 @@ class Config:
             # no plot_res value is set, return the default
             # dpi used by matplotlib
             return dpi
-
 
     def create_list_by_series_ordering(self, setting_to_order):
         """
@@ -499,7 +500,6 @@ class Config:
             ordered_settings_list.append(setting_to_order[series])
 
         return ordered_settings_list
-
 
     def calculate_plot_dimension(self, config_value, output_units):
         '''
