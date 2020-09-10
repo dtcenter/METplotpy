@@ -27,4 +27,4 @@ on host 'eyewall', under the directory:
 
     **Z500dayDJF.nc**
 
-    and save it under the test/data/cbl directory
+    and save it under the METplotpy/metplotpy/blocking_s2s directory
