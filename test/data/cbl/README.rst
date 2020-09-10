@@ -5,9 +5,6 @@
      Get this file from host 'eyewall' under the directory:
      */d1/blocking_S2S_METplotpy/CBL*
 
-**CBL_compute.py**
-     calculates the blocking layer and then invokes the method in CBL_plot.py to generate the
-     .pdf and .png
 
 **CBL_DJF_expected.png**
      is the plot that should be generated when you run CBL_compute.py
