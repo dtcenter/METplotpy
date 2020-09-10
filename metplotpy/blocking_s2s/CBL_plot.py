@@ -4,7 +4,9 @@ from pylab import *
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 import cartopy.crs as ccrs
 import numpy as np
-from metcalcpy.util.utils import convert_coords
+import warnings
+
+from metcalcpy.util.utils import convert_lon_360_to_180 as cl
 
 def create_cbl_plot(lons, lats, mean_cbl, mmstd, month_str, output_plotname):
     """
@@ -22,6 +24,10 @@ def create_cbl_plot(lons, lats, mean_cbl, mmstd, month_str, output_plotname):
              Generates an output file in pdf format, with name and location as specified in the
              output_plotname input argument.
     """
+    # Ignore the MatplotlibDeprecationWarning.  draw() isn't being used and is
+    # unaffected by the deprecation in Matplotlib 3.3.  This code was
+    # developed using Matplotlib 3.3.1
+    warnings.filterwarnings("ignore")
 
     # center the plot at 0 degrees longitude
     lon_center = 0
@@ -50,7 +56,7 @@ def create_cbl_plot(lons, lats, mean_cbl, mmstd, month_str, output_plotname):
     # lons in data are [0,360], but we need [-180,180] for the plot
     # calculate the new lon range using formula ((lons + 180.0)%360.0) - 180.0
     # new_lons = np.mod(lons + 180.0, 360.0) - 180.0
-    new_lons = convert_coords(lons)
+    new_lons = cl(lons)
     minlon = min(new_lons)
     maxlon = max(new_lons)
     ax.set_extent([minlon, maxlon, 0, 90], ccrs.PlateCarree())
@@ -59,5 +65,8 @@ def create_cbl_plot(lons, lats, mean_cbl, mmstd, month_str, output_plotname):
     full_output_plot = output_plotname + "." + fmt
     # plt.savefig("./CBL_" + str(month_str) + "." + fmt, format=fmt, dpi=400, bbox_inches='tight')
     plt.savefig(full_output_plot, format=fmt, dpi=400, bbox_inches='tight')
+    fmt2 = 'png'
+    full_output_plot2 = output_plotname + "." + fmt2
+    plt.savefig(full_output_plot2, format=fmt2, dpi=400, bbox_inches='tight')
 
-    plt.show()
+    # plt.show()
