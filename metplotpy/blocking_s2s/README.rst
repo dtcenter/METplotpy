@@ -1,5 +1,31 @@
 README
 
+**Required packages**
+
+Python 3.6.3
+
+Matplotlib 3.3.1
+
+Cartopy 0.17.1
+
+metcalcpy  (see README of github.com/dtcenter/METcalcpy for instructions to install locally into your conda env)
+
+numpy
+
+pandas
+
+psutil
+
+pytest
+
+pyyaml
+
+scikit-image 
+
+scipy
+
+*(Please add any other packages to this list, if we accidentally omitted any)*
+
 **Description**
 
 CBL_plot.py is the plotting only portion of the original CBL.py
