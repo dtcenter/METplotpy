@@ -1,11 +1,7 @@
-#! /usr/bin/env conda run -n blenny_363 python
+#!/usr/bin/env conda run -n blenny_363 python
 
-import pytest
-import warnings
-import CBL_compute as cc
-
+from blocking_s2s import CBL_compute as cc
 from metcalcpy.compare_images import CompareImages
-
 
 def test_create_cbl_plot():
     """
@@ -13,8 +9,9 @@ def test_create_cbl_plot():
         one generated.  Invoke the CBL_compute.py
         script to generate the latest CBL_DJF.png
     """
-    file1 = '../data/CBL/Z500dayDJF.nc'
+    file1 = '../../metplotpy/blocking_S2S/Z500dayDJF.nc'
     cc.main(file1)
-    comparison = CompareImages('../data/CBL/CBL_DJF_expected.png', '../data/CBL/CBL_DJF.png')
+    comparison = CompareImages('../data/CBL/CBL_DJF_expected.png', 'CBL_DJF.png')
     assert comparison.mssim == 1
+    # assert True
 
