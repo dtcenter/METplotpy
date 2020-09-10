@@ -3,8 +3,10 @@ Class Name: series.py
  """
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
+
 import itertools
 import metcalcpy.util.utils as utils
+
 
 class Series:
     """
@@ -13,10 +15,12 @@ class Series:
         Each series is depicted by a single line in the performance diagram.
 
     """
-    def __init__(self, config, idx, input_data):
+
+    def __init__(self, config, idx: int, input_data, y_axis: int = 1):
         self.config = config
         self.idx = idx
         self.input_data = input_data
+        self.y_axis = y_axis
         self.plot_disp = config.plot_disp[idx]
         self.plot_stat = config.plot_stat
         self.color = config.colors_list[idx]
@@ -41,5 +45,3 @@ class Series:
 
         # Subset the data for this series object
         self.series_points = self._create_series_points()
-
-

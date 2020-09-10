@@ -95,6 +95,8 @@ class LineConfig(Config):
         self.all_series_y2 = self._get_all_series_y(2)
         self.all_series = self._get_all_series()
         self.user_legends = self._get_user_legends("")
+        self.indy_stagger = self._get_bool('indy_stagger_1')
+
 
     def _get_series_inner_dict(self, index):
 

@@ -68,7 +68,6 @@ class Config:
         if self.series_vals_2:
             self.all_series_vals.extend(self.series_vals_2)
 
-
         # Represent the names of the forecast variables (inner keys) to the fcst_var_val setting.
         # These are the names of the columns in the input dataframe.
         self.fcst_vars_1 = self._get_fcst_vars(1)
@@ -547,3 +546,22 @@ class Config:
             converted_value = 10
 
         return converted_value
+
+    def _get_bool(self, param: str):
+        """
+        Validates the value of the parameter and returns a boolean
+        Args:
+            :param param: name of the parameter
+        Returns:
+            :return: boolean value
+        """
+
+        param_val = self.get_config_value(param)
+        if type(param_val) is bool:
+            return param_val
+
+        if type(param_val) is str:
+            return param_val == 'True'
+
+        else:
+            return None
