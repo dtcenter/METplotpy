@@ -96,6 +96,9 @@ class LineConfig(Config):
         self.all_series = self._get_all_series()
         self.user_legends = self._get_user_legends("")
         self.indy_stagger = self._get_bool('indy_stagger_1')
+        self.variance_inflation_factor = self._get_bool('variance_inflation_factor')
+        self.dump_points_1 = self._get_bool('dump_points_1')
+        self.dump_points_2 = self._get_bool('dump_points_2')
 
 
     def _get_series_inner_dict(self, index):
@@ -431,7 +434,7 @@ class LineConfig(Config):
         all_legends = self.get_config_value('user_legend')
         ll_list = []
         for idx, ll in enumerate(self.all_series):
-            if idx >= len(all_legends) or all_legends[idx] == ' ':
+            if idx >= len(all_legends) or all_legends[idx].strip() == '':
                 ll_list.append(' '.join(map(str, ll)))
             else:
                 ll_list.append(all_legends[idx])
