@@ -112,11 +112,11 @@ class LineSeries(Series):
                     std_err_vals = utils.compute_std_err_from_mean(point_data['stat_value'].tolist())
 
                 elif self.config.plot_stat == 'MEDIAN':
-                    if not self.config.get_config_value('variance_inflation_factor'):
-                        std_err_vals = utils.compute_std_err_from_median_no_variance_inflation_factor(
+                    if  self.config.variance_inflation_factor is True:
+                        std_err_vals = utils.compute_std_err_from_median_variance_inflation_factor(
                             point_data['stat_value'].tolist())
                     else:
-                        std_err_vals = utils.compute_std_err_from_median_variance_inflation_factor(
+                        std_err_vals = utils.compute_std_err_from_median_no_variance_inflation_factor(
                             point_data['stat_value'].tolist())
 
                 elif self.config.plot_stat == 'SUM':
