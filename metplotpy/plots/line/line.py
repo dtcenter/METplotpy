@@ -10,6 +10,7 @@ import plotly.graph_objects as go
 import numpy as np
 import yaml
 import pandas as pd
+import re
 
 from plots.line.line_config import LineConfig
 from plots.line.line_series import LineSeries
@@ -222,7 +223,8 @@ class Line(MetPlot):
         n_stats = [0] * len(x_points)
         # "Dump" False Detection Rate (POFD) and PODY points to an output
         # file based on the output image filename (useful in debugging)
-        # self.write_output_file()
+        if self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is True:
+            self.write_output_file()
 
         # TODO add diff series
         num_stag = len(self.config_obj.all_series_y1) + len(self.config_obj.all_series_y2)
@@ -342,7 +344,51 @@ class Line(MetPlot):
     def write_html(self):
         name_arr = self.get_config_value('plot_filename').split('.')
         html_name = name_arr[0] + ".html"
-        self.figure.write_html(html_name, include_plotlyjs=True)
+        self.figure.write_html(html_name, include_plotlyjs=False)
+
+    def write_output_file(self):
+        """
+            Writes the POFD (False alarm ratio) and PODY data points that are
+            being plotted
+
+        """
+
+        # Open file, name it based on the stat_input config setting,
+        # (the input data file) except replace the .data
+        # extension with .points1 extension
+        input_filename = self.config_obj.stat_input
+        match = re.match(r'(.*)(.data)', input_filename)
+        if match:
+            filename_only = match.group(1)
+            output_file_1 = filename_only + ".points1"
+            output_file_2 = filename_only + ".points2"
+
+            all_points_1 = [[0 for x in range(len(self.config_obj.all_series_y1) * 3)] for y in
+                            range(len(self.config_obj.indy_vals))]
+            if self.config_obj.series_vals_2:
+                all_points_2 = [[0 for x in range(len(self.config_obj.all_series_y2) * 3)] for y in
+                                range(len(self.config_obj.indy_vals))]
+
+            for idx, series in enumerate(self.series_list):
+                y_points = series.series_points['dbl_med']
+                dbl_up_ci = series.series_points['dbl_up_ci']
+                dbl_lo_ci = series.series_points['dbl_lo_ci']
+                if series.y_axis == 1:
+                    for x in range(len(self.config_obj.indy_vals)):
+                        all_points_1[x][idx * 3] = y_points[x]
+                        all_points_1[x][idx * 3 + 1] = y_points[x] -dbl_lo_ci[x]
+                        all_points_1[x][idx * 3 + 2] = y_points[x] +dbl_up_ci[x]
+                else:
+                    adjusted_idx = idx - len(self.config_obj.all_series_y1)
+                    for x in range(len(self.config_obj.indy_vals)):
+                        all_points_2[x][adjusted_idx * 3] = y_points[x]
+                        all_points_2[x][adjusted_idx * 3 + 1] = y_points[x] - dbl_lo_ci[x]
+                        all_points_2[x][adjusted_idx * 3 + 2] = y_points[x] + dbl_up_ci[x]
+
+            if self.config_obj.dump_points_1 is True:
+                np.savetxt(output_file_1, all_points_1, fmt='%.6f')
+            if self.config_obj.series_vals_2 and self.config_obj.dump_points_2 is True:
+                np.savetxt(output_file_2, all_points_2, fmt='%.6f')
 
 
 def main():
