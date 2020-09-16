@@ -177,12 +177,10 @@ class Line(MetPlot):
         # Set x-axis title
         x_points = self.config_obj.indy_vals
         x_points_index = list(range(0, len(x_points)))
+
         fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="#c2c2c2", linewidth=2, showgrid=True,
                          ticks="inside",
                          gridwidth=0.5, gridcolor='#F8F8F8')
-
-        # fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="black", linewidth=2, showgrid=False,
-        #                  range=[0.0, 1.0], dtick=0.1)
 
         # Set y-axes titles
         fig.update_yaxes(title_text=self.config_obj.yaxis_1, secondary_y=False, linecolor="#c2c2c2", linewidth=2,
@@ -303,6 +301,10 @@ class Line(MetPlot):
                     ticktext=x_points
                 )
             )
+
+        if self.config_obj.xaxis_reverse is True:
+            fig.update_xaxes(autorange="reversed")
+
         # add x2 axis if applicable
         if self.config_obj.show_nstats:
             fig.update_layout(xaxis2=XAxis(title_text='NStats', overlaying='x', side='top', linecolor="#c2c2c2",
