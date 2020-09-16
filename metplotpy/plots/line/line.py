@@ -54,7 +54,7 @@ class Line(MetPlot):
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
-        if self.config_obj.use_ee:
+        if self.config_obj.use_ee is True:
             self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
 
         # Create a list of series objects.
@@ -191,9 +191,6 @@ class Line(MetPlot):
             fig.update_yaxes(title_text=self.config_obj.yaxis_2, secondary_y=True, linecolor="#c2c2c2", linewidth=2,
                              showgrid=False, zeroline=False, ticks="inside", gridwidth=0.5, gridcolor='#F8F8F8')
 
-        # set the range of the x-axis and y-axis to range from 0 to 1
-        # fig.update_layout(xaxis=dict(range=[0., 1.]))
-        # fig.update_layout(yaxis=dict(range=[0., 1.]))
 
         # style the legend box
         if self.config_obj.draw_box:
@@ -260,6 +257,14 @@ class Line(MetPlot):
                 else:
                     x_points_index_adj = x_points_index + stag_vals[idx]
 
+                if self.config_obj.vert_plot is True:
+                    temp = y_points
+                    y_points = x_points_index_adj
+                    x_points_index_adj = temp
+
+
+
+
                 # add the plot
                 fig.add_trace(
                     go.Scatter(x=x_points_index_adj, y=y_points, showlegend=True, mode=self.config_obj.mode[idx],
@@ -281,14 +286,23 @@ class Line(MetPlot):
                 )
                 n_stats = list(map(add, n_stats, series.series_points['nstat']))
 
-        # update x1 axis ticks and tick text
-        fig.update_layout(
-            xaxis=dict(
-                tickmode='array',
-                tickvals=x_points_index,
-                ticktext=x_points
+        # update x1 or y1 axis ticks and tick text
+        if self.config_obj.vert_plot is True:
+            fig.update_layout(
+                yaxis=dict(
+                    tickmode='array',
+                    tickvals=x_points_index,
+                    ticktext=x_points
+                )
             )
-        )
+        else:
+            fig.update_layout(
+                xaxis=dict(
+                    tickmode='array',
+                    tickvals=x_points_index,
+                    ticktext=x_points
+                )
+            )
         # add x2 axis if applicable
         if self.config_obj.show_nstats:
             fig.update_layout(xaxis2=XAxis(title_text='NStats', overlaying='x', side='top', linecolor="#c2c2c2",

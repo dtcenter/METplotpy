@@ -99,6 +99,7 @@ class LineConfig(Config):
         self.variance_inflation_factor = self._get_bool('variance_inflation_factor')
         self.dump_points_1 = self._get_bool('dump_points_1')
         self.dump_points_2 = self._get_bool('dump_points_2')
+        self.vert_plot = self._get_bool('vert_plot')
 
 
     def _get_series_inner_dict(self, index):
