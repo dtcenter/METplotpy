@@ -4,7 +4,7 @@
 # conda environment name
 # !!!!!!!!
 
-# !/usr/bin/env conda run -n blenny_363 python
+#!/usr/bin/env conda run -n blenny_363 python
 
 import pytest
 import os
