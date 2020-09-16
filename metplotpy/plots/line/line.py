@@ -189,7 +189,6 @@ class Line(MetPlot):
             fig.update_yaxes(title_text=self.config_obj.yaxis_2, secondary_y=True, linecolor="#c2c2c2", linewidth=2,
                              showgrid=False, zeroline=False, ticks="inside", gridwidth=0.5, gridcolor='#F8F8F8')
 
-
         # style the legend box
         if self.config_obj.draw_box:
             fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
@@ -234,12 +233,27 @@ class Line(MetPlot):
                                     True)
             stag_vals = stag_vals + dbl_adj_scale / 2
 
+        yaxis_min = None
+        yaxis_max = None
+
         for idx, series in enumerate(self.series_list):
 
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
             if series.plot_disp:
                 y_points = series.series_points['dbl_med']
+
+                # collect min-max if we need to sync axis
+                if self.config_obj.sync_yaxes is True and series.y_axis == 1:
+                    if yaxis_min is None:
+                        yaxis_min = min(y_points)
+                        yaxis_max = max(y_points)
+                    else:
+                        if yaxis_min > min(y_points):
+                            yaxis_min = min(y_points)
+                        if yaxis_max < max(y_points):
+                            yaxis_max = max(y_points)
+
                 legend_label = self.config_obj.user_legends[idx]
 
                 # show or not ci
@@ -259,9 +273,6 @@ class Line(MetPlot):
                     temp = y_points
                     y_points = x_points_index_adj
                     x_points_index_adj = temp
-
-
-
 
                 # add the plot
                 fig.add_trace(
@@ -302,8 +313,14 @@ class Line(MetPlot):
                 )
             )
 
+        # reverse xaxis if needed
         if self.config_obj.xaxis_reverse is True:
             fig.update_xaxes(autorange="reversed")
+
+        #  Synch y axis if needed
+        if self.config_obj.sync_yaxes is True:
+            fig['layout']['yaxis1'].update(range=[yaxis_min, yaxis_max], autorange=False)
+            fig['layout']['yaxis2'].update(range=[yaxis_min, yaxis_max], autorange=False)
 
         # add x2 axis if applicable
         if self.config_obj.show_nstats:
@@ -392,8 +409,8 @@ class Line(MetPlot):
                 if series.y_axis == 1:
                     for x in range(len(self.config_obj.indy_vals)):
                         all_points_1[x][idx * 3] = y_points[x]
-                        all_points_1[x][idx * 3 + 1] = y_points[x] -dbl_lo_ci[x]
-                        all_points_1[x][idx * 3 + 2] = y_points[x] +dbl_up_ci[x]
+                        all_points_1[x][idx * 3 + 1] = y_points[x] - dbl_lo_ci[x]
+                        all_points_1[x][idx * 3 + 2] = y_points[x] + dbl_up_ci[x]
                 else:
                     adjusted_idx = idx - len(self.config_obj.all_series_y1)
                     for x in range(len(self.config_obj.indy_vals)):

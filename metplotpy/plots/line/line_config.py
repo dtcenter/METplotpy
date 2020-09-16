@@ -100,7 +100,8 @@ class LineConfig(Config):
         self.dump_points_1 = self._get_bool('dump_points_1')
         self.dump_points_2 = self._get_bool('dump_points_2')
         self.vert_plot = self._get_bool('vert_plot')
-
+        self.xaxis_reverse = self._get_bool('xaxis_reverse')
+        self.sync_yaxes = self._get_bool('sync_yaxes')
 
     def _get_series_inner_dict(self, index):
 
@@ -282,7 +283,7 @@ class LineConfig(Config):
                 # the recognized plotly marker names:
                 # circle-open (for small circle), circle, triangle-up,
                 # square, diamond, or hexagon
-                line_style_list.append( constants.LINE_STYLE_TO_PLOTLY_DASH[line_style])
+                line_style_list.append(constants.LINE_STYLE_TO_PLOTLY_DASH[line_style])
             else:
                 line_style_list.append(None)
         line_style_list_ordered = self.create_list_by_series_ordering(line_style_list)
@@ -324,7 +325,7 @@ class LineConfig(Config):
         markers = self.get_config_value('series_symbols')
         markers_size = []
         for marker in markers:
-           markers_size.append(constants.PCH_TO_PLOTLY_MARKER_SIZE[marker])
+            markers_size.append(constants.PCH_TO_PLOTLY_MARKER_SIZE[marker])
 
         markers_size_ordered = self.create_list_by_series_ordering(markers_size)
         return markers_size_ordered
