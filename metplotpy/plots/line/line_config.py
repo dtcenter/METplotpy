@@ -102,6 +102,7 @@ class LineConfig(Config):
         self.vert_plot = self._get_bool('vert_plot')
         self.xaxis_reverse = self._get_bool('xaxis_reverse')
         self.sync_yaxes = self._get_bool('sync_yaxes')
+        self.grid_on = self._get_bool('grid_on')
 
     def _get_series_inner_dict(self, index):
 

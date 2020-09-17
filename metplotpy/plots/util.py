@@ -6,6 +6,10 @@ import argparse
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
+import matplotlib
+import numpy as np
+
+
 def read_config_from_command_line():
     """
         Read the "custom" config file from the command line
@@ -25,3 +29,18 @@ def read_config_from_command_line():
     # Execute the parse_args() method
     args = parser.parse_args()
     return args.Path
+
+
+def alpha_blending(hex_color: str, alpha: float) -> str:
+    """ Alpha color blending as if on the white background.
+        Useful for gridlines
+
+    Args:
+        @param hex_color - the color in hex
+        @param alpha - Alpha value between 0 and 1
+    Returns: blended hex color
+    """
+    foreground_tuple = matplotlib.colors.hex2color(hex_color)
+    foreground_arr = np.array(foreground_tuple)
+    final = tuple((1. - alpha) + foreground_arr * alpha)
+    return matplotlib.colors.rgb2hex(final)

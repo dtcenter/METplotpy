@@ -178,16 +178,24 @@ class Line(MetPlot):
         x_points = self.config_obj.indy_vals
         x_points_index = list(range(0, len(x_points)))
 
-        fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="#c2c2c2", linewidth=2, showgrid=True,
+        blended_grid_col = util.alpha_blending(self.config_obj.get_config_value('grid_col'), 0.5)
+
+        fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="#c2c2c2", linewidth=2,
+                         showgrid=self.config_obj.grid_on,
                          ticks="inside",
-                         gridwidth=0.5, gridcolor='#F8F8F8')
+                         zeroline=False,
+                         gridwidth=self.config_obj.get_config_value('grid_lwd') / 2,
+                         gridcolor=blended_grid_col)
 
         # Set y-axes titles
         fig.update_yaxes(title_text=self.config_obj.yaxis_1, secondary_y=False, linecolor="#c2c2c2", linewidth=2,
-                         showgrid=True, zeroline=False, ticks="inside", gridwidth=0.5, gridcolor='#F8F8F8')
+                         showgrid=self.config_obj.grid_on,
+                         zeroline=False, ticks="inside",
+                         gridwidth=self.config_obj.get_config_value('grid_lwd') / 2,
+                         gridcolor=blended_grid_col)
         if self.config_obj.parameters['list_stat_2']:
             fig.update_yaxes(title_text=self.config_obj.yaxis_2, secondary_y=True, linecolor="#c2c2c2", linewidth=2,
-                             showgrid=False, zeroline=False, ticks="inside", gridwidth=0.5, gridcolor='#F8F8F8')
+                             showgrid=False, zeroline=False, ticks="inside")
 
         # style the legend box
         if self.config_obj.draw_box:
@@ -422,6 +430,8 @@ class Line(MetPlot):
                 np.savetxt(output_file_1, all_points_1, fmt='%.6f')
             if self.config_obj.series_vals_2 and self.config_obj.dump_points_2 is True:
                 np.savetxt(output_file_2, all_points_2, fmt='%.6f')
+
+
 
 
 def main():
