@@ -45,3 +45,10 @@ class Series:
 
         # Subset the data for this series object
         self.series_points = self._create_series_points()
+
+    def _create_series_points(self):
+        """
+        Abstract method that create series points.
+
+        """
+        raise NotImplementedError
