@@ -113,12 +113,12 @@ class Line(MetPlot):
         # use the list of series ordering values to determine how many series objects we need.
         num_series_y1 = len(self.config_obj.all_series_y1)
         for i, series in enumerate(range(num_series_y1)):
-            series_obj = LineSeries(self.config_obj, i, input_data)
+            series_obj = LineSeries(self.config_obj, i, input_data, series_list)
             series_list.append(series_obj)
 
         num_series_y2 = len(self.config_obj.all_series_y2)
         for i, series in enumerate(range(num_series_y2)):
-            series_obj = LineSeries(self.config_obj, num_series_y1 + i, input_data, 2)
+            series_obj = LineSeries(self.config_obj, num_series_y1 + i, input_data, series_list, 2)
             series_list.append(series_obj)
 
         return series_list
@@ -417,21 +417,40 @@ class Line(MetPlot):
                 if series.y_axis == 1:
                     for x in range(len(self.config_obj.indy_vals)):
                         all_points_1[x][idx * 3] = y_points[x]
-                        all_points_1[x][idx * 3 + 1] = y_points[x] - dbl_lo_ci[x]
-                        all_points_1[x][idx * 3 + 2] = y_points[x] + dbl_up_ci[x]
+                        if not y_points[x] is None and not dbl_lo_ci[x] is None:
+                            all_points_1[x][idx * 3 + 1] = y_points[x] - dbl_lo_ci[x]
+                        else:
+                            all_points_1[x][idx * 3 + 1] = None
+
+                        if not y_points[x] is None and not dbl_up_ci[x] is None:
+                            all_points_1[x][idx * 3 + 2] = y_points[x] + dbl_up_ci[x]
+                        else:
+                            all_points_1[x][idx * 3 + 2] = None
                 else:
                     adjusted_idx = idx - len(self.config_obj.all_series_y1)
                     for x in range(len(self.config_obj.indy_vals)):
                         all_points_2[x][adjusted_idx * 3] = y_points[x]
-                        all_points_2[x][adjusted_idx * 3 + 1] = y_points[x] - dbl_lo_ci[x]
-                        all_points_2[x][adjusted_idx * 3 + 2] = y_points[x] + dbl_up_ci[x]
+                        if not y_points[x] is None and not dbl_lo_ci[x] is None:
+                            all_points_2[x][adjusted_idx * 3 + 1] = y_points[x] - dbl_lo_ci[x]
+                        else:
+                            all_points_2[x][adjusted_idx * 3 + 1] = None
+
+                        if not y_points[x] is None and not dbl_up_ci[x] is None:
+                            all_points_2[x][adjusted_idx * 3 + 2] = y_points[x] + dbl_up_ci[x]
+                        else:
+                            all_points_2[x][adjusted_idx * 3 + 2] = None
 
             if self.config_obj.dump_points_1 is True:
-                np.savetxt(output_file_1, all_points_1, fmt='%.6f')
+                try:
+                    np.savetxt(output_file_1, all_points_1, fmt='%.6f')
+                except TypeError:
+                    print('Can\'t save points to a file')
+
             if self.config_obj.series_vals_2 and self.config_obj.dump_points_2 is True:
-                np.savetxt(output_file_2, all_points_2, fmt='%.6f')
-
-
+                try:
+                    np.savetxt(output_file_2, all_points_2, fmt='%.6f')
+                except TypeError:
+                    print('Can\'t save points to a file')
 
 
 def main():

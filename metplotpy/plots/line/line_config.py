@@ -7,9 +7,13 @@ __author__ = 'Minna Win, Hank Fisher'
 __email__ = 'met_help@ucar.edu'
 
 import re
+
+from metcalcpy.util.utils import OPERATION_TO_SIGN
 from plots.config import Config
 import plots.constants as constants
 import itertools
+
+import metcalcpy.util.utils as utils
 
 
 class LineConfig(Config):
@@ -93,7 +97,6 @@ class LineConfig(Config):
 
         self.all_series_y1 = self._get_all_series_y(1)
         self.all_series_y2 = self._get_all_series_y(2)
-        self.all_series = self._get_all_series()
         self.user_legends = self._get_user_legends("")
         self.indy_stagger = self._get_bool('indy_stagger_1')
         self.variance_inflation_factor = self._get_bool('variance_inflation_factor')
@@ -436,9 +439,13 @@ class LineConfig(Config):
 
         all_legends = self.get_config_value('user_legend')
         ll_list = []
-        for idx, ll in enumerate(self.all_series):
+        for idx, ll in enumerate(self._get_all_series()):
             if idx >= len(all_legends) or all_legends[idx].strip() == '':
-                ll_list.append(' '.join(map(str, ll)))
+                if len(ll) == 3 and ll[2] in OPERATION_TO_SIGN.keys():
+                    # this is a derived series
+                    ll_list.append(utils.get_derived_curve_name(ll))
+                else:
+                    ll_list.append(' '.join(map(str, ll)))
             else:
                 ll_list.append(all_legends[idx])
 
@@ -452,11 +459,19 @@ class LineConfig(Config):
 
         return all_series
 
-    def _get_all_series_y(self, axis):
+    def get_series_y(self, axis):
         all_fields_values = self.get_config_value('series_val_' + str(axis)).copy()
         if self._get_fcst_vars(axis):
             all_fields_values['fcst_var'] = list(self._get_fcst_vars(axis).keys())
 
         all_fields_values['stat_name'] = self.get_config_value('list_stat_' + str(axis))
-
         return list(itertools.product(*all_fields_values.values()))
+
+    def _get_all_series_y(self, axis):
+        all_series = self.get_series_y(axis)
+
+        # add derived series if exist
+        if self.get_config_value('derived_series_' + str(axis)):
+            all_series = all_series + self.get_config_value('derived_series_' + str(axis))
+
+        return all_series

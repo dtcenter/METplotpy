@@ -21,24 +21,14 @@ class LineSeries(Series):
 
     """
 
-    def __init__(self, config, idx: int, input_data, y_axis: int = 1):
+    def __init__(self, config, idx: int, input_data, series_list: list, y_axis: int = 1):
+        self.series_list = series_list
+        self.series_name = ''
+        self.series_data = None
         super().__init__(config, idx, input_data, y_axis)
 
-    def _create_series_points(self):
+    def _create_series_points(self) -> dict:
         """
-           Subset the data for the appropriate series.  Data input can
-           originate from CTC linetype or PCT linetype.  The methodology
-           will depend on the linetype.
-
-           Args:
-
-           Returns:
-               tuple of three lists:
-                                   pody (Probability of detection) and
-                                   pofd (probability of false detection/
-                                         false alarm rate)
-                                   thresh (threshold value, used to annotate)
-
 
         """
         # Subset data based on self.all_series_vals that we acquired from the
@@ -51,26 +41,15 @@ class LineSeries(Series):
 
         all_fields_values['stat_name'] = self.config.get_config_value('list_stat_' + str(self.y_axis))
 
-        if self.config.indy_vals:
-            all_fields_values[self.config.indy_var] = self.config.indy_vals
+        list_of_series_names = list(itertools.product(*all_fields_values.values()))
+        all_fields_values_no_indy = all_fields_values.copy()
 
-        all_points = list(itertools.product(*all_fields_values.values()))
-
-        # calculate index adjustment for y2 axis
-        y2_ind_adjust = 0
-        if self.y_axis == 2:
-            y2_ind_adjust = len(self.config.all_series_y1)
-
-        start_index = (self.idx-y2_ind_adjust) * len(self.config.indy_vals)
-        end_index = start_index + len(self.config.indy_vals)
-        series_points = all_points[start_index: end_index]
-
-        series_points_results = {'dbl_lo_ci': [], 'dbl_med': [], 'dbl_up_ci': [], 'nstat': []}
-        # for each point
-        for point_ind, point in enumerate(series_points):
+        if self.idx < len(list_of_series_names):
+            # this is a normal series
+            self.series_name = list_of_series_names[self.idx]
             all_filters = []
-            for field_ind, field in enumerate(all_fields_values.keys()):
-                filter_value = point[field_ind]
+            for field_ind, field in enumerate(all_fields_values_no_indy.keys()):
+                filter_value = self.series_name[field_ind]
                 if "," in filter_value:
                     filter_list = filter_value.split(',')
                 elif ";" in filter_value:
@@ -84,51 +63,133 @@ class LineSeries(Series):
                 all_filters.append((self.input_data[field].isin(filter_list)))
             # use numpy to select the rows where any record evaluates to True
             mask = np.array(all_filters).all(axis=0)
-            point_data = self.input_data.loc[mask]
-
+            self.series_data = self.input_data.loc[mask]
             # sort data by date/time - needed for CI calculations
-            if 'fcst_valid_beg' in point_data.columns:
-                point_data = point_data.sort_values(['fcst_valid_beg', 'fcst_lead'])
-            elif 'fcst_valid' in point_data.columns:
-                point_data = point_data.sort_values(['fcst_valid', 'fcst_lead'])
+            if 'fcst_valid_beg' in self.series_data.columns:
+                self.series_data = self.series_data.sort_values(['fcst_valid_beg', 'fcst_lead'])
+            if 'fcst_valid' in self.series_data.columns:
+                self.series_data = self.series_data.sort_values(['fcst_valid', 'fcst_lead'])
+            if 'fcst_init_beg' in self.series_data.columns:
+                self.series_data = self.series_data.sort_values(['fcst_init_beg', 'fcst_lead'])
+            if 'fcst_init' in self.series_data.columns:
+                self.series_data = self.series_data.sort_values(['fcst_init', 'fcst_lead'])
 
-            # calculate point stat
-            if self.config.plot_stat == 'MEAN':
-                point_stat = np.nanmean(point_data['stat_value'])
-            elif self.config.plot_stat == 'MEDIAN':
-                point_stat = np.nanmedian(point_data['stat_value'])
-            elif self.config.plot_stat == 'SUM':
-                point_stat = np.nansum(point_data['stat_value'])
-            else:
-                point_stat = None
+        else:
+            # this is a derived series
 
-            series_ci = self.config.plot_ci[self.idx]
-            dbl_lo_ci = 0
-            dbl_up_ci = 0
+            # TODO  check if the input frame already has diff series ( from calculation agg stats )
 
-            if 'STD' == series_ci and len(point_data) > 0:
-                std_err_vals = None
+            derived_series_index = self.idx - len(self.config.get_series_y(self.y_axis))
+
+            self.series_name = self.config.get_config_value('derived_series_' + str(self.y_axis))[
+                derived_series_index]
+            series_name_1 = self.series_name[0].split()
+            series_name_2 = self.series_name[1].split()
+            operation = self.series_name[2]
+
+            # find original series
+            for series in self.series_list:
+                if set(series_name_1) == set(series.series_name):
+                    series_1 = series
+                if set(series_name_2) == set(series.series_name):
+                    series_2 = series
+
+            for indy in self.config.indy_vals:
+                if utils.is_string_integer(indy):
+                    indy = int(indy)
+                stats_indy_1 = series_1.series_data.loc[series_1.series_data[self.config.indy_var] == indy]
+                stats_indy_2 = series_2.series_data.loc[series_2.series_data[self.config.indy_var] == indy]
+
+                # validate data
+                if 'fcst_valid_beg' in stats_indy_1.columns:
+                    unique_dates = stats_indy_1[['fcst_valid_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                elif 'fcst_valid' in stats_indy_1.columns:
+                    unique_dates = stats_indy_1[['fcst_valid', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                elif 'fcst_init_beg' in stats_indy_1.columns:
+                    unique_dates = stats_indy_1[['fcst_init_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                else:
+                    unique_dates = stats_indy_1[['fcst_init', 'fcst_lead', 'stat_name"']].drop_duplicates().shape[0]
+                if stats_indy_1.shape[0] != unique_dates:
+                    raise ValueError('Derived curve can\'t be calculated. Multiple values for one valid date/fcst_lead')
+
+                # data should be sorted
+
+                stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_value'].tolist(),
+                                                              stats_indy_2['stat_value'].tolist(),
+                                                              operation)
+                stats_indy_1 = stats_indy_1.drop(columns=['stat_value'])
+                stats_indy_1['stat_value'] = stats_values
+
+                if 'stat_bcl' in stats_indy_1.columns:
+                    stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_bcl'].tolist(),
+                                                                  stats_indy_2['stat_bcl'].tolist(),
+                                                                  operation)
+                    stats_indy_1 = stats_indy_1.drop(columns=['stat_bcl'])
+                    stats_indy_1['stat_bcl'] = stats_values
+
+                if 'stat_bcu' in stats_indy_1.columns:
+                    stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_bcu'].tolist(),
+                                                                  stats_indy_2['stat_bcu'].tolist(),
+                                                                  operation)
+                    stats_indy_1 = stats_indy_1.drop(columns=['stat_bcu'])
+                    stats_indy_1['stat_bcu'] = stats_values
+
+                if self.series_data is None:
+                    self.series_data = stats_indy_1
+                else:
+                    self.series_data = self.series_data.append(stats_indy_1)
+
+        series_points_results = {'dbl_lo_ci': [], 'dbl_med': [], 'dbl_up_ci': [], 'nstat': []}
+        # for each point
+        for point_ind, indy in enumerate(self.config.indy_vals):
+            if utils.is_string_integer(indy):
+                indy = int(indy)
+
+            point_data = self.series_data.loc[self.series_data[self.config.indy_var] == indy]
+
+            if len(point_data) > 0:
+
+                # calculate point stat
                 if self.config.plot_stat == 'MEAN':
-                    std_err_vals = utils.compute_std_err_from_mean(point_data['stat_value'].tolist())
-
+                    point_stat = np.nanmean(point_data['stat_value'])
                 elif self.config.plot_stat == 'MEDIAN':
-                    if  self.config.variance_inflation_factor is True:
-                        std_err_vals = utils.compute_std_err_from_median_variance_inflation_factor(
-                            point_data['stat_value'].tolist())
-                    else:
-                        std_err_vals = utils.compute_std_err_from_median_no_variance_inflation_factor(
-                            point_data['stat_value'].tolist())
-
+                    point_stat = np.nanmedian(point_data['stat_value'])
                 elif self.config.plot_stat == 'SUM':
-                    std_err_vals = utils.compute_std_err_from_sum(point_data['stat_value'].tolist())
+                    point_stat = np.nansum(point_data['stat_value'])
+                else:
+                    point_stat = None
 
-                if std_err_vals is not None and std_err_vals[1] == 0:
-                    dbl_alpha = self.config.parameters['alpha']
-                    dbl_z = norm.ppf(1 - (dbl_alpha / 2))
-                    dbl_z_val = (dbl_z + dbl_z / math.sqrt(2)) / 2
-                    dbl_std_err = dbl_z_val * std_err_vals[0]
-                    dbl_lo_ci = dbl_std_err
-                    dbl_up_ci = dbl_std_err
+                series_ci = self.config.plot_ci[self.idx]
+                dbl_lo_ci = 0
+                dbl_up_ci = 0
+
+                if 'STD' == series_ci:
+                    std_err_vals = None
+                    if self.config.plot_stat == 'MEAN':
+                        std_err_vals = utils.compute_std_err_from_mean(point_data['stat_value'].tolist())
+
+                    elif self.config.plot_stat == 'MEDIAN':
+                        if self.config.variance_inflation_factor is True:
+                            std_err_vals = utils.compute_std_err_from_median_variance_inflation_factor(
+                                point_data['stat_value'].tolist())
+                        else:
+                            std_err_vals = utils.compute_std_err_from_median_no_variance_inflation_factor(
+                                point_data['stat_value'].tolist())
+
+                    elif self.config.plot_stat == 'SUM':
+                        std_err_vals = utils.compute_std_err_from_sum(point_data['stat_value'].tolist())
+
+                    if std_err_vals is not None and std_err_vals[1] == 0:
+                        dbl_alpha = self.config.parameters['alpha']
+                        dbl_z = norm.ppf(1 - (dbl_alpha / 2))
+                        dbl_z_val = (dbl_z + dbl_z / math.sqrt(2)) / 2
+                        dbl_std_err = dbl_z_val * std_err_vals[0]
+                        dbl_lo_ci = dbl_std_err
+                        dbl_up_ci = dbl_std_err
+            else:
+                dbl_lo_ci = None
+                point_stat = None
+                dbl_up_ci = None
 
             series_points_results['dbl_lo_ci'].append(dbl_lo_ci)
             series_points_results['dbl_med'].append(point_stat)
