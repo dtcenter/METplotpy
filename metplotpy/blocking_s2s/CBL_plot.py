@@ -1,14 +1,14 @@
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+from matplotlib import MatplotlibDeprecationWarning
 from pylab import *
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 import cartopy.crs as ccrs
-import netCDF4 as netcdf
 import numpy as np
 import warnings
 import metcalcpy.util.utils as utils
 
-def create_cbl_plot(lons, lats, cblf, mhweight, month_str, output_plotname, do_averaging=True):
+def create_cbl_plot(lons, lats, cblf, mhweight, month_str, output_plotname, do_averaging=True, lon_0_to_360=True):
     """
         Create the map plot of the mean CBL values
 
@@ -20,6 +20,9 @@ def create_cbl_plot(lons, lats, cblf, mhweight, month_str, output_plotname, do_a
          @params month_str:  indicates the months comprising this plot
          @params output_plotname: The full path and filename of the output plot file
          @params do_averaging: calculate the averages for cblf and mwhgt and plot these values
+         @params lon_0_to_360: True by default. If false, assumes longitude grid points span from
+                                -180 to 180. If true, make the necessary conversion to -180 to 180 in
+                                the longitude and reorder the corresponding CBLm numpy array.
 
         Returns:
              Generates an output file in pdf format, with name and location as specified in the
@@ -28,7 +31,7 @@ def create_cbl_plot(lons, lats, cblf, mhweight, month_str, output_plotname, do_a
     # Ignore the MatplotlibDeprecationWarning.  draw() isn't being used and is
     # unaffected by the deprecation in Matplotlib 3.3.  This code was
     # developed using Matplotlib 3.3.1
-    warnings.filterwarnings("ignore",category=DeprecationWarning)
+    warnings.filterwarnings("ignore",category=MatplotlibDeprecationWarning)
 
     # do averaging, by default
     if not do_averaging:
@@ -69,14 +72,19 @@ def create_cbl_plot(lons, lats, cblf, mhweight, month_str, output_plotname, do_a
     # new_lons = np.mod(lons + 180.0, 360.0) - 180.0
     # and we also need to reorder the CBLm array to align with the
     # new lon grid points.
-    new_lons = utils.convert_lon_360_to_180(lons)
-    CBLm_beg = CBLm[180:]
-    CBLm_end = CBLm[0:180]
-    CBLm_reordered = np.concatenate((CBLm_beg, CBLm_end))
-    minlon = min(new_lons)
-    maxlon = max(new_lons)
+
+    if lon_0_to_360:
+        # Convert lon grid to -180 to 180 and reorder the CBLm values to
+        # correspond to these changes.
+        lons = utils.convert_lon_360_to_180(lons)
+        CBLm_beg = CBLm[180:]
+        CBLm_end = CBLm[0:180]
+        CBLm_reordered = np.concatenate((CBLm_beg, CBLm_end))
+
+    minlon = min(lons)
+    maxlon = max(lons)
     ax.set_extent([minlon, maxlon, 0, 90], ccrs.PlateCarree())
-    plt.plot(new_lons, CBLm_reordered, 'k', linewidth=1.0)
+    plt.plot(lons, CBLm_reordered, 'k', linewidth=1.0)
     fmt = 'pdf'
     full_output_plot = output_plotname + "." + fmt
     # plt.savefig("./CBL_" + str(month_str) + "." + fmt, format=fmt, dpi=400, bbox_inches='tight')
