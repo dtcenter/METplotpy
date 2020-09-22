@@ -24,7 +24,6 @@ def plot_ibls(blonlong,lons,plot_title,output_plotname):
 
     #Exchange longitude for better display
     lonplot,lonsortlocs = convert_lons_indices(lons,-89)
-    lonplot = lons[lonsortlocs]
     a = blonlongmean[lonsortlocs]
 
     #Plot LTM IBL
@@ -45,10 +44,10 @@ def plot_ibls(blonlong,lons,plot_title,output_plotname):
     fmt = 'pdf'
     full_output_plot = output_plotname + "." + fmt
     plt.savefig(full_output_plot,format=fmt,dpi=400, bbox_inches='tight')
-    #fmt2 = 'png'
-    #full_output_plot2 = output_plotname + "." + fmt2
-    #plt.savefig(full_output_plot2,format=fmt2,dpi=400, bbox_inches='tight')
-    #plt.show()
+    plt.pause(1e-13)
+    fmt2 = 'png'
+    full_output_plot2 = output_plotname + "." + fmt2
+    plt.savefig(full_output_plot2,format=fmt2,dpi=400, bbox_inches='tight')
 
 
 def plot_blocks(blockfreq,GIBL,ibl,lons,plot_title,output_plotname):
@@ -86,7 +85,7 @@ def plot_blocks(blockfreq,GIBL,ibl,lons,plot_title,output_plotname):
     fmt = 'pdf'
     full_output_plot = output_plotname + "." + fmt
     plt.savefig(full_output_plot,format=fmt,dpi=400, bbox_inches='tight')
-    #fmt2 = 'png'
-    #full_output_plot2 = output_plotname + "." + fmt2
-    #plt.savefig(full_output_plot2,format=fmt2,dpi=400, bbox_inches='tight')
-    plt.show()
+    plt.pause(1e-13)
+    fmt2 = 'png'
+    full_output_plot2 = output_plotname + "." + fmt2
+    plt.savefig(full_output_plot2,format=fmt2,dpi=400, bbox_inches='tight')
