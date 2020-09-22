@@ -91,6 +91,7 @@ def create_cbl_plot(lons, lats, cblf, mhweight, month_str, output_plotname, do_a
     full_output_plot = output_plotname + "." + fmt
     # plt.savefig("./CBL_" + str(month_str) + "." + fmt, format=fmt, dpi=400, bbox_inches='tight')
     plt.savefig(full_output_plot, format=fmt, dpi=400, bbox_inches='tight')
+    plt.pause(1e-13)
     fmt2 = 'png'
     full_output_plot2 = output_plotname + "." + fmt2
     plt.savefig(full_output_plot2, format=fmt2, dpi=400, bbox_inches='tight')
