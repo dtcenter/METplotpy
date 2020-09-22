@@ -32,6 +32,8 @@ def create_cbl_plot(lons, lats, cblf, mhweight, month_str, output_plotname, do_a
     # unaffected by the deprecation in Matplotlib 3.3.  This code was
     # developed using Matplotlib 3.3.1
     warnings.filterwarnings("ignore",category=MatplotlibDeprecationWarning)
+    # To filter the cartopy mpl gridliner deprecation warning
+    warnings.filterwarnings("ignore",category=UserWarning)
 
     # do averaging, by default
     if not do_averaging:
