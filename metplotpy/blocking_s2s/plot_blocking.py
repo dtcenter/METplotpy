@@ -2,13 +2,13 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import numpy as np
 
-def convert_lons_indices(exlons,minlon_in):
+def convert_lons_indices(lons_in,minlon_in,range_in):
 
-    origlons = np.asarray(exlons)
+    origlons = np.asarray(lons_in)
     minlon = abs(minlon_in)
 
     # Use formula
-    newlons = np.mod((exlons + minlon), 360) - minlon
+    newlons = np.mod((lons_in + minlon), range_in) - minlon
     lonsortlocs = np.argsort(newlons)
     reordered_lons = newlons[lonsortlocs]
 
@@ -23,7 +23,7 @@ def plot_ibls(blonlong,lons,plot_title,output_plotname):
 
 
     #Exchange longitude for better display
-    lonplot,lonsortlocs = convert_lons_indices(lons,-89)
+    lonplot,lonsortlocs = convert_lons_indices(lons,-89,360)
     a = blonlongmean[lonsortlocs]
 
     #Plot LTM IBL
@@ -52,7 +52,7 @@ def plot_ibls(blonlong,lons,plot_title,output_plotname):
 
 def plot_blocks(blockfreq,GIBL,ibl,lons,plot_title,output_plotname):
 
-    lonplot,lonsortlocs = convert_lons_indices(lons,-90)
+    lonplot,lonsortlocs = convert_lons_indices(lons,-90,360)
 
     gibl_mean = np.mean(GIBL,axis=(1,0))
     gibl_mean = gibl_mean[lonsortlocs]
