@@ -105,51 +105,65 @@ class LineSeries(Series):
                     series_1 = series
                 if set(series_name_2) == set(series.series_name):
                     series_2 = series
+            name = utils.get_derived_curve_name([self.series_name[0], self.series_name[1], operation])
+            for field in all_fields_values_no_indy:
+                self.series_data = self.input_data.loc[self.input_data[field] == name]
+                if len(self.series_data) > 0:
+                    break
 
-            for indy in self.config.indy_vals:
-                if utils.is_string_integer(indy):
-                    indy = int(indy)
-                stats_indy_1 = series_1.series_data.loc[series_1.series_data[self.config.indy_var] == indy]
-                stats_indy_2 = series_2.series_data.loc[series_2.series_data[self.config.indy_var] == indy]
+            # check if the input frame already has diff series ( from calculation agg stats )
+            if len(self.series_data) == 0:
 
-                # validate data
-                if 'fcst_valid_beg' in stats_indy_1.columns:
-                    unique_dates = stats_indy_1[['fcst_valid_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
-                elif 'fcst_valid' in stats_indy_1.columns:
-                    unique_dates = stats_indy_1[['fcst_valid', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
-                elif 'fcst_init_beg' in stats_indy_1.columns:
-                    unique_dates = stats_indy_1[['fcst_init_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
-                else:
-                    unique_dates = stats_indy_1[['fcst_init', 'fcst_lead', 'stat_name"']].drop_duplicates().shape[0]
-                if stats_indy_1.shape[0] != unique_dates:
-                    raise ValueError('Derived curve can\'t be calculated. Multiple values for one valid date/fcst_lead')
+                for indy in self.config.indy_vals:
+                    if utils.is_string_integer(indy):
+                        indy = int(indy)
 
-                # data should be sorted
+                    # check if the input frame already has diff series ( from calculation agg stats )
 
-                stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_value'].tolist(),
-                                                              stats_indy_2['stat_value'].tolist(),
-                                                              operation)
-                stats_indy_1 = stats_indy_1.drop(columns=['stat_value'])
-                stats_indy_1['stat_value'] = stats_values
+                    stats_indy_1 = series_1.series_data.loc[series_1.series_data[self.config.indy_var] == indy]
+                    stats_indy_2 = series_2.series_data.loc[series_2.series_data[self.config.indy_var] == indy]
 
-                if 'stat_bcl' in stats_indy_1.columns:
-                    stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_bcl'].tolist(),
-                                                                  stats_indy_2['stat_bcl'].tolist(),
+                    # validate data
+                    if 'fcst_valid_beg' in stats_indy_1.columns:
+                        unique_dates = \
+                        stats_indy_1[['fcst_valid_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                    elif 'fcst_valid' in stats_indy_1.columns:
+                        unique_dates = stats_indy_1[['fcst_valid', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                    elif 'fcst_init_beg' in stats_indy_1.columns:
+                        unique_dates = \
+                        stats_indy_1[['fcst_init_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                    else:
+                        unique_dates = stats_indy_1[['fcst_init', 'fcst_lead', 'stat_name"']].drop_duplicates().shape[0]
+                    if stats_indy_1.shape[0] != unique_dates:
+                        raise ValueError(
+                            'Derived curve can\'t be calculated. Multiple values for one valid date/fcst_lead')
+
+                    # data should be sorted
+
+                    stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_value'].tolist(),
+                                                                  stats_indy_2['stat_value'].tolist(),
                                                                   operation)
-                    stats_indy_1 = stats_indy_1.drop(columns=['stat_bcl'])
-                    stats_indy_1['stat_bcl'] = stats_values
+                    stats_indy_1 = stats_indy_1.drop(columns=['stat_value'])
+                    stats_indy_1['stat_value'] = stats_values
 
-                if 'stat_bcu' in stats_indy_1.columns:
-                    stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_bcu'].tolist(),
-                                                                  stats_indy_2['stat_bcu'].tolist(),
-                                                                  operation)
-                    stats_indy_1 = stats_indy_1.drop(columns=['stat_bcu'])
-                    stats_indy_1['stat_bcu'] = stats_values
+                    if 'stat_bcl' in stats_indy_1.columns:
+                        stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_bcl'].tolist(),
+                                                                      stats_indy_2['stat_bcl'].tolist(),
+                                                                      operation)
+                        stats_indy_1 = stats_indy_1.drop(columns=['stat_bcl'])
+                        stats_indy_1['stat_bcl'] = stats_values
 
-                if self.series_data is None:
-                    self.series_data = stats_indy_1
-                else:
-                    self.series_data = self.series_data.append(stats_indy_1)
+                    if 'stat_bcu' in stats_indy_1.columns:
+                        stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_bcu'].tolist(),
+                                                                      stats_indy_2['stat_bcu'].tolist(),
+                                                                      operation)
+                        stats_indy_1 = stats_indy_1.drop(columns=['stat_bcu'])
+                        stats_indy_1['stat_bcu'] = stats_values
+
+                    if self.series_data is None:
+                        self.series_data = stats_indy_1
+                    else:
+                        self.series_data = self.series_data.append(stats_indy_1)
 
         series_points_results = {'dbl_lo_ci': [], 'dbl_med': [], 'dbl_up_ci': [], 'nstat': []}
         # for each point
