@@ -4,6 +4,7 @@ from matplotlib import MatplotlibDeprecationWarning
 from pylab import *
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 import cartopy.crs as ccrs
+from cartopy.util import add_cyclic_point
 import numpy as np
 import warnings
 import metcalcpy.util.utils as utils
@@ -44,6 +45,7 @@ def create_cbl_plot(lons, lats, cblf, mhweight, month_str, output_plotname, do_a
         mmstd = np.nanmean(mhweight,axis=0)
 
 
+    mmstd, lonsm = add_cyclic_point(mmstd, lons)
 
     # center the plot at 0 degrees longitude
     lon_center = 0
@@ -53,7 +55,7 @@ def create_cbl_plot(lons, lats, cblf, mhweight, month_str, output_plotname, do_a
     ax = fig.add_subplot(1, 1, 1, projection=proj)
 
     ax = plt.axes(projection=proj)
-    contourf(lons, lats, mmstd[:, :], np.arange(0, 71, 10), cmap=plt.cm.Reds, extend='max')
+    contourf(lonsm, lats, mmstd[:, :], np.arange(0, 71, 10), cmap=plt.cm.Reds, extend='max')
     ax.coastlines(resolution='50m', color='gray', linewidth=1.25)
     gl = ax.gridlines(crs=proj, draw_labels=True)
     ax.set_global()
@@ -83,6 +85,7 @@ def create_cbl_plot(lons, lats, cblf, mhweight, month_str, output_plotname, do_a
         CBLm_end = CBLm[0:180]
         CBLm_reordered = np.concatenate((CBLm_beg, CBLm_end))
 
+    CBLm, lons = add_cyclic_point(CBLm, coord=lons)
     minlon = min(lons)
     maxlon = max(lons)
     ax.set_extent([minlon, maxlon, 0, 90], ccrs.PlateCarree())
