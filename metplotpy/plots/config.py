@@ -82,6 +82,7 @@ class Config:
         # be used in subsetting the input dataframe (e.g. for key='model', and value='SH_CMORPH',
         # we want to subset data where column name is 'model', with coincident rows of 'SH_CMORPH'.
         self.series_val_names = self._get_series_val_names()
+        self.series_ordering = None
 
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
@@ -461,14 +462,6 @@ class Config:
                 -blue
                 -green
 
-               and the line widths are:
-               line_width:
-                  -1
-                  -3
-                  -2
-               then the first series has a line width=3,
-               the second series has a line width=2,
-               and the third series has a line width=1
 
             Then the following is expected:
               the first series' color is 'blue'
@@ -492,11 +485,14 @@ class Config:
 
         # order the input list according to the series_order setting
         ordered_settings_list = []
+        # create a natural order if series_ordering is missing
+        if self.series_ordering is None:
+            self.series_ordering = list(range(1, len(setting_to_order)+1))
 
         # Make the series ordering list zero-based to sync with Python's zero-based counting
         series_ordered_zb = [sorder - 1 for sorder in self.series_ordering]
-        for series in series_ordered_zb:
-            ordered_settings_list.append(setting_to_order[series])
+        for idx, series in enumerate(series_ordered_zb):
+            ordered_settings_list.insert(series, setting_to_order[idx])
 
         return ordered_settings_list
 
