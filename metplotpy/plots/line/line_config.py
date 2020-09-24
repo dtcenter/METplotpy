@@ -106,6 +106,7 @@ class LineConfig(Config):
         self.xaxis_reverse = self._get_bool('xaxis_reverse')
         self.sync_yaxes = self._get_bool('sync_yaxes')
         self.grid_on = self._get_bool('grid_on')
+        self.con_series = self._get_con_series()
 
     def _get_series_inner_dict(self, index):
 

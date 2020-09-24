@@ -286,6 +286,20 @@ class Config:
         color_list_ordered = self.create_list_by_series_ordering(color_list)
         return color_list_ordered
 
+    def _get_con_series(self) -> list:
+        """
+           Retrieves the 'connect across NA' values used for lines and markers, from the
+           config file (default or custom).
+           Args:
+
+           Returns:
+               con_series_list or con_series_from_config: a list of 1 and/or 0 to be used for the lines
+        """
+        con_series_settings = self.get_config_value('con_series')
+        con_series_list = [color for color in con_series_settings]
+        con_series_list_ordered = self.create_list_by_series_ordering(con_series_list)
+        return con_series_list_ordered
+
     def _get_markers(self):
         """
            Retrieve all the markers.
@@ -487,7 +501,7 @@ class Config:
         ordered_settings_list = []
         # create a natural order if series_ordering is missing
         if self.series_ordering is None:
-            self.series_ordering = list(range(1, len(setting_to_order)+1))
+            self.series_ordering = list(range(1, len(setting_to_order) + 1))
 
         # Make the series ordering list zero-based to sync with Python's zero-based counting
         series_ordered_zb = [sorder - 1 for sorder in self.series_ordering]

@@ -249,6 +249,11 @@ class Line(MetPlot):
             # it isn't requested (as set in the config file)
             if series.plot_disp:
                 y_points = series.series_points['dbl_med']
+                connect = self.config_obj.con_series[idx]
+                if connect == 1:
+                    connectgaps = True
+                else:
+                    connectgaps = False
 
                 # collect min-max if we need to sync axis
                 if self.config_obj.sync_yaxes is True and series.y_axis == 1:
@@ -285,10 +290,12 @@ class Line(MetPlot):
                     y_points = x_points_index_adj
                     x_points_index_adj = temp
 
+
                 # add the plot
                 fig.add_trace(
                     go.Scatter(x=x_points_index_adj, y=y_points, showlegend=True, mode=self.config_obj.mode[idx],
                                textposition="top right", name=legend_label,
+                               connectgaps = connectgaps,
                                line=dict(color=self.config_obj.colors_list[idx],
                                          width=self.config_obj.linewidth_list[idx],
                                          dash=self.config_obj.linestyles_list[idx]),
