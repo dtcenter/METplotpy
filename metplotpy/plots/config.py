@@ -32,6 +32,7 @@ class Config:
         self.title = self.get_config_value('title')
         self.use_ee = self.get_config_value('event_equal')
         self.indy_vals = self.get_config_value('indy_vals')
+        self.indy_label = self._get_indy_label()
         self.indy_var = self.get_config_value('indy_var')
         self.show_plot_in_browser = self.get_config_value('show_plot_in_browser')
         self.plot_width = self.get_config_value('plot_width')
@@ -575,3 +576,8 @@ class Config:
 
         else:
             return None
+
+    def _get_indy_label(self):
+        if 'indy_label' in self.parameters.keys():
+            return self.get_config_value('indy_label')
+        return self.indy_vals

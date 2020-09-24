@@ -184,7 +184,8 @@ class Line(MetPlot):
                          ticks="inside",
                          zeroline=False,
                          gridwidth=self.config_obj.get_config_value('grid_lwd') / 2,
-                         gridcolor=blended_grid_col)
+                         gridcolor=blended_grid_col
+                         )
 
         # Set y-axes titles
         fig.update_yaxes(title_text=self.config_obj.yaxis_1, secondary_y=False, linecolor="#c2c2c2", linewidth=2,
@@ -290,12 +291,11 @@ class Line(MetPlot):
                     y_points = x_points_index_adj
                     x_points_index_adj = temp
 
-
                 # add the plot
                 fig.add_trace(
                     go.Scatter(x=x_points_index_adj, y=y_points, showlegend=True, mode=self.config_obj.mode[idx],
                                textposition="top right", name=legend_label,
-                               connectgaps = connectgaps,
+                               connectgaps=connectgaps,
                                line=dict(color=self.config_obj.colors_list[idx],
                                          width=self.config_obj.linewidth_list[idx],
                                          dash=self.config_obj.linestyles_list[idx]),
@@ -320,7 +320,7 @@ class Line(MetPlot):
                 yaxis=dict(
                     tickmode='array',
                     tickvals=x_points_index,
-                    ticktext=x_points
+                    ticktext=self.config_obj.indy_label
                 )
             )
         else:
@@ -328,7 +328,7 @@ class Line(MetPlot):
                 xaxis=dict(
                     tickmode='array',
                     tickvals=x_points_index,
-                    ticktext=x_points
+                    ticktext=self.config_obj.indy_label
                 )
             )
 
