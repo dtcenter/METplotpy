@@ -117,6 +117,9 @@ class Line(MetPlot):
             series_obj = LineSeries(self.config_obj, num_series_y1 + i, input_data, series_list, 2)
             series_list.append(series_obj)
 
+        # reorder series
+        series_list = self.config_obj.create_list_by_series_ordering(series_list)
+
         return series_list
 
     def _get_all_lines(self):
@@ -265,7 +268,6 @@ class Line(MetPlot):
 
                 error_y_thickness = self.config_obj.linewidth_list[idx]
                 show_signif = self.config_obj.get_show_signif()[idx]
-
 
                 no_ci_up = all(v == 0 for v in series.series_points['dbl_up_ci'])
                 no_ci_lo = all(v == 0 for v in series.series_points['dbl_lo_ci'])
