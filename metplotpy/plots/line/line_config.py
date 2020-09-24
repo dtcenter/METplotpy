@@ -475,3 +475,20 @@ class LineConfig(Config):
             all_series = all_series + self.get_config_value('derived_series_' + str(axis))
 
         return all_series
+
+    def get_show_signif(self):
+        """ Retrieve all the show_signif from the configuration file, if not
+            specified in any config file, use the default values of False
+
+            Args:
+
+            Returns:
+                show_signif_list: a list of show_signif corresponding to each line
+        """
+        show_signif = self.get_config_value('show_signif')
+        show_signif_list = []
+        for s in show_signif:
+            if type(s) is str:
+                show_signif_list.append(s == 'True')
+        show_signif_list_ordered = self.create_list_by_series_ordering(show_signif_list)
+        return show_signif_list_ordered
