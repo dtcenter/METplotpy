@@ -30,7 +30,7 @@ class Config:
         self.yaxis_1 = self.get_config_value('yaxis_1')
         self.yaxis_2 = self.get_config_value('yaxis_2')
         self.title = self.get_config_value('title')
-        self.use_ee = self.get_config_value('event_equalize')
+        self.use_ee = self.get_config_value('event_equal')
         self.indy_vals = self.get_config_value('indy_vals')
         self.indy_var = self.get_config_value('indy_var')
         self.show_plot_in_browser = self.get_config_value('show_plot_in_browser')
@@ -40,7 +40,7 @@ class Config:
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
 
-        # list of the x, y, and loc values for the
+        # list of the x, y
         # bbox_to_anchor() setting used in determining
         # the location of the bounding box which defines
         # the legend.

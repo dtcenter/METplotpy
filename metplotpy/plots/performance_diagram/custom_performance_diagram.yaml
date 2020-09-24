@@ -97,4 +97,4 @@ series_line_style:
   - ":"
 stat_input:  ./plot_20200317_151252.data
 plot_filename: ./performance_diagram_default.png
-event_equalize: False
+event_equal: False

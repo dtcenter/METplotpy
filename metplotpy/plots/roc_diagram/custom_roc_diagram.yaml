@@ -18,7 +18,7 @@ series_order:
 #    - 2
 stat_curve: 'None'
 add_point_thresholds: False
-event_equalize: False
+event_equal: False
 title: "ROC PCT 20200507_074426 "
 xaxis: "POFD (False Detection Rate)"
 yaxis_1: "PODY"

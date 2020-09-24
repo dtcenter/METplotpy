@@ -70,7 +70,7 @@ series_line_style:
   - "-"
 
 # Perform event equalization to check for missing data
-event_equalize: False
+event_equal: False
 
 plot_caption: "This is caption"
 caption_weight: "plain text"
