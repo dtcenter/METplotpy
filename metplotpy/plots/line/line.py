@@ -24,13 +24,8 @@ from operator import add
 
 
 class Line(MetPlot):
-    """  Generates a Plotly line plot for 1 or more traces (lines),
+    """  Generates a Plotly line plot for 1 or more traces (lines)
          where each line is represented by a text point data file.
-         A default config file for two lines is provided, along with
-         sample/dummy data (line1_plot_data.txt and line2_plot_data.txt).
-         A setting is over-ridden in the default configuration file if
-         it is defined in the custom configuration file.
-
     """
 
     def __init__(self, parameters):
@@ -79,7 +74,7 @@ class Line(MetPlot):
 
     def _read_input_data(self):
         """
-            Read the input data file (either CTC or PCT linetype)
+            Read the input data file
             and store as a pandas dataframe so we can subset the
             data to represent each of the series defined by the
             series_val permutations.
@@ -110,12 +105,13 @@ class Line(MetPlot):
         """
         series_list = []
 
-        # use the list of series ordering values to determine how many series objects we need.
+        # add series for y1 axis
         num_series_y1 = len(self.config_obj.all_series_y1)
         for i, series in enumerate(range(num_series_y1)):
             series_obj = LineSeries(self.config_obj, i, input_data, series_list)
             series_list.append(series_obj)
 
+        # add series for y2 axis
         num_series_y2 = len(self.config_obj.all_series_y2)
         for i, series in enumerate(range(num_series_y2)):
             series_obj = LineSeries(self.config_obj, num_series_y1 + i, input_data, series_list, 2)
@@ -266,6 +262,11 @@ class Line(MetPlot):
 
                 # show or not ci
                 error_y_visible = True
+
+                error_y_thickness = self.config_obj.linewidth_list[idx]
+                show_signif = self.config_obj.get_show_signif()[idx]
+
+
                 no_ci_up = all(v == 0 for v in series.series_points['dbl_up_ci'])
                 no_ci_lo = all(v == 0 for v in series.series_points['dbl_lo_ci'])
                 if no_ci_up is True and no_ci_lo is True:
@@ -297,7 +298,8 @@ class Line(MetPlot):
                                             symmetric=False,
                                             array=series.series_points['dbl_up_ci'],
                                             arrayminus=series.series_points['dbl_lo_ci'],
-                                            visible=error_y_visible)
+                                            visible=error_y_visible,
+                                            thickness=error_y_thickness)
                                ),
                     secondary_y=series.y_axis != 1
                 )
