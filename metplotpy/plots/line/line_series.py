@@ -27,6 +27,18 @@ class LineSeries(Series):
         self.series_data = None
         super().__init__(config, idx, input_data, y_axis)
 
+    def _calc_point_stat(self, data: list) -> float:
+        # calculate point stat
+        if self.config.plot_stat == 'MEAN':
+            point_stat = np.nanmean(data)
+        elif self.config.plot_stat == 'MEDIAN':
+            point_stat = np.nanmedian(data)
+        elif self.config.plot_stat == 'SUM':
+            point_stat = np.nansum(data)
+        else:
+            point_stat = None
+        return point_stat
+
     def _create_series_points(self) -> dict:
         """
 
@@ -150,14 +162,7 @@ class LineSeries(Series):
             if len(point_data) > 0:
 
                 # calculate point stat
-                if self.config.plot_stat == 'MEAN':
-                    point_stat = np.nanmean(point_data['stat_value'])
-                elif self.config.plot_stat == 'MEDIAN':
-                    point_stat = np.nanmedian(point_data['stat_value'])
-                elif self.config.plot_stat == 'SUM':
-                    point_stat = np.nansum(point_data['stat_value'])
-                else:
-                    point_stat = None
+                point_stat = self._calc_point_stat(point_data['stat_value'].tolist())
 
                 series_ci = self.config.plot_ci[self.idx]
                 dbl_lo_ci = 0
@@ -186,6 +191,34 @@ class LineSeries(Series):
                         dbl_std_err = dbl_z_val * std_err_vals[0]
                         dbl_lo_ci = dbl_std_err
                         dbl_up_ci = dbl_std_err
+                elif 'BOOT' == series_ci:
+                    stat_bcu = 0
+                    stat_bcl = 0
+                    if 'stat_bcu' in point_data.head() and 'stat_bcl' in point_data.head():
+                        stat_bcu = self._calc_point_stat(point_data['stat_bcu'].tolist())
+                        stat_bcl = self._calc_point_stat(point_data['stat_bcl'].tolist())
+                        if stat_bcu == -9999:
+                            stat_bcu = 0
+                        if stat_bcl == -9999:
+                            stat_bcl = 0
+
+                    dbl_lo_ci = point_stat - stat_bcl
+                    dbl_up_ci = stat_bcu - point_stat
+
+                elif 'NORM' == series_ci:
+                    stat_ncu = 0
+                    stat_ncl = 0
+                    if 'stat_ncu' in point_data.head() and 'stat_ncl' in point_data.head():
+                        stat_ncu = self._calc_point_stat(point_data['stat_ncu'].tolist())
+                        stat_ncl = self._calc_point_stat(point_data['stat_ncl'].tolist())
+                        if stat_ncu == -9999:
+                            stat_ncu = 0
+                        if stat_ncl == -9999:
+                            stat_ncl = 0
+
+                    dbl_lo_ci = point_stat - stat_ncl
+                    dbl_up_ci = stat_ncu - point_stat
+
             else:
                 dbl_lo_ci = None
                 point_stat = None
