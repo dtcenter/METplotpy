@@ -178,7 +178,7 @@ class LineSeries(Series):
                 # calculate point stat
                 point_stat = self._calc_point_stat(point_data['stat_value'].tolist())
 
-                series_ci = self.config.plot_ci[self.idx]
+                series_ci = self.config.get_config_value('plot_ci')[self.idx].upper()
                 dbl_lo_ci = 0
                 dbl_up_ci = 0
 
