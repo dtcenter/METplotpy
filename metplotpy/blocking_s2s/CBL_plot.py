@@ -83,13 +83,13 @@ def create_cbl_plot(lons, lats, cblf, mhweight, month_str, output_plotname, do_a
         lons = utils.convert_lon_360_to_180(lons)
         CBLm_beg = CBLm[180:]
         CBLm_end = CBLm[0:180]
-        CBLm_reordered = np.concatenate((CBLm_beg, CBLm_end))
+        CBLm = np.concatenate((CBLm_beg, CBLm_end))
 
     CBLm, lons = add_cyclic_point(CBLm, coord=lons)
     minlon = min(lons)
     maxlon = max(lons)
     ax.set_extent([minlon, maxlon, 0, 90], ccrs.PlateCarree())
-    plt.plot(lons, CBLm_reordered, 'k', linewidth=1.0)
+    plt.plot(lons, CBLm, 'k', linewidth=1.0)
     fmt = 'pdf'
     full_output_plot = output_plotname + "." + fmt
     # plt.savefig("./CBL_" + str(month_str) + "." + fmt, format=fmt, dpi=400, bbox_inches='tight')
