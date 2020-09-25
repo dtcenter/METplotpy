@@ -4,9 +4,10 @@ Class Name: ROCDiagramSeries
 __author__ = 'Tatiana Burek'
 __email__ = 'met_help@ucar.edu'
 
-import numpy as np
 import itertools
 import math
+
+import numpy as np
 
 import metcalcpy.util.utils as utils
 from plots.series import Series
@@ -48,10 +49,11 @@ class LineSeries(Series):
 
         all_fields_values = self.config.get_config_value('series_val_' + str(self.y_axis)).copy()
 
-        if self.config._get_fcst_vars(self.y_axis):
-            all_fields_values['fcst_var'] = list(self.config._get_fcst_vars(self.y_axis).keys())
+        if self.config.get_fcst_vars(self.y_axis):
+            all_fields_values['fcst_var'] = list(self.config.get_fcst_vars(self.y_axis).keys())
 
-        all_fields_values['stat_name'] = self.config.get_config_value('list_stat_' + str(self.y_axis))
+        all_fields_values['stat_name'] = \
+            self.config.get_config_value('list_stat_' + str(self.y_axis))
 
         list_of_series_names = list(itertools.product(*all_fields_values.values()))
         all_fields_values_no_indy = all_fields_values.copy()
@@ -105,7 +107,9 @@ class LineSeries(Series):
                     series_1 = series
                 if set(series_name_2) == set(series.series_name):
                     series_2 = series
-            name = utils.get_derived_curve_name([self.series_name[0], self.series_name[1], operation])
+            name = utils.get_derived_curve_name([self.series_name[0],
+                                                 self.series_name[1],
+                                                 operation])
             for field in all_fields_values_no_indy:
                 self.series_data = self.input_data.loc[self.input_data[field] == name]
                 if len(self.series_data) > 0:
@@ -118,25 +122,30 @@ class LineSeries(Series):
                     if utils.is_string_integer(indy):
                         indy = int(indy)
 
-                    # check if the input frame already has diff series ( from calculation agg stats )
+                    # check if the input frame already has diff series
+                    # ( from calculation agg stats )
 
-                    stats_indy_1 = series_1.series_data.loc[series_1.series_data[self.config.indy_var] == indy]
-                    stats_indy_2 = series_2.series_data.loc[series_2.series_data[self.config.indy_var] == indy]
+                    stats_indy_1 = \
+                        series_1.series_data.loc[series_1.series_data[self.config.indy_var] == indy]
+                    stats_indy_2 = \
+                        series_2.series_data.loc[series_2.series_data[self.config.indy_var] == indy]
 
                     # validate data
                     if 'fcst_valid_beg' in stats_indy_1.columns:
                         unique_dates = \
-                        stats_indy_1[['fcst_valid_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                            stats_indy_1[['fcst_valid_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
                     elif 'fcst_valid' in stats_indy_1.columns:
-                        unique_dates = stats_indy_1[['fcst_valid', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                        unique_dates = \
+                            stats_indy_1[['fcst_valid', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
                     elif 'fcst_init_beg' in stats_indy_1.columns:
                         unique_dates = \
-                        stats_indy_1[['fcst_init_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                            stats_indy_1[['fcst_init_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
                     else:
                         unique_dates = stats_indy_1[['fcst_init', 'fcst_lead', 'stat_name"']].drop_duplicates().shape[0]
                     if stats_indy_1.shape[0] != unique_dates:
                         raise ValueError(
-                            'Derived curve can\'t be calculated. Multiple values for one valid date/fcst_lead')
+                            'Derived curve can\'t be calculated. '
+                            'Multiple values for one valid date/fcst_lead')
 
                     # data should be sorted
 
@@ -182,7 +191,7 @@ class LineSeries(Series):
                 dbl_lo_ci = 0
                 dbl_up_ci = 0
 
-                if 'STD' == series_ci:
+                if series_ci == 'STD':
                     std_err_vals = None
                     if self.config.plot_stat == 'MEAN':
                         std_err_vals = utils.compute_std_err_from_mean(point_data['stat_value'].tolist())
@@ -205,7 +214,7 @@ class LineSeries(Series):
                         dbl_std_err = dbl_z_val * std_err_vals[0]
                         dbl_lo_ci = dbl_std_err
                         dbl_up_ci = dbl_std_err
-                elif 'BOOT' == series_ci:
+                elif series_ci == 'BOOT':
                     stat_bcu = 0
                     stat_bcl = 0
                     if 'stat_bcu' in point_data.head() and 'stat_bcl' in point_data.head():
@@ -219,7 +228,7 @@ class LineSeries(Series):
                     dbl_lo_ci = point_stat - stat_bcl
                     dbl_up_ci = stat_bcu - point_stat
 
-                elif 'NORM' == series_ci:
+                elif series_ci == 'NORM':
                     stat_ncu = 0
                     stat_ncl = 0
                     if 'stat_ncu' in point_data.head() and 'stat_ncl' in point_data.head():
