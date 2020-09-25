@@ -44,3 +44,24 @@ def alpha_blending(hex_color: str, alpha: float) -> str:
     foreground_arr = np.array(foreground_tuple)
     final = tuple((1. - alpha) + foreground_arr * alpha)
     return matplotlib.colors.rgb2hex(final)
+
+
+def apply_weight_style(text: str, weight: int) -> str:
+    """
+    Applied HTML style weight to text:
+    1 - none
+    2 - bold
+    3 - italic
+    4 - bold italic
+
+    :param text: text to style
+    :param weight: - int representation of the style
+    :return: styled text
+    """
+    if weight == 2:
+        return '<b>' + text + '</b>'
+    if weight == 3:
+        return '<i>' + text + '</b>'
+    if weight == 4:
+        return '<b><i>' + text + '</i></b>'
+    return text
