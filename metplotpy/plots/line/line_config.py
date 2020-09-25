@@ -7,13 +7,13 @@ __author__ = 'Minna Win, Hank Fisher'
 __email__ = 'met_help@ucar.edu'
 
 import re
-
-from metcalcpy.util.utils import OPERATION_TO_SIGN
-from plots.config import Config
-import plots.constants as constants
 import itertools
 
+from plots.config import Config
+import plots.constants as constants
+
 import metcalcpy.util.utils as utils
+from metcalcpy.util.utils import OPERATION_TO_SIGN
 
 
 class LineConfig(Config):
@@ -51,6 +51,12 @@ class LineConfig(Config):
         self.plot_stat = self.get_config_value('stat_curve')
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
+        self.plot_margins = dict(l=self.parameters['mar'][1]+80,
+                                 r=self.parameters['mar'][3]+80,
+                                 t=self.parameters['mar'][2]+100,
+                                 b=self.parameters['mar'][0]+80,
+                                 pad= 5
+                                 )
         self.plot_resolution = self._get_plot_resolution()
         self.caption = self.get_config_value('plot_caption')
         self.caption_weight = self.get_config_value('caption_weight')
@@ -178,11 +184,11 @@ class LineConfig(Config):
         if not series_val_dict:
             return {}
 
-        for k, v in series_val_dict.items():
+        for field, values in series_val_dict.items():
             # Sometimes the value consists of a list of more
             # than one item:
-            for idx, val in enumerate(v):
-                val_inner_dict[v[idx]] = k
+            for idx, val in enumerate(values):
+                val_inner_dict[values[idx]] = field
 
         return val_inner_dict
 
@@ -196,9 +202,7 @@ class LineConfig(Config):
             a list of unique values representing the ordinal value of the corresponding series
 
         """
-        ordinals = self.get_config_value('series_order')
-        series_order_list = [ord for ord in ordinals]
-        return series_order_list
+        return self.get_config_value('series_order')
 
     def _get_plot_disp(self):
         """
@@ -213,8 +217,8 @@ class LineConfig(Config):
 
         plot_display_config_vals = self.get_config_value('plot_disp')
         plot_display_bools = []
-        for p in plot_display_config_vals:
-            if str(p).upper() == "TRUE":
+        for val in plot_display_config_vals:
+            if str(val).upper() == "TRUE":
                 plot_display_bools.append(True)
             else:
                 plot_display_bools.append(False)
@@ -222,7 +226,7 @@ class LineConfig(Config):
         plot_display_bools_ordered = self.create_list_by_series_ordering(plot_display_bools)
         return plot_display_bools_ordered
 
-    def _get_fcst_vars(self, index):
+    def get_fcst_vars(self, index):
         """
            Retrieve a list of the inner keys (fcst_vars) to the fcst_var_val dictionary.
 
@@ -439,18 +443,18 @@ class LineConfig(Config):
     def _get_user_legends(self, legend_label_type):
 
         all_legends = self.get_config_value('user_legend')
-        ll_list = []
-        for idx, ll in enumerate(self._get_all_series()):
+        legend_list = []
+        for idx, ser_components in enumerate(self._get_all_series()):
             if idx >= len(all_legends) or all_legends[idx].strip() == '':
-                if len(ll) == 3 and ll[2] in OPERATION_TO_SIGN.keys():
+                if len(ser_components) == 3 and ser_components[2] in OPERATION_TO_SIGN.keys():
                     # this is a derived series
-                    ll_list.append(utils.get_derived_curve_name(ll))
+                    legend_list.append(utils.get_derived_curve_name(ser_components))
                 else:
-                    ll_list.append(' '.join(map(str, ll)))
+                    legend_list.append(' '.join(map(str, ser_components)))
             else:
-                ll_list.append(all_legends[idx])
+                legend_list.append(all_legends[idx])
 
-        legends_list_ordered = self.create_list_by_series_ordering(ll_list)
+        legends_list_ordered = self.create_list_by_series_ordering(legend_list)
         return legends_list_ordered
 
     def _get_all_series(self):
@@ -462,8 +466,8 @@ class LineConfig(Config):
 
     def get_series_y(self, axis):
         all_fields_values = self.get_config_value('series_val_' + str(axis)).copy()
-        if self._get_fcst_vars(axis):
-            all_fields_values['fcst_var'] = list(self._get_fcst_vars(axis).keys())
+        if self.get_fcst_vars(axis):
+            all_fields_values['fcst_var'] = list(self.get_fcst_vars(axis).keys())
 
         all_fields_values['stat_name'] = self.get_config_value('list_stat_' + str(axis))
         return list(itertools.product(*all_fields_values.values()))
@@ -488,8 +492,8 @@ class LineConfig(Config):
         """
         show_signif = self.get_config_value('show_signif')
         show_signif_list = []
-        for s in show_signif:
-            if type(s) is str:
-                show_signif_list.append(s == 'True')
+        for val in show_signif:
+            if isinstance(val, str):
+                show_signif_list.append(val == 'True')
         show_signif_list_ordered = self.create_list_by_series_ordering(show_signif_list)
         return show_signif_list_ordered

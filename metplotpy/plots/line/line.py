@@ -5,22 +5,23 @@ __author__ = 'Tatiana Burek'
 __email__ = 'met_help@ucar.edu'
 
 import os
+import re
+import csv
+from operator import add
+import yaml
+import numpy as np
+import pandas as pd
 
 import plotly.graph_objects as go
-import numpy as np
-import yaml
-import pandas as pd
-import re
+from plotly.subplots import make_subplots
+from plotly.graph_objs.layout import XAxis
 
 from plots.line.line_config import LineConfig
 from plots.line.line_series import LineSeries
 from plots.met_plot import MetPlot
+import plots.util as util
 
 import metcalcpy.util.utils as calc_util
-import plots.util as util
-from plotly.subplots import make_subplots
-from plotly.graph_objs.layout import XAxis
-from operator import add
 
 
 class Line(MetPlot):
@@ -84,7 +85,8 @@ class Line(MetPlot):
             Returns:
 
         """
-        return pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer', float_precision='round_trip')
+        return pd.read_csv(self.config_obj.stat_input, sep='\t',
+                           header='infer', float_precision='round_trip')
 
     def _create_series(self, input_data):
         """
@@ -107,13 +109,13 @@ class Line(MetPlot):
 
         # add series for y1 axis
         num_series_y1 = len(self.config_obj.all_series_y1)
-        for i, series in enumerate(range(num_series_y1)):
+        for i in range(num_series_y1):
             series_obj = LineSeries(self.config_obj, i, input_data, series_list)
             series_list.append(series_obj)
 
         # add series for y2 axis
         num_series_y2 = len(self.config_obj.all_series_y2)
-        for i, series in enumerate(range(num_series_y2)):
+        for i in range(num_series_y2):
             series_obj = LineSeries(self.config_obj, num_series_y1 + i, input_data, series_list, 2)
             series_list.append(series_obj)
 
@@ -161,15 +163,28 @@ class Line(MetPlot):
         width = self.config_obj.plot_width
         height = self.config_obj.plot_height
         # fig.update_layout(width=width, height=height, paper_bgcolor="white")
-        fig.update_layout(width=width, height=height)
+        fig.update_layout(width=width, height=height,
+                          margin=self.config_obj.plot_margins
+                          )
+
+        title_weight = self.config_obj.parameters['title_weight']
+        title = self.config_obj.title
+        if title_weight == 2:
+            title = '<b>' + self.config_obj.title + '</b>'
+        elif title_weight == 3:
+            title = '<b><i>' + self.config_obj.title + '</i></b>'
 
         # Add figure title
         fig.update_layout(
-            title={'text': self.config_obj.title,
-                   'y': 0.95,
-                   'x': 0.5,
+            title={'text': title,
+                   'font': {
+                       'size': self.config_obj.parameters['title_size'] * 10,
+                   },
+                   'y': self.config_obj.parameters['title_offset'] * -0.45,
+                   'x': self.config_obj.parameters['title_align'],
                    'xanchor': "center",
-                   'yanchor': "top"},
+                   'yanchor': "top"
+                   },
             plot_bgcolor="#FFF"
 
         )
@@ -184,17 +199,21 @@ class Line(MetPlot):
                          ticks="inside",
                          zeroline=False,
                          gridwidth=self.config_obj.get_config_value('grid_lwd') / 2,
-                         gridcolor=blended_grid_col
+                         gridcolor=blended_grid_col,
+                         automargin=True
                          )
 
         # Set y-axes titles
-        fig.update_yaxes(title_text=self.config_obj.yaxis_1, secondary_y=False, linecolor="#c2c2c2", linewidth=2,
+        fig.update_yaxes(title_text=self.config_obj.yaxis_1,
+                         secondary_y=False, linecolor="#c2c2c2", linewidth=2,
                          showgrid=self.config_obj.grid_on,
                          zeroline=False, ticks="inside",
                          gridwidth=self.config_obj.get_config_value('grid_lwd') / 2,
-                         gridcolor=blended_grid_col)
+                         gridcolor=blended_grid_col,
+                         automargin=True)
         if self.config_obj.parameters['list_stat_2']:
-            fig.update_yaxes(title_text=self.config_obj.yaxis_2, secondary_y=True, linecolor="#c2c2c2", linewidth=2,
+            fig.update_yaxes(title_text=self.config_obj.yaxis_2,
+                             secondary_y=True, linecolor="#c2c2c2", linewidth=2,
                              showgrid=False, zeroline=False, ticks="inside")
 
         # style the legend box
@@ -250,11 +269,6 @@ class Line(MetPlot):
             # it isn't requested (as set in the config file)
             if series.plot_disp:
                 y_points = series.series_points['dbl_med']
-                connect = self.config_obj.con_series[idx]
-                if connect == 1:
-                    connectgaps = True
-                else:
-                    connectgaps = False
 
                 # collect min-max if we need to sync axis
                 if self.config_obj.sync_yaxes is True and series.y_axis == 1:
@@ -287,15 +301,14 @@ class Line(MetPlot):
                     x_points_index_adj = x_points_index + stag_vals[idx]
 
                 if self.config_obj.vert_plot is True:
-                    temp = y_points
-                    y_points = x_points_index_adj
-                    x_points_index_adj = temp
+                    y_points, x_points_index_adj = x_points_index_adj, y_points
 
                 # add the plot
                 fig.add_trace(
-                    go.Scatter(x=x_points_index_adj, y=y_points, showlegend=True, mode=self.config_obj.mode[idx],
+                    go.Scatter(x=x_points_index_adj, y=y_points, showlegend=True,
+                               mode=self.config_obj.mode[idx],
                                textposition="top right", name=legend_label,
-                               connectgaps=connectgaps,
+                               connectgaps=self.config_obj.con_series[idx] == 1,
                                line=dict(color=self.config_obj.colors_list[idx],
                                          width=self.config_obj.linewidth_list[idx],
                                          dash=self.config_obj.linestyles_list[idx]),
@@ -341,10 +354,23 @@ class Line(MetPlot):
             fig['layout']['yaxis1'].update(range=[yaxis_min, yaxis_max], autorange=False)
             fig['layout']['yaxis2'].update(range=[yaxis_min, yaxis_max], autorange=False)
 
+        # apply y-axis limits
+        if len(self.config_obj.parameters['ylim']) > 0:
+            fig['layout']['yaxis1'].update(range=[self.config_obj.parameters['ylim'][0],
+                                                  self.config_obj.parameters['ylim'][1]],
+                                           autorange=False)
+        # apply y2-axis limits
+        if len(self.config_obj.parameters['y2lim']) > 0:
+            fig['layout']['yaxis2'].update(range=[self.config_obj.parameters['y2lim'][0],
+                                                  self.config_obj.parameters['y2lim'][1]],
+                                           autorange=False)
+
         # add x2 axis if applicable
         if self.config_obj.show_nstats:
-            fig.update_layout(xaxis2=XAxis(title_text='NStats', overlaying='x', side='top', linecolor="#c2c2c2",
-                                           linewidth=2, showgrid=False, zeroline=False, ticks="inside"))
+            fig.update_layout(xaxis2=XAxis(title_text='NStats', overlaying='x',
+                                           side='top', linecolor="#c2c2c2",
+                                           linewidth=2, showgrid=False,
+                                           zeroline=False, ticks="inside"))
             fig.update_layout(
                 xaxis2=dict(
                     tickmode='array',
@@ -355,7 +381,8 @@ class Line(MetPlot):
             # x2 axis label formatting
             fig.update_layout(xaxis2=dict(tickangle=0, tickfont=dict(size=9)))
             fig.add_trace(
-                go.Scatter(y=[None] * len(x_points), x=x_points_index, xaxis='x2', showlegend=False),
+                go.Scatter(y=[None] * len(x_points), x=x_points_index,
+                           xaxis='x2', showlegend=False),
             )
 
         return fig
@@ -421,45 +448,77 @@ class Line(MetPlot):
                 all_points_2 = [[0 for x in range(len(self.config_obj.all_series_y2) * 3)] for y in
                                 range(len(self.config_obj.indy_vals))]
 
-            for idx, series in enumerate(self.series_list):
+            for series_idx, series in enumerate(self.series_list):
                 y_points = series.series_points['dbl_med']
                 dbl_up_ci = series.series_points['dbl_up_ci']
                 dbl_lo_ci = series.series_points['dbl_lo_ci']
                 if series.y_axis == 1:
-                    for x in range(len(self.config_obj.indy_vals)):
-                        all_points_1[x][idx * 3] = y_points[x]
-                        if not y_points[x] is None and not dbl_lo_ci[x] is None:
-                            all_points_1[x][idx * 3 + 1] = y_points[x] - dbl_lo_ci[x]
+                    for indy_val_idx in range(len(self.config_obj.indy_vals)):
+                        all_points_1[indy_val_idx][series_idx * 3] = y_points[indy_val_idx]
+                        if not y_points[indy_val_idx] is None \
+                                and not dbl_lo_ci[indy_val_idx] is None:
+                            all_points_1[indy_val_idx][series_idx * 3 + 1] = \
+                                y_points[indy_val_idx] - dbl_lo_ci[indy_val_idx]
                         else:
-                            all_points_1[x][idx * 3 + 1] = None
+                            all_points_1[indy_val_idx][series_idx * 3 + 1] = None
 
-                        if not y_points[x] is None and not dbl_up_ci[x] is None:
-                            all_points_1[x][idx * 3 + 2] = y_points[x] + dbl_up_ci[x]
+                        if not y_points[indy_val_idx] is None \
+                                and not dbl_up_ci[indy_val_idx] is None:
+                            all_points_1[indy_val_idx][series_idx * 3 + 2] = \
+                                y_points[indy_val_idx] + dbl_up_ci[indy_val_idx]
                         else:
-                            all_points_1[x][idx * 3 + 2] = None
+                            all_points_1[indy_val_idx][series_idx * 3 + 2] = None
                 else:
-                    adjusted_idx = idx - len(self.config_obj.all_series_y1)
-                    for x in range(len(self.config_obj.indy_vals)):
-                        all_points_2[x][adjusted_idx * 3] = y_points[x]
-                        if not y_points[x] is None and not dbl_lo_ci[x] is None:
-                            all_points_2[x][adjusted_idx * 3 + 1] = y_points[x] - dbl_lo_ci[x]
+                    adjusted_idx = series_idx - len(self.config_obj.all_series_y1)
+                    for indy_val_idx in range(len(self.config_obj.indy_vals)):
+                        all_points_2[indy_val_idx][adjusted_idx * 3] = y_points[indy_val_idx]
+                        if not y_points[indy_val_idx] is None \
+                                and not dbl_lo_ci[indy_val_idx] is None:
+                            all_points_2[indy_val_idx][adjusted_idx * 3 + 1] = \
+                                y_points[indy_val_idx] - dbl_lo_ci[indy_val_idx]
                         else:
-                            all_points_2[x][adjusted_idx * 3 + 1] = None
+                            all_points_2[indy_val_idx][adjusted_idx * 3 + 1] = None
 
-                        if not y_points[x] is None and not dbl_up_ci[x] is None:
-                            all_points_2[x][adjusted_idx * 3 + 2] = y_points[x] + dbl_up_ci[x]
+                        if not y_points[indy_val_idx] is None \
+                                and not dbl_up_ci[indy_val_idx] is None:
+                            all_points_2[indy_val_idx][adjusted_idx * 3 + 2] = \
+                                y_points[indy_val_idx] + dbl_up_ci[indy_val_idx]
                         else:
-                            all_points_2[x][adjusted_idx * 3 + 2] = None
+                            all_points_2[indy_val_idx][adjusted_idx * 3 + 2] = None
 
             if self.config_obj.dump_points_1 is True:
                 try:
-                    np.savetxt(output_file_1, all_points_1, fmt='%.6f')
+                    all_points_1_formatted = []
+                    for row in all_points_1:
+                        formatted_row = []
+                        for val in row:
+                            if val is None:
+                                formatted_row.append("N/A")
+                            else:
+                                formatted_row.append("%.6f" % val)
+                        all_points_1_formatted.append(formatted_row)
+                    with open(output_file_1, "w+") as my_csv:
+                        csv_writer = csv.writer(my_csv, delimiter=' ')
+                        csv_writer.writerows(all_points_1_formatted)
+
                 except TypeError:
                     print('Can\'t save points to a file')
 
             if self.config_obj.series_vals_2 and self.config_obj.dump_points_2 is True:
                 try:
-                    np.savetxt(output_file_2, all_points_2, fmt='%.6f')
+                    all_points_2_formatted = []
+                    for row in all_points_2:
+                        formatted_row = []
+                        for val in row:
+                            if val is None:
+                                formatted_row.append("N/A")
+                            else:
+                                formatted_row.append("%.6f" % val)
+                        all_points_2_formatted.append(formatted_row)
+                    with open(output_file_2, "w+") as my_csv:
+                        csv_writer = csv.writer(my_csv, delimiter=' ')
+                        csv_writer.writerows(all_points_2_formatted)
+
                 except TypeError:
                     print('Can\'t save points to a file')
 
@@ -483,12 +542,12 @@ def main():
             print(exc)
 
     try:
-        r = Line(docs)
-        r.save_to_file()
-        r.show_in_browser()
-        r.write_html()
-    except ValueError as ve:
-        print(ve)
+        plot = Line(docs)
+        plot.save_to_file()
+        plot.show_in_browser()
+        plot.write_html()
+    except ValueError as val_er:
+        print(val_er)
 
 
 if __name__ == "__main__":
