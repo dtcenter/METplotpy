@@ -53,7 +53,7 @@ class LineConfig(Config):
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
         self.plot_margins = dict(l=self.parameters['mar'][1]+80,
                                  r=self.parameters['mar'][3]+80,
-                                 t=self.parameters['mar'][2]+100,
+                                 t=self.parameters['mar'][2]+100 + 10,
                                  b=self.parameters['mar'][0]+80,
                                  pad= 5
                                  )

@@ -16,6 +16,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objs.layout import XAxis
 
+from plots.constants import XAXIS_ORIENTATION, YAXIS_ORIENTATION
 from plots.line.line_config import LineConfig
 from plots.line.line_series import LineSeries
 from plots.met_plot import MetPlot
@@ -167,18 +168,13 @@ class Line(MetPlot):
                           margin=self.config_obj.plot_margins
                           )
 
-        title_weight = self.config_obj.parameters['title_weight']
-        title = self.config_obj.title
-        if title_weight == 2:
-            title = '<b>' + self.config_obj.title + '</b>'
-        elif title_weight == 3:
-            title = '<b><i>' + self.config_obj.title + '</i></b>'
+        title = util.apply_weight_style(self.config_obj.title, self.config_obj.parameters['title_weight'])
 
         # Add figure title
         fig.update_layout(
             title={'text': title,
                    'font': {
-                       'size': self.config_obj.parameters['title_size'] * 10,
+                       'size': self.config_obj.parameters['title_size'] + 10,
                    },
                    'y': self.config_obj.parameters['title_offset'] * -0.45,
                    'x': self.config_obj.parameters['title_align'],
@@ -194,27 +190,37 @@ class Line(MetPlot):
 
         blended_grid_col = util.alpha_blending(self.config_obj.get_config_value('grid_col'), 0.5)
 
-        fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="#c2c2c2", linewidth=2,
+        x_axis_title = util.apply_weight_style(self.config_obj.xaxis, self.config_obj.parameters['xlab_weight'])
+        fig.update_xaxes(title_text=x_axis_title, linecolor="#c2c2c2", linewidth=2,
                          showgrid=self.config_obj.grid_on,
                          ticks="inside",
                          zeroline=False,
                          gridwidth=self.config_obj.get_config_value('grid_lwd') / 2,
                          gridcolor=blended_grid_col,
-                         automargin=True
+                         automargin=True,
+                         title_font={'size': self.config_obj.parameters['xlab_size'] + 10},
+                         title_standoff=abs(self.config_obj.parameters['xlab_offset'])
                          )
 
         # Set y-axes titles
-        fig.update_yaxes(title_text=self.config_obj.yaxis_1,
+        y_axis_title = util.apply_weight_style(self.config_obj.yaxis_1, self.config_obj.parameters['ylab_weight'])
+        fig.update_yaxes(title_text=y_axis_title,
                          secondary_y=False, linecolor="#c2c2c2", linewidth=2,
                          showgrid=self.config_obj.grid_on,
                          zeroline=False, ticks="inside",
                          gridwidth=self.config_obj.get_config_value('grid_lwd') / 2,
                          gridcolor=blended_grid_col,
-                         automargin=True)
+                         automargin=True,
+                         title_font={'size': self.config_obj.parameters['ylab_size'] + 10},
+                         title_standoff=abs(self.config_obj.parameters['ylab_offset'])
+                         )
         if self.config_obj.parameters['list_stat_2']:
-            fig.update_yaxes(title_text=self.config_obj.yaxis_2,
+            y_axis_title = util.apply_weight_style(self.config_obj.yaxis_2, self.config_obj.parameters['y2lab_weight'])
+            fig.update_yaxes(title_text=y_axis_title,
                              secondary_y=True, linecolor="#c2c2c2", linewidth=2,
-                             showgrid=False, zeroline=False, ticks="inside")
+                             showgrid=False, zeroline=False, ticks="inside",
+                             title_font={'size': self.config_obj.parameters['y2lab_size'] + 10},
+                             title_standoff=abs(self.config_obj.parameters['y2lab_offset']))
 
         # style the legend box
         if self.config_obj.draw_box:
@@ -239,7 +245,14 @@ class Line(MetPlot):
                                       ))
 
         # x1 axis label formatting
-        fig.update_layout(xaxis=dict(tickangle=0, tickfont=dict(size=9)))
+        tickangle = self.config_obj.parameters['xtlab_orient']
+        if tickangle in XAXIS_ORIENTATION.keys():
+            tickangle = XAXIS_ORIENTATION[tickangle]
+
+        fig.update_layout(xaxis=dict(
+            tickangle=tickangle,
+            tickfont=dict(size=9),
+        ))
 
         n_stats = [0] * len(x_points)
         # "Dump" False Detection Rate (POFD) and PODY points to an output
@@ -327,6 +340,23 @@ class Line(MetPlot):
                 )
                 n_stats = list(map(add, n_stats, series.series_points['nstat']))
 
+        tickangle = self.config_obj.parameters['ytlab_orient']
+        if tickangle in YAXIS_ORIENTATION.keys():
+            tickangle = YAXIS_ORIENTATION[tickangle]
+
+        fig.update_layout(yaxis=dict(
+            tickangle=tickangle
+        ))
+
+        if len(self.config_obj.all_series_y2) > 0:
+            tickangle = self.config_obj.parameters['y2tlab_orient']
+            if tickangle in YAXIS_ORIENTATION.keys():
+                tickangle = YAXIS_ORIENTATION[tickangle]
+
+            fig['layout']['yaxis2'].update(yaxis2=dict(
+                tickangle=tickangle
+            ))
+
         # update x1 or y1 axis ticks and tick text
         if self.config_obj.vert_plot is True:
             fig.update_layout(
@@ -367,10 +397,15 @@ class Line(MetPlot):
 
         # add x2 axis if applicable
         if self.config_obj.show_nstats:
-            fig.update_layout(xaxis2=XAxis(title_text='NStats', overlaying='x',
+            x_axis_title = util.apply_weight_style('NStats', self.config_obj.parameters['x2lab_weight'])
+            fig.update_layout(xaxis2=XAxis(title_text=x_axis_title, overlaying='x',
                                            side='top', linecolor="#c2c2c2",
                                            linewidth=2, showgrid=False,
-                                           zeroline=False, ticks="inside"))
+                                           zeroline=False, ticks="inside",
+                                           title_font={'size': self.config_obj.parameters['x2lab_size'] + 10},
+                                           title_standoff=abs(self.config_obj.parameters['x2lab_offset'])
+                                           )
+                              )
             fig.update_layout(
                 xaxis2=dict(
                     tickmode='array',
@@ -379,7 +414,10 @@ class Line(MetPlot):
                 )
             )
             # x2 axis label formatting
-            fig.update_layout(xaxis2=dict(tickangle=0, tickfont=dict(size=9)))
+            tickangle = self.config_obj.parameters['x2tlab_orient']
+            if tickangle in XAXIS_ORIENTATION.keys():
+                tickangle = XAXIS_ORIENTATION[tickangle]
+            fig.update_layout(xaxis2=dict(tickangle=tickangle, tickfont=dict(size=9)))
             fig.add_trace(
                 go.Scatter(y=[None] * len(x_points), x=x_points_index,
                            xaxis='x2', showlegend=False),

@@ -68,3 +68,5 @@ PCH_TO_PLOTLY_MARKER_SIZE = {'.': 5, 'o': 8, 's': 6, '^': 8, 'd': 6, 'H': 7}
 
 TYPE_TO_PLOTLY_MODE = {'b': 'lines+markers', 'p': 'markers', 'l': 'lines'}
 LINE_STYLE_TO_PLOTLY_DASH = {'-': None, '--': 'dash', ':': 'dot', '-:': 'dashdot'}
+XAXIS_ORIENTATION = {0: 0, 1: 0, 2: 270, 3: 270}
+YAXIS_ORIENTATION = {0: -90, 1: 0, 2: 0, 3: -90}
