@@ -84,7 +84,9 @@ class LineConfig(Config):
         # set in METviewer to prevent obstructing the x-axis.
         self.bbox_y = -0.12 + float(user_settings['bbox_y']) + 0.25
         legend_magnification = user_settings['legend_size']
+        caption_magnification = self.get_config_value('caption_size')
         self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
+        self.caption_size = int(constants.DEFAULT_CAPTION_FONTSIZE * caption_magnification)
         self.legend_ncol = self.get_config_value('legend_ncol')
         legend_box = self.get_config_value('legend_box').lower()
         if legend_box == 'n':
