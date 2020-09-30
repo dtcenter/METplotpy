@@ -11,7 +11,7 @@ setuptools.setup(
     description="plotting package for METplus",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/NCAR/METplotpy",
+    url="https://github.com/dtcenter/METplotpy",
     packages=setuptools.find_packages(),
     classifiers=[
          "Programming Language :: Python :: 3",

@@ -38,24 +38,27 @@ Consider breaking the enhancement down into sub-issues.
 - [ ] Select **requestor(s)**
 
 ### Projects and Milestone ###
-- [ ] Review **projects** and select relevant **Repository** and **Organization** ones
-- [ ] Select **milestone**
+- [ ] Review **projects** and select relevant **Repository** and **Organization** ones or add "alert:NEED PROJECT ASSIGNMENT" label
+- [ ] Select **milestone** to next major version milestone or "Future Versions"
 
 ## Define Related Issue(s) ##
 Consider the impact to the other METplus components.
-- [ ] [METplus](https://github.com/NCAR/METplus/issues/new/choose), [MET](https://github.com/NCAR/MET/issues/new/choose), [METdb](https://github.com/NCAR/METdb/issues/new/choose), [METviewer](https://github.com/NCAR/METviewer/issues/new/choose), [METexpress](https://github.com/NCAR/METexpress/issues/new/choose), [METcalcpy](https://github.com/NCAR/METcalcpy/issues/new/choose), [METplotpy](https://github.com/NCAR/METplotpy/issues/new/choose)
+- [ ] [METplus](https://github.com/dtcenter/METplus/issues/new/choose), [MET](https://github.com/dtcenter/MET/issues/new/choose), [METdatadb](https://github.com/dtcenter/METdatadb/issues/new/choose), [METviewer](https://github.com/dtcenter/METviewer/issues/new/choose), [METexpress](https://github.com/dtcenter/METexpress/issues/new/choose), [METcalcpy](https://github.com/dtcenter/METcalcpy/issues/new/choose), [METplotpy](https://github.com/dtcenter/METplotpy/issues/new/choose)
 
 ## Enhancement Checklist ##
-See the [METplus Workflow](https://ncar.github.io/METplus/Contributors_Guide/github_workflow.html) for details.
-- [ ] Complete the issue definition above.
+See the [METplus Workflow](https://dtcenter.github.io/METplus/Contributors_Guide/github_workflow.html) for details.
+- [ ] Complete the issue definition above, including the **Time Estimate** and **Funding Source**.
 - [ ] Fork this repository or create a branch of **develop**.
-Branch name:  `feature_<Issue Number>_<Description>`
+Branch name: `feature_<Issue Number>_<Description>`
 - [ ] Complete the development and test your changes.
+- [ ] Add/update log messages for easier debugging.
 - [ ] Add/update unit tests.
 - [ ] Add/update documentation.
 - [ ] Push local changes to GitHub.
-- [ ] Submit a pull request to merge into **develop** and link the pull request to this issue.
+- [ ] Submit a pull request to merge into **develop**.
 Pull request: `feature <Issue Number> <Description>`
+- [ ] Define the pull request metadata, as permissions allow.
+Select: **Reviewer(s)**, **Project(s)**, **Milestone**, and **Linked issues**
 - [ ] Iterate until the reviewer(s) accept and merge your changes.
 - [ ] Delete your fork or branch.
 - [ ] Close this issue.
