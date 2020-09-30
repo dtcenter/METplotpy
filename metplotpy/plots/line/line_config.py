@@ -51,11 +51,11 @@ class LineConfig(Config):
         self.plot_stat = self.get_config_value('stat_curve')
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
-        self.plot_margins = dict(l=self.parameters['mar'][1]+80,
-                                 r=self.parameters['mar'][3]+80,
-                                 t=self.parameters['mar'][2]+100 + 10,
-                                 b=self.parameters['mar'][0]+80,
-                                 pad= 5
+        self.plot_margins = dict(l=self.parameters['mar'][1] + 65,
+                                 r=self.parameters['mar'][3] + 20,
+                                 t=self.parameters['mar'][2] + 80,
+                                 b=self.parameters['mar'][0] + 80,
+                                 pad=5
                                  )
         self.plot_resolution = self._get_plot_resolution()
         self.caption = self.get_config_value('plot_caption')

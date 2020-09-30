@@ -189,12 +189,12 @@ class Line(MetPlot):
         fig.update_layout(
             title={'text': title,
                    'font': {
-                       'size': self.config_obj.parameters['title_size'] + 10,
+                       'size': self.config_obj.parameters['title_size'] * 11,
                    },
-                   'y': self.config_obj.parameters['title_offset'] * -0.45,
+                   'y': self.config_obj.parameters['title_offset'] * (-0.48),
                    'x': self.config_obj.parameters['title_align'],
                    'xanchor': "center",
-                   'yanchor': "top"
+                   'xref': 'paper'
                    },
             plot_bgcolor="#FFF"
 
