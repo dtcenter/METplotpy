@@ -165,7 +165,8 @@ class Line(MetPlot):
         height = self.config_obj.plot_height
         # fig.update_layout(width=width, height=height, paper_bgcolor="white")
         fig.update_layout(width=width, height=height,
-                          margin=self.config_obj.plot_margins
+                          margin=self.config_obj.plot_margins,
+                          paper_bgcolor="white"
                           )
 
         title = util.apply_weight_style(self.config_obj.title, self.config_obj.parameters['title_weight'])
@@ -223,29 +224,18 @@ class Line(MetPlot):
                              title_standoff=abs(self.config_obj.parameters['y2lab_offset']))
 
         # style the legend box
-        if self.config_obj.draw_box:
-            fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
-                                          y=self.config_obj.bbox_y,
-                                          bordercolor="black",
-                                          borderwidth=2,
-                                          font=dict(
-                                              size=self.config_obj.legend_size,
-                                              color="black"
-                                          ),
-                                          ))
+        border_width = 2
+        if not self.config_obj.draw_box:
+            border_width = 0
 
-        else:
-            fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
-                                          y=self.config_obj.bbox_y
-                                          ))
-
-        # can't support number of columns in legend, can only choose
-        # between horizontal or vertical alignment of legend labels
-        # so only support vertical legends (ie num columns = 1)
         fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
                                       y=self.config_obj.bbox_y,
                                       bordercolor="black",
-                                      borderwidth=2
+                                      borderwidth=border_width,
+                                      font=dict(
+                                          size=self.config_obj.legend_size,
+                                          color="black"
+                                      ),
                                       ))
 
         # x1 axis label formatting
