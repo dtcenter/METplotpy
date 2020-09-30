@@ -227,11 +227,15 @@ class Line(MetPlot):
         border_width = 2
         if not self.config_obj.draw_box:
             border_width = 0
-
-        fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
-                                      y=self.config_obj.bbox_y,
+        orientation = 'h'
+        if self.config_obj.parameters['legend_ncol'] == 1:
+            orientation = 'v'
+        fig.update_layout(legend=dict(x=self.config_obj.bbox_x, y=self.config_obj.bbox_y,
+                                      xanchor='center',
+                                      yanchor='top',
                                       bordercolor="black",
                                       borderwidth=border_width,
+                                      orientation=orientation,
                                       font=dict(
                                           size=self.config_obj.legend_size,
                                           color="black"
