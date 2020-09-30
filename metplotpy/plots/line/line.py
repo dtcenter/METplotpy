@@ -163,10 +163,24 @@ class Line(MetPlot):
         # Set plot height and width in pixel value
         width = self.config_obj.plot_width
         height = self.config_obj.plot_height
-        # fig.update_layout(width=width, height=height, paper_bgcolor="white")
+        plot_caption = util.apply_weight_style(self.config_obj.parameters['plot_caption'], self.config_obj.parameters['caption_weight'])
+
+
         fig.update_layout(width=width, height=height,
                           margin=self.config_obj.plot_margins,
-                          paper_bgcolor="white"
+                          paper_bgcolor="white",
+                          annotations=[dict(text= plot_caption,
+                                            align='left',
+                                            showarrow=False,
+                                            xref='paper',
+                                            yref='paper',
+                                            x=0 + self.config_obj.parameters['caption_align'],
+                                            y=-3.1 + self.config_obj.parameters['caption_offset'],
+                                            font=dict(
+                                                size=self.config_obj.caption_size,
+                                                color=self.config_obj.parameters['caption_col']
+                                            ),
+                                            )]
                           )
 
         title = util.apply_weight_style(self.config_obj.title, self.config_obj.parameters['title_weight'])
