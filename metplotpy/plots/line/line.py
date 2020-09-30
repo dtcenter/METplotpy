@@ -227,7 +227,11 @@ class Line(MetPlot):
             fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
                                           y=self.config_obj.bbox_y,
                                           bordercolor="black",
-                                          borderwidth=2
+                                          borderwidth=2,
+                                          font=dict(
+                                              size=self.config_obj.legend_size,
+                                              color="black"
+                                          ),
                                           ))
 
         else:
@@ -249,9 +253,11 @@ class Line(MetPlot):
         if tickangle in XAXIS_ORIENTATION.keys():
             tickangle = XAXIS_ORIENTATION[tickangle]
 
+        tickfont_size = 10 * self.config_obj.parameters['xtlab_size']
+
         fig.update_layout(xaxis=dict(
             tickangle=tickangle,
-            tickfont=dict(size=9),
+            tickfont=dict(size=tickfont_size)
         ))
 
         n_stats = [0] * len(x_points)
@@ -343,18 +349,21 @@ class Line(MetPlot):
         tickangle = self.config_obj.parameters['ytlab_orient']
         if tickangle in YAXIS_ORIENTATION.keys():
             tickangle = YAXIS_ORIENTATION[tickangle]
+        tickfont_size = 10 * self.config_obj.parameters['ytlab_size']
 
         fig.update_layout(yaxis=dict(
-            tickangle=tickangle
+            tickangle=tickangle,
+            tickfont=dict(size=tickfont_size)
         ))
 
         if len(self.config_obj.all_series_y2) > 0:
             tickangle = self.config_obj.parameters['y2tlab_orient']
             if tickangle in YAXIS_ORIENTATION.keys():
                 tickangle = YAXIS_ORIENTATION[tickangle]
-
+            tickfont_size = 10 * self.config_obj.parameters['y2tlab_size']
             fig['layout']['yaxis2'].update(yaxis2=dict(
-                tickangle=tickangle
+                tickangle=tickangle,
+                tickfont=dict(size=tickfont_size)
             ))
 
         # update x1 or y1 axis ticks and tick text
@@ -417,7 +426,8 @@ class Line(MetPlot):
             tickangle = self.config_obj.parameters['x2tlab_orient']
             if tickangle in XAXIS_ORIENTATION.keys():
                 tickangle = XAXIS_ORIENTATION[tickangle]
-            fig.update_layout(xaxis2=dict(tickangle=tickangle, tickfont=dict(size=9)))
+            tickfont_size = 10 * self.config_obj.parameters['x2tlab_size']
+            fig.update_layout(xaxis2=dict(tickangle=tickangle, tickfont=dict(size=tickfont_size)))
             fig.add_trace(
                 go.Scatter(y=[None] * len(x_points), x=x_points_index,
                            xaxis='x2', showlegend=False),
