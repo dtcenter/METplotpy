@@ -1,3 +1,4 @@
+
 """
 Class Name: performance_diagram.py
  """
@@ -292,9 +293,10 @@ class PerformanceDiagram(MetPlot):
         #            borderaxespad=0., ncol=5, prop={'size': 6}, fancybox=True)
 
         # Legend based on the style settings in the config file.
-        ax2.legend(bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y), loc='lower left',
+        ax2.legend(bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y), loc='best',
                    ncol=self.config_obj.legend_ncol,
-                   prop={'size': self.config_obj.legend_size})
+                   prop={'size': self.config_obj.legend_size},
+                   frameon=self.config_obj.draw_box)
         ax1.xaxis.set_label_coords(0.5, -0.066)
         ax1.set_xlabel(xlabel, fontsize=9)
         ax1.set_ylabel(ylabel, fontsize=9)
@@ -352,18 +354,26 @@ class PerformanceDiagram(MetPlot):
             fileobj.close()
 
 
-def main():
+def main(config_filename=None):
     """
             Generates a sample, default, line plot using a combination of
             default and custom config files on sample data found in this directory.
             The location of the input data is defined in either the default or
             custom config file.
+
+            Args:
+                @param config_filename: default is None, the name of the custom config file to apply
+            Returns:
+
     """
 
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
     # with open("./custom_performance_diagram.yaml", 'r') as stream:
-    config_file = util.read_config_from_command_line()
+    if not config_filename:
+        config_file = util.read_config_from_command_line()
+    else:
+        config_file = config_filename
     with open(config_file, 'r') as stream:
         try:
             docs = yaml.load(stream, Loader=yaml.FullLoader)
@@ -376,6 +386,8 @@ def main():
 
     except ValueError as value_error:
         print(value_error)
+
+
 
 
 if __name__ == "__main__":
