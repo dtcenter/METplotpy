@@ -1,3 +1,5 @@
+
+#!/usr/bin/env conda run -n blenny_363 python
 """
 Class Name: performance_diagram_config.py
 
@@ -9,7 +11,6 @@ __email__ = 'met_help@ucar.edu'
 import re
 from plots.config import Config
 import plots.constants as constants
-import metcalcpy.util.utils as utils
 
 class PerformanceDiagramConfig(Config):
 
@@ -47,6 +48,16 @@ class PerformanceDiagramConfig(Config):
         self.plot_width = self.calculate_plot_dimension('plot_width', 'in')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'in')
 
+        # Caption settings
+        self.caption = self.get_config_value('plot_caption')
+        self.caption_weight = self.get_config_value('caption_weight')
+        self.caption_color = self.get_config_value('caption_color')
+
+        requested_caption_size = self.get_config_value('caption_size')
+        self.caption_size = self.calculate_caption_size(requested_caption_size)
+        self.caption_offset = self.get_config_value('caption_offset')
+        self.caption_align = self.get_config_value('caption_align')
+
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
 
@@ -54,8 +65,17 @@ class PerformanceDiagramConfig(Config):
         # bbox_to_anchor() setting used in determining
         # the location of the bounding box which defines
         # the legend.
-        self.bbox_x = float(user_settings['bbox_x'])
-        self.bbox_y = float(user_settings['bbox_y'])
+
+        # adjust METviewer values to be consistent with the Matplotlib scale
+        # The METviewer x default is set to 0, which corresponds to a Matplotlib
+        # x-value of 0.5 (roughly centered with respect to the x-axis)
+        mv_bbox_x = float(user_settings['bbox_x'])
+        self.bbox_x = mv_bbox_x + 0.5
+
+        # METviewer legend box y-value is set to -.25 by default, which corresponds
+        # to a Matplotlib y-value of -.1
+        mv_bbox_y = float(user_settings['bbox_y'])
+        self.bbox_y = mv_bbox_y +.15
         legend_magnification = user_settings['legend_size']
         self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
         self.legend_ncol = self.get_config_value('legend_ncol')
@@ -215,23 +235,26 @@ class PerformanceDiagramConfig(Config):
                              "config file.  Expecting format of %y <units> or %x <units>")
         return anno_var, anno_units
 
-    def get_caption_size(self):
+    def calculate_caption_size(self, requested_caption_size):
         '''
-            Get the caption_size. Override this for Matplotlib and Pyplot implementations.
+            Calculate the actual caption_size. Override this for Matplotlib and Pyplot implementations.
+            The caption size in METviewer is a percent value of magnification.  Make the
+            appropriate calculations
 
             Args:
+                @param requested_caption_size: The caption size specified in the config file
 
             Returns:
-
+                actual_caption_size:  The size that will be applied to the caption
         '''
         # by default, the caption will be located on the lower right side
         # of the plot, below the x-axis.  METviewer has default value of
         # 0.8 (80% magnification)  For this implementation (Matplotlib), set the
-        # base caption size to 9, and calculate the font size (in pointsize/pixel)
+        # base caption size to 12, and calculate the font size (in pointsize/pixel)
 
-        caption_size = float(self.get_config_value('caption_size'))
+        caption_size = float(requested_caption_size)
         matplotlib_default_size = 12.0
-        adj_caption_size = caption_size * matplotlib_default_size
-        return adj_caption_size
+        actual_caption_size = caption_size * matplotlib_default_size
+        return actual_caption_size
 
 
