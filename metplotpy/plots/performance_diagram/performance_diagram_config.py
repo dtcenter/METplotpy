@@ -53,10 +53,21 @@ class PerformanceDiagramConfig(Config):
         self.caption_weight = self.get_config_value('caption_weight')
         self.caption_color = self.get_config_value('caption_color')
 
+
+        # Make necessary adjustments from values set in METviewer to
+        # corresponding values in Matplotlib.
         requested_caption_size = self.get_config_value('caption_size')
         self.caption_size = self.calculate_caption_size(requested_caption_size)
-        self.caption_offset = self.get_config_value('caption_offset')
-        self.caption_align = self.get_config_value('caption_align')
+
+        # METviewer default set to 0, which corresponds to a y-value in Matplotlib
+        # to .13
+        mv_caption_offset = self.get_config_value('caption_offset')
+        self.caption_offset = mv_caption_offset + 0.13
+
+        # METviewer default is set to 3, which corresponds to an x-value in Matplotlib
+        # to 0.05
+        mv_caption_align = self.get_config_value('caption_align')
+        self.caption_align = mv_caption_align - 2.95
 
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
