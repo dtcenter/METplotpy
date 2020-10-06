@@ -58,10 +58,11 @@ def apply_weight_style(text: str, weight: int) -> str:
     :param weight: - int representation of the style
     :return: styled text
     """
-    if weight == 2:
-        return '<b>' + text + '</b>'
-    if weight == 3:
-        return '<i>' + text + '</b>'
-    if weight == 4:
-        return '<b><i>' + text + '</i></b>'
+    if len(text) > 0:
+        if weight == 2:
+            return '<b>' + text + '</b>'
+        if weight == 3:
+            return '<i>' + text + '</b>'
+        if weight == 4:
+            return '<b><i>' + text + '</i></b>'
     return text
