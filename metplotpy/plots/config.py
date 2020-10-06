@@ -30,7 +30,7 @@ class Config:
         self.yaxis_1 = self.get_config_value('yaxis_1')
         self.yaxis_2 = self.get_config_value('yaxis_2')
         self.title = self.get_config_value('title')
-        self.use_ee = self.get_config_value('event_equal')
+        self.use_ee = self._get_bool('event_equal')
         self.indy_vals = self.get_config_value('indy_vals')
         self.indy_label = self._get_indy_label()
         self.indy_var = self.get_config_value('indy_var')
@@ -65,7 +65,7 @@ class Config:
         # in the input dataframe.
         self.series_vals_1 = self._get_series_vals(1)
         self.series_vals_2 = self._get_series_vals(2)
-        self.all_series_vals = self.series_vals_1
+        self.all_series_vals = self.series_vals_1.copy()
         if self.series_vals_2:
             self.all_series_vals.extend(self.series_vals_2)
 
@@ -255,9 +255,11 @@ class Config:
                the number of series
 
         """
-
         # Retrieve the lists from the series_val_1 dictionary
-        series_vals_list = self.series_vals_1
+        series_vals_list = self.series_vals_1.copy()
+        fcst_vals = list(self.fcst_vars_1.values())
+        fcst_vals_flat = [item for sublist in fcst_vals for item in sublist]
+        series_vals_list.append(fcst_vals_flat)
 
         # Utilize itertools' product() to create the cartesian product of all elements
         # in the lists to produce all permutations of the series_val values and the
@@ -265,11 +267,19 @@ class Config:
         permutations = [p for p in itertools.product(*series_vals_list)]
 
         if self.series_vals_2:
-            series_vals_list_2 = self.series_vals_2
+            series_vals_list_2 = self.series_vals_2.copy()
+            fcst_vals_2 = list(self.fcst_vars_2.values())
+            fcst_vals_2_flat = [item for sublist in fcst_vals_2 for item in sublist]
+            series_vals_list_2.append(fcst_vals_2_flat)
             permutations_2 = [p for p in itertools.product(*series_vals_list_2)]
             permutations.extend(permutations_2)
 
-        return len(permutations)
+        total = len(permutations)
+        # add derived
+        total = total + len(self.get_config_value('derived_series_1'))
+        total = total + len(self.get_config_value('derived_series_2'))
+
+        return total
 
     def _get_colors(self):
         """
