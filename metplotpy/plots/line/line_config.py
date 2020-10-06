@@ -6,11 +6,11 @@ Holds values set in the Line plot config file(s)
 __author__ = 'Minna Win, Hank Fisher'
 __email__ = 'met_help@ucar.edu'
 
-import re
 import itertools
 
 from plots.config import Config
 import plots.constants as constants
+import plots.util as util
 
 import metcalcpy.util.utils as utils
 from metcalcpy.util.utils import OPERATION_TO_SIGN
@@ -33,8 +33,42 @@ class LineConfig(Config):
         # init common layout
         super().__init__(parameters)
 
-        # use this setting to determine the ordering of colors, lines, and markers
-        self.series_ordering = self._get_series_order()
+        self.paper_bgcolor = "white"
+        self.line_color = "#c2c2c2"
+        self.line_width = 2
+
+        self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
+        self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
+
+        self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.y_tickangle = self.parameters['ytlab_orient']
+        if self.y_tickangle in constants.YAXIS_ORIENTATION.keys():
+            self.y_tickangle = constants.YAXIS_ORIENTATION[self.y_tickangle]
+        self.y_tickfont_size = self.parameters['ytlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.y2_title_font_size = self.parameters['y2lab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.y2_tickangle = self.parameters['y2tlab_orient']
+        if self.y2_tickangle in constants.YAXIS_ORIENTATION.keys():
+            self.y2_tickangle = constants.YAXIS_ORIENTATION[self.y2_tickangle]
+        self.y2_tickfont_size = self.parameters['y2tlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.x_title_font_size = self.parameters['xlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.x_tickangle = self.parameters['xtlab_orient']
+        if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
+            self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
+        self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.x2_title_font_size = self.parameters['x2lab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.x2_tickangle = self.parameters['x2tlab_orient']
+        if self.x2_tickangle in constants.XAXIS_ORIENTATION.keys():
+            self.x2_tickangle = constants.XAXIS_ORIENTATION[self.x2_tickangle]
+        self.x2_tickfont_size = self.parameters['x2tlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        # use alpha blending for the grid lines
+        self.blended_grid_col = util.alpha_blending(self.parameters['grid_col'], 0.5)
+
+        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
+        self.series_ordering = self.get_config_value('series_order')
 
         self.plot_disp = self._get_plot_disp()
 
@@ -42,28 +76,16 @@ class LineConfig(Config):
         # counting/numbering
         self.series_ordering_zb = [sorder - 1 for sorder in self.series_ordering]
 
-        self.stat_input = self.get_config_value('stat_input')
-
-        self.series_inner_dict1 = self._get_series_inner_dict(1)
-        self.series_inner_dict2 = self._get_series_inner_dict(2)
-
-        # Supported values for stat_curve are none, mean, and median
-        self.plot_stat = self.get_config_value('stat_curve')
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
-        self.plot_margins = dict(l=self.parameters['mar'][1] + 65,
+        self.plot_margins = dict(l=0,
                                  r=self.parameters['mar'][3] + 20,
                                  t=self.parameters['mar'][2] + 80,
                                  b=self.parameters['mar'][0] + 80,
                                  pad=5
                                  )
-        self.plot_resolution = self._get_plot_resolution()
-        self.caption = self.get_config_value('plot_caption')
-        self.caption_weight = self.get_config_value('caption_weight')
-        self.caption_color = self.get_config_value('caption_color')
-        self.caption_size = self.get_config_value('caption_size')
-        self.caption_offset = self.get_config_value('caption_offset')
-        self.caption_align = self.get_config_value('caption_align')
+        self.caption_size = int(constants.DEFAULT_CAPTION_FONTSIZE * self.get_config_value('caption_size'))
+        self.caption_offset = self.parameters['caption_offset'] - 3.1
         self.colors_list = self._get_colors()
         self.marker_list = self._get_markers()
         self.marker_size = self._get_markers_size()
@@ -72,36 +94,32 @@ class LineConfig(Config):
         self.linestyles_list = self._get_linestyles()
         self.plot_ci = self._get_plot_ci()
 
-        # legend style settings as defined in METviewer
-        user_settings = self._get_legend_style()
-
         # list of the x, y, and loc values for the
         # bbox_to_anchor() setting used in determining
         # the location of the bounding box which defines
         # the legend.
-        self.bbox_x = 0.5 + float(user_settings['bbox_x'])
+        self.bbox_x = 0.5 + self.parameters['legend_inset']['x']
         # set legend box lower by .18 pixels of the default value
         # set in METviewer to prevent obstructing the x-axis.
-        self.bbox_y = -0.12 + float(user_settings['bbox_y']) + 0.25
-        legend_magnification = user_settings['legend_size']
-        caption_magnification = self.get_config_value('caption_size')
-        self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
-        self.caption_size = int(constants.DEFAULT_CAPTION_FONTSIZE * caption_magnification)
-        self.legend_ncol = self.get_config_value('legend_ncol')
-        legend_box = self.get_config_value('legend_box').lower()
-        if legend_box == 'n':
+        self.bbox_y = -0.12 + self.parameters['legend_inset']['y'] + 0.25
+        self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * self.parameters['legend_size'])
+
+        if self.parameters['legend_box'].lower() == 'n':
             # Don't draw a box around legend labels
-            self.draw_box = False
+            self.legend_border_width = 0
         else:
             # Other choice is 'o'
             # Enclose legend labels in a box
-            self.draw_box = True
+            self.legend_border_width = 2
+
+        if self.parameters['legend_ncol'] == 1:
+            self.legend_orientation = 'v'
+        else:
+            self.legend_orientation = 'h'
+        self.legend_border_color = "black"
+
         self.plot_stat = self._get_plot_stat()
-        self.show_nstats = self.get_config_value('show_nstats')
-        if self.show_nstats == 'True':
-            self.show_nstats = True
-        elif self.show_nstats == 'False':
-            self.show_nstats = False
+        self.show_nstats = self._get_bool('show_nstats')
 
         self.all_series_y1 = self._get_all_series_y(1)
         self.all_series_y2 = self._get_all_series_y(2)
@@ -115,96 +133,8 @@ class LineConfig(Config):
         self.sync_yaxes = self._get_bool('sync_yaxes')
         self.grid_on = self._get_bool('grid_on')
         self.con_series = self._get_con_series()
-
-    def _get_series_inner_dict(self, index):
-
-        """
-            Get a dictionary containing the inner key-value pairs. This information
-            will be used to subset the PCT or CTC data (represented by a
-            pandas dataframe) for the ROC diagram.
-
-            The value of this inner dictionary corresponds to the column name of the
-            dataframe, and is saved as the key in this new dictionary.  The key of the
-            inner dictionary corresponds to the row of interest, and is saved as the
-            value in the new dictionary.
-
-            For example:
-            series_val_1:
-               model:
-                  - GFS
-                  - WRF
-               vx_mask:
-                  - FULL
-
-            The inner dictionary (from the above configuration file entry)
-            looks like this: {'model': ['GFS', 'WRF'], 'vx_mask':'FULL'}
-            and we want to subset the data where (model == GFS and vx_mask == FULL) for one
-            permutation/series and (model == WRF and vx_mask == FULL)
-            for the second permutation/series
-            (i.e. key = row value of interest and value = corresponding column header).
-
-            Our new dictionary looks like this:
-
-            {'GFS':'model', 'WRF':'model','FULL':'vx_mask'}
-
-            now we can readily determine which row value of interest corresponds to a column header.
-
-
-            We also need to support this (and other) scenario(s):
-            series_val_1:
-                model:
-                   - GFS
-                   - GALWEM
-
-            where the inner dictionary looks like: {'model': ['GFS', 'GALWEM']} and our
-            new dictionary looks like:
-            {'GFS':'model', 'GALWEM':'model'}
-
-
-            Args:
-                index:  The number defining which of series_vals_1 or series_vals_2 to consider
-
-            Returns:
-                val_inner_dict: the inner dictionary
-                                of the series_vals dictionary re-organized,
-                                where the key is the row value of interest
-                                and the value corresponds to the column header
-
-        """
-        val_inner_dict = {}
-
-        if index == 1:
-            # evaluate series_val_1 setting
-            series_val_dict = self.get_config_value('series_val_1')
-        elif index == 2:
-            # evaluate series_val_2 setting
-            series_val_dict = self.get_config_value('series_val_2')
-        else:
-            raise ValueError('Index value must be either 1 or 2')
-
-        # return empty dictionary if series_val_dict is empty
-        if not series_val_dict:
-            return {}
-
-        for field, values in series_val_dict.items():
-            # Sometimes the value consists of a list of more
-            # than one item:
-            for idx, val in enumerate(values):
-                val_inner_dict[values[idx]] = field
-
-        return val_inner_dict
-
-    def _get_series_order(self):
-        """
-            Get the order number for each series
-
-            Args:
-
-            Returns:
-            a list of unique values representing the ordinal value of the corresponding series
-
-        """
-        return self.get_config_value('series_order')
+        self.num_series = self.calculate_number_of_series()
+        self.create_html = self._get_bool('create_html')
 
     def _get_plot_disp(self):
         """
@@ -248,7 +178,7 @@ class LineConfig(Config):
         elif index == 2:
             fcst_var_val_dict = self.get_config_value('fcst_var_val_2')
             if not fcst_var_val_dict:
-                fcst_var_val_dict = []
+                fcst_var_val_dict = {}
         else:
             fcst_var_val_dict = {}
 
@@ -381,7 +311,6 @@ class LineConfig(Config):
         # Determine the number of series based on the number of
         # permutations from the series_var setting in the
         # config file
-        num_series = self.calculate_number_of_series()
 
         # Numbers of values for other settings for series
         num_ci_settings = len(self.plot_ci)
@@ -394,7 +323,7 @@ class LineConfig(Config):
         num_linestyles = len(self.linestyles_list)
         status = False
 
-        if num_series == num_plot_disp == \
+        if self.num_series == num_plot_disp == \
                 num_markers == num_series_ord == num_colors \
                 == num_legends == num_line_widths == num_linestyles == num_ci_settings:
             status = True
@@ -426,27 +355,12 @@ class LineConfig(Config):
 
         return ordered_ci_settings_list
 
-    def _get_annotation_template(self):
-        """ Retrieve the annotation template, and then extract the units and the variable
-
-        """
-        anno_tmpl = self.get_config_value('annotation_template')
-        if not anno_tmpl:
-            return None, None
-        match = re.match(r'^%([a-z|A-Z])(.*)', anno_tmpl)
-        if match:
-            anno_var = match.group(1)
-            anno_units = match.group(2)
-        else:
-            raise ValueError("Non-conforming annotation template specified in "
-                             "config file.  Expecting format of %y <units> or %x <units>")
-        return anno_var, anno_units
-
     def _get_user_legends(self, legend_label_type):
 
         all_legends = self.get_config_value('user_legend')
         legend_list = []
-        for idx, ser_components in enumerate(self._get_all_series()):
+        num_series_y1 = len(self.get_series_y(1))
+        for idx, ser_components in enumerate(self.get_series_y(1)):
             if idx >= len(all_legends) or all_legends[idx].strip() == '':
                 if len(ser_components) == 3 and ser_components[2] in OPERATION_TO_SIGN.keys():
                     # this is a derived series
@@ -456,15 +370,42 @@ class LineConfig(Config):
             else:
                 legend_list.append(all_legends[idx])
 
+        num_series_y2 = len(self.get_series_y(2))
+        for idx, ser_components in enumerate(self.get_series_y(2)):
+            if idx + num_series_y1 >= len(all_legends) or all_legends[idx + num_series_y1].strip() == '':
+                if len(ser_components) == 3 and ser_components[2] in OPERATION_TO_SIGN.keys():
+                    # this is a derived series
+                    legend_list.append(utils.get_derived_curve_name(ser_components))
+                else:
+                    legend_list.append(' '.join(map(str, ser_components)))
+            else:
+                legend_list.append(all_legends[idx + num_series_y1])
+
+        num_series_y1_d = len(self.get_config_value('derived_series_1'))
+        for idx, ser_components in enumerate(self.get_config_value('derived_series_1')):
+            if idx + num_series_y1 + num_series_y2 >= len(all_legends) or all_legends[
+                idx + num_series_y1 + num_series_y2].strip() == '':
+                if len(ser_components) == 3 and ser_components[2] in OPERATION_TO_SIGN.keys():
+                    # this is a derived series
+                    legend_list.append(utils.get_derived_curve_name(ser_components))
+                else:
+                    legend_list.append(' '.join(map(str, ser_components)))
+            else:
+                legend_list.append(all_legends[idx + num_series_y1 + num_series_y2])
+
+        for idx, ser_components in enumerate(self.get_config_value('derived_series_2')):
+            if idx + num_series_y1 + num_series_y2 + num_series_y1_d >= len(all_legends) or all_legends[
+                idx + num_series_y1 + num_series_y2 + num_series_y1_d].strip() == '':
+                if len(ser_components) == 3 and ser_components[2] in OPERATION_TO_SIGN.keys():
+                    # this is a derived series
+                    legend_list.append(utils.get_derived_curve_name(ser_components))
+                else:
+                    legend_list.append(' '.join(map(str, ser_components)))
+            else:
+                legend_list.append(all_legends[idx + num_series_y1 + num_series_y2 + num_series_y1_d])
+
         legends_list_ordered = self.create_list_by_series_ordering(legend_list)
         return legends_list_ordered
-
-    def _get_all_series(self):
-        all_series = self.all_series_y1.copy()
-        if self.all_series_y2:
-            all_series.extend(self.all_series_y2)
-
-        return all_series
 
     def get_series_y(self, axis):
         all_fields_values = self.get_config_value('series_val_' + str(axis)).copy()
@@ -482,20 +423,3 @@ class LineConfig(Config):
             all_series = all_series + self.get_config_value('derived_series_' + str(axis))
 
         return all_series
-
-    def get_show_signif(self):
-        """ Retrieve all the show_signif from the configuration file, if not
-            specified in any config file, use the default values of False
-
-            Args:
-
-            Returns:
-                show_signif_list: a list of show_signif corresponding to each line
-        """
-        show_signif = self.get_config_value('show_signif')
-        show_signif_list = []
-        for val in show_signif:
-            if isinstance(val, str):
-                show_signif_list.append(val == 'True')
-        show_signif_list_ordered = self.create_list_by_series_ordering(show_signif_list)
-        return show_signif_list_ordered
