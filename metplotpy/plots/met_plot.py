@@ -33,7 +33,6 @@ class MetPlot:
 
         """
 
-
         # Determine location of the default YAML config files and then
         # read defaults stored in YAML formatted file into the dictionary
         if 'METPLOTPY_BASE' in os.environ:
@@ -125,7 +124,6 @@ class MetPlot:
             # Do not draw border around the legend labels.
             borderwidth = 0
 
-
         legend_ncol = self.get_config_value('legend_ncol')
         if legend_ncol > 1:
             legend_orientation = "h"
@@ -140,7 +138,6 @@ class MetPlot:
                                legend_size=legend_size)
 
         return legend_settings
-
 
     def get_title(self):
         """Creates a Plotly title dictionary with values from users and default parameters
@@ -323,7 +320,7 @@ class MetPlot:
         Returns:
 
         """
-        image_name = self.get_config_value('image_name')
+        image_name = self.get_config_value('plot_filename')
         if self.figure:
             try:
                 self.figure.write_image(image_name)
