@@ -4,7 +4,7 @@ Class Name: ROCDiagramSeries
 __author__ = 'Tatiana Burek'
 __email__ = 'met_help@ucar.edu'
 
-import itertools
+from typing import Union
 import math
 
 import numpy as np
@@ -22,9 +22,10 @@ class LineSeries(Series):
 
     """
 
-    def __init__(self, config, idx: int, input_data, series_list: list, y_axis: int = 1):
+    def __init__(self, config, idx: int, input_data, series_list: list, series_name: Union[list, tuple],
+                 y_axis: int = 1):
         self.series_list = series_list
-        self.series_name = ''
+        self.series_name = series_name
         self.series_data = None
         super().__init__(config, idx, input_data, y_axis)
 
@@ -44,25 +45,11 @@ class LineSeries(Series):
         """
 
         """
-        # Subset data based on self.all_series_vals that we acquired from the
-        # config file
 
-        all_fields_values = self.config.get_config_value('series_val_' + str(self.y_axis)).copy()
-
-        if self.config.get_fcst_vars(self.y_axis):
-            all_fields_values['fcst_var'] = list(self.config.get_fcst_vars(self.y_axis).keys())
-
-        all_fields_values['stat_name'] = \
-            self.config.get_config_value('list_stat_' + str(self.y_axis))
-
-        list_of_series_names = list(itertools.product(*all_fields_values.values()))
-        all_fields_values_no_indy = all_fields_values.copy()
-
-        if self.idx < len(list_of_series_names):
+        if not self.series_name[-1] in utils.OPERATION_TO_SIGN.keys():
             # this is a normal series
-            self.series_name = list_of_series_names[self.idx]
             all_filters = []
-            for field_ind, field in enumerate(all_fields_values_no_indy.keys()):
+            for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
                 filter_value = self.series_name[field_ind]
                 if "," in filter_value:
                     filter_list = filter_value.split(',')
@@ -90,13 +77,6 @@ class LineSeries(Series):
 
         else:
             # this is a derived series
-
-            # TODO  check if the input frame already has diff series ( from calculation agg stats )
-
-            derived_series_index = self.idx - len(self.config.get_series_y(self.y_axis))
-
-            self.series_name = self.config.get_config_value('derived_series_' + str(self.y_axis))[
-                derived_series_index]
             series_name_1 = self.series_name[0].split()
             series_name_2 = self.series_name[1].split()
             operation = self.series_name[2]
@@ -110,7 +90,7 @@ class LineSeries(Series):
             name = utils.get_derived_curve_name([self.series_name[0],
                                                  self.series_name[1],
                                                  operation])
-            for field in all_fields_values_no_indy:
+            for field in self.all_fields_values_no_indy[self.y_axis]:
                 self.series_data = self.input_data.loc[self.input_data[field] == name]
                 if len(self.series_data) > 0:
                     break
@@ -172,7 +152,7 @@ class LineSeries(Series):
                     if self.series_data is None:
                         self.series_data = stats_indy_1
                     else:
-                        self.series_data = self.series_data.append(stats_indy_1)
+                        self.series_data = self.series_data.append(stats_indy_1, sort=False)
 
         series_points_results = {'dbl_lo_ci': [], 'dbl_med': [], 'dbl_up_ci': [], 'nstat': []}
         # for each point
