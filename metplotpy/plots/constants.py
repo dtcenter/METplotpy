@@ -47,6 +47,11 @@ DEFAULT_TITLE_FONTSIZE = 10
 # Default size used in plotly legend text
 DEFAULT_LEGEND_FONTSIZE = 12
 DEFAULT_CAPTION_FONTSIZE = 14
+DEFAULT_CAPTION_Y_OFFSET = -3.1
+DEFAULT_TITLE_FONT_SIZE = 11
+DEFAULT_TITLE_OFFSET = (-0.48)
+
+
 AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", ".", "h"]
 AVAILABLE_PLOTLY_MARKERS_LIST = ["open-circle", "circle",
                                  "square", "diamond",
