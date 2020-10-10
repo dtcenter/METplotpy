@@ -10,8 +10,8 @@ definite quantities such as wind speed and wave height.
 
 import numpy as np
 import matplotlib.pyplot as plt
-from calc_difficulty_index import forecast_difficulty as di
-from piecewise_linear import PiecewiseLinear as plin
+from metcalcpy.calc_difficulty_index import forecast_difficulty as di
+from metcalcpy.piecewise_linear import PiecewiseLinear as plin
 from mycolormaps import spectral, stoplight
 
 __author__ = 'Bill Campbell (NRL) and Lindsay Blank (NCAR)'
@@ -23,8 +23,7 @@ EPS = np.finfo(np.float32).eps
 # Only allow 2D fields for now
 FIELD_DIM = 2
 
-
-def _test_plot_field(field, vmin, vmax, xlab, ylab, title):
+def plot_field(field, vmin, vmax, xlab, ylab, title):
     """Auxiliary plot routine."""
     fig, ax = plt.subplots(figsize=(15, 10))
 
@@ -48,26 +47,6 @@ def _test_plot_field(field, vmin, vmax, xlab, ylab, title):
     plt.show()
 
     return fig
-
-
-def plot_field(field, lats, lons, vmin=0.0, vmax=1.0,
-               xlab='X', ylab='Y', cmap=None,
-               clab='difficulty', title='Title'):
-    """Auxiliary plot routine."""
-    X, Y = np.meshgrid(lons, lats, indexing='ij')
-    fig, ax = plt.subplots(figsize=(8, 5))
-    plt.title(title)
-    if cmap is None:
-        cmap = mcmap.stoplight()
-    plt.pcolormesh(X, Y, field.T, shading='interp', cmap=cmap)
-    cbar = plt.colorbar(orientation='horizontal', aspect=30)
-    cbar.set_label(clab)
-    plt.clim(vmin=vmin, vmax=vmax)
-    plt.xlabel(xlab)
-    plt.ylabel(ylab)
-
-    return fig
-
 
 def main():
     """
@@ -110,7 +89,7 @@ def main():
     dijfd = di(sigmaij, muij, threshold, fieldijn, Aplin=None, sigma_over_mu_ref=EPS)
     
     # Plot the difficulty index.
-    imfd = _test_plot_field(dijfd, 0.0, 1.0, 'Longitude', 'Latitude',
+    imfd = plot_field(dijfd, 0.0, 1.0, 'Longitude', 'Latitude',
             'Forecast Difficulty Index')
 
     imfd_fmt = 'png'
