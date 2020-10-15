@@ -63,3 +63,9 @@ PCH_TO_PLOTLY_MARKER = {'0':'circle-open', '19':'circle',
                         'rhombus':'diamond', 'ring':'hexagon2', '.':'circle-open',
                         'o': 'circle', '^':'triangle-up', 'd':'diamond', 'H':'hexagon2',
                         'h': 'hexagon2','s':'square'}
+
+# Caption weights supported in Matplotlib are normal, italic and oblique.
+# Map these onto the MetViewer requested values of 1 (normal), 2 (bold),
+# 3 (italic), 4 (bold italic), and 5 (symbol) using a dictionary
+MV_TO_MPL_CAPTION_STYLE = {1:'normal', 2:'normal', 3:'italic', 4:'oblique', 5:'normal'}
+
