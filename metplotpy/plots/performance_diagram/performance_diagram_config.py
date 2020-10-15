@@ -48,10 +48,21 @@ class PerformanceDiagramConfig(Config):
         self.plot_width = self.calculate_plot_dimension('plot_width', 'in')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'in')
 
+        # x-axis labels and x-axis ticks
+        self.x_tickangle = self.parameters['xtlab_orient']
+
+        # y-axis labels and y-axis ticks
+        self.y_tickangle = self.parameters['ytlab_orient']
+
         # Caption settings
         self.caption = self.get_config_value('plot_caption')
-        self.caption_weight = self.get_config_value('caption_weight')
+        mv_caption_weight = self.get_config_value('caption_weight')
         self.caption_color = self.get_config_value('caption_color')
+
+        # Only oblique, italic, and normal are supported in Matplotlib, use the
+        # MV_TO_MPL_CATPTION_STYLE dictionary to map these caption styles to
+        # what was requested in METviewer
+        self.caption_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_caption_weight]
 
 
         # Make necessary adjustments from values set in METviewer to
@@ -68,6 +79,8 @@ class PerformanceDiagramConfig(Config):
         # to 0.05
         mv_caption_align = self.get_config_value('caption_align')
         self.caption_align = mv_caption_align - 2.95
+
+
 
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
