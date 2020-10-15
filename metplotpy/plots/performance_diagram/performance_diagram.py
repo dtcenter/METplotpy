@@ -232,7 +232,8 @@ class PerformanceDiagram(MetPlot):
 
         # Plot the caption
         plt.figtext(self.config_obj.caption_align, self.config_obj.caption_offset, self.config_obj.plot_caption,
-                    size=self.config_obj.caption_size)
+                    size=self.config_obj.caption_size,color=self.config_obj.caption_color,
+                    style=self.config_obj.caption_weight)
 
         #
         # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE
@@ -300,6 +301,12 @@ class PerformanceDiagram(MetPlot):
         ax1.xaxis.set_label_coords(0.5, -0.066)
         ax1.set_xlabel(xlabel, fontsize=9)
         ax1.set_ylabel(ylabel, fontsize=9)
+
+        # xtick labels and ytick labels
+        plt.xticks(visible=False)
+        plt.setp(ax1.get_xticklabels(), color="red", fontsize=7)
+        plt.setp(ax1.get_yticklabels(), color="green", fontsize=15)
+
         if self.config_obj.yaxis_2:
             ax2.set_ylabel(self.config_obj.yaxis_2, fontsize=9)
 
