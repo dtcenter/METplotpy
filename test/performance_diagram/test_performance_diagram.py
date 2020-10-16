@@ -25,11 +25,11 @@ def setup():
     pd.main(custom_config_filename)
 
 def cleanup():
-    # remove the performance_diagram_custom.png and plot_20200317_151252.points1 files
+    # remove the performance_diagram_expected.png and plot_20200317_151252.points1 files
     # from any previous runs
     try:
         path = os.getcwd()
-        plot_file = 'performance_diagram_custom.png'
+        plot_file = 'performance_diagram_expected.png'
         points_file = 'plot_20200317_151252.points1'
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(path, points_file))
@@ -40,7 +40,7 @@ def cleanup():
 
 
 
-@pytest.mark.parametrize("test_input,expected",(["./performance_diagram_custom.png", True], ["./plot_20200317_151252.points1", True]))
+@pytest.mark.parametrize("test_input,expected",(["./performance_diagram_expected.png", True], ["./plot_20200317_151252.points1", True]))
 def test_files_exist(setup, test_input, expected):
     '''
         Checking that the plot and data files are getting created
@@ -56,7 +56,7 @@ def test_images_match(setup):
         changed in appearance.
     '''
     path = os.getcwd()
-    plot_file = './performance_diagram_custom.png'
+    plot_file = './performance_diagram_expected.png'
     actual_file = os.path.join(path, plot_file)
     comparison = CompareImages('./performance_diagram_expected.png',actual_file)
     assert comparison.mssim == 1
