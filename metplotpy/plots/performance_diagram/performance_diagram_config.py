@@ -49,10 +49,19 @@ class PerformanceDiagramConfig(Config):
         self.plot_height = self.calculate_plot_dimension('plot_height', 'in')
 
         # x-axis labels and x-axis ticks
+        self.x_title_font_size = self.parameters['xlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
         self.x_tickangle = self.parameters['xtlab_orient']
+        if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
+            self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
+        self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
 
         # y-axis labels and y-axis ticks
+        self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
         self.y_tickangle = self.parameters['ytlab_orient']
+        if self.y_tickangle in constants.YAXIS_ORIENTATION.keys():
+            self.y_tickangle = constants.YAXIS_ORIENTATION[self.y_tickangle]
+        self.y_tickfont_size = self.parameters['ytlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         # Caption settings
         self.caption = self.get_config_value('plot_caption')
