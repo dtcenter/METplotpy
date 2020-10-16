@@ -139,28 +139,18 @@ caption_offset: 0  # axis perpendicular location adjustment (up/down)
 caption_align: 3 # axis parallel location adjustment (left/right 3.8 is max value, 2.9 is min value)
 
 # x-axis labels
-xlab_align: 0.5
-xlab_offset: 2
 xlab_size: 1
-xlab_weight: 1
 
 # x-axis ticks
-xtlab_decim: 0
-xtlab_horiz: 0.5
-xtlab_orient: 1
-xtlab_perp: -0.75
+#these three are unsupported
+xtlab_orient: 0
 xtlab_size: 1
 
 # y-axis labels
-ylab_align: 0.5
-ylab_offset: -2
 ylab_size: 1
-ylab_weight: 1
 
 # y-axis ticks
-ytlab_horiz: 0.5
 ytlab_orient: 1
-ytlab_perp: 0.5
 ytlab_size: 1
 
 stat_input:  ../performance_diagram/plot_20200317_151252.data
