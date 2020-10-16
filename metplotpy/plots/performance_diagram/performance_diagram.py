@@ -1,4 +1,3 @@
-
 """
 Class Name: performance_diagram.py
  """
@@ -232,7 +231,7 @@ class PerformanceDiagram(MetPlot):
 
         # Plot the caption
         plt.figtext(self.config_obj.caption_align, self.config_obj.caption_offset, self.config_obj.plot_caption,
-                    size=self.config_obj.caption_size,color=self.config_obj.caption_color,
+                    size=self.config_obj.caption_size, color=self.config_obj.caption_color,
                     style=self.config_obj.caption_weight)
 
         #
@@ -299,13 +298,13 @@ class PerformanceDiagram(MetPlot):
                    prop={'size': self.config_obj.legend_size},
                    frameon=self.config_obj.draw_box)
         ax1.xaxis.set_label_coords(0.5, -0.066)
-        ax1.set_xlabel(xlabel, fontsize=9)
-        ax1.set_ylabel(ylabel, fontsize=9)
+        ax1.set_xlabel(xlabel, fontsize=self.config_obj.x_title_font_size)
+        ax1.set_ylabel(ylabel, fontsize=self.config_obj.y_title_font_size)
 
         # xtick labels and ytick labels
         plt.xticks(visible=False)
-        plt.setp(ax1.get_xticklabels(), color="red", fontsize=7)
-        plt.setp(ax1.get_yticklabels(), color="green", fontsize=15)
+        plt.setp(ax1.get_xticklabels(), fontsize=self.config_obj.x_title_font_size, rotation=self.config_obj.x_tickangle)
+        plt.setp(ax1.get_yticklabels(), fontsize=self.config_obj.y_title_font_size, rotation=self.config_obj.y_tickangle)
 
         if self.config_obj.yaxis_2:
             ax2.set_ylabel(self.config_obj.yaxis_2, fontsize=9)
@@ -393,8 +392,6 @@ def main(config_filename=None):
 
     except ValueError as value_error:
         print(value_error)
-
-
 
 
 if __name__ == "__main__":
