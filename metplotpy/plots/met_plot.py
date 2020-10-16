@@ -1,3 +1,4 @@
+#!/usr/bin/env conda run -n blenny_363 python
 """
 Class Name: met_plot.py
  """
