@@ -1,5 +1,5 @@
 """
-Class Name: ROCDiagramSeries
+Class Name: LineSeries
  """
 __author__ = 'Tatiana Burek'
 __email__ = 'met_help@ucar.edu'
@@ -8,6 +8,7 @@ from typing import Union
 import math
 
 import numpy as np
+from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
 from plots.series import Series
@@ -16,20 +17,27 @@ from scipy.stats import norm
 
 class LineSeries(Series):
     """
-        Represents a ROC diagram series object
+        Represents a Line plot series object
         of data points and their plotting style
         elements (line colors, markers, linestyles, etc.)
 
     """
 
-    def __init__(self, config, idx: int, input_data, series_list: list, series_name: Union[list, tuple],
-                 y_axis: int = 1):
+    def __init__(self, config, idx: int, input_data, series_list: list,
+                 series_name: Union[list, tuple], y_axis: int = 1):
         self.series_list = series_list
         self.series_name = series_name
         self.series_data = None
         super().__init__(config, idx, input_data, y_axis)
 
-    def _calc_point_stat(self, data: list) -> float:
+    def _calc_point_stat(self, data: list) -> Union[float, None]:
+        """
+        Calculates the statistic specified in the config 'plot_stat' parameter
+        using input data list
+        :param data: list os numbers
+        :return:  mean, median or sum of the values from the input list or
+            None if the statistic parameter is invalid
+        """
         # calculate point stat
         if self.config.plot_stat == 'MEAN':
             point_stat = np.nanmean(data)
@@ -43,12 +51,21 @@ class LineSeries(Series):
 
     def _create_series_points(self) -> dict:
         """
+        Subset the data for the appropriate series.
+        Calculates values for each point including CI
 
+        Args:
+
+        Returns:
+               dictionary with CI ,point values and number of stats as keys
         """
 
+        # different ways to subset data for normal and derived series
         if not self.series_name[-1] in utils.OPERATION_TO_SIGN.keys():
             # this is a normal series
             all_filters = []
+
+            # create a set of filters for this series
             for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
                 filter_value = self.series_name[field_ind]
                 if "," in filter_value:
@@ -65,6 +82,7 @@ class LineSeries(Series):
             # use numpy to select the rows where any record evaluates to True
             mask = np.array(all_filters).all(axis=0)
             self.series_data = self.input_data.loc[mask]
+
             # sort data by date/time - needed for CI calculations
             if 'fcst_valid_beg' in self.series_data.columns:
                 self.series_data = self.series_data.sort_values(['fcst_valid_beg', 'fcst_lead'])
@@ -77,99 +95,56 @@ class LineSeries(Series):
 
         else:
             # this is a derived series
+
+            # the name of the 1st series
             series_name_1 = self.series_name[0].split()
+            # the name of the 2nd series
             series_name_2 = self.series_name[1].split()
+            # operation
             operation = self.series_name[2]
 
-            # find original series
+            # find original series data
+            series_data_1 = None
+            series_data_2 = None
             for series in self.series_list:
                 if set(series_name_1) == set(series.series_name):
-                    series_1 = series
+                    series_data_1 = series.series_data
                 if set(series_name_2) == set(series.series_name):
-                    series_2 = series
-            name = utils.get_derived_curve_name([self.series_name[0],
-                                                 self.series_name[1],
-                                                 operation])
+                    series_data_2 = series.series_data
+
+            # create a series name as a string
+            series_name_str = utils.get_derived_curve_name([self.series_name[0],
+                                                            self.series_name[1],
+                                                            operation])
+            # look for the data with the series name value in the input data frame
+            # it could be there if agg or summary statistic logic was applied
             for field in self.all_fields_values_no_indy[self.y_axis]:
-                self.series_data = self.input_data.loc[self.input_data[field] == name]
+                self.series_data = self.input_data.loc[self.input_data[field] == series_name_str]
                 if len(self.series_data) > 0:
                     break
 
-            # check if the input frame already has diff series ( from calculation agg stats )
+            # check if the input frame already has derived series ( from calculation agg stats )
             if len(self.series_data) == 0:
-
-                for indy in self.config.indy_vals:
-                    if utils.is_string_integer(indy):
-                        indy = int(indy)
-
-                    # check if the input frame already has diff series
-                    # ( from calculation agg stats )
-
-                    stats_indy_1 = \
-                        series_1.series_data.loc[series_1.series_data[self.config.indy_var] == indy]
-                    stats_indy_2 = \
-                        series_2.series_data.loc[series_2.series_data[self.config.indy_var] == indy]
-
-                    # validate data
-                    if 'fcst_valid_beg' in stats_indy_1.columns:
-                        unique_dates = \
-                            stats_indy_1[['fcst_valid_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
-                    elif 'fcst_valid' in stats_indy_1.columns:
-                        unique_dates = \
-                            stats_indy_1[['fcst_valid', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
-                    elif 'fcst_init_beg' in stats_indy_1.columns:
-                        unique_dates = \
-                            stats_indy_1[['fcst_init_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
-                    else:
-                        unique_dates = stats_indy_1[['fcst_init', 'fcst_lead', 'stat_name"']].drop_duplicates().shape[0]
-                    if stats_indy_1.shape[0] != unique_dates:
-                        raise ValueError(
-                            'Derived curve can\'t be calculated. '
-                            'Multiple values for one valid date/fcst_lead')
-
-                    # data should be sorted
-
-                    stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_value'].tolist(),
-                                                                  stats_indy_2['stat_value'].tolist(),
-                                                                  operation)
-                    stats_indy_1 = stats_indy_1.drop(columns=['stat_value'])
-                    stats_indy_1['stat_value'] = stats_values
-
-                    if 'stat_bcl' in stats_indy_1.columns:
-                        stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_bcl'].tolist(),
-                                                                      stats_indy_2['stat_bcl'].tolist(),
-                                                                      operation)
-                        stats_indy_1 = stats_indy_1.drop(columns=['stat_bcl'])
-                        stats_indy_1['stat_bcl'] = stats_values
-
-                    if 'stat_bcu' in stats_indy_1.columns:
-                        stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_bcu'].tolist(),
-                                                                      stats_indy_2['stat_bcu'].tolist(),
-                                                                      operation)
-                        stats_indy_1 = stats_indy_1.drop(columns=['stat_bcu'])
-                        stats_indy_1['stat_bcu'] = stats_values
-
-                    if self.series_data is None:
-                        self.series_data = stats_indy_1
-                    else:
-                        self.series_data = self.series_data.append(stats_indy_1, sort=False)
+                # no data with with the series name value was found - calculate derived statistic for the each line
+                self._calculate_derived_values(operation, series_data_1, series_data_2)
 
         series_points_results = {'dbl_lo_ci': [], 'dbl_med': [], 'dbl_up_ci': [], 'nstat': []}
-        # for each point
-        for point_ind, indy in enumerate(self.config.indy_vals):
+
+        # for each point calculate plot statistic iand CI
+        for indy in self.config.indy_vals:
             if utils.is_string_integer(indy):
                 indy = int(indy)
 
             point_data = self.series_data.loc[self.series_data[self.config.indy_var] == indy]
 
             if len(point_data) > 0:
-
                 # calculate point stat
                 point_stat = self._calc_point_stat(point_data['stat_value'].tolist())
 
-                series_ci = self.config.get_config_value('plot_ci')[self.idx].upper()
+                # calculate CI
                 dbl_lo_ci = 0
                 dbl_up_ci = 0
+                series_ci = self.config.get_config_value('plot_ci')[self.idx].upper()
 
                 if series_ci == 'STD':
                     std_err_vals = None
@@ -233,3 +208,71 @@ class LineSeries(Series):
             series_points_results['nstat'].append(len(point_data['stat_value']))
 
         return series_points_results
+
+    def _calculate_derived_values(self, operation:str, series_data_1: DataFrame, series_data_2: DataFrame) -> None:
+        """
+        Validates if both DataFrames have the same fcst_valid_beg values and if it is TRUE
+        Calculates derived statistic for the each line based on data from teh 1st and 2nd data frames
+        For example, if teh operatin is 'DIFF' the diferensires between values from
+        the 1st and the 2nd frames will be calculated
+        This method also calculates CI(s)
+
+        :param operation: statistic to calculate
+        :param series_data_1: 1st data frame sorted  by fcst_init_beg
+        :param series_data_2: 2nd data frame sorted  by fcst_init_beg
+        """
+
+        # for each independent value
+        for indy in self.config.indy_vals:
+            if utils.is_string_integer(indy):
+                indy = int(indy)
+
+            stats_indy_1 = \
+                series_data_1.loc[series_data_1[self.config.indy_var] == indy]
+            stats_indy_2 = \
+                series_data_2.loc[series_data_2[self.config.indy_var] == indy]
+
+            # validate data
+            if 'fcst_valid_beg' in stats_indy_1.columns:
+                unique_dates = \
+                    stats_indy_1[['fcst_valid_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+            elif 'fcst_valid' in stats_indy_1.columns:
+                unique_dates = \
+                    stats_indy_1[['fcst_valid', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+            elif 'fcst_init_beg' in stats_indy_1.columns:
+                unique_dates = \
+                    stats_indy_1[['fcst_init_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+            else:
+                unique_dates = \
+                    stats_indy_1[['fcst_init', 'fcst_lead', 'stat_name"']].drop_duplicates().shape[0]
+            if stats_indy_1.shape[0] != unique_dates:
+                raise ValueError(
+                    'Derived curve can\'t be calculated. '
+                    'Multiple values for one valid date/fcst_lead')
+
+            # data should be sorted sorted  by fcst_init_beg !!!!!
+            stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_value'].tolist(),
+                                                          stats_indy_2['stat_value'].tolist(),
+                                                          operation)
+            stats_indy_1 = stats_indy_1.drop(columns=['stat_value'])
+            stats_indy_1['stat_value'] = stats_values
+
+            # calculate CI(s)
+            if 'stat_bcl' in stats_indy_1.columns:
+                stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_bcl'].tolist(),
+                                                              stats_indy_2['stat_bcl'].tolist(),
+                                                              operation)
+                stats_indy_1 = stats_indy_1.drop(columns=['stat_bcl'])
+                stats_indy_1['stat_bcl'] = stats_values
+
+            if 'stat_bcu' in stats_indy_1.columns:
+                stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_bcu'].tolist(),
+                                                              stats_indy_2['stat_bcu'].tolist(),
+                                                              operation)
+                stats_indy_1 = stats_indy_1.drop(columns=['stat_bcu'])
+                stats_indy_1['stat_bcu'] = stats_values
+
+            if self.series_data is None:
+                self.series_data = stats_indy_1
+            else:
+                self.series_data = self.series_data.append(stats_indy_1, sort=False)
