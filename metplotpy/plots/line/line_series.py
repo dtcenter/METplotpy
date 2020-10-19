@@ -30,6 +30,27 @@ class LineSeries(Series):
         self.series_data = None
         super().__init__(config, idx, input_data, y_axis)
 
+    def _create_all_fields_values_no_indy(self) -> dict:
+        """
+        Creates a dictionary with two keys that represents each axis
+        values - dictionaries of field values pairs of all series variables (without indy variable)
+        :return: dictionary with field-values pairs for each axis
+        """
+        all_fields_values_no_indy = {}
+        all_fields_values = self.config.get_config_value('series_val_1').copy()
+        if self.config._get_fcst_vars(1):
+            all_fields_values['fcst_var'] = list(self.config._get_fcst_vars(1).keys())
+        all_fields_values['stat_name'] = self.config.get_config_value('list_stat_1')
+        all_fields_values_no_indy[1] = all_fields_values
+
+        all_fields_values = self.config.get_config_value('series_val_2').copy()
+        if self.config._get_fcst_vars(2):
+            all_fields_values['fcst_var'] = list(self.config._get_fcst_vars(2).keys())
+        all_fields_values['stat_name'] = self.config.get_config_value('list_stat_2')
+        all_fields_values_no_indy[2] = all_fields_values
+
+        return all_fields_values_no_indy
+
     def _calc_point_stat(self, data: list) -> Union[float, None]:
         """
         Calculates the statistic specified in the config 'plot_stat' parameter
@@ -209,7 +230,7 @@ class LineSeries(Series):
 
         return series_points_results
 
-    def _calculate_derived_values(self, operation:str, series_data_1: DataFrame, series_data_2: DataFrame) -> None:
+    def _calculate_derived_values(self, operation: str, series_data_1: DataFrame, series_data_2: DataFrame) -> None:
         """
         Validates if both DataFrames have the same fcst_valid_beg values and if it is TRUE
         Calculates derived statistic for the each line based on data from teh 1st and 2nd data frames
