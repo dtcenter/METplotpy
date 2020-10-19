@@ -45,14 +45,14 @@ class Series:
 
         self.all_fields_values_no_indy = {}
         all_fields_values = self.config.get_config_value('series_val_1').copy()
-        if self.config.get_fcst_vars(1):
-            all_fields_values['fcst_var'] = list(self.config.get_fcst_vars(1).keys())
+        if self.config._get_fcst_vars(1):
+            all_fields_values['fcst_var'] = list(self.config._get_fcst_vars(1).keys())
         all_fields_values['stat_name'] = self.config.get_config_value('list_stat_1')
         self.all_fields_values_no_indy[1] = all_fields_values
 
         all_fields_values = self.config.get_config_value('series_val_2').copy()
-        if self.config.get_fcst_vars(2):
-            all_fields_values['fcst_var'] = list(self.config.get_fcst_vars(2).keys())
+        if self.config._get_fcst_vars(2):
+            all_fields_values['fcst_var'] = list(self.config._get_fcst_vars(2).keys())
         all_fields_values['stat_name'] = self.config.get_config_value('list_stat_2')
         self.all_fields_values_no_indy[2] = all_fields_values
 

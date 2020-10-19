@@ -73,8 +73,8 @@ class Config:
 
         # Represent the names of the forecast variables (inner keys) to the fcst_var_val setting.
         # These are the names of the columns in the input dataframe.
-        self.fcst_vars_1 = self.get_fcst_vars(1)
-        self.fcst_vars_2 = self.get_fcst_vars(2)
+        self.fcst_vars_1 = self._get_fcst_vars(1)
+        self.fcst_vars_2 = self._get_fcst_vars(2)
 
         # Get the list of the statistics of interest
         self.list_stat_1 = self.get_config_value('list_stat_1')
@@ -191,7 +191,7 @@ class Config:
     def _get_series_columns(self, index):
         ''' Retrieve the column name that corresponds to this '''
 
-    def get_fcst_vars(self, index):
+    def _get_fcst_vars(self, index):
         """
            Retrieve a list of the inner keys (fcst_vars) to the fcst_var_val dictionary.
 
@@ -245,7 +245,7 @@ class Config:
             return [*series_val_dict.keys()]
         return []
 
-    def calculate_number_of_series(self) -> int:
+    def calculate_number_of_series(self):
         """
            From the number of items in the permutation list,
            determine how many series "objects" are to be plotted.
@@ -256,39 +256,18 @@ class Config:
                the number of series
 
         """
+
         # Retrieve the lists from the series_val_1 dictionary
-        series_vals_list = self.series_vals_1.copy()
-        if isinstance(self.fcst_vars_1, list) is True:
-            fcst_vals = self.fcst_vars_1
-        elif isinstance(self.fcst_vars_1, dict) is True:
-            fcst_vals = list(self.fcst_vars_1.values())
-        fcst_vals_flat = [item for sublist in fcst_vals for item in sublist]
-        series_vals_list.append(fcst_vals_flat)
+        series_vals_list = self.series_vals_1
 
         # Utilize itertools' product() to create the cartesian product of all elements
         # in the lists to produce all permutations of the series_val values and the
         # fcst_var_val values.
-        permutations = list(itertools.product(*series_vals_list))
+        permutations = [p for p in itertools.product(*series_vals_list)]
 
-        if self.series_vals_2:
-            series_vals_list_2 = self.series_vals_2.copy()
-            if isinstance(self.fcst_vars_1, list) is True:
-                fcst_vals_2 = self.fcst_vars_2
-            elif isinstance(self.fcst_vars_2, dict) is True:
-                fcst_vals_2 = list(self.fcst_vars_2.values())
-            fcst_vals_2_flat = [item for sublist in fcst_vals_2 for item in sublist]
-            series_vals_list_2.append(fcst_vals_2_flat)
-            permutations_2 = list(itertools.product(*series_vals_list_2))
-            permutations.extend(permutations_2)
+        return len(permutations)
 
-        total = len(permutations)
-        # add derived
-        total = total + len(self.get_config_value('derived_series_1'))
-        total = total + len(self.get_config_value('derived_series_2'))
-
-        return total
-
-    def _get_colors(self) -> list:
+    def _get_colors(self):
         """
            Retrieves the colors used for lines and markers, from the
            config file (default or custom).
@@ -362,7 +341,8 @@ class Config:
         linestyle_list_ordered = self.create_list_by_series_ordering(list(linestyles))
         return linestyle_list_ordered
 
-    def _get_user_legends(self, legend_label_type: str = '') -> list:
+
+    def _get_user_legends(self, legend_label_type):
         """
            Retrieve the text that is to be displayed in the legend at the bottom of the plot.
            Each entry corresponds to a series.
@@ -388,6 +368,7 @@ class Config:
         #          - CONUS
         # The constructed legend label will be "NoahMPv3.5.1_d01 CONUS Performance"
 
+
         # Check for empty list as setting in the config file
         legends_list = []
 
@@ -404,6 +385,7 @@ class Config:
                     legend = ' '
                     legends_list.append(legend)
                 else:
+                    legend_label_specified = True
                     legends_list.append(legend)
 
         ll_list = []
@@ -416,7 +398,7 @@ class Config:
             return [legend_label_type]
 
         perms = utils.create_permutations(series_list)
-        for idx, ll in enumerate(legends_list):
+        for idx,ll in enumerate(legends_list):
             if ll == ' ':
                 if len(series_list) > 1:
                     label_parts = [perms[idx][0], ' ', perms[idx][1], ' ', legend_label_type]
@@ -427,7 +409,8 @@ class Config:
             else:
                 ll_list.append(ll)
 
-        return self.create_list_by_series_ordering(ll_list)
+        legends_list_ordered = self.create_list_by_series_ordering(ll_list)
+        return legends_list_ordered
 
     def _get_plot_resolution(self):
         """

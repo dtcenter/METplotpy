@@ -153,7 +153,7 @@ class LineConfig(Config):
 
         return self.create_list_by_series_ordering(plot_display_bools)
 
-    def get_fcst_vars(self, index):
+    def _get_fcst_vars(self, index):
         """
            Retrieve a list of the inner keys (fcst_vars) to the fcst_var_val dictionary.
 
@@ -420,8 +420,8 @@ class LineConfig(Config):
         :return: an array of series components tuples
         """
         all_fields_values = self.get_config_value('series_val_' + str(axis)).copy()
-        if self.get_fcst_vars(axis):
-            all_fields_values['fcst_var'] = list(self.get_fcst_vars(axis).keys())
+        if self._get_fcst_vars(axis):
+            all_fields_values['fcst_var'] = list(self._get_fcst_vars(axis).keys())
 
         all_fields_values['stat_name'] = self.get_config_value('list_stat_' + str(axis))
         return list(itertools.product(*all_fields_values.values()))
@@ -440,3 +440,47 @@ class LineConfig(Config):
             all_series = all_series + self.get_config_value('derived_series_' + str(axis))
 
         return all_series
+
+    def calculate_number_of_series(self) -> int:
+        """
+           From the number of items in the permutation list,
+           determine how many series "objects" are to be plotted.
+
+           Args:
+
+           Returns:
+               the number of series
+
+        """
+        # Retrieve the lists from the series_val_1 dictionary
+        series_vals_list = self.series_vals_1.copy()
+        if isinstance(self.fcst_vars_1, list) is True:
+            fcst_vals = self.fcst_vars_1
+        elif isinstance(self.fcst_vars_1, dict) is True:
+            fcst_vals = list(self.fcst_vars_1.values())
+        fcst_vals_flat = [item for sublist in fcst_vals for item in sublist]
+        series_vals_list.append(fcst_vals_flat)
+
+        # Utilize itertools' product() to create the cartesian product of all elements
+        # in the lists to produce all permutations of the series_val values and the
+        # fcst_var_val values.
+        permutations = list(itertools.product(*series_vals_list))
+
+        if self.series_vals_2:
+            series_vals_list_2 = self.series_vals_2.copy()
+            if isinstance(self.fcst_vars_2, list) is True:
+                fcst_vals_2 = self.fcst_vars_2
+            elif isinstance(self.fcst_vars_2, dict) is True:
+                fcst_vals_2 = list(self.fcst_vars_2.values())
+            fcst_vals_2_flat = [item for sublist in fcst_vals_2 for item in sublist]
+            series_vals_list_2.append(fcst_vals_2_flat)
+            permutations_2 = list(itertools.product(*series_vals_list_2))
+            permutations.extend(permutations_2)
+
+        total = len(permutations)
+        # add derived
+        total = total + len(self.get_config_value('derived_series_1'))
+        total = total + len(self.get_config_value('derived_series_2'))
+
+        return total
+
