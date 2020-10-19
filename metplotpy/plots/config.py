@@ -7,6 +7,8 @@ __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
 import itertools
+from typing import Union
+
 import metcalcpy.util.utils as utils
 import plots.constants as constants
 
@@ -241,10 +243,9 @@ class Config:
         # (series_var1, series_var2, ..., series_varn).
         if series_val_dict:
             return [*series_val_dict.keys()]
-        else:
-            return []
+        return []
 
-    def calculate_number_of_series(self):
+    def calculate_number_of_series(self) -> int:
         """
            From the number of items in the permutation list,
            determine how many series "objects" are to be plotted.
@@ -264,14 +265,14 @@ class Config:
         # Utilize itertools' product() to create the cartesian product of all elements
         # in the lists to produce all permutations of the series_val values and the
         # fcst_var_val values.
-        permutations = [p for p in itertools.product(*series_vals_list)]
+        permutations = list(itertools.product(*series_vals_list))
 
         if self.series_vals_2:
             series_vals_list_2 = self.series_vals_2.copy()
             fcst_vals_2 = list(self.fcst_vars_2.values())
             fcst_vals_2_flat = [item for sublist in fcst_vals_2 for item in sublist]
             series_vals_list_2.append(fcst_vals_2_flat)
-            permutations_2 = [p for p in itertools.product(*series_vals_list_2)]
+            permutations_2 = list(itertools.product(*series_vals_list_2))
             permutations.extend(permutations_2)
 
         total = len(permutations)
@@ -281,7 +282,7 @@ class Config:
 
         return total
 
-    def _get_colors(self):
+    def _get_colors(self) -> list:
         """
            Retrieves the colors used for lines and markers, from the
            config file (default or custom).
@@ -293,9 +294,7 @@ class Config:
         """
 
         colors_settings = self.get_config_value('colors')
-        color_list = [color for color in colors_settings]
-        color_list_ordered = self.create_list_by_series_ordering(color_list)
-        return color_list_ordered
+        return self.create_list_by_series_ordering(list(colors_settings))
 
     def _get_con_series(self) -> list:
         """
@@ -304,12 +303,11 @@ class Config:
            Args:
 
            Returns:
-               con_series_list or con_series_from_config: a list of 1 and/or 0 to be used for the lines
+               con_series_list or con_series_from_config: a list of 1 and/or 0 to
+               be used for the lines
         """
         con_series_settings = self.get_config_value('con_series')
-        con_series_list = [color for color in con_series_settings]
-        con_series_list_ordered = self.create_list_by_series_ordering(con_series_list)
-        return con_series_list_ordered
+        return self.create_list_by_series_ordering(list(con_series_settings))
 
     def _get_markers(self):
         """
@@ -329,12 +327,11 @@ class Config:
             else:
                 # markers are indicated by name: small circle, circle, triangle,
                 # diamond, hexagon, square
-                m = marker.lower()
-                markers_list.append(constants.PCH_TO_MATPLOTLIB_MARKER[m])
-        markers_list_ordered = self.create_list_by_series_ordering(markers_list)
+                markers_list.append(constants.PCH_TO_MATPLOTLIB_MARKER[marker.lower()])
+        markers_list_ordered = self.create_list_by_series_ordering(list(markers_list))
         return markers_list_ordered
 
-    def _get_linewidths(self):
+    def _get_linewidths(self) -> list:
         """ Retrieve all the linewidths from the configuration file, if not
             specified in any config file, use the default values of 2
 
@@ -344,9 +341,7 @@ class Config:
                 linewidth_list: a list of linewidths corresponding to each line (model)
         """
         linewidths = self.get_config_value('series_line_width')
-        linewidths_list = [l for l in linewidths]
-        linewidths_list_ordered = self.create_list_by_series_ordering(linewidths_list)
-        return linewidths_list_ordered
+        return self.create_list_by_series_ordering(list(linewidths))
 
     def _get_linestyles(self):
         """
@@ -358,11 +353,10 @@ class Config:
                 list of line styles, each line style corresponds to a particular series
         """
         linestyles = self.get_config_value('series_line_style')
-        linestyle_list = [l for l in linestyles]
-        linestyle_list_ordered = self.create_list_by_series_ordering(linestyle_list)
+        linestyle_list_ordered = self.create_list_by_series_ordering(list(linestyles))
         return linestyle_list_ordered
 
-    def _get_user_legends(self, legend_label_type):
+    def _get_user_legends(self, legend_label_type: str = '') -> list:
         """
            Retrieve the text that is to be displayed in the legend at the bottom of the plot.
            Each entry corresponds to a series.
@@ -404,7 +398,6 @@ class Config:
                     legend = ' '
                     legends_list.append(legend)
                 else:
-                    legend_label_specified = True
                     legends_list.append(legend)
 
         ll_list = []
@@ -428,8 +421,7 @@ class Config:
             else:
                 ll_list.append(ll)
 
-        legends_list_ordered = self.create_list_by_series_ordering(ll_list)
-        return legends_list_ordered
+        return self.create_list_by_series_ordering(ll_list)
 
     def _get_plot_resolution(self):
         """
@@ -455,21 +447,22 @@ class Config:
                 units = self.get_config_value('plot_units').lower()
                 if units == 'in':
                     return resolution
-                elif units == 'mm':
+
+                if units == 'mm':
                     # convert mm to inches so we can
                     # set dpi value
                     return resolution * constants.MM_TO_INCHES
-                else:
-                    # units not supported, assume inches
-                    return resolution
-            else:
-                # units not indicated, assume
-                # we are dealing with inches
+
+                # units not supported, assume inches
                 return resolution
-        else:
-            # no plot_res value is set, return the default
-            # dpi used by matplotlib
-            return dpi
+
+            # units not indicated, assume
+            # we are dealing with inches
+            return resolution
+
+        # no plot_res value is set, return the default
+        # dpi used by matplotlib
+        return dpi
 
     def create_list_by_series_ordering(self, setting_to_order):
         """
@@ -499,7 +492,7 @@ class Config:
 
             Args:
 
-                setting_to_order:  the name of the setting (eg line_width) to be
+                setting_to_order:  the name of the setting (eg axis_line_width) to be
                                    ordered based on the order indicated
                                    in the config file under the series_order setting.
 
@@ -530,12 +523,14 @@ class Config:
            on the requested output units, output_units.
 
            Args:
-              @param config_value:  The plot dimension to convert, either a width or height, in inches or mm
+              @param config_value:  The plot dimension to convert, either a width or height,
+                    in inches or mm
               @param output_units: pixels or in (inches) to indicate which
                                    units to use to define plot size. Python plotly uses pixels and
                                    Matplotlib uses inches.
            Returns:
-             converted_value : converted value from in/mm to pixels or mm to inches based on input values
+             converted_value : converted value from in/mm to pixels or mm to inches based
+                                    on input values
         '''
         value2convert = self.get_config_value(config_value)
         resolution = self.get_config_value('plot_res')
@@ -568,24 +563,23 @@ class Config:
 
         return converted_value
 
-    def _get_bool(self, param: str):
+    def _get_bool(self, param: str) -> Union[bool, None]:
         """
         Validates the value of the parameter and returns a boolean
         Args:
             :param param: name of the parameter
         Returns:
-            :return: boolean value
+            :return: boolean value or None
         """
 
         param_val = self.get_config_value(param)
-        if type(param_val) is bool:
+        if isinstance(param_val, bool):
             return param_val
 
-        if type(param_val) is str:
-            return param_val == 'True'
+        if isinstance(param_val, str):
+            return param_val.upper() == 'TRUE'
 
-        else:
-            return None
+        return None
 
     def _get_indy_label(self):
         if 'indy_label' in self.parameters.keys():
