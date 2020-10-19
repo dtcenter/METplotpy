@@ -76,3 +76,7 @@ TYPE_TO_PLOTLY_MODE = {'b': 'lines+markers', 'p': 'markers', 'l': 'lines'}
 LINE_STYLE_TO_PLOTLY_DASH = {'-': None, '--': 'dash', ':': 'dot', '-:': 'dashdot'}
 XAXIS_ORIENTATION = {0: 0, 1: 0, 2: 270, 3: 270}
 YAXIS_ORIENTATION = {0: -90, 1: 0, 2: 0, 3: -90}
+
+PLOTLY_PAPER_BGCOOR = "white"
+PLOTLY_AXIS_LINE_COLOR = "#c2c2c2"
+PLOTLY_AXIS_LINE_WIDTH = 2
