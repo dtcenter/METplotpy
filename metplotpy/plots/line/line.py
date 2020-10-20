@@ -692,18 +692,23 @@ class Line(MetPlot):
             print('Can\'t save points to a file')
 
 
-def main():
+def main(config_filename=None):
     """
             Generates a sample, default, line plot using the
             default and custom config files on sample data found in this directory.
             The location of the input data is defined in either the default or
             custom config file.
+            Args:
+                @param config_filename: default is None, the name of the custom config file to apply
         """
 
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
     # with open("./custom_line_plot.yaml", 'r') as stream:
-    config_file = util.read_config_from_command_line()
+    if not config_filename:
+        config_file = util.read_config_from_command_line()
+    else:
+        config_file = config_filename
     with open(config_file, 'r') as stream:
         try:
             docs = yaml.load(stream, Loader=yaml.FullLoader)
@@ -713,7 +718,7 @@ def main():
     try:
         plot = Line(docs)
         plot.save_to_file()
-        plot.show_in_browser()
+        #plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
     except ValueError as val_er:
