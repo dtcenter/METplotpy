@@ -314,7 +314,6 @@ class Line(MetPlot):
 
         :return: the list of the adjustment values
         """
-        # TODO add diff series
 
         # get the total number of series
         num_stag = len(self.config_obj.all_series_y1) + len(self.config_obj.all_series_y2)
