@@ -203,21 +203,18 @@ class LineConfig(Config):
 
     def _get_linestyles(self) -> list:
         """
-           Retrieve all the markers. Convert marker names from
-           the config file into plotly python's marker names.
+           Retrieve all the line styles. Convert line style names from
+           the config file into plotly python's line style names.
 
            Args:
 
            Returns:
-               markers: a list of the plotly markers
+               line_styles: a list of the plotly line styles
         """
         line_styles = self.get_config_value('series_line_style')
         line_style_list = []
         for line_style in line_styles:
             if line_style in constants.LINE_STYLE_TO_PLOTLY_DASH.keys():
-                # the recognized plotly marker names:
-                # circle-open (for small circle), circle, triangle-up,
-                # square, diamond, or hexagon
                 line_style_list.append(constants.LINE_STYLE_TO_PLOTLY_DASH[line_style])
             else:
                 line_style_list.append(None)
