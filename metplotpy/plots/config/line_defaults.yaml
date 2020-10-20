@@ -12,14 +12,14 @@ caption_weight: 1
 cex: 1
 colors: []
 con_series: []
-derived_series_1:[]
+derived_series_1: []
 derived_series_2: []
 dump_points_1: 'False'
 dump_points_2: 'False'
 event_equal: 'False'
-fcst_var_val_1:{}
+fcst_var_val_1: {}
 fcst_var_val_2: {}
-fixed_vars_vals_input:{}
+fixed_vars_vals_input: {}
 grid_col: '#f5274a'
 grid_lty: 3
 grid_lwd: 1
@@ -27,7 +27,7 @@ grid_on: 'True'
 grid_x: listX
 indy_stagger_1: 'False'
 indy_stagger_2: 'False'
-indy_vals:[]
+indy_vals: []
 indy_var: ''
 legend_box: o
 legend_inset:
@@ -51,8 +51,8 @@ mgp:
 - 0
 num_iterations: 1
 num_threads: -1
-plot_ci:[]
-plot_disp:[]
+plot_ci: []
+plot_disp: []
 plot_filename: /tmp/line.png
 plot_height: 8.5
 plot_res: 72
@@ -61,15 +61,15 @@ plot_type: png16m
 plot_units: in
 plot_width: 11.0
 random_seed: null
-series_line_style:[]
-series_line_width:[]
-series_order:[]
-series_symbols:[]
-series_type:[]
-series_val_1:{}
+series_line_style: []
+series_line_width: []
+series_order: []
+series_symbols: []
+series_type: []
+series_val_1: {}
 series_val_2: {}
 show_nstats: 'False'
-show_signif:[]
+show_signif: []
 stat_input: ../line/line.data
 sync_yaxes: 'False'
 title: test title
