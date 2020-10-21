@@ -1,3 +1,4 @@
+#!/usr/bin/env conda run -n diff_index_plot python
 # -*- coding: utf-8 -*-
 """
 Load fieldijn from npz file created with save_ensemble_data.py
@@ -12,10 +13,11 @@ Taken from original test_difficulty_index.py but replacing with METcalcpy and ME
 """
 import numpy as np
 import matplotlib.pyplot as plt
-import mycolormaps as mcmap
 from metcalcpy.calc_difficulty_index import forecast_difficulty as di
 from metcalcpy.calc_difficulty_index import EPS
-from plot_difficulty_index import plot_field
+from metcalcpy.piecewise_linear import PiecewiseLinear as plin
+import metplotpy.difficulty_index.mycolormaps as mcmap
+from metplotpy.difficulty_index.plot_difficulty_index import plot_field
 
 
 def load_data(filename):
@@ -43,10 +45,21 @@ def compute_difficulty_index(field, mu, sigma, thresholds):
     Compute difficulty index for an ensemble forecast given
     a set of thresholds, returning a dictionary of fields.
     """
+    xunits="feet"
+    A6_1_name = "A6_1"
+    A6_1_left = 0.0
+    A6_1_right = 0.0
+    A6_1_xlist = [3.0, 9.0, 12.0, 21.0]
+    A6_1_ylist = [0.0, 1.5, 1.5, 0.0]
+    Aplin =\
+            plin(A6_1_xlist, A6_1_ylist, xunits=xunits,
+                    right=A6_1_right, left=A6_1_left,
+                    name=A6_1_name)
+
     dij = {}
     for threshold in thresholds:
         dij[threshold] =\
-            di(sigma, mu, threshold, field, sigma_over_mu_ref=EPS)
+            di(sigma, mu, threshold, field, Aplin, sigma_over_mu_ref=EPS)
 
     return dij
 
@@ -64,6 +77,7 @@ def plot_difficulty_index(dij, lats, lons, thresholds):
     units = 'feet'
     cmap = mcmap.stoplight()
     for threshold in thresholds:
+        print(np.max(dij[threshold]))
         if np.max(dij[threshold]) <= 1.0:
             vmax = 1.0
         else:

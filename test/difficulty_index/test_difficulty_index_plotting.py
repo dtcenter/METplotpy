@@ -1,7 +1,6 @@
-#!/usr/bin/env conda run -n blenny_363 python
-
-from  import CBL_compute as cc
+import example_difficulty_index as edi  
 from metcalcpy.compare_images import CompareImages
+import pytest
 
 def test_difficulty_index_plot():
     """
@@ -9,8 +8,8 @@ def test_difficulty_index_plot():
     one generated.  Invoke the plot_difficulty_index.py
     script to generate the difficulty_index.png
     """
-    file1 = '../../metplotpy/blocking_S2S/Z500dayDJF.nc'
-                                            cc.main(file1)
-                                                comparison = CompareImages('../data/CBL/CBL_DJF_expected.png', 'CBL_DJF.png')
-                                                    assert comparison.mssim == 1
+    file1 = 'swh_North_Pacific_5dy_ensemble.npz'
+    edi.main()
+    comparison = CompareImages('diff_index_expected.png', 'swh_North_Pacific_difficulty_index_9_00_feet.png')
+    assert comparison.mssim == 1
 
