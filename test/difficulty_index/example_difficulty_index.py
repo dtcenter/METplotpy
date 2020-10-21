@@ -77,7 +77,6 @@ def plot_difficulty_index(dij, lats, lons, thresholds):
     units = 'feet'
     cmap = mcmap.stoplight()
     for threshold in thresholds:
-        print(np.max(dij[threshold]))
         if np.max(dij[threshold]) <= 1.0:
             vmax = 1.0
         else:

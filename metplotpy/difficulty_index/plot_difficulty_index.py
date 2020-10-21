@@ -25,7 +25,36 @@ FIELD_DIM = 2
 
 def plot_field(field, lats, lons, vmin, vmax,
         xlab, ylab, cmap, clab, title):
-    """Auxiliary plot routine."""
+    """
+    Parameters
+    ----------
+    field : 2D numpy array
+        Field you want to plot (difficulty index)
+    lats : 1D numpy array
+        Latitude values
+    lons : 1D numpy array
+        Longitude values
+    vmin : float
+        Minimum value on the colorbar
+    vmax : float
+        Maximum value on the colorbar
+    xlab : String
+        x-axis label
+    ylab : String
+        y-axis label
+    cmap: Matplotlib Colormap Class Object
+        Color map for plot
+    clab: String
+        Label for colorbar
+    title: String
+        Plot title
+
+    Returns
+    -------
+    fig : plot
+        Difficulty index plot
+    """
+
     X, Y = np.meshgrid(lons, lats, indexing='ij')
     fig, ax = plt.subplots(figsize=(8, 5))
     plt.title(title)
