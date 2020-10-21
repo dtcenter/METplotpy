@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from metcalcpy.calc_difficulty_index import forecast_difficulty as di
 from metcalcpy.piecewise_linear import PiecewiseLinear as plin
-import mycolormaps as mcmap
+import metplotpy.difficulty_index.mycolormaps as mcmap
 
 __author__ = 'Bill Campbell (NRL) and Lindsay Blank (NCAR)'
 __version__ = '0.1.0'
@@ -42,4 +42,4 @@ def plot_field(field, lats, lons, vmin, vmax,
     return fig
 
 if __name__ == "__main__":
-    pass()
+    pass
