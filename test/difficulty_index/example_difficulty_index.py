@@ -45,21 +45,10 @@ def compute_difficulty_index(field, mu, sigma, thresholds):
     Compute difficulty index for an ensemble forecast given
     a set of thresholds, returning a dictionary of fields.
     """
-    xunits="feet"
-    A6_1_name = "A6_1"
-    A6_1_left = 0.0
-    A6_1_right = 0.0
-    A6_1_xlist = [3.0, 9.0, 12.0, 21.0]
-    A6_1_ylist = [0.0, 1.5, 1.5, 0.0]
-    Aplin =\
-            plin(A6_1_xlist, A6_1_ylist, xunits=xunits,
-                    right=A6_1_right, left=A6_1_left,
-                    name=A6_1_name)
-
     dij = {}
     for threshold in thresholds:
         dij[threshold] =\
-            di(sigma, mu, threshold, field, Aplin, sigma_over_mu_ref=EPS)
+            di(sigma, mu, threshold, field, sigma_over_mu_ref=EPS)
 
     return dij
 
