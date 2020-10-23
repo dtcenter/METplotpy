@@ -15,7 +15,7 @@ Pre-requisites:
 Python packages:
 ---------------
 - numpy
-- matplotlib
+- matplotlib version 2.2.2
 - scipy
 
 Python 3.6
