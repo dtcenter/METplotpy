@@ -32,6 +32,18 @@ class PerformanceDiagramConfig(Config):
         # use this setting to determine the ordering of colors, lines, and markers
         self.series_ordering = self._get_series_order()
 
+        # captions
+        self.plot_caption = self.get_config_value('plot_caption')
+        # plain text, bold, italic, bold italic are choices in METviewer UI
+        self.caption_weight = self.get_config_value('caption_weight')
+        self.caption_color = self.get_config_value('caption_color')
+        # relative magnification
+        self.caption_size = self.get_config_value('caption_size')
+        # up-down location relative to the x-axis line
+        self.caption_offset = self.get_config_value('caption_offset')
+        # left-right position
+        self.caption_align = self.get_config_value('caption_align')
+
         # Make the series ordering zero-based to be consistent with Python's zero-based
         # counting/numbering
         self.series_ordering_zb = [sorder - 1 for sorder in self.series_ordering]
