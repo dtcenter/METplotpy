@@ -44,7 +44,7 @@ class Config:
         self.caption_weight = self.get_config_value('caption_weight')
         self.caption_color = self.get_config_value('caption_color')
         # relative magnification
-        self.caption_size = self.get_caption_size()
+        self.caption_size = self.get_config_value('caption_size')
 
         # up-down location relative to the x-axis line
         self.caption_offset = self.get_config_value('caption_offset')
@@ -585,4 +585,3 @@ class Config:
         if 'indy_label' in self.parameters.keys():
             return self.get_config_value('indy_label')
         return self.indy_vals
->>>>>>> origin/develop
