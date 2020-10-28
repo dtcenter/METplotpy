@@ -250,17 +250,26 @@ class PerformanceDiagram(MetPlot):
             if series.plot_disp:
                 pody_points = series.series_points[1]
                 sr_points = series.series_points[0]
+
+                # turn on/off connecting line. 'NA' in config file turns off
+                # connecting line
+                if series.linewidth == 'NA':
+                    linewidth = 0
+                else:
+                    linewidth = series.linewidth
+
                 # small circle and circle symbols render very small
                 # increase the marker size for these two.
+
                 if series.marker == '.' or series.marker == 'o':
                     plt.plot(sr_points, pody_points, linestyle=series.linestyle,
-                             linewidth=series.linewidth,
+                             linewidth=linewidth,
                              color=series.color, marker=series.marker,
                              label=series.user_legends,
                              alpha=0.5, ms=9)
                 else:
                     plt.plot(sr_points, pody_points, linestyle=series.linestyle,
-                             linewidth=series.linewidth,
+                             linewidth=linewidth,
                              color=series.color, marker=series.marker,
                              label=series.user_legends,
                              alpha=0.5, ms=6)
