@@ -416,12 +416,16 @@ class LineConfig(Config):
         :param axis: y-axis (1 or 2)
         :return: an array of series components tuples
         """
-        all_fields_values = self.get_config_value('series_val_' + str(axis)).copy()
+        all_fields_values_orig = self.get_config_value('series_val_' + str(axis)).copy()
+        all_fields_values = {}
+        for x in reversed(list(all_fields_values_orig.keys())):
+            all_fields_values[x] = all_fields_values_orig.get(x)
+
         if self._get_fcst_vars(axis):
             all_fields_values['fcst_var'] = list(self._get_fcst_vars(axis).keys())
 
         all_fields_values['stat_name'] = self.get_config_value('list_stat_' + str(axis))
-        return list(itertools.product(*all_fields_values.values()))
+        return utils.create_permutations_mv(all_fields_values, 0)
 
     def _get_all_series_y(self, axis: int) -> list:
         """
@@ -480,4 +484,3 @@ class LineConfig(Config):
         total = total + len(self.get_config_value('derived_series_2'))
 
         return total
-
