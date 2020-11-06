@@ -38,7 +38,8 @@ class PerformanceDiagramConfig(Config):
         self.caption_weight = self.get_config_value('caption_weight')
         self.caption_color = self.get_config_value('caption_color')
         # relative magnification
-        self.caption_size = self.get_config_value('caption_size')
+        caption_size_magnification = self.get_config_value('caption_size')
+        self.caption_size = caption_size_magnification * constants.MPL_FONT_SIZE_DEFAULT
         # up-down location relative to the x-axis line
         self.caption_offset = self.get_config_value('caption_offset')
         # left-right position
@@ -91,15 +92,19 @@ class PerformanceDiagramConfig(Config):
         requested_caption_size = self.get_config_value('caption_size')
         self.caption_size = self.calculate_caption_size(requested_caption_size)
 
-        # METviewer default set to 0, which corresponds to a y-value in Matplotlib
+
+        # (0,0) in METviewer corresponds to (x=0.05,y=0.13) in Matplotlib
+        # Adjust the caption up/down from x-axis.
+        # METviewer default is set to 3, which corresponds to a y-value in Matplotlib
         # to .13
         mv_caption_offset = self.get_config_value('caption_offset')
-        self.caption_offset = mv_caption_offset + 0.13
+        self.caption_offset = mv_caption_offset - 2.87
+        # self.caption_offset = mv_caption_offset
 
-        # METviewer default is set to 3, which corresponds to an x-value in Matplotlib
-        # to 0.05
+        # Adjust the caption left/right relative to the y-axis
+        # METviewer default is set to 0, corresponds to y=0.05 in Matplotlib
         mv_caption_align = self.get_config_value('caption_align')
-        self.caption_align = mv_caption_align - 2.95
+        self.caption_align = mv_caption_align + 0.13
 
 
 
