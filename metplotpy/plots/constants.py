@@ -86,4 +86,5 @@ PLOTLY_AXIS_LINE_WIDTH = 2
 # 3 (italic), 4 (bold italic), and 5 (symbol) using a dictionary
 MV_TO_MPL_CAPTION_STYLE = {1:'normal', 2:'normal', 3:'italic', 4:'oblique', 5:'normal'}
 
-
+# Matplotlib constants
+MPL_FONT_SIZE_DEFAULT = 11
