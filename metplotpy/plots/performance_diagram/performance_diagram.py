@@ -312,8 +312,8 @@ class PerformanceDiagram(MetPlot):
 
         # xtick labels and ytick labels
         plt.xticks(visible=False)
-        plt.setp(ax1.get_xticklabels(), fontsize=self.config_obj.x_title_font_size, rotation=self.config_obj.x_tickangle)
-        plt.setp(ax1.get_yticklabels(), fontsize=self.config_obj.y_title_font_size, rotation=self.config_obj.y_tickangle)
+        plt.setp(ax1.get_xticklabels(), fontsize=self.config_obj.x_tickfont_size, rotation=self.config_obj.x_tickangle)
+        plt.setp(ax1.get_yticklabels(), fontsize=self.config_obj.y_tickfont_size, rotation=self.config_obj.y_tickangle)
 
         if self.config_obj.yaxis_2:
             ax2.set_ylabel(self.config_obj.yaxis_2, fontsize=9)
