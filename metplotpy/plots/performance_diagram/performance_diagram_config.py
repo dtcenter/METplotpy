@@ -66,7 +66,7 @@ class PerformanceDiagramConfig(Config):
         self.x_tickangle = self.parameters['xtlab_orient']
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
-        self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.x_tickfont_size = self.parameters['xtlab_size'] * constants.MPL_FONT_SIZE_DEFAULT
 
 
         # y-axis labels and y-axis ticks
@@ -74,7 +74,7 @@ class PerformanceDiagramConfig(Config):
         self.y_tickangle = self.parameters['ytlab_orient']
         if self.y_tickangle in constants.YAXIS_ORIENTATION.keys():
             self.y_tickangle = constants.YAXIS_ORIENTATION[self.y_tickangle]
-        self.y_tickfont_size = self.parameters['ytlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.y_tickfont_size = self.parameters['ytlab_size'] * constants.MPL_FONT_SIZE_DEFAULT
 
         # Caption settings
         self.caption = self.get_config_value('plot_caption')
