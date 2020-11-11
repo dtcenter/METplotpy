@@ -132,11 +132,11 @@ annotation_template:
 
 plot_caption: "This is caption"
 caption_weight: 1
-#caption_color: "#333333"
-caption_color: "purple"
+caption_color: "#ff0000"
+#caption_color: "purple"
 caption_size: ".8" # relative magnification
-caption_offset: 0  # axis perpendicular location adjustment (up/down)
-caption_align: 3 # axis parallel location adjustment (left/right 3.8 is max value, 2.9 is min value)
+caption_offset: 3  # axis perpendicular location adjustment (up/down)
+caption_align: 0 # axis parallel location adjustment (left/right 3.8 is max value, 2.9 is min value)
 
 # x-axis labels
 xlab_size: 1
