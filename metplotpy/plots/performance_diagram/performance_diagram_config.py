@@ -62,7 +62,7 @@ class PerformanceDiagramConfig(Config):
         self.plot_height = self.calculate_plot_dimension('plot_height', 'in')
 
         # x-axis labels and x-axis ticks
-        self.x_title_font_size = self.parameters['xlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.x_title_font_size = self.parameters['xlab_size'] * constants.DEFAULT_CAPTION_FONTSIZE
         self.x_tickangle = self.parameters['xtlab_orient']
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
@@ -99,13 +99,13 @@ class PerformanceDiagramConfig(Config):
         # METviewer default is set to 3, which corresponds to a y-value in Matplotlib
         # to .13
         mv_caption_offset = self.get_config_value('caption_offset')
-        self.caption_offset = mv_caption_offset - 2.87
+        self.caption_offset = float(mv_caption_offset) - 2.87
         # self.caption_offset = mv_caption_offset
 
         # Adjust the caption left/right relative to the y-axis
         # METviewer default is set to 0, corresponds to y=0.05 in Matplotlib
         mv_caption_align = self.get_config_value('caption_align')
-        self.caption_align = mv_caption_align + 0.13
+        self.caption_align = float(mv_caption_align) + 0.13
 
 
 
