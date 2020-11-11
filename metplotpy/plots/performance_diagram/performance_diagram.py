@@ -8,6 +8,7 @@ import re
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.font_manager import FontProperties
 import numpy as np
 import yaml
 import pandas as pd
@@ -229,10 +230,21 @@ class PerformanceDiagram(MetPlot):
                   color=constants.DEFAULT_TITLE_COLOR, fontweight="bold",
                   fontfamily=constants.DEFAULT_TITLE_FONT, pad=28)
 
-        # Plot the caption
+        # Plot the caption, leverage FontProperties to re-create the 'weights' menu in
+        # METviewer (i.e. use a combination of style and weight to create the bold italic
+        # caption weight in METviewer)
+        fontobj = FontProperties()
+        font = fontobj.copy()
+        font.set_size(self.config_obj.caption_size)
+        style = self.config_obj.caption_weight[0]
+        wt = self.config_obj.caption_weight[1]
+        font.set_style(style)
+        font.set_weight(wt)
+                # plt.figtext(self.config_obj.caption_align, self.config_obj.caption_offset, self.config_obj.plot_caption,
+        #             size=self.config_obj.caption_size, color=self.config_obj.caption_color)
+
         plt.figtext(self.config_obj.caption_align, self.config_obj.caption_offset, self.config_obj.plot_caption,
-                    size=self.config_obj.caption_size, color=self.config_obj.caption_color,
-                    style=self.config_obj.caption_weight)
+                    fontproperties=font,color=self.config_obj.caption_color)
 
         #
         # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE
