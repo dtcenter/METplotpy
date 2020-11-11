@@ -81,8 +81,9 @@ class PerformanceDiagramConfig(Config):
         mv_caption_weight = self.get_config_value('caption_weight')
         self.caption_color = self.get_config_value('caption_color')
 
-        # Only oblique, italic, and normal are supported in Matplotlib, use the
-        # MV_TO_MPL_CATPTION_STYLE dictionary to map these caption styles to
+        # Need to use a combination of Matplotlib's font weight and font style to
+        # re-create the METviewer caption weight. Use the
+        # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
         # what was requested in METviewer
         self.caption_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_caption_weight]
 
