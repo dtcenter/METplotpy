@@ -27,6 +27,7 @@ Import MetPlot class
 """
 from plots.met_plot import MetPlot
 
+
 class Hovmoeller(MetPlot):
     """
     Class to create of Plotly Hovmoeller plot from a 2D data array
