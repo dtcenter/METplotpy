@@ -1,0 +1,5 @@
+title: Hovmoeller Plot
+xaxis:
+  title: x-values
+yaxis:
+  title: y-values
