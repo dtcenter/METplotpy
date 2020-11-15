@@ -318,8 +318,17 @@ class PerformanceDiagram(MetPlot):
                    ncol=self.config_obj.legend_ncol,
                    prop={'size': self.config_obj.legend_size},
                    frameon=self.config_obj.draw_box)
-        ax1.xaxis.set_label_coords(0.5, -0.066)
-        ax1.set_xlabel(xlabel, fontsize=self.config_obj.x_title_font_size)
+
+        # Use the fontmanager to set the weight for the x-axis label/title using the same
+        # method employed above for the caption text weight
+        font_x = fontobj.copy()
+        font_x.set_size(self.config_obj.caption_size)
+        style_x = self.config_obj.xlab_weight[0]
+        wt_x = self.config_obj.xlab_weight[1]
+        font_x.set_style(style_x)
+        font_x.set_weight(wt_x)
+        ax1.xaxis.set_label_coords(self.config_obj.x_title_offset, self.config_obj.x_title_align)
+        ax1.set_xlabel(xlabel, fontsize=self.config_obj.x_title_font_size, fontproperties=font_x)
         ax1.set_ylabel(ylabel, fontsize=self.config_obj.y_title_font_size)
 
         # xtick labels and ytick labels
