@@ -79,6 +79,13 @@ class PerformanceDiagramConfig(Config):
         mv_x_title_align = self.get_config_value('xlab_align')
         self.x_title_align = float(mv_x_title_align) - .55
 
+        # Need to use a combination of Matplotlib's font weight and font style to
+        # re-create the METviewer xlab_weight. Use the
+        # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
+        # what was requested in METviewer
+        mv_xlab_weight = self.get_config_value('xlab_weight')
+        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_xlab_weight]
+
         self.x_tickangle = self.parameters['xtlab_orient']
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
