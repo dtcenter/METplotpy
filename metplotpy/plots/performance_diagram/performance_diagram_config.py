@@ -63,6 +63,22 @@ class PerformanceDiagramConfig(Config):
 
         # x-axis labels and x-axis ticks
         self.x_title_font_size = self.parameters['xlab_size'] * constants.DEFAULT_CAPTION_FONTSIZE
+
+        # left-right location of x-axis label/title relative to the y-axis line
+        # make adjustments between METviewer default and Matplotlib's center
+        # METviewer default value of 2 corresponds to Matplotlib value of .5
+        #
+        mv_x_title_offset = self.get_config_value('xlab_offset')
+        self.x_title_offset = float(mv_x_title_offset) - 1.5
+
+        # up-down of x-axis label/title position
+        # make adjustments between METviewer default and Matplotlib's center
+        # METviewer default is .5, Matplotlib center is 0.05, so subtract 0.55 from the
+        # METviewer setting to get the correct Matplotlib y-value (up/down)
+        # for the x-title position
+        mv_x_title_align = self.get_config_value('xlab_align')
+        self.x_title_align = float(mv_x_title_align) - .55
+
         self.x_tickangle = self.parameters['xtlab_orient']
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
