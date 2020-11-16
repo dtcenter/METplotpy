@@ -28,6 +28,27 @@ Import MetPlot class
 from plots.met_plot import MetPlot
 
 
+def lat_avg(data, latmin, latmax):
+    """
+    Compute latitudinal average for hovmoeller diagram.
+    :param data: input data (time, lat, lon)
+    :type data: xarray.Dataarray
+    :param latmin: southern latitude for averaging
+    :type latmin: float
+    :param latmax: northern latitude for averaging
+    :type latmax: float
+    :return: data (time, lon)
+    :rtype: xarray.Dataarray
+    """
+    data = data.sel(lat=slice(latmin, latmax))
+    units = data.attrs['units']
+    data = data.mean(dim='lat')
+    data.attrs['units'] = units
+    data = data.squeeze()
+
+    return data
+
+
 class Hovmoeller(MetPlot):
     """
     Class to create of Plotly Hovmoeller plot from a 2D data array
