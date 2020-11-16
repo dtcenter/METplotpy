@@ -99,6 +99,26 @@ class PerformanceDiagramConfig(Config):
             self.y_tickangle = constants.YAXIS_ORIENTATION[self.y_tickangle]
         self.y_tickfont_size = self.parameters['ytlab_size'] * constants.MPL_FONT_SIZE_DEFAULT
 
+        # left-right position of y-axis label/title position
+        # make adjustments between METviewer default and Matplotlib's center
+        # METviewer default is .5, Matplotlib center is -0.05
+        mv_y_title_align = self.get_config_value('ylab_align')
+        self.y_title_align = float(mv_y_title_align) - 0.55
+
+        # up-down location of y-axis label/title relative to the x-axis line
+        # make adjustments between METviewer default and Matplotlib's center
+        # METviewer default value of -2 corresponds to Matplotlib value of 0.4
+        #
+        mv_y_title_offset = self.get_config_value('ylab_offset')
+        self.y_title_offset = float(mv_y_title_offset) + 2.4
+
+        # Need to use a combination of Matplotlib's font weight and font style to
+        # re-create the METviewer ylab_weight. Use the
+        # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
+        # what was requested in METviewer
+        mv_ylab_weight = self.get_config_value('ylab_weight')
+        self.ylab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_ylab_weight]
+
         # Caption settings
         self.caption = self.get_config_value('plot_caption')
         mv_caption_weight = self.get_config_value('caption_weight')
@@ -129,8 +149,6 @@ class PerformanceDiagramConfig(Config):
         # METviewer default is set to 0, corresponds to y=0.05 in Matplotlib
         mv_caption_align = self.get_config_value('caption_align')
         self.caption_align = float(mv_caption_align) + 0.13
-
-
 
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
