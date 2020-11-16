@@ -17,8 +17,11 @@ lat_min: -5
 speed: 2
 source: ERAI
 
-varname: precip
+var_name: precip
+var_units: mm / day
+unit_conversion: 250
 
 contour_min: 0.2
 contour_max: 1.2
 contour_del: 0.2
+

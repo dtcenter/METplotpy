@@ -96,11 +96,14 @@ if __name__ == "__main__":
         sys.exit(1)
     logging.debug(ds)
 
-    data = ds[config['varname']]
+    data = ds[config['var_name']]
     logging.debug(data)
 
     data = data.sel(time=slice(config['date_start'], config['date_end']))
     time = ds.time.sel(time=slice(config['date_start'], config['date_end']))
+
+    data = data * config['unit_conversion']
+    data.attrs['units'] = config['var_units']
 
     plot = Hovmoeller(None, data)
 
