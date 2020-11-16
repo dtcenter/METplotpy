@@ -1,3 +1,5 @@
+plot_filename: hovmoeller.png
+
 title: Hovmoeller Plot
 xaxis:
   title: x-values
