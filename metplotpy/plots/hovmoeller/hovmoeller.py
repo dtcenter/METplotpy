@@ -36,27 +36,32 @@ class Hovmoeller(MetPlot):
         default_conf_filename = 'hovmoeller_defaults.yaml'
 
         super().__init__(parameters, default_conf_filename)
+        logging.debug(self.parameters)
 
+        self.data = data
 
-def lat_avg(data, lat_min, lat_max):
-    """
-    Compute latitudinal average
-    :param data: input data (time, lat, lon)
-    :type data: xarray.DataArray
-    :param lat_min: southern latitude for averaging
-    :type lat_min: float
-    :param lat_max: northern latitude for averaging
-    :type lat_max: float
-    :return: data (time, lon)
-    :rtype: xarray.DataArray
-    """
-    data = data.sel(lat=slice(lat_min, lat_max))
-    units = data.attrs['units']
-    data = data.mean(dim='lat')
-    data.attrs['units'] = units
-    data = data.squeeze()
+    def _create_figure(self):
+        pass
 
-    return data
+    def _lat_avg(self, data, lat_min, lat_max):
+        """
+        Compute latitudinal average
+        :param data: input data (time, lat, lon)
+        :type data: xarray.DataArray
+        :param lat_min: southern latitude for averaging
+        :type lat_min: float
+        :param lat_max: northern latitude for averaging
+        :type lat_max: float
+        :return: data (time, lon)
+        :rtype: xarray.DataArray
+        """
+        data = data.sel(lat=slice(lat_min, lat_max))
+        units = data.attrs['units']
+        data = data.mean(dim='lat')
+        data.attrs['units'] = units
+        data = data.squeeze()
+
+        return data
 
 
 if __name__ == "__main__":
