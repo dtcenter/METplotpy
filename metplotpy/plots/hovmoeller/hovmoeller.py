@@ -28,35 +28,35 @@ Import MetPlot class
 from plots.met_plot import MetPlot
 
 
-def lat_avg(data, latmin, latmax):
+class Hovmoeller(MetPlot):
     """
-    Compute latitudinal average for hovmoeller diagram.
+    Class to create a Plotly Hovmoeller plot from a 2D data array
+    """
+    def __init__(self, parameters, data):
+        default_conf_filename = 'hovmoeller_defaults.yaml'
+
+        super().__init__(parameters, default_conf_filename)
+
+
+def lat_avg(data, lat_min, lat_max):
+    """
+    Compute latitudinal average
     :param data: input data (time, lat, lon)
-    :type data: xarray.Dataarray
-    :param latmin: southern latitude for averaging
-    :type latmin: float
-    :param latmax: northern latitude for averaging
-    :type latmax: float
+    :type data: xarray.DataArray
+    :param lat_min: southern latitude for averaging
+    :type lat_min: float
+    :param lat_max: northern latitude for averaging
+    :type lat_max: float
     :return: data (time, lon)
-    :rtype: xarray.Dataarray
+    :rtype: xarray.DataArray
     """
-    data = data.sel(lat=slice(latmin, latmax))
+    data = data.sel(lat=slice(lat_min, lat_max))
     units = data.attrs['units']
     data = data.mean(dim='lat')
     data.attrs['units'] = units
     data = data.squeeze()
 
     return data
-
-
-class Hovmoeller(MetPlot):
-    """
-    Class to create of Plotly Hovmoeller plot from a 2D data array
-    """
-    def __init__(self, parameters, data):
-        default_conf_filename = 'hovmoeller_defaults.yaml'
-
-        super().__init__(parameters, default_conf_filename)
 
 
 if __name__ == "__main__":
@@ -102,9 +102,12 @@ if __name__ == "__main__":
     """
     Read YAML configuration file
     """
-    config = yaml.load(
-        open(args.config), Loader=yaml.FullLoader)
-    logging.info(config)
+    try:
+        config = yaml.load(
+            open(args.config), Loader=yaml.FullLoader)
+        logging.info(config)
+    except yaml.YAMLError as exc:
+        logging.error(exc)
 
     """
     Read dataset
@@ -112,8 +115,9 @@ if __name__ == "__main__":
     try:
         logging.info('Opening ' + filename_in)
         ds = xr.open_dataset(filename_in)
-    except IOError:
+    except IOError as exc:
         logging.error('Unable to open ' + filename_in)
+        logging.error(exc)
         sys.exit(1)
     logging.debug(ds)
 
