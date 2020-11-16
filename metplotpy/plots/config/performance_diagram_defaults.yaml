@@ -79,12 +79,12 @@ user_legend:
   - SH
   - TROP
 # two types supported, 'n' for none and 'o' for box
-legend_box: 'n'
+legend_box: 'box'
 # number of columns in legend
 legend_ncol: 1
 legend_inset:
-  x: 0.
-  y: -0.14
+  x: 0.0
+  y: -0.25
 legend_size: 0.8
 plot_stat: median
 plot_contour_legend: False
@@ -118,7 +118,7 @@ series_line_style:
 # Perform event equalization to check for missing data
 event_equal: False
 
-# annotation_template: "%y in"  annotates each y-value with the  units 'in' for inches, preserving the whitespace between the
+# annotation_template: "%y in"  annotates each y-value                                             with the  units 'in' for inches, preserving the whitespace between the
 # y-value and the units
 # "%x <units>" will annotate each x-value (success ratio/independent variable value) with units, preserving the whitespace between the 
 # annotation and the units.
@@ -130,6 +130,39 @@ event_equal: False
 #    annotation_template: "%y in."
 annotation_template: 
 
+plot_caption: "This is caption"
+caption_weight: 4
+caption_color: "#ff0000"
+caption_size: "1.3" # relative magnification
+caption_offset: 2.95  # axis perpendicular location adjustment (up/down 3.8 is max value, 2.9 is min value)
+caption_align: -.1 # axis parallel location adjustment (left/right)
+
+# x-axis labels
+xlab_size: 1.3
+#right-left positioning
+xlab_offset: 2
+#up-down positioning
+xlab_align: .5
+# text weight: plain text, bold, italic, bold italic
+xlab_weight: 4
+
+# x-axis ticks
+#these three are unsupported
+xtlab_orient: 2
+xtlab_size: 1.5
+
+# y-axis labels
+ylab_size: 1
+#left-right positioning
+ylab_align: 0.5 #default 0.5
+#up-down positioning
+ylab_offset: -2 #default -2
+# text weight: plain text, bold, italic, bold italic
+ylab_weight: 3
+
+# y-axis ticks
+ytlab_orient: 1
+ytlab_size: 1.3
 
 stat_input:  ../performance_diagram/plot_20200317_151252.data
 plot_filename: /tmp/performance_diagram_default.png
