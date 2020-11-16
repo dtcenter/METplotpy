@@ -43,6 +43,10 @@ if __name__ == "__main__":
     Parse command line arguments
     """
     parser = argparse.ArgumentParser()
+    parser.add_argument('--config', type=str,
+                        default=os.path.join(os.getenv('METPLOTPY_BASE'),
+                        'plots', 'config', 'hovmoeller_defaults.yaml'),
+                        help='configuration file')
     parser.add_argument('--datadir', type=str,
                         default=os.getenv('DATA_DIR'),
                         help='top-level data directory (default $DATA_DIR)')
@@ -69,6 +73,27 @@ if __name__ == "__main__":
         sys.exit(1)
     logging.info(args.input)
 
+    """
+    Construct input filename
+    """
+    filename_in = os.path.join(args.datadir, args.input)
+
+    """
+    Read YAML configuration file
+    """
+    config = yaml.load(
+        open(args.config), Loader=yaml.FullLoader)
+    logging.info(config)
+
+    """
+    Read dataset
+    """
+    try:
+        logging.info('Opening ' + filename_in)
+        ds = xr.open_dataset(filename_in)
+    except IOError:
+        logging.error('Unable to open ' + filename_in)
+        sys.exit(1)
 
     data = None
     plot = Hovmoeller(None, data)
