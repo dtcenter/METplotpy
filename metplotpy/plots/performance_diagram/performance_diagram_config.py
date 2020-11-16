@@ -93,7 +93,7 @@ class PerformanceDiagramConfig(Config):
 
 
         # y-axis labels and y-axis ticks
-        self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.y_title_font_size = self.parameters['ylab_size'] * constants.DEFAULT_CAPTION_FONTSIZE
         self.y_tickangle = self.parameters['ytlab_orient']
         if self.y_tickangle in constants.YAXIS_ORIENTATION.keys():
             self.y_tickangle = constants.YAXIS_ORIENTATION[self.y_tickangle]
