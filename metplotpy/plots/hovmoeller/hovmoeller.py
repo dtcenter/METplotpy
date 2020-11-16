@@ -94,7 +94,13 @@ if __name__ == "__main__":
     except IOError:
         logging.error('Unable to open ' + filename_in)
         sys.exit(1)
+    logging.debug(ds)
 
-    data = None
+    data = ds[config['varname']]
+    logging.debug(data)
+
+    data = data.sel(time=slice(config['date_start'], config['date_end']))
+    time = ds.time.sel(time=slice(config['date_start'], config['date_end']))
+
     plot = Hovmoeller(None, data)
 
