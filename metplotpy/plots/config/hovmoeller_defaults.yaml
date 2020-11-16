@@ -1,7 +1,9 @@
 plot_filename: hovmoeller.png
 
 title: Hovmoeller Plot
+
 xaxis:
-  title: x-values
+  title: Longitude
+
 yaxis:
-  title: y-values
+  title: Time
