@@ -39,5 +39,6 @@ class Hovmoeller(MetPlot):
 
 if __name__ == "__main__":
 
-    plot = Hovmoeller(None, None)
+    data = None
+    plot = Hovmoeller(None, data)
 
