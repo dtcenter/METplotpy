@@ -7,3 +7,18 @@ xaxis:
 
 yaxis:
   title: Time
+
+date_start: 2016-01-01
+date_end: 2016-03-31
+
+lat_max: 5
+lat_min: -5
+
+speed: 2
+source: ERAI
+
+varname: precip
+
+contour_min: 0.2
+contour_max: 1.2
+contour_del: 0.2
