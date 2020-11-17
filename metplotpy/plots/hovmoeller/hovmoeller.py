@@ -40,21 +40,34 @@ class Hovmoeller(MetPlot):
         logging.debug(self.parameters)
 
         self.time = time
-        self.time_str = self._get_time_str(time)
+        self.time_str = self.get_time_str(time)
         self.lon = lon
-        self.data = self._lat_avg(data,
+        self.data = self.lat_avg(data,
             self.parameters['lat_min'], self.parameters['lat_max'])
 
-        logging.debug(self.time_str)
-        logging.debug(self.lon)
-        logging.debug(self.data)
+        self.create_figure()
 
-    def _create_figure(self):
+    def create_figure(self):
 
         # init Figure
         fig = go.Figure()
 
-    def _get_time_str(self, time):
+        contour_plot = go.Contour(
+            z=self.data.values,
+            x=self.lon,
+            y=self.time_str,
+            contours=dict(start=self.parameters['contour_min'],
+                          end=self.parameters['contour_max'],
+                          size=self.parameters['contour_del'],
+                          showlines=False),
+            colorbar=dict(title=data.attrs['units'],
+                          len=0.6,
+                          lenmode='fraction')
+        )
+
+        fig.add_trace(contour_plot)
+
+    def get_time_str(self, time):
         """
         Generate time string for y-axis labels.
         :param time: time coordinate
@@ -68,7 +81,7 @@ class Hovmoeller(MetPlot):
 
         return time_str
 
-    def _lat_avg(self, data, lat_min, lat_max):
+    def lat_avg(self, data, lat_min, lat_max):
         """
         Compute latitudinal average.
         :param data: input data (time, lat, lon)
