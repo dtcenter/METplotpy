@@ -71,16 +71,18 @@ class Hovmoeller(MetPlot):
         self.figure.update_layout(
             title=self.parameters['source'] + " " + self.parameters['var_name'],
             annotations=[
-            go.layout.Annotation(
-                x=300,
-                y=self.time_str[5],
-                xref="x",
-                yref="y",
-                text=self.lat_str,
-                showarrow=False,
-                bgcolor="white",
-                opacity=0.9,
-                font=dict(size=16)
+                self.get_xaxis_title(),
+                self.get_yaxis_title(),
+                go.layout.Annotation(
+                    x=300,
+                    y=self.time_str[5],
+                    xref="x",
+                    yref="y",
+                    text=self.lat_str,
+                    showarrow=False,
+                    bgcolor="white",
+                    opacity=0.9,
+                    font=dict(size=16)
                 )
             ]
         )
