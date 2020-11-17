@@ -21,6 +21,7 @@ from datetime import datetime
 import numpy as np
 import xarray as xr  # http://xarray.pydata.org/
 import plotly.graph_objects as go
+from netCDF4 import num2date
 
 """
 Import MetPlot class
@@ -39,9 +40,13 @@ class Hovmoeller(MetPlot):
         logging.debug(self.parameters)
 
         self.time = time
+        self.time_str = self._get_time_str(time)
         self.lon = lon
         self.data = self._lat_avg(data,
             self.parameters['lat_min'], self.parameters['lat_max'])
+
+        logging.debug(self.time_str)
+        logging.debug(self.lon)
         logging.debug(self.data)
 
     def _create_figure(self):
@@ -49,9 +54,23 @@ class Hovmoeller(MetPlot):
         # init Figure
         fig = go.Figure()
 
+    def _get_time_str(self, time):
+        """
+        Generate time string for y-axis labels.
+        :param time: time coordinate
+        :type time: datetime object
+        :return: time_str
+        :rtype: str
+        """
+        ts = (time - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 'h')
+        date = num2date(ts, 'hours since 1970-01-01T00:00:00Z')
+        time_str = [i.strftime("%Y-%m-%d %H:%M") for i in date]
+
+        return time_str
+
     def _lat_avg(self, data, lat_min, lat_max):
         """
-        Compute latitudinal average
+        Compute latitudinal average.
         :param data: input data (time, lat, lon)
         :type data: xarray.DataArray
         :param lat_min: southern latitude for averaging
