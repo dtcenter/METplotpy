@@ -45,12 +45,11 @@ class Hovmoeller(MetPlot):
         self.data = self.lat_avg(data,
             self.parameters['lat_min'], self.parameters['lat_max'])
 
+        self.figure = go.Figure()
+
         self.create_figure()
 
     def create_figure(self):
-
-        # init Figure
-        fig = go.Figure()
 
         contour_plot = go.Contour(
             z=self.data.values,
@@ -65,7 +64,7 @@ class Hovmoeller(MetPlot):
                           lenmode='fraction')
         )
 
-        fig.add_trace(contour_plot)
+        self.figure.add_trace(contour_plot)
 
     def get_time_str(self, time):
         """
@@ -175,4 +174,7 @@ if __name__ == "__main__":
     data.attrs['units'] = config['var_units']
 
     plot = Hovmoeller(None, time, lon, data)
+
+    plot.show_in_browser()
+    plot.save_to_file()
 
