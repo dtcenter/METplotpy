@@ -38,7 +38,7 @@ LINESTYLE_BY_NAMES = {'solid': '-', 'points': ':', 'lines': '--', 'overplotted':
                       'l': '--', 'o': '-.', 'b': '-',
                       's': '-.', 'h': ' ', 'n': ' '}
 
-ACCEPTABLE_CI_VALS = ['NONE', 'BOOT', 'NORM']
+ACCEPTABLE_CI_VALS = ['NONE', 'BOOT', 'NORM', "STD"]
 
 DEFAULT_TITLE_FONT = 'sans-serif'
 DEFAULT_TITLE_COLOR = 'black'
@@ -46,6 +46,12 @@ DEFAULT_TITLE_FONTSIZE = 10
 
 # Default size used in plotly legend text
 DEFAULT_LEGEND_FONTSIZE = 12
+DEFAULT_CAPTION_FONTSIZE = 14
+DEFAULT_CAPTION_Y_OFFSET = -3.1
+DEFAULT_TITLE_FONT_SIZE = 11
+DEFAULT_TITLE_OFFSET = (-0.48)
+
+
 AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", ".", "h"]
 AVAILABLE_PLOTLY_MARKERS_LIST = ["open-circle", "circle",
                                  "square", "diamond",
@@ -56,10 +62,21 @@ PCH_TO_MATPLOTLIB_MARKER = {'20': '.', '19': 'o', '17': '^', '1': 'H',
                             'circle': 'o', 'square': 's',
                             'triangle': '^', 'rhombus': 'd', 'ring': 'h'}
 
-PCH_TO_PLOTLY_MARKER = {'0':'circle-open', '19':'circle',
-                        '17':'triangle-up', '15':'square', '18':'diamond',
-                        '1':'hexagon2', 'small circle': 'circle-open',
-                        'circle': 'circle', 'square':'square', 'triangle':'triangle-up',
-                        'rhombus':'diamond', 'ring':'hexagon2', '.':'circle-open',
-                        'o': 'circle', '^':'triangle-up', 'd':'diamond', 'H':'hexagon2',
-                        'h': 'hexagon2','s':'square'}
+PCH_TO_PLOTLY_MARKER = {'0': 'circle-open', '19': 'circle', '20': 'circle',
+                        '17': 'triangle-up', '15': 'square', '18': 'diamond',
+                        '1': 'hexagon2', 'small circle': 'circle-open',
+                        'circle': 'circle', 'square': 'square', 'triangle': 'triangle-up',
+                        'rhombus': 'diamond', 'ring': 'hexagon2', '.': 'circle',
+                        'o': 'circle', '^': 'triangle-up', 'd': 'diamond', 'H': 'circle-open',
+                        'h': 'hexagon2', 's': 'square'}
+
+PCH_TO_PLOTLY_MARKER_SIZE = {'.': 5, 'o': 8, 's': 6, '^': 8, 'd': 6, 'H': 7}
+
+TYPE_TO_PLOTLY_MODE = {'b': 'lines+markers', 'p': 'markers', 'l': 'lines'}
+LINE_STYLE_TO_PLOTLY_DASH = {'-': None, '--': 'dash', ':': 'dot', '-:': 'dashdot'}
+XAXIS_ORIENTATION = {0: 0, 1: 0, 2: 270, 3: 270}
+YAXIS_ORIENTATION = {0: -90, 1: 0, 2: 0, 3: -90}
+
+PLOTLY_PAPER_BGCOOR = "white"
+PLOTLY_AXIS_LINE_COLOR = "#c2c2c2"
+PLOTLY_AXIS_LINE_WIDTH = 2

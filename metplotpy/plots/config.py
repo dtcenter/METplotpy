@@ -7,8 +7,11 @@ __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
 import itertools
+from typing import Union
+
 import metcalcpy.util.utils as utils
 import plots.constants as constants
+
 
 class Config:
     """
@@ -29,8 +32,9 @@ class Config:
         self.yaxis_1 = self.get_config_value('yaxis_1')
         self.yaxis_2 = self.get_config_value('yaxis_2')
         self.title = self.get_config_value('title')
-        self.use_ee = self.get_config_value('event_equalize')
+        self.use_ee = self._get_bool('event_equal')
         self.indy_vals = self.get_config_value('indy_vals')
+        self.indy_label = self._get_indy_label()
         self.indy_var = self.get_config_value('indy_var')
         self.show_plot_in_browser = self.get_config_value('show_plot_in_browser')
         self.plot_width = self.get_config_value('plot_width')
@@ -39,7 +43,7 @@ class Config:
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
 
-        # list of the x, y, and loc values for the
+        # list of the x, y
         # bbox_to_anchor() setting used in determining
         # the location of the bounding box which defines
         # the legend.
@@ -63,7 +67,9 @@ class Config:
         # in the input dataframe.
         self.series_vals_1 = self._get_series_vals(1)
         self.series_vals_2 = self._get_series_vals(2)
-        self.all_series_vals = self.series_vals_1 + self.series_vals_2
+        self.all_series_vals = self.series_vals_1.copy()
+        if self.series_vals_2:
+            self.all_series_vals.extend(self.series_vals_2)
 
         # Represent the names of the forecast variables (inner keys) to the fcst_var_val setting.
         # These are the names of the columns in the input dataframe.
@@ -79,7 +85,7 @@ class Config:
         # be used in subsetting the input dataframe (e.g. for key='model', and value='SH_CMORPH',
         # we want to subset data where column name is 'model', with coincident rows of 'SH_CMORPH'.
         self.series_val_names = self._get_series_val_names()
-
+        self.series_ordering = None
 
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
@@ -93,7 +99,6 @@ class Config:
         """
 
         return self._get_nested(self.parameters, args)
-
 
     def _get_nested(self, data, args):
         """Recursive function that uses the tuple with keys to find a value
@@ -232,16 +237,13 @@ class Config:
 
         """
 
-
         series_val_dict = self.get_config_value('series_val_1')
-
 
         # Unpack and access the values corresponding to the inner keys
         # (series_var1, series_var2, ..., series_varn).
         if series_val_dict:
-           return [*series_val_dict.keys()]
-        else:
-           return []
+            return [*series_val_dict.keys()]
+        return []
 
     def calculate_number_of_series(self):
         """
@@ -277,9 +279,20 @@ class Config:
         """
 
         colors_settings = self.get_config_value('colors')
-        color_list = [color for color in colors_settings]
-        color_list_ordered = self.create_list_by_series_ordering(color_list)
-        return color_list_ordered
+        return self.create_list_by_series_ordering(list(colors_settings))
+
+    def _get_con_series(self) -> list:
+        """
+           Retrieves the 'connect across NA' values used for lines and markers, from the
+           config file (default or custom).
+           Args:
+
+           Returns:
+               con_series_list or con_series_from_config: a list of 1 and/or 0 to
+               be used for the lines
+        """
+        con_series_settings = self.get_config_value('con_series')
+        return self.create_list_by_series_ordering(list(con_series_settings))
 
     def _get_markers(self):
         """
@@ -299,13 +312,11 @@ class Config:
             else:
                 # markers are indicated by name: small circle, circle, triangle,
                 # diamond, hexagon, square
-                m = marker.lower()
-                markers_list.append(constants.PCH_TO_MATPLOTLIB_MARKER[m])
-        markers_list_ordered = self.create_list_by_series_ordering(markers_list)
+                markers_list.append(constants.PCH_TO_MATPLOTLIB_MARKER[marker.lower()])
+        markers_list_ordered = self.create_list_by_series_ordering(list(markers_list))
         return markers_list_ordered
 
-
-    def _get_linewidths(self):
+    def _get_linewidths(self) -> list:
         """ Retrieve all the linewidths from the configuration file, if not
             specified in any config file, use the default values of 2
 
@@ -315,9 +326,7 @@ class Config:
                 linewidth_list: a list of linewidths corresponding to each line (model)
         """
         linewidths = self.get_config_value('series_line_width')
-        linewidths_list = [l for l in linewidths]
-        linewidths_list_ordered = self.create_list_by_series_ordering(linewidths_list)
-        return linewidths_list_ordered
+        return self.create_list_by_series_ordering(list(linewidths))
 
     def _get_linestyles(self):
         """
@@ -329,8 +338,7 @@ class Config:
                 list of line styles, each line style corresponds to a particular series
         """
         linestyles = self.get_config_value('series_line_style')
-        linestyle_list = [l for l in linestyles]
-        linestyle_list_ordered = self.create_list_by_series_ordering(linestyle_list)
+        linestyle_list_ordered = self.create_list_by_series_ordering(list(linestyles))
         return linestyle_list_ordered
 
 
@@ -432,22 +440,22 @@ class Config:
                 units = self.get_config_value('plot_units').lower()
                 if units == 'in':
                     return resolution
-                elif units == 'mm':
+
+                if units == 'mm':
                     # convert mm to inches so we can
                     # set dpi value
                     return resolution * constants.MM_TO_INCHES
-                else:
-                    # units not supported, assume inches
-                    return resolution
-            else:
-                # units not indicated, assume
-                # we are dealing with inches
-                return resolution
-        else:
-            # no plot_res value is set, return the default
-            # dpi used by matplotlib
-            return dpi
 
+                # units not supported, assume inches
+                return resolution
+
+            # units not indicated, assume
+            # we are dealing with inches
+            return resolution
+
+        # no plot_res value is set, return the default
+        # dpi used by matplotlib
+        return dpi
 
     def create_list_by_series_ordering(self, setting_to_order):
         """
@@ -465,14 +473,6 @@ class Config:
                 -blue
                 -green
 
-               and the line widths are:
-               line_width:
-                  -1
-                  -3
-                  -2
-               then the first series has a line width=3,
-               the second series has a line width=2,
-               and the third series has a line width=1
 
             Then the following is expected:
               the first series' color is 'blue'
@@ -485,7 +485,7 @@ class Config:
 
             Args:
 
-                setting_to_order:  the name of the setting (eg line_width) to be
+                setting_to_order:  the name of the setting (eg axis_line_width) to be
                                    ordered based on the order indicated
                                    in the config file under the series_order setting.
 
@@ -496,14 +496,16 @@ class Config:
 
         # order the input list according to the series_order setting
         ordered_settings_list = []
+        # create a natural order if series_ordering is missing
+        if self.series_ordering is None:
+            self.series_ordering = list(range(1, len(setting_to_order) + 1))
 
         # Make the series ordering list zero-based to sync with Python's zero-based counting
         series_ordered_zb = [sorder - 1 for sorder in self.series_ordering]
-        for series in series_ordered_zb:
-            ordered_settings_list.append(setting_to_order[series])
+        for idx, series in enumerate(series_ordered_zb):
+            ordered_settings_list.insert(series, setting_to_order[idx])
 
         return ordered_settings_list
-
 
     def calculate_plot_dimension(self, config_value, output_units):
         '''
@@ -514,12 +516,14 @@ class Config:
            on the requested output units, output_units.
 
            Args:
-              @param config_value:  The plot dimension to convert, either a width or height, in inches or mm
+              @param config_value:  The plot dimension to convert, either a width or height,
+                    in inches or mm
               @param output_units: pixels or in (inches) to indicate which
                                    units to use to define plot size. Python plotly uses pixels and
                                    Matplotlib uses inches.
            Returns:
-             converted_value : converted value from in/mm to pixels or mm to inches based on input values
+             converted_value : converted value from in/mm to pixels or mm to inches based
+                                    on input values
         '''
         value2convert = self.get_config_value(config_value)
         resolution = self.get_config_value('plot_res')
@@ -551,3 +555,26 @@ class Config:
             converted_value = 10
 
         return converted_value
+
+    def _get_bool(self, param: str) -> Union[bool, None]:
+        """
+        Validates the value of the parameter and returns a boolean
+        Args:
+            :param param: name of the parameter
+        Returns:
+            :return: boolean value or None
+        """
+
+        param_val = self.get_config_value(param)
+        if isinstance(param_val, bool):
+            return param_val
+
+        if isinstance(param_val, str):
+            return param_val.upper() == 'TRUE'
+
+        return None
+
+    def _get_indy_label(self):
+        if 'indy_label' in self.parameters.keys():
+            return self.get_config_value('indy_label')
+        return self.indy_vals

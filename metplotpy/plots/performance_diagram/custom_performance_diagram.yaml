@@ -96,5 +96,5 @@ series_line_style:
   # dotted line
   - ":"
 stat_input:  ./plot_20200317_151252.data
-plot_output: ./performance_diagram_default.png
-event_equalize: False
+plot_filename: ./performance_diagram_default.png
+event_equal: False
