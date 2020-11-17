@@ -32,16 +32,22 @@ class Hovmoeller(MetPlot):
     """
     Class to create a Plotly Hovmoeller plot from a 2D data array
     """
-    def __init__(self, parameters, data):
+    def __init__(self, parameters, time, lon, data):
         default_conf_filename = 'hovmoeller_defaults.yaml'
 
         super().__init__(parameters, default_conf_filename)
         logging.debug(self.parameters)
 
-        self.data = data
+        self.time = time
+        self.lon = lon
+        self.data = self._lat_avg(data,
+            self.parameters['lat_min'], self.parameters['lat_max'])
+        logging.debug(self.data)
 
     def _create_figure(self):
-        pass
+
+        # init Figure
+        fig = go.Figure()
 
     def _lat_avg(self, data, lat_min, lat_max):
         """
@@ -131,9 +137,10 @@ if __name__ == "__main__":
 
     data = data.sel(time=slice(config['date_start'], config['date_end']))
     time = ds.time.sel(time=slice(config['date_start'], config['date_end']))
+    lon = ds.lon
 
     data = data * config['unit_conversion']
     data.attrs['units'] = config['var_units']
 
-    plot = Hovmoeller(None, data)
+    plot = Hovmoeller(None, time, lon, data)
 
