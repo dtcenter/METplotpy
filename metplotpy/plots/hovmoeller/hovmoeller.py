@@ -44,6 +44,8 @@ class Hovmoeller(MetPlot):
         self.lon = lon
         self.data = self.lat_avg(data,
             self.parameters['lat_min'], self.parameters['lat_max'])
+        self.lat_str = self.get_lat_str(
+            self.parameters['lat_min'], self.parameters['lat_max'])
 
         self.figure = go.Figure()
 
@@ -79,6 +81,31 @@ class Hovmoeller(MetPlot):
         time_str = [i.strftime("%Y-%m-%d %H:%M") for i in date]
 
         return time_str
+
+    def get_lat_str(self, lat_min, lat_max):
+        """
+        Generate string describing the latitude band averaged over.
+        :param lat_min: southern latitude limit of the average
+        :type lat_min: float
+        :param lat_max: northern latitude limit of the average
+        :type lat_max: float
+        :return: lat_str
+        :rtype: str
+        """
+        if lat_min < 0:
+            hem_min = 'S'
+            lat_min = -lat_min
+        else:
+            hem_min = 'N'
+        if lat_max < 0:
+            hem_max = 'S'
+            lat_max = -lat_max
+        else:
+            hem_max = 'N'
+
+        lat_str = str(lat_min) + hem_min + " - " + str(lat_max) + hem_max
+
+        return lat_str
 
     def lat_avg(self, data, lat_min, lat_max):
         """
