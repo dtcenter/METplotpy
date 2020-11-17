@@ -68,6 +68,23 @@ class Hovmoeller(MetPlot):
 
         self.figure.add_trace(contour_plot)
 
+        self.figure.update_layout(
+            title=self.parameters['source'] + " " + self.parameters['var_name'],
+            annotations=[
+            go.layout.Annotation(
+                x=300,
+                y=self.time_str[5],
+                xref="x",
+                yref="y",
+                text=self.lat_str,
+                showarrow=False,
+                bgcolor="white",
+                opacity=0.9,
+                font=dict(size=16)
+                )
+            ]
+        )
+
     def get_time_str(self, time):
         """
         Generate time string for y-axis labels.
