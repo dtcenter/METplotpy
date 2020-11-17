@@ -122,7 +122,7 @@ class PerformanceDiagramConfig(Config):
         # Caption settings
         self.caption = self.get_config_value('plot_caption')
         mv_caption_weight = self.get_config_value('caption_weight')
-        self.caption_color = self.get_config_value('caption_color')
+        self.caption_color = self.get_config_value('caption_col')
 
         # Need to use a combination of Matplotlib's font weight and font style to
         # re-create the METviewer caption weight. Use the
