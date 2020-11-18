@@ -54,7 +54,7 @@ legend_inset:
   y: -0.14
 plot_caption: "This is caption"
 caption_weight: "plain text"
-caption_color: "#333333"
+caption_col: "#333333"
 caption_size: "0.8" # relative magnification
 caption_offset: 3  # axis perpendicular location adjustment
 caption_align: 0, # axis parallel location adjustment
