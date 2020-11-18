@@ -150,6 +150,25 @@ class PerformanceDiagramConfig(Config):
         mv_caption_align = self.get_config_value('caption_align')
         self.caption_align = float(mv_caption_align) + 0.13
 
+        # The plot's title size, title weight, and positioning in left-right and up-down directions
+        mv_title_size = self.get_config_value('title_size')
+        self.title_size = mv_title_size * constants.MPL_FONT_SIZE_DEFAULT
+
+        mv_title_weight = self.get_config_value('title_weight')
+        # use the same constants dictionary as used for captions
+        self.title_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_title_weight]
+
+        # These values can't be used as-is, the only choice for aligning in Matplotlib
+        # are center (default), left, and right
+        mv_title_align = self.get_config_value('title_align')
+        self.title_align = float(mv_title_align)
+
+        # does nothing because the vertical position in Matplotlib is
+        # automatically chosen to avoid labels and ticks on the topmost
+        # x-axis
+        mv_title_offset = self.get_config_value('title_offset')
+        self.title_offset = float(mv_title_offset)
+
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
 
