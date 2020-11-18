@@ -63,7 +63,7 @@ class PerformanceDiagramSeries(Series):
         # defined in the config file.  These will be used to subset the pandas
         # dataframe input data.  Each permutation corresponds to a series.
         # This permutation corresponds to this series instance.
-        perm = utils.create_permutations(self.all_series_vals)
+        perm = utils.create_permutations_mv(self.all_series_vals, 0)
 
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config._config_consistency_check()

@@ -77,7 +77,7 @@ colors:
 series_line_width:
   - 1
   - 1
-  - NA
+  - 3
 series_symbols:
   # Other supported symbols: small circle = ".", ring/hexagon = "H", rhombus/diamond="d"
   # Circle
@@ -96,5 +96,5 @@ series_line_style:
   # dotted line
   - ":"
 stat_input:  ./plot_20200317_151252.data
-plot_filename: ./performance_diagram_default.png
-event_equal: False
+plot_filename: ./performance_diagram_expected.png
+event_equalize: False
