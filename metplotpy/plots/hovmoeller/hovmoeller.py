@@ -43,9 +43,9 @@ class Hovmoeller(MetPlot):
         self.time_str = self.get_time_str(time)
         self.lon = lon
         self.data = self.lat_avg(data,
-            self.parameters['lat_min'], self.parameters['lat_max'])
+            self.get_config_value('lat_min'), self.get_config_value('lat_max'))
         self.lat_str = self.get_lat_str(
-            self.parameters['lat_min'], self.parameters['lat_max'])
+            self.get_config_value('lat_min'), self.get_config_value('lat_max'))
 
         self.figure = go.Figure()
 
@@ -57,9 +57,9 @@ class Hovmoeller(MetPlot):
             z=self.data.values,
             x=self.lon,
             y=self.time_str,
-            contours=dict(start=self.parameters['contour_min'],
-                          end=self.parameters['contour_max'],
-                          size=self.parameters['contour_del'],
+            contours=dict(start=self.get_config_value('contour_min'),
+                          end=self.get_config_value('contour_max'),
+                          size=self.get_config_value('contour_del'),
                           showlines=False),
             colorbar=dict(title=data.attrs['units'],
                           len=0.6,
@@ -69,7 +69,7 @@ class Hovmoeller(MetPlot):
         self.figure.add_trace(contour_plot)
 
         self.figure.update_layout(
-            title=self.parameters['source'] + " " + self.parameters['var_name'],
+            title=self.get_config_value('source') + " " + self.get_config_value('var_name'),
             annotations=[
                 self.get_xaxis_title(),
                 self.get_yaxis_title(),
