@@ -225,7 +225,7 @@ class Line(MetPlot):
         no_ci_up = all(v == 0 for v in series.series_points['dbl_up_ci'])
         no_ci_lo = all(v == 0 for v in series.series_points['dbl_lo_ci'])
         error_y_visible = True
-        if no_ci_up is True and no_ci_lo is True:
+        if (no_ci_up is True and no_ci_lo is True) or self.config_obj.plot_ci[series.idx] == 'NONE':
             error_y_visible = False
 
         # switch x amd y values for the vertical plot
