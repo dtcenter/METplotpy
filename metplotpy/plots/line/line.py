@@ -355,6 +355,9 @@ class Line(MetPlot):
             )
 
     def _add_xaxis(self) -> None:
+        """
+        Configures and adds x-axis to the plot
+        """
         self.figure.update_xaxes(title_text=self.config_obj.xaxis,
                                  linecolor=PLOTLY_AXIS_LINE_COLOR,
                                  linewidth=PLOTLY_AXIS_LINE_WIDTH,
@@ -376,6 +379,9 @@ class Line(MetPlot):
             self.figure.update_xaxes(autorange="reversed")
 
     def _add_yaxis(self) -> None:
+        """
+        Configures and adds y-axis to the plot
+        """
         self.figure.update_yaxes(title_text=
                                  util.apply_weight_style(self.config_obj.yaxis_1,
                                                          self.config_obj.parameters['ylab_weight']),
