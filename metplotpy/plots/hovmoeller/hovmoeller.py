@@ -63,10 +63,10 @@ class Hovmoeller(MetPlot):
     def create_figure(self):
 
         contour_plot = go.Contour(
-            colorscale=cmap_rgb,
             z=self.data.values,
             x=self.lon,
             y=self.time_str,
+            colorscale=self.get_config_value('colorscale'),
             contours=dict(start=self.get_config_value('contour_min'),
                           end=self.get_config_value('contour_max'),
                           size=self.get_config_value('contour_del'),
@@ -79,22 +79,12 @@ class Hovmoeller(MetPlot):
         self.figure.add_trace(contour_plot)
 
         self.figure.update_layout(
-            title=self.get_config_value('source') + " " + self.get_config_value('var_name'),
-            annotations=[
-                self.get_xaxis_title(),
-                self.get_yaxis_title(),
-                go.layout.Annotation(
-                    x=300,
-                    y=self.time_str[0],
-                    xref="x",
-                    yref="y",
-                    text=self.lat_str,
-                    showarrow=False,
-                    bgcolor="white",
-                    opacity=0.9,
-                    font=dict(size=16)
-                )
-            ]
+            height=self.get_config_value('height'),
+            width=self.get_config_value('width'),
+            title=self.get_config_value('title') + '    ' + self.lat_str,
+            font=dict(size=self.get_config_value('font_size')),
+            xaxis_title=self.get_config_value('xaxis_title'),
+            yaxis_title=self.get_config_value('yaxis_title'),
         )
 
     def get_time_str(self, time):
