@@ -17,7 +17,6 @@ import sys
 import argparse
 import logging
 import yaml
-from datetime import datetime
 import numpy as np
 import xarray as xr  # http://xarray.pydata.org/
 import plotly.graph_objects as go
@@ -27,15 +26,6 @@ from netCDF4 import num2date
 Import MetPlot class
 """
 from plots.met_plot import MetPlot
-
-
-cmap_rgb = [[0, "rgb(255, 255, 255)"], [0.111111, "rgb(255, 255, 255)"],
-            [0.111111, "rgb(135, 206, 250)"], [0.222222, "rgb(135, 206, 250)"],
-            [0.222222, "rgb(30, 144, 255)"], [0.333333, "rgb(30, 144, 255)"],
-            [0.333333, "rgb(0, 0, 238)"], [0.444444, "rgb(0, 0, 238)"],
-            [0.444444, "rgb(131, 111, 255)"], [0.666667, "rgb(131, 111, 255)"],
-            [0.666667, "rgb(171, 130, 255)"], [0.888889, "rgb(171, 130, 255)"],
-            [0.888889, "rgb(145, 44, 238)"], [1, "rgb(145, 44, 238)"]]
 
 
 class Hovmoeller(MetPlot):
