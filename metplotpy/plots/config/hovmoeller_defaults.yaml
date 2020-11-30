@@ -1,27 +1,18 @@
-plot_filename: hovmoeller.png
-height: 400
-width: 600
-title: Hovmoeller Plot
+plot_filename: erai_precip.png
+height: 800
+width: 1200
+title: ERAI Precipitation
 
-xaxis:
-  x: 180
-  y: 0
-  title:
-    text: Longitude
+font_size: 20
 
-yaxis:
-  x: 0
-  y: 0
-  title:
-    text: Time
+xaxis_title: Longitude
+yaxis_title: Time
 
 date_start: 2016-01-01
 date_end: 2016-03-31
 
 lat_max: 5
 lat_min: -5
-
-source: ERAI
 
 var_name: precip
 var_units: mm / day
@@ -30,3 +21,4 @@ unit_conversion: 250
 contour_min: 0.2
 contour_max: 1.6
 contour_del: 0.2
+colorscale: 'BuPu'
