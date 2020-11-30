@@ -1,12 +1,17 @@
 plot_filename: hovmoeller.png
-
+height: 400
+width: 600
 title: Hovmoeller Plot
 
 xaxis:
+  x: 180
+  y: 0
   title:
     text: Longitude
 
 yaxis:
+  x: 0
+  y: 0
   title:
     text: Time
 

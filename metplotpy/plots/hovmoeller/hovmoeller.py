@@ -29,6 +29,15 @@ Import MetPlot class
 from plots.met_plot import MetPlot
 
 
+cmap_rgb = [[0, "rgb(255, 255, 255)"], [0.111111, "rgb(255, 255, 255)"],
+            [0.111111, "rgb(135, 206, 250)"], [0.222222, "rgb(135, 206, 250)"],
+            [0.222222, "rgb(30, 144, 255)"], [0.333333, "rgb(30, 144, 255)"],
+            [0.333333, "rgb(0, 0, 238)"], [0.444444, "rgb(0, 0, 238)"],
+            [0.444444, "rgb(131, 111, 255)"], [0.666667, "rgb(131, 111, 255)"],
+            [0.666667, "rgb(171, 130, 255)"], [0.888889, "rgb(171, 130, 255)"],
+            [0.888889, "rgb(145, 44, 238)"], [1, "rgb(145, 44, 238)"]]
+
+
 class Hovmoeller(MetPlot):
     """
     Class to create a Plotly Hovmoeller plot from a 2D data array
@@ -54,6 +63,7 @@ class Hovmoeller(MetPlot):
     def create_figure(self):
 
         contour_plot = go.Contour(
+            colorscale=cmap_rgb,
             z=self.data.values,
             x=self.lon,
             y=self.time_str,
@@ -75,7 +85,7 @@ class Hovmoeller(MetPlot):
                 self.get_yaxis_title(),
                 go.layout.Annotation(
                     x=300,
-                    y=self.time_str[5],
+                    y=self.time_str[0],
                     xref="x",
                     yref="y",
                     text=self.lat_str,
