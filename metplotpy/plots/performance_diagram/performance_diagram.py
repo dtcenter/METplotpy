@@ -8,6 +8,7 @@ import re
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.font_manager import FontProperties
 import numpy as np
 import yaml
 import pandas as pd
@@ -18,6 +19,7 @@ from performance_diagram_series import PerformanceDiagramSeries
 import plots.util as util
 import plots.constants as constants
 import warnings
+
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
@@ -74,7 +76,6 @@ class PerformanceDiagram(MetPlot):
         # create binary versions of the plot.
         self.figure = self._create_figure()
 
-
     def _read_input_data(self):
         """
             Read in the input data as set in the config file as stat_input as a pandas dataframe.
@@ -93,7 +94,6 @@ class PerformanceDiagram(MetPlot):
         # stat_ncu with valid values).
         df = df_full.dropna(axis=1, how="all")
         return df
-
 
     def _create_series(self, input_data):
         """
@@ -175,7 +175,6 @@ class PerformanceDiagram(MetPlot):
         # This creates a figure size that is of a "reasonable" size, in inches
         fig = plt.figure(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
-
         #
         # PLOT THE "TEMPLATE" THAT CREATES THE EQUAL LINES OF CSI AND EQUAL LINES OF BIAS
         # THAT COMPRISE THE PERFORMANCE DIAGRAM
@@ -227,9 +226,35 @@ class PerformanceDiagram(MetPlot):
             cbar = plt.colorbar(cs_var)
             cbar.set_label(csi_label, fontsize=9)
 
-        plt.title(self.config_obj.title, fontsize=constants.DEFAULT_TITLE_FONTSIZE,
-                  color=constants.DEFAULT_TITLE_COLOR, fontweight="bold",
-                  fontfamily=constants.DEFAULT_TITLE_FONT, pad=28)
+        # use FontProperties to re-create the weights set in METviewer
+        fontobj = FontProperties()
+        font_title = fontobj.copy()
+        font_title.set_size(self.config_obj.title_size)
+        style = self.config_obj.title_weight[0]
+        wt = self.config_obj.title_weight[1]
+        font_title.set_style(style)
+        font_title.set_weight(wt)
+
+        plt.title(self.config_obj.title,
+                  fontproperties=font_title,
+                  color=constants.DEFAULT_TITLE_COLOR,
+                  pad=28)
+
+        # Plot the caption, leverage FontProperties to re-create the 'weights' menu in
+        # METviewer (i.e. use a combination of style and weight to create the bold italic
+        # caption weight in METviewer)
+        fontobj = FontProperties()
+        font = fontobj.copy()
+        font.set_size(self.config_obj.caption_size)
+        style = self.config_obj.caption_weight[0]
+        wt = self.config_obj.caption_weight[1]
+        font.set_style(style)
+        font.set_weight(wt)
+                # plt.figtext(self.config_obj.caption_align, self.config_obj.caption_offset, self.config_obj.plot_caption,
+        #             size=self.config_obj.caption_size, color=self.config_obj.caption_color)
+
+        plt.figtext(self.config_obj.caption_align, self.config_obj.caption_offset, self.config_obj.plot_caption,
+                    fontproperties=font,color=self.config_obj.caption_color)
 
         #
         # PLOT THE STATISTICS DATA FOR EACH line/SERIES (i.e. GENERATE THE LINES ON THE
@@ -247,32 +272,41 @@ class PerformanceDiagram(MetPlot):
             if series.plot_disp:
                 pody_points = series.series_points[1]
                 sr_points = series.series_points[0]
+
+                # turn on/off connecting line. 'NA' in config file turns off
+                # connecting line
+                if series.linewidth == 'NA':
+                    linewidth = 0
+                else:
+                    linewidth = series.linewidth
+
                 # small circle and circle symbols render very small
                 # increase the marker size for these two.
+
                 if series.marker == '.' or series.marker == 'o':
                     plt.plot(sr_points, pody_points, linestyle=series.linestyle,
-                             linewidth=series.linewidth,
+                             linewidth=linewidth,
                              color=series.color, marker=series.marker,
                              label=series.user_legends,
                              alpha=0.5, ms=9)
                 else:
                     plt.plot(sr_points, pody_points, linestyle=series.linestyle,
-                             linewidth=series.linewidth,
+                             linewidth=linewidth,
                              color=series.color, marker=series.marker,
                              label=series.user_legends,
                              alpha=0.5, ms=6)
 
                 # Annotate the points with their PODY (i.e. dependent variable value)
-                if not self.config_obj.anno_var :
+                if not self.config_obj.anno_var:
                     pass
                 elif self.config_obj.anno_var == 'y':
                     for idx, pody in enumerate(pody_points):
                         plt.annotate(str(pody) + self.config_obj.anno_units,
-                                    (sr_points[idx], pody_points[idx]), fontsize=9)
+                                     (sr_points[idx], pody_points[idx]), fontsize=9)
                 elif self.config_obj.anno_var == 'x':
                     for idx, succ_ratio in enumerate(sr_points):
                         plt.annotate(str(succ_ratio) + self.config_obj.anno_units,
-                                    (sr_points[idx], pody_points[idx]), fontsize=9)
+                                     (sr_points[idx], pody_points[idx]), fontsize=9)
 
                 # Plot error bars if they were requested:
                 if self.config_obj.plot_ci[i] != "NONE":
@@ -290,12 +324,37 @@ class PerformanceDiagram(MetPlot):
         #            borderaxespad=0., ncol=5, prop={'size': 6}, fancybox=True)
 
         # Legend based on the style settings in the config file.
-        ax2.legend(bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y), loc='lower left',
-                               ncol=self.config_obj.legend_ncol,
-                   prop={'size': self.config_obj.legend_size})
-        ax1.xaxis.set_label_coords(0.5, -0.066)
-        ax1.set_xlabel(xlabel, fontsize=9)
-        ax1.set_ylabel(ylabel, fontsize=9)
+        ax2.legend(bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y), loc='best',
+                   ncol=self.config_obj.legend_ncol,
+                   prop={'size': self.config_obj.legend_size},
+                   frameon=self.config_obj.draw_box)
+
+        # Use the fontmanager to set the weight for the x-axis label/title using the same
+        # method employed above for the caption text weight
+        font_x = fontobj.copy()
+        font_x.set_size(self.config_obj.x_title_font_size)
+        style_x = self.config_obj.xlab_weight[0]
+        wt_x = self.config_obj.xlab_weight[1]
+        font_x.set_style(style_x)
+        font_x.set_weight(wt_x)
+        ax1.xaxis.set_label_coords(self.config_obj.x_title_offset, self.config_obj.x_title_align)
+        ax1.set_xlabel(xlabel, fontsize=self.config_obj.x_title_font_size, fontproperties=font_x)
+
+        # repeat with another fontmanager for the y-axis label/title
+        font_y = fontobj.copy()
+        font_y.set_size(self.config_obj.y_title_font_size)
+        style_y = self.config_obj.ylab_weight[0]
+        wt_y = self.config_obj.ylab_weight[1]
+        font_y.set_style(style_y)
+        font_y.set_weight(wt_y)
+        ax1.yaxis.set_label_coords(self.config_obj.y_title_align, self.config_obj.y_title_offset)
+        ax1.set_ylabel(ylabel, fontsize=self.config_obj.y_title_font_size,fontproperties=font_y)
+
+        # xtick labels and ytick labels
+        plt.xticks(visible=False)
+        plt.setp(ax1.get_xticklabels(), fontsize=self.config_obj.x_tickfont_size, rotation=self.config_obj.x_tickangle)
+        plt.setp(ax1.get_yticklabels(), fontsize=self.config_obj.y_tickfont_size, rotation=self.config_obj.y_tickangle)
+
         if self.config_obj.yaxis_2:
             ax2.set_ylabel(self.config_obj.yaxis_2, fontsize=9)
 
@@ -303,7 +362,6 @@ class PerformanceDiagram(MetPlot):
         plt.tight_layout()
         plt.savefig(self.get_config_value('plot_filename'))
         self.save_to_file()
-
 
     def write_output_file(self):
         """
@@ -321,14 +379,13 @@ class PerformanceDiagram(MetPlot):
             filename_only = match.group(1)
             output_file = filename_only + ".points1"
 
-
             # make sure this file doesn't already
             # exit, delete it if it does
             try:
                 if os.stat(output_file).st_size == 0:
                     fileobj = open(output_file, 'a')
                 else:
-                  os.remove(output_file)
+                    os.remove(output_file)
             except FileNotFoundError as fnfe:
                 # OK if no file was found
                 pass
@@ -352,18 +409,26 @@ class PerformanceDiagram(MetPlot):
             fileobj.close()
 
 
-def main():
+def main(config_filename=None):
     """
             Generates a sample, default, line plot using a combination of
             default and custom config files on sample data found in this directory.
             The location of the input data is defined in either the default or
             custom config file.
+
+            Args:
+                @param config_filename: default is None, the name of the custom config file to apply
+            Returns:
+
     """
 
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
     # with open("./custom_performance_diagram.yaml", 'r') as stream:
-    config_file = util.read_config_from_command_line()
+    if not config_filename:
+        config_file = util.read_config_from_command_line()
+    else:
+        config_file = config_filename
     with open(config_file, 'r') as stream:
         try:
             docs = yaml.load(stream, Loader=yaml.FullLoader)

@@ -80,3 +80,12 @@ YAXIS_ORIENTATION = {0: -90, 1: 0, 2: 0, 3: -90}
 PLOTLY_PAPER_BGCOOR = "white"
 PLOTLY_AXIS_LINE_COLOR = "#c2c2c2"
 PLOTLY_AXIS_LINE_WIDTH = 2
+
+# Caption weights supported in Matplotlib are normal, italic and oblique.
+# Map these onto the MetViewer requested values of 1 (normal), 2 (bold),
+# 3 (italic), 4 (bold italic), and 5 (symbol) using a dictionary
+MV_TO_MPL_CAPTION_STYLE = {1:('normal', 'normal'), 2:('normal','bold'), 3:('italic', 'normal')
+    , 4:('italic', 'bold'),5:('oblique','normal')}
+
+# Matplotlib constants
+MPL_FONT_SIZE_DEFAULT = 11
