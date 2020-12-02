@@ -91,7 +91,7 @@ class LineSeries(Series):
         """
 
         # different ways to subset data for normal and derived series
-        if not self.series_name[-1] in utils.OPERATION_TO_SIGN.keys():
+        if  self.series_name[-1] not in utils.OPERATION_TO_SIGN.keys():
             # this is a normal series
             all_filters = []
 
