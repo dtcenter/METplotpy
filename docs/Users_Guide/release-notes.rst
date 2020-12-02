@@ -1,20 +1,24 @@
-METplotpy Release Notes
------------------------
+METplotpy |version| Release Notes
+_________________________________
 
-** New in v1.0**
+When applicable, release notes are followed by the GitHub issue number which
+describes the bugfix, enhancement, or new feature: `METplotpy GitHub issues. <https://github.com/dtcenter/METplotpy/issues>`_
 
-Bugfixes:
+Version |version| release notes (|release_date|)
+------------------------------------------------
 
-New Plot:
+Version X.Y_beta1 release notes (YYYYMMDD)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Refactor CBL code to isolate plotting and replace Basemap with Cartopy  (`#33 <https://github.com/dtcenter/METplotpy/issues/33>`_)
+- Bugfixes since the version X.Y release:
 
-* Create line plot (`#19 <https://github.com/dtcenter/METplotpy/issues/19>`_)
+- New Plots:
+  - Refactor CBL code to isolate plotting and replace Basemap with Cartopy  (`#33 <https://github.com/dtcenter/METplotpy/issues/33>`_)
+  - Create line plot (`#19 <https://github.com/dtcenter/METplotpy/issues/19>`_)
 
-Enhancements:
+- Enhancements:
+  - Include more Python packages to the conda environment (`#52 <https://github.com/dtcenter/METplotpy/issues/52>`_)
 
-* Include more Python packages to the conda environment (`#52 <https://github.com/dtcenter/METplotpy/issues/52>`_)
-
-Internal:
+- Internal:
 
 
