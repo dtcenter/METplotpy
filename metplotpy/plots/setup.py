@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="metplotpy",
-    version="1.0.0-beta2",
+    __version__="1.0.0-beta2",
     author="METplus",
     author_email="met-help@ucar.edu",
     description="plotting package for METplus",
