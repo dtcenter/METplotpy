@@ -11,21 +11,21 @@ Version 1.0.0_beta2 release notes (20201208)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 - New Plots:
 
-  - Replicate METviewer Reliability diagram using Python (#12)
+  - Replicate METviewer Reliability diagram using Python (`_#12 <https://github.com/dtcenter/METplotpy/issues/12>`_)
 
-  - Plot for Hovmoller Diagram from NOAA PSL Diagnostics package (#45)
+  - Plot for Hovmoller Diagram from NOAA PSL Diagnostics package (`_#45 <https://github.com/dtcenter/METplotpy/issues/45>`_)
 
-  - Replicate METviewer Performance diagram using Python (#20)
+  - Replicate METviewer Performance diagram using Python (`_#20 <https://github.com/dtcenter/METplotpy/issues/20>`_)
 
 - Enhancements:
 
-  - Include more Python packages to the conda environment (#52)
+  - Include more Python packages to the conda environment (`_#52 <https://github.com/dtcenter/METplotpy/issues/52>`_)
 
 - Internal:
 
-  - Version selector for sphinx documentation (#63 )
+  - Version selector for sphinx documentation (`_#63 <https://github.com/dtcenter/METplotpy/issues/63>`_)
 
-  - Use new METcalcpy permutation calculation for the line plot (#61)
+  - Use new METcalcpy permutation calculation for the line plot (`_#61 <https://github.com/dtcenter/METplotpy/issues/61>`_)
 
 
 Version 1.0.0_beta1 release notes (20201022)
@@ -36,24 +36,24 @@ Version 1.0.0_beta1 release notes (20201022)
  
   - Create line plot (`#19 <https://github.com/dtcenter/METplotpy/issues/19>`_)
   
-  - Replicate METviewer Reliability diagram using Python (#12)
+  - Replicate METviewer Reliability diagram using Python (`_#12 <https://github.com/dtcenter/METplotpy/issues/12>`_)
 
-  - Plot for Hovmoller Diagram from NOAA PSL Diagnostics package (#45)
+  - Plot for Hovmoller Diagram from NOAA PSL Diagnostics package (`_#45 <https://github.com/dtcenter/METplotpy/issues/45>`_)
 
-  - Replicate METviewer Performance diagram using Python (#20)
+  - Replicate METviewer Performance diagram using Python (`_#20 <https://github.com/dtcenter/METplotpy/issues/20>`_)
   
-  - Replicate METviewer Reliability diagram using Python (#12)
+  - Replicate METviewer Reliability diagram using Python (`_#12 <https://github.com/dtcenter/METplotpy/issues/12>`_)
 
-  - Plot for Hovmoller Diagram from NOAA PSL Diagnostics package (#45)
+  - Plot for Hovmoller Diagram from NOAA PSL Diagnostics package (`_#45 <https://github.com/dtcenter/METplotpy/issues/45>`_)
 
-  - Replicate METviewer Performance diagram using Python (#20)
+  - Replicate METviewer Performance diagram using Python (`_#20 <https://github.com/dtcenter/METplotpy/issues/20>`_)
 
 - Enhancements:
   
 
 - Internal:
 
-Bugfixes:
+- Bugfixes:
 
 
 
