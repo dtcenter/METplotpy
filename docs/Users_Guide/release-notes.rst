@@ -7,18 +7,53 @@ describes the bugfix, enhancement, or new feature: `METplotpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ------------------------------------------------
 
-Version X.Y_beta1 release notes (YYYYMMDD)
+Version 1.0.0_beta2 release notes (20201208)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- New Plots:
 
-- Bugfixes since the version X.Y release:
+  - Replicate METviewer Reliability diagram using Python (#12)
+
+  - Plot for Hovmoller Diagram from NOAA PSL Diagnostics package (#45)
+
+  - Replicate METviewer Performance diagram using Python (#20)
+
+- Enhancements:
+
+  - Include more Python packages to the conda environment (#52)
+
+- Internal:
+
+  - Version selector for sphinx documentation (#63 )
+
+  - Use new METcalcpy permutation calculation for the line plot (#61)
+
+
+Version 1.0.0_beta1 release notes (20201022)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - New Plots:
   - Refactor CBL code to isolate plotting and replace Basemap with Cartopy  (`#33 <https://github.com/dtcenter/METplotpy/issues/33>`_)
+ 
   - Create line plot (`#19 <https://github.com/dtcenter/METplotpy/issues/19>`_)
+  
+  - Replicate METviewer Reliability diagram using Python (#12)
+
+  - Plot for Hovmoller Diagram from NOAA PSL Diagnostics package (#45)
+
+  - Replicate METviewer Performance diagram using Python (#20)
+  
+  - Replicate METviewer Reliability diagram using Python (#12)
+
+  - Plot for Hovmoller Diagram from NOAA PSL Diagnostics package (#45)
+
+  - Replicate METviewer Performance diagram using Python (#20)
 
 - Enhancements:
-  - Include more Python packages to the conda environment (`#52 <https://github.com/dtcenter/METplotpy/issues/52>`_)
+  
 
 - Internal:
+
+Bugfixes:
+
 
 
