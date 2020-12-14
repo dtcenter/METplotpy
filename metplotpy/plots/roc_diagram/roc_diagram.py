@@ -317,8 +317,20 @@ class ROCDiagram(MetPlot):
 
             fileobj.close()
 
+    def write_html(self) -> None:
+        """
+        Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
+        """
+        if self.config_obj.create_html is True:
+            # construct the fle name from plot_filename
+            name_arr = self.get_config_value('plot_filename').split('.')
+            html_name = name_arr[0] + ".html"
 
-def main():
+            # save html
+            self.figure.write_html(html_name, include_plotlyjs=False)
+
+
+def main(config_filename=None):
     """
             Generates a sample, default, ROC diagram using the
             default and custom config files on sample data found in this directory.
@@ -328,8 +340,11 @@ def main():
 
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
-    # with open("./custom_roc_diagram.yaml", 'r') as stream:
-    config_file = util.read_config_from_command_line()
+    # with open("./custom_performance_diagram.yaml", 'r') as stream:
+    if not config_filename:
+        config_file = util.read_config_from_command_line()
+    else:
+        config_file = config_filename
     with open(config_file, 'r') as stream:
         try:
             docs = yaml.load(stream, Loader=yaml.FullLoader)
@@ -339,6 +354,8 @@ def main():
     try:
         r = ROCDiagram(docs)
         r.save_to_file()
+        r.write_html()
+        r.write_output_file()
         # r.show_in_browser()
     except ValueError as ve:
         print(ve)
