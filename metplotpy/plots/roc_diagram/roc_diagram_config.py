@@ -23,6 +23,9 @@ class ROCDiagramConfig(Config):
         # init common layout
         super().__init__(parameters)
 
+        # Boolean value to indicate whether to make the METviewer plot interactive
+        self.create_html = self._get_bool('create_html')
+
         # use this setting to determine the ordering of colors, lines, and markers
         self.series_ordering = self._get_series_order()
 
@@ -46,7 +49,12 @@ class ROCDiagramConfig(Config):
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
         self.plot_resolution = self._get_plot_resolution()
-
+        self.caption = self.get_config_value('plot_caption')
+        self.caption_weight = self.get_config_value('caption_weight')
+        self.caption_color = self.get_config_value('caption_color')
+        self.caption_size = self.get_config_value('caption_size')
+        self.caption_offset = self.get_config_value('caption_offset')
+        self.caption_align = self.get_config_value('caption_align')
         self.colors_list = self._get_colors()
         self.marker_list = self._get_markers()
         self.linewidth_list = self._get_linewidths()
@@ -55,16 +63,6 @@ class ROCDiagramConfig(Config):
         self.add_point_thresholds = self._get_point_thresh()
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
-
-        # caption parameters
-        self.caption_weight = self.get_config_value('caption_weight')
-        self.caption_color = self.get_config_value('caption_col')
-        self.caption_align = self.get_config_value('caption_align')
-        ##
-        self.caption = self.get_config_value('plot_caption')
-        self.caption_size = int(constants.DEFAULT_CAPTION_FONTSIZE
-                                * self.get_config_value('caption_size'))
-        self.caption_offset = self.parameters['caption_offset'] - 3.1
 
         # list of the x, y, and loc values for the
         # bbox_to_anchor() setting used in determining
