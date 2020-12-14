@@ -59,6 +59,8 @@ caption_size: "0.8" # relative magnification
 caption_offset: 3  # axis perpendicular location adjustment
 caption_align: 0, # axis parallel location adjustment
 
+# Make the plot generated in METviewer interactive
+create_html: 'True'
 stat_input:  ./plot_20200507_074426.data
 plot_filename: ./custom_roc_diagram.png
 
