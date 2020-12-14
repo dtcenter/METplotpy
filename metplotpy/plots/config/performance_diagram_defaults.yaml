@@ -2,6 +2,14 @@
 # Default settings specific to performance diagram plot
 # Line and marker plots of series data of Success Rate (1-FAR) on x-axis vs. PODY on y-axis.
 title: Performance Diagram ("Default title")
+title_weight: 4
+
+# unsupported, Matplotlib align choices are left, right, center and
+# offset is automatically chosen to avoid labels and ticks on the topmost
+# x-axis
+title_align: 0.5
+title_offset: -2
+title_size: 1.8
 xaxis: Success Ratio (1 - FAR)
 yaxis_1: Probability of Detection (PODY)
 yaxis_2:
@@ -139,16 +147,16 @@ caption_offset: 2.95  # axis perpendicular location adjustment (up/down 3.8 is m
 caption_align: -.1 # axis parallel location adjustment (left/right)
 
 # x-axis labels
-xlab_size: 1.3
-#left-right positioning
-xlab_align: .5
+xlab_size:  1.3
 #up-down positioning
+xlab_align: .5
+#left-right positioning
 xlab_offset: 2
 # text weight: plain text, bold, italic, bold italic
 xlab_weight: 2
 
 # x-axis ticks
-#these three are unsupported
+#these are unsupported
 xtlab_orient: 2
 xtlab_size: 1.5
 

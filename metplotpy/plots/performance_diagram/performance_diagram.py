@@ -226,9 +226,19 @@ class PerformanceDiagram(MetPlot):
             cbar = plt.colorbar(cs_var)
             cbar.set_label(csi_label, fontsize=9)
 
-        plt.title(self.config_obj.title, fontsize=constants.DEFAULT_TITLE_FONTSIZE,
-                  color=constants.DEFAULT_TITLE_COLOR, fontweight="bold",
-                  fontfamily=constants.DEFAULT_TITLE_FONT, pad=28)
+        # use FontProperties to re-create the weights set in METviewer
+        fontobj = FontProperties()
+        font_title = fontobj.copy()
+        font_title.set_size(self.config_obj.title_size)
+        style = self.config_obj.title_weight[0]
+        wt = self.config_obj.title_weight[1]
+        font_title.set_style(style)
+        font_title.set_weight(wt)
+
+        plt.title(self.config_obj.title,
+                  fontproperties=font_title,
+                  color=constants.DEFAULT_TITLE_COLOR,
+                  pad=28)
 
         # Plot the caption, leverage FontProperties to re-create the 'weights' menu in
         # METviewer (i.e. use a combination of style and weight to create the bold italic

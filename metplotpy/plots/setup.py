@@ -1,18 +1,11 @@
 import setuptools
-from setuptools import setup, find_packages
-from distutils.util import convert_path
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-main_ns = {}
-version_path = convert_path('docs/version')
-with open(version_path) as version_file:
-    exec(version_file.read(), main_ns)
-
 setuptools.setup(
     name="metplotpy",
-    version=main_ns['__version__'],
+    version="1.0.0-beta2",
     author="METplus",
     author_email="met-help@ucar.edu",
     description="plotting package for METplus",
@@ -22,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
          "Programming Language :: Python :: 3",
-         "License :: OSI Approved :: MIT License", 
+         "License :: Apache LICENSE-2.0",
          "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',

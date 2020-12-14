@@ -37,13 +37,6 @@ class PerformanceDiagramConfig(Config):
         # plain text, bold, italic, bold italic are choices in METviewer UI
         self.caption_weight = self.get_config_value('caption_weight')
         self.caption_color = self.get_config_value('caption_color')
-        # relative magnification
-        caption_size_magnification = self.get_config_value('caption_size')
-        self.caption_size = caption_size_magnification * constants.MPL_FONT_SIZE_DEFAULT
-        # up-down location relative to the x-axis line
-        self.caption_offset = self.get_config_value('caption_offset')
-        # left-right position
-        self.caption_align = self.get_config_value('caption_align')
 
         # Make the series ordering zero-based to be consistent with Python's zero-based
         # counting/numbering
@@ -130,7 +123,6 @@ class PerformanceDiagramConfig(Config):
         # what was requested in METviewer
         self.caption_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_caption_weight]
 
-
         # Make necessary adjustments from values set in METviewer to
         # corresponding values in Matplotlib.
         requested_caption_size = self.get_config_value('caption_size')
@@ -143,12 +135,30 @@ class PerformanceDiagramConfig(Config):
         # to .13
         mv_caption_offset = self.get_config_value('caption_offset')
         self.caption_offset = float(mv_caption_offset) - 2.87
-        # self.caption_offset = mv_caption_offset
 
         # Adjust the caption left/right relative to the y-axis
         # METviewer default is set to 0, corresponds to y=0.05 in Matplotlib
         mv_caption_align = self.get_config_value('caption_align')
         self.caption_align = float(mv_caption_align) + 0.13
+
+        # The plot's title size, title weight, and positioning in left-right and up-down directions
+        mv_title_size = self.get_config_value('title_size')
+        self.title_size = mv_title_size * constants.MPL_FONT_SIZE_DEFAULT
+
+        mv_title_weight = self.get_config_value('title_weight')
+        # use the same constants dictionary as used for captions
+        self.title_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_title_weight]
+
+        # These values can't be used as-is, the only choice for aligning in Matplotlib
+        # are center (default), left, and right
+        mv_title_align = self.get_config_value('title_align')
+        self.title_align = float(mv_title_align)
+
+        # does nothing because the vertical position in Matplotlib is
+        # automatically chosen to avoid labels and ticks on the topmost
+        # x-axis
+        mv_title_offset = self.get_config_value('title_offset')
+        self.title_offset = float(mv_title_offset)
 
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
