@@ -1,10 +1,14 @@
 ---
 # Default settings specific to ROC diagram plot
 # Line and marker plots of false alarm rate (x-axis) vs probability of detection (y-axis).
+
+# Title settings
 title: ROC CTC
-xaxis: test x_label
-yaxis_1: test y_label
-yaxis_2:
+title_align: 0.5
+title_offset: -2
+title_size: 1.4
+title_weight: 2.0
+
 
 plot_width: 11
 plot_height: 8.5
@@ -71,12 +75,39 @@ series_line_style:
 # Perform event equalization to check for missing data
 event_equal: False
 
+# Caption settings
 plot_caption: "This is caption"
-caption_weight: "plain text"
+caption_weight: 1
 caption_col: "#333333"
-caption_size: "0.8" # relative magnification
+caption_size: 0.8 # relative magnification
 caption_offset: 3  # axis perpendicular location adjustment
 caption_align: 0, # axis parallel location adjustment
+
+# X1 axis settings
+xaxis: test x_label
+xlab_align: 0.5
+xlab_offset: 2
+xlab_size: 1
+xlab_weight: 1
+xlim: []
+xtlab_decim: 0
+xtlab_horiz: 0.5
+xtlab_orient: 1
+xtlab_perp: -0.75
+xtlab_size: 1
+
+# Y1 axis settings
+yaxis_1: test y_label
+yaxis_2: ''
+ylab_align: 0.5
+ylab_offset: -2
+ylab_size: 1
+ylab_weight: 1
+ylim: []
+ytlab_horiz: 0.5
+ytlab_orient: 1
+ytlab_perp: 0.5
+ytlab_size: 1
 
 stat_input:  ./plot_20200507_074426.data
 plot_filename: ./roc_diagram_default.png
