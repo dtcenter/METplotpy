@@ -7,6 +7,7 @@ __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
 from plots.config import Config
+import plots.util as utils
 import plots.constants as constants
 
 class ROCDiagramConfig(Config):
@@ -49,12 +50,24 @@ class ROCDiagramConfig(Config):
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
         self.plot_resolution = self._get_plot_resolution()
+
+        # title settings
+        self.title_font_size = self.get_config_value('title_size')
+        mv_title_weight = self.get_config_value('title_weight')
+        # use the same constants dictionary as used for captions
+        self.title_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_title_weight]
+
+        # Caption settings
         self.caption = self.get_config_value('plot_caption')
         self.caption_weight = self.get_config_value('caption_weight')
-        self.caption_color = self.get_config_value('caption_color')
-        self.caption_size = self.get_config_value('caption_size')
-        self.caption_offset = self.get_config_value('caption_offset')
+        self.caption_color = self.get_config_value('caption_col')
+        # caption size is a magnification value
+        self.caption_size = float(self.get_config_value('caption_size')) * constants.DEFAULT_CAPTION_FONTSIZE
+        self.caption_offset = self.get_config_value('caption_offset') - 3.1
         self.caption_align = self.get_config_value('caption_align')
+        self.caption = self.get_config_value('plot_caption')
+
+
         self.colors_list = self._get_colors()
         self.marker_list = self._get_markers()
         self.linewidth_list = self._get_linewidths()
@@ -83,6 +96,23 @@ class ROCDiagramConfig(Config):
             # Other choice is 'o'
             # Enclose legend labels in a box
             self.draw_box = True
+
+        # x-axis parameters
+        self.x_title_font_size = self.parameters['xlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.x_tickangle = self.parameters['xtlab_orient']
+        if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
+            self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
+        self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.xaxis = utils.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
+
+        # y-axis parameters
+        self.y_tickangle = self.parameters['ytlab_orient']
+        if self.y_tickangle in constants.YAXIS_ORIENTATION.keys():
+            self.y_tickangle = constants.YAXIS_ORIENTATION[self.y_tickangle]
+        self.y_tickfont_size = self.parameters['ytlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
+        self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
 
 
     def _get_series_inner_dict(self, index):
