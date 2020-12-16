@@ -19,10 +19,36 @@ series_order:
 stat_curve: 'None'
 add_point_thresholds: False
 event_equal: False
-title: "ROC PCT 20200507_074426 "
-xaxis: "POFD (False Detection Rate)"
-yaxis_1: "PODY"
-yaxis_2: ''
+title: "Custom title: ROC PCT 20200507_074426 "
+# value of 0.5 centers the title, smaller values moves text to the left
+title_align: 0.3
+# -2 locates title at top, -1.5 puts title inside plotting region
+title_offset: -2
+# font size multiplier
+title_size: 1.5
+#1=plain text, 2=bold,3=italic,4=bold italic
+title_weight: 4
+
+xaxis: Custom POFD #"POFD (False Detection Rate)"
+yaxis_1: "PODY Custom"
+
+# X1 axis settings
+xlab_align: 2
+xlab_offset: 0 #2
+xlab_size:  1.5
+xlab_weight: 1
+xtlab_horiz: 0.5
+xtlab_orient: 2 #1
+xtlab_size: 2 #1
+
+ylab_align: 0.5
+ylab_offset: -2
+ylab_size: 2
+ylab_weight: 1
+# 0=-90 degrees, 1=0 degrees, 2=0 degrees, 3=-90 degrees
+ytlab_orient: 1
+ytlab_size: 1.2
+
 plot_width: 6
 plot_height: 6
 plot_res: 72
@@ -52,12 +78,17 @@ legend_box: 'o' # legend box type - o: box, n: none
 legend_inset:
   x: 0.
   y: -0.14
+
 plot_caption: "This is caption"
-caption_weight: "plain text"
-caption_col: "#333333"
-caption_size: "0.8" # relative magnification
-caption_offset: 3  # axis perpendicular location adjustment
-caption_align: 0, # axis parallel location adjustment
+# weight of text: 1=plain text, 2=bold, 3=italic, 4=bold italic
+caption_weight: 4
+# caption text color
+caption_col: "#ff4444"
+caption_size: 1.2 # relative magnification
+#up-down position of caption text
+caption_offset: 2.9 #3  # axis perpendicular location adjustment
+#left-right positioning of caption. Reasonable values are between 0 and 1: 0=leftmost,1=rightmost
+caption_align: .1 #0 # axis parallel location adjustment
 
 # Make the plot generated in METviewer interactive
 create_html: 'True'
