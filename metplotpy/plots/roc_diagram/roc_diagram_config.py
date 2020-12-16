@@ -51,11 +51,11 @@ class ROCDiagramConfig(Config):
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
         self.plot_resolution = self._get_plot_resolution()
 
-        # title settings
-        self.title_font_size = self.get_config_value('title_size')
-        mv_title_weight = self.get_config_value('title_weight')
-        # use the same constants dictionary as used for captions
-        self.title_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_title_weight]
+        # title parameters
+        self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
+        self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
+        self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
 
         # Caption settings
         self.caption = self.get_config_value('plot_caption')
@@ -66,7 +66,6 @@ class ROCDiagramConfig(Config):
         self.caption_offset = self.get_config_value('caption_offset') - 3.1
         self.caption_align = self.get_config_value('caption_align')
         self.caption = self.get_config_value('plot_caption')
-
 
         self.colors_list = self._get_colors()
         self.marker_list = self._get_markers()
@@ -98,18 +97,19 @@ class ROCDiagramConfig(Config):
             self.draw_box = True
 
         # x-axis parameters
-        self.x_title_font_size = self.parameters['xlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.x_title_font_size = self.parameters['xlab_size'] * constants.DEFAULT_TITLE_FONT_SIZE
         self.x_tickangle = self.parameters['xtlab_orient']
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
-        self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.x_tickfont_size = self.parameters['xtlab_size'] * constants.DEFAULT_TITLE_FONT_SIZE
         self.xaxis = utils.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         # y-axis parameters
         self.y_tickangle = self.parameters['ytlab_orient']
         if self.y_tickangle in constants.YAXIS_ORIENTATION.keys():
             self.y_tickangle = constants.YAXIS_ORIENTATION[self.y_tickangle]
-        self.y_tickfont_size = self.parameters['ytlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.y_tickfont_size = self.parameters['ytlab_size'] * constants.DEFAULT_TITLE_FONT_SIZE
+
 
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
