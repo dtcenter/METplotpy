@@ -13,6 +13,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 import plots.util as util
+import plots.constants as constants
 from plots.met_plot import MetPlot
 from roc_diagram_config import ROCDiagramConfig
 from roc_diagram_series import ROCDiagramSeries
@@ -136,6 +137,7 @@ class ROCDiagram(MetPlot):
 
         fig = make_subplots(specs=[[{"secondary_y": True}]])
 
+
         # Set plot height and width in pixel value
         width = self.config_obj.plot_width
         height = self.config_obj.plot_height
@@ -143,18 +145,31 @@ class ROCDiagram(MetPlot):
         fig.update_layout(width=width, height=height)
 
         # Add figure title
-        fig.update_layout(
-            title={'text': self.config_obj.title,
-                   'y': 0.95,
-                   'x': 0.5,
-                   'xanchor': "center",
-                   'yanchor': "top"},
-            plot_bgcolor="#FFF"
+        # fig.update_layout(
+        #     title={'text': self.config_obj.title,
+        #            'y': 0.95,
+        #            'x': 0.5,
+        #            'xanchor': "center",
+        #            'yanchor': "top"},
+        #     plot_bgcolor="#FFF"
+        #
+        # )
 
-        )
-        # Set x-axis title
-        fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="black", linewidth=2, showgrid=False,
-                         dtick=0.1, tickmode='linear', tick0=0.0)
+        # create title
+        title = {'text': util.apply_weight_style(self.config_obj.title,
+                                                 self.config_obj.parameters['title_weight']),
+                 'font': {
+                     'size': self.config_obj.title_font_size,
+                 },
+                 'y': self.config_obj.title_offset,
+                 'x': self.config_obj.parameters['title_align'],
+                 'xanchor': 'center',
+                 'yanchor':'top',
+                 'xref': 'paper'
+                 }
+        fig.update_layout(title=title, plot_bgcolor="#FFF")
+
+
         # fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="black", linewidth=2, showgrid=False,
         #                  range=[0.0, 1.0], dtick=0.1)
 
@@ -201,6 +216,57 @@ class ROCDiagram(MetPlot):
                                       bordercolor="black",
                                       borderwidth=2
                                       ))
+
+        # caption styling
+        annotation = [
+            {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
+                                             self.config_obj.parameters['caption_weight']),
+             'align': 'left',
+             'showarrow': False,
+             'xref': 'paper',
+             'yref': 'paper',
+             'x': self.config_obj.parameters['caption_align'],
+             'y': self.config_obj.caption_offset,
+             'font': {
+                 'size': self.config_obj.caption_size,
+                 'color': self.config_obj.parameters['caption_col']
+             }
+             }]
+
+        # Set x-axis title
+        # fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="black", linewidth=2, showgrid=False,
+        #                  dtick=0.1, tickmode='linear', tick0=0.0)
+        fig.update_xaxes(title_text=self.config_obj.xaxis,
+                                 linecolor=constants.PLOTLY_AXIS_LINE_COLOR,
+                                 linewidth=constants.PLOTLY_AXIS_LINE_WIDTH,
+                                 showgrid=False,
+                                 dtick=0.1,
+                                 tick0=0.0,
+                                 tickmode='linear',
+                                 zeroline=False,
+                                 title_font={
+                                     'size': self.config_obj.x_title_font_size
+                                 },
+                                 title_standoff=abs(self.config_obj.parameters['xlab_offset']),
+                                 tickangle=self.config_obj.x_tickangle,
+                                 tickfont={'size': self.config_obj.x_tickfont_size}
+                                 )
+
+        fig.update_yaxes(title_text=
+                                 util.apply_weight_style(self.config_obj.yaxis_1,
+                                                         self.config_obj.parameters['ylab_weight']),
+                                 secondary_y=False,
+                                 linecolor=constants.PLOTLY_AXIS_LINE_COLOR,
+                                 linewidth=constants.PLOTLY_AXIS_LINE_WIDTH,
+                                 zeroline=False,
+                                 title_font={
+                                     'size': self.config_obj.y_title_font_size
+                                 },
+                                 title_standoff=abs(self.config_obj.parameters['ylab_offset']),
+                                 tickangle=self.config_obj.y_tickangle,
+                                 tickfont={'size': self.config_obj.y_tickfont_size}
+                                 )
+        fig.update_layout(annotations=annotation)
 
         # x1 axis label formatting
         fig.update_layout(xaxis=dict(tickangle=0, tickfont=dict(size=9)))
