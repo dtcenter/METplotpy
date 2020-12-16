@@ -81,7 +81,7 @@ caption_weight: 1
 caption_col: "#333333"
 caption_size: 0.8 # relative magnification
 caption_offset: 3  # axis perpendicular location adjustment
-caption_align: 0, # axis parallel location adjustment
+caption_align: 0 # axis parallel location adjustment
 
 # X1 axis settings
 xaxis: test x_label
