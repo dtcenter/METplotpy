@@ -12,7 +12,7 @@ from matplotlib.font_manager import FontProperties
 import numpy as np
 import yaml
 import pandas as pd
-from plots.met_plot import MetPlot
+from plots.base_plot import BasePlot
 import metcalcpy.util.utils as calc_util
 from performance_diagram_config import PerformanceDiagramConfig
 from performance_diagram_series import PerformanceDiagramSeries
@@ -23,7 +23,7 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
-class PerformanceDiagram(MetPlot):
+class PerformanceDiagram(BasePlot):
     """  Generates a performance diagram (multi-line line plot)
          where each line represents a series of Success ratio vs POD
          A series represents a model paired with a vx_masking region.
@@ -72,7 +72,7 @@ class PerformanceDiagram(MetPlot):
         # create figure
         # pylint:disable=assignment-from-no-return
         # Need to have a self.figure that we can pass along to
-        # the methods in met_plot.py (MetPlot class methods) to
+        # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
         self.figure = self._create_figure()
 
