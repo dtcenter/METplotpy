@@ -15,7 +15,7 @@ from metcalcpy.compare_images import CompareImages
 @pytest.fixture
 def setup():
     # Cleanup the plotfile and point1 output file from any previous run
-    # cleanup()
+    cleanup()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
@@ -42,12 +42,12 @@ def cleanup():
 def test_first(setup):
     assert True
 
-@pytest.mark.parametrize("test_input,expected",(["./roc_diagram_expected.png", True], ["./plot_20200507_074426.points1", True]))
-def test_files_exist(setup, test_input, expected):
+@pytest.mark.parametrize("test_input,expected_boolean",(["./roc_diagram_expected.png", True], ["./plot_20200507_074426.points1", True]))
+def test_files_exist(setup, test_input, expected_boolean):
     '''
         Checking that the plot and data files are getting created
     '''
-    assert os.path.isfile(test_input) == expected
+    assert os.path.isfile(test_input) == expected_boolean
     cleanup()
 
 
