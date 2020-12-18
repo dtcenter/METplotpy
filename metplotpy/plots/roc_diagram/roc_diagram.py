@@ -247,11 +247,11 @@ class ROCDiagram(MetPlot):
                                  title_font={
                                      'size': self.config_obj.x_title_font_size
                                  },
+                                 ticks="inside",
                                  title_standoff=abs(self.config_obj.parameters['xlab_offset']),
                                  tickangle=self.config_obj.x_tickangle,
                                  tickfont={'size': self.config_obj.x_tickfont_size}
                                  )
-
         fig.update_yaxes(title_text=
                                  util.apply_weight_style(self.config_obj.yaxis_1,
                                                          self.config_obj.parameters['ylab_weight']),
@@ -262,14 +262,13 @@ class ROCDiagram(MetPlot):
                                  title_font={
                                      'size': self.config_obj.y_title_font_size
                                  },
+                                 ticks="inside",
                                  title_standoff=abs(self.config_obj.parameters['ylab_offset']),
                                  tickangle=self.config_obj.y_tickangle,
                                  tickfont={'size': self.config_obj.y_tickfont_size}
                                  )
-        fig.update_layout(annotations=annotation)
 
-        # x1 axis label formatting
-        fig.update_layout(xaxis=dict(tickangle=0, tickfont=dict(size=9)))
+        fig.update_layout(annotations=annotation)
 
         thresh_list = []
 
