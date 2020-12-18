@@ -32,8 +32,10 @@ def cleanup():
         path = os.getcwd()
         plot_file = 'roc_diagram_actual.png'
         points_file = 'plot_20200507_074426.points1'
+        html_file = '.html'
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(path, points_file))
+        os.remove(os.path.join(path, html_file))
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
