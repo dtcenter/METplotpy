@@ -35,15 +35,18 @@ yaxis_1: "PODY Custom"
 # X1 axis settings
 xlab_size:  1.75
 xlab_weight: 2
+xlab_offset: 0
 xtlab_horiz: 0.5
-xtlab_orient: 3 #1
-xtlab_size: 2 #1
+xtlab_orient: 2 #1
+xtlab_size: 1.2 #1
 
-ylab_size: 2
+# Y1 axis settings
+ylab_size: 2.5
 ylab_weight: 1
-# 0=-90 degrees, 1=0 degrees, 2=0 degrees, 3=-90 degrees
+ylab_offset: 0
+# orientation: 0=-90 degrees, 1=0 degrees, 2=0 degrees, 3=-90 degrees
 ytlab_orient: 1
-ytlab_size: 1.2
+ytlab_size: 0.9
 
 plot_width: 6
 plot_height: 6
