@@ -48,7 +48,7 @@ def test_files_exist(setup, test_input, expected):
         Checking that the plot and data files are getting created
     '''
     assert os.path.isfile(test_input) == expected
-    # cleanup()
+    cleanup()
 
 
 def test_images_match(setup):
@@ -61,5 +61,5 @@ def test_images_match(setup):
     plot_file = './roc_diagram_actual.png'
     actual_file = os.path.join(path, plot_file)
     comparison = CompareImages('./roc_diagram_expected.png',actual_file)
-    assert comparison.mssim != 1
-    # cleanup()
+    assert comparison.mssim == 1
+    cleanup()
