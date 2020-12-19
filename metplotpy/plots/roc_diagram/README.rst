@@ -48,15 +48,47 @@ The *-e* option allows this installation to be editable, which is useful in that
 source code without reinstalling
 
 
+**Alternative to installing METcalcpy (set PYTHONPATH environment)**
+
+Clone the METcalcpy repository
+
+Include the METcalcpy path in your PYTHONPATH environment
+
+e.g. if your path to METcalcpy is /home/username/METcalcpy
+
+set up your PYTHONPATH this way:
+
+*csh*:
+
+
+setenv PYTHONPATH /home/username/METcalcpy/metcalcpy
+
+
+*bash*:
+
+
+export PYTHONPATH=/home/username/METcalcpy/metcalcpy
+
+
+
 **How to Run**
 
-Set your *PYTHONPATH* to the following:
+Append the following to your *PYTHONPATH*:
 
-/$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram:$METPLOTPY_SOURCE/METplotpy/metplotpy/plots:$METPLOTPY_SOURCE/METplotpy/metplotpy/
+$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram:$METPLOTPY_SOURCE/METplotpy/metplotpy/plots:$METPLOTPY_SOURCE/METplotpy/metplotpy/
 
 
 where $METPLOTPY_SOURCE is the path to where you downloaded/cloned the METplotpy code.
 
+
+e.g.
+
+*csh*:
+
+setenv PYTHONPATH ${PYTHONPATH}:$METPLOTPY_SOURCE/METplotpy
+
+*bash*:
+export PYTHONPATH ${PYTHONPATH}:$METPLOTPY_SOURCE/METplotpy
 
 There is one sample data file (plot_20200507_074426.data) and one sample custom config file,
 custom_performance_diagram.yaml that are available in the directory
@@ -70,3 +102,25 @@ This uses the input data file plot_20200507_74426.data that is included
 in the source.  A performance diagram, named performance_diagram_default.png
 is created, along with a plot_202005_74426.points1 file.  The latter file
 contains the POFD and PODY points that are plotted.
+
+**Description of Configuration settings**
+
+The performance diagram relies on two configuration files:
+a default and a custom file that can override
+settings defined in the default:
+
+* roc_diagram_defaults.yaml
+
+* custom_roc_diagram.yaml
+
+The default config files for all plot types are located in the *METplotpy/metplotpy/config
+directory*.
+
+The custom config files reside in the directory corresponding to that plot type, ie the
+custom_roc_diagram.yaml file is located in the *$METPLOT_SOURCE/METplotpy/metplotpy/plots/roc_diagram*
+directory.
+
+
+
+
+
