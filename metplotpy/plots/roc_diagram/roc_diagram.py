@@ -401,6 +401,10 @@ def main(config_filename=None):
             default and custom config files on sample data found in this directory.
             The location of the input data is defined in either the default or
             custom config file.
+
+             Args:
+                @param config_filename: default is None, the name of the custom config file to apply
+            Returns:
         """
 
     # Retrieve the contents of the custom config file to over-ride
