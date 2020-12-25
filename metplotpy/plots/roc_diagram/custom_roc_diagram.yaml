@@ -85,5 +85,5 @@ caption_align: .1 #0 # axis parallel location adjustment
 # Make the plot generated in METviewer interactive
 create_html: 'True'
 stat_input:  ./plot_20200507_074426.data
-plot_filename: ./roc_diagram_expected.png
+plot_filename: ./roc_diagram_actual.png
 
