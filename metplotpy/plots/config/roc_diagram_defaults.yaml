@@ -3,114 +3,106 @@
 # Line and marker plots of false alarm rate (x-axis) vs probability of detection (y-axis).
 
 # Title settings
-title: ROC CTC
-title_align: 0.5
-title_offset: -2
-title_size: 1.4
-title_weight: 2.0
+title: ROC CTC # required
+title_align:  0.5 # optional
+title_offset: -2 #required
+title_size: 1.4 #required
+title_weight: 2.0 #required
 
 
-plot_width: 11
-plot_height: 8.5
-plot_res: 72
-plot_units: in
+plot_width: 11 #required
+plot_height: 8.5 #required
+plot_res: 7 #required
+plot_units:  in #required
 
+# one of the following MUST be set to False whilst the other
+# is set to True.  Both MUST be set to a boolean value.
 roc_pct: False
 roc_ctc: True
 
-add_point_thresholds: True
+add_point_thresholds: True  #optional
 
-series_val_1:
-    model:
-     - WRF
-    vx_mask:
-      - EAST
-      - FILL
-series_val_2:
-fcst_var_val1:
-fcst_var_val2:
+series_val_1:  #optional
 
-indy_vars:
-indy_vals:
+series_val_2:   #optional
+
+fcst_var_val1:   #optional
+fcst_var_val2:   #optional
+
+indy_vars:    #optional
+indy_vals:    #optional
 
 user_legend:
-  - ' '
-  - ' '
-# two types supported, 'n' for none and 'o' for box
+  #user_legend:
+  - 'CTC ROC'
+
+# Required setting. Two types supported, 'n' for none and 'o' for box
 legend_box: 'n'
 # number of columns in legend
-legend_ncol: 3
+legend_ncol: 3 #optional
 legend_inset:
-  x: 0.
-  y: -0.14
-legend_size: 0.8
+  x: 0.  #required
+  y: -0.14 #required
+legend_size: 0.8  #required
 
 plot_disp:
-  - True
-  - True
+  - True #required
 series_order:
-  - 1
-  - 2
-stat_curve: 'None'
+  - 1  #required
+stat_curve: 'None' #required
 
 colors:
-  - "#ff0000"
-  - "#8000ff"
+  -  "#8000ff" #optional
 series_symbols:
-  - "Small circle"
-  - "Small circle"
+  -  "Small circle" #required
 series_line_width:
-  - 1
-  - 1
+  -  1  #optional
 series_type:
-  - "joined lines"
-  - "joined lines"
+  - "joined lines" #optional
 
 series_line_style:
   # solid line
-  - "-"
-  # solid line
-  - "-"
+  -  "-" #optional
 
 # Perform event equalization to check for missing data
-event_equal: False
+event_equal: False #optional
 
 # Caption settings
-plot_caption: "This is caption"
-caption_weight: 1
-caption_col: "#333333"
-caption_size: 0.8 # relative magnification
-caption_offset: 3  # axis perpendicular location adjustment
-caption_align: 0 # axis parallel location adjustment
+plot_caption: "This is caption" #required, set to empty string if no caption text
+caption_weight: 1 #optional
+caption_col: "#333333" #optional
+caption_size: 0.8 # relative magnification, required
+caption_offset: 3  # axis perpendicular location adjustment, required
+caption_align: 0 # axis parallel location adjustment, required
 
 # X1 axis settings
-xaxis: test x_label
-xlab_align: 0.5
-xlab_offset: 2
-xlab_size: 1
-xlab_weight: 1
-xlim: []
-xtlab_decim: 0
-xtlab_horiz: 0.5
-xtlab_orient: 1
-xtlab_perp: -0.75
-xtlab_size: 1
+xaxis: test x_label #required
+# unsupported by Python plotting
+xlab_align: 0.5 #not used for this plot
+xlab_offset: 2 #required
+xlab_size: 1 #required
+xlab_weight: 1 #optional
+xlim: [] #optional
+xtlab_decim: 0 #optional
+xtlab_horiz: 0.5 #optional
+xtlab_orient: 1 #optional
+xtlab_perp: -0.75 #optional
+xtlab_size: 1 #required
 
 # Y1 axis settings
-yaxis_1: test y_label
-yaxis_2: ''
-ylab_align: 0.5
-ylab_offset: -2
-ylab_size: 1
-ylab_weight: 1
-ylim: []
-ytlab_horiz: 0.5
-ytlab_orient: 1
-ytlab_perp: 0.5
-ytlab_size: 1
+yaxis_1: test y_label #required, set to empty string if no label
+yaxis_2: '' #required, set to empty string if no label
+#unsupported by Python plotting
+ylab_align: 0.5 #unused by this plot
+ylab_offset: -2 #required
+ylab_size: 1 #required
+ylab_weight: 1 #optional
+ylim: [] #optional
+ytlab_horiz: 0.5 #optional
+ytlab_orient: 1 #optional
+ytlab_perp: 0.5 #optional
+ytlab_size: 1 #required
 
-stat_input:  ./plot_20200507_074426.data
-plot_filename: ./roc_diagram_default.png
-show_plot_in_browser: True
-
-
+create_html: True  #optional
+stat_input:  ./plot_20200507_074426.data #required
+plot_filename: ./roc_diagram_default.png #required
