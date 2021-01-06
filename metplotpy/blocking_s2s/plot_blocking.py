@@ -1,16 +1,27 @@
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import numpy as np
+import sys
+sys.path.insert(0, "/glade/u/home/kalb/UIUC/METcalcpy/")
 import metcalcpy.util.utils as util
+import warnings
 
+warnings.filterwarnings("ignore",category=UserWarning)
 
-def plot_ibls(blonlong,lons,plot_title,output_plotname):
+def plot_ibls(blonlong,lons,plot_title,output_plotname,**kwargs):
+
+    # Get extra arguments
+    data2 = kwargs.get('data2',None)
+    lon2 = kwargs.get('lon2',None)
+    label1 = kwargs.get('label1',None)
+    label2 = kwargs.get('label2',None)
 
     #calculating long-term mean IBL for figure
     # Average across all days
     blonlongyr = np.mean(blonlong,axis=1) #[year, lon]
     blonlongmean = np.mean(blonlongyr,axis=0) #[lon]
-
 
     #Exchange longitude for better display
     lonplot,lonsortlocs = util.convert_lons_indices(lons,-89,360)
@@ -19,8 +30,25 @@ def plot_ibls(blonlong,lons,plot_title,output_plotname):
     #Plot LTM IBL
     plt.figure()
 
-    plt.plot(lonplot,a,linewidth = 2)
+    plt.plot(lonplot,a,linewidth = 2,label=label1)
+
+    #Check for an additional dataset
+    print('Plotting')
+    if data2 is not None:
+        blon2longyr = np.mean(data2,axis=1) #[year, lon]
+        blon2longmean = np.mean(blon2longyr,axis=0) #[lon]
+        if lon2 is not None:
+            lon2plot,lon2sortlocs = util.convert_lons_indices(lon2,-89,360)
+        else:
+            lon2plot = lonplot
+            lon2sortlocs = lonsortlocs
+        a2 = blon2longmean[lon2sortlocs]
+        plotmax = np.nanmax([np.nanmax(a),np.nanmax(a2)])
+        plt.plot(lon2plot,a2,linewidth = 2,label=label2)
+    else:
+        plotmax=np.nanmax(a)
     plt.xlim([-90,270])
+    #plt.ylim([0,plotmax])
     plt.ylabel('IBL Frequency')
     plt.title(plot_title)
     ax=plt.gca()
@@ -30,6 +58,8 @@ def plot_ibls(blonlong,lons,plot_title,output_plotname):
     ax.grid(True, which='both',axis='x')
     ax.grid(True, which='major',axis='y',linewidth=1.5)
     ax.grid(True, which='major',axis='x',linewidth=1.5)
+    if label1:
+        plt.legend()
 
     fmt = 'pdf'
     full_output_plot = output_plotname + "." + fmt
