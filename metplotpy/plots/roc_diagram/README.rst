@@ -120,6 +120,95 @@ The custom config files reside in the directory corresponding to that plot type,
 custom_roc_diagram.yaml file is located in the *$METPLOT_SOURCE/METplotpy/metplotpy/plots/roc_diagram*
 directory.
 
+The settings in the configuration file are used by METviewer to generate
+plots within that application.
+
+For a ROC diagram, the following settings are used (there are some settings that
+are not used for generating a ROC diagram, but are required by METviewer).
+
+Required settings:
+
+- title
+
+  The title of the plot.  If no title is desired, set this to an empty string: ' '
+
+
+
+- title_offset
+
+  The left-right positioning of the title
+
+- title_size
+
+  Font size in terms of a multiplier (applied to an internal font size)
+
+- title_weight
+
+  setting values:
+
+    1=plain text
+
+    2=bold
+
+    3=italic
+
+    4=bold italic
+
+- plot_width
+
+  Sets the width of the output plot
+
+- plot_height
+
+  Sets the height of the output plot
+
+- plot_res
+
+  The plot resolution, a higher value requests higher resolution image
+
+- plot_units
+
+  in for units in inches
+
+  cm for units in centimeters
+
+- roc_pct
+
+   Calculate ROC points using the probabilistic contingency table (PCT)
+
+   set to False if roc_ctc is True
+
+   set to True if roc_ctc if False
+
+- roc_ctc
+
+   Calculate ROC points using the  contingency table counts (CTC)
+
+   set to True if roc_ctc is False
+
+   set to False if roc_ctc if True
+
+- add_point_thresholds
+
+  True  plots the threshold value for each point
+
+  False do not plot the threshold value
+
+- user_legend
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
