@@ -18,7 +18,7 @@ from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
 from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from plots.met_plot import MetPlot
+from plots.base_plot import BasePlot
 import plots.util as util
 from plots.reliability_diagram.reliability_config import ReliabilityConfig
 from plots.reliability_diagram.reliability_series import ReliabilitySeries
@@ -35,7 +35,7 @@ def abline(x_value: float, intercept: float, slope: float) -> float:
     return slope * x_value + intercept
 
 
-class Reliability(MetPlot):
+class Reliability(BasePlot):
     """  Generates a Plotly line plot for 1 or more traces (lines)
          where each line is represented by a text point data file.
     """
@@ -53,7 +53,7 @@ class Reliability(MetPlot):
         super().__init__(parameters, "reliability_defaults.yaml")
 
         # instantiate a LineConfig object, which holds all the necessary settings from the
-        # config file that represents the MetPlot object (Line).
+        # config file that represents the BasePlot object (Line).
         self.config_obj = ReliabilityConfig(self.parameters)
 
         # Check that we have all the necessary settings for each series
@@ -78,7 +78,7 @@ class Reliability(MetPlot):
         # create figure
         # pylint:disable=assignment-from-no-return
         # Need to have a self.figure that we can pass along to
-        # the methods in met_plot.py (MetPlot class methods) to
+        # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
         self._create_figure()
 

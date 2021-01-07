@@ -1,6 +1,6 @@
 #!/usr/bin/env conda run -n blenny_363 python
 """
-Class Name: met_plot.py
+Class Name: base_plot.py
  """
 __author__ = 'Tatiana Burek'
 __email__ = 'met_help@ucar.edu'
@@ -10,7 +10,7 @@ import numpy as np
 import yaml
 
 
-class MetPlot:
+class BasePlot:
     """A class that provides methods for building Plotly plot's common features
      like title, axis, legend.
 
@@ -23,7 +23,7 @@ class MetPlot:
     DEFAULT_IMAGE_FORMAT = 'png'
 
     def __init__(self, parameters, default_conf_filename):
-        """Inits MetPlot with user defined and default dictionaries.
+        """Inits BasePlot with user defined and default dictionaries.
            Removes the old image if it exists
 
         Args:

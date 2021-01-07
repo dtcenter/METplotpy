@@ -10,10 +10,10 @@ import yaml
 import pandas as pd
 import numpy as np
 
-from plots.met_plot import MetPlot
+from plots.base_plot import BasePlot
 
 
-class Histogram(MetPlot):
+class Histogram(BasePlot):
     """A class that creates histogram using Plotly using a two dimensional data array
 
     To use:

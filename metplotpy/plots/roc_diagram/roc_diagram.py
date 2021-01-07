@@ -14,13 +14,13 @@ from plotly.subplots import make_subplots
 
 import plots.util as util
 import plots.constants as constants
-from plots.met_plot import MetPlot
+from plots.base_plot import BasePlot
 from roc_diagram_config import ROCDiagramConfig
 from roc_diagram_series import ROCDiagramSeries
 import metcalcpy.util.utils as calc_util
 
 
-class ROCDiagram(MetPlot):
+class ROCDiagram(BasePlot):
     """
         Creates a ROC diagram based on settings in a config file and
         either MET output data for the following line types:
@@ -44,7 +44,7 @@ class ROCDiagram(MetPlot):
         super().__init__(parameters, default_conf_filename)
 
         # instantiate a ROCDiagramConfig object, which holds all the necessary settings from the
-        # config file that represents the MetPlot object (ROC diagram).
+        # config file that represents the BasePlot object (ROC diagram).
         self.config_obj = ROCDiagramConfig(self.parameters)
 
         # Read in input data, location specified in config file
@@ -63,7 +63,7 @@ class ROCDiagram(MetPlot):
         # create figure
         # pylint:disable=assignment-from-no-return
         # Need to have a self.figure that we can pass along to
-        # the methods in met_plot.py (MetPlot class methods) to
+        # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
         self.figure = self._create_figure()
 

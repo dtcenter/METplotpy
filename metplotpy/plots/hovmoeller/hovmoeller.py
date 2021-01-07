@@ -23,12 +23,12 @@ import plotly.graph_objects as go
 from netCDF4 import num2date
 
 """
-Import MetPlot class
+Import BasePlot class
 """
-from plots.met_plot import MetPlot
+from plots.base_plot import BasePlot
 
 
-class Hovmoeller(MetPlot):
+class Hovmoeller(BasePlot):
     """
     Class to create a Plotly Hovmoeller plot from a 2D data array
     """

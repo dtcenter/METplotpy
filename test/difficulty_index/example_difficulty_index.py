@@ -48,7 +48,7 @@ def compute_difficulty_index(field, mu, sigma, thresholds):
     dij = {}
     for threshold in thresholds:
         dij[threshold] =\
-            di(sigma, mu, threshold, field, sigma_over_mu_ref=EPS)
+            di(sigma, mu, threshold, field, Aplin=None, sigma_over_mu_ref=EPS)
 
     return dij
 

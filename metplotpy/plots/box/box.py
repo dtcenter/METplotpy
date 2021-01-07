@@ -7,9 +7,9 @@ __email__ = 'met_help@ucar.edu'
 import plotly.graph_objects as go
 import yaml
 import pandas as pd
-from plots.met_plot import MetPlot
+from plots.base_plot import BasePlot
 
-class Box(MetPlot):
+class Box(BasePlot):
     """  Generates a Plotly box plot,
 
     """
@@ -29,7 +29,7 @@ class Box(MetPlot):
         # create figure
         # pylint:disable=assignment-from-no-return
         # Need to have a self.figure that we can pass along to
-        # the methods in met_plot.py (MetPlot class methods) to
+        # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
         self.figure = self._create_figure()
 
@@ -53,7 +53,7 @@ class Box(MetPlot):
         return self.get_config_value('boxes')
 
     def get_xaxis_title(self):
-        """ Override the method in the parent class, MetPlot, as this is located
+        """ Override the method in the parent class, BasePlot, as this is located
             in a different location in the config file.
         """
 
@@ -61,7 +61,7 @@ class Box(MetPlot):
 
 
     def get_yaxis_title(self):
-        """ Override the method in the parent class, MetPlot, as this is located
+        """ Override the method in the parent class, BasePlot, as this is located
             in a different location in the config file.
         """
 
