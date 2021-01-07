@@ -6,9 +6,9 @@ Holds values set in the ROC config file(s)
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
-from plots.config import Config
-import plots.util as utils
-import plots.constants as constants
+from config import Config
+import util
+import constants
 
 class ROCDiagramConfig(Config):
     def __init__(self, parameters):
@@ -102,7 +102,7 @@ class ROCDiagramConfig(Config):
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
         self.x_tickfont_size = self.parameters['xtlab_size'] * constants.DEFAULT_TITLE_FONT_SIZE
-        self.xaxis = utils.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
+        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         # y-axis parameters
         self.y_tickangle = self.parameters['ytlab_orient']
