@@ -38,17 +38,8 @@ metcalcpy 0.0.1 or above
 METcalcpy:
 Clone the METcalcpy repository from https://github.com/dtcenter/METcalcpy
 
-**How to install METcalcpy in your conda env**
 
-From within your active conda environment, cd to the METcalcpy/ directory, you should see the setup.py script
-
-From this directory, run *pip install -e .*
-
-The *-e* option allows this installation to be editable, which is useful in that you can update your METcalcpy/metcalcpy
-source code without reinstalling
-
-
-**Alternative to installing METcalcpy (set PYTHONPATH environment)**
+**Set PYTHONPATH env to use METcalcpy modules**
 
 Clone the METcalcpy repository
 
@@ -93,6 +84,15 @@ export PYTHONPATH ${PYTHONPATH}:$METPLOTPY_SOURCE/METplotpy
 There is one sample data file (plot_20200507_074426.data) and one sample custom config file,
 custom_performance_diagram.yaml that are available in the directory
 where the performance_diagram.py file resides.
+
+
+**To generate a plot using only the default settings defined in the
+METplotpy/metplotpy/plots/config/roc_diagram_defaults.yaml configuration
+file:**
+
+From the command line, run:
+
+*python performance_diagram.py ./minimal_roc_diagram.yaml*
 
 From the command line, run:
 
@@ -184,15 +184,15 @@ Required settings:
 
    Calculate ROC points using the  contingency table counts (CTC)
 
-   set to True if roc_ctc is False
+   set to True if roc_pct is False
 
-   set to False if roc_ctc if True
+   set to False if roc_pct if True
 
 - add_point_thresholds
 
   True  plots the threshold value for each point
 
-  False do not plot the threshold value
+  False  do not plot the threshold value
 
 - user_legend
 
