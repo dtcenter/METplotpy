@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from metcalcpy.calc_difficulty_index import forecast_difficulty as di
 from metcalcpy.piecewise_linear import PiecewiseLinear as plin
-import metplotpy.difficulty_index.mycolormaps as mcmap
+import metplotpy.plots.difficulty_index.mycolormaps as mcmap
 
 __author__ = 'Bill Campbell (NRL) and Lindsay Blank (NCAR)'
 __version__ = '0.1.0'
