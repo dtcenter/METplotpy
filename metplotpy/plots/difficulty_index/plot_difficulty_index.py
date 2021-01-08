@@ -61,7 +61,7 @@ def plot_field(field, lats, lons, vmin, vmax,
     if cmap is None:
         cmap = mcmap.stoplight()
     
-    plt.pcolormesh(X, Y, field.T, shading='interp', cmap=cmap)
+    plt.pcolormesh(X, Y, field.T, shading='nearest', cmap=cmap)
     cbar = plt.colorbar(orientation='horizontal', aspect=30)
     cbar.set_label(clab)
     plt.clim(vmin=vmin, vmax=vmax)
