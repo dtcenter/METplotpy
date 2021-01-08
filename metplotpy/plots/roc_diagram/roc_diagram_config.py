@@ -7,8 +7,8 @@ __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
 from config import Config
-import util
-import constants
+import plots.util as util
+import plots.constants as constants
 
 class ROCDiagramConfig(Config):
     def __init__(self, parameters):
