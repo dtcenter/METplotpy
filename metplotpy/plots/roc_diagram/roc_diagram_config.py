@@ -6,7 +6,7 @@ Holds values set in the ROC config file(s)
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
-from config import Config
+from plots.config import Config
 import plots.util as util
 import plots.constants as constants
 
