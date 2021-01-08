@@ -38,7 +38,7 @@ LINESTYLE_BY_NAMES = {'solid': '-', 'points': ':', 'lines': '--', 'overplotted':
                       'l': '--', 'o': '-.', 'b': '-',
                       's': '-.', 'h': ' ', 'n': ' '}
 
-ACCEPTABLE_CI_VALS = ['NONE', 'BOOT', 'NORM', "STD"]
+ACCEPTABLE_CI_VALS = ['NONE', 'BOOT', 'NORM', "STD", "ETB"]
 
 DEFAULT_TITLE_FONT = 'sans-serif'
 DEFAULT_TITLE_COLOR = 'black'
