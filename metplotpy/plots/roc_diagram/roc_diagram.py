@@ -12,9 +12,9 @@ import plotly
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-import util
-import constants
-from base_plot import BasePlot
+import plots.util as util
+import plots.constants as constants
+from plots.base_plot import BasePlot
 from roc_diagram_config import ROCDiagramConfig
 from roc_diagram_series import ROCDiagramSeries
 import metcalcpy.util.utils as calc_util
