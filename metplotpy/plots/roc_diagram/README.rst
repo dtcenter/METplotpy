@@ -86,21 +86,25 @@ custom_performance_diagram.yaml that are available in the directory
 where the performance_diagram.py file resides.
 
 
-**To generate a plot using only the default settings defined in the
+**To generate a plot using only the default settings (these are defined in the
 METplotpy/metplotpy/plots/config/roc_diagram_defaults.yaml configuration
-file:**
+file)**
 
 From the command line, run:
 
 *python performance_diagram.py ./minimal_roc_diagram.yaml*
+
+
+**To generate a plot that overrides some of the default settings with some of the settings in the custom config file
+(custom_roc_diagram.yaml)**
 
 From the command line, run:
 
 *python performance_diagram.py ./custom_roc_diagram.yaml*
 
 This uses the input data file plot_20200507_74426.data that is included
-in the source.  A performance diagram, named performance_diagram_default.png
-is created, along with a plot_202005_74426.points1 file.  The latter file
+in the source.  A ROC diagram, named roc_diagram_default.png
+is created, along with a plot_202005_074426.points1 file.  The latter file
 contains the POFD and PODY points that are plotted.
 
 **Description of Configuration settings**
@@ -195,6 +199,121 @@ Required settings:
   False  do not plot the threshold value
 
 - user_legend
+
+  empty string ('') or legend text you wish to display
+
+- legend_box
+
+ n for none/no box around the legend
+
+ o for a box around the legend
+
+- legend_inset
+
+  x  A float value indicating the x-position of legend
+
+  y  A float value indicating the y-position of the legend
+
+- legend_size
+
+  A float value that is a scaling factor to be applied to some default legend size.
+
+  A number greater than 1.0 will increase the legend size; a value less than 1.0 will
+
+  result in a smaller legend
+
+
+- plot_disp
+
+ True if you want your plot to be displayed
+
+ False otherwise
+
+- series_order
+
+    For multiple series, indicate the order in which you want your series plotted:
+
+    -3   (first series to be plotted third)
+
+    -1   (second series to be plotted first)
+
+    -2   (third series to be plotted second)
+
+    This enables you to easily modify the order of how things are plotted (with their
+    corresponding settings)
+
+- stat_curve
+ None  - no stat curve, for ROC diagram, no stat curves are currently supported
+
+
+- series_symbols
+
+  Supported values:
+     "small circle"  an open circle
+     "circle"   a circle
+     "square"   a square
+     "rhombus"  a diamond
+     "ring"  a hexagon
+     "triangle"  an upside-down triangle
+
+- plot_caption
+
+  Set to empty string if no caption is desired
+
+- caption_size
+
+  Float value, values larger than one will create caption larger than the default size
+
+  Values less than one will create a caption smaller than the default size.
+
+- caption_offset
+
+  The up-down offset of the caption relative to the x-axis
+
+- caption_align
+
+  The left-right alignment of the caption
+
+- xaxis
+
+  Label to apply to the x-axis
+
+-xlab_offset
+
+ The up-down offset of the x-axis label
+
+- xlab_size
+
+  Size of the x-axis label
+
+- xtlab_size
+
+ The size of the tick labels for the x-axis
+
+- yaxis_1
+
+  The label for the y-axis.  Set to empty string if no label is desired.
+
+- yaxis_2
+  The label for the second y-axis.  Set to empty string for this plot type.
+
+- ylab_offset
+
+  The up-down offset of the y-axis label
+
+- ytlab_size
+
+  The size of the tick labels for the y-axis
+
+-stat_input
+
+ The full file path and filename for the input data needed to generate this plot
+
+- plot_filename
+
+  The full file path and name for the plot that will be generated.  Currently, only
+  png files will be generated.
+
 
 
 
