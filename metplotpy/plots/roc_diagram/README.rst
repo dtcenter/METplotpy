@@ -3,7 +3,8 @@
 This file describes the information necessary for generating ROC diagrams,
 which are implemented in Python Plotly.  The user must supply a custom YAML
 configuration file that contains settings that supersede the values in the default
-config file, performance_diagram_defaults.yaml.
+config file, performance_diagram_defaults.yaml.  This can be an empty file, if the user
+wishes to use the default settings as defined in the roc_diagram_defaults.yaml config file.
 
 The default configuration file uses example data that is output from the MET tool.
 
@@ -29,6 +30,8 @@ scipy 1.5.0
 
 plotly 4.9.0
 
+matplotlib 3.3.1 or above
+
 netcdf4 1.4.1
 
 pyyaml 5.3.1
@@ -43,7 +46,7 @@ Clone the METcalcpy repository from https://github.com/dtcenter/METcalcpy
 
 Clone the METcalcpy repository
 
-Include the METcalcpy path in your PYTHONPATH environment
+Include the path to the METcalcpy in your PYTHONPATH environment
 
 e.g. if your path to METcalcpy is /home/username/METcalcpy
 
@@ -52,13 +55,13 @@ set up your PYTHONPATH this way:
 *csh*:
 
 
-setenv PYTHONPATH /home/username/METcalcpy/metcalcpy
+setenv PYTHONPATH /home/username/METcalcpy/metcalcpy:/home/username/METcalcpy/metcalcpy/util
 
 
 *bash*:
 
 
-export PYTHONPATH=/home/username/METcalcpy/metcalcpy
+export PYTHONPATH=/home/username/METcalcpy/metcalcpy:/home/username/METcalcpy/metcalcpy/util
 
 
 
@@ -79,6 +82,7 @@ e.g.
 setenv PYTHONPATH ${PYTHONPATH}:$METPLOTPY_SOURCE/METplotpy
 
 *bash*:
+
 export PYTHONPATH ${PYTHONPATH}:$METPLOTPY_SOURCE/METplotpy
 
 There is one sample data file (plot_20200507_074426.data) and one sample custom config file,
@@ -95,6 +99,12 @@ From the command line, run:
 *python performance_diagram.py ./minimal_roc_diagram.yaml*
 
 
+A plot named roc_diagram_minimal.png will be created in the
+$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram directory.
+A plot_20200507_074426.points1 text file is also created, which has the pofd and pody
+values that were plotted.  Finally, a .html file is created which is used by METviewer
+to make the plot interactive within the METviewer tool.
+
 **To generate a plot that overrides some of the default settings with some of the settings in the custom config file
 (custom_roc_diagram.yaml)**
 
@@ -104,8 +114,10 @@ From the command line, run:
 
 This uses the input data file plot_20200507_74426.data that is included
 in the source.  A ROC diagram, named roc_diagram_default.png
-is created, along with a plot_202005_074426.points1 file.  The latter file
-contains the POFD and PODY points that are plotted.
+is created, along with the plot_202005_074426.points1 file.  The latter file
+contains the POFD and PODY points that are plotted.  A .html file is created
+which is used by METviewer
+to make the plot interactive within the METviewer tool.
 
 **Description of Configuration settings**
 
@@ -204,15 +216,15 @@ Required settings:
 
 - legend_box
 
- n for none/no box around the legend
+ ``n    for none/no box around the legend``
 
- o for a box around the legend
+ ``o    for a box around the legend``
 
 - legend_inset
 
-  x  A float value indicating the x-position of legend
+  ``x     A float value indicating the x-position of legend``
 
-  y  A float value indicating the y-position of the legend
+  ``y     A float value indicating the y-position of the legend``
 
 - legend_size
 
@@ -233,28 +245,35 @@ Required settings:
 
     For multiple series, indicate the order in which you want your series plotted:
 
-    -3   (first series to be plotted third)
+    ``- 3   (first series to be plotted third)``
 
-    -1   (second series to be plotted first)
+    ``- 1   (second series to be plotted first)``
 
-    -2   (third series to be plotted second)
+    ``- 2   (third series to be plotted second)``
 
-    This enables you to easily modify the order of how things are plotted (with their
+    This enables you to easily modify the order of how things are plotted (using their
     corresponding settings)
 
 - stat_curve
- None  - no stat curve, for ROC diagram, no stat curves are currently supported
+
+ set to 'None'  - for ROC diagram, no stat curves are currently supported
 
 
 - series_symbols
 
   Supported values:
-     "small circle"  an open circle
-     "circle"   a circle
-     "square"   a square
-     "rhombus"  a diamond
-     "ring"  a hexagon
-     "triangle"  an upside-down triangle
+
+   ``"small circle"   an open circle``
+
+   ``"circle"         a circle``
+
+   ``"square"         a square``
+
+   ``"rhombus"        a diamond``
+
+   ``"ring"           a hexagon``
+
+   ``"triangle"       an upside-down triangle``
 
 - plot_caption
 
@@ -278,7 +297,7 @@ Required settings:
 
   Label to apply to the x-axis
 
--xlab_offset
+- xlab_offset
 
  The up-down offset of the x-axis label
 
@@ -305,7 +324,7 @@ Required settings:
 
   The size of the tick labels for the y-axis
 
--stat_input
+- stat_input
 
  The full file path and filename for the input data needed to generate this plot
 
