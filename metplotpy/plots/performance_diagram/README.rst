@@ -36,30 +36,31 @@ metcalcpy 0.0.1 or above
 METcalcpy:
 Clone the METcalcpy repository from https://github.com/dtcenter/METcalcpy
 
-**How to install METcalcpy in your conda env**
-
-From within your active conda environment, cd to the METcalcpy/ directory, you should see the setup.py script
-
-From this directory, run *pip install -e .*
-
-The *-e* option allows this installation to be editable, which is useful in that you can update your METcalcpy/metcalcpy
-source code without reinstalling
 
 **How to Run**
 
 Set your *PYTHONPATH* to the following:
 
-/$METPLOTPY_SOURCE/METplotpy/metplotpy:$METPLOTPY_SOURCE/METplotpy/metplotpy/plots:$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram
+$METPLOTPY_SOURCE/METplotpy/metplotpy:$METPLOTPY_SOURCE/METplotpy/metplotpy/plots:$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram
 
 
 where $METPLOTPY_SOURCE is the path to where you downloaded/cloned the METplotpy code.
 
 
-There is one sample data file (plot_20200317_151252.data) and one sample custom config file,
-custom_performance_diagram.yaml that are available in the directory
+There is one sample data file (plot_20200317_151252.data), one sample custom config file
+(custom_performance_diagram.yaml) and one minimal custom config file
+(minimal_performance_diagram.yaml) that are available in the directory
 where the performance_diagram.py file resides.
 
 From the command line, run:
+
+*python performance_diagram.py ./minimal_performance_diagram.yaml*
+
+This uses the input data file plot_20200317_151252.data that is included
+in the source.  A performance diagram, named performance_diagram_m.png
+is created, along with a plot_20200317_151252.points1 file.  The latter file
+contains the (1-FAR) and PODY points that are plotted. A plot named
+performance_diagram_default.png is generated.
 
 *python performance_diagram.py ./custom_performance_diagram.yaml*
 
