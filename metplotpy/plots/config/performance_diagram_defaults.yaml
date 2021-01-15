@@ -173,6 +173,6 @@ ytlab_orient: 1
 ytlab_size: 1.3
 
 stat_input:  ../performance_diagram/plot_20200317_151252.data
-plot_filename: /tmp/performance_diagram_default.png
+plot_filename: ../performance_diagram_default.png
 
 
