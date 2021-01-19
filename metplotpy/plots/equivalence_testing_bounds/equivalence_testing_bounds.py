@@ -537,8 +537,8 @@ def main(config_filename=None):
     try:
         plot = EquivalenceTestingBounds(docs)
         plot.save_to_file()
-        plot.show_in_browser()
-        #plot.write_html()
+        #plot.show_in_browser()
+        plot.write_html()
         plot.write_output_file()
     except ValueError as val_er:
         print(val_er)
