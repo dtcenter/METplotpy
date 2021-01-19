@@ -232,12 +232,6 @@ class LineSeries(Series):
                     dbl_lo_ci = point_stat - stat_ncl
                     dbl_up_ci = stat_ncu - point_stat
 
-                elif series_ci == 'ETB' and self.series_name[-1] in utils.OPERATION_TO_SIGN.keys():
-                    # calculate ETB for derived series
-                    etb = self._calculate_tost_paired(series_data_1, series_data_2)
-                    dbl_lo_ci = point_stat - etb['ci_tost'][0]
-                    dbl_up_ci = etb['ci_tost'][1] - point_stat
-
             else:
                 dbl_lo_ci = None
                 point_stat = None
