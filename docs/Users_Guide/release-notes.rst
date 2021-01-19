@@ -8,7 +8,7 @@ Version |version| release notes (|release_date|)
 ------------------------------------------------
 
 Version 1.0.0_beta2 release notes (20201208)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * New Plots:
 
   * Replicate METviewer Reliability diagram using Python (`_#12 <https://github.com/dtcenter/METplotpy/issues/12>`_)
@@ -29,7 +29,7 @@ Version 1.0.0_beta2 release notes (20201208)
 
 
 Version 1.0.0_beta1 release notes (20201022)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * New Plots:
 
