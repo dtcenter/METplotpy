@@ -81,7 +81,7 @@ is sponsored by the National Science Foundation (NSF).
    :numbered: 4
 
    installation
-
+   release-notes
 
 Indices and tables
 ==================
