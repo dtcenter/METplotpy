@@ -19,7 +19,7 @@ Some general examples coming soon.
 
 .. raw:: html
 
-    <div class="sphx-glr-clear"></div>
+    <div style='clear:both'></div>
 
 
 
@@ -40,9 +40,9 @@ A sample example in a different section than the general examples section.
 
 .. only:: html
 
- .. figure:: /examples/sample/images/thumb/sphx_glr_plot_sample_thumb.png
+    .. figure:: /examples/sample/images/thumb/sphx_glr_plot_sample_thumb.png
 
-     :ref:`sphx_glr_examples_sample_plot_sample.py`
+        :ref:`sphx_glr_examples_sample_plot_sample.py`
 
 .. raw:: html
 
@@ -55,7 +55,7 @@ A sample example in a different section than the general examples section.
    /examples/sample/plot_sample
 .. raw:: html
 
-    <div class="sphx-glr-clear"></div>
+    <div style='clear:both'></div>
 
 
 
@@ -65,15 +65,15 @@ A sample example in a different section than the general examples section.
     :class: sphx-glr-footer-gallery
 
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+  .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: examples_python.zip <//d1/personal/jpresto/METplotpy/git/METplotpy/docs/examples/examples_python.zip>`
+    :download:`Download all examples in Python source code: examples_python.zip <//Users/minnawin/metplotpy_feature_7/METplotpy/docs/examples/examples_python.zip>`
 
 
 
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
+  .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: examples_jupyter.zip <//d1/personal/jpresto/METplotpy/git/METplotpy/docs/examples/examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: examples_jupyter.zip <//Users/minnawin/metplotpy_feature_7/METplotpy/docs/examples/examples_jupyter.zip>`
 
 
 .. only:: html

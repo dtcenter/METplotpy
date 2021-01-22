@@ -39,6 +39,7 @@ contributions.
    :caption: METplotpy 
 
    Users_Guide/index
+   Users_Guide/release_notes
 
 
 
