@@ -182,5 +182,41 @@ file if all default settings are to be applied.
 * **plot_filename**   path and filename of the output performance diagram PNG file
                       Only PNG output is currently supported.
 
+Run from the Command Line
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To generate a default performance diagram (i.e. using settings in the 
+performance_diagram_defaults.yaml configuration file), clone the code from the METplotpy 
+repository at github.com/dtcenter/METplotpy:
+
+    ``cd $METPLOTPY_SOURCE``
+
+    ``git clone https://github.com/dtcenter/METplotpy``
+
+Change directory to $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram, where
+$METPLOTPY_SOURCE is the directory where you cloned the code.   
 
 
+      ``cd METplotpy/metplotpy/plots/performance_diagram``
+
+
+Activate your conda environment, which has all the Python requirements outlined in the Installation
+guide.  
+
+Run the following at the command line:
+
+``python performance_diagram.py ./minimal_performance_diagram.yaml``
+
+This will create a PNG file performance_diagram_default.png in the directory from where you ran 
+the python command above.
+
+
+
+To generate a slightly modified plot, re-run the above command using the custom_performance_diagram.yaml file:
+
+``python performance_diagram.py ./custom_performance_diagram.yaml``
+
+This will create a PNG file, performance_diagram_custom.png, which will differ in appearance from the default
+plot.  These plots use the plot_20200317_151252.data that is found in the METplotpy/metplotpy/plots/performance_diagram
+directory, and creates the PNG plot in addition to a plot_2020-317_151252.points1 file.  The latter is a text
+file that contains the x- and y-values that are being plotted and is useful in debugging.  
