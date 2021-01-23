@@ -41,6 +41,11 @@ def plot_K_means(inputi,wrnum,lon,lat,perc,output_plotname):
     r = np.arange(-80,81,10)#*2.0
 
     ii=np.arange(0,wrnum,1)
+    remp = wrnum%2
+    if remp==0:
+        nrows = wrnum/2
+    else:
+        nrows = (wrnum+1)/2
 
     lon,lat = np.meshgrid(lon, lat)
     tran = ccrs.PlateCarree(central_longitude=lon0)
@@ -48,10 +53,11 @@ def plot_K_means(inputi,wrnum,lon,lat,perc,output_plotname):
     fig = plt.figure(figsize=(10,10))
     for g1 in np.arange(0,wrnum,1):
         g = ii[g1]
-        ax1 = fig.add_subplot(3,2,g1+1,projection=proj)
+        ax1 = fig.add_subplot(nrows,2,g1+1,projection=proj)
         contourf(lon,lat,inputi[g],r,transform=ccrs.PlateCarree(),cmap = cmocean.cm.balance,extend="both")
         ax1.coastlines(resolution='50m', color='gray', linewidth=1.25)
-        #plt.colorbar(orientation='horizontal', fraction=0.086, pad=0.1)
+        if (wrnum - g1) <= 2:
+            plt.colorbar(orientation='horizontal', fraction=0.086, pad=0.05)
         fr = perc[g1]*100 #get_cluster_fraction(f,g) * 100
         plt.title('WR '+str(g1+1)+' ('+str(round(fr,1))+'%)')
 
