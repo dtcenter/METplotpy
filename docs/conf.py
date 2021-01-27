@@ -29,6 +29,9 @@ release_year = '2020'
 release_date = f'{release_year}1022'
 copyright = f'{release_year}, {author}'
 
+# if set, adds "Last updated on " followed by
+# the date in the specified format
+html_last_updated_fmt = '%c'
 
 # -- General configuration ---------------------------------------------------
 
