@@ -47,3 +47,4 @@ toml @ file:///home/conda/feedstock_root/build_artifacts/toml_1589469402899/work
 toolz @ file:///home/conda/feedstock_root/build_artifacts/toolz_1600973991856/work
 tornado @ file:///home/conda/feedstock_root/build_artifacts/tornado_1602488894481/work
 zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1601765966131/work
+pingouin
