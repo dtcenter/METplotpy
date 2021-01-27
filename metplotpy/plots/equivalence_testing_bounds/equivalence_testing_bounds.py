@@ -20,13 +20,13 @@ from plots.equivalence_testing_bounds.equivalence_testing_bounds_series \
     import EquivalenceTestingBoundsSeries
 from plots.line.line_config import LineConfig
 from plots.line.line_series import LineSeries
-from plots.met_plot import MetPlot
+from plots.met_plot import BasePlot
 import plots.util as util
 
 import metcalcpy.util.utils as calc_util
 
 
-class EquivalenceTestingBounds(MetPlot):
+class EquivalenceTestingBounds(BasePlot):
     """  Generates a Plotly Equivalence Testing Bounds plot .
     """
 
@@ -43,7 +43,7 @@ class EquivalenceTestingBounds(MetPlot):
         super().__init__(parameters, "equivalence_testing_bounds_defaults.yaml")
 
         # instantiate a LineConfig object, which holds all the necessary settings from the
-        # config file that represents the MetPlot object (EquivalenceTestingBounds).
+        # config file that represents the BasePlot object (EquivalenceTestingBounds).
         self.config_obj = LineConfig(self.parameters)
 
         # Check that we have all the necessary settings for each series
@@ -72,7 +72,7 @@ class EquivalenceTestingBounds(MetPlot):
         # create figure
         # pylint:disable=assignment-from-no-return
         # Need to have a self.figure that we can pass along to
-        # the methods in met_plot.py (MetPlot class methods) to
+        # the methods in met_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
         self._create_figure()
 
