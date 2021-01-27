@@ -8,7 +8,8 @@
 
 import pytest
 import os
-from metplotpy.plots.performance_diagram import performance_diagram as pd
+#from metplotpy.plots.performance_diagram import performance_diagram as pd
+import performance_diagram as pd
 from metcalcpy.compare_images import CompareImages
 
 @pytest.fixture

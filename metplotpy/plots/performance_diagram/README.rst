@@ -36,9 +36,6 @@ metcalcpy 0.0.1 or above
 METcalcpy:
 Clone the METcalcpy repository from https://github.com/dtcenter/METcalcpy
 
-
-*** ADD INSTRUCTIONS FOR CLONING METCALCPY ***
-
 **How to Run**
 
 Set your *PYTHONPATH* to the following:

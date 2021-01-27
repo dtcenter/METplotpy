@@ -81,6 +81,9 @@ is sponsored by the National Science Foundation (NSF).
    :numbered: 4
 
    installation
+   performance_diagram
+   roc_diagram
+   release-notes
 
 
 Indices and tables

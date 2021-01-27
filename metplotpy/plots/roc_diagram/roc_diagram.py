@@ -54,6 +54,8 @@ class ROCDiagram(BasePlot):
         if self.config_obj.use_ee:
             self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
 
+            #
+
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
         # such as line color, marker symbol,

@@ -4,22 +4,26 @@
 # conda environment name
 # !!!!!!!!
 
-# !/usr/bin/env conda run -n blenny_363 python
+#!/usr/bin/env conda run -n blenny_363 python
 
 import pytest
 import os
 from metplotpy.plots.roc_diagram import roc_diagram as roc
+# import roc_diagram as roc
 from metcalcpy.compare_images import CompareImages
 
 
 @pytest.fixture
 def setup():
     # Cleanup the plotfile and point1 output file from any previous run
-    cleanup()
+    # cleanup()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
     custom_config_filename = "./test_roc_diagram.yaml"
+    print("\n current directory: ", os.getcwd())
+    print("\ncustom config file: ", custom_config_filename, '\n')
+
 
     # Invoke the command to generate a Performance Diagram based on
     # the custom_performance_diagram.yaml custom config file.
@@ -41,8 +45,8 @@ def cleanup():
         # don't exist.  Ignore.
         pass
 
-def test_first(setup):
-    assert True
+# def test_first(setup):
+#     assert True
 
 @pytest.mark.parametrize("test_input,expected_boolean",(["./roc_diagram_expected.png", True], ["./plot_20200507_074426.points1", True]))
 def test_files_exist(setup, test_input, expected_boolean):
@@ -64,4 +68,4 @@ def test_images_match(setup):
     actual_file = os.path.join(path, plot_file)
     comparison = CompareImages('./roc_diagram_expected.png',actual_file)
     assert comparison.mssim == 1
-    cleanup()
+    # cleanup()
