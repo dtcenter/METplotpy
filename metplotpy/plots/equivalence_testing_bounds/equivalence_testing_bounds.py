@@ -20,7 +20,7 @@ from plots.equivalence_testing_bounds.equivalence_testing_bounds_series \
     import EquivalenceTestingBoundsSeries
 from plots.line.line_config import LineConfig
 from plots.line.line_series import LineSeries
-from plots.met_plot import BasePlot
+from plots.base_plot import BasePlot
 import plots.util as util
 
 import metcalcpy.util.utils as calc_util
