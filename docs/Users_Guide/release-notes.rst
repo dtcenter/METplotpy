@@ -9,6 +9,28 @@ Version |version| release notes (|release_date|)
 
 Version 1.0.0_beta2 release notes (20201208)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* New Plots:
+ 
+  * Implement Equivalence Testing Bounds plot in Plotly (`#71 <https://github.com/dtcenter/METplotpy/issues/71>`_)
+
+  * Recreate plot generated in the blocking Subseasonal to seasonal (S2S) script    provided by University of Illinois (`#40 <https://github.com/dtcenter/METplotpy/issues/40>`_)
+
+* Enhancements:
+
+* Internal:
+ 
+    * Rename the met_plot.py and MetPlot class name (`#69 <https://github.com/dtcenter/METplotpy/issues/69>`_)
+ 
+    * Automate release date for automation (`#62 <https://github.com/dtcenter/METplotpy/issues/62>`_)
+
+* Bugfixes:
+    
+    * Difficulty index plot loses data at edges (`#76 <https://github.com/dtcenter/METplotpy/issues/76>`_)
+
+
+Version 1.0.0_beta2 release notes (20201208)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * New Plots:
 
   * Replicate METviewer Reliability diagram using Python (`_#12 <https://github.com/dtcenter/METplotpy/issues/12>`_)
