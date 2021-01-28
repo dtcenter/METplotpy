@@ -1,0 +1,417 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2. Performance diagram &mdash; METplotpy develop documentation</title>
+  
+
+  
+  
+  
+  
+    <link rel="canonical" href="https://dtcenter.github.io/METplotpy/latest/Users_Guide/performance_diagram.html"/>
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/pop_ver.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_override.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. ROC diagram" href="roc_diagram.html" />
+    <link rel="prev" title="1. Installation guide for METplotpy" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> METplotpy
+          
+
+          
+            
+            <img src="../_static/met_plotpy_logo_2019_09.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                develop
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">METplotpy</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User’s Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">1. Installation guide for METplotpy</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2. Performance diagram</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#description">2.1. Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example">2.2. Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-from-the-command-line">2.3. Run from the Command Line</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="roc_diagram.html">3. ROC diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release-notes.html">4. METplotpy develop Release Notes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">METplotpy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">User’s Guide</a> &raquo;</li>
+        
+      <li>2. Performance diagram</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/Users_Guide/performance_diagram.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="performance-diagram">
+<h1>2. Performance diagram<a class="headerlink" href="#performance-diagram" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="description">
+<h2>2.1. Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>Performance diagrams are used to show the relationship between categorical statistics, with
+axes representing detection and success(1 - false alarm) rates Roebber, 2009).
+The simplest input to the performance diagram is the MET contingency table statistics (CTS)
+output.  This output can be produced by many of the MET tools (Point-Stat, Grid-Stat, etc.).</p>
+<p>There are several reference lines on the performance diagram.  The dashed lines that radiate
+from the origin are lines of equal frequency bias.  Labels for the frequency bias amount are
+at the end of each line. The diagonal represents a perfect frequency bias score of 1.  Curves
+of equal Critical Success Index (CSI) connect the top of the plot to the right side.  CSI
+amounts are listed to the right side of the plot, with better values falling closer to the top.</p>
+</div>
+<div class="section" id="example">
+<h2>2.2. Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p><strong>Sample Data</strong></p>
+<p>The sample data used to create these plots is available in the METplotpy repository, where the
+performance diagram scripts are located:</p>
+<p>$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/plot_20200317_151252.data</p>
+<p>$METPLOTPY_SOURCE is the directory where the METplotpy code is saved.  The data is text
+output from MET in columnar format.</p>
+<p><strong>Configuration Files</strong></p>
+<p>The performance diagram utilizes YAML configuration files to indicate where input data is located and
+to set plot attributes. These plot attributes correspond to values that can be set via the METviewer
+tool. YAML is a recursive acroynym for “YAML Ain’t Markup Language” and according to yaml.org,
+it is a “human-readable data-serialization language. It is commonly used for configuration files
+and in applications where data is being stored or transmitted”.  Two configuration files are required,
+the first is a default configuration file, performance_diagram_defaults.yaml that is found in the
+$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config directory. $METPLOTPY_SOURCE indicates the directory
+where the METplotpy source code has been saved.  The second required YAML configuration file is a
+user-supplied “custom” configuration file that can be used to customize/override the default
+settings in the performance_diagram_defaults.yaml file.  The custom configuration file can be an empty
+file if all default settings are to be applied.</p>
+<p><strong>Default Configuration File Settings</strong></p>
+<ul class="simple">
+<li><p><strong>title</strong>   The title for the performance diagram</p></li>
+<li><p><strong>title_weight</strong> 1=plain 2=bold 3=italic 4=bold italic</p></li>
+<li><p><strong>title_align</strong>   Unsupported by Matplotlib, included for consistency with METviewer</p></li>
+<li><p><strong>title_offset</strong>  Unsupported by Matplotlib, included for consistency with METviewer</p></li>
+<li><dl class="simple">
+<dt><strong>title_size</strong>   Magnifier value. Values above 1.0 create title</dt><dd><p>that is larger than the internal default size.
+Values less than 1.0 create a title that is
+smaller than the internal default size.</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>xaxis</strong>  The label to the x-axis</p></li>
+<li><p><strong>yaxis_1</strong>  The label to the bottom y-axis</p></li>
+<li><dl class="simple">
+<dt><strong>yaxis_2</strong>  The label to the top y-axis (leave empty if second y-axis</dt><dd><p>is not needed/required)</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>plot_width</strong>  width of plot in inches</p></li>
+<li><p><strong>plot_height</strong> height of plot in inches</p></li>
+<li><p><strong>plot_units</strong>  units for plot: in for inches or cm for centimeters</p></li>
+<li><dl class="simple">
+<dt><strong>plot_ci</strong>      A list of values of the type of Confidence Intervals to apply.</dt><dd><p>Choose either None for no confidence intervals or Norm for
+normalized confidence intervals.</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>plot_disp</strong>     A list of True/False values. True to display, False otherwise</p></li>
+<li><dl class="simple">
+<dt><strong>series_order</strong>  A list of values 1..n indicating the order of the series in the list</dt><dd><p>e.g. if the list is 3, then 1, then 2 this indicates that the first
+series in the list is to be treated as the third, the second element
+in the list is to be treated as the first series, and the third
+element in the list is to be treated as the second series.</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>indy_var</strong>     The independant variable</p></li>
+<li><p><strong>indy_vals</strong>    A list of independent variables</p></li>
+<li><p><strong>fcst_var_val_1</strong>   Variables of interest</p></li>
+<li><p><strong>fcst_var_val_2</strong>   Second set of variables of interest</p></li>
+<li><p><strong>series_val_1</strong> Series values</p></li>
+<li><p><strong>series_val_2</strong>  Second set of series values. Leave as empty</p></li>
+<li><p><strong>list_stat_1</strong>   List of statistics of interest</p></li>
+<li><p><strong>list_stat_2</strong>   Second list of statistics of interest. Leave as empty list</p></li>
+<li><dl class="simple">
+<dt><strong>user_legend</strong>   List of legend labels.  One for each series.</dt><dd><p>If any list member is empty, a legend label will be created based
+on other information.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>legend_box</strong>    ‘n’ for no box around the legend</dt><dd><p>‘o’ for a box drawn around the legend</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>legend_ncol</strong>    Integer value indicating how many columns of</dt><dd><p>legend labels</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>legend_inset</strong>   x and y values indicating position of the legend</p></li>
+<li><dl class="simple">
+<dt><strong>legend_size</strong>    A magnification value.  Value greater than 1.</dt><dd><p>produces a legend that is greater than an internal
+default value.  Value less than 1.0 produces
+a legend smaller than an internal default size.</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>plot_stat</strong>      The statistics to plot: median, mean or sum</p></li>
+<li><p><strong>plot_contour_legend</strong>  True for drawing a legend for contour lines, False otherwise</p></li>
+<li><p><strong>colors</strong>   A list of colors one for each series. Define as color name or hexadecimal values</p></li>
+<li><dl class="simple">
+<dt><strong>series_line_width</strong>   A list of widths for each series line.  Values greater than 1 result</dt><dd><p>in a thicker line.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>series_symbols</strong>     A list of symbols to apply for each series: ‘o’ for circle,</dt><dd><p>‘s’ for square, ‘H’ for ring,
+‘d’ for diamond, ‘^’ for triangle</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>series_line_style</strong>  A list of line styles to apply to the corresponding series:</dt><dd><p>‘-‘ for solid line
+‘–’ for dashed line
+‘:’ for dotted line</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>event_equal</strong>      True to perform event equalization on data, False otherwise</p></li>
+<li><dl class="simple">
+<dt><strong>annotation_template</strong>  Annotation for y-value.  Leave empty if no annotation is desired</dt><dd><p>Otherwise indicate template with “%y &lt;units&gt;”.  Double quotes around
+annotation is needed.</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>plot_caption</strong>     Caption text, leave empty if no caption is desired</p></li>
+<li><p><strong>caption_weight</strong>   1=plain text 2=bold 3=italic 4=bold italic</p></li>
+<li><p><strong>caption_col</strong>      Color of caption, color name or hexadecimal value</p></li>
+<li><p><strong>caption_size</strong>     Relative magnification of an internal default font size</p></li>
+<li><p><strong>caption_offset</strong>   The up/down position relative to the x-axis</p></li>
+<li><p><strong>caption_align</strong>    The left/right position relative to the y-axis</p></li>
+<li><p><strong>xlab_size</strong>        Size of the x label as a magnification of an internal default size</p></li>
+<li><p><strong>xlab_align</strong>       up/down positioning relative to x-axis</p></li>
+<li><p><strong>xlab_offset</strong>      left/right position relative to the y-axis</p></li>
+<li><p><strong>xlab_weight</strong>     1=plain text 2=bold 3=italic 4=bold italic</p></li>
+<li><p><strong>xtlab_orient</strong>    unsupported by Matplotlib, kept for consistency with METviewer</p></li>
+<li><p><strong>xtlab_size</strong>      unsupported by Matplotlib, kept for consistency with METviewer</p></li>
+<li><p><strong>ylab_align</strong>      left/right position of y label</p></li>
+<li><p><strong>ylab_offset</strong>     up/down position of y label</p></li>
+<li><p><strong>ylab_weight</strong>     1=plain text 2=bold 3=italic 4=bold italic</p></li>
+<li><p><strong>ytlab_orient</strong>    y-tick label orientation</p></li>
+<li><p><strong>ytlab_size</strong>      size of y-tick labels as a magnification of an internal default size</p></li>
+<li><p><strong>stat_input</strong>      path and filename of the input MET stat file</p></li>
+<li><dl class="simple">
+<dt><strong>plot_filename</strong>   path and filename of the output performance diagram PNG file</dt><dd><p>Only PNG output is currently supported.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="run-from-the-command-line">
+<h2>2.3. Run from the Command Line<a class="headerlink" href="#run-from-the-command-line" title="Permalink to this headline">¶</a></h2>
+<p>To generate a default performance diagram (i.e. using settings in the
+performance_diagram_defaults.yaml configuration file), clone the code from the METplotpy
+repository at github.com/dtcenter/METplotpy:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">$METPLOTPY_SOURCE</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/dtcenter/METplotpy</span></code></p>
+</div></blockquote>
+<p>Change directory to $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram, where
+$METPLOTPY_SOURCE is the directory where you cloned the code.</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">METplotpy/metplotpy/plots/performance_diagram</span></code></p>
+</div></blockquote>
+<p>Activate your conda environment, which has all the Python requirements outlined in the Installation
+guide.</p>
+<p>Run the following at the command line:</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">performance_diagram.py</span> <span class="pre">./minimal_performance_diagram.yaml</span></code></p>
+<p>This will create a PNG file performance_diagram_default.png in the directory from where you ran
+the python command above.</p>
+<p>To generate a slightly modified plot, re-run the above command using the custom_performance_diagram.yaml file:</p>
+<p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">performance_diagram.py</span> <span class="pre">./custom_performance_diagram.yaml</span></code></p>
+<p>This will create a PNG file, performance_diagram_custom.png, which will differ in appearance from the default
+plot.  These plots use the plot_20200317_151252.data that is found in the METplotpy/metplotpy/plots/performance_diagram
+directory, and creates the PNG plot in addition to a plot_2020-317_151252.points1 file.  The latter is a text
+file that contains the x- and y-values that are being plotted and is useful in debugging.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="roc_diagram.html" class="btn btn-neutral float-right" title="3. ROC diagram" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral float-left" title="1. Installation guide for METplotpy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES
+      <span class="lastupdated">
+        Last updated on Jan 27, 2021, 6:10:56 PM.
+      </span>
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+ 
+<script>var version_json_loc = "../../versions.json";</script>
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
