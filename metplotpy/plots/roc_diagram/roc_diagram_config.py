@@ -254,33 +254,6 @@ class ROCDiagramConfig(Config):
                 return False
 
 
-    def _get_fcst_vars(self, index):
-        """
-           Retrieve a list of the inner keys (fcst_vars) to the fcst_var_val dictionary.
-
-           Args:
-              index: identifier used to differentiate between fcst_var_val_1 and
-                     fcst_var_val_2 config settings
-           Returns:
-               a list containing all the fcst variables requested in the
-               fcst_var_val setting in the config file.  This will be
-               used to subset the input data that corresponds to a particular series.
-
-        """
-        all_fcst_vars = []
-        if index == 1:
-            fcst_var_val_dict = self.get_config_value('fcst_var_val_1')
-            if fcst_var_val_dict:
-                all_fcst_vars = []
-        elif index == 2:
-            fcst_var_val_dict = self.get_config_value('fcst_var_val_2')
-            if fcst_var_val_dict:
-                all_fcst_vars = []
-        else:
-            all_fcst_vars = []
-
-        return all_fcst_vars
-
     def _get_markers(self):
         """
            Retrieve all the markers. Convert marker names from
