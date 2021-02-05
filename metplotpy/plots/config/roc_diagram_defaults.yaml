@@ -22,14 +22,18 @@ roc_ctc: True
 
 add_point_thresholds: True  #optional
 
-series_val_1:  #optional
+series_val_1:
+  # series_var_1
+  model:
+    # series_val_1
+    - GFS_0p25_G193
 
-series_val_2:   #optional
+series_val_2:   {} #optional
 
-fcst_var_val1:   #optional
-fcst_var_val2:   #optional
+fcst_var_val_1: {}  #optional
+fcst_var_val_2: {}  #optional
 
-indy_vars:    #optional
+indy_var:    'fcst_valid_beg'
 indy_vals:    #optional
 
 user_legend:
