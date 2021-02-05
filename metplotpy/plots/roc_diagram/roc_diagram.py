@@ -52,9 +52,34 @@ class ROCDiagram(BasePlot):
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee:
-            self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
 
-            #
+            # Initialize the fix variable lists that will be needed by the
+            # event_equalize() method in the METcalcpy module.
+            list_fix_vars = []
+            list_fix_var_vals = []
+
+            # for both PCT and CTC linetypes, the indy_val is fcst_valid_beg,
+            # as verified by looking at the METviewer GUI for ROC diagram
+            self.parameters['indy_vals'] = 'fcst_valid_beg'
+
+            if self.config_obj.linetype_pct:
+                # add thresh_i
+                input_df = self.input_df
+                unique_i_thresh = input_df['thresh_i'].unique()
+                # Create a dataframe to act like the matrix with
+                # n rows and 1 column in roc.R script.
+                matPermVal_df = pd.DataFrame(unique_i_thresh)
+
+                # Assign values to list_fix_vars and list_fix_var_vals which
+                # are used in the event_equalize() code.
+                if list_fix_vars is None:
+                    list_fix_vars.append("thresh_i")
+                    list_fix_var_vals[0] = matPermVal_df[:,1]
+                else:
+                    list_fix_vars.append('thresh_i')
+                    list_fix_var_vals[len(list_fix_var_vals) + 1] = matPermVal_df[:,1]
+
+            self.input_df = calc_util.perform_event_equalization(self.config_obj.parameters, self.input_df)
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
