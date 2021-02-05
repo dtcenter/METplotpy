@@ -2,22 +2,16 @@
 roc_pct: False
 roc_ctc: True
 
-series_val_1:
-# e.g.
-#  model:
-#    - 'WRF'
-#  vx_mask:
-#    - "EAST"
-#    - "FILL"
+series_val_1: {}
+series_val_2: {}
 
-series_val_2:
 plot_disp:
     - True
 series_order:
     - 1
 stat_curve: 'None'
 add_point_thresholds: False
-event_equal: False
+event_equal: True
 title: "Custom title: ROC PCT 20200507_074426 "
 # value of 0.5 centers the title, smaller values moves text to the left
 title_align: 0.3
