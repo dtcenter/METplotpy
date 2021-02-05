@@ -22,13 +22,8 @@ roc_ctc: True
 
 add_point_thresholds: True  #optional
 
-series_val_1:
-  # series_var_1
-  model:
-    # series_val_1
-    - GFS_0p25_G193
-
-series_val_2:   {} #optional
+series_val_1: {}
+series_val_2:   {}
 
 fcst_var_val_1: {}  #optional
 fcst_var_val_2: {}  #optional
@@ -48,6 +43,8 @@ legend_inset:
   x: 0.  #required
   y: -0.14 #required
 legend_size: 0.8  #required
+
+line_type: N/A
 
 plot_disp:
   - True #required
@@ -69,7 +66,7 @@ series_line_style:
   -  "-" #optional
 
 # Perform event equalization to check for missing data
-event_equal: False #optional
+event_equal: True #False
 
 # Caption settings
 plot_caption: "This is caption" #required, set to empty string if no caption text
