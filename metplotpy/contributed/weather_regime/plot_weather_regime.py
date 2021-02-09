@@ -1,5 +1,5 @@
 import matplotlib
-#matplotlib.use('agg')
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from pylab import *
@@ -48,7 +48,7 @@ def plot_eof(eof,wrnum,variance_fractions,lons,lats,output_plotname,plevels):
         ax1 = fig.add_subplot(nrows,2,i+1,projection=proj)
         contourf(lons,lats,corr,plevels,transform=ccrs.PlateCarree(),cmap = cmocean.cm.balance,extend='both')
         if (wrnum - i) <= 2:
-            plt.colorbar(orientation ='horizontal',pad=0.01)
+            plt.colorbar(orientation ='horizontal',pad=0.01)  #.set_label(label='m',size=15)
         ax1.add_feature(cfeature.BORDERS)
         ax1.add_feature(cfeature.STATES)
         ax1.add_feature(cfeature.COASTLINE)
@@ -57,7 +57,7 @@ def plot_eof(eof,wrnum,variance_fractions,lons,lats,output_plotname,plevels):
     plt.tight_layout()
     fmt='png'
     full_output_plot = output_plotname + "." + fmt
-    plt.show()
+    plt.savefig(full_output_plot,format=fmt,dpi=400, bbox_inches='tight')
 
 
 def plot_K_means(inputi,wrnum,lon,lat,perc,output_plotname,plevels):
@@ -88,9 +88,10 @@ def plot_K_means(inputi,wrnum,lon,lat,perc,output_plotname,plevels):
             contourf(lon,lat,inputi[g],transform=ccrs.PlateCarree(),cmap = cmocean.cm.balance,extend="both")
         ax1.coastlines(resolution='50m', color='gray', linewidth=1.25)
         if (wrnum - g1) <= 2:
-            plt.colorbar(orientation='horizontal', fraction=0.086, pad=0.05)
+            plt.colorbar(orientation='horizontal', fraction=0.086, pad=0.05).set_label(label='m',size=15)
+            #plt.colorbar().set_label(label='m',size=15)
         fr = perc[g1]*100 #get_cluster_fraction(f,g) * 100
-        plt.title('WR '+str(g1+1)+' ('+str(round(fr,1))+'%)')
+        plt.title('Weather Regime '+str(g1+1)+' ('+str(round(fr,1))+'%)')
 
     plt.tight_layout()
     fmt='png'
