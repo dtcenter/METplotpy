@@ -442,7 +442,7 @@ def main(config_filename=None):
         r.save_to_file()
         r.write_html()
         r.write_output_file()
-        r.show_in_browser()
+        #r.show_in_browser()
     except ValueError as ve:
         print(ve)
 
