@@ -53,33 +53,25 @@ class ROCDiagram(BasePlot):
         # Apply event equalization, if requested
         if self.config_obj.use_ee:
 
-            # Initialize the fix variable lists that will be needed by the
-            # event_equalize() method in the METcalcpy module.
-            list_fix_vars = []
-            list_fix_var_vals = []
-
-            # for both PCT and CTC linetypes, the indy_val is fcst_valid_beg,
+            #
+            # for both PCT and CTC linetypes, the indy_var is fcst_valid_beg,
             # as verified by looking at the METviewer GUI for ROC diagram
-            self.parameters['indy_vals'] = 'fcst_valid_beg'
+            self.parameters['indy_var'] = 'fcst_valid_beg'
 
             if self.config_obj.linetype_pct:
-                # add thresh_i
-                input_df = self.input_df
-                unique_i_thresh = input_df['thresh_i'].unique()
-                # Create a dataframe to act like the matrix with
-                # n rows and 1 column in roc.R script.
-                matPermVal_df = pd.DataFrame(unique_i_thresh)
+                # add thresh_i to fixed_vars
 
-                # Assign values to list_fix_vars and list_fix_var_vals which
-                # are used in the event_equalize() code.
-                if list_fix_vars is None:
-                    list_fix_vars.append("thresh_i")
-                    list_fix_var_vals[0] = matPermVal_df[:,1]
-                else:
-                    list_fix_vars.append('thresh_i')
-                    list_fix_var_vals[len(list_fix_var_vals) + 1] = matPermVal_df[:,1]
+                # initialise and sort thresh_i
+                unique_i_thresh = self.input_df['thresh_i'].unique().tolist()
+                unique_i_thresh.sort()
 
-            self.input_df = calc_util.perform_event_equalization(self.config_obj.parameters, self.input_df)
+                # create a sub-dictionary
+                thresh_i_0 = {'thresh_i_0': unique_i_thresh}
+
+                # add sub-dictionary to fixed_vars_vals_input
+                self.parameters['fixed_vars_vals_input']['thresh_i'] = thresh_i_0
+
+            self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -164,7 +156,6 @@ class ROCDiagram(BasePlot):
 
         fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-
         # Set plot height and width in pixel value
         width = self.config_obj.plot_width
         height = self.config_obj.plot_height
@@ -191,11 +182,10 @@ class ROCDiagram(BasePlot):
                  'y': self.config_obj.title_offset,
                  'x': self.config_obj.parameters['title_align'],
                  'xanchor': 'center',
-                 'yanchor':'top',
+                 'yanchor': 'top',
                  'xref': 'paper'
                  }
         fig.update_layout(title=title, plot_bgcolor="#FFF")
-
 
         # fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="black", linewidth=2, showgrid=False,
         #                  range=[0.0, 1.0], dtick=0.1)
@@ -203,7 +193,7 @@ class ROCDiagram(BasePlot):
         # Set y-axes titles
         # fig.update_yaxes(title_text="<b>primary</b> yaxis title", secondary_y=False)
         fig.update_yaxes(title_text=self.config_obj.yaxis_1, secondary_y=False, linecolor="black", linewidth=2,
-                         showgrid=False, zeroline=False, range=[0.0, 1.0],dtick=0.1)
+                         showgrid=False, zeroline=False, range=[0.0, 1.0], dtick=0.1)
         # fig.update_yaxes(title_text=self.config_obj.yaxis_2, secondary_y=True, linecolor="black", linewidth=2,
         #                  showgrid=False, zeroline=False, range=[0.0, 1.0], dtick=0.1)
 
@@ -264,36 +254,36 @@ class ROCDiagram(BasePlot):
         # fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="black", linewidth=2, showgrid=False,
         #                  dtick=0.1, tickmode='linear', tick0=0.0)
         fig.update_xaxes(title_text=self.config_obj.xaxis,
-                                 linecolor=constants.PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=constants.PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=False,
-                                 dtick=0.1,
-                                 tick0=0.0,
-                                 tickmode='linear',
-                                 zeroline=False,
-                                 title_font={
-                                     'size': self.config_obj.x_title_font_size
-                                 },
-                                 ticks="inside",
-                                 title_standoff=abs(self.config_obj.parameters['xlab_offset']),
-                                 tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size}
-                                 )
+                         linecolor=constants.PLOTLY_AXIS_LINE_COLOR,
+                         linewidth=constants.PLOTLY_AXIS_LINE_WIDTH,
+                         showgrid=False,
+                         dtick=0.1,
+                         tick0=0.0,
+                         tickmode='linear',
+                         zeroline=False,
+                         title_font={
+                             'size': self.config_obj.x_title_font_size
+                         },
+                         ticks="inside",
+                         title_standoff=abs(self.config_obj.parameters['xlab_offset']),
+                         tickangle=self.config_obj.x_tickangle,
+                         tickfont={'size': self.config_obj.x_tickfont_size}
+                         )
         fig.update_yaxes(title_text=
-                                 util.apply_weight_style(self.config_obj.yaxis_1,
-                                                         self.config_obj.parameters['ylab_weight']),
-                                 secondary_y=False,
-                                 linecolor=constants.PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=constants.PLOTLY_AXIS_LINE_WIDTH,
-                                 zeroline=False,
-                                 title_font={
-                                     'size': self.config_obj.y_title_font_size
-                                 },
-                                 ticks="inside",
-                                 title_standoff=abs(self.config_obj.parameters['ylab_offset']),
-                                 tickangle=self.config_obj.y_tickangle,
-                                 tickfont={'size': self.config_obj.y_tickfont_size}
-                                 )
+                         util.apply_weight_style(self.config_obj.yaxis_1,
+                                                 self.config_obj.parameters['ylab_weight']),
+                         secondary_y=False,
+                         linecolor=constants.PLOTLY_AXIS_LINE_COLOR,
+                         linewidth=constants.PLOTLY_AXIS_LINE_WIDTH,
+                         zeroline=False,
+                         title_font={
+                             'size': self.config_obj.y_title_font_size
+                         },
+                         ticks="inside",
+                         title_standoff=abs(self.config_obj.parameters['ylab_offset']),
+                         tickangle=self.config_obj.y_tickangle,
+                         tickfont={'size': self.config_obj.y_tickfont_size}
+                         )
 
         fig.update_layout(annotations=annotation)
 
@@ -316,14 +306,13 @@ class ROCDiagram(BasePlot):
 
                 # add the plot
                 fig.add_trace(
-                    go.Scatter(mode="lines+markers",x=pofd_points, y=pody_points, showlegend=True,
+                    go.Scatter(mode="lines+markers", x=pofd_points, y=pody_points, showlegend=True,
                                text=thresh_list, textposition="top right", name=legend_label,
                                line=dict(color=self.config_obj.colors_list[idx],
                                          width=self.config_obj.linewidth_list[idx]),
                                marker_symbol=self.config_obj.marker_list[idx]),
                     secondary_y=False
                 )
-
 
             def add_trace_copy(trace):
                 """Adds separate traces for markers and a legend.
@@ -337,8 +326,9 @@ class ROCDiagram(BasePlot):
                 #     new_trace.update(textfont_color=trace.marker.color, textposition='top center',
                 #                  mode="text", showlegend=False)
                 new_trace.update(textfont_color=trace.marker.color, textposition='top center',
-                                         mode="text", showlegend=False)
+                                 mode="text", showlegend=False)
                 trace.update(mode="lines+markers")
+
             if self.config_obj.add_point_thresholds:
                 fig.for_each_trace(add_trace_copy)
         return fig
@@ -452,7 +442,7 @@ def main(config_filename=None):
         r.save_to_file()
         r.write_html()
         r.write_output_file()
-        # r.show_in_browser()
+        r.show_in_browser()
     except ValueError as ve:
         print(ve)
 
