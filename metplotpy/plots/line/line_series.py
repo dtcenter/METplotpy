@@ -6,13 +6,16 @@ __email__ = 'met_help@ucar.edu'
 
 from typing import Union
 import math
+import statistics
 
 import numpy as np
 from pandas import DataFrame
+import pingouin as pg
+from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
+
 from plots.series import Series
-from scipy.stats import norm
 
 
 class LineSeries(Series):
@@ -90,8 +93,11 @@ class LineSeries(Series):
                dictionary with CI ,point values and number of stats as keys
         """
 
+        series_data_1 = None
+        series_data_2 = None
+
         # different ways to subset data for normal and derived series
-        if not self.series_name[-1] in utils.OPERATION_TO_SIGN.keys():
+        if self.series_name[-1] not in utils.OPERATION_TO_SIGN.keys():
             # this is a normal series
             all_filters = []
 
@@ -134,8 +140,7 @@ class LineSeries(Series):
             operation = self.series_name[2]
 
             # find original series data
-            series_data_1 = None
-            series_data_2 = None
+
             for series in self.series_list:
                 if set(series_name_1) == set(series.series_name):
                     series_data_1 = series.series_data
@@ -160,7 +165,7 @@ class LineSeries(Series):
 
         series_points_results = {'dbl_lo_ci': [], 'dbl_med': [], 'dbl_up_ci': [], 'nstat': []}
 
-        # for each point calculate plot statistic iand CI
+        # for each point calculate plot statistic and CI
         for indy in self.config.indy_vals:
             if utils.is_string_integer(indy):
                 indy = int(indy)
@@ -306,3 +311,33 @@ class LineSeries(Series):
                 self.series_data = stats_indy_1
             else:
                 self.series_data = self.series_data.append(stats_indy_1, sort=False)
+
+    def _calculate_tost_paired(self, series_data_1: DataFrame, series_data_2: DataFrame) -> dict:
+        """
+        Validates if both DataFrames have the same fcst_valid_beg values and if it is TRUE
+        Calculates derived statistic for the each line based on data from teh 1st and 2nd data frames
+        For example, if the operation is 'DIFF' the differences between values from
+        the 1st and the 2nd frames will be calculated
+        This method also calculates CI(s)
+
+        :param series_data_1: 1st data frame sorted  by fcst_init_beg
+        :param series_data_2: 2nd data frame sorted  by fcst_init_beg
+        """
+
+        corr = pg.corr(x=series_data_1['stat_value'], y=series_data_2['stat_value'])['r'].tolist()[0]
+        low_eqbound = self.config.get_config_value('eqbound_low')
+        if not low_eqbound:
+            low_eqbound = -0.001
+        high_eqbound = self.config.get_config_value('eqbound_high')
+        if not high_eqbound:
+            high_eqbound = 0.001
+
+        return utils.tost_paired(len(series_data_1['stat_value']),
+                                 statistics.mean(series_data_1['stat_value']),
+                                 statistics.mean(series_data_2['stat_value']),
+                                 statistics.stdev(series_data_1['stat_value']),
+                                 statistics.stdev(series_data_2['stat_value']),
+                                 corr,
+                                 low_eqbound, high_eqbound,
+                                 self.config.get_config_value('alpha')
+                                 )

@@ -16,8 +16,8 @@ import matplotlib.pyplot as plt
 from metcalcpy.calc_difficulty_index import forecast_difficulty as di
 from metcalcpy.calc_difficulty_index import EPS
 from metcalcpy.piecewise_linear import PiecewiseLinear as plin
-import metplotpy.difficulty_index.mycolormaps as mcmap
-from metplotpy.difficulty_index.plot_difficulty_index import plot_field
+import metplotpy.plots.difficulty_index.mycolormaps as mcmap
+from metplotpy.plots.difficulty_index.plot_difficulty_index import plot_field
 
 
 def load_data(filename):
@@ -48,7 +48,7 @@ def compute_difficulty_index(field, mu, sigma, thresholds):
     dij = {}
     for threshold in thresholds:
         dij[threshold] =\
-            di(sigma, mu, threshold, field, sigma_over_mu_ref=EPS)
+            di(sigma, mu, threshold, field, Aplin=None, sigma_over_mu_ref=EPS)
 
     return dij
 

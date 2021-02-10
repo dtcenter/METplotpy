@@ -95,11 +95,17 @@ class PerformanceDiagramSeries(Series):
             # match the series value name to
             # its corresponding permutation value
             col_str = svn
-            mask_val_str = cur_perm[i]
-            if i == 0:
-                query_str = col_str + " == " + '"' + mask_val_str + '"'
+
+            # If we have more than one item in the series_val1, treat this
+            # differently than if there is only one item
+            if len(self.series_val_names) > 1:
+                series_var_val_str = cur_perm[i]
             else:
-                query_str = query_str + " and " + col_str + " == " + '"' + mask_val_str + '"'
+                series_var_val_str = cur_perm
+            if i == 0:
+                query_str = col_str + " == " + '"' + series_var_val_str + '"'
+            else:
+                query_str = query_str + " and " + col_str + " == " + '"' + series_var_val_str + '"'
 
         subset_series = subsetted.query(query_str)
 

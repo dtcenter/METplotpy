@@ -52,7 +52,7 @@ How to run:
 ==========
 Run a 'pip install -e .' in $METplotpy to add metplotpy to the path. To call plot_difficulty_index, add the following import statement to the script:
 
-'from metplotpy.difficulty_index.plot_difficulty_index import plot_field'
+'from metplotpy.plots.difficulty_index.plot_difficulty_index import plot_field'
 
 To see an example, please look at the following:
 $METplotpy/test/difficulty_index/example_difficulty_index.py

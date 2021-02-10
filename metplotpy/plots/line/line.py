@@ -22,13 +22,13 @@ from plotly.graph_objects import Figure
 from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 from plots.line.line_config import LineConfig
 from plots.line.line_series import LineSeries
-from plots.met_plot import MetPlot
+from plots.base_plot import BasePlot
 import plots.util as util
 
 import metcalcpy.util.utils as calc_util
 
 
-class Line(MetPlot):
+class Line(BasePlot):
     """  Generates a Plotly line plot for 1 or more traces (lines)
          where each line is represented by a text point data file.
     """
@@ -46,7 +46,7 @@ class Line(MetPlot):
         super().__init__(parameters, "line_defaults.yaml")
 
         # instantiate a LineConfig object, which holds all the necessary settings from the
-        # config file that represents the MetPlot object (Line).
+        # config file that represents the BasePlot object (Line).
         self.config_obj = LineConfig(self.parameters)
 
         # Check that we have all the necessary settings for each series
@@ -75,7 +75,7 @@ class Line(MetPlot):
         # create figure
         # pylint:disable=assignment-from-no-return
         # Need to have a self.figure that we can pass along to
-        # the methods in met_plot.py (MetPlot class methods) to
+        # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
         self._create_figure()
 
@@ -225,7 +225,7 @@ class Line(MetPlot):
         no_ci_up = all(v == 0 for v in series.series_points['dbl_up_ci'])
         no_ci_lo = all(v == 0 for v in series.series_points['dbl_lo_ci'])
         error_y_visible = True
-        if no_ci_up is True and no_ci_lo is True:
+        if (no_ci_up is True and no_ci_lo is True) or self.config_obj.plot_ci[series.idx] == 'NONE':
             error_y_visible = False
 
         # switch x amd y values for the vertical plot
@@ -355,6 +355,9 @@ class Line(MetPlot):
             )
 
     def _add_xaxis(self) -> None:
+        """
+        Configures and adds x-axis to the plot
+        """
         self.figure.update_xaxes(title_text=self.config_obj.xaxis,
                                  linecolor=PLOTLY_AXIS_LINE_COLOR,
                                  linewidth=PLOTLY_AXIS_LINE_WIDTH,
@@ -376,6 +379,9 @@ class Line(MetPlot):
             self.figure.update_xaxes(autorange="reversed")
 
     def _add_yaxis(self) -> None:
+        """
+        Configures and adds y-axis to the plot
+        """
         self.figure.update_yaxes(title_text=
                                  util.apply_weight_style(self.config_obj.yaxis_1,
                                                          self.config_obj.parameters['ylab_weight']),

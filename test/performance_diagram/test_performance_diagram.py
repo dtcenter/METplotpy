@@ -29,7 +29,7 @@ def cleanup():
     # from any previous runs
     try:
         path = os.getcwd()
-        plot_file = 'performance_diagram_expected.png'
+        plot_file = 'performance_diagram_actual.png'
         points_file = 'plot_20200317_151252.points1'
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(path, points_file))
@@ -40,12 +40,12 @@ def cleanup():
 
 
 
-@pytest.mark.parametrize("test_input,expected",(["./performance_diagram_expected.png", True], ["./plot_20200317_151252.points1", True]))
-def test_files_exist(setup, test_input, expected):
+@pytest.mark.parametrize("test_input,expected_bool",(["./performance_diagram_actual.png", True], ["./plot_20200317_151252.points1", True]))
+def test_files_exist(setup, test_input, expected_bool):
     '''
         Checking that the plot and data files are getting created
     '''
-    assert os.path.isfile(test_input) == expected
+    assert os.path.isfile(test_input) == expected_bool
     cleanup()
 
 
@@ -56,7 +56,7 @@ def test_images_match(setup):
         changed in appearance.
     '''
     path = os.getcwd()
-    plot_file = './performance_diagram_expected.png'
+    plot_file = 'performance_diagram_actual.png'
     actual_file = os.path.join(path, plot_file)
     comparison = CompareImages('./performance_diagram_expected.png',actual_file)
     assert comparison.mssim == 1
