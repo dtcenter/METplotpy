@@ -21,11 +21,11 @@ import numpy as np
 import plotly.graph_objects as go
 
 """
-Import MetPlot class
+Import BasePlot class
 """
-from plots.met_plot import MetPlot
+from plots.base_plot import BasePlot
 
-class Histrogram_2d(MetPlot):
+class Histrogram_2d(BasePlot):
     """
     Class to create a Plotly Histogram_2d plot from a 2D data array
     """
@@ -50,9 +50,12 @@ if __name__ == "__main__":
     """
     Parse command line arguments
     """
+    metplotpy_base = os.getenv('METPLOTPY_BASE')
+    if not metplotpy_base:
+        metplotpy_base = ''
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str,
-        default=os.path.join(os.getenv('METPLOTPY_BASE'),
+        default=os.path.join(metplotpy_base,
         'plots', 'config', 'histogram_2d_defaults.yaml'),
         help='configuration file')
     parser.add_argument('--datadir', type=str,
