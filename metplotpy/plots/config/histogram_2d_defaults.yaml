@@ -1,0 +1,11 @@
+plot_filename:
+height: 800
+width: 1200
+title:
+
+font_size: 20
+
+xaxis_title:
+yaxis_title:
+
+var_name:
