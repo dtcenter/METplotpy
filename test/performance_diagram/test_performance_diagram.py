@@ -8,6 +8,8 @@
 
 import pytest
 import os
+import sys
+sys.path.append('../..')
 from metplotpy.plots.performance_diagram import performance_diagram as pd
 from metcalcpy.compare_images import CompareImages
 
@@ -39,7 +41,6 @@ def cleanup():
         pass
 
 
-
 @pytest.mark.parametrize("test_input,expected_bool",(["./performance_diagram_actual.png", True], ["./plot_20200317_151252.points1", True]))
 def test_files_exist(setup, test_input, expected_bool):
     '''
@@ -55,6 +56,10 @@ def test_images_match(setup):
         newly created plot to verify that the plot hasn't
         changed in appearance.
     '''
+    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    custom_config_filename = "./custom_performance_diagram.yaml"
+    pd.main(custom_config_filename)
+
     path = os.getcwd()
     plot_file = 'performance_diagram_actual.png'
     actual_file = os.path.join(path, plot_file)
