@@ -17,7 +17,6 @@ import sys
 import argparse
 import logging
 import yaml
-import numpy as np
 import xarray as xr
 import plotly.graph_objects as go
 
@@ -39,7 +38,11 @@ class Histogram_2d(BasePlot):
 
         self.data = data
 
-        logging.debug(self.data.dims)
+        self.dims = data.dims
+
+        self.coords = data.coords
+
+        self.pdf = data / data.sum()
 
         self.figure = go.Figure()
 
@@ -47,8 +50,15 @@ class Histogram_2d(BasePlot):
 
     def create_figure(self):
 
-        self.figure.add_heatmap(z = self.data)
+        if self.get_config_value('normalize_to_pdf'):
+            z_data = self.pdf
+        else:
+            z_data = self.data
 
+        self.figure.add_heatmap(
+            x=self.data.coords[self.dims[0]],
+            y=self.data.coords[self.dims[1]],
+            z=z_data)
 
 
 if __name__ == "__main__":

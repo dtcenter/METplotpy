@@ -9,3 +9,5 @@ xaxis_title:
 yaxis_title:
 
 var_name: 'hist_APCP_00_L0_PWAT_L0'
+
+normalize_to_pdf: False
