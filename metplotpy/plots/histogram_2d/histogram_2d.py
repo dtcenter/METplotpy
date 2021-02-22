@@ -18,6 +18,7 @@ import argparse
 import logging
 import yaml
 import numpy as np
+import xarray as xr
 import plotly.graph_objects as go
 
 """
@@ -25,7 +26,8 @@ Import BasePlot class
 """
 from plots.base_plot import BasePlot
 
-class Histrogram_2d(BasePlot):
+
+class Histogram_2d(BasePlot):
     """
     Class to create a Plotly Histogram_2d plot from a 2D data array
     """

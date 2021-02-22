@@ -8,4 +8,4 @@ font_size: 20
 xaxis_title:
 yaxis_title:
 
-var_name:
+var_name: 'hist_APCP_00_L0_PWAT_L0'
