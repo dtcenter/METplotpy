@@ -4,7 +4,7 @@ height: 800
 width: 1200
 font_size: 20
 
-var_name: 'hist_APCP_00_L0_PWAT_L0'
+var_name: 'hist_x_y'
 
 title: 'Probability Distribution Function'
 xaxis_title: 'x'
@@ -13,6 +13,4 @@ yaxis_title: 'y'
 normalize_to_pdf: True
 
 pdf_min: 0.0
-pdf_max: 0.001
-
-
+pdf_max: 0.1
