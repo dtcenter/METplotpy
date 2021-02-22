@@ -1,13 +1,18 @@
 plot_filename: 'grid_diag_out.png'
+
 height: 800
 width: 1200
-title:
-
 font_size: 20
-
-xaxis_title:
-yaxis_title:
 
 var_name: 'hist_APCP_00_L0_PWAT_L0'
 
-normalize_to_pdf: False
+title:
+xaxis_title:
+yaxis_title:
+
+normalize_to_pdf: True
+
+pdf_min: 0.0
+pdf_max: 0.001
+
+

@@ -37,11 +37,10 @@ class Histogram_2d(BasePlot):
         logging.debug(self.parameters)
 
         self.data = data
-
         self.dims = data.dims
-
         self.coords = data.coords
 
+        # normalized probability distribution function
         self.pdf = data / data.sum()
 
         self.figure = go.Figure()
@@ -58,7 +57,9 @@ class Histogram_2d(BasePlot):
         self.figure.add_heatmap(
             x=self.data.coords[self.dims[0]],
             y=self.data.coords[self.dims[1]],
-            z=z_data)
+            z=z_data,
+            zmin=self.get_config_value('pdf_min'),
+            zmax=self.get_config_value('pdf_max'))
 
 
 if __name__ == "__main__":
