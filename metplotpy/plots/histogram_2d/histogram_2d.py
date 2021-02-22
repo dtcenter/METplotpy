@@ -39,6 +39,9 @@ class Histogram_2d(BasePlot):
 
         self.data = data
 
+        self.dims = data.dims
+        logging.debug(self.dims)
+
         self.figure = go.Figure()
 
         self.create_figure()
@@ -118,5 +121,5 @@ if __name__ == "__main__":
 
     plot = Histogram_2d(None, data)
 
-    plot.show_in_browser()
+    # plot.show_in_browser()
     plot.save_to_file()
