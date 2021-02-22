@@ -1,4 +1,4 @@
-plot_filename:
+plot_filename: 'grid_diag_out.png'
 height: 800
 width: 1200
 title:
