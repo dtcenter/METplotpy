@@ -61,6 +61,15 @@ class Histogram_2d(BasePlot):
             zmin=self.get_config_value('pdf_min'),
             zmax=self.get_config_value('pdf_max'))
 
+        self.figure.update_layout(
+            height=self.get_config_value('height'),
+            width=self.get_config_value('width'),
+            font=dict(size=self.get_config_value('font_size')),
+            title=self.get_config_value('title'),
+            xaxis_title=self.get_config_value('xaxis_title'),
+            yaxis_title=self.get_config_value('yaxis_title'),
+        )
+
 
 if __name__ == "__main__":
     """

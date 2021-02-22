@@ -6,9 +6,9 @@ font_size: 20
 
 var_name: 'hist_APCP_00_L0_PWAT_L0'
 
-title:
-xaxis_title:
-yaxis_title:
+title: 'Probability Distribution Function'
+xaxis_title: 'x'
+yaxis_title: 'y'
 
 normalize_to_pdf: True
 
