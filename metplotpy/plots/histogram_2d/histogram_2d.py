@@ -39,8 +39,7 @@ class Histogram_2d(BasePlot):
 
         self.data = data
 
-        self.dims = data.dims
-        logging.debug(self.dims)
+        logging.debug(self.data.dims)
 
         self.figure = go.Figure()
 
@@ -48,7 +47,8 @@ class Histogram_2d(BasePlot):
 
     def create_figure(self):
 
-        pass
+        self.figure.add_heatmap(z = self.data)
+
 
 
 if __name__ == "__main__":
