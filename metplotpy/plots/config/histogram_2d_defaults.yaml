@@ -1,4 +1,4 @@
-plot_filename: 'grid_diag_out.png'
+plot_filename: 'prob_dist.png'
 
 height: 800
 width: 1200
