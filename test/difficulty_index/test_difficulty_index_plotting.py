@@ -1,4 +1,5 @@
-import example_difficulty_index as edi  
+import example_difficulty_index as edi
+import math
 from metcalcpy.compare_images import CompareImages
 import pytest
 import warnings
@@ -15,5 +16,11 @@ def test_difficulty_index_plot():
     file1 = 'swh_North_Pacific_5dy_ensemble.npz'
     edi.main()
     comparison = CompareImages('diff_index_expected.png', 'swh_North_Pacific_difficulty_index_9_00_feet.png')
+    # Allow small changes in the title font size, which
+    # result in comparison = 0.9926 and not the expected value of 1.
+    # Accepting 99% match between the expected and actual results in a change
+    # of the original assertion.
+    # assert (0.99 < comparison.mssim)
+
     assert comparison.mssim == 1
 
