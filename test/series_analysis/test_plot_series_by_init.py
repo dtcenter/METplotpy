@@ -2,9 +2,11 @@
    the sample data on the host 'eyewall': /d1/METplus_Plotting_Data/series_by_init
 """
 import os, shutil
+import sys
+sys.path.append("../../metplotpy/contributed")
 import errno
 import pytest
-import plot_series_by_init as psi
+import series_analysis.plot_series_by_init as psi
 from PIL import Image
 from PIL import ImageChops
 
