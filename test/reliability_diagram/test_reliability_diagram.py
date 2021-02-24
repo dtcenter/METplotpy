@@ -8,9 +8,12 @@
 
 import pytest
 import os
+import warnings
 from metplotpy.plots.reliability_diagram import reliability as r
 from metcalcpy.compare_images import CompareImages
 
+# Suppress future warnings which don't impact us
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 @pytest.fixture
 def setup():
