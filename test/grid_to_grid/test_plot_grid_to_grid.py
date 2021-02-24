@@ -10,7 +10,7 @@ import os
 import pytest
 # Import used to perform image_comparison with an identified baseline of plots.
 # from matplotlib.testing.decorators import image_comparison
-import plot_grid_to_grid as pgg
+import contributed.grid_to_grid.plot_grid_to_grid as pgg
 
 
 @pytest.fixture()
