@@ -10,7 +10,7 @@ title: 'Probability Distribution Function'
 xaxis_title: 'x'
 yaxis_title: 'y'
 
-normalize_to_pdf: True
+normalize_to_pdf: False
 
 pdf_min: 0.0
-pdf_max: 0.1
+pdf_max: 4.0

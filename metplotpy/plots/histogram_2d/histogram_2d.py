@@ -17,6 +17,7 @@ import sys
 import argparse
 import logging
 import yaml
+import numpy as np
 import xarray as xr
 import plotly.graph_objects as go
 
@@ -71,6 +72,22 @@ class Histogram_2d(BasePlot):
         )
 
 
+def create_test_data(filename_in):
+    logging.debug('Creating test data')
+    nx, ny = 21, 21
+    x_coord = np.linspace(-2, 2, nx)
+    y_coord = np.linspace(-2, 2, ny)
+    x_mesh, y_mesh = np.meshgrid(x_coord, y_coord, indexing='ij')
+    f_mesh = 4 - np.square(x_mesh - y_mesh + 1)
+    f_mesh = np.clip(f_mesh, 0, 4)
+    logging.debug(f_mesh.max())
+    f_array = xr.DataArray(f_mesh,
+        dims=['x', 'y'],
+        coords={'x': x_coord, 'y': y_coord})
+    ds = xr.Dataset({'hist_x_y': f_array})
+    ds.to_netcdf(filename_in)
+
+
 if __name__ == "__main__":
     """
     Parse command line arguments
@@ -94,6 +111,8 @@ if __name__ == "__main__":
         help='log file (default stdout)')
     parser.add_argument('--debug', action='store_true',
         help='set logging level to debug')
+    parser.add_argument('--test', action='store_true',
+                        help='internal test')
     args = parser.parse_args()
 
     """
@@ -113,6 +132,12 @@ if __name__ == "__main__":
     Construct input filename
     """
     filename_in = os.path.join(args.datadir, args.input)
+
+    """
+    Create test dataset
+    """
+    if args.test:
+        create_test_data(filename_in)
 
     """
     Read YAML configuration file
@@ -137,9 +162,8 @@ if __name__ == "__main__":
     logging.debug(ds)
 
     data = ds[config['var_name']]
-    logging.debug(data)
 
     plot = Histogram_2d(None, data)
 
-    # plot.show_in_browser()
-    plot.save_to_file()
+    plot.show_in_browser()
+    # plot.save_to_file()
