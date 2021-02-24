@@ -6,9 +6,12 @@
 """
 
 import os
+import sys
+sys.path.append("../../metplotpy/contributed")
 import errno
 import pytest
-import plot_series_by_lead_all as psla
+import series_analysis.plot_series_by_lead_all as psla
+
 
 @pytest.fixture()
 def settings():
