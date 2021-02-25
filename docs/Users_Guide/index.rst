@@ -12,7 +12,7 @@ be found on the `METplus website <http://dtcenter.org/community-code/metplus>`_.
 
 It is important to note here that METplotpy is an evolving software package.
 This documentation describes the |release| release dated |release_date|.
-Intermediate releases may include bug fixes. METploytpy is also able to accept
+Intermediate releases may include bug fixes. METplotpy is also able to accept
 new modules contributed by the community. If you have code you would like to
 contribute, we will gladly consider your contribution. Please send an email to:
 `met_he\lp@ucar.edu <mailto:>`__. We will then determine if we will be able to
