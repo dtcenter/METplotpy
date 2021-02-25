@@ -15,7 +15,7 @@ This documentation describes the |release| release dated |release_date|.
 Intermediate releases may include bug fixes. METplotpy is also able to accept
 new modules contributed by the community. If you have code you would like to
 contribute, we will gladly consider your contribution. Please send an email to:
-`met_he\lp@ucar.edu <mailto:>`__. We will then determine if we will be able to
+`met_help@ucar.edu <mailto:>`__. We will then determine if we will be able to
 include the contribution in a future version.
 
 This User's Guide was prepared by the developers of METplotpy, including
