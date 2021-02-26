@@ -1,10 +1,12 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_examples_sample_plot_sample.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_examples_sample_plot_sample.py:
+        Click :ref:`here <sphx_glr_download_examples_sample_plot_sample.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_examples_sample_plot_sample.py:
 
 
 This is a sample plot
@@ -16,6 +18,7 @@ Make a simple x-y plot
 
 .. image:: /examples/sample/images/sphx_glr_plot_sample_001.png
     :class: sphx-glr-single-img
+
 
 
 
@@ -35,7 +38,7 @@ Make a simple x-y plot
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.221 seconds)
+   **Total running time of the script:** ( 0 minutes  0.302 seconds)
 
 
 .. _sphx_glr_download_examples_sample_plot_sample.py:
@@ -48,13 +51,13 @@ Make a simple x-y plot
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: plot_sample.py <plot_sample.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: plot_sample.ipynb <plot_sample.ipynb>`
 

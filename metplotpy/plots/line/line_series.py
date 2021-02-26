@@ -106,8 +106,12 @@ class LineSeries(Series):
                 filter_value = self.series_name[field_ind]
                 if "," in filter_value:
                     filter_list = filter_value.split(',')
+                    # add the original value
+                    filter_list.append(filter_value)
                 elif ";" in filter_value:
                     filter_list = filter_value.split(';')
+                    # add the original value
+                    filter_list.append(filter_value)
                 else:
                     filter_list = [filter_value]
                 for i, filter_val in enumerate(filter_list):

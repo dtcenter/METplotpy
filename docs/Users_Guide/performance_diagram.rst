@@ -56,16 +56,15 @@ file if all default settings are to be applied.
 * **title_offset**  Unsupported by Matplotlib, included for consistency with METviewer
 
 * **title_size**   Magnifier value. Values above 1.0 create title 
-               that is larger than the internal default size. 
-               Values less than 1.0 create a title that is 
-               smaller than the internal default size.
+  that is larger than the internal default size. Values less than
+  1.0 create a title that is smaller than the internal default size.
 
 * **xaxis**  The label to the x-axis
 
 * **yaxis_1**  The label to the bottom y-axis
 
 * **yaxis_2**  The label to the top y-axis (leave empty if second y-axis 
-           is not needed/required)
+  is not needed/required)
 
 * **plot_width**  width of plot in inches
 
@@ -73,18 +72,17 @@ file if all default settings are to be applied.
 
 * **plot_units**  units for plot: in for inches or cm for centimeters
 
-* **plot_ci**      A list of values of the type of Confidence Intervals to apply.
-               Choose either None for no confidence intervals or Norm for 
-               normalized confidence intervals.
+* **plot_ci**  A list of values of the type of Confidence Intervals to apply.
+  Choose either None for no confidence intervals or Norm for normalized
+  confidence intervals.
                
 
 * **plot_disp**     A list of True/False values. True to display, False otherwise
 
 * **series_order**  A list of values 1..n indicating the order of the series in the list
-               e.g. if the list is 3, then 1, then 2 this indicates that the first
-               series in the list is to be treated as the third, the second element
-               in the list is to be treated as the first series, and the third 
-               element in the list is to be treated as the second series.
+  e.g. if the list is 3, then 1, then 2 this indicates that the first series in the list
+  is to be treated as the third, the second element in the list is to be treated as the
+  first series, and the third element in the list is to be treated as the second series.
  
 * **indy_var**     The independant variable
 
@@ -102,46 +100,43 @@ file if all default settings are to be applied.
 
 * **list_stat_2**   Second list of statistics of interest. Leave as empty list
 
-* **user_legend**   List of legend labels.  One for each series.
-                    If any list member is empty, a legend label will be created based
-                    on other information.
+* **user_legend**   List of legend labels.  One for each series. If any list
+  member is empty, a legend label will be created based on other information.
 
-* **legend_box**    'n' for no box around the legend
-                    'o' for a box drawn around the legend
+* **legend_box**
+  'n' for no box around the legend
+  'o' for a box drawn around the legend
 
 * **legend_ncol**    Integer value indicating how many columns of
-                     legend labels
+  legend labels
 
 * **legend_inset**   x and y values indicating position of the legend
 
 * **legend_size**    A magnification value.  Value greater than 1.
-                     produces a legend that is greater than an internal
-                     default value.  Value less than 1.0 produces
-                     a legend smaller than an internal default size.
+  Produces a legend that is greater than an internal default value.
+  Value less than 1.0 produces a legend smaller than an internal default size.
 
-* **plot_stat**      The statistics to plot: median, mean or sum
+* **plot_stat**  The statistics to plot: median, mean or sum
 
 * **plot_contour_legend**  True for drawing a legend for contour lines, False otherwise
 
 * **colors**   A list of colors one for each series. Define as color name or hexadecimal values  
 
-* **series_line_width**   A list of widths for each series line.  Values greater than 1 result 
-                           in a thicker line.
+* **series_line_width**   A list of widths for each series line.  Values greater than 1 result
+  in a thicker line.
 
-* **series_symbols**     A list of symbols to apply for each series: 'o' for circle, 
-                         's' for square, 'H' for ring,
-                         'd' for diamond, '^' for triangle
+* **series_symbols**     A list of symbols to apply for each series:
+  'o' for circle, 's' for square, 'H' for ring, 'd' for diamond, '^' for triangle
 
 * **series_line_style**  A list of line styles to apply to the corresponding series:
-	                 '-' for solid line
-                         '--' for dashed line
-                         ':' for dotted line
+  '-' for solid line
+  '--' for dashed line
+  ':' for dotted line
 
 * **event_equal**      True to perform event equalization on data, False otherwise
 
-* **annotation_template**  Annotation for y-value.  Leave empty if no annotation is desired
-                           Otherwise indicate template with "%y <units>".  Double quotes around
-                           annotation is needed.
+* **annotation_template**  Annotation for y-value.  Leave empty if no annotation is desired.
+  Otherwise indicate template with "%y <units>".  Double quotes around annotation is needed.
 
 * **plot_caption**     Caption text, leave empty if no caption is desired
 
@@ -180,7 +175,7 @@ file if all default settings are to be applied.
 * **stat_input**      path and filename of the input MET stat file
 
 * **plot_filename**   path and filename of the output performance diagram PNG file
-                      Only PNG output is currently supported.
+  Only PNG output is currently supported.
 
 Run from the Command Line
 ~~~~~~~~~~~~~~~~~~~~~~~~~
