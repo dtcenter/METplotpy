@@ -9,29 +9,33 @@ Python Requirements
 
 * Python 3.6.3
 
+* bootstrapped 0.0.2 
+
 * cartopy 0.17.0 or above
 
-* kaleido
+* imutils 0.5.3
+
+* kaleido 0.0.1
 
 * kiwisolver 1.0.1
 
 * lxml
 
-* matplotlib 3.3 or above
+* matplotlib 3.3.3 or above
 
 * metcalcpy 
 
-* netcdf 
+* netcdf 1.5.1.2 or above 
 
 * numpy
 
 * pandas
 
-* Pillow
+* pillow
 
-* pingouin
+* pingouin 0.3.10 or above
 
-* Pint
+* pint
 
 * pyshp
 
