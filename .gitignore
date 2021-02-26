@@ -1,3 +1,5 @@
+#Ignore docs subdirectory
+docs/
 
 #Ignore tilda files created by emacs
 *~
