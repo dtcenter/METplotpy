@@ -7,6 +7,45 @@ describes the bugfix, enhancement, or new feature: `METplotpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ------------------------------------------------
 
+Version 1.0.0_beta4 release notes (20201208)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* New Plots:
+
+   * Add plots for GridDiag analysis  (`#36 <https://github.com/dtcenter/METplotpy/issues/36>`_)
+
+* Enhancements:
+
+   * Series plot support for "group" statistics (`#88 <https://github.com/dtcenter/METplotpy/issues/88>`_)
+
+   * Add a version selector for documentation (`#60 <https://github.com/dtcenter/METplotpy/issues/60>`_)
+
+* Internal:
+
+
+Version 1.0.0_beta3 release notes (20201208)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* New Plots:
+ 
+  * Implement Equivalence Testing Bounds plot in Plotly (`#71 <https://github.com/dtcenter/METplotpy/issues/71>`_)
+
+  * Recreate plot generated in the blocking Subseasonal to seasonal (S2S) script    provided by University of Illinois (`#40 <https://github.com/dtcenter/METplotpy/issues/40>`_)
+
+* Enhancements:
+
+* Internal:
+ 
+    * Rename the met_plot.py and MetPlot class name (`#69 <https://github.com/dtcenter/METplotpy/issues/69>`_)
+ 
+    * Automate release date for automation (`#62 <https://github.com/dtcenter/METplotpy/issues/62>`_)
+
+* Bugfixes:
+    
+    * Difficulty index plot loses data at edges (`#76 <https://github.com/dtcenter/METplotpy/issues/76>`_)
+
+
+
 Version 1.0.0_beta2 release notes (20201208)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * New Plots:
