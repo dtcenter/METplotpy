@@ -1,15 +1,3 @@
-alpha: 0.05
-box_avg: 'False'
-box_boxwex: 0.2
-box_notch: 'False'
-box_outline: 'True'
-box_pts: 'False'
-caption_align: 0.0
-caption_col: '#333333'
-caption_offset: 3.0
-caption_size: 0.8
-caption_weight: 1
-cex: 1
 colors:
 - '#ff0000'
 - '#55ff00'
