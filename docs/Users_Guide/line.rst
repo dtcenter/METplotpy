@@ -31,7 +31,7 @@ output from MET in columnar format.
 The line plot utilizes YAML configuration files to indicate where input data is located and
 to set plot attributes. These plot attributes correspond to values that can be set via the METviewer
 tool. YAML is a recursive acroynym for "YAML Ain't Markup Language" and according to yaml.org,
-it is a "human-readable data-serialization language. It is commonly used for configuration files
+it is a "human-readable data-serialization language". It is commonly used for configuration files
 and in applications where data is being stored or transmitted".  Two configuration files are required,
 the first is a default configuration file, line_defaults.yaml that is found in the
 $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config directory.  All default
