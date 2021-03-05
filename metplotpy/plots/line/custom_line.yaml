@@ -148,7 +148,7 @@ show_signif:
 - 'False'
 - 'False'
 - 'False'
-stat_input: ./line.data
+stat_input: ../../../test/line/line.data
 sync_yaxes: 'False'
 title: test title
 title_align: 0.5
