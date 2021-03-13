@@ -9,8 +9,8 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from cartopy.util import add_cyclic_point
 import numpy as np
-import sys
-sys.path.insert(0, "/glade/u/home/kalb/UIUC/METcalcpy/")
+#import sys
+#sys.path.insert(0, "/glade/u/home/kalb/UIUC/METcalcpy/")
 import metcalcpy.util.utils as util
 
 def plot_elbow(K,d,mi,line,curve,plot_title,output_plotname):
@@ -30,6 +30,7 @@ def plot_elbow(K,d,mi,line,curve,plot_title,output_plotname):
 
 def plot_eof(eof,wrnum,variance_fractions,lons,lats,output_plotname,plevels):
 
+    print(output_plotname)
     middleIndex = int((len(lons) - 1)/2)
     lon0 = lons[middleIndex]
 
@@ -44,6 +45,7 @@ def plot_eof(eof,wrnum,variance_fractions,lons,lats,output_plotname,plevels):
     proj = tran
     fig = plt.figure(figsize=(10,10))
     for i in np.arange(0,wrnum,1):
+        print('plotting')
         corr = eof[i]
         ax1 = fig.add_subplot(nrows,2,i+1,projection=proj)
         contourf(lons,lats,corr,plevels,transform=ccrs.PlateCarree(),cmap = cmocean.cm.balance,extend='both')
@@ -60,13 +62,13 @@ def plot_eof(eof,wrnum,variance_fractions,lons,lats,output_plotname,plevels):
     plt.savefig(full_output_plot,format=fmt,dpi=400, bbox_inches='tight')
 
 
-def plot_K_means(inputi,wrnum,lon,lat,perc,output_plotname,plevels):
+def plot_K_means(inputi,wrnum,lons,lats,perc,output_plotname,plevels):
 
-    lon,lonsort = util.convert_lons_indices(lon,-180,360)
+    lons,lonsort = util.convert_lons_indices(lons,-180,360)
 
     ### Plot the clusters
-    middleIndex = int((len(lon) - 1)/2)
-    lon0 = lon[middleIndex]
+    middleIndex = int((len(lons) - 1)/2)
+    lon0 = lons[middleIndex]
 
     ii=np.arange(0,wrnum,1)
     remp = wrnum%2
@@ -75,7 +77,7 @@ def plot_K_means(inputi,wrnum,lon,lat,perc,output_plotname,plevels):
     else:
         nrows = (wrnum+1)/2
 
-    lon,lat = np.meshgrid(lon, lat)
+    lons,lats = np.meshgrid(lons, lats)
     tran = ccrs.PlateCarree(central_longitude=lon0)
     proj = tran
     fig = plt.figure(figsize=(10,10))
@@ -83,13 +85,12 @@ def plot_K_means(inputi,wrnum,lon,lat,perc,output_plotname,plevels):
         g = ii[g1]
         ax1 = fig.add_subplot(nrows,2,g1+1,projection=proj)
         if plevels:
-            contourf(lon,lat,inputi[g],plevels,transform=ccrs.PlateCarree(),cmap = cmocean.cm.balance,extend="both")
+            contourf(lons,lats,inputi[g],plevels,transform=ccrs.PlateCarree(),cmap = cmocean.cm.balance,extend="both")
         else:
-            contourf(lon,lat,inputi[g],transform=ccrs.PlateCarree(),cmap = cmocean.cm.balance,extend="both")
+            contourf(lons,lats,inputi[g],transform=ccrs.PlateCarree(),cmap = cmocean.cm.balance,extend="both")
         ax1.coastlines(resolution='50m', color='gray', linewidth=1.25)
         if (wrnum - g1) <= 2:
             plt.colorbar(orientation='horizontal', fraction=0.086, pad=0.05).set_label(label='m',size=15)
-            #plt.colorbar().set_label(label='m',size=15)
         fr = perc[g1]*100 #get_cluster_fraction(f,g) * 100
         plt.title('Weather Regime '+str(g1+1)+' ('+str(round(fr,1))+'%)')
 
