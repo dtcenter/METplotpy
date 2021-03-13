@@ -9,8 +9,8 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from cartopy.util import add_cyclic_point
 import numpy as np
-#import sys
-#sys.path.insert(0, "/glade/u/home/kalb/UIUC/METcalcpy/")
+import sys
+sys.path.insert(0, "/glade/u/home/kalb/UIUC/METcalcpy/")
 import metcalcpy.util.utils as util
 
 def plot_elbow(K,d,mi,line,curve,plot_title,output_plotname):
@@ -45,7 +45,6 @@ def plot_eof(eof,wrnum,variance_fractions,lons,lats,output_plotname,plevels):
     proj = tran
     fig = plt.figure(figsize=(10,10))
     for i in np.arange(0,wrnum,1):
-        print('plotting')
         corr = eof[i]
         ax1 = fig.add_subplot(nrows,2,i+1,projection=proj)
         contourf(lons,lats,corr,plevels,transform=ccrs.PlateCarree(),cmap = cmocean.cm.balance,extend='both')

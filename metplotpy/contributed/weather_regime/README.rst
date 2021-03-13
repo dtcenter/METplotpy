@@ -70,10 +70,10 @@ In your code, generate the following as numpy arrays
     stuff
 
 * **line**:
-    stuff
+    a numpy array
 
 * **curve**:
-    stuff
+    a numpy array 
 
 * **plot_title**:
     A string that gives the name of the title of the plot
