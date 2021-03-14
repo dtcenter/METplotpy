@@ -9,8 +9,6 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from cartopy.util import add_cyclic_point
 import numpy as np
-import sys
-sys.path.insert(0, "/glade/u/home/kalb/UIUC/METcalcpy/")
 import metcalcpy.util.utils as util
 
 def plot_elbow(K,d,mi,line,curve,plot_title,output_plotname):
