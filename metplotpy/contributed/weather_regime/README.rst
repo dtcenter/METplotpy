@@ -139,9 +139,9 @@ In your code, generate the following as numpy arrays
 
 
 **Invoke the plotting functions**
-    pwr.plot_elbow(K,d,mi,line,curve,plot_title,plot_outname)
-    pwr.plot_eof(eof,wrnum,variance_fractions,lons,lats,plot_outname,plevels)
-    pwr.plot_K_means(kmeans,wrnum,lons,lats,perc,plot_outname,plevels)
+    | pwr.plot_elbow(K,d,mi,line,curve,plot_title,plot_outname)
+    | pwr.plot_eof(eof,wrnum,variance_fractions,lons,lats,plot_outname,plevels)
+    | pwr.plot_K_means(kmeans,wrnum,lons,lats,perc,plot_outname,plevels)
 
 
 **Output**
