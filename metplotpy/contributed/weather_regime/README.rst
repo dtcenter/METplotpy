@@ -64,16 +64,16 @@ In your code, generate the following as numpy arrays
     weather regime analysis
 
 * **d**:
-    a numpy array of 
+    a numpy array containing the differences between the curve and the line
 
 * **mi**:
-    stuff
+    a numpy array containing the location of the maximum distance
 
 * **line**:
-    a numpy array
+    a numpy array representing the straight line from the sum of squared difference for all clusters
 
 * **curve**:
-    a numpy array 
+    a numpy array containing the actual values of sum of squared distances
 
 * **plot_title**:
     A string that gives the name of the title of the plot
