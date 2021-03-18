@@ -19,236 +19,538 @@ import matplotlib.patches as patches
 from matplotlib.path import Path
 
 # Config options
-ADDPTS = True
+ADDPTS = False
 FCSTLEAD = 96
-
-# Use gridspec
-gs = gridspec.GridSpec(nrows=4,ncols=1,height_ratios=[1,1,1,1],hspace=0.20,wspace=0.0)
-
-# New Figure
-fig = plt.figure(1,figsize=(20,15))
-
-# Coordinate reference system
-crs = ccrs.PlateCarree(central_longitude=180.0)
-
-#gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
-#                  linewidth=0.5, color='gray', alpha=0.4, linestyle='-')
-#gl.xlabels_top = True
-#gl.ylabels_left = True
-#gl.xlines = True
-#gl.ylines = True
-#gl.xlocator = mticker.FixedLocator([0,30,60,90,120,150,180,-30,-60,-90,-120,-150,-180])
-#gl.xformatter = LONGITUDE_FORMATTER
-#gl.yformatter = LATITUDE_FORMATTER
-#gl.xlabel_style = {'size': 15, 'color': 'gray'}
-#gl.ylabel_style = {'size': 15, 'color': 'gray'}
 
 # Function for common axis params
 def setup_axis(ax):
+
+    # What environment variables will we need here?
+    # None, just leave this stuff fixed for the use case
+
+    # Add coastlines
     ax.coastlines(resolution='50m',color='black')
-    #ax.set_global()
-    #ax.set_extent([0,359,-40,40],crs=ccrs.PlateCarree())
+
+    # Set the latitude window limit (y-axis)
     ax.set_ylim([-40,40])
-    #ax.set_xticks([0, 60, 120, 180, 240, 300, 360], crs=ccrs.PlateCarree())
+
+    # Define the tickmark locations for the x-axis (longitude)
     ax.set_xticks([45, 90, 135, 180, 225, 270, 315], minor=False, crs=ccrs.PlateCarree())
-    #ax.set_yticks([-90, -60, -30, 0, 30, 60, 90], crs=ccrs.PlateCarree())
-    #ax.set_yticks([-45 -30, -15, 0, 15, 30, 45], crs=ccrs.PlateCarree())
+
+    # Define the tickmark locations for the y-axis (latitude)
     ax.set_yticks([-40, -30, -15, 0, 15, 30, 40], minor=False, crs=ccrs.PlateCarree())
+
+    # Set tickmark formatting for x and y axes
     ax.xaxis.set_major_formatter(LongitudeFormatter(zero_direction_label=True))
     ax.yaxis.set_major_formatter(LatitudeFormatter())
+
+    # Control which sides of the panel tickmarks appear on
     ax.tick_params(axis="x", bottom=True, top=False, labelbottom=True, labeltop=False)
     ax.tick_params(axis="y", left=True, right=True, labelleft=True, labelright=True)
-    ax.set_ylabel('')
-    ax.set_xlabel('')
-    #ax.add_feature(cfeat.STATES.with_scale('50m'))
-    #ax.set_extent([0.0,359.0,-45.0,45.0],crs=ccrs.PlateCarree())
-
-def setup_gridlines(ax):
-    ax.set_ylim([-40,40])
-    ax.set_xticks(list(range(0,370,10)),minor=False,crs=ccrs.PlateCarree())
-    ax.set_yticks(list(range(-40,50,10)),minor=False,crs=ccrs.PlateCarree())
-    ax.xaxis.set_major_formatter(LongitudeFormatter(zero_direction_label=True))
-    ax.yaxis.set_major_formatter(LatitudeFormatter())
-    ax.tick_params(axis="x", bottom=False, top=False, labelbottom=False, labeltop=False,grid_color='b')
-    ax.tick_params(axis="y", left=False, right=False, labelleft=False, labelright=False,grid_color='b')
+   
+    # Turn off axis titles
     ax.set_ylabel('')
     ax.set_xlabel('')
 
-def draw_grid(ax):
-  lat_fwd = list(range(-40,50,10))
-  lat_rev = list(range(50,-40,-10))
-  lon_fwd = list(range(0,370,10))
-  lon_rev = list(range(370,0,-10))
-  lon_cnt = 0
-  lat_cnt = 0
-  codes = [Path.MOVETO,Path.LINETO,Path.CLOSEPOLY]
-  # DRAW LAT LINES FIRST
-  print("LATITUDE")
-  while lat_cnt < len(lat_fwd):
-    while lon_cnt < len(lon_fwd):
-      verts = [(float(lon_fwd[lon_cnt]),float(lat_fwd[lat_cnt])),(float(lon_rev[lon_cnt]),float(lat_fwd[lat_cnt])),(float(lon_rev[lon_cnt]),float(lat_fwd[lat_cnt]))]
-      #print(verts)
-      path = Path(verts,codes)
-      patch = patches.PathPatch(path, lw=0.5, transform=ccrs.PlateCarree())
-      ax.add_patch(patch)
-      lon_cnt = lon_cnt + 1
-    lon_cnt = 0
-    lat_cnt = lat_cnt + 1
-  lon_cnt = 0
-  lat_cnt = 0
-  # NOW DRAW LON LINES
-  print("LONGITUDE")
-  while lon_cnt < len(lon_fwd):
-    while lat_cnt < len(lat_fwd):
-      verts = [(float(lon_fwd[lon_cnt]),float(lat_fwd[lat_cnt])),(float(lon_fwd[lon_cnt]),float(lat_rev[lat_cnt])),(float(lon_fwd[lon_cnt]),float(lat_rev[lat_cnt]))]
-      print(verts)
-      path = Path(verts,codes)
-      patch = patches.PathPatch(path, lw=0.5, transform=ccrs.PlateCarree(), color='lightgray')
-      ax.add_patch(patch)
-      lat_cnt = lat_cnt + 1
-    lat_cnt = 0
-    lon_cnt = lon_cnt + 1
+# Panels go 1,2,3 top to bottom
+def plot_gdf(gdf_data):
 
-# TOP PANEL
-ax1 = plt.subplot(gs[0,0],projection=crs)
-setup_axis(ax1)
-ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
-#levels = [0.5,1.5,2.5,3.5]
-levels = list(range(0,41,5))
-# create an axes on the right side of ax. The width of cax will be 5%
-# of ax and the padding between cax and ax will be fixed at 0.05 inch.
-# since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
-axdiv1 = make_axes_locatable(ax1)
-#cbax = axdiv.append_axes("right", size="5%", pad=0.1, axes_class=plt.Axes)
-cbax1 = axdiv1.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
-con1 = anly_xr.where(anly_xr>0.0).plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Oranges,cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'},extend='max',add_labels=False)
-if ADDPTS:
-  scat1 = ax1.scatter(alons,alats,transform=ccrs.PlateCarree(),s=1,c='cyan')
-cbar1 = con1.colorbar
-# Set tickmark locations for colorbar
-cbar1.set_ticks(list(range(0,41,5)))
-#cbar1.set_ticklabels([1,2,3,4])
-#cbar1.set_label('TC Genesis 10 deg -1 yr -1 (2017-2018)', labelpad=0, y=1.05, rotation=0, size=20)
+  # Use gridspec
+  gs_gdf = gridspec.GridSpec(nrows=4,ncols=1,height_ratios=[1,1,1,1],hspace=0.20,wspace=0.0)
 
-#ax1 = plt.subplot(gs[0,0],projection=crs)
-#setup_axis(ax1)
-#ax1.set_title('(a) Hits',loc='left')
-#levels = [0.5,1.5,2.5,3.5]
-#levels = [0,1,2,3,4,5]
-# create an axes on the right side of ax. The width of cax will be 5%
-# of ax and the padding between cax and ax will be fixed at 0.05 inch.
-# since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
-#axdiv1 = make_axes_locatable(ax1)
-#cbax = axdiv.append_axes("right", size="5%", pad=0.1, axes_class=plt.Axes)
-#cbax1 = axdiv1.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
-#con1 = hit_xr.where(hit_xr>0.0).plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Oranges,cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'},extend='max',add_labels=False)
-#cbar1 = con1.colorbar
-# Set tickmark locations for colorbar
-#cbar1.set_ticks([0,1,2,3,4])
-#cbar1.set_ticklabels([1,2,3,4])
-#cbar1.set_label('TC Genesis 10 deg -1 yr -1 (2017-2018)', labelpad=0, y=1.05, rotation=0, size=20)
+  # New Figure
+  fig_gdf = plt.figure(1,figsize=(20,15))
 
-# SECOND PANEL
-ax2 = plt.subplot(gs[1,0],projection=crs)
-setup_axis(ax2)
-ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
-#levels = [0.5,1.5,2.5,3.5]
-#levels = [0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5]
-levels = levels
-# create an axes on the right side of ax. The width of cax will be 5%
-# of ax and the padding between cax and ax will be fixed at 0.05 inch.
-# since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
-axdiv2 = make_axes_locatable(ax2)
-#cbax = axdiv.append_axes("right", size="5%", pad=0.1, axes_class=plt.Axes)
-cbax2 = axdiv2.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
-con2 = hit_xr.where(hit_xr>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Oranges,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
-if ADDPTS:
-  scat2 = ax2.scatter(hlon,hlat,transform=ccrs.PlateCarree(),s=1,c='cyan')
-cbar2 = con2.colorbar
-# Set tickmark locations for colorbar
-cbar2.set_ticks(list(range(0,41,5)))
-#cbar1.set_ticklabels([1,2,3,4])
-#cbar1.set_label('TC Genesis 10 deg -1 yr -1 (2017-2018)', labelpad=0, y=1.05, rotation=0, size=20)
+  # Set the current figure
+  #plt.set_current_figure(fig_gdf)
 
-#ax2 = plt.subplot(gs[1,0],projection=crs)
-#setup_axis(ax2)
-#ax2.set_title('(b) Early TCGs',loc='left')
-#levels = levels
-# create an axes on the right side of ax. The width of cax will be 5%
-# of ax and the padding between cax and ax will be fixed at 0.05 inch.
-# since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
-#axdiv2 = make_axes_locatable(ax2)
-#cbax = axdiv.append_axes("right", size="5%", pad=0.1, axes_class=plt.Axes)
-#cbax2 = axdiv2.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
-#con2 = ear_xr.where(ear_xr>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Oranges,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
-#cbar2 = con2.colorbar
-# Set tickmark locations for colorbar
-#cbar2.set_ticks([0,1,2,3,4])
-#cbar2.set_ticklabels([1,2,3,4])
-#cbar2.set_label('TC Genesis 10 deg -1 yr -1 (2017-2018)', labelpad=0, y=1.05, rotation=0, size=20)
+  # Coordinate reference system
+  crs_gdf = ccrs.PlateCarree(central_longitude=180.0)
 
-# THIRD PANEL
-ax3 = plt.subplot(gs[2,0],projection=crs)
-setup_axis(ax3)
-ax3.set_title(F'(c) False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon))),loc='left')
-levels = levels
-# create an axes on the right side of ax. The width of cax will be 5%
-# of ax and the padding between cax and ax will be fixed at 0.05 inch.
-# since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
-axdiv3 = make_axes_locatable(ax3)
-#cbax = axdiv.append_axes("right", size="5%", pad=0.1, axes_class=plt.Axes)
-cbax3 = axdiv3.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
-con3 = fam_xr.where(fam_xr>0.0).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Oranges,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='max',add_labels=False)
-if ADDPTS:
-  scat3 = ax3.scatter(flon,flat,transform=ccrs.PlateCarree(),s=1,c='cyan')
-cbar3 = con3.colorbar
-# Set tickmark locations for colorbar
-cbar3.set_ticks(list(range(0,41,5)))
-#cbar4.set_ticklabels([1,2,3,4])
-#cbar3.set_label('TC Genesis 10 deg -1 yr -1 (2015-2018)', labelpad=0, y=1.05, rotation=0, size=20)
+  # What environment variables will we need here?
+  # 1. Contour levels for each panel?
+  # 2. 
 
-#ax3 = plt.subplot(gs[2,0],projection=crs)
-#setup_axis(ax3)
-#ax3.set_title('(c) Late TCGs',loc='left')
-#levels = levels
-# create an axes on the right side of ax. The width of cax will be 5%
-# of ax and the padding between cax and ax will be fixed at 0.05 inch.
-# since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
-#axdiv3 = make_axes_locatable(ax3)
-#cbax = axdiv.append_axes("right", size="5%", pad=0.1, axes_class=plt.Axes)
-#cbax3 = axdiv3.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
-#con3 = lat_xr.where(lat_xr>0.0).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Oranges,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='max',add_labels=False)
-#cbar3 = con3.colorbar
-# Set tickmark locations for colorbar
-#cbar3.set_ticks([0,1,2,3,4])
-#cbar3.set_ticklabels([1,2,3,4])
-#cbar3.set_label('TC Genesis 10 deg -1 yr -1 (2017-2018)', labelpad=0, y=1.05, rotation=0, size=20)
+  ####### PANEL 1
+  ax1 = plt.subplot(gs_gdf[0,0],projection=crs_gdf)
+  setup_axis(ax1)
+  #ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
+  ax1.set_title('OBS_DENS')
+  #levels = [0.5,1.5,2.5,3.5]
+  levels = list(range(0,41,5))
 
-# FOURTH PANEL
-tot_xr = hit_xr+fam_xr
-ax4 = plt.subplot(gs[3,0],projection=crs)
-setup_axis(ax4)
-ax4.set_title(F'(d) Hit + False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon)+len(hlon))),loc='left')
-levels = levels
-# create an axes on the right side of ax. The width of cax will be 5%
-# of ax and the padding between cax and ax will be fixed at 0.05 inch.
-# since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
-axdiv4 = make_axes_locatable(ax4)
-#cbax = axdiv.append_axes("right", size="5%", pad=0.1, axes_class=plt.Axes)
-cbax4 = axdiv4.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
-con4 = tot_xr.where(tot_xr>0.0).plot.pcolormesh(ax=ax4,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Oranges,cbar_kwargs={'cax':cbax4,'ax':ax4,'orientation':'horizontal'},extend='max',add_labels=False)
-if ADDPTS:
-  scat4 = ax4.scatter(flon,flat,transform=ccrs.PlateCarree(),s=1,c='cyan')
-cbar4 = con4.colorbar
-# Set tickmark locations for colorbar
-cbar4.set_ticks(list(range(0,41,5)))
-#cbar4.set_ticklabels([1,2,3,4])
-cbar4.set_label('TC Genesis 10 deg -1 yr -1 (2015-2018)', labelpad=0, y=1.05, rotation=0, size=20)
+  # create an axis on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv1 = make_axes_locatable(ax1)
+  cbax1 = axdiv1.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
-# Save off figure
-#plt.show()
-if ADDPTS:
-  plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h_pts.png',bbox_inches='tight',pad_inches=0.25)
-else:
-  plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h.png',bbox_inches='tight',pad_inches=0.25)
+  # Contour the data
+  con1 = gdf_data['OBS_DENS'].where(gdf_data['OBS_DENS']>0.0).plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'},extend='max',add_labels=False)
 
+  # Add scatter points if requested
+  if ADDPTS:
+    scat1 = ax1.scatter(alons,alats,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  cbar1 = con1.colorbar
+  cbar1.set_ticks(list(range(0,41,5)))
+
+  ######## PANEL 2
+  ax2 = plt.subplot(gs_gdf[1,0],projection=crs_gdf)
+  setup_axis(ax2)
+  #ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
+  ax2.set_title('FCST_DENS')
+  #levels = [0.5,1.5,2.5,3.5]
+  #levels = [0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5]
+  levels = levels
+
+  # create an axis on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv2 = make_axes_locatable(ax2)
+  cbax2 = axdiv2.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con2 = gdf_data['FCST_DENS'].where(gdf_data['FCST_DENS']>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
+  #con2 = gdf_data['FYOY_DENS'].where(gdf_data['FYOY_DENS']>0.0).plot.contourf(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat2 = ax2.scatter(hlon,hlat,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  cbar2 = con2.colorbar
+  cbar2.set_ticks(list(range(0,41,5)))
+
+  ######## PANEL 3
+  fminuso = gdf_data['FCST_DENS']-gdf_data['OBS_DENS'] 
+  ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
+  setup_axis(ax3)
+  #ax3.set_title(F'(c) False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon))),loc='left')
+  ax3.set_title('FGEN-OGEN')
+  levels = list(range(-40,40,5))
+
+  # create an axis on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv3 = make_axes_locatable(ax3)
+  cbax3 = axdiv3.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con3 = fminuso.where((fminuso>0.0) | (fminuso<0.0)).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.coolwarm,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='max',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat3 = ax3.scatter(flon,flat,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  cbar3 = con3.colorbar
+  cbar3.set_ticks(list(range(-40,40,5)))
+
+  ######## PANEL 4
+  ax4 = plt.subplot(gs_gdf[3,0],projection=crs_gdf)
+  ax4.axis('off')
+
+  # Save off figure
+  #plt.show()
+  if ADDPTS:
+    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h_pts.png',bbox_inches='tight',pad_inches=0.25)
+     plt.savefig('GDF.png')
+  else:
+    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h.png',bbox_inches='tight',pad_inches=0.25)
+    plt.savefig('GDF.png',bbox_inches='tight',pad_inches=0.25)
+
+  # Cleanup
+  del(fig_gdf,gs_gdf)
+
+# Panels go 1,2,3,4 top to bottom
+def plot_gdf_ufs(gdf_data):
+  
+  # Use gridspec
+  gs_gdf = gridspec.GridSpec(nrows=4,ncols=1,height_ratios=[1,1,1,1],hspace=0.20,wspace=0.0)
+
+  # New Figure
+  fig_gdf = plt.figure(1,figsize=(20,15))
+  
+  # Set the current figure
+  #plt.set_current_figure(fig_gdf)
+
+  # Coordinate reference system
+  crs_gdf = ccrs.PlateCarree(central_longitude=180.0)
+
+  # What environment variables will we need here?
+  # 1. Contour levels for each panel?
+  # 2. 
+
+  ####### PANEL 1
+  ax1 = plt.subplot(gs_gdf[0,0],projection=crs_gdf)
+  setup_axis(ax1)
+  #ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
+  ax1.set_title('OBS_DENS')
+  #levels = [0.5,1.5,2.5,3.5]
+  levels = list(range(0,41,5))
+
+  # create an axis on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv1 = make_axes_locatable(ax1)
+  cbax1 = axdiv1.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con1 = gdf_data['OBS_DENS'].where(gdf_data['OBS_DENS']>0.0).plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'},extend='max',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat1 = ax1.scatter(alons,alats,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  cbar1 = con1.colorbar
+  cbar1.set_ticks(list(range(0,41,5)))
+
+  ######## PANEL 2
+  ax2 = plt.subplot(gs_gdf[1,0],projection=crs_gdf)
+  setup_axis(ax2)
+  #ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
+  ax2.set_title('FYOY_DENS')
+  #levels = [0.5,1.5,2.5,3.5]
+  #levels = [0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5]
+  levels = levels
+
+  # create an axis on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv2 = make_axes_locatable(ax2)
+  cbax2 = axdiv2.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con2 = gdf_data['FYOY_DENS'].where(gdf_data['FYOY_DENS']>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
+  #con2 = gdf_data['FYOY_DENS'].where(gdf_data['FYOY_DENS']>0.0).plot.contourf(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat2 = ax2.scatter(hlon,hlat,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  cbar2 = con2.colorbar
+  cbar2.set_ticks(list(range(0,41,5)))
+
+  ######## PANEL 3
+  ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
+  setup_axis(ax3)
+  #ax3.set_title(F'(c) False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon))),loc='left')
+  ax3.set_title('FYON_DENS')
+  levels = levels
+
+  # create an axis on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv3 = make_axes_locatable(ax3)
+  cbax3 = axdiv3.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con3 = gdf_data['FYON_DENS'].where(gdf_data['FYON_DENS']>0.0).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='max',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat3 = ax3.scatter(flon,flat,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  cbar3 = con3.colorbar
+  cbar3.set_ticks(list(range(0,41,5)))
+
+  ######## PANEL 4
+  #tot_xr = hit_xr+fam_xr
+  hitfalse = gdf_data['FYOY_DENS']+gdf_data['FYON_DENS']
+  ax4 = plt.subplot(gs_gdf[3,0],projection=crs_gdf)
+  setup_axis(ax4)
+  #ax4.set_title(F'(d) Hit + False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon)+len(hlon))),loc='left')
+  ax4.set_title('FYOY_DENS + FYON_DENS')
+  levels = levels
+  
+  # create an axes on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv4 = make_axes_locatable(ax4)
+  cbax4 = axdiv4.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con4 = hitfalse.where(hitfalse>0.0).plot.pcolormesh(ax=ax4,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax4,'ax':ax4,'orientation':'horizontal'},extend='max',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat4 = ax4.scatter(flon,flat,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  # Since this is the bottom panel also add a title
+  cbar4 = con4.colorbar
+  cbar4.set_ticks(list(range(0,41,5)))
+  cbar4.set_label('TC Genesis 10 deg -1 yr -1 (2015-2018)', labelpad=0, y=1.05, rotation=0, size=20)
+
+  # Save off figure
+  #plt.show()
+  if ADDPTS:
+    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h_pts.png',bbox_inches='tight',pad_inches=0.25)
+     plt.savefig('GDF_UFS.png')
+  else:
+    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h.png',bbox_inches='tight',pad_inches=0.25)
+    plt.savefig('GDF_UFS.png',bbox_inches='tight',pad_inches=0.25)
+
+  # Cleanup
+  del(gs_gdf,fig_gdf)
+
+# Panels go 1,2,3,4 top to bottom
+def plot_gdf_cat(gdf_data):
+
+  # Use gridspec
+  gs_gdf = gridspec.GridSpec(nrows=4,ncols=1,height_ratios=[1,1,1,1],hspace=0.20,wspace=0.0)
+
+  # New Figure
+  fig_gdf = plt.figure(1,figsize=(20,15))
+
+  # Set the current figure
+  #plt.set_current_figure(fig_gdf)
+
+  # Coordinate reference system
+  crs_gdf = ccrs.PlateCarree(central_longitude=180.0)
+
+  # What environment variables will we need here?
+  # 1. Contour levels for each panel?
+  # 2. 
+
+  ####### PANEL 1
+  ax1 = plt.subplot(gs_gdf[0,0],projection=crs_gdf)
+  setup_axis(ax1)
+  #ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
+  ax1.set_title('FYOY_DENS')
+  #levels = [0.5,1.5,2.5,3.5]
+  levels = list(range(0,41,5))
+
+  # create an axis on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv1 = make_axes_locatable(ax1)
+  cbax1 = axdiv1.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con1 = gdf_data['FYOY_DENS'].where(gdf_data['FYOY_DENS']>0.0).plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'},extend='max',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat1 = ax1.scatter(alons,alats,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  cbar1 = con1.colorbar
+  cbar1.set_ticks(list(range(0,41,5)))
+
+  ######## PANEL 2
+  ax2 = plt.subplot(gs_gdf[1,0],projection=crs_gdf)
+  setup_axis(ax2)
+  #ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
+  ax2.set_title('EHIT_DENS')
+  #levels = [0.5,1.5,2.5,3.5]
+  #levels = [0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5]
+  levels = levels
+
+  # create an axis on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv2 = make_axes_locatable(ax2)
+  cbax2 = axdiv2.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con2 = gdf_data['EHIT_DENS'].where(gdf_data['EHIT_DENS']>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
+  #con2 = gdf_data['FYOY_DENS'].where(gdf_data['FYOY_DENS']>0.0).plot.contourf(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat2 = ax2.scatter(hlon,hlat,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  cbar2 = con2.colorbar
+  cbar2.set_ticks(list(range(0,41,5)))
+
+  ######## PANEL 3
+  ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
+  setup_axis(ax3)
+  #ax3.set_title(F'(c) False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon))),loc='left')
+  ax3.set_title('LHIT_DENS')
+  levels = levels
+
+  # create an axis on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv3 = make_axes_locatable(ax3)
+  cbax3 = axdiv3.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con3 = gdf_data['LHIT_DENS'].where(gdf_data['LHIT_DENS']>0.0).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='max',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat3 = ax3.scatter(flon,flat,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  cbar3 = con3.colorbar
+  cbar3.set_ticks(list(range(0,41,5)))
+
+  ######## PANEL 4
+  #tot_xr = hit_xr+fam_xr
+  ax4 = plt.subplot(gs_gdf[3,0],projection=crs_gdf)
+  setup_axis(ax4)
+  #ax4.set_title(F'(d) Hit + False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon)+len(hlon))),loc='left')
+  ax4.set_title('FYON_DENS')
+  levels = levels
+
+  # create an axes on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv4 = make_axes_locatable(ax4)
+  cbax4 = axdiv4.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con4 = gdf_data['FYON_DENS'].where(gdf_data['FYON_DENS']>0.0).plot.pcolormesh(ax=ax4,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax4,'ax':ax4,'orientation':'horizontal'},extend='max',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat4 = ax4.scatter(flon,flat,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  # Since this is the bottom panel also add a title
+  cbar4 = con4.colorbar
+  cbar4.set_ticks(list(range(0,41,5)))
+  cbar4.set_label('TC Genesis 10 deg -1 yr -1 (2015-2018)', labelpad=0, y=1.05, rotation=0, size=20)
+
+  # Save off figure
+  #plt.show()
+  if ADDPTS:
+    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h_pts.png',bbox_inches='tight',pad_inches=0.25)
+     plt.savefig('GDF_CAT.png')
+  else:
+    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h.png',bbox_inches='tight',pad_inches=0.25)
+    plt.savefig('GDF_CAT.png',bbox_inches='tight',pad_inches=0.25)
+
+  # Cleanup
+  del(gs_gdf,fig_gdf)
+
+# Panels go 1,2,3,4 top to bottom
+def plot_tdf(tdf_data):
+
+  # Use gridspec
+  gs_tdf = gridspec.GridSpec(nrows=4,ncols=1,height_ratios=[1,1,1,1],hspace=0.20,wspace=0.0)
+
+  # New Figure
+  fig_tdf = plt.figure(1,figsize=(20,15))
+
+  # Set the current figure
+  #plt.set_current_figure(fig_tdf)
+
+  # Coordinate reference system
+  crs_tdf = ccrs.PlateCarree(central_longitude=180.0)
+
+  ####### PANEL 1
+  ax1 = plt.subplot(gs_tdf[0,0],projection=crs_tdf)
+  setup_axis(ax1)
+  #ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
+  ax1.set_title('OTRK_DENS')
+  #levels = [0.5,1.5,2.5,3.5]
+  levels = list(range(0,41,5))
+
+  # create an axis on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv1 = make_axes_locatable(ax1)
+  cbax1 = axdiv1.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con1 = tdf_data['OTRK_DENS'].where(tdf_data['OTRK_DENS']>0.0).plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'},extend='max',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat1 = ax1.scatter(alons,alats,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  cbar1 = con1.colorbar
+  cbar1.set_ticks(list(range(0,41,5)))
+
+  ######## PANEL 2
+  ax2 = plt.subplot(gs_tdf[1,0],projection=crs_tdf)
+  setup_axis(ax2)
+  #ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
+  ax2.set_title('FTRK_DENS')
+  #levels = [0.5,1.5,2.5,3.5]
+  #levels = [0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5]
+  levels = levels
+
+  # create an axis on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv2 = make_axes_locatable(ax2)
+  cbax2 = axdiv2.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con2 = tdf_data['FTRK_DENS'].where(tdf_data['FTRK_DENS']>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat2 = ax2.scatter(hlon,hlat,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  cbar2 = con2.colorbar
+  cbar2.set_ticks(list(range(0,41,5)))
+
+  ######## PANEL 3
+  fminuso = tdf_data['FTRK_DENS']-tdf_data['OTRK_DENS']
+  ax3 = plt.subplot(gs_tdf[2,0],projection=crs_tdf)
+  setup_axis(ax3)
+  #ax3.set_title(F'(c) False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon))),loc='left')
+  ax3.set_title('FTRK-OTRK')
+  #levels = levels
+  levels = list(range(-40,40,5))
+
+  # create an axis on the right side of ax. The width of cax will be 5%
+  # of ax and the padding between cax and ax will be fixed at 0.35 inch.
+  # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
+  # Use this axis for the colorbar
+  axdiv3 = make_axes_locatable(ax3)
+  cbax3 = axdiv3.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
+
+  # Contour the data
+  con3 = fminuso.where((fminuso>0.0) | (fminuso<0.0)).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.coolwarm,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='both',add_labels=False)
+
+  # Add scatter points if requested
+  if ADDPTS:
+    scat3 = ax3.scatter(flon,flat,transform=ccrs.PlateCarree(),s=1,c='cyan')
+
+  # Add the colorbar and set the tickmarks on it
+  cbar3 = con3.colorbar
+  cbar3.set_ticks(list(range(-40,40,5)))
+
+  ######## PANEL 4
+  ax4 = plt.subplot(gs_tdf[3,0],projection=crs_tdf)
+  ax4.axis('off') 
+
+  # Save off figure
+  #plt.show()
+  if ADDPTS:
+    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h_pts.png',bbox_inches='tight',pad_inches=0.25)
+     plt.savefig('TDF.png')
+  else:
+    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h.png',bbox_inches='tight',pad_inches=0.25)
+    plt.savefig('TDF.png',bbox_inches='tight',pad_inches=0.25)
+
+  # Cleanup
+  del(gs_tdf,fig_tdf)
