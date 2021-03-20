@@ -19,7 +19,6 @@ from metcalcpy.piecewise_linear import PiecewiseLinear as plin
 import metplotpy.plots.difficulty_index.mycolormaps as mcmap
 from metplotpy.plots.difficulty_index.plot_difficulty_index import plot_field
 
-
 def load_data(filename):
     """Load ensemble data from file"""
     loaded = np.load(filename)
