@@ -19,7 +19,7 @@ def setup():
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
-    custom_config_filename = "./custom_reliability.yaml"
+    custom_config_filename = "./custom_reliability_use_defaults.yaml"
 
     # Invoke the command to generate a Performance Diagram based on
     # the custom_performance_diagram.yaml custom config file.
