@@ -84,6 +84,7 @@ is sponsored by the National Science Foundation (NSF).
    line
    performance_diagram
    reliability_diagram
+   roc_diagram
    release-notes
 
 
