@@ -83,7 +83,7 @@ plot_ci:
 - none
 plot_disp:
 - 'True'
-plot_filename: ./custom_reliability_diagram.png
+plot_filename: ./default_reliability_diagram.png
 plot_height: 8.5
 plot_res: 72
 plot_stat: median

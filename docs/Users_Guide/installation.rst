@@ -13,6 +13,10 @@ Python Requirements
 
 * cartopy 0.17.0 or above
 
+* cmocean
+
+* eofs
+
 * imutils 0.5.3
 
 * kaleido 0.0.1
@@ -37,9 +41,9 @@ Python Requirements
 
 * pint
 
-* pyshp
-
 * plotly 4.9.0
+
+* pyshp
 
 * psutil
 
