@@ -44,7 +44,7 @@ def plot_eof(eof,wrnum,variance_fractions,lons,lats,output_plotname,plevels):
     fig = plt.figure(figsize=(10,10))
     for i in np.arange(0,wrnum,1):
         corr = eof[i]
-        ax1 = fig.add_subplot(nrows,2,i+1,projection=proj)
+        ax1 = fig.add_subplot(int(nrows),2,i+1,projection=proj)
         contourf(lons,lats,corr,plevels,transform=ccrs.PlateCarree(),cmap = cmocean.cm.balance,extend='both')
         if (wrnum - i) <= 2:
             plt.colorbar(orientation ='horizontal',pad=0.01)  #.set_label(label='m',size=15)
@@ -80,7 +80,7 @@ def plot_K_means(inputi,wrnum,lons,lats,perc,output_plotname,plevels):
     fig = plt.figure(figsize=(10,10))
     for g1 in np.arange(0,wrnum,1):
         g = ii[g1]
-        ax1 = fig.add_subplot(nrows,2,g1+1,projection=proj)
+        ax1 = fig.add_subplot(int(nrows),2,g1+1,projection=proj)
         if plevels:
             contourf(lons,lats,inputi[g],plevels,transform=ccrs.PlateCarree(),cmap = cmocean.cm.balance,extend="both")
         else:
