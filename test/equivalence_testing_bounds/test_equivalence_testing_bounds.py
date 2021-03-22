@@ -4,14 +4,13 @@
 # conda environment name
 # !!!!!!!!
 
-#!/usr/bin/env conda run -n blenny_363 python
+# !/usr/bin/env conda run -n blenny_363 python
 
 import pytest
 import os
-import sys
-sys.path.append('../..')
-from metplotpy.plots.performance_diagram import performance_diagram as pd
+from metplotpy.plots.equivalence_testing_bounds import equivalence_testing_bounds as etb
 from metcalcpy.compare_images import CompareImages
+
 
 @pytest.fixture
 def setup():
@@ -20,33 +19,36 @@ def setup():
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
-    custom_config_filename = "./custom_performance_diagram.yaml"
+    custom_config_filename = "./custom_equivalence_testing_bounds.yaml"
 
     # Invoke the command to generate a Performance Diagram based on
     # the custom_performance_diagram.yaml custom config file.
-    pd.main(custom_config_filename)
+    etb.main(custom_config_filename)
+
 
 def cleanup():
-    # remove the performance_diagram_expected.png and plot_20200317_151252.points1 files
+    # remove the line.png and .points1 file
     # from any previous runs
     try:
         path = os.getcwd()
-        plot_file = 'performance_diagram_actual.png'
-        points_file = 'plot_20200317_151252.points1'
+        plot_file = 'equivalence_testing_bounds.png'
+        points_file_1 = 'equivalence_testing_bounds.points1'
         os.remove(os.path.join(path, plot_file))
-        os.remove(os.path.join(path, points_file))
+        os.remove(os.path.join(path, points_file_1))
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
         pass
 
 
-@pytest.mark.parametrize("test_input,expected_bool",(["./performance_diagram_actual.png", True], ["./plot_20200317_151252.points1", True]))
-def test_files_exist(setup, test_input, expected_bool):
+@pytest.mark.parametrize("test_input,expected",
+                         (["./equivalence_testing_bounds.png", True],
+                          ["./equivalence_testing_bounds.points1", True]))
+def test_files_exist(setup, test_input, expected):
     '''
         Checking that the plot and data files are getting created
     '''
-    assert os.path.isfile(test_input) == expected_bool
+    assert os.path.isfile(test_input) == expected
     cleanup()
 
 
@@ -56,14 +58,9 @@ def test_images_match(setup):
         newly created plot to verify that the plot hasn't
         changed in appearance.
     '''
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
-    custom_config_filename = "./custom_performance_diagram.yaml"
-    pd.main(custom_config_filename)
-
     path = os.getcwd()
-    plot_file = 'performance_diagram_actual.png'
+    plot_file = './equivalence_testing_bounds.png'
     actual_file = os.path.join(path, plot_file)
-    comparison = CompareImages('./performance_diagram_expected.png',actual_file)
+    comparison = CompareImages('./equivalence_testing_bounds_expected.png', actual_file)
     assert comparison.mssim == 1
     cleanup()
-

@@ -7,56 +7,83 @@ box_boxwex: 0.2
 box_notch: 'False'
 box_outline: 'True'
 box_pts: 'False'
-caption_align: 0
+caption_align: 0.0
 caption_col: '#333333'
-caption_offset: 3
+caption_offset: 3.0
 caption_size: 0.8
 caption_weight: 1
 cex: 1
-colors: []
-con_series: []
+circular_block_bootstrap: 'True'
+colors:
+- '#ff0000'
+con_series:
+- 1
+create_html: 'True'
 derived_series_1: []
 derived_series_2: []
 dump_points_1: 'False'
 dump_points_2: 'False'
 event_equal: 'False'
-fcst_var_val_1: {}
-fcst_var_val_2: {}
+fcst_var_val_1:
+  PROB(APCP_03>1.270):
+  - PSTD_CALIBRATION
+  - PSTD_BASER
+  - PSTD_NI
+fcst_var_val_2: null
 fixed_vars_vals_input: {}
-grid_col: '#f5274a'
+grid_col: '#cccccc'
 grid_lty: 3
 grid_lwd: 1
 grid_on: 'True'
 grid_x: listX
+indy_label: []
 indy_stagger_1: 'False'
 indy_stagger_2: 'False'
-indy_vals: []
-indy_var: ''
+indy_vals:
+- '0'
+- '0.1'
+- '0.2'
+- '0.3'
+- '0.4'
+- '0.5'
+- '0.6'
+- '0.7'
+- '0.8'
+- '0.9'
+indy_var: thresh_i
+inset_hist: 'True'
 legend_box: o
 legend_inset:
   x: 0.0
   y: -0.25
 legend_ncol: 3
 legend_size: 0.8
-line_type: N/A
-list_stat_1: []
+line_type: pct
+list_stat_1:
+- PSTD_CALIBRATION
+- PSTD_BASER
+- PSTD_NI
 list_stat_2: []
-list_static_val: {}
+list_static_val:
+  fcst_var: PROB(APCP_03>1.270)
 mar:
 - 8
 - 4
 - 5
 - 4
-method: ''
+method: perc
 mgp:
 - 1
 - 1
 - 0
 num_iterations: 1
 num_threads: -1
-plot_ci: []
-plot_disp: []
-plot_filename: /tmp/line.png
+plot_caption: ''
+plot_ci:
+- none
+plot_disp:
+- 'True'
+plot_filename: ./default_reliability_diagram.png
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -64,17 +91,24 @@ plot_type: png16m
 plot_units: in
 plot_width: 11.0
 random_seed: null
-series_line_style: []
-series_line_width: []
-series_order: []
-series_symbols: []
-series_type: []
+rely_event_hist: 'True'
+series_line_style:
+- '-'
+series_line_width:
+- 1
+series_order:
+- 1
+series_symbols:
+- .
+series_type:
+- b
 series_val_1: {}
 series_val_2: {}
 show_nstats: 'False'
-show_signif: []
+show_signif:
+- 'False'
+stat_input: ./plot_20210311_145053.data
 summary_curves: []
-stat_input: ../line/line.data
 sync_yaxes: 'False'
 title: test title
 title_align: 0.5

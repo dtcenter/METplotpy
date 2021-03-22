@@ -19,16 +19,19 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'METplotpy'
-copyright = '2019, NCAR'
+copyright = '2021, NCAR'
 author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Win-Gildenmeister, M., Burek, T., Fillmore, D., Halley Gotway, J., Adriaansen, D., Fisher, H.'
 version = 'develop'
 verinfo = version
 release = f'{version}'
-release_year = '2020'
-release_date = f'{release_year}1022'
+release_year = '2021'
+release_date = f'{release_year}-03-31'
 copyright = f'{release_year}, {author}'
 
+# if set, adds "Last updated on " followed by
+# the date in the specified format
+html_last_updated_fmt = '%c'
 
 # -- General configuration ---------------------------------------------------
 
