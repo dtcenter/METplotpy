@@ -2,25 +2,17 @@
 
 import xarray as xr
 import cartopy.crs as ccrs
-import cartopy.feature as cfeat
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 import matplotlib.gridspec as gridspec
 
 # Stuff for making the colorbar height not extend past the plot box
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-# For lat/lon grid lines
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+# For lat/lon axes
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
-
-# For drawing polylines
-import matplotlib.patches as patches
-from matplotlib.path import Path
 
 # Config options
 ADDPTS = False
-FCSTLEAD = 96
 
 # Function for common axis params
 def setup_axis(ax):
@@ -99,7 +91,6 @@ def plot_gdf(gdf_data):
   ######## PANEL 2
   ax2 = plt.subplot(gs_gdf[1,0],projection=crs_gdf)
   setup_axis(ax2)
-  #ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
   ax2.set_title('FCST_DENS')
   levels = levels
 
@@ -126,7 +117,6 @@ def plot_gdf(gdf_data):
   fminuso = gdf_data['FCST_DENS']-gdf_data['OBS_DENS'] 
   ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
   setup_axis(ax3)
-  #ax3.set_title(F'(c) False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon))),loc='left')
   ax3.set_title('FGEN-OGEN')
   levels = [-2.7,-2.1,-1.5,-0.9,-0.3,0.3,0.9,1.5,2.1,2.7]
 
@@ -155,10 +145,8 @@ def plot_gdf(gdf_data):
   # Save off figure
   #plt.show()
   if ADDPTS:
-    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h_pts.png',bbox_inches='tight',pad_inches=0.25)
      plt.savefig('GDF.png')
   else:
-    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h.png',bbox_inches='tight',pad_inches=0.25)
     plt.savefig('GDF.png',bbox_inches='tight',pad_inches=0.25)
 
   # Cleanup
@@ -211,7 +199,6 @@ def plot_gdf_ufs(gdf_data):
   ######## PANEL 2
   ax2 = plt.subplot(gs_gdf[1,0],projection=crs_gdf)
   setup_axis(ax2)
-  #ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
   ax2.set_title('FYOY_DENS')
   levels = levels
 
@@ -237,7 +224,6 @@ def plot_gdf_ufs(gdf_data):
   ######## PANEL 3
   ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
   setup_axis(ax3)
-  #ax3.set_title(F'(c) False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon))),loc='left')
   ax3.set_title('FYON_DENS')
   levels = levels
 
@@ -264,7 +250,6 @@ def plot_gdf_ufs(gdf_data):
   hitfalse = gdf_data['FYOY_DENS']+gdf_data['FYON_DENS']
   ax4 = plt.subplot(gs_gdf[3,0],projection=crs_gdf)
   setup_axis(ax4)
-  #ax4.set_title(F'(d) Hit + False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon)+len(hlon))),loc='left')
   ax4.set_title('FYOY_DENS + FYON_DENS')
   levels = levels
   
@@ -291,10 +276,8 @@ def plot_gdf_ufs(gdf_data):
   # Save off figure
   #plt.show()
   if ADDPTS:
-    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h_pts.png',bbox_inches='tight',pad_inches=0.25)
      plt.savefig('GDF_UFS.png')
   else:
-    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h.png',bbox_inches='tight',pad_inches=0.25)
     plt.savefig('GDF_UFS.png',bbox_inches='tight',pad_inches=0.25)
 
   # Cleanup
@@ -347,7 +330,6 @@ def plot_gdf_cat(gdf_data):
   ######## PANEL 2
   ax2 = plt.subplot(gs_gdf[1,0],projection=crs_gdf)
   setup_axis(ax2)
-  #ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
   ax2.set_title('EHIT_DENS')
   levels = levels
 
@@ -373,7 +355,6 @@ def plot_gdf_cat(gdf_data):
   ######## PANEL 3
   ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
   setup_axis(ax3)
-  #ax3.set_title(F'(c) False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon))),loc='left')
   ax3.set_title('LHIT_DENS')
   levels = levels
 
@@ -399,7 +380,6 @@ def plot_gdf_cat(gdf_data):
   #tot_xr = hit_xr+fam_xr
   ax4 = plt.subplot(gs_gdf[3,0],projection=crs_gdf)
   setup_axis(ax4)
-  #ax4.set_title(F'(d) Hit + False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon)+len(hlon))),loc='left')
   ax4.set_title('FYON_DENS')
   levels = levels
 
@@ -426,10 +406,8 @@ def plot_gdf_cat(gdf_data):
   # Save off figure
   #plt.show()
   if ADDPTS:
-    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h_pts.png',bbox_inches='tight',pad_inches=0.25)
      plt.savefig('GDF_CAT.png')
   else:
-    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h.png',bbox_inches='tight',pad_inches=0.25)
     plt.savefig('GDF_CAT.png',bbox_inches='tight',pad_inches=0.25)
 
   # Cleanup
@@ -478,7 +456,6 @@ def plot_tdf(tdf_data):
   ######## PANEL 2
   ax2 = plt.subplot(gs_tdf[1,0],projection=crs_tdf)
   setup_axis(ax2)
-  #ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
   ax2.set_title('FTRK_DENS')
   levels = levels
 
@@ -504,7 +481,6 @@ def plot_tdf(tdf_data):
   fminuso = tdf_data['FTRK_DENS']-tdf_data['OTRK_DENS']
   ax3 = plt.subplot(gs_tdf[2,0],projection=crs_tdf)
   setup_axis(ax3)
-  #ax3.set_title(F'(c) False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon))),loc='left')
   ax3.set_title('FTRK-OTRK')
   levels = [-11.0,-9.0,-7.0,-5.0,-3.0,-1.0,1.0,3.0,5.0,7.0,9.0]
   
@@ -533,10 +509,8 @@ def plot_tdf(tdf_data):
   # Save off figure
   #plt.show()
   if ADDPTS:
-    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h_pts.png',bbox_inches='tight',pad_inches=0.25)
      plt.savefig('TDF.png')
   else:
-    #plt.savefig(F'gdf_cat_ufs_{FCSTLEAD}h.png',bbox_inches='tight',pad_inches=0.25)
     plt.savefig('TDF.png',bbox_inches='tight',pad_inches=0.25)
 
   # Cleanup
