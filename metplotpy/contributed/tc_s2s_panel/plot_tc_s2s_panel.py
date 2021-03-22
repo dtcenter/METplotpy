@@ -4,6 +4,7 @@ import xarray as xr
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import os
 
 # Stuff for making the colorbar height not extend past the plot box
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -13,6 +14,17 @@ from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 
 # Config options
 ADDPTS = False
+PANELTITLELOC = 'left'
+
+# Set some variables
+lead_step = int(str(os.environ.get('TCGEN_INIT_FREQ')))
+shortest_lead = int(str(os.environ.get('TCGEN_MIN_LEAD')))
+longest_lead = int(str(os.environ.get('TCGEN_MAX_LEAD')))
+LEAD_WINDOW_STR = f"{shortest_lead:4d}-{longest_lead:4d}"
+
+# Strings for plots
+count_string = f'TC genesis counts per 10x10 degrees per year'
+days_string = f'TC days per 10x10 degrees per year'
 
 # Function for common axis params
 def setup_axis(ax):
@@ -53,24 +65,16 @@ def plot_gdf(gdf_data):
   # New Figure
   fig_gdf = plt.figure(1,figsize=(20,15))
 
-  # Set the current figure
-  #plt.set_current_figure(fig_gdf)
-
   # Coordinate reference system
   crs_gdf = ccrs.PlateCarree(central_longitude=180.0)
-
-  # What environment variables will we need here?
-  # 1. Contour levels for each panel?
-  # 2. 
 
   ####### PANEL 1
   ax1 = plt.subplot(gs_gdf[0,0],projection=crs_gdf)
   setup_axis(ax1)
-  #ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
-  ax1.set_title('OBS_DENS')
+  ax1.set_title('(a) BEST Genesis Event Density',loc=PANELTITLELOC)
   levels = [0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0]
 
-  # create an axis on the right side of ax. The width of cax will be 5%
+  # create an axis on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -91,10 +95,10 @@ def plot_gdf(gdf_data):
   ######## PANEL 2
   ax2 = plt.subplot(gs_gdf[1,0],projection=crs_gdf)
   setup_axis(ax2)
-  ax2.set_title('FCST_DENS')
+  ax2.set_title(f'(b) Forecast Genesis Event Density ({LEAD_WINDOW_STR}h)',loc=PANELTITLELOC)
   levels = levels
 
-  # create an axis on the right side of ax. The width of cax will be 5%
+  # create an axis on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -103,7 +107,6 @@ def plot_gdf(gdf_data):
 
   # Contour the data
   con2 = gdf_data['FCST_DENS'].where(gdf_data['FCST_DENS']>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
-  #con2 = gdf_data['FYOY_DENS'].where(gdf_data['FYOY_DENS']>0.0).plot.contourf(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -117,10 +120,10 @@ def plot_gdf(gdf_data):
   fminuso = gdf_data['FCST_DENS']-gdf_data['OBS_DENS'] 
   ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
   setup_axis(ax3)
-  ax3.set_title('FGEN-OGEN')
+  ax3.set_title(f'(c) (b) minus (a)',loc=PANELTITLELOC)
   levels = [-2.7,-2.1,-1.5,-0.9,-0.3,0.3,0.9,1.5,2.1,2.7]
 
-  # create an axis on the right side of ax. The width of cax will be 5%
+  # create an axis on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -137,6 +140,7 @@ def plot_gdf(gdf_data):
   # Add the colorbar and set the tickmarks on it
   cbar3 = con3.colorbar
   cbar3.set_ticks(levels)
+  cbar3.set_label(count_string,labelpad=0,y=1.05,rotation=0,size=20)
 
   ######## PANEL 4
   ax4 = plt.subplot(gs_gdf[3,0],projection=crs_gdf)
@@ -161,24 +165,16 @@ def plot_gdf_ufs(gdf_data):
   # New Figure
   fig_gdf = plt.figure(1,figsize=(20,15))
   
-  # Set the current figure
-  #plt.set_current_figure(fig_gdf)
-
   # Coordinate reference system
   crs_gdf = ccrs.PlateCarree(central_longitude=180.0)
-
-  # What environment variables will we need here?
-  # 1. Contour levels for each panel?
-  # 2. 
 
   ####### PANEL 1
   ax1 = plt.subplot(gs_gdf[0,0],projection=crs_gdf)
   setup_axis(ax1)
-  #ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
-  ax1.set_title('OBS_DENS')
+  ax1.set_title('(a) BEST Genesis Event Density',loc=PANELTITLELOC)
   levels = [0.0,0.05,0.1,0.2,0.3,0.4,0.5,0.8,1.1,1.4]
 
-  # create an axis on the right side of ax. The width of cax will be 5%
+  # create an axis on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -199,10 +195,10 @@ def plot_gdf_ufs(gdf_data):
   ######## PANEL 2
   ax2 = plt.subplot(gs_gdf[1,0],projection=crs_gdf)
   setup_axis(ax2)
-  ax2.set_title('FYOY_DENS')
+  ax2.set_title('(b) Hits (Forecast Yes/Observation Yes)',loc=PANELTITLELOC)
   levels = levels
 
-  # create an axis on the right side of ax. The width of cax will be 5%
+  # create an axis on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -211,7 +207,6 @@ def plot_gdf_ufs(gdf_data):
 
   # Contour the data
   con2 = gdf_data['FYOY_DENS'].where(gdf_data['FYOY_DENS']>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
-  #con2 = gdf_data['FYOY_DENS'].where(gdf_data['FYOY_DENS']>0.0).plot.contourf(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -224,10 +219,10 @@ def plot_gdf_ufs(gdf_data):
   ######## PANEL 3
   ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
   setup_axis(ax3)
-  ax3.set_title('FYON_DENS')
+  ax3.set_title('(c) False Alarms (Forecast Yes/Observation No)',loc=PANELTITLELOC)
   levels = levels
 
-  # create an axis on the right side of ax. The width of cax will be 5%
+  # create an axis on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -246,14 +241,12 @@ def plot_gdf_ufs(gdf_data):
   cbar3.set_ticks(levels)
 
   ######## PANEL 4
-  #tot_xr = hit_xr+fam_xr
   hitfalse = gdf_data['FYOY_DENS']+gdf_data['FYON_DENS']
   ax4 = plt.subplot(gs_gdf[3,0],projection=crs_gdf)
   setup_axis(ax4)
-  ax4.set_title('FYOY_DENS + FYON_DENS')
-  levels = levels
+  ax4.set_title('(d) Hits + False Alarms',loc=PANELTITLELOC)
   
-  # create an axes on the right side of ax. The width of cax will be 5%
+  # create an axes on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -271,7 +264,7 @@ def plot_gdf_ufs(gdf_data):
   # Since this is the bottom panel also add a title
   cbar4 = con4.colorbar
   cbar4.set_ticks(levels)
-  cbar4.set_label('TC Genesis 10 deg -1 yr -1 (2015-2018)', labelpad=0, y=1.05, rotation=0, size=20)
+  cbar4.set_label(count_string,labelpad=0,y=1.05,rotation=0,size=20)
 
   # Save off figure
   #plt.show()
@@ -292,24 +285,16 @@ def plot_gdf_cat(gdf_data):
   # New Figure
   fig_gdf = plt.figure(1,figsize=(20,15))
 
-  # Set the current figure
-  #plt.set_current_figure(fig_gdf)
-
   # Coordinate reference system
   crs_gdf = ccrs.PlateCarree(central_longitude=180.0)
-
-  # What environment variables will we need here?
-  # 1. Contour levels for each panel?
-  # 2. 
 
   ####### PANEL 1
   ax1 = plt.subplot(gs_gdf[0,0],projection=crs_gdf)
   setup_axis(ax1)
-  #ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
-  ax1.set_title('FYOY_DENS')
+  ax1.set_title('(a) Hits (Forecast Yes/Observation Yes)',loc=PANELTITLELOC)
   levels = [0.0,0.05,0.1,0.2,0.3,0.4,0.5,0.8,1.1,1.4]
 
-  # create an axis on the right side of ax. The width of cax will be 5%
+  # create an axis on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -330,10 +315,10 @@ def plot_gdf_cat(gdf_data):
   ######## PANEL 2
   ax2 = plt.subplot(gs_gdf[1,0],projection=crs_gdf)
   setup_axis(ax2)
-  ax2.set_title('EHIT_DENS')
+  ax2.set_title('(b) Early Hits',loc=PANELTITLELOC)
   levels = levels
 
-  # create an axis on the right side of ax. The width of cax will be 5%
+  # create an axis on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -342,7 +327,6 @@ def plot_gdf_cat(gdf_data):
 
   # Contour the data
   con2 = gdf_data['EHIT_DENS'].where(gdf_data['EHIT_DENS']>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
-  #con2 = gdf_data['FYOY_DENS'].where(gdf_data['FYOY_DENS']>0.0).plot.contourf(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -355,10 +339,10 @@ def plot_gdf_cat(gdf_data):
   ######## PANEL 3
   ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
   setup_axis(ax3)
-  ax3.set_title('LHIT_DENS')
+  ax3.set_title('(c) Late Hits',loc=PANELTITLELOC)
   levels = levels
 
-  # create an axis on the right side of ax. The width of cax will be 5%
+  # create an axis on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -380,10 +364,10 @@ def plot_gdf_cat(gdf_data):
   #tot_xr = hit_xr+fam_xr
   ax4 = plt.subplot(gs_gdf[3,0],projection=crs_gdf)
   setup_axis(ax4)
-  ax4.set_title('FYON_DENS')
+  ax4.set_title('(d) False Alarms (Forecast Yes/Observation No)',loc=PANELTITLELOC)
   levels = levels
 
-  # create an axes on the right side of ax. The width of cax will be 5%
+  # create an axes on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -401,7 +385,7 @@ def plot_gdf_cat(gdf_data):
   # Since this is the bottom panel also add a title
   cbar4 = con4.colorbar
   cbar4.set_ticks(levels)
-  cbar4.set_label('TC Genesis 10 deg -1 yr -1 (2015-2018)', labelpad=0, y=1.05, rotation=0, size=20)
+  cbar4.set_label(count_string,labelpad=0,y=1.05,rotation=0,size=20)
 
   # Save off figure
   #plt.show()
@@ -422,20 +406,16 @@ def plot_tdf(tdf_data):
   # New Figure
   fig_tdf = plt.figure(1,figsize=(20,15))
 
-  # Set the current figure
-  #plt.set_current_figure(fig_tdf)
-
   # Coordinate reference system
   crs_tdf = ccrs.PlateCarree(central_longitude=180.0)
 
   ####### PANEL 1
   ax1 = plt.subplot(gs_tdf[0,0],projection=crs_tdf)
   setup_axis(ax1)
-  #ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
-  ax1.set_title('OTRK_DENS')
+  ax1.set_title('(a) BEST Genesis Track Density',loc=PANELTITLELOC)
   levels = [3.0,6.0,9.0,12.0,15.0,18.0,21.0,24.0]
 
-  # create an axis on the right side of ax. The width of cax will be 5%
+  # create an axis on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -456,10 +436,10 @@ def plot_tdf(tdf_data):
   ######## PANEL 2
   ax2 = plt.subplot(gs_tdf[1,0],projection=crs_tdf)
   setup_axis(ax2)
-  ax2.set_title('FTRK_DENS')
+  ax2.set_title(f'(b) Forecast Genesis Track Density ({LEAD_WINDOW_STR}h)',loc=PANELTITLELOC)
   levels = levels
 
-  # create an axis on the right side of ax. The width of cax will be 5%
+  # create an axis on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -481,10 +461,10 @@ def plot_tdf(tdf_data):
   fminuso = tdf_data['FTRK_DENS']-tdf_data['OTRK_DENS']
   ax3 = plt.subplot(gs_tdf[2,0],projection=crs_tdf)
   setup_axis(ax3)
-  ax3.set_title('FTRK-OTRK')
+  ax3.set_title('(c) (b) minus (a)',loc=PANELTITLELOC)
   levels = [-11.0,-9.0,-7.0,-5.0,-3.0,-1.0,1.0,3.0,5.0,7.0,9.0]
   
-  # create an axis on the right side of ax. The width of cax will be 5%
+  # create an axis on the bottom of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
   # Use this axis for the colorbar
@@ -501,6 +481,7 @@ def plot_tdf(tdf_data):
   # Add the colorbar and set the tickmarks on it
   cbar3 = con3.colorbar
   cbar3.set_ticks(levels)
+  cbar3.set_label(days_string,labelpad=0,y=1.05,rotation=0,size=20)
 
   ######## PANEL 4
   ax4 = plt.subplot(gs_tdf[3,0],projection=crs_tdf)
