@@ -124,8 +124,6 @@ def plot_gdf(gdf_data):
 
   ######## PANEL 3
   fminuso = gdf_data['FCST_DENS']-gdf_data['OBS_DENS'] 
-  print(fminuso.min().values)
-  print(fminuso.max().values)
   ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
   setup_axis(ax3)
   #ax3.set_title(F'(c) False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon))),loc='left')
