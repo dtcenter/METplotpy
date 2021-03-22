@@ -29,13 +29,13 @@ to set plot attributes. These plot attributes correspond to values that can be s
 tool. YAML is a recursive acroynym for "YAML Ain't Markup Language" and according to yaml.org,
 it is a "human-readable data-serialization language". It is commonly used for configuration files
 and in applications where data is being stored or transmitted".  Two configuration files are required,
-the first is a default configuration file, line_defaults.yaml that is found in the
+the first is a default configuration file, reliability_defaults.yaml that is found in the
 $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config directory.  All default
 configuration files are located in the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config
 directory.  Note, $METPLOTPY_SOURCE is the user-specified directory
 where the METplotpy source code has been saved.  The second required YAML configuration file is a
 user-supplied "custom" configuration file that is used to customize/override the default
-settings in the line_defaults.yaml file.  The custom configuration file can be an empty
+settings in the reliability_defaults.yaml file.  The custom configuration file can be an empty
 file if all default settings are to be applied.
 
 METplus Configuration
@@ -45,7 +45,7 @@ METplus Configuration
 **Default Configuration File**
 
 The following is the `mandatory`, reliability_defaults.yaml configuration file,
-which serves as a good starting point for creating a line
+which serves as a good starting point for creating a reliability diagram
 plot as it represents the default values set in METviewer
 
 .. literalinclude:: ../../metplotpy/plots/config/reliability_defaults.yaml
@@ -53,26 +53,32 @@ plot as it represents the default values set in METviewer
 **Custom Configuration File**
 
 A second, `mandatory` configuration file is required, which is
-used to customize the settings to the line plot. The custom_line.yaml
-file is included with the source code.  If the user
-wishes to use all the default settings defined in the line_defaults.yaml
-file, an empty custom configuration file can be specified instead.
+used to customize the settings to the reliability diagram plot. The custom_reliability.yaml
+file is included with the source code an looks like the following:
 
-.. literalinclude:: ../../metplotpy/plots/reliability_diagram/custom_reliability.yaml
+.. literalinclude:: ../../metplotpy/plots/reliability_diagram/custom_reliability_diagram.yaml
+
+If the user
+wishes to use all the default settings defined in the reliability_defaults.yaml
+file, an empty custom configuration file (custom_reliability_use_defaults.yaml)
+can be specified instead:
+
+.. literalinclude:: ../../metplotpy/plots/reliability_diagram/custom_reliability_use_defaults.yaml
 
 
 
 Run from the Command Line
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The custom_reliability.yaml configuration file, in combination with the
-line_defaults.yaml configuration file, generate a plot of
-five series:
+The reliability diagram plot that uses only the default values defined in
+the reliability_defaults.yaml configuration file looks like the following:
 
-.. image:: custom_reliability_diagram.png
+.. image:: default_reliability_diagram.png
 
-To generate the above plot using the reliability_defaults.yaml and
-custom_reliability.yaml config files, perform the following:
+
+To generate the above plot, use the reliability_defaults.yaml and
+the empty custom configuration file, custom_reliability_use_defaults.yaml config files.
+Then, perform the following:
 
 * verify that you are running in the conda environment that
   has the required Python packages outlined in the requirements
@@ -83,9 +89,21 @@ custom_reliability.yaml config files, perform the following:
 
 * enter the following command:
 
-  ``python reliability.py ./custom_reliability.yaml``
+  ``python reliability.py ./custom_reliability_use_defaults.yaml``
 
 
-* a `custom_reliability_diagram.png` output file will be created in the
-  $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/reliability_diagram directory, as
-  specified by the custom_reliability.yaml `plot_filename` value.
+* a `default_reliability_diagram.png` output file will be created in the
+  $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/reliability_diagram directory. The filename is
+  specified by the `plot_filename` value in the reliability_defaults.yaml config file.
+
+To generate a customized reliability diagram, use the custom_reliability_diagram.yaml config
+file.
+
+* enter the following command:
+``python reliability.py ./custom_reliability_diagram.yaml``
+
+In this example, this custom config file changes the color of the boxes.
+
+.. image:: custom_reliability_diagram.png
+
+
