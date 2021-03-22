@@ -76,8 +76,7 @@ def plot_gdf(gdf_data):
   setup_axis(ax1)
   #ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
   ax1.set_title('OBS_DENS')
-  #levels = [0.5,1.5,2.5,3.5]
-  levels = list(range(0,41,5))
+  levels = [0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0]
 
   # create an axis on the right side of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
@@ -95,15 +94,13 @@ def plot_gdf(gdf_data):
 
   # Add the colorbar and set the tickmarks on it
   cbar1 = con1.colorbar
-  cbar1.set_ticks(list(range(0,41,5)))
+  cbar1.set_ticks(levels)
 
   ######## PANEL 2
   ax2 = plt.subplot(gs_gdf[1,0],projection=crs_gdf)
   setup_axis(ax2)
   #ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
   ax2.set_title('FCST_DENS')
-  #levels = [0.5,1.5,2.5,3.5]
-  #levels = [0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5]
   levels = levels
 
   # create an axis on the right side of ax. The width of cax will be 5%
@@ -123,15 +120,17 @@ def plot_gdf(gdf_data):
 
   # Add the colorbar and set the tickmarks on it
   cbar2 = con2.colorbar
-  cbar2.set_ticks(list(range(0,41,5)))
+  cbar2.set_ticks(levels)
 
   ######## PANEL 3
   fminuso = gdf_data['FCST_DENS']-gdf_data['OBS_DENS'] 
+  print(fminuso.min().values)
+  print(fminuso.max().values)
   ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
   setup_axis(ax3)
   #ax3.set_title(F'(c) False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon))),loc='left')
   ax3.set_title('FGEN-OGEN')
-  levels = list(range(-40,40,5))
+  levels = [-2.7,-2.1,-1.5,-0.9,-0.3,0.3,0.9,1.5,2.1,2.7]
 
   # create an axis on the right side of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
@@ -141,7 +140,7 @@ def plot_gdf(gdf_data):
   cbax3 = axdiv3.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con3 = fminuso.where((fminuso>0.0) | (fminuso<0.0)).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.coolwarm,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='max',add_labels=False)
+  con3 = fminuso.where((fminuso>0.3) | (fminuso<-0.3)).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.coolwarm,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='both',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -149,7 +148,7 @@ def plot_gdf(gdf_data):
 
   # Add the colorbar and set the tickmarks on it
   cbar3 = con3.colorbar
-  cbar3.set_ticks(list(range(-40,40,5)))
+  cbar3.set_ticks(levels)
 
   ######## PANEL 4
   ax4 = plt.subplot(gs_gdf[3,0],projection=crs_gdf)
@@ -191,8 +190,7 @@ def plot_gdf_ufs(gdf_data):
   setup_axis(ax1)
   #ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
   ax1.set_title('OBS_DENS')
-  #levels = [0.5,1.5,2.5,3.5]
-  levels = list(range(0,41,5))
+  levels = [0.0,0.05,0.1,0.2,0.3,0.4,0.5,0.8,1.1,1.4]
 
   # create an axis on the right side of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
@@ -210,15 +208,13 @@ def plot_gdf_ufs(gdf_data):
 
   # Add the colorbar and set the tickmarks on it
   cbar1 = con1.colorbar
-  cbar1.set_ticks(list(range(0,41,5)))
+  cbar1.set_ticks(levels)
 
   ######## PANEL 2
   ax2 = plt.subplot(gs_gdf[1,0],projection=crs_gdf)
   setup_axis(ax2)
   #ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
   ax2.set_title('FYOY_DENS')
-  #levels = [0.5,1.5,2.5,3.5]
-  #levels = [0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5]
   levels = levels
 
   # create an axis on the right side of ax. The width of cax will be 5%
@@ -238,7 +234,7 @@ def plot_gdf_ufs(gdf_data):
 
   # Add the colorbar and set the tickmarks on it
   cbar2 = con2.colorbar
-  cbar2.set_ticks(list(range(0,41,5)))
+  cbar2.set_ticks(levels)
 
   ######## PANEL 3
   ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
@@ -263,7 +259,7 @@ def plot_gdf_ufs(gdf_data):
 
   # Add the colorbar and set the tickmarks on it
   cbar3 = con3.colorbar
-  cbar3.set_ticks(list(range(0,41,5)))
+  cbar3.set_ticks(levels)
 
   ######## PANEL 4
   #tot_xr = hit_xr+fam_xr
@@ -291,7 +287,7 @@ def plot_gdf_ufs(gdf_data):
   # Add the colorbar and set the tickmarks on it
   # Since this is the bottom panel also add a title
   cbar4 = con4.colorbar
-  cbar4.set_ticks(list(range(0,41,5)))
+  cbar4.set_ticks(levels)
   cbar4.set_label('TC Genesis 10 deg -1 yr -1 (2015-2018)', labelpad=0, y=1.05, rotation=0, size=20)
 
   # Save off figure
@@ -330,8 +326,7 @@ def plot_gdf_cat(gdf_data):
   setup_axis(ax1)
   #ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
   ax1.set_title('FYOY_DENS')
-  #levels = [0.5,1.5,2.5,3.5]
-  levels = list(range(0,41,5))
+  levels = [0.0,0.05,0.1,0.2,0.3,0.4,0.5,0.8,1.1,1.4]
 
   # create an axis on the right side of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
@@ -349,15 +344,13 @@ def plot_gdf_cat(gdf_data):
 
   # Add the colorbar and set the tickmarks on it
   cbar1 = con1.colorbar
-  cbar1.set_ticks(list(range(0,41,5)))
+  cbar1.set_ticks(levels)
 
   ######## PANEL 2
   ax2 = plt.subplot(gs_gdf[1,0],projection=crs_gdf)
   setup_axis(ax2)
   #ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
   ax2.set_title('EHIT_DENS')
-  #levels = [0.5,1.5,2.5,3.5]
-  #levels = [0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5]
   levels = levels
 
   # create an axis on the right side of ax. The width of cax will be 5%
@@ -377,7 +370,7 @@ def plot_gdf_cat(gdf_data):
 
   # Add the colorbar and set the tickmarks on it
   cbar2 = con2.colorbar
-  cbar2.set_ticks(list(range(0,41,5)))
+  cbar2.set_ticks(levels)
 
   ######## PANEL 3
   ax3 = plt.subplot(gs_gdf[2,0],projection=crs_gdf)
@@ -402,7 +395,7 @@ def plot_gdf_cat(gdf_data):
 
   # Add the colorbar and set the tickmarks on it
   cbar3 = con3.colorbar
-  cbar3.set_ticks(list(range(0,41,5)))
+  cbar3.set_ticks(levels)
 
   ######## PANEL 4
   #tot_xr = hit_xr+fam_xr
@@ -429,7 +422,7 @@ def plot_gdf_cat(gdf_data):
   # Add the colorbar and set the tickmarks on it
   # Since this is the bottom panel also add a title
   cbar4 = con4.colorbar
-  cbar4.set_ticks(list(range(0,41,5)))
+  cbar4.set_ticks(levels)
   cbar4.set_label('TC Genesis 10 deg -1 yr -1 (2015-2018)', labelpad=0, y=1.05, rotation=0, size=20)
 
   # Save off figure
@@ -464,8 +457,7 @@ def plot_tdf(tdf_data):
   setup_axis(ax1)
   #ax1.set_title('(a) BEST N=%04d' % (int(len(alons))),loc='left')
   ax1.set_title('OTRK_DENS')
-  #levels = [0.5,1.5,2.5,3.5]
-  levels = list(range(0,41,5))
+  levels = [3.0,6.0,9.0,12.0,15.0,18.0,21.0,24.0]
 
   # create an axis on the right side of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
@@ -483,15 +475,13 @@ def plot_tdf(tdf_data):
 
   # Add the colorbar and set the tickmarks on it
   cbar1 = con1.colorbar
-  cbar1.set_ticks(list(range(0,41,5)))
+  cbar1.set_ticks(levels)
 
   ######## PANEL 2
   ax2 = plt.subplot(gs_tdf[1,0],projection=crs_tdf)
   setup_axis(ax2)
   #ax2.set_title(F'(a) Hits (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(hlon))),loc='left')
   ax2.set_title('FTRK_DENS')
-  #levels = [0.5,1.5,2.5,3.5]
-  #levels = [0.5,1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,9.5]
   levels = levels
 
   # create an axis on the right side of ax. The width of cax will be 5%
@@ -510,7 +500,7 @@ def plot_tdf(tdf_data):
 
   # Add the colorbar and set the tickmarks on it
   cbar2 = con2.colorbar
-  cbar2.set_ticks(list(range(0,41,5)))
+  cbar2.set_ticks(levels)
 
   ######## PANEL 3
   fminuso = tdf_data['FTRK_DENS']-tdf_data['OTRK_DENS']
@@ -518,9 +508,8 @@ def plot_tdf(tdf_data):
   setup_axis(ax3)
   #ax3.set_title(F'(c) False TCGs (FV3-GFS {FCSTLEAD}h lead) N=%04d' % (int(len(flon))),loc='left')
   ax3.set_title('FTRK-OTRK')
-  #levels = levels
-  levels = list(range(-40,40,5))
-
+  levels = [-11.0,-9.0,-7.0,-5.0,-3.0,-1.0,1.0,3.0,5.0,7.0,9.0]
+  
   # create an axis on the right side of ax. The width of cax will be 5%
   # of ax and the padding between cax and ax will be fixed at 0.35 inch.
   # since cartopy uses a geo_axes, we need to specify the axes_class for the append_axes method
@@ -529,7 +518,7 @@ def plot_tdf(tdf_data):
   cbax3 = axdiv3.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con3 = fminuso.where((fminuso>0.0) | (fminuso<0.0)).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.coolwarm,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='both',add_labels=False)
+  con3 = fminuso.where((fminuso>1.0) | (fminuso<-1.0)).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.coolwarm,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='both',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -537,7 +526,7 @@ def plot_tdf(tdf_data):
 
   # Add the colorbar and set the tickmarks on it
   cbar3 = con3.colorbar
-  cbar3.set_ticks(list(range(-40,40,5)))
+  cbar3.set_ticks(levels)
 
   ######## PANEL 4
   ax4 = plt.subplot(gs_tdf[3,0],projection=crs_tdf)
