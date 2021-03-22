@@ -15,7 +15,7 @@ caption_weight: 1
 cex: 1
 circular_block_bootstrap: 'True'
 colors:
-- '#ff0000'
+- 'blue'
 con_series:
 - 1
 create_html: 'True'
