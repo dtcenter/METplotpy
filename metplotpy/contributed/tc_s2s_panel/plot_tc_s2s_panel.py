@@ -20,7 +20,7 @@ PANELTITLELOC = 'left'
 lead_step = int(str(os.environ.get('TCGEN_INIT_FREQ')))
 shortest_lead = int(str(os.environ.get('TCGEN_MIN_LEAD')))
 longest_lead = int(str(os.environ.get('TCGEN_MAX_LEAD')))
-LEAD_WINDOW_STR = f"{shortest_lead:4d}-{longest_lead:4d}"
+LEAD_WINDOW_STR = f"{shortest_lead:d} - {longest_lead:d}"
 
 # Strings for plots
 count_string = f'TC genesis counts per 10x10 degrees per year'
