@@ -1,19 +1,24 @@
-import example_difficulty_index as edi  
-from metcalcpy.compare_images import CompareImages
+import sys
+sys.path.append("../..")
+import example_difficulty_index as edi
+import math
 import pytest
 import warnings
 
 def test_difficulty_index_plot():
     """
-    Compare the expected image (diff_index_expected.png) to the latest
-    one generated.  Invoke the plot_difficulty_index.py
-    script to generate the difficulty_index.png
+    Compare difficulty index values to ensure correctness.
     """
     
-    warnings.filterwarnings("ignore", category=DeprecationWarning)
-
     file1 = 'swh_North_Pacific_5dy_ensemble.npz'
-    edi.main()
-    comparison = CompareImages('diff_index_expected.png', 'swh_North_Pacific_difficulty_index_9_00_feet.png')
-    assert comparison.mssim == 1
+    lats, lons, fieldijn = edi.load_data(file1)
+    muij, sigmaij = edi.compute_stats(fieldijn)
 
+    assert 6.988188171386719 == muij[0][10]
+
+    assert 6.3287403106689455 == muij[18][65]
+
+    assert 9.475065612792969 == muij[25][100]
+
+if __name__ == "__main__":
+            test_difficulty_index_plot()
