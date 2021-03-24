@@ -94,4 +94,7 @@ custom_line.yaml config files, perform the following:
   $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line directory, as
   specified by the custom_line.yaml `plot_filename` value.
 
+* in addition, a line.point1 (<outputfilename>.point1) text file is also
+  generated, which lists the independent and dependent variables that
+  are plotted.  This information can be useful in debugging.
 
