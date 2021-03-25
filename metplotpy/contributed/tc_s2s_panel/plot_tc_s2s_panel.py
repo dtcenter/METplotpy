@@ -1,5 +1,24 @@
 #!/usr/bin/env python
 
+"""Panel Plotting for the METplus S2S TDF/GDF use case
+
+This script is used to create customized panel plots for a METplus subseasonal-to-seasonal
+(S2S) use case. It is tightly tied to the data computed in the UserScript in the METplus
+repository, and while the code used here to generate the graphics may be useful as a template
+or example this script is meant exclusively for the use case.
+
+Contains the following functions
+  * setup_axis()
+  * plot_gdf()
+  * plot_gdf_cat()
+  * plot_gdf_ufs()
+  * plot_tdf()
+
+Author: Daniel R. Adriaansen
+Date: 24 March 2021
+
+"""
+
 import xarray as xr
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
@@ -29,9 +48,18 @@ days_string = f'TC days per 10x10 degrees per year'
 # Function for common axis params
 def setup_axis(ax):
 
-    # What environment variables will we need here?
-    # None, just leave this stuff fixed for the use case
+    """Sets up axis for plotting
+ 
+    Parameters
+    ----------
+    ax : axis object
 
+    Returns
+    -------
+    None
+
+    """
+   
     # Add coastlines
     ax.coastlines(resolution='50m',color='black')
 
@@ -58,6 +86,23 @@ def setup_axis(ax):
 
 # Panels go 1,2,3 top to bottom
 def plot_gdf(gdf_data):
+
+  """Plot the GDF panel plot
+
+  This function will plot a three panel (with a blank fourth panel) graphic. Panel contents from top to bottom:
+  Panel 1: Observed genesis density 'OBS_DENS'
+  Panel 2: Forecast genesis density 'FCST_DENS'
+  Panel 3: Panel 2 - Panel 1 difference
+  
+  Parameters
+  ----------
+  gdf_data : Xarray Dataset
+
+  Returns
+  -------
+  None
+
+  """
 
   # Use gridspec
   gs_gdf = gridspec.GridSpec(nrows=4,ncols=1,height_ratios=[1,1,1,1],hspace=0.20,wspace=0.0)
@@ -173,6 +218,24 @@ def plot_gdf(gdf_data):
 
 # Panels go 1,2,3,4 top to bottom
 def plot_gdf_ufs(gdf_data):
+
+  """Plot the GDF panel with UFS workshop format  
+
+  This function will plot a four panel graphic. Panel contents from top to bottom:
+  Panel 1: Observed genesis density 'OBS_DENS'
+  Panel 2: Density of forecast hits 'FYOY_DENS'
+  Panel 3: Density of forecast false alarms 'FYON_DENS'
+  Panel 4: Panel 4 + Panel 3 sum
+  
+  Parameters
+  ----------
+  gdf_data : Xarray Dataset
+
+  Returns
+  -------
+  None
+
+  """
   
   # Use gridspec
   gs_gdf = gridspec.GridSpec(nrows=4,ncols=1,height_ratios=[1,1,1,1],hspace=0.20,wspace=0.0)
@@ -314,6 +377,24 @@ def plot_gdf_ufs(gdf_data):
 # Panels go 1,2,3,4 top to bottom
 def plot_gdf_cat(gdf_data):
 
+  """Plot the GDF category panel plot
+  
+  This function will plot a four panel graphic. Panel contents from top to bottom:
+  Panel 1: Forecast hit density 'FYOY_DENS'
+  Panel 2: Early forecast hit density 'EHIT_DENS'
+  Panel 3: Late forecast hit density 'LHIT_DENS'
+  Panel 4: Forecast false alarm density 'FYON_DENS'
+  
+  Parameters
+  ----------
+  gdf_data : Xarray Dataset
+
+  Returns
+  -------
+  None
+
+  """
+
   # Use gridspec
   gs_gdf = gridspec.GridSpec(nrows=4,ncols=1,height_ratios=[1,1,1,1],hspace=0.20,wspace=0.0)
 
@@ -454,6 +535,23 @@ def plot_gdf_cat(gdf_data):
 
 # Panels go 1,2,3,4 top to bottom
 def plot_tdf(tdf_data):
+
+  """Plot the TDF panel plot
+  
+  This function will plot a three panel (with a blank fourth panel) graphic. Panel contents from top to bottom:
+  Panel 1: Observed genesis track density 'OTRK_DENS'
+  Panel 2: Forecast genesis track density 'FTRK_DENS'
+  Panel 3: Panel 2 - Panel 1 difference
+  
+  Parameters
+  ----------
+  tdf_data : Xarray Dataset
+
+  Returns
+  -------
+  None
+
+  """
 
   # Use gridspec
   gs_tdf = gridspec.GridSpec(nrows=4,ncols=1,height_ratios=[1,1,1,1],hspace=0.20,wspace=0.0)
