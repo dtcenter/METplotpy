@@ -12,8 +12,6 @@ metcalcpy  (see README of github.com/dtcenter/METcalcpy for instructions to inst
 
 numpy
 
-pandas
-
 psutil
 
 pytest
