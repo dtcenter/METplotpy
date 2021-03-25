@@ -82,7 +82,12 @@ def plot_gdf(gdf_data):
   cbax1 = axdiv1.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con1 = gdf_data['OBS_DENS'].where(gdf_data['OBS_DENS']>0.0).plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'},extend='max',add_labels=False)
+  con1 = gdf_data['OBS_DENS']. \
+         where(gdf_data['OBS_DENS']>0.0). \
+         plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.Reds, \
+                         cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'}, \
+                         extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -106,7 +111,12 @@ def plot_gdf(gdf_data):
   cbax2 = axdiv2.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con2 = gdf_data['FCST_DENS'].where(gdf_data['FCST_DENS']>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
+  con2 = gdf_data['FCST_DENS']. \
+         where(gdf_data['FCST_DENS']>0.0). \
+         plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.Reds, \
+                         cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'}, \
+                         extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -131,7 +141,12 @@ def plot_gdf(gdf_data):
   cbax3 = axdiv3.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con3 = fminuso.where((fminuso>0.3) | (fminuso<-0.3)).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.coolwarm,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='both',add_labels=False)
+  con3 = fminuso. \
+         where((fminuso>0.3) | (fminuso<-0.3)). \
+         plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.coolwarm, \
+                         cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'}, \
+                         extend='both',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -182,7 +197,12 @@ def plot_gdf_ufs(gdf_data):
   cbax1 = axdiv1.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con1 = gdf_data['OBS_DENS'].where(gdf_data['OBS_DENS']>0.0).plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'},extend='max',add_labels=False)
+  con1 = gdf_data['OBS_DENS']. \
+         where(gdf_data['OBS_DENS']>0.0). \
+         plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.Reds, \
+                         cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'}, \
+                         extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -206,7 +226,12 @@ def plot_gdf_ufs(gdf_data):
   cbax2 = axdiv2.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con2 = gdf_data['FYOY_DENS'].where(gdf_data['FYOY_DENS']>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
+  con2 = gdf_data['FYOY_DENS']. \
+         where(gdf_data['FYOY_DENS']>0.0). \
+         plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.Reds, \
+                         cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'}, \
+                         extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -230,7 +255,12 @@ def plot_gdf_ufs(gdf_data):
   cbax3 = axdiv3.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con3 = gdf_data['FYON_DENS'].where(gdf_data['FYON_DENS']>0.0).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='max',add_labels=False)
+  con3 = gdf_data['FYON_DENS']. \
+         where(gdf_data['FYON_DENS']>0.0). \
+         plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.Reds, \
+                         cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'}, \
+                         extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -254,7 +284,12 @@ def plot_gdf_ufs(gdf_data):
   cbax4 = axdiv4.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con4 = hitfalse.where(hitfalse>0.0).plot.pcolormesh(ax=ax4,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax4,'ax':ax4,'orientation':'horizontal'},extend='max',add_labels=False)
+  con4 = hitfalse. \
+         where(hitfalse>0.0). \
+         plot.pcolormesh(ax=ax4,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.Reds, \
+                         cbar_kwargs={'cax':cbax4,'ax':ax4,'orientation':'horizontal'}, \
+                         extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -302,7 +337,12 @@ def plot_gdf_cat(gdf_data):
   cbax1 = axdiv1.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con1 = gdf_data['FYOY_DENS'].where(gdf_data['FYOY_DENS']>0.0).plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'},extend='max',add_labels=False)
+  con1 = gdf_data['FYOY_DENS']. \
+         where(gdf_data['FYOY_DENS']>0.0). \
+         plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.Reds, \
+                         cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'}, \
+                         extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -326,7 +366,12 @@ def plot_gdf_cat(gdf_data):
   cbax2 = axdiv2.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con2 = gdf_data['EHIT_DENS'].where(gdf_data['EHIT_DENS']>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
+  con2 = gdf_data['EHIT_DENS']. \
+         where(gdf_data['EHIT_DENS']>0.0). \
+         plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.Reds, \
+                         cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'}, \
+                         extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -350,7 +395,12 @@ def plot_gdf_cat(gdf_data):
   cbax3 = axdiv3.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con3 = gdf_data['LHIT_DENS'].where(gdf_data['LHIT_DENS']>0.0).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='max',add_labels=False)
+  con3 = gdf_data['LHIT_DENS']. \
+         where(gdf_data['LHIT_DENS']>0.0). \
+         plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.Reds, \
+                         cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'}, \
+                         extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -375,7 +425,12 @@ def plot_gdf_cat(gdf_data):
   cbax4 = axdiv4.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con4 = gdf_data['FYON_DENS'].where(gdf_data['FYON_DENS']>0.0).plot.pcolormesh(ax=ax4,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax4,'ax':ax4,'orientation':'horizontal'},extend='max',add_labels=False)
+  con4 = gdf_data['FYON_DENS']. \
+         where(gdf_data['FYON_DENS']>0.0). \
+         plot.pcolormesh(ax=ax4,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.Reds, \
+                         cbar_kwargs={'cax':cbax4,'ax':ax4,'orientation':'horizontal'}, \
+                         extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -423,7 +478,12 @@ def plot_tdf(tdf_data):
   cbax1 = axdiv1.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con1 = tdf_data['OTRK_DENS'].where(tdf_data['OTRK_DENS']>0.0).plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'},extend='max',add_labels=False)
+  con1 = tdf_data['OTRK_DENS']. \
+         where(tdf_data['OTRK_DENS']>0.0). \
+         plot.pcolormesh(ax=ax1,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.Reds, \
+                         cbar_kwargs={'cax':cbax1,'ax':ax1,'orientation':'horizontal'}, \
+                         extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -447,7 +507,12 @@ def plot_tdf(tdf_data):
   cbax2 = axdiv2.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con2 = tdf_data['FTRK_DENS'].where(tdf_data['FTRK_DENS']>0.0).plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.Reds,cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'},extend='max',add_labels=False)
+  con2 = tdf_data['FTRK_DENS']. \
+         where(tdf_data['FTRK_DENS']>0.0). \
+         plot.pcolormesh(ax=ax2,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.Reds, \
+                         cbar_kwargs={'cax':cbax2,'ax':ax2,'orientation':'horizontal'}, \
+                         extend='max',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
@@ -472,7 +537,12 @@ def plot_tdf(tdf_data):
   cbax3 = axdiv3.append_axes("bottom", size="5%", pad=0.35, axes_class=plt.Axes)
 
   # Contour the data
-  con3 = fminuso.where((fminuso>1.0) | (fminuso<-1.0)).plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(),levels=levels,cmap=plt.cm.coolwarm,cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'},extend='both',add_labels=False)
+  con3 = fminuso. \
+         where((fminuso>1.0) | (fminuso<-1.0)). \
+         plot.pcolormesh(ax=ax3,transform=ccrs.PlateCarree(), \
+                         levels=levels,cmap=plt.cm.coolwarm, \
+                         cbar_kwargs={'cax':cbax3,'ax':ax3,'orientation':'horizontal'}, \
+                         extend='both',add_labels=False)
 
   # Add scatter points if requested
   if ADDPTS:
