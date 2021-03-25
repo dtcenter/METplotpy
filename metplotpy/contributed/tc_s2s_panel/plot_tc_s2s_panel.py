@@ -36,9 +36,9 @@ ADDPTS = False
 PANELTITLELOC = 'left'
 
 # Set some variables
-lead_step = int(str(os.environ.get('TCGEN_INIT_FREQ')))
-shortest_lead = int(str(os.environ.get('TCGEN_MIN_LEAD')))
-longest_lead = int(str(os.environ.get('TCGEN_MAX_LEAD')))
+lead_step = int(str(os.environ.get('TCGEN_INIT_FREQ',6)))
+shortest_lead = int(str(os.environ.get('TCGEN_MIN_LEAD',48)))
+longest_lead = int(str(os.environ.get('TCGEN_MAX_LEAD',120)))
 LEAD_WINDOW_STR = f"{shortest_lead:d} - {longest_lead:d}"
 
 # Strings for plots
@@ -85,7 +85,7 @@ def setup_axis(ax):
     ax.set_xlabel('')
 
 # Panels go 1,2,3 top to bottom
-def plot_gdf(gdf_data):
+def plot_gdf(gdf_data,outdir=None):
 
   """Plot the GDF panel plot
 
@@ -97,6 +97,7 @@ def plot_gdf(gdf_data):
   Parameters
   ----------
   gdf_data : Xarray Dataset
+  outdir : string path to output directory (optional)
 
   Returns
   -------
@@ -208,16 +209,23 @@ def plot_gdf(gdf_data):
 
   # Save off figure
   #plt.show()
-  if ADDPTS:
-     plt.savefig('GDF.png')
+  if outdir:
+    if not os.path.exists(outdir):
+      os.makedirs(outdir)
+    outfile = os.path.join(outdir,'GDF.png')
   else:
-    plt.savefig('GDF.png',bbox_inches='tight',pad_inches=0.25)
+    outfile = 'GDF.png'
+
+  if ADDPTS:
+    plt.savefig(outfile)
+  else:
+    plt.savefig(outfile,bbox_inches='tight',pad_inches=0.25)
 
   # Cleanup
   del(fig_gdf,gs_gdf)
 
 # Panels go 1,2,3,4 top to bottom
-def plot_gdf_ufs(gdf_data):
+def plot_gdf_ufs(gdf_data,outdir=None):
 
   """Plot the GDF panel with UFS workshop format  
 
@@ -230,6 +238,7 @@ def plot_gdf_ufs(gdf_data):
   Parameters
   ----------
   gdf_data : Xarray Dataset
+  outdir : string path to output directory (optional)
 
   Returns
   -------
@@ -366,16 +375,23 @@ def plot_gdf_ufs(gdf_data):
 
   # Save off figure
   #plt.show()
-  if ADDPTS:
-     plt.savefig('GDF_UFS.png')
+  if outdir:
+    if not os.path.exists(outdir):
+      os.makedirs(outdir)
+    outfile = os.path.join(outdir,'GDF_UFS.png')
   else:
-    plt.savefig('GDF_UFS.png',bbox_inches='tight',pad_inches=0.25)
+    outfile = 'GDF_UFS.png'
+
+  if ADDPTS:
+    plt.savefig(outfile)
+  else:
+    plt.savefig(outfile,bbox_inches='tight',pad_inches=0.25)
 
   # Cleanup
   del(gs_gdf,fig_gdf)
 
 # Panels go 1,2,3,4 top to bottom
-def plot_gdf_cat(gdf_data):
+def plot_gdf_cat(gdf_data,outdir=None):
 
   """Plot the GDF category panel plot
   
@@ -388,6 +404,7 @@ def plot_gdf_cat(gdf_data):
   Parameters
   ----------
   gdf_data : Xarray Dataset
+  outdir : string path to output directory (optional)
 
   Returns
   -------
@@ -525,16 +542,23 @@ def plot_gdf_cat(gdf_data):
 
   # Save off figure
   #plt.show()
-  if ADDPTS:
-     plt.savefig('GDF_CAT.png')
+  if outdir:
+    if not os.path.exists(outdir):
+      os.makedirs(outdir)
+    outfile = os.path.join(outdir,'GDF_CAT.png')
   else:
-    plt.savefig('GDF_CAT.png',bbox_inches='tight',pad_inches=0.25)
+    outfile = 'GDF_CAT.png'
+
+  if ADDPTS:
+    plt.savefig(outfile)
+  else:
+    plt.savefig(outfile,bbox_inches='tight',pad_inches=0.25)
 
   # Cleanup
   del(gs_gdf,fig_gdf)
 
 # Panels go 1,2,3,4 top to bottom
-def plot_tdf(tdf_data):
+def plot_tdf(tdf_data,outdir=None):
 
   """Plot the TDF panel plot
   
@@ -546,6 +570,7 @@ def plot_tdf(tdf_data):
   Parameters
   ----------
   tdf_data : Xarray Dataset
+  outdir : string path to output directory (optional)
 
   Returns
   -------
@@ -657,10 +682,17 @@ def plot_tdf(tdf_data):
 
   # Save off figure
   #plt.show()
-  if ADDPTS:
-     plt.savefig('TDF.png')
+  if outdir:
+    if not os.path.exists(outdir):
+      os.makedirs(outdir)
+    outfile = os.path.join(outdir,'TDF.png')
   else:
-    plt.savefig('TDF.png',bbox_inches='tight',pad_inches=0.25)
+    outfile = 'TDF.png'
+
+  if ADDPTS:
+     plt.savefig(outfile)
+  else:
+    plt.savefig(outfile,bbox_inches='tight',pad_inches=0.25)
 
   # Cleanup
   del(gs_tdf,fig_tdf)
