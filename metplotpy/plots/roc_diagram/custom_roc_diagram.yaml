@@ -2,6 +2,8 @@
 roc_pct: False
 roc_ctc: True
 
+reverse_connection_order: False
+
 series_val_1: {}
 series_val_2: {}
 
