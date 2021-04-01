@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade python-dateutil requests sphinx \
-          sphinx-gallery Pillow sphinx_rtd_theme
+          sphinx-gallery matplotlib Pillow sphinx_rtd_theme
       - name: Build docs
         continue-on-error: true
         run: |
