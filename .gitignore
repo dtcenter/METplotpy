@@ -7,6 +7,6 @@
 # sphinx output
 docs/_build
 
-docs/examples/
+docs/examples/*
 
 
