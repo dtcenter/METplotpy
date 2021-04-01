@@ -1,0 +1,32 @@
+# configuration file used for plot_series_xyz.py plots to indicate
+# location of input data, storm of interest, output filenames, and other
+# settings used to determine what to plot.
+
+#The directory just above the storm directories
+input_nc_file_dir: '/Volumes/d1/minnawin/METplus_Plotting_Data/series_analysis_init/20141214_00'
+# on host 'kiowa', sample data is found here:
+#input_nc_file_dir: '/d1/projects/METplus/METplus_Plotting_Data/series_analysis_init/20141214_00'
+
+#The name of the netcdf input file containing the variable of interest
+input_nc_file: 'series_TMP_Z2.nc'
+
+#The name of the variable of interest, e.g. TEMP.
+variable_name: 'TMP'
+
+#The level corresponding to the variable of interest, e.g. Z2, L1, P500, etc.
+level: 'Z2'
+
+#The storm number, used in the title of the plot and in creating the full path to the data.
+storm_number: 'ML1200972014'
+
+#The output file name base which will look something like ML1200972014/TMP_Z2, where
+#the .png extension will be added to the filename when the plot is created.
+#This is the "base" output filename to be used for FBAR and OBAR plots.
+output_filename_base: 'TMP_Z2'
+
+#The directory where you wish to store the output plots.
+output_dir: '/Volumes/d1/minnawin/METplus_Plotting_Output'
+
+#Background map with coastlines are by default turned "off", set to True to
+#draw coastlines.
+background_on: 'false'
