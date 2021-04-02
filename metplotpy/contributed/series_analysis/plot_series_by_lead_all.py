@@ -41,7 +41,11 @@ class PlotSeriesByLeadAll():
         input_nc_file_dir = self.config['input_nc_file_dir']
         output_dir = self.config['output_dir']
         output_full_filename = os.path.join(output_dir, output_filename)
-        background_on = self.config['background_on']
+        background_on_value = self.config['background_on']
+        if background_on_value.upper() == 'FALSE':
+            background_on = False
+        else:
+            background_on = True
 
         # read in the netcdf file
         try:
