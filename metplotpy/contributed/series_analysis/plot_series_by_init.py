@@ -23,14 +23,14 @@ class PlotSeriesByInit():
     def __init__(self, cfg:dict) -> None:
         self.config = cfg
 
-    def create_plot(self, config: dict) -> dict:
+    def create_plot(self) -> dict:
         '''
             Generates the plots (png) for each var-level-stat combination created
             by the series analysis by init.
             Reads the input netcdf file and gathers the lat, lon, FBAR and OBAR
             values into numpy arrays
 
-        :param config: the YAML config file in dictionary representation
+        :param
         :return:
         :raises errno.EEXIST, FileNotFoundError
 
@@ -38,6 +38,7 @@ class PlotSeriesByInit():
 
         # Retrieve the settings indicating the storm, variables, levels, etc of interest from the yaml config file,
         # series_init.yaml
+        config = self.config
         input_nc_filename = config['input_nc_file']
         input_nc_file_dir = config['input_nc_file_dir']
         variable_name = config['variable_name']
