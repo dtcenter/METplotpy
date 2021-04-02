@@ -26,10 +26,8 @@ hours.
 
 Input required:
 ===============
-in the code, under the 'def main()' section, set the following:
--input_dir_base  The base directory where all the input data resides
--output_base_dir  the base directory where output files will be saved
-
+There is a yaml config file series_lead_all.yaml where you can indicate input file locations, output file locations,
+etc.
 
 Output generated:
 ================
@@ -39,10 +37,10 @@ for each netcdf file, there will be a corresponding .png file in the output dire
 How to run:
 ==========
 
-cd to the $METplotpy/src/series_analysis directory.  On the host 'kiowa', the script is set up to run "out of the
-box" using the sample data in the /d1/projects/METplus/METplus_Plotting_Data/series_by_lead_all directory.
+cd to the $METplotpy/metplotpy/contributed/series_analysis directory.  On the host 'kiowa', the script is set up to run "out of the
+box" using the sample data in the /d1/projects/METplus/METplus_Plotting_Data/series_analysis_lead directory.
 
 from the command line, run the following command:
 
 
-python ./plot_series_by_lead_all.py
+python ./plot_series_by_lead_all.py ./series_lead_all.yaml
