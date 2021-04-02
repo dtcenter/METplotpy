@@ -173,7 +173,7 @@ def main():
 
     # Invoke the function that generates the plot
     psbi = PlotSeriesByInit(config)
-    psbi.create_plot(config)
+    psbi.create_plot()
 
 
 if __name__ == "__main__":
