@@ -1,5 +1,5 @@
 
-#The directory just above the storm directories
+#The directory just above the Fxyz directories
 input_nc_file_dir: '/Volumes/d1/minnawin/METplus_Plotting_Data/series_analysis_lead'
 # on host 'kiowa', sample data is found here:
 #input_nc_file_dir: '/d1/projects/METplus/METplus_Plotting_Data/series_analysis_lead/'
