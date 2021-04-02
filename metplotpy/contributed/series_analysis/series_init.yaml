@@ -17,7 +17,7 @@ variable_name: 'TMP'
 level: 'Z2'
 
 #The storm number, used in the title of the plot and in creating the full path to the data.
-storm_number: 'ML1200972014'
+storm_number: 'ML1200942014'
 
 #The output file name base which will look something like ML1200972014/TMP_Z2, where
 #the .png extension will be added to the filename when the plot is created.
