@@ -100,6 +100,7 @@ To generate a customized reliability diagram, use the custom_reliability_diagram
 file.
 
 * enter the following command:
+
 ``python reliability.py ./custom_reliability_diagram.yaml``
 
 In this example, this custom config file changes the color of the boxes.
