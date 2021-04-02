@@ -7,15 +7,20 @@ is the output from the METplus feature relative use case.
 
 import os
 import errno
+import warnings
 from collections import namedtuple
 import re
 import matplotlib.pyplot as plt
 from matplotlib import cm
+import matplotlib.cbook
 import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
 #pylint: disable=import-error
-from netCDF4 import Dataset
 
+from netCDF4 import Dataset
+# ignore the MatplotlibFutureDeprecation warning which does not affect this code
+# since it was developed with matplotlib 3.3
+warnings.simplefilter(action='ignore', category=matplotlib.cbook.mplDeprecation)
 
 def generate_plot(input_nc_file_dir, input_nc_filename, fhr, variable_name,
                   level_type, level, output_filename,
@@ -138,22 +143,23 @@ def get_info(base_dir, output_base_dir):
     # Get a list of all the subdirectories under the base_dir and create a list of named
     # tuples that contain the forecast hour, variable (TMP or HGT), level type
     # (ie P or Z) and level.
-    FileInfo = namedtuple('FileInfo', 'fhr, variable,level_type, level, output_filename')
+    FileInfo = namedtuple('FileInfo', 'fhr, variable_name,level_type, level, output_filename')
 
-    # filename looks like the following: series_[fhr]_[variable]_[level].nc
+    # filename looks like the following: series_[fhr]_to_[fhr]_[variable]_[level].nc
     file_info_list = []
 
     # pylint: disable=unused-variable
     for root, dirs, files in os.walk(base_dir):
         for file in files:
-            match = re.search('series_F([0-9]{3})_(HGT|TMP)_(P|Z)([0-9]{3}).nc', file)
+            # match = re.search('series_F([0-9]{3})_(HGT|TMP)_(P|Z)([0-9]{3}).nc', file)
+            match = re.search('series_F([0-9]{1,3})_to_F([0-9]{1,3})_(HGT|TMP)_(P|Z)([0-9]{1,3}).nc', file)
             if match:
                 fhr = match.group(1)
-                variable_name = match.group(2)
-                level_type = match.group(3)
-                level = match.group(4)
+                variable_name = match.group(3)
+                level_type = match.group(4)
+                level = match.group(5)
                 # Create the output filename (full path) but omit the extension
-                output_filename = 'series_F' + fhr + "_" + variable_name + '_' + level_type + level
+                output_filename = 'series_F' + fhr + "_to_F" + fhr + "_" + variable_name + '_' + level_type + level
                 output_file_no_ext = os.path.join(output_base_dir, output_filename)
                 cur_file_info = FileInfo(fhr, variable_name, level_type, level, output_file_no_ext)
                 file_info_list.append(cur_file_info)
@@ -166,15 +172,16 @@ def main():
     /d1/METplus_Plotting_Data/series_by_lead_all_fhrs:
     series_F000/, series_F006/, series_F012, and series_F018
     """
-    input_dir_base = "/d1/METplus_Plotting_Data/series_by_lead_all_fhrs"
-    output_dir_base = '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output'
+    input_dir_base = "/Volumes/d1/minnawin/METplus_Plotting_Data/series_analysis_lead"
+    output_dir_base = '/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output'
 
     # create the directory if it doesn't exist (equivalent of mkdir -p)
     try:
         os.makedirs(output_dir_base)
     except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(output_dir_base):
-            pass
+           # directory already exists, proceed
+           pass
 
     # Default is false, set this to True only if you want to see coastlines drawn
     plot_background_map = True
@@ -187,7 +194,7 @@ def main():
         level_type = file_info.level_type
         level = file_info.level
         variable_name = file_info.variable_name
-        input_filename = 'series_F' + hour + '_' + variable_name + '_' + level_type + \
+        input_filename = 'series_F' + hour + '_to_F' + hour + '_' + variable_name + '_' + level_type + \
                          level + '.nc'
         input_file = os.path.join(input_dir, input_filename)
         output_filename = file_info.output_filename
