@@ -3,14 +3,10 @@
 """
 import os, shutil, sys
 import yaml
-import errno
 import warnings
 import matplotlib
-from matplotlib import cm
-import pytest
-sys.path.append("../../")
+sys.path.append("../../metplotpy")
 from contributed.series_analysis.plot_series_by_init import PlotSeriesByInit
-import plots.util as util
 
 # ignore the MatplotlibFutureDeprecation warning which does not affect this code
 # since it was developed with matplotlib 3.3
