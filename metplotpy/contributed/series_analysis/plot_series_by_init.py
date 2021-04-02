@@ -3,6 +3,7 @@ Generates static plots (png) from netcdf output from performing series analysis 
 """
 
 import os
+import yaml
 import errno
 import warnings
 import matplotlib.pyplot as plt
@@ -12,7 +13,7 @@ import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
 #pylint: disable=import-error
 from netCDF4 import Dataset
-import plot_util as util
+import plots.util as util
 
 # ignore the MatplotlibFutureDeprecation warning which does not affect this code
 # since it was developed with matplotlib 3.3
@@ -20,14 +21,14 @@ warnings.simplefilter(action='ignore', category=matplotlib.cbook.mplDeprecation)
 
 
 
-def create_plot():
+def create_plot(config:dict):
     '''
         Generates the plots (png) for each var-level-stat combination created
         by the series analysis by init.
         Reads the input netcdf file and gathers the lat, lon, FBAR and OBAR
         values into numpy arrays
 
-
+    :param config: the YAML config file in dictionary representation
     :return:
 
     :raises errno.EEXIST, FileNotFoundError
@@ -36,7 +37,6 @@ def create_plot():
 
     # Retrieve the settings indicating the storm, variables, levels, etc of interest from the yaml config file,
     # series_init.yaml
-    config = util.read_yaml_config()
     input_nc_filename = config['input_nc_file']
     input_nc_file_dir = config['input_nc_file_dir']
     variable_name = config['variable_name']
@@ -160,8 +160,16 @@ def main():
     :return:
     """
 
+    config_file = util.read_config_from_command_line()
+
+    with open(config_file, 'r') as stream:
+        try:
+            config = yaml.load(stream, Loader=yaml.FullLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
+
     # Invoke the function that generates the plot
-    create_plot()
+    create_plot(config)
 
 
 if __name__ == "__main__":
