@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
-import animate_utilities as au
+import metplotpy.contributed.series_analysis.animate_utilities as au
 #pylint: disable=import-error
 from netCDF4 import Dataset
 sys.path.append("../..")
