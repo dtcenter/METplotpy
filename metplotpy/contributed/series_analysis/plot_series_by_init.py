@@ -3,6 +3,7 @@ Generates static plots (png) from netcdf output from performing series analysis 
 """
 
 import os
+import sys
 import yaml
 import errno
 import warnings
@@ -13,8 +14,8 @@ import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
 #pylint: disable=import-error
 from netCDF4 import Dataset
+sys.path.append("../..")
 import plots.util as util
-
 # ignore the MatplotlibFutureDeprecation warning which does not affect this code
 # since it was developed with matplotlib 3.3
 warnings.simplefilter(action='ignore', category=matplotlib.cbook.mplDeprecation)
