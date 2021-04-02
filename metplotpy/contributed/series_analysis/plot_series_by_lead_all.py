@@ -18,7 +18,7 @@ import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
 #pylint: disable=import-error
 sys.path.append("../..")
-import plots.util as util
+import metplotpy.plots.util as util
 
 from netCDF4 import Dataset
 # ignore the MatplotlibFutureDeprecation warning which does not affect this code
@@ -140,6 +140,7 @@ class PlotSeriesByLeadAll():
                             files created by running the METplus use cases
            :param output_base_dir The base directory where the plots are stored
 
+
            :return: file_info_list   A list of named tuples that contain the file info
                                      needed to generate the title of
                                      each plot and the output filename of each plot.
@@ -206,9 +207,8 @@ def main():
             pass
 
     # Invoke the function that generates the plot
-
-
     file_info_list = psl.get_info(input_nc_file_dir, output_dir)
+
     for file_info in file_info_list:
         hour = file_info.fhr
         fhr = 'series_F' + hour
