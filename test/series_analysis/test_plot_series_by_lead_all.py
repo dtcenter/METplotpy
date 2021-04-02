@@ -5,13 +5,10 @@
 
 """
 
-import os, sys
+import sys
 import yaml
-import errno
-import pytest
 sys.path.append("../../")
-import plots.util as util
-from contributed.series_analysis.plot_series_by_lead_all import PlotSeriesByLeadAll
+from metplotpy.contributed.series_analysis.plot_series_by_lead_all import PlotSeriesByLeadAll
 
 def test_get_info():
     """
