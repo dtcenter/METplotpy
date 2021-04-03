@@ -36,9 +36,11 @@ for each netcdf file, there will be a corresponding .png file in the output dire
 
 How to run:
 ==========
+set your PYTHONPATH to point to your $HOME/METplotpy directory
 
-cd to the $METplotpy/metplotpy/contributed/series_analysis directory.  On the host 'kiowa', the script is set up to run "out of the
-box" using the sample data in the /d1/projects/METplus/METplus_Plotting_Data/series_analysis_lead directory.
+cd to the $METplotpy/metplotpy/contributed/series_analysis directory.  On the host 'kiowa', the script is set up to run
+"out of the box" using the sample data in the
+/d1/projects/METplus/METplus_Plotting_Data/series_analysis_lead directory.
 
 from the command line, run the following command:
 
