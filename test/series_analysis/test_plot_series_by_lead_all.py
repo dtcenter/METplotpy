@@ -187,10 +187,18 @@ def test_animation_series_by_lead():
         output_filename = asbl.create_output_filename(output_dir, stat_files[0], filename_regex)
         au.create_gif(animation_duration_secs, stat_files, output_filename)
 
+    # expected_files = [
+    #     '/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python'
+    #     '/series_TMP_Z2_fbar.gif',
+    #     '/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python'
+    #     '/series_TMP_Z2_obar.gif'
+    # ]
+
+    # running on kiowa
     expected_files = [
-        '/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python'
+        '/d1/projects/METplus/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python'
         '/series_TMP_Z2_fbar.gif',
-        '/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python'
+        '/d1/projects/METplus/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python'
         '/series_TMP_Z2_obar.gif'
     ]
 
