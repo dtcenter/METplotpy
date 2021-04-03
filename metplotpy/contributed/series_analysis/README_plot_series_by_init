@@ -34,7 +34,10 @@ and statistic is either fbar or obar.
 
 How to run:
 ===========
-The plot_series_by_init.py is initially set up to run, using output data on host 'kiowa', under the /d1/projects/METplus/METplus_Plotting_Data/series_by_init directory.
+set your PYTHONPATH to point to your $HOME/METplotpy directory
+
+The plot_series_by_init.py is initially set up to run, using output data on host 'kiowa', under the
+/d1/projects/METplus/METplus_Plotting_Data/series_by_init directory.
 
 To run, 'cd' to $METplotpy/metplotpy/contributed/series_analysis/ and run the following:
 
