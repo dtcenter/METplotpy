@@ -7,7 +7,6 @@
 
 import os, sys, re
 import yaml
-import pytest
 sys.path.append("../../")
 from metplotpy.contributed.series_analysis.plot_series_by_lead_all import PlotSeriesByLeadAll
 from metplotpy.contributed.series_analysis.plot_series_by_grouping import PlotSeriesByGrouping
@@ -41,12 +40,12 @@ def test_get_info():
     # iterate over each item in the list of named tuples and from the output_filename,
     # create the full filename (with .nc extension) and see if all the expected
     # files were found.
-    expected_files = [
-        '/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_F000_to_F000_TMP_Z2',
-        '/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_F018_to_F018_TMP_Z2',
-        '/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_F024_to_F024_TMP_Z2',
-        '/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_F042_to_F042_TMP_Z2'
-        ]
+    expected_filenames = ['series_F000_to_F000_TMP_Z2', 'series_F018_to_F018_TMP_Z2',
+                          'series_F024_to_F024_TMP_Z2', 'series_F042_to_F042_TMP_Z2']
+    expected_files = []
+    for filenm in expected_filenames:
+        full_filename = os.path.join(output_dir_base, filenm)
+        expected_files.append(full_filename)
 
     # Verify that we have found the number of netcdf files that were
     # expected (from running the feature relative use case corresponding
@@ -80,16 +79,17 @@ def test_series_lead_group_plots():
         background_on = False
 
     filename_regex = psg.config['png_plot_filename_regex']
-    expected_files = [
-        '/Volumes/d1/minnawin/METplus_Plotting_Output/series_analysis_lead_group/plot/'
+    expected_filenames = [
         'series_F000_to_F018_TMP_Z2_fbar.png',
-        '/Volumes/d1/minnawin/METplus_Plotting_Output/series_analysis_lead_group/plot/'
         'series_F000_to_F018_TMP_Z2_obar.png',
-        '/Volumes/d1/minnawin/METplus_Plotting_Output/series_analysis_lead_group/plot/'
         'series_F024_to_F042_TMP_Z2_fbar.png',
-        '/Volumes/d1/minnawin/METplus_Plotting_Output/series_analysis_lead_group/plot/'
         'series_F024_to_F042_TMP_Z2_obar.png'
     ]
+
+    expected_files = []
+    for filenm in expected_filenames:
+        full_filename = os.path.join(output_dir, filenm)
+        expected_files.append(full_filename)
 
     psg.create_plots(input_nc_file_dir, output_dir, background_on, filename_regex)
 
@@ -131,10 +131,13 @@ def test_series_lead_group_animations():
         background_on = False
 
     filename_regex = psg.config['png_plot_filename_regex']
-    expected_files = [
-        '/Volumes/d1/minnawin/METplus_Plotting_Output/series_analysis_lead_group/plot/series_TMP_Z2_fbar.gif',
-        '/Volumes/d1/minnawin/METplus_Plotting_Output/series_analysis_lead_group/plot/series_TMP_Z2_obar.gif'
-    ]
+    expected_filenames = [
+        'series_TMP_Z2_fbar.gif','series_TMP_Z2_obar.gif']
+
+    expected_files = []
+    for filenm in expected_filenames:
+        full_filename = os.path.join(output_dir, filenm)
+        expected_files.append(full_filename)
 
     psg.create_plots(input_nc_file_dir, output_dir, background_on, filename_regex)
 
@@ -195,12 +198,13 @@ def test_animation_series_by_lead():
     # ]
 
     # running on kiowa
-    expected_files = [
-        '/d1/projects/METplus/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python'
-        '/series_TMP_Z2_fbar.gif',
-        '/d1/projects/METplus/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python'
-        '/series_TMP_Z2_obar.gif'
-    ]
+    expected_filenames = [
+        '/series_TMP_Z2_fbar.gif','/series_TMP_Z2_obar.gif']
+
+    expected_files = []
+    for filenm in expected_filenames:
+        full_filename = os.path.join(output_dir, filenm)
+        expected_files.append(full_filename)
 
     # Verify that we have found the number of png files that were
     # expected (from running the feature relative use case corresponding
