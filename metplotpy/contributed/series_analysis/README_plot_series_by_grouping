@@ -34,6 +34,8 @@ same subdirectory.  The process is repeated for the fbar files.
 
 How to run:
 ==========
+set your PYTHONPATH to point to your $HOME/METplotpy directory
+
 The script runs "out of the box" on the host 'kiowa', using data and input, etc. that corresponds to the sample
 data located in /d1/projects/METplus/METplus_Plotting_Data/series_analysis
 
