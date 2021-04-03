@@ -6,8 +6,8 @@ import re
 import os, sys
 import errno
 import yaml
-import animate_utilities as au
 sys.path.append("../..")
+import contributed.series_analysis.animate_utilities as au
 import metplotpy.plots.util as util
 
 
