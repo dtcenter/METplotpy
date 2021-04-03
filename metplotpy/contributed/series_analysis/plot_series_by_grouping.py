@@ -8,10 +8,11 @@
 
 import os, sys
 import re
-import errno
+import errno, warnings
 import yaml
 import matplotlib.pyplot as plt
 from matplotlib import cm
+import matplotlib.cbook
 import cartopy.crs as ccrs
 from cartopy.util import add_cyclic_point
 import metplotpy.contributed.series_analysis.animate_utilities as au
@@ -19,6 +20,9 @@ import metplotpy.contributed.series_analysis.animate_utilities as au
 from netCDF4 import Dataset
 sys.path.append("../..")
 import metplotpy.plots.util as util
+# ignore the MatplotlibFutureDeprecation warning which does not affect this code
+# since changes must be made in Cartopy code
+warnings.simplefilter(action='ignore', category=matplotlib.cbook.mplDeprecation)
 
 
 
@@ -50,7 +54,7 @@ class PlotSeriesByGrouping():
 
         # For each nc_file, read in the necessary values from the netcdf file
         for nc_file in nc_files:
-            print("current nc file: ", nc_file)
+            # print("current nc file: ", nc_file)
             match = re.match(r'.*/(.*).nc', nc_file)
             if match:
                 filename_only = match.group(1)
@@ -99,11 +103,11 @@ class PlotSeriesByGrouping():
                     file_handle.close()
 
                 # Verify that these values are consistent with lat, lon values, etc.
-                print("lat : ", lats)
-                print("lon : ", lons)
-                print("FBAR: ", fbar)
-                print("OBAR: ", obar)
-                print("===============\n\n")
+                # print("lat : ", lats)
+                # print("lon : ", lons)
+                # print("FBAR: ", fbar)
+                # print("OBAR: ", obar)
+                # print("===============\n\n")
 
             # Use the reversed Spectral colormap to reflect temperatures.
             cmap = cm.get_cmap('Spectral_r')
@@ -170,7 +174,7 @@ class PlotSeriesByGrouping():
                     output_png_file = output_filename + "_obar.png"
                 else:
                     output_png_file = output_filename + "_fbar.png"
-                print("output filename: ", output_png_file)
+                # print("output filename: ", output_png_file)
                 plt.savefig(output_png_file)
 
     def get_nc_files(self, input_dir_base):
@@ -193,7 +197,7 @@ class PlotSeriesByGrouping():
         # sort files by full path in ascending order so Day1 preceeds Day2, and
         # Day3 preceeds Day4...
         sorted_nc_files = sorted(nc_files)
-        print("sorted nc files: ", sorted_nc_files)
+        # print("sorted nc files: ", sorted_nc_files)
         return sorted_nc_files
 
     def collect_files_to_animate(self, input_dir, statistic):
@@ -293,22 +297,20 @@ def main():
     filename_regex = psl.config['png_plot_filename_regex']
     psl.create_plots(input_nc_file_dir, output_dir, background_on, filename_regex)
 
-    # generate gif for OBAR
-    obar_filename_regex = psl.config['obar_filename_regex']
-    statistic = 'obar'
-    sorted_obars = psl.collect_files_to_animate(output_dir, statistic)
-    duration = 0.1
-    obar_output_filename = psl.create_output_filename(output_dir, sorted_obars[0], obar_filename_regex)
-    au.create_gif(duration, sorted_obars, obar_output_filename)
+    # duration in sec to stay on each frame in the animation
+    duration = psl.config['duration']
 
+    # list of statistics of interest
+    statistics_of_interest = psl.config['statistic_of_interest']
 
-    # generate gif for FBAR
-    fbar_filename_regex = psl.config['fbar_filename_regex']
-    statistic = 'fbar'
-    sorted_fbars = psl.collect_files_to_animate(output_dir, statistic)
-    duration = 0.1
-    fbar_output_filename = psl.create_output_filename(output_dir, sorted_fbars[0], fbar_filename_regex)
-    au.create_gif(duration, sorted_fbars, fbar_output_filename)
+    for idx, statistic in enumerate(statistics_of_interest):
+        stat_filename_regex = psl.config['stat_filename_regex']
+        sorted_stats = psl.collect_files_to_animate(output_dir, statistic)
+
+        # use the first stat in sorted_stats to use as an example to check for correct file format
+        # in create_output_filename()
+        stat_output_filename = psl.create_output_filename(output_dir, sorted_stats[idx], stat_filename_regex[idx])
+        au.create_gif(duration, sorted_stats, stat_output_filename)
 
 
 if __name__ == "__main__":
