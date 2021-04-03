@@ -1,0 +1,27 @@
+input_dir: "/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output"
+
+output_dir: "/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python"
+
+fhrs_list:
+  - "F000"
+  - "F018"
+  - "F024"
+  - "F042"
+
+variable: "TMP"
+
+level_type: "Z"
+
+level: "2"
+
+# regular expression describing the format of the static plot filenames
+filename_regex: ".*series_F([0-9]{3})_to_F([0-9]{3})_([A-Z]{3})_((P|Z)[0-9]{1,3})_(obar|fbar).png"
+
+animation_duration_secs: '0.8'
+
+# File format of the static plot file (the file to be animated). Set to True for png, False for jpeg
+output_is_png: 'True'
+
+statistic_of_interest:
+  - "fbar"
+  - "obar"
