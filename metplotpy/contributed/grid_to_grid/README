@@ -19,7 +19,7 @@ Pre-requisite:
 
 What to specify:
 ===============
-At the bottom of the script, under the 'def main()' section, the user specifies the following:
+In the grid.yaml configuration file, the user specifies the following:
  -input directory
  -output directory
  -and for each variable of interest:
@@ -45,8 +45,10 @@ The sample data is located at /d1/projects/METplus/METplus_Plotting_Data/grid_to
 
 How to run:
 ==========
+set your PYTHONPATH to point to your $USER/METplotpy directory
+
 run the following on the command line:
-python plot_grid_to_grid.py
+python plot_grid_to_grid.py grid.yaml
 
 The simplest way to run the script is to cd to the directory METplotpy/src/grid_to_grid/
 and enter the following;
