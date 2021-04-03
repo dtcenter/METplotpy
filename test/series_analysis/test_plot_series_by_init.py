@@ -9,7 +9,7 @@ sys.path.append("../../metplotpy")
 from contributed.series_analysis.plot_series_by_init import PlotSeriesByInit
 
 # ignore the MatplotlibFutureDeprecation warning which does not affect this code
-# since it was developed with matplotlib 3.3
+# since changes must be made to Cartopy
 warnings.simplefilter(action='ignore', category=matplotlib.cbook.mplDeprecation)
 
 
