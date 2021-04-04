@@ -10,9 +10,21 @@ output_dir: '/Volumes/d1/minnawin/METplus_Plotting_Output/series_analysis_lead_g
 #draw coastlines.
 background_on: 'false'
 
+# list of statistics of interest
+statistic_of_interest:
+  - "obar"
+  - "fbar"
+
 # Filename regular expression for obar and fbar filenames
-obar_filename_regex: '(.*series)_(F[0-9]{3}_to_F[0-9]{3})_(.*_obar).png'
-fbar_filename_regex: '(.*series)_(F[0-9]{3}_to_F[0-9]{3})_(.*_fbar).png'
+# *** NOTE*** make sure the order corresponds to the ordering
+# of the statistic_of_interest (i.e. if obar is first in list above, make
+# sure the first regex in this list corresponds to obar)
+stat_filename_regex:
+  - '(.*series)_(F[0-9]{3}_to_F[0-9]{3})_(.*_obar).png'
+  - '(.*series)_(F[0-9]{3}_to_F[0-9]{3})_(.*_fbar).png'
 
 # Regular expression for output plot, eg. the png filename
 png_plot_filename_regex: '(.*series_(F[0-9]{3}_to_F[0-9]{3})_([A-Z]{3})_(P|Z)([0-9]{1,3}).png'
+
+# length of time in secs to view each frame in an animation
+duration: "0.1"

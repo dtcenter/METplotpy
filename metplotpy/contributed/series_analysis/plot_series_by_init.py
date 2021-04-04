@@ -17,7 +17,7 @@ from netCDF4 import Dataset
 sys.path.append("../..")
 import metplotpy.plots.util as util
 # ignore the MatplotlibFutureDeprecation warning which does not affect this code
-# since it was developed with matplotlib 3.3
+# since changes must be made in Cartopy code
 warnings.simplefilter(action='ignore', category=matplotlib.cbook.mplDeprecation)
 
 class PlotSeriesByInit():
