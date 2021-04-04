@@ -1,27 +1,35 @@
+# point to where your static png plots are located (i.e. the files you wish to animate)
 input_dir: "/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output"
 
+# Location to put animation (gif) files
 output_dir: "/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python"
 
+# A list of forecast hours of interest
 fhrs_list:
   - "F000"
   - "F018"
   - "F024"
   - "F042"
 
+# The variable of interest
 variable: "TMP"
 
+# Level type (eg. Z or P)
 level_type: "Z"
 
+# Level value
 level: "2"
 
 # regular expression describing the format of the static plot filenames
 filename_regex: ".*series_F([0-9]{3})_to_F([0-9]{3})_([A-Z]{3})_((P|Z)[0-9]{1,3})_(obar|fbar).png"
 
+# how long (in seconds) to stay on a frame when running the animation
 animation_duration_secs: '0.8'
 
 # File format of the static plot file (the file to be animated). Set to True for png, False for jpeg
 output_is_png: 'True'
 
+# A list of statistics of interest
 statistic_of_interest:
   - "fbar"
   - "obar"
