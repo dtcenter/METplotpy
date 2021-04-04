@@ -81,6 +81,8 @@ def test_expected_files_created():
                       'TMP_FCST_grid_stat_GFS_vs_ANLYS_240000L_20170613_000000V_pairs.png',
                       'TMP_FCST_grid_stat_GFS_vs_ANLYS_480000L_20170613_000000V_pairs.png']
 
+
+
     for expected in expected_files:
          if expected not in all_files:
              assert False

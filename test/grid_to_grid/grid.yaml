@@ -1,6 +1,5 @@
 # The directory where the grid stat netcdf output files are located.
-#input_dir: "/d1/METplus_Plotting_Data/grid_to_grid/201706130000/grid_stat"
-input_dir: "/Volumes/d1/minnawin/METplus_Plotting_Data/grid_to_grid/201706130000/grid_stat"
+input_dir: "/d1/projects/METplus/METplus_Plotting_Data/grid_to_grid/201706130000/grid_stat"
 
 # The directory where you wish to save the plots
 output_dir: '/Volumes/d1/minnawin/METplus_Plotting_Output/grid_to_grid/201706130000/grid_stat/plots'

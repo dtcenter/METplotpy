@@ -1,5 +1,5 @@
 # point to where your static png plots are located (i.e. the files you wish to animate)
-input_dir: "/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output"
+input_dir: "d1/projects/METplus/METplus_Plotting_Output/series_by_lead_all_fhrs/output"
 
 # Location to put animation (gif) files
 output_dir: "/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python"
