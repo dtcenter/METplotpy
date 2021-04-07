@@ -16,7 +16,6 @@ def get_config():
         except yaml.YAMLError as exc:
             print(exc)
 
-@pytest.mark.skip()
 def test_get_timestr():
     """ Tests that the function get_timestr (in hovmoeller_plotly.py) returns a list
         of timestrings (i.e. a non-zero length list).
@@ -37,7 +36,6 @@ def test_get_timestr():
     actual_timestr = hov.get_timestr(timeA)
 
     assert (len(actual_timestr) > 0)
-
 
 
 def test_output_plot_created():
@@ -90,3 +88,52 @@ def test_output_plot_created():
     else:
         assert False
 
+
+def test_get_latstring():
+    '''
+       Verify that the lat string created is expected
+    :return:
+    '''
+
+    # Try a few lats and latn values to make sure we are covering
+    # all possibilities
+
+    latstr = hov.get_latstring(-90, 90)
+    expected_str = '90S - 90N'
+    assert latstr == expected_str
+
+
+    latstr = hov.get_latstring(0, -5)
+    expected_str = '0N - 5S'
+    assert latstr == expected_str
+
+def test_get_clevels():
+   '''
+      test that the get_clevels() function is behaving correctly
+   '''
+   pltvarname = ['precip', 'uwnd', 'vwnd', 'div', 'olr']
+   # order in list: cmin, cmax, cspc
+   expected = {'precip':[0.2, 1.6, 0.2], 'div':[-0.000011,0.000011,0.000002],
+               'uwnd':[-21.,21.,2.],'vwnd':[-21.,21.,2.] , 'olr':[160.,240.,20.]}
+   for var in pltvarname:
+       cmin, cmax, cspac = hov.get_clevels(var)
+       assert expected[var][0] == cmin
+       assert expected[var][1] == cmax
+       assert expected[var][2] == cspac
+
+
+def test_get_clevels_bogus_var():
+   '''
+      test that the get_clevels() function is behaving correctly
+      when an unexpected variable is input
+   '''
+
+   # When an unexpected variable is encountered, a default tuple for
+   # cmin, cmax and cspac is returned, with a printed error message.
+   # We can't capture the output, but we can check for these default values.
+   default = [-21.,21.,2.]
+   cmin, cmax, cspac = hov.get_clevels("bogus")
+
+   assert cmin == default[0]
+   assert cmax == default[1]
+   assert cspac == default[2]
