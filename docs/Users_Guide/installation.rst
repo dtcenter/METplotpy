@@ -2,7 +2,9 @@ Installation guide for METplotpy
 ===========================================
 
 METplotpy is written entirely in Python and uses YAML configuration files and relies
-on the METcalcpy package.
+on the METcalcpy package. The version numbers (when provided) indicate the minimum version
+number for that package.
+
 
 Python Requirements
 ~~~~~~~~~~~~~~~~~~~
@@ -19,7 +21,7 @@ Python Requirements
 
 * imutils 0.5.3
 
-* kaleido 0.0.1
+* imageio 
 
 * kiwisolver 1.0.1
 
@@ -29,7 +31,7 @@ Python Requirements
 
 * metcalcpy 
 
-* netcdf 1.5.1.2 or above 
+* netcdf4 1.5.1.2 or above 
 
 * numpy
 
@@ -43,6 +45,8 @@ Python Requirements
 
 * plotly 4.9.0
 
+* python-kaleido 0.0.1
+
 * pyshp
 
 * psutil
@@ -53,7 +57,7 @@ Python Requirements
 
 * pytest 5.2.1
 
-* PyYAML
+* pyyaml
 
 * requests
 
