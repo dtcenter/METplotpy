@@ -13,8 +13,8 @@ Python packages:
 
 Input:
 =====
-Assign the appropriate values to the following (in the 'def main()') section of the code.
-The code can be run 'out of the box', using sample data on the host 'eyewall'.
+Assign the appropriate values to the corresponding keys in the animate.yaml configuration file:
+
 -input_dir  The directory where the static (png) plots to be combined into an animation
 -output_dir  The directory where the animations (gif files) are to be stored
 -fhrs_list  A list of the fhrs to include in the animation, in the format ["Faa", "Fbb", ..., "Fzz"] where
@@ -24,10 +24,11 @@ The code can be run 'out of the box', using sample data on the host 'eyewall'.
 -level  The level of interest, e.g. 500 in P500, Z as in Z2, etc.
 -filename_regex The regular expression that describes the format of the static files (.png file)  For the feature
                 relative use case, the files have the format of:
-                        .*series_F([0-9]{3})_([A-Z]{3})_((P|Z)[0-9]{1,3})_(obar|fbar).png
+                        .*series_F([0-9]{3})_to_F([0-9]{3})_([A-Z]{3})_((P|Z)[0-9]{1,3})_(OBAR|FBAR).png
 
                 where the values in the parenthesis refer to the fhr, variable, level type, level, and statistic,
                 respectively.
+-statistic    The statistic of interest: obar or fbar, etc..
 -output_gif_base  The 'base' or first part of the output filename to be created.
 -duration The time (in sec) that each frame of the animation is viewed
 
@@ -40,13 +41,15 @@ sub-directory.
 
 How to run:
 ===========
-The script runs "out of the box" on the host 'kiowa', using data and input, etc. that corresponds to the sample
-data located in /d1/projects/METplus/METplus_Plotting_Data/series_analysis
+set the PYTHONPATH to $USER/METplotpy
 
-cd to $METplotpy/src/series_analysis/
+The script runs "out of the box" on the host 'kiowa', using data and input, etc. that corresponds to the sample
+data located in /d1/projects/METplus/METplus_Plotting_Data/series_analysis_<xyz>
+
+cd to the appropriate directory under $METplotpy/metplotpy/contributed/series_analysis/
 
 from the command line, run the following command:
-python ./plot_series_by_lead_all.py
+python ./animate_series_by_lead_all.py animate.yaml
 
 
 gif files are generated in the /d1/projects/METplus/METplus_Plotting_Data/series_by_lead_all/plots directory

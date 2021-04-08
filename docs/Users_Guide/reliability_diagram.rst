@@ -6,7 +6,7 @@ Description
 Reliability diagrams are useful in displaying the conditional bias of probabilistic forecasts.
 For more information about reliability diagrams, refer to the METviewer documentation:
 
-https://dtcenter.github.io/METviewer/latest/Users_Guide/reliabilityplots.html
+https://metviewer.readthedocs.io/en/latest/Users_Guide/reliabilityplots.html
 
 Example
 ~~~~~~~
@@ -100,6 +100,7 @@ To generate a customized reliability diagram, use the custom_reliability_diagram
 file.
 
 * enter the following command:
+
 ``python reliability.py ./custom_reliability_diagram.yaml``
 
 In this example, this custom config file changes the color of the boxes.

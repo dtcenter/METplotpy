@@ -21,16 +21,8 @@ examples/series_by_lead_all_fhrs config files.
 
 Input Required:
 ===============
-The following values need to be set in the plot_series_by_grouping.py script (in the def main() section):
--input_dir  the directory where the input netcdf files are located
--output_dir the directory where the png plot files and animation file (gif) are located
--filename_regex  The regular expression that describes the output file to help identify the group (eg F000_to_F006, F006_to_F012, etc),
- variable (eg TMP, UGRD, HGT, etc), level (eg P850, Z2, etc), and statistic (obar vs. fbar)
--duration the length of time in seconds, to view each frame in the animation
--obar_filename_regex  The filename regular expression that describes the filename format for the obar png file
--fbar_filename_regex  The filename regular expression that describes the filename format for the fbar png file
-
-
+The series_lead_group.yaml file is a configuration file where you set the location of your input, output, and other
+relevant settings.  This file is found in the same directory as the plot_series_by_grouping.py script.
 
 
 
@@ -42,13 +34,15 @@ same subdirectory.  The process is repeated for the fbar files.
 
 How to run:
 ==========
+set your PYTHONPATH to point to your $HOME/METplotpy directory
+
 The script runs "out of the box" on the host 'kiowa', using data and input, etc. that corresponds to the sample
 data located in /d1/projects/METplus/METplus_Plotting_Data/series_analysis
 
-cd to $METplotpy/src/series_analysis/
+cd to $METplotpy/metplotpy/contributed/series_analysis/
 
 from the command line, run the following command:
-python ./plot_series_by_grouping.py
+python ./plot_series_by_grouping.py ./series_lead_group.yaml
 
 
 png and gif files are generated in the /d1/projects/METplus/METplus_Plotting_Data/series_by_lead_grouing/plots directory

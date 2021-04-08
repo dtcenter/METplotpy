@@ -21,14 +21,8 @@ Input files:
 
 Input required:
 ==============
-The user specifies the following in the plot_series_by_init.py script (in the def main() sections):
--storm number, which corresponds to the subdirectory under the $OUTPUT_DIR/YYYYMMDD_hh/ directory created by the METplus
-use case.
--nc_input_dir_base, the $OUTPUT_DIR/YYYYMMDD_hh directory under which the output is saved based on the storm number.
--nc_input_filename, the filename of the netcdf file of interest
--variable_name, the variable name of interest, which is found in the nc_input_filename above.
--level - the level (level type ie P or Z) and level value (ie 850 or 2) of interest.
-
+The user specifies the following in the series_init.yaml file that is in the same directory where
+the plot_series_by_init.py script resides.  This is where you set the location of your input, output, etc.
 
 Output created:
 ==============
@@ -40,11 +34,14 @@ and statistic is either fbar or obar.
 
 How to run:
 ===========
-The plot_series_by_init.py is initially set up to run, using output data on host 'kiowa', under the /d1/projects/METplus/METplus_Plotting_Data/series_by_init directory.
+set your PYTHONPATH to point to your $HOME/METplotpy directory
 
-To run, 'cd' to $METplotpy/src/series_analysis/ and run the following:
+The plot_series_by_init.py is initially set up to run, using output data on host 'kiowa', under the
+/d1/projects/METplus/METplus_Plotting_Data/series_by_init directory.
 
-python ./plot_series_by_init.py
+To run, 'cd' to $METplotpy/metplotpy/contributed/series_analysis/ and run the following:
+
+python ./plot_series_by_init.py ./series_init.yaml
 
 you will see output to stdout that shows the lat, lon, FBAR, and OBAR values for the file+variable+level+statistic of
 interest and the name of the output files created.

@@ -1,0 +1,12 @@
+
+# input netCDF data file
+input_data: '/d1/projects/METcalcpy/METcalcpy_Data/TropicalDiagnostics/precip.erai.sfc.1p0.2x.2014-2016.nc'
+
+# ouput data directory
+output_plot_path: '/home/minnawin/METcalcpy/output/plots/hovmoeller/'
+
+# plot start date, format: yyyy-mm-dd
+date_start: '2016-01-01'
+
+# plot end date, format: yyyy-mm-dd
+date_last: '2016-03-31'

@@ -5,159 +5,213 @@
 
 """
 
-import os
-import errno
-import pytest
-import plot_series_by_lead_all as psla
+import os, sys, re
+import yaml
+sys.path.append("../../")
+from metplotpy.contributed.series_analysis.plot_series_by_lead_all import PlotSeriesByLeadAll
+from metplotpy.contributed.series_analysis.plot_series_by_grouping import PlotSeriesByGrouping
+from metplotpy.contributed.series_analysis.animate_series_by_lead_all import AnimateSeriesByLeadAll
+from metplotpy.contributed.series_analysis import animate_utilities as au
 
-@pytest.fixture()
-def settings():
 
-    settings_dict = {'input_dir_base': '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs',
-                     'output_dir_base': '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output'
-                     }
-
-    # create the output directory if it doesn't exist
-    # (equivalent of Unix/Linux 'mkdir -p')
-    try:
-        os.makedirs(settings_dict['output_dir_base'])
-    except OSError as exc:
-        if exc.errno == errno.EEXIST and os.path.isdir(settings_dict['output_dir_base']):
-            pass
-
-    return settings_dict
-
-def get_filesizes(input_dir):
-    """
-        This is used to get the file sizes of a list of files (full path)
-        in a specified directory.
-    :param input_dir: The specified directory that contains expected
-                      plots whose file sizes are to be determined.
-    :return: filesizes:  A dictionary whose keys are the full filepath
-                         and corresponding value is the file size as
-                         returned by os.stat(file).st_size.
-    """
-    all_files = []
-    for root, dirs, files in os.walk(input_dir):
-        for cur_file in files:
-            if cur_file.endswith('png'):
-                all_files.append(os.path.join(root, cur_file))
-
-    # Create a dictionary that contains the file size for each expected file
-    # based on filename (key) and filesize (values)
-    file_sizes = {os.path.basename(cur_file): os.stat(cur_file).st_size for cur_file in all_files}
-    return file_sizes
-
-def test_get_info(settings):
+def test_get_info():
     """
         Verify that the get_info() function in plot_series_by_lead_all.py
         is returning the correct number and files (based on filenames) produced
         by the series analysis by lead for all fhrs.
 
     """
-    input_dir_base = settings['input_dir_base']
-    output_dir_base = settings['output_dir_base']
+
+
+    config_file = "./series_lead_all.yaml"
+
+    with open(config_file, 'r') as stream:
+        try:
+            config = yaml.load(stream, Loader=yaml.FullLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    psla = PlotSeriesByLeadAll(config)
+    input_dir_base = psla.config['input_nc_file_dir']
+    output_dir_base = psla.config['output_dir']
     series_by_lead_tuples = psla.get_info(input_dir_base,
                                           output_dir_base)
 
     # iterate over each item in the list of named tuples and from the output_filename,
     # create the full filename (with .nc extension) and see if all the expected
     # files were found.
-    expected_nc_files = ['/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F006_TMP_P850.nc',
-                         '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F006_HGT_P500.nc',
-                         '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F000_HGT_P500.nc',
-                         '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F000_TMP_P850.nc',
-                         '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F012_HGT_P500.nc',
-                         '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F012_TMP_P850.nc'
-                         ]
+    expected_filenames = ['series_F000_to_F000_TMP_Z2', 'series_F018_to_F018_TMP_Z2',
+                          'series_F024_to_F024_TMP_Z2', 'series_F042_to_F042_TMP_Z2']
+    expected_files = []
+    for filenm in expected_filenames:
+        full_filename = os.path.join(output_dir_base, filenm)
+        expected_files.append(full_filename)
 
     # Verify that we have found the number of netcdf files that were
     # expected (from running the feature relative use case corresponding
-    # to using the series_by_lead_all_fhrs.conf).
-    num_expected = len(expected_nc_files)
-    cur_nc_counter = 0
+    # to using the series_by_lead_all_fhrs.yaml).
+    num_expected = len(expected_files)
+    match_counter = 0
     for cur_file in series_by_lead_tuples:
-        cur_nc = cur_file.output_filename + ".nc"
-        if cur_nc in expected_nc_files:
-            cur_nc_counter = cur_nc_counter + 1
+        if cur_file.output_filename in expected_files:
+            match_counter = match_counter + 1
 
-    assert(cur_nc_counter == num_expected)
+    assert (match_counter == num_expected)
 
+def test_series_lead_group_plots():
+    ''' Test that the expected png files are created by the plot_series_by_grouping module'''
 
+    config_file = "./series_lead_group.yaml"
 
+    with open(config_file, 'r') as stream:
+        try:
+            config = yaml.load(stream, Loader=yaml.FullLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
 
+    psg = PlotSeriesByGrouping(config)
+    input_nc_file_dir = psg.config['input_nc_file_dir']
+    output_dir = psg.config['output_dir']
+    background_on_setting = psg.config['background_on']
+    if background_on_setting.upper()  == 'TRUE':
+        background_on = True
+    else:
+        background_on = False
 
+    filename_regex = psg.config['png_plot_filename_regex']
+    expected_filenames = [
+        'series_F000_to_F018_TMP_Z2_fbar.png',
+        'series_F000_to_F018_TMP_Z2_obar.png',
+        'series_F024_to_F042_TMP_Z2_fbar.png',
+        'series_F024_to_F042_TMP_Z2_obar.png'
+    ]
 
-def test_expected_files_created(settings):
-    """
-        Testing that the expected png files for OBAR and FBAR are created in
-        the expected directory:
-        /d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F000_HGT_P500_fbar.png
-        /d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F000_HGT_P500_obar.png
-        /d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F000_TMP_P850_fbar.png
-        /d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F000_TMP_P850_obar.png
-        /d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F006_HGT_P500_fbar.png
-        /d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F006_HGT_P500_obar.png
-        /d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F006_TMP_P850_fbar.png
-        /d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F006_TMP_P850_obar.png
-        /d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F012_HGT_P500_fbar.png
-        /d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F012_HGT_P500_obar.png
-        /d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F012_TMP_P850_fbar.png
-        /d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F012_TMP_P850_obar.png
+    expected_files = []
+    for filenm in expected_filenames:
+        full_filename = os.path.join(output_dir, filenm)
+        expected_files.append(full_filename)
 
-    :param settings: The dictionary that holds the input variable settings
-    :return:
-    """
+    psg.create_plots(input_nc_file_dir, output_dir, background_on, filename_regex)
 
-    # Get all the series analysis files created by the use case,
-    # and generate the plots.  Then compare the number and
-    # filenames against a baseline directory to verify that
-    # we are getting the same results.
-    series_tuples = psla.get_info(settings['input_dir_base'],
-                                  settings['output_dir_base'])
+    # Verify that we have found the number of png files that were
+    # expected (from running the feature relative use case corresponding
+    # to using the series_lead_group.yaml).
+    match_counter = 0
+    for root, dirs, files in os.walk(output_dir):
+        for file in files:
+            # match = re.search('series_F([0-9]{3})_(HGT|TMP)_(P|Z)([0-9]{3}).nc', file)
+            match = re.search('series_F([0-9]{1,3})_to_F([0-9]{1,3})_(HGT|TMP)_(P|Z)([0-9]{1,3})(.*).png', file)
+            if match:
+                full_file = os.path.join(output_dir, file)
+                match_counter += 1
 
-    expected_plots = [
-        '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F000_HGT_P500_fbar.png',
-        '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F000_HGT_P500_obar.png',
-        '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F000_TMP_P850_fbar.png',
-        '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F000_TMP_P850_obar.png',
-        '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F006_HGT_P500_fbar.png',
-        '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F006_HGT_P500_obar.png',
-        '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F006_TMP_P850_fbar.png',
-        '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F006_TMP_P850_obar.png',
-        '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F012_HGT_P500_fbar.png',
-        '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F012_HGT_P500_obar.png',
-        '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F012_TMP_P850_fbar.png',
-        '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/output/series_F012_TMP_P850_obar.png']
+    num_expected = len(expected_files)
 
-    num_expected = len(expected_plots)
-    plot_background_map = True
-    for cur_tuple in series_tuples:
-        hour = cur_tuple.fhr
-        fhr = 'series_F' + cur_tuple.fhr
-        input_dir = os.path.join(settings['input_dir_base'], fhr)
-        level_type = cur_tuple.level_type
-        level = cur_tuple.level
-        variable_name = cur_tuple.variable
-        output_filename = cur_tuple.output_filename
-        input_filename = 'series_F' + hour + '_' + variable_name + '_' + level_type + \
-                         level + '.nc'
-        input_file = os.path.join(input_dir, input_filename)
-        psla.generate_plot(input_dir, input_file, hour, variable_name, level_type, level,
-                      output_filename, plot_background_map)
+    # print("Number of matches: ", match_counter)
+    assert (match_counter == num_expected)
 
+def test_series_lead_group_animations():
+    ''' Test that the expected gif files (animations) are created by the plot_series_by_grouping module'''
 
-    # Now verify that the same number of files and the same
-    # files (png) have been created by the call to generate_plot.
-    baseline_dir = '/d1/METplus_Plotting_Data/series_by_lead_all_fhrs/baseline_output'
-    expected_filesizes = get_filesizes(baseline_dir)
-    created_files_filesizes = get_filesizes(settings['output_dir_base'])
-    # Verify that the file sizes in the baseline plots match the filesizes of the
-    # corresponding plots that were just created.
-    for filename, sizes in expected_filesizes.items():
-        if filename in created_files_filesizes:
-            assert (expected_filesizes[filename] == created_files_filesizes[filename])
-        else:
-            assert (False)
+    config_file = "./series_lead_group.yaml"
 
+    with open(config_file, 'r') as stream:
+        try:
+            config = yaml.load(stream, Loader=yaml.FullLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    psg = PlotSeriesByGrouping(config)
+    input_nc_file_dir = psg.config['input_nc_file_dir']
+    output_dir = psg.config['output_dir']
+    background_on_setting = psg.config['background_on']
+    if background_on_setting.upper()  == 'TRUE':
+        background_on = True
+    else:
+        background_on = False
+
+    filename_regex = psg.config['png_plot_filename_regex']
+    expected_filenames = [
+        'series_TMP_Z2_fbar.gif','series_TMP_Z2_obar.gif']
+
+    expected_files = []
+    for filenm in expected_filenames:
+        full_filename = os.path.join(output_dir, filenm)
+        expected_files.append(full_filename)
+
+    psg.create_plots(input_nc_file_dir, output_dir, background_on, filename_regex)
+
+    # Verify that we have found the number of png files that were
+    # expected (from running the feature relative use case corresponding
+    # to using the series_lead_group.yaml).
+    match_counter = 0
+    for root, dirs, files in os.walk(output_dir):
+        for file in files:
+            # match = re.search('series_F([0-9]{3})_(HGT|TMP)_(P|Z)([0-9]{3}).nc', file)
+            match = re.search('series_(HGT|TMP)_(P|Z)([0-9]{1,3})(.*).gif', file)
+            if match:
+                full_file = os.path.join(output_dir, file)
+                match_counter += 1
+
+    num_expected = len(expected_files)
+    assert (match_counter == num_expected)
+
+def test_animation_series_by_lead():
+    ''' Test that the expected gif files (animations) are created by the
+        animate_series_by_lead module.
+    '''
+
+    config_file = "./animate.yaml"
+
+    with open(config_file, 'r') as stream:
+        try:
+            config = yaml.load(stream, Loader=yaml.FullLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    asbl = AnimateSeriesByLeadAll(config)
+    # Get the values that were set in the yaml config file animate.yaml
+    input_dir = asbl.config['input_dir']
+    output_dir = asbl.config['output_dir']
+    fhrs_list = asbl.config['fhrs_list']
+    variable = asbl.config["variable"]
+    level_type = asbl.config['level_type']
+    level = asbl.config['level']
+    filename_regex = asbl.config['filename_regex']
+    animation_duration_secs = asbl.config['animation_duration_secs']
+    # list of statistics of interest
+    statistics_of_interest = asbl.config['statistic_of_interest']
+
+    # Animate the plots corresponding to the statistics of interest for the corresponding forecast, variable, and level
+    for statistic in statistics_of_interest:
+        stat_files = asbl.collect_files_to_animate(input_dir, fhrs_list, variable,
+                                                   level_type, level, statistic)
+        # create output filename for statistic animation (gif) file
+        output_filename = asbl.create_output_filename(output_dir, stat_files[0], filename_regex)
+        au.create_gif(animation_duration_secs, stat_files, output_filename)
+
+    expected_filenames = [
+        '/series_TMP_Z2_fbar.gif','/series_TMP_Z2_obar.gif']
+
+    expected_files = []
+    for filenm in expected_filenames:
+        full_filename = os.path.join(output_dir, filenm)
+        expected_files.append(full_filename)
+
+    # Verify that we have found the number of png files that were
+    # expected (from running the feature relative use case corresponding
+    # to using the series_lead_group.yaml).
+    match_counter = 0
+    for root, dirs, files in os.walk(output_dir):
+        for file in files:
+            # match = re.search('series_F([0-9]{3})_(HGT|TMP)_(P|Z)([0-9]{3}).nc', file)
+            match = re.search('series_(HGT|TMP)_(P|Z)([0-9]{1,3})(.*).gif', file)
+            if match:
+                full_file = os.path.join(output_dir, file)
+                match_counter += 1
+
+    num_expected = len(expected_files)
+
+    # print("Number of matches: ", match_counter)
+    assert (match_counter == num_expected)
 
