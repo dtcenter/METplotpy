@@ -19,14 +19,14 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'METplotpy'
-copyright = '2019, NCAR'
+copyright = '2021, NCAR'
 author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Win-Gildenmeister, M., Burek, T., Fillmore, D., Halley Gotway, J., Adriaansen, D., Fisher, H.'
 version = 'develop'
 verinfo = version
 release = f'{version}'
-release_year = '2020'
-release_date = f'{release_year}1022'
+release_year = '2021'
+release_date = f'{release_year}-03-31'
 copyright = f'{release_year}, {author}'
 
 # if set, adds "Last updated on " followed by
@@ -68,8 +68,6 @@ sphinx_gallery_conf = {
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = ["_themes", ]
 html_js_files = ['pop_ver.js']
-html_theme_options = {'canonical_url': 'https://dtcenter.github.io/METplotpy/latest/'}
-html_theme_options['versions'] = {'latest': '../latest', 'develop': '../develop'}
 html_css_files = ['theme_override.css']
 
 # Add any paths that contain custom static files (such as style sheets) here,

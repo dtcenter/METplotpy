@@ -7,8 +7,8 @@ The line plot is a scatter plot where each point is connected by a line.
 It is used by METviewer for generating series plots.
 Refer to the METviewer documentation for details on how this
 plot is utilized:
-https://dtcenter.github.io/METviewer/latest/Users_Guide/seriesplots.html
 
+https://metviewer.readthedocs.io/en/latest/Users_Guide/seriesplots.html
 
 
 Example
@@ -94,4 +94,7 @@ custom_line.yaml config files, perform the following:
   $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line directory, as
   specified by the custom_line.yaml `plot_filename` value.
 
+* in addition, a line.point1 (<outputfilename>.point1) text file is also
+  generated, which lists the independent and dependent variables that
+  are plotted.  This information can be useful in debugging.
 
