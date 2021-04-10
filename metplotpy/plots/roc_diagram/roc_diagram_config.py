@@ -53,7 +53,7 @@ class ROCDiagramConfig(Config):
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
         self.plot_resolution = self._get_plot_resolution()
-        reverse_ctc_connection = self.get_config_value('reverse_connection_order')
+        reverse_ctc_connection = str(self.get_config_value('reverse_connection_order'))
         if reverse_ctc_connection.upper() == "FALSE":
             self.ctc_ascending = False
         else:
