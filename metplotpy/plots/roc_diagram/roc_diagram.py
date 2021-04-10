@@ -7,16 +7,16 @@ __email__ = 'met_help@ucar.edu'
 import os
 import yaml
 import re
+import sys
 import pandas as pd
-import plotly
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
-import plots.util as util
-import plots.constants as constants
-from plots.base_plot import BasePlot
-from roc_diagram_config import ROCDiagramConfig
-from roc_diagram_series import ROCDiagramSeries
+sys.path.append("../../../")
+import metplotpy.plots.util as util
+import metplotpy.plots.constants as constants
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots.roc_diagram.roc_diagram_config import ROCDiagramConfig
+from metplotpy.plots.roc_diagram.roc_diagram_series import ROCDiagramSeries
 import metcalcpy.util.utils as calc_util
 
 
