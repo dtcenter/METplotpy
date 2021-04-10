@@ -6,9 +6,12 @@ Holds values set in the ROC config file(s)
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
-from plots.config import Config
-import plots.util as util
-import plots.constants as constants
+
+import sys
+sys.path.append("../../../")
+from metplotpy.plots.config import Config
+import metplotpy.plots.util as util
+import metplotpy.plots.constants as constants
 
 class ROCDiagramConfig(Config):
     def __init__(self, parameters):
@@ -50,6 +53,11 @@ class ROCDiagramConfig(Config):
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
         self.plot_resolution = self._get_plot_resolution()
+        reverse_ctc_connection = self.get_config_value('reverse_connection_order')
+        if reverse_ctc_connection.upper() == "FALSE":
+            self.ctc_ascending = False
+        else:
+            self.ctc_ascending = True
 
         # title parameters
         self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
