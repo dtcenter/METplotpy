@@ -1,18 +1,22 @@
 # !!!IMPORTANT!!!
 # activate conda environment in the testing subshell
-# Replace blenny_363 with your METplus Python 3.6.3
+# Replace blenny_latest with your METplus Python 3.6.3
 # conda environment name
 # !!!!!!!!
 
-#!/usr/bin/env conda run -n blenny_363 python
+#!/usr/bin/env conda run -n blenny_latest python
 
 import pytest
 import os
+import sys
+import pandas as pd
+sys.path.append("../../..")
 from metplotpy.plots.roc_diagram import roc_diagram as roc
-# import roc_diagram as roc
 from metcalcpy.compare_images import CompareImages
+import metcalcpy.util.ctc_statistics as ctc
 
-
+# Fixture used for the image comparison
+# test.
 @pytest.fixture
 def setup():
     # Cleanup the plotfile and point1 output file from any previous run
@@ -20,7 +24,7 @@ def setup():
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
-    custom_config_filename = "./test_roc_diagram.yaml"
+    custom_config_filename = "./CTC_ROC_thresh.yaml"
     print("\n current directory: ", os.getcwd())
     print("\ncustom config file: ", custom_config_filename, '\n')
 
@@ -34,8 +38,8 @@ def cleanup():
     # from any previous runs
     try:
         path = os.getcwd()
-        plot_file = 'roc_diagram_actual.png'
-        points_file = 'plot_20200507_074426.points1'
+        plot_file = 'CTC_ROC_thresh.png'
+        points_file = 'CTC_ROC_thresh.points1'
         html_file = '.html'
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(path, points_file))
@@ -45,10 +49,8 @@ def cleanup():
         # don't exist.  Ignore.
         pass
 
-# def test_first(setup):
-#     assert True
 
-@pytest.mark.parametrize("test_input,expected_boolean",(["./roc_diagram_expected.png", True], ["./plot_20200507_074426.points1", True]))
+@pytest.mark.parametrize("test_input,expected_boolean",(["./CTC_ROC_thresh_expected.png", True], ["./CTC_ROC_thresh.points1", True]))
 def test_files_exist(setup, test_input, expected_boolean):
     '''
         Checking that the plot and data files are getting created
@@ -56,16 +58,51 @@ def test_files_exist(setup, test_input, expected_boolean):
     assert os.path.isfile(test_input) == expected_boolean
     cleanup()
 
+def test_expected_CTC_thresh_points(setup):
+    '''
+        For test data, verify that the points in the .points1 file
+        match what is expected (within round-off tolerance/acceptable precision).
+    :return:
+    '''
+    expected_pody = pd.Series([1,0.1228585, 0.5093934, 0.7634846, 0.8457663, 0 ])
+    expected_pofd = pd.Series([1, 0.0048342, 0.0247044, 0.0491275, 0.0688293, 0 ])
+
+    df = pd.read_csv("./CTC_ROC_thresh.points1", sep='\t', header='infer')
+    pofd = df.iloc[:, 0]
+    pody = df.iloc[:, 1]
+
+    for index, expected in enumerate(expected_pody):
+        if ctc.round_half_up(expected) - ctc.round_half_up(pody[index]) == 0.0:
+            pass
+        else:
+            assert False
+
+        # if we get here, then all elements matched in value and position
+    assert True
+
+    # do the same test for pofd
+    for index, expected in enumerate(expected_pofd):
+        if ctc.round_half_up(expected) - ctc.round_half_up(pofd[index]) == 0.0:
+            pass
+        else:
+            assert False
+
+        # if we get here, then all elements matched in value and position
+    assert True
+
 
 def test_images_match(setup):
     '''
         Compare an expected plot with the
         newly created plot to verify that the plot hasn't
         changed in appearance.
+
+        !!!!!WARNING!!!!!:  When run within PyCharm IDE, the CTC_ROC_thresh.png plot
+        can sometimes be a different size than the expected (which was generated
+        using the same configuration file and data!)
     '''
     path = os.getcwd()
-    plot_file = './roc_diagram_actual.png'
+    plot_file = './CTC_ROC_thresh.png'
     actual_file = os.path.join(path, plot_file)
-    comparison = CompareImages('./roc_diagram_expected.png',actual_file)
+    comparison = CompareImages('./CTC_ROC_thresh.png',actual_file)
     assert comparison.mssim == 1
-    # cleanup()
