@@ -72,7 +72,7 @@ plot_type: png16m
 plot_units: in
 plot_width: 11.0
 random_seed: null
-reverse_connection_order: 'True'
+reverse_connection_order: 'False'
 roc_ctc: true
 roc_pct: false
 series_line_style:
