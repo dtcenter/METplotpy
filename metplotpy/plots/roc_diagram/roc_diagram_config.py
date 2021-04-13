@@ -9,9 +9,9 @@ __email__ = 'met_help@ucar.edu'
 
 import sys
 sys.path.append("../../../")
-from metplotpy.plots.config import Config
-import metplotpy.plots.util as util
-import metplotpy.plots.constants as constants
+from plots.config import Config
+import plots.util as util
+import plots.constants as constants
 
 class ROCDiagramConfig(Config):
     def __init__(self, parameters):
