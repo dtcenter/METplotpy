@@ -334,12 +334,12 @@ class LineConfig(Config):
         ci_settings_list = [ci.upper() for ci in plot_ci_list]
 
         # Do some checking to make sure that the values are valid (case-insensitive):
-        # None, boot, or norm
+        # None, boot, or met_prm
         for ci_setting in ci_settings_list:
             if ci_setting not in constants.ACCEPTABLE_CI_VALS:
                 raise ValueError("A plot_ci value is set to an invalid value. "
                                  "Accepted values are (case insensitive): "
-                                 "None, norm, or boot. Please check your config file.")
+                                 "None, met_prm, or boot. Please check your config file.")
 
         return self.create_list_by_series_ordering(ci_settings_list)
 

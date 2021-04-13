@@ -18,7 +18,7 @@ plot_height: 8.5
 plot_units: cm
 plot_ci:
   - none
-  - norm
+  - met_prm
   - None
 plot_disp:
   - True
