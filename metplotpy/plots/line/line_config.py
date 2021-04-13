@@ -455,10 +455,10 @@ class LineConfig(Config):
         """
         # Retrieve the lists from the series_val_1 dictionary
         series_vals_list = self.series_vals_1.copy()
-        if isinstance(self.fcst_vars_1, list) is True:
-            fcst_vals = self.fcst_vars_1
-        elif isinstance(self.fcst_vars_1, dict) is True:
-            fcst_vals = list(self.fcst_vars_1.values())
+        if isinstance(self.fcst_var_val_1, list) is True:
+            fcst_vals = self.fcst_var_val_1
+        elif isinstance(self.fcst_var_val_1, dict) is True:
+            fcst_vals = list(self.fcst_var_val_1.values())
         fcst_vals_flat = [item for sublist in fcst_vals for item in sublist]
         series_vals_list.append(fcst_vals_flat)
 
@@ -469,10 +469,10 @@ class LineConfig(Config):
 
         if self.series_vals_2:
             series_vals_list_2 = self.series_vals_2.copy()
-            if isinstance(self.fcst_vars_2, list) is True:
-                fcst_vals_2 = self.fcst_vars_2
-            elif isinstance(self.fcst_vars_2, dict) is True:
-                fcst_vals_2 = list(self.fcst_vars_2.values())
+            if isinstance(self.fcst_var_val_2, list) is True:
+                fcst_vals_2 = self.fcst_var_val_2
+            elif isinstance(self.fcst_var_val_2, dict) is True:
+                fcst_vals_2 = list(self.fcst_var_val_2.values())
             fcst_vals_2_flat = [item for sublist in fcst_vals_2 for item in sublist]
             series_vals_list_2.append(fcst_vals_2_flat)
             permutations_2 = list(itertools.product(*series_vals_list_2))

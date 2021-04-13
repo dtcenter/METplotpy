@@ -2,18 +2,23 @@
 roc_pct: False
 roc_ctc: True
 
-reverse_connection_order: False
+series_val_1:
+#  model:
+#    - 'WRF'
+#  vx_mask:
+#    - "EAST"
+#    - "FILL"
 
-series_val_1: {}
-series_val_2: {}
-
+series_val_2:
 plot_disp:
     - True
+#    - True
 series_order:
     - 1
+#    - 2
 stat_curve: 'None'
 add_point_thresholds: False
-event_equal: True
+event_equal: False
 title: "Custom title: ROC PCT 20200507_074426 "
 # value of 0.5 centers the title, smaller values moves text to the left
 title_align: 0.3
@@ -32,8 +37,8 @@ xlab_size:  1.75
 xlab_weight: 2
 xlab_offset: 0
 xtlab_horiz: 0.5
-xtlab_orient: 2
-xtlab_size: 1.2
+xtlab_orient: 2 #1
+xtlab_size: 1.2 #1
 
 # Y1 axis settings
 ylab_size: 2.5
@@ -49,16 +54,22 @@ plot_res: 72
 plot_units: in
 
 colors:
+#    - "#ff0000"
     - "#8000ff"
 series_symbols:
+#    - "Small circle"
     - "Small circle"
 series_type:
+#    - 'joined lines'
     - 'joined lines'
 series_line_style:
+#    - 'solid'
     - 'solid'
 series_line_width:
+#    - 1
     - 1
 user_legend:
+#  - ''
   - 'CTC ROC'
 
 legend_size: 0.8 # relative magnification
@@ -80,6 +91,7 @@ caption_align: .1 #0 # axis parallel location adjustment
 
 # Make the plot generated in METviewer interactive
 create_html: 'True'
-stat_input:  ./plot_20200507_074426.data
+# input file is relative to the roc_diagram.py module
+stat_input:  ./CTC_ROC_thresh.data
 plot_filename: ./roc_diagram_actual.png
 
