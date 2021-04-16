@@ -1,10 +1,11 @@
 import numpy as np
 from netCDF4 import Dataset
 import xarray as xr
-import sys
+import sys, os
+import yaml
 
 sys.path.append('../../')
-from tropical_diagnostics.diagnostics import spacetime_plot as stp
+import spacetime_plot as stp
 """
 This routine reads spectra computed using mjo_cross in spacetime routines.
 
@@ -28,8 +29,21 @@ prob_coh2
 The output is saved to a netcdf file with save_Spectra and this is what is read in below.
 """
 
-pathdata = './'
-plotpath = './'
+
+# Read in the YAML config file
+# user can use their own, if none specified at the command line,
+# use the "default" example YAML config file, spectra_plot_coh2.py
+config_file = './spectra_plot_coh.yaml'
+with open(config_file, 'r') as stream:
+    try:
+        config = yaml.load(stream, Loader=yaml.FullLoader)
+    except yaml.YAMLError as exc:
+        print(exc)
+
+# Retrieve settings from config file
+pathdata = config['pathdata']
+plotpath = config['plotpath']
+
 
 # plot layout parameters
 flim = 0.5  # maximum frequency in cpd for plotting
@@ -41,11 +55,16 @@ N = [1, 2]  # wave modes for plotting
 source = ""
 
 symmetry = "symm"      #("symm", "asymm", "latband")
-filenames = ['ERAI_TRMM_P_symm_1spd', 'FV3_TRMM_P_symm_1spd_fhr00', 'FV3_TRMM_P_symm_1spd_fhr24',
-             'ERAI_P_D850_symm_1spd', 'FV3_P_D850_symm_1spd_fhr00', 'FV3_P_D850_symm_1spd_fhr24',
-             'ERAI_P_D200_symm_1spd', 'FV3_P_D200_symm_1spd_fhr00', 'FV3_P_D200_symm_1spd_fhr24']
-vars1 = ['ERAI P', 'FV3 P FH00', 'FV3 P FH24', 'ERAI P', 'FV3 P FH00', 'FV3 P FH24', 'ERAI P', 'FV3 P FH00', 'FV3 P FH24']
-vars2 = ['TRMM', 'TRMM', 'TRMM', 'ERAI D850', 'FV3 D850 FH00', 'FV3 D850 FH24', 'ERAI D200', 'FV3 D200 FH00', 'FV3 D200 FH24']
+# filenames = ['ERAI_TRMM_P_symm_1spd', 'FV3_TRMM_P_symm_1spd_fhr00', 'FV3_TRMM_P_symm_1spd_fhr24',
+#              'ERAI_P_D850_symm_1spd', 'FV3_P_D850_symm_1spd_fhr00', 'FV3_P_D850_symm_1spd_fhr24',
+#              'ERAI_P_D200_symm_1spd', 'FV3_P_D200_symm_1spd_fhr00', 'FV3_P_D200_symm_1spd_fhr24']
+filenames = ['ERAI_TRMM_P_symm_2spd',
+             'ERAI_P_D850_symm_2spd',
+             'ERAI_P_D200_symm_2spd']
+# vars1 = ['ERAI P', 'ERAI P', 'FV3 P FH00', 'FV3 P FH24', 'ERAI P', 'FV3 P FH00', 'FV3 P FH24']
+vars1 = ['ERAI P', 'ERAI P', 'ERAI P']
+# vars2 = ['TRMM', 'TRMM', 'TRMM', 'ERAI D850', 'FV3 D850 FH00', 'FV3 D850 FH24', 'ERAI D200', 'FV3 D200 FH00', 'FV3 D200 FH24']
+vars2 = ['TRMM', 'ERAI D850', 'ERAI D200']
 nplot = len(vars1)
 
 pp = 0
@@ -55,7 +74,10 @@ while pp < nplot:
     # read data from file
     var1 = vars1[pp]
     var2 = vars2[pp]
-    fin = xr.open_dataset(pathdata + 'SpaceTimeSpectra_' + filenames[pp] + '.nc')
+    input_fname = 'SpaceTimeSpectra_' + filenames[pp] + '.nc'
+    full_input_file = os.path.join(pathdata, input_fname)
+    # fin = xr.open_dataset(pathdata + 'SpaceTimeSpectra_' + filenames[pp] + '.nc')
+    fin = xr.open_dataset(full_input_file)
     STC = fin['STC'][:, :, :]
     wnum = fin['wnum']
     freq = fin['freq']
@@ -99,6 +121,10 @@ while pp < nplot:
     Phs2 = scl_one * Phs2
 
     pp += 1
+
+
+
+
 
 # plot coherence
 stp.plot_coherence(Coh2, Phs1, Phs2, symmetry, source, vars1, vars2, plotpath, flim, 20, contourmin, contourmax,
