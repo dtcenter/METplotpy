@@ -311,7 +311,7 @@ def loadDataStr(GRIB_PATH, load_data, init_yrmondayhr, acc_int, fcst_hr_str, fcs
         
         data_str = [GRIB_PATH+'/NEWSe/NEWSe_Hour/'+init_yrmondayhr[:-2]+'/NEWSe_'+init_yrmondayhr[:-2]+'_i'+init_yrmondayhr[-2:]+'_m'+ens_mem+'_f'+fcst_hr_str+'.grb2']
     
-    print data_str                                  
+    print(data_str)
     return data_str
  
 ###################################################################################
@@ -1015,7 +1015,7 @@ def load_pair_prop(TRACK_PATH,GRIB_PATH_DES,beg_date,end_date,start_hrs,total_fc
             #Edit datetime element to reflect proper hour
             datetime_curdate = datetime_curdate.replace(hour = inits)
             
-            print datetime_curdate
+            print(datetime_curdate)
     
             #Load paired model/obs track files here
             try:
@@ -1345,7 +1345,7 @@ def load_simp_prop(TRACK_PATH,GRIB_PATH_DES,beg_date,end_date,start_hrs,total_fc
             #Edit datetime element to reflect proper hour
             datetime_curdate = datetime_curdate.replace(hour = inits)
             
-            print datetime_curdate
+            print(datetime_curdate)
     
             #Load the simple and paired model/obs track files here
             try:

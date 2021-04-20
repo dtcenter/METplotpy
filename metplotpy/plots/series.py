@@ -36,9 +36,13 @@ class Series:
         self.series_vals_2 = config.series_vals_2
         self.all_series_vals = self.series_vals_1 + self.series_vals_2
 
-        # forecast variable names defined in the fcst_var_val setting
-        self.fcst_vars_1 = config.fcst_vars_1
-        self.fcst_vars_2 = config.fcst_vars_2
+        # Forecast variable names defined in the fcst_var_val setting
+        # Renamed fcst_vars_1 and fcst_vars_2 in config file
+        # self.fcst_vars_1 = config.fcst_vars_1
+        # self.fcst_vars_2 = config.fcst_vars_2
+        # to this:
+        self.fcst_vars_1 = config.fcst_var_val_1
+        self.fcst_vars_2 = config.fcst_var_val_2
 
         # Column names corresponding to the series variable names
         self.series_val_names = config.series_val_names

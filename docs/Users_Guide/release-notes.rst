@@ -71,10 +71,10 @@ Version 1.0.0_beta1 release notes (20201022)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * New Plots:
+
   * Refactor CBL code to isolate plotting and replace Basemap with Cartopy  (`#33 <https://github.com/dtcenter/METplotpy/issues/33>`_)
  
   * Create line plot (`#19 <https://github.com/dtcenter/METplotpy/issues/19>`_)
-
   
   * Replicate METviewer Reliability diagram using Python (`_#12 <https://github.com/dtcenter/METplotpy/issues/12>`_)
 

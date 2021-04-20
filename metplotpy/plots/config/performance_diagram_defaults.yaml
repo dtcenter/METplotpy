@@ -15,10 +15,11 @@ yaxis_1: Probability of Detection (PODY)
 yaxis_2:
 plot_width: 11
 plot_height: 8.5
+plot_res: 72
 plot_units: cm
 plot_ci:
   - none
-  - norm
+  - met_prm
   - None
 plot_disp:
   - True
@@ -64,20 +65,20 @@ fcst_var_val_1:
 fcst_var_val_2:
 
 series_val_1:
-  # series_var1
+  # series_var_1
   model:
-    # series_val1
+    # series_val_1
     - GFS_0p25_G193
   # series_var2
   vx_mask:
-    # series_val1
+    # series_val_1
     - NH_CMORPH_G193
-    # series_val2
+    # series_val_2
     - SH_CMORPH_G193
-    # series_val3
+    # series_val_3
     - TROP_CMORPH_G193
 
-series_val2:
+series_val_2:
 list_stat_1:
   - FAR
   - PODY

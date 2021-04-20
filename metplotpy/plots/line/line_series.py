@@ -209,20 +209,20 @@ class LineSeries(Series):
                         dbl_lo_ci = dbl_std_err
                         dbl_up_ci = dbl_std_err
                 elif series_ci == 'BOOT':
-                    stat_bcu = 0
-                    stat_bcl = 0
-                    if 'stat_bcu' in point_data.head() and 'stat_bcl' in point_data.head():
-                        stat_bcu = self._calc_point_stat(point_data['stat_bcu'].tolist())
-                        stat_bcl = self._calc_point_stat(point_data['stat_bcl'].tolist())
-                        if stat_bcu == -9999:
-                            stat_bcu = 0
-                        if stat_bcl == -9999:
-                            stat_bcl = 0
+                    stat_btcu = 0
+                    stat_btcl = 0
+                    if 'stat_btcu' in point_data.head() and 'stat_btcl' in point_data.head():
+                        stat_btcu = self._calc_point_stat(point_data['stat_btcu'].tolist())
+                        stat_btcl = self._calc_point_stat(point_data['stat_btcl'].tolist())
+                        if stat_btcu == -9999:
+                            stat_btcu = 0
+                        if stat_btcl == -9999:
+                            stat_btcl = 0
 
-                    dbl_lo_ci = point_stat - stat_bcl
-                    dbl_up_ci = stat_bcu - point_stat
+                    dbl_lo_ci = point_stat - stat_btcl
+                    dbl_up_ci = stat_btcu - point_stat
 
-                elif series_ci == 'NORM':
+                elif series_ci == 'MET_PMR':
                     stat_ncu = 0
                     stat_ncl = 0
                     if 'stat_ncu' in point_data.head() and 'stat_ncl' in point_data.head():
@@ -235,6 +235,20 @@ class LineSeries(Series):
 
                     dbl_lo_ci = point_stat - stat_ncl
                     dbl_up_ci = stat_ncu - point_stat
+
+                elif series_ci == 'MET_BOOT':
+                    stat_bcu = 0
+                    stat_bcl = 0
+                    if 'stat_bcu' in point_data.head() and 'stat_bcl' in point_data.head():
+                        stat_bcu = self._calc_point_stat(point_data['stat_bcu'].tolist())
+                        stat_bcl = self._calc_point_stat(point_data['stat_bcl'].tolist())
+                        if stat_bcu == -9999:
+                            stat_bcu = 0
+                        if stat_bcl == -9999:
+                            stat_bcl = 0
+
+                    dbl_lo_ci = point_stat - stat_bcl
+                    dbl_up_ci = stat_bcu - point_stat
 
             else:
                 dbl_lo_ci = None

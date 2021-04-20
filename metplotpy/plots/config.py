@@ -84,8 +84,8 @@ class Config:
 
         # Represent the names of the forecast variables (inner keys) to the fcst_var_val setting.
         # These are the names of the columns in the input dataframe.
-        self.fcst_vars_1 = self._get_fcst_vars(1)
-        self.fcst_vars_2 = self._get_fcst_vars(2)
+        self.fcst_var_val_1 = self._get_fcst_vars(1)
+        self.fcst_var_val_2 = self._get_fcst_vars(2)
 
         # Get the list of the statistics of interest
         self.list_stat_1 = self.get_config_value('list_stat_1')
@@ -386,6 +386,10 @@ class Config:
         # set a flag indicating when a legend label is specified
         legend_label_unspecified = True
 
+        # Check if a stat curve was requested, if so, then the number
+        # of series_val_1 values will be inconsistent with the number of
+        # legend labels 'specified' (either with actual labels or whitespace)
+
         num_series = self.calculate_number_of_series()
         if len(all_legends) == 0:
             for i in range(num_series):
@@ -396,7 +400,7 @@ class Config:
                     legend = ' '
                     legends_list.append(legend)
                 else:
-                    legend_label_specified = True
+                    legend_label_unspecified = False
                     legends_list.append(legend)
 
         ll_list = []

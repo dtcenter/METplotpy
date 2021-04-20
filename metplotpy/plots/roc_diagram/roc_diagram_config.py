@@ -6,7 +6,11 @@ Holds values set in the ROC config file(s)
 __author__ = 'Minna Win'
 __email__ = 'met_help@ucar.edu'
 
+
+import sys
+sys.path.append("../../../")
 from plots.config import Config
+import plots.util as util
 import plots.constants as constants
 
 class ROCDiagramConfig(Config):
@@ -22,6 +26,9 @@ class ROCDiagramConfig(Config):
 
         # init common layout
         super().__init__(parameters)
+
+        # Boolean value to indicate whether to make the METviewer plot interactive
+        self.create_html = self._get_bool('create_html')
 
         # use this setting to determine the ordering of colors, lines, and markers
         self.series_ordering = self._get_series_order()
@@ -46,12 +53,28 @@ class ROCDiagramConfig(Config):
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
         self.plot_resolution = self._get_plot_resolution()
+        reverse_ctc_connection = str(self.get_config_value('reverse_connection_order'))
+        if reverse_ctc_connection.upper() == "FALSE":
+            self.ctc_ascending = False
+        else:
+            self.ctc_ascending = True
+
+        # title parameters
+        self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
+        self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
+        self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+
+        # Caption settings
         self.caption = self.get_config_value('plot_caption')
         self.caption_weight = self.get_config_value('caption_weight')
-        self.caption_color = self.get_config_value('caption_color')
-        self.caption_size = self.get_config_value('caption_size')
-        self.caption_offset = self.get_config_value('caption_offset')
+        self.caption_color = self.get_config_value('caption_col')
+        # caption size is a magnification value
+        self.caption_size = float(self.get_config_value('caption_size')) * constants.DEFAULT_CAPTION_FONTSIZE
+        self.caption_offset = self.get_config_value('caption_offset') - 3.1
         self.caption_align = self.get_config_value('caption_align')
+        self.caption = self.get_config_value('plot_caption')
+
         self.colors_list = self._get_colors()
         self.marker_list = self._get_markers()
         self.linewidth_list = self._get_linewidths()
@@ -80,6 +103,24 @@ class ROCDiagramConfig(Config):
             # Other choice is 'o'
             # Enclose legend labels in a box
             self.draw_box = True
+
+        # x-axis parameters
+        self.x_title_font_size = self.parameters['xlab_size'] * constants.DEFAULT_TITLE_FONT_SIZE
+        self.x_tickangle = self.parameters['xtlab_orient']
+        if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
+            self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
+        self.x_tickfont_size = self.parameters['xtlab_size'] * constants.DEFAULT_TITLE_FONT_SIZE
+        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
+
+        # y-axis parameters
+        self.y_tickangle = self.parameters['ytlab_orient']
+        if self.y_tickangle in constants.YAXIS_ORIENTATION.keys():
+            self.y_tickangle = constants.YAXIS_ORIENTATION[self.y_tickangle]
+        self.y_tickfont_size = self.parameters['ytlab_size'] * constants.DEFAULT_TITLE_FONT_SIZE
+
+
+        self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
+        self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
 
 
     def _get_series_inner_dict(self, index):
@@ -220,33 +261,6 @@ class ROCDiagramConfig(Config):
             else:
                 return False
 
-
-    def _get_fcst_vars(self, index):
-        """
-           Retrieve a list of the inner keys (fcst_vars) to the fcst_var_val dictionary.
-
-           Args:
-              index: identifier used to differentiate between fcst_var_val_1 and
-                     fcst_var_val_2 config settings
-           Returns:
-               a list containing all the fcst variables requested in the
-               fcst_var_val setting in the config file.  This will be
-               used to subset the input data that corresponds to a particular series.
-
-        """
-        all_fcst_vars = []
-        if index == 1:
-            fcst_var_val_dict = self.get_config_value('fcst_var_val_1')
-            if fcst_var_val_dict:
-                all_fcst_vars = []
-        elif index == 2:
-            fcst_var_val_dict = self.get_config_value('fcst_var_val_2')
-            if fcst_var_val_dict:
-                all_fcst_vars = []
-        else:
-            all_fcst_vars = []
-
-        return all_fcst_vars
 
     def _get_markers(self):
         """

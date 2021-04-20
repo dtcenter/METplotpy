@@ -8,6 +8,7 @@
 
 import pytest
 import os
+import performance_diagram as pd
 import sys
 sys.path.append('../..')
 from metplotpy.plots.performance_diagram import performance_diagram as pd
