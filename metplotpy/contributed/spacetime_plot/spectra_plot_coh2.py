@@ -33,7 +33,7 @@ The output is saved to a netcdf file with save_Spectra and this is what is read 
 # Read in the YAML config file
 # user can use their own, if none specified at the command line,
 # use the "default" example YAML config file, spectra_plot_coh2.py
-config_file = './spectra_plot_coh.yaml'
+config_file = './spectra_plot_coh2.yaml'
 with open(config_file, 'r') as stream:
     try:
         config = yaml.load(stream, Loader=yaml.FullLoader)
@@ -62,9 +62,9 @@ filenames = ['ERAI_TRMM_P_symm_2spd',
              'ERAI_P_D850_symm_2spd',
              'ERAI_P_D200_symm_2spd']
 # vars1 = ['ERAI P', 'ERAI P', 'FV3 P FH00', 'FV3 P FH24', 'ERAI P', 'FV3 P FH00', 'FV3 P FH24']
-vars1 = ['ERAI P', 'ERAI P', 'ERAI P']
+vars1 = ['ERAI', 'ERAI P', 'ERAI P']
 # vars2 = ['TRMM', 'TRMM', 'TRMM', 'ERAI D850', 'FV3 D850 FH00', 'FV3 D850 FH24', 'ERAI D200', 'FV3 D200 FH00', 'FV3 D200 FH24']
-vars2 = ['TRMM', 'ERAI D850', 'ERAI D200']
+vars2 = ['TRMM', 'D850', 'D200']
 nplot = len(vars1)
 
 pp = 0
