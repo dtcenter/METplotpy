@@ -25,7 +25,8 @@ from netCDF4 import num2date
 """
 Import BasePlot class
 """
-from plots.base_plot import BasePlot
+#from plots.base_plot import BasePlot
+from ..base_plot import BasePlot
 
 
 class Hovmoeller(BasePlot):
@@ -61,7 +62,7 @@ class Hovmoeller(BasePlot):
                           end=self.get_config_value('contour_max'),
                           size=self.get_config_value('contour_del'),
                           showlines=False),
-            colorbar=dict(title=data.attrs['units'],
+            colorbar=dict(title=self.data.attrs['units'],
                           len=0.6,
                           lenmode='fraction')
         )
