@@ -3,6 +3,7 @@ from netCDF4 import Dataset
 import xarray as xr
 import sys, os
 import yaml
+import metcalcpy.util.read_env_vars_in_config as readconfig
 
 sys.path.append('../../')
 import spacetime_plot as stp
@@ -33,16 +34,19 @@ The output is saved to a netcdf file with save_Spectra and this is what is read 
 # Read in the YAML config file
 # user can use their own, if none specified at the command line,
 # use the "default" example YAML config file, spectra_plot_coh2.py
+# Using a custom YAML reader so we can use environment variables
 config_file = './spectra_plot_coh2.yaml'
-with open(config_file, 'r') as stream:
-    try:
-        config = yaml.load(stream, Loader=yaml.FullLoader)
-    except yaml.YAMLError as exc:
-        print(exc)
+#with open(config_file, 'r') as stream:
+#    try:
+#        config = yaml.load(stream, Loader=yaml.FullLoader)
+#    except yaml.YAMLError as exc:
+#        print(exc)
+
+config_dict = readconfig.parse_config(config_file)
 
 # Retrieve settings from config file
-pathdata = config['pathdata']
-plotpath = config['plotpath']
+pathdata = config_dict['pathdata'][0]
+plotpath = config_dict['plotpath'][0]
 
 
 # plot layout parameters
@@ -124,9 +128,8 @@ while pp < nplot:
 
 
 
-
-
 # plot coherence
+print("plotpath ",plotpath)
 stp.plot_coherence(Coh2, Phs1, Phs2, symmetry, source, vars1, vars2, plotpath, flim, 20, contourmin, contourmax,
                    contourspace, nplot, N)
 

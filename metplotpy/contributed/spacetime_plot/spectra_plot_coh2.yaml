@@ -1,2 +1,4 @@
-pathdata: '/Volumes/d1/minnawin/METcalcpy/METcalcpy_Data/TropicalDiagnostics/'
-plotpath: '/Volumes/d1/minnawin/output/plots/cross_spectra/'
+pathdata: 
+- !ENV '${CALCPY_DATA}/TropicalDiagnostics/'
+plotpath: 
+- !ENV '${OUTPUT_BASE}/plots/cross_spectra/'
