@@ -12,7 +12,7 @@ from functools import reduce
 import pandas as pd
 import Ngl as ngl
 import string
-import metcalcpy.contributed.tropical_diagnostics.matsuno_plot as mp
+import metcalcpy.contributed.spacetime.matsuno_plot as mp
 
 pi = np.pi
 re = 6.371008e6  # Earth's radius in meters

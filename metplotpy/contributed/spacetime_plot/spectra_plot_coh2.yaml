@@ -1,0 +1,4 @@
+pathdata: 
+- !ENV '${CALCPY_DATA}/TropicalDiagnostics/'
+plotpath: 
+- !ENV '${OUTPUT_BASE}/plots/cross_spectra/'
