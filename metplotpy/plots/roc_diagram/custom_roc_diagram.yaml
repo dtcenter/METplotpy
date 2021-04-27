@@ -14,7 +14,7 @@ series_order:
 stat_curve: 'None'
 add_point_thresholds: False
 event_equal: True
-title: "Custom title: ROC PCT 20200507_074426 "
+title: "Custom: ROC PCT 20200507_074426 "
 # value of 0.5 centers the title, smaller values moves text to the left
 title_align: 0.3
 # -2 locates title at top, -1.5 puts title inside plotting region
@@ -81,5 +81,5 @@ caption_align: .1 #0 # axis parallel location adjustment
 # Make the plot generated in METviewer interactive
 create_html: 'True'
 stat_input:  ./plot_20200507_074426.data
-plot_filename: ./roc_diagram_actual.png
+plot_filename: ./roc_diagram_custom.png
 

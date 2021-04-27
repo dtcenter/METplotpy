@@ -2,7 +2,7 @@ Installation guide for METplotpy
 ===========================================
 
 METplotpy is written entirely in Python and uses YAML configuration files and relies
-on the METcalcpy package. The version numbers (when provided) indicate the minimum version
+on the METcalcpy package. The version numbers (when provided) indicate the *minimum* version
 number for that package.
 
 
@@ -13,7 +13,7 @@ Python Requirements
 
 * bootstrapped 0.0.2 
 
-* cartopy 0.17.0 or above
+* cartopy 0.17.0
 
 * cmocean
 
@@ -23,33 +23,31 @@ Python Requirements
 
 * imageio 
 
-* kiwisolver 1.0.1
-
 * lxml
 
-* matplotlib 3.3.3 or above
+* matplotlib 3.3.0
 
 * metcalcpy 
 
-* netcdf4 1.5.1.2 or above 
+* netcdf4 1.5.1.2
 
-* numpy
+* numpy 1.17.0
 
-* pandas
+* pandas 1.0.1
 
 * pillow
 
-* pingouin 0.3.10 or above
+* pingouin 0.3.8
 
 * pint
 
 * plotly 4.9.0
 
-* python-kaleido 0.0.1
+* python-kaleido 0.2.1
 
 * pyshp
 
-* psutil
+* psutil 5.7.2
 
 * pymysql
 
@@ -57,7 +55,7 @@ Python Requirements
 
 * pytest 5.2.1
 
-* pyyaml
+* pyyaml 5.3.1
 
 * requests
 
@@ -65,7 +63,13 @@ Python Requirements
 
 * scikit-image 0.16.2
 
-* scipy
+* scikit-learn 0.23.2
+
+* scipy 1.5.1
+
+* statsmodels 0.11.1
+
+* xarray 0.16.2
 
 
 Install METcalcpy in your conda environment

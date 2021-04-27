@@ -38,7 +38,7 @@ user-supplied "custom" configuration file that is used to customize/override the
 settings in the reliability_defaults.yaml file.  The custom configuration file can be an empty
 file if all default settings are to be applied.
 
-METplus Configuration
+METplotpy Configuration
 ~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -107,7 +107,7 @@ In this example, this custom config file changes the color of the boxes.
 
 .. image:: custom_reliability_diagram.png
 
-* in addition, a line.point1 (<outputfilename>.point1) text file is also
+* in addition, a .point1 (<outputfilename>.point1) text file is also
   generated, which lists the independent and dependent variables that
   are plotted.  This information can be useful in debugging.
 
