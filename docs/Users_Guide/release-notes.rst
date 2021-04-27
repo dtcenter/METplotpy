@@ -7,6 +7,27 @@ describes the bugfix, enhancement, or new feature: `METplotpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ------------------------------------------------
 
+Version 1.0.0_beta5 release notes (20210427)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* New Plots:
+   
+   * Add plots for Weather Regime Analysis (`#74 <https://github.com/dtcenter/METplotpy/issue/74`_)
+
+   * Add plots for Coherence Spectra (`#46 <https://github.com/dtcenter/METplotpy/issue/46`_)
+
+   * Replicate METviewer ROC diagram  (`#11 <https://github.com/dtcenter/METplotpy/issue/11`_)
+
+* Enhancements:
+
+   * Restructure the Conf Interval dropdown list (`#99 <https://github.com/dtcenter/METplotpy/issues/99>`_)
+
+   * Add support to reverse the connection order for ROC (`#81 <https://github.com/dtcenter/METplotpy/issues/81>`_)
+
+* Internal: 
+
+   * Setup METplotpy docs to use github actions (`#100 <https://github.com/dtcenter/METplotpy/issues/100>`_)
+
 Version 1.0.0_beta4 release notes (20201208)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -20,8 +41,7 @@ Version 1.0.0_beta4 release notes (20201208)
 
    * Add a version selector for documentation (`#60 <https://github.com/dtcenter/METplotpy/issues/60>`_)
 
-* Internal:
-
+* Internal: 
 
 Version 1.0.0_beta3 release notes (20201208)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
