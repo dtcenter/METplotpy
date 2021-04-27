@@ -41,7 +41,7 @@ Version 1.0.0_beta4 release notes (20201208)
 
    * Add a version selector for documentation (`#60 <https://github.com/dtcenter/METplotpy/issues/60>`_)
 
-* Internal: 
+* Internal:
 
 
 Version 1.0.0_beta3 release notes (20201208)
