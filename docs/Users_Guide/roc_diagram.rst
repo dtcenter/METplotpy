@@ -109,7 +109,7 @@ file.
 
 ``python roc_diagram.py ./custom_roc_diagram.yaml``
 
-In this example, this custom config file changes the color of the boxes.
+In this example, this custom config file changes the title and axis labels.
 
 .. image:: roc_diagram_custom.png
 
