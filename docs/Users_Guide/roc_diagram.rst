@@ -11,7 +11,7 @@ a parameter.  In addition to creating ROC diagrams directly from the source code
 repository, ROC diagrams can be generated through METviewer.  For more information on ROC diagrams, please
 refer to the METviewer documentation:
 
-https://ral.ucar.edu/staff/lblank/work/html/rocplot.html
+https://metviewer.readthedocs.io/en/latest/Users_Guide/rocplot.html
 
 Example
 ~~~~~~~
@@ -50,7 +50,7 @@ METplus Configuration
 
 **Default Configuration File**
 
-The following is the `mandatory`, roc_defaults.yaml configuration file,
+The following is the `mandatory`, roc_diagram_defaults.yaml configuration file,
 which serves as a good starting point for creating a ROC diagram
 plot as it represents the default values set in METviewer
 
@@ -60,7 +60,7 @@ plot as it represents the default values set in METviewer
 
 A second, `mandatory` configuration file is required, which is
 used to customize the settings to the ROC diagram plot. The custom_reliability.yaml
-file is included with the source code an looks like the following:
+file is included with the source code and looks like the following:
 
 .. literalinclude:: ../../metplotpy/plots/roc_diagram/custom_roc_diagram.yaml
 
@@ -69,7 +69,7 @@ wishes to use all the default settings defined in the roc_diagram_defaults.yaml
 file, an empty custom configuration file (minimal_roc_diagram_defaults.yaml)
 can be specified instead:
 
-.. literalinclude:: ../../metplotpy/plots/roc_diagram_diagram/minimal_ROC_defaults.yaml
+.. literalinclude:: ../../metplotpy/plots/roc_diagram_diagram/minimal_roc_defaults.yaml
 
 
 
@@ -83,7 +83,7 @@ the roc_diagram_defaults.yaml configuration file looks like the following:
 
 
 To generate the above plot, use the roc_diagram_defaults.yaml and
-the empty custom configuration file, minimal_roc_diagram.yaml config files.
+the empty custom configuration file, minimal_roc_diagram.yaml.
 Then, perform the following:
 
 * verify that you are running in the conda environment that
