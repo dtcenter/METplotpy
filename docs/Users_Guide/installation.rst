@@ -35,31 +35,19 @@ Python Requirements
 
 * pandas 1.0.1
 
-* pillow
-
 * pingouin 0.3.8
-
-* pint
 
 * plotly 4.9.0
 
 * python-kaleido 0.2.1
 
-* pyshp
-
 * psutil 5.7.2
 
 * pymysql
 
-* pyshp
-
 * pytest 5.2.1
 
 * pyyaml 5.3.1
-
-* requests
-
-* retrying
 
 * scikit-image 0.16.2
 
