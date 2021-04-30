@@ -12,11 +12,11 @@ Version 1.0.0_beta5 release notes (20210427)
 
 * New Plots:
    
-   * Add plots for Weather Regime Analysis (`#74 <https://github.com/dtcenter/METplotpy/issue/74`_)
+   * **Add plots for Weather Regime Analysis** (`#74 <https://github.com/dtcenter/METplotpy/issue/74`_)
 
-   * Add plots for Coherence Spectra (`#46 <https://github.com/dtcenter/METplotpy/issue/46`_)
+   * **Add plots for Coherence Spectra** (`#46 <https://github.com/dtcenter/METplotpy/issue/46`_)
 
-   * Replicate METviewer ROC diagram  (`#11 <https://github.com/dtcenter/METplotpy/issue/11`_)
+   * **Replicate METviewer ROC diagram**  (`#11 <https://github.com/dtcenter/METplotpy/issue/11`_)
 
 * Enhancements:
 
@@ -33,7 +33,7 @@ Version 1.0.0_beta4 release notes (20201208)
 
 * New Plots:
 
-   * Add plots for GridDiag analysis  (`#36 <https://github.com/dtcenter/METplotpy/issues/36>`_)
+   * **Add plots for GridDiag analysis**  (`#36 <https://github.com/dtcenter/METplotpy/issues/36>`_)
 
 * Enhancements:
 
@@ -49,9 +49,9 @@ Version 1.0.0_beta3 release notes (20201208)
 
 * New Plots:
  
-  * Implement Equivalence Testing Bounds plot in Plotly (`#71 <https://github.com/dtcenter/METplotpy/issues/71>`_)
+  * **Implement Equivalence Testing Bounds plot in Plotly** (`#71 <https://github.com/dtcenter/METplotpy/issues/71>`_)
 
-  * Recreate plot generated in the blocking Subseasonal to seasonal (S2S) script    provided by University of Illinois (`#40 <https://github.com/dtcenter/METplotpy/issues/40>`_)
+  * **Recreate plot generated in the blocking Subseasonal to seasonal (S2S) script provided by University of Illinois** (`#40 <https://github.com/dtcenter/METplotpy/issues/40>`_)
 
 * Enhancements:
 
@@ -71,11 +71,11 @@ Version 1.0.0_beta2 release notes (20201208)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 * New Plots:
 
-  * Replicate METviewer Reliability diagram using Python (`_#12 <https://github.com/dtcenter/METplotpy/issues/12>`_)
+  * **Replicate METviewer Reliability diagram using Python** (`_#12 <https://github.com/dtcenter/METplotpy/issues/12>`_)
 
-  * Plot for Hovmoller Diagram from NOAA PSL Diagnostics package (`_#45 <https://github.com/dtcenter/METplotpy/issues/45>`_)
+  * **Plot for Hovmoller Diagram from NOAA PSL Diagnostics package** (`_#45 <https://github.com/dtcenter/METplotpy/issues/45>`_)
 
-  * Replicate METviewer Performance diagram using Python (`_#20 <https://github.com/dtcenter/METplotpy/issues/20>`_)
+  * **Replicate METviewer Performance diagram using Python** (`_#20 <https://github.com/dtcenter/METplotpy/issues/20>`_)
 
 * Enhancements:
 
@@ -95,21 +95,14 @@ Version 1.0.0_beta1 release notes (20201022)
 
   * Refactor CBL code to isolate plotting and replace Basemap with Cartopy  (`#33 <https://github.com/dtcenter/METplotpy/issues/33>`_)
  
-  * Create line plot (`#19 <https://github.com/dtcenter/METplotpy/issues/19>`_)
+  * **Create line plot** (`#19 <https://github.com/dtcenter/METplotpy/issues/19>`_)
   
-  * Replicate METviewer Reliability diagram using Python (`_#12 <https://github.com/dtcenter/METplotpy/issues/12>`_)
-
-  * Plot for Hovmoller Diagram from NOAA PSL Diagnostics package (`_#45 <https://github.com/dtcenter/METplotpy/issues/45>`_)
-
-  * Replicate METviewer Performance diagram using Python (`_#20 <https://github.com/dtcenter/METplotpy/issues/20>`_)
-  
-  * Replicate METviewer Reliability diagram using Python (`_#12 <https://github.com/dtcenter/METplotpy/issues/12>`_)
-
-  * Plot for Hovmoller Diagram from NOAA PSL Diagnostics package (`_#45 <https://github.com/dtcenter/METplotpy/issues/45>`_)
-
-  * Replicate METviewer Performance diagram using Python (`_#20 <https://github.com/dtcenter/METplotpy/issues/20>`_)
+  * **Add Difficulty Index plotting from NRL** (`#47 <https://github.com/dtcenter/METplotpy/issues/47>` _)
 
 * Enhancements:
+
+   * Include more Python packages to the conda environment (`#52 <https://github.com/dtcenter/METplotpy/issues/52>` _)
+
   
 
 * Internal:
