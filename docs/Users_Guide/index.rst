@@ -38,13 +38,15 @@ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
 ANY KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License.
 
+.. _citations:
+
 **Citations**
 
 The citation for this User's Guide should be:
 
 |author_list|, |release_year|: The METplotpy Version |version| User's Guide.
 Developmental Testbed Center.
-Available at: `METplotpy releases <https://github.com/dtcenter/METplotpy/releases>`_
+Available at: https://github.com/dtcenter/METplotpy/releases.
 
 **Acknowledgments**
 
