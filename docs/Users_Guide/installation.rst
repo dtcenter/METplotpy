@@ -94,8 +94,19 @@ export PYTHONPATH=\
 
 $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:${PYTHONPATH}
 
+Overview of Plots
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+The plots in the METplotpy repository reside under one of two directories: *METplotpy/metplotpy/contributed* and
+*METplotpy/metplotpy/plots*.
 
+The plots under the *METplotpy/metplotpy/contributed* directory correspond to plots that were either created prior
+to the creation of the METplotpy repository, and/or developed outside of the DTC.  The plots that reside in the
+*METplotpy/metplotpy/plots* directory were developed by the DTC and were primarily created to replace the R script
+implementation of plotting done in METviewer.  These plots were written using Python plotly,  with the exception of
+the performance diagram, which was written using Matplotlib.  The plots in the contributed directory may have different
+Python and third party Python package requirements that differ from the packages and versions
+specified in the 'Python Requirements' section.
 
 
 
