@@ -108,10 +108,7 @@ To cite this documentation in publications, please refer to the METplotpy User's
 
 .. [#NCAR] `National Center for Atmospheric Research, Research
        Applications Laboratory <https://ral.ucar.edu/>`_, `Developmental Testbed Center <https://dtcenter.org/>`_
-.. [#CIRA] `Cooperative Institute for Research in the Atmosphere at
-       National Oceanic and Atmospheric Administration (NOAA) Earth 
-       System Research Laboratory <https://www.esrl.noaa.gov/>`_
-  
+
 .. toctree::
    :hidden:
    :caption: METplotpy 
