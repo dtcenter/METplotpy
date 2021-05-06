@@ -101,6 +101,7 @@ To cite this documentation in publications, please refer to the METplotpy User's
 * Tatiana Burek [#NCAR]_
 * David Fillmore [#NCAR]_
 * Hank Fisher [#NCAR]_
+* Christina Kalb [#NCAR]_
 * Minna Win-Gildenmeister [#NCAR]_
 
 .. rubric:: Organization
