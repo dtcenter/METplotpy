@@ -165,5 +165,5 @@ if __name__ == "__main__":
 
     plot = Histogram_2d(None, data)
 
-    plot.show_in_browser()
-    # plot.save_to_file()
+    #plot.show_in_browser()
+    plot.save_to_file()
