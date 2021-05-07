@@ -1,12 +1,18 @@
-plot_filename: 'prob_dist.png'
+plot_filename: 'tmp_p500.png'
 
 height: 800
 width: 1200
 font_size: 20
 
+# use this var_name when running with --test (create test data)
+# argument, otherwise, set it to correspond to the variable of interest
+# in your data set if you want something other than hist_x_y
 var_name: 'hist_x_y'
 
-title: 'Probability Distribution Function'
+
+# Use for running with --test
+#title: 'Probability Distribution Function'
+title: '2d Histogram for TMP 500mb '
 xaxis_title: 'x'
 yaxis_title: 'y'
 
