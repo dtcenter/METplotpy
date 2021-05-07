@@ -87,6 +87,7 @@ is sponsored by the National Science Foundation (NSF).
    performance_diagram
    reliability_diagram
    roc_diagram
+   histogram_2d
    release-notes
 
 
