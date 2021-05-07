@@ -69,7 +69,7 @@ wishes to use all the default settings defined in the roc_diagram_defaults.yaml
 file, an empty custom configuration file (minimal_roc_diagram_defaults.yaml)
 can be specified instead:
 
-.. literalinclude:: ../../metplotpy/plots/roc_diagram_diagram/minimal_roc_defaults.yaml
+.. literalinclude:: ../../metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml
 
 
 

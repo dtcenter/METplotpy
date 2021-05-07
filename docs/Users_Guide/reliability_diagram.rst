@@ -39,7 +39,7 @@ settings in the reliability_defaults.yaml file.  The custom configuration file c
 file if all default settings are to be applied.
 
 METplotpy Configuration
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 
 **Default Configuration File**
