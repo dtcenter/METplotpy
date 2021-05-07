@@ -12,11 +12,11 @@ Version 1.0.0_beta5 release notes (20210427)
 
 * New Plots:
    
-   * **Add plots for Weather Regime Analysis** (`#74 <https://github.com/dtcenter/METplotpy/issue/74`_)
+   * **Add plots for Weather Regime Analysis** (`#74 <https://github.com/dtcenter/METplotpy/issue/74>`_)
 
-   * **Add plots for Coherence Spectra** (`#46 <https://github.com/dtcenter/METplotpy/issue/46`_)
+   * **Add plots for Coherence Spectra** (`#46 <https://github.com/dtcenter/METplotpy/issue/46>`_)
 
-   * **Replicate METviewer ROC diagram**  (`#11 <https://github.com/dtcenter/METplotpy/issue/11`_)
+   * **Replicate METviewer ROC diagram**  (`#11 <https://github.com/dtcenter/METplotpy/issue/11>`_)
 
 * Enhancements:
 
