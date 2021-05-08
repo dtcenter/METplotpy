@@ -39,7 +39,7 @@ Run from the Command Line
 
 The histogram_2d_defaults.yaml configuration file, in combination with the
 grid_diag_temperature.nc netCDF data file (generated from the MET tool grid_diag),
-generates a 2d histogram plot of the hist_x_y variable:
+generates a 2d histogram plot of the hist_TMP_Z2_TMP_P500 variable:
 
 
 .. image:: tmp_z2_p500.png
@@ -48,7 +48,7 @@ To generate the above plot using the histogram_2d_defaults.yaml config file and 
 netCDF file (generated from the MET tool grid_diag), perform these steps:
 
 * if you are working within a conda environment, activate the conda
-  environment that has the required Python packages outlined in the requirements
+  environment that has the required Python packages outlined in the installation section
   section
 
 * clone the METplotpy repository from GitHub:
