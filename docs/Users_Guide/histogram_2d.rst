@@ -27,7 +27,7 @@ output from the MET grid_diag tool, in netCDF format.
 
 **Configuration File**
 
-The histogram_2d utilizes a default YAML configuration files to indicate the plot attributes such as titles,
+The histogram_2d utilizes a default YAML configuration file to indicate the plot attributes such as titles,
 the plot size, the output plot name, and the variable of interest to plot.  The input data file and directory are
 specified at the command line. The default configuration file, histogram_2d_defaults.yaml is found in the
 $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config directory.  $METPLOTPY_SOURCE is the user-specified directory
@@ -39,19 +39,17 @@ Run from the Command Line
 
 The histogram_2d_defaults.yaml configuration file, in combination with the
 grid_diag_temperature.nc netCDF data file (generated from the MET tool grid_diag),
-generates a 2d histogram plot of the hist_TMP_Z2_TMP_P500 variable:
+generates a 2D-histogram plot of the hist_TMP_Z2_TMP_P500 variable:
 
 
 .. image:: tmp_z2_p500.png
 
 To generate the above plot using the histogram_2d_defaults.yaml config file and the grid_diag_temperature.nc
-netCDF file (generated from the MET tool grid_diag), perform these steps:
+netCDF file (which was generated from the MET tool grid_diag), perform these steps:
 
-* if you are working within a conda environment, activate the conda
-  environment that has the required Python packages outlined in the installation section
-  section
+1. if you are working within a conda environment, activate the conda environment that has the required Python packages outlined in the installation section
 
-* clone the METplotpy repository from GitHub:
+2. clone the METplotpy repository from GitHub:
 
   ``mkdir $METPLOTPY_SRC_DIR``
 
@@ -60,8 +58,7 @@ netCDF file (generated from the MET tool grid_diag), perform these steps:
   ``cd $METPLOTPY_SRC_DIR``
 
   ``git clone https://github.com/dtcenter/METplotpy``
-
-* set your PYTHONPATH to point to the location of the METplotpy code:
+3. set your PYTHONPATH to point to the location of the METplotpy code:
 
   *for csh*:
 
@@ -73,14 +70,14 @@ netCDF file (generated from the MET tool grid_diag), perform these steps:
 
   replace $METPLOTPY_SRC_DIR with the directory where you saved the source code
 
-* cd to the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d
+4. cd to the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d
   directory
 
-* enter the following command at the command line:
+5. enter the following command at the command line:
   ``python histogram_2d.py --input grid_diag_temperature.nc --datadir $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d``
 
 
-* a `tmp_z2_p500.png` output file will be created in the
+  a `tmp_z2_p500.png` output file will be created in the
   $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d directory, as
   specified by the histogram_2d_defaults.yaml `plot_filename` setting.
 
