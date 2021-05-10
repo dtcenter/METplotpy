@@ -1,4 +1,4 @@
-histogram_2d plot
+Histogram_2d plot
 ===========================================
 
 Description
