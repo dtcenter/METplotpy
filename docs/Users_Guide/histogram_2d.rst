@@ -58,6 +58,7 @@ netCDF file (which was generated from the MET tool grid_diag), perform these ste
   ``cd $METPLOTPY_SRC_DIR``
 
   ``git clone https://github.com/dtcenter/METplotpy``
+
 3. set your PYTHONPATH to point to the location of the METplotpy code:
 
   *for csh*:
@@ -70,10 +71,10 @@ netCDF file (which was generated from the MET tool grid_diag), perform these ste
 
   replace $METPLOTPY_SRC_DIR with the directory where you saved the source code
 
-4. cd to the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d
-  directory
+4. cd to the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d directory
 
 5. enter the following command at the command line:
+
   ``python histogram_2d.py --input grid_diag_temperature.nc --datadir $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d``
 
 
