@@ -1,18 +1,17 @@
 Spacetime (Cross-spectra) Plot
-=================
+==============================
 
 Description:
-~~~~~~~~~~~
+~~~~~~~~~~~~
 
 Please refer to the METplus use case for a description of the spacetime (cross-spectra) plot and for instructions on creating a
-
 spacetime (cross-spectra)  plot:
 
 https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsPrecip_obsOnly_CrossSpectraPlot.html#sphx-glr-generated-model-applications-s2s-userscript-obsprecip-obsonly-crossspectraplot-py
 
 
 Required Packages:
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 * Python 3.8.8
 
