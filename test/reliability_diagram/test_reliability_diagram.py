@@ -57,9 +57,6 @@ def test_images_match(setup):
         newly created plot to verify that the plot hasn't
         changed in appearance.
     '''
-    path = os.getcwd()
-    plot_file = 'reliability_expected.png'
-    actual_file = os.path.join(path, plot_file)
-    comparison = CompareImages('./reliability_expected.png', actual_file)
+    comparison = CompareImages('./reliability_expected.png', 'reliability_expected.png')
     assert comparison.mssim == 1
     cleanup()
