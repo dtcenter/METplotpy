@@ -37,4 +37,5 @@ class WindRoseConfig(Config):
         self.plot_width = self.get_config_value('plot_width')
         self.plot_height = self.get_config_value('plot_height')
         self.dump_points = self.get_config_value('dump_points')
+        self.show_in_browser = self.get_config_value('show_in_browser')
 

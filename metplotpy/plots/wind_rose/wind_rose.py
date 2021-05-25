@@ -21,19 +21,20 @@ import plots.util as util
 
 
 class WindRosePlot(BasePlot):
+    """
+            Creates a Wind rose plot based on settings in a config file and
+            either MET output data for the MPR line type.
+            The data can be extracted from the provided files or provided
+            as DataFrames for U and V wind components.
+            DataFrame requirements:
+             - should have a column named 'FCST_VAR' with values 'UGRD' for u_wind_data and/or 'VGRD' for v_wind_data
+             - should contain columns 'OBS' and 'FCST'
+            (see point_stat_mpr.txt)
+            Based on 'type' parameter the Wind rose would be built from OBS or FCST or FCST-OBS data
+            This class works with MET v.9.1+ output
+            """
     def __init__(self, parameters: dict, u_wind_data: Union[pd.DataFrame, None] = None,
                  v_wind_data: Union[pd.DataFrame, None] = None):
-        """
-        Creates a Wind rose plot based on settings in a config file and
-        either MET output data for the MPR line type.
-        The data can be extracted from the provided files or provided
-        as DataFrames for U and V wind components.
-        U and V data should be in the column named 'FCST_VAR' with values 'UGRD' and 'VGRD'
-        U and V components should have OBS and FCST values (see point_stat_mpr.txt)
-        Based on 'type' parameter the Winf rose would be built from OBS or FCST or FCST-OBS data
-        This class works with MET v.9.1+ output
-
-        """
 
         default_conf_filename = "wind_rose_defaults.yaml"
 
@@ -271,14 +272,13 @@ class WindRosePlot(BasePlot):
             )
             self.traces.append(trace)
 
-    def save_to_file(self):
-        """Saves the image to a file specified in the config file.
-         Prints a message if fails
+    def save_to_file(self) -> None:
+        """ Saves the image to a file specified in the config file.
+            Prints a message if fails
 
-        Args:
+            Args:
 
-        Returns:
-
+            Returns:
         """
         image_name = self.get_config_value('plot_filename')
         if self.figure:
@@ -395,7 +395,8 @@ def main(config_filename=None):
     try:
         plot = WindRosePlot(docs)
         plot.save_to_file()
-        #plot.show_in_browser()
+        if plot.config_obj.show_in_browser:
+            plot.show_in_browser()
         plot.write_output_file()
 
     except ValueError as ve:
