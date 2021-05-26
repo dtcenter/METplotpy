@@ -30,6 +30,5 @@ angularaxis_ticktext:
   - 'S'
   - 'W'
 plot_filename: ./wind_rose_default.png
-stat_input: ./point_stat_mpr.txt
 dump_points: True
 show_in_browser: False
