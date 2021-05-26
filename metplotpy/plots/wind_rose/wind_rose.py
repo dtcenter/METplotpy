@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import yaml
 import re
+from pathlib import Path
 
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -340,7 +341,7 @@ class WindRosePlot(BasePlot):
             if match:
                 filename_only = match.group(1)
             else:
-                filename_only = 'wond_rose'
+                filename_only = 'wind_rose'
 
             # save points
             self._save_points(points, filename_only + ".points")
@@ -391,6 +392,9 @@ def main(config_filename=None):
             docs = yaml.load(stream, Loader=yaml.FullLoader)
         except yaml.YAMLError as exc:
             print(exc)
+    # point to data file in the test dir
+    if  'stat_input' not in docs:
+        docs['stat_input'] = str(Path(__file__).parent.parent.parent.parent)  + '/test/wind_rose/point_stat_mpr.txt'
 
     try:
         plot = WindRosePlot(docs)
