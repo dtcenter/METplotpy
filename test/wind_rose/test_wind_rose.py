@@ -42,7 +42,7 @@ def cleanup():
 
 
 @pytest.mark.parametrize("test_input,expected",
-                         (["./wind_rose_expected.png", True], ["./wind_rose.points", True]))
+                         (["wind_rose_expected.png", True], ["wind_rose_expected.points", True]))
 def test_files_exist(setup, test_input, expected):
     '''
         Checking that the plot and data files are getting created
