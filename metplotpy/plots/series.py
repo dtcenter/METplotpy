@@ -24,9 +24,13 @@ class Series:
         self.plot_disp = config.plot_disp[idx]
         self.plot_stat = config.plot_stat
         self.color = config.colors_list[idx]
-        self.marker = config.marker_list[idx]
-        self.linewidth = config.linewidth_list[idx]
-        self.linestyle = config.linestyles_list[idx]
+        if hasattr(config,'marker_list'):
+            self.marker = config.marker_list[idx]
+        if hasattr(config, 'linewidth_list'):
+            self.linewidth = config.linewidth_list[idx]
+        if hasattr(config, 'linestyles_list'):
+            self.linestyle = config.linestyles_list[idx]
+
         self.user_legends = config.user_legends[idx]
         self.series_order = config.series_ordering_zb[idx]
 
