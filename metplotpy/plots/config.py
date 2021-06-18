@@ -58,19 +58,29 @@ class Config:
         # bbox_to_anchor() setting used in determining
         # the location of the bounding box which defines
         # the legend.
-        self.bbox_x = float(user_settings['bbox_x'])
-        self.bbox_y = float(user_settings['bbox_y'])
-        legend_magnification = user_settings['legend_size']
-        self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
+        bbox_x = user_settings.get('bbox_x')
+        if bbox_x:
+            self.bbox_x = float(user_settings['bbox_x'])
+
+        bbox_y = user_settings.get('bbox_y')
+        if bbox_y:
+            self.bbox_y = float(user_settings['bbox_y'])
+
+        legend_magnification = user_settings.get('legend_size')
+        if legend_magnification:
+            self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
+
         self.legend_ncol = self.get_config_value('legend_ncol')
-        legend_box = self.get_config_value('legend_box').lower()
-        if legend_box == 'n':
-            # Don't draw a box around legend labels
-            self.draw_box = False
-        else:
-            # Other choice is 'o'
-            # Enclose legend labels in a box
-            self.draw_box = True
+        legend_box = self.get_config_value('legend_box')
+        if legend_box:
+            legend_box = legend_box.lower()
+            if legend_box == 'n':
+                # Don't draw a box around legend labels
+                self.draw_box = False
+            else:
+                # Other choice is 'o'
+                # Enclose legend labels in a box
+                self.draw_box = True
 
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
@@ -149,17 +159,23 @@ class Config:
                 - a dictionary that holds the legend settings that
                   are set in METviewer
         """
-        legend_box = self.get_config_value('legend_box').lower()
+        legend_box = self.get_config_value('legend_box')
+        if legend_box:
+            legend_box = legend_box.lower()
+
         legend_ncol = self.get_config_value('legend_ncol')
         legend_inset = self.get_config_value('legend_inset')
-        legend_bbox_x = legend_inset['x']
-        legend_bbox_y = legend_inset['y']
-        legend_size = self.get_config_value('legend_size')
-        legend_settings = dict(bbox_x=legend_bbox_x,
+        if legend_inset:
+            legend_bbox_x = legend_inset['x']
+            legend_bbox_y = legend_inset['y']
+            legend_size = self.get_config_value('legend_size')
+            legend_settings = dict(bbox_x=legend_bbox_x,
                                bbox_y=legend_bbox_y,
                                legend_size=legend_size,
                                legend_ncol=legend_ncol,
                                legend_box=legend_box)
+        else:
+            legend_settings = dict()
 
         return legend_settings
 
