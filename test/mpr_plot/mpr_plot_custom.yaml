@@ -27,7 +27,8 @@ angularaxis_ticktext:
   - 'E'
   - 'S'
   - 'W'
-
+mpr_file_list:
+  - ./point_stat_mpr.txt
 width: 1200
 height: 7500
 marker_color: 'rgb(194,189,251)'
