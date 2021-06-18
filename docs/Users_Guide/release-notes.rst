@@ -77,7 +77,7 @@ Version 1.0.0 release notes (20210511)
 
 * Internal:
 
-   * Move the documentation over to Read The Docs (`#73 <https://github.com/dtcenter/METplotpy/issues/84>`_)
+   * Move the documentation over to Read The Docs (`#84 <https://github.com/dtcenter/METplotpy/issues/84>`_)
 
    * Make sure all tests are working (`#73 <https://github.com/dtcenter/METplotpy/issues/73>`_)
 
