@@ -88,7 +88,7 @@ class MprPlot(BasePlot):
             Returns:
 
         """
-        dtypes = {"VERSION": 'string', 'MODEL': 'string', 'DESC': 'string', 'FCST_LEAD': int}
+        dtypes = {"VERSION": 'str', 'MODEL': 'str', 'DESC': 'str', 'FCST_LEAD': int}
 
         # for each file
         for mpr_file in self.config_obj.mpr_file_list:
@@ -563,10 +563,6 @@ def main(config_filename=None):
             docs = yaml.load(stream, Loader=yaml.FullLoader)
         except yaml.YAMLError as exc:
             print(exc)
-
-    # point to data file in the test dir
-    if 'mpr_file_list' not in docs:
-        docs['mpr_file_list'] = [str(Path(__file__).parent.parent.parent.parent) + '/test/mpr_plot/point_stat_mpr.txt']
 
     try:
         plot = MprPlot(docs)
