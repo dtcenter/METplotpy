@@ -73,7 +73,7 @@ file is included with the source code.  If the user
 wishes to use all the default settings defined in the box_defaults.yaml
 file, an empty custom configuration file can be specified instead.
 
-.. literalinclude:: ../../metplotpy/test/box/custom_box.yaml
+.. literalinclude:: ../../test/box/custom_box.yaml
 
 
 
