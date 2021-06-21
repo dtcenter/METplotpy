@@ -179,7 +179,7 @@ class Box(BasePlot):
         # add x2 axis
         self._add_x2axis(n_stats)
 
-        self.figure.update_layout(boxmode='group', xaxis_tickangle=0)
+        self.figure.update_layout(boxmode='group')
 
     def _draw_series(self, series: BoxSeries) -> None:
         """
@@ -188,11 +188,14 @@ class Box(BasePlot):
         :param series: Line series object with data and parameters
         """
 
+        # defaults markers and colors for the regular box plot
         line_color = dict(color='rgb(0,0,0)')
         fillcolor = series.color
         marker_color = 'rgb(0,0,0)'
         marker_line_color = 'rgb(0,0,0)'
         marker_symbol = 'circle-open'
+
+        # markers and colors for points only  plot
         if self.config_obj.box_pts:
             line_color = dict(color='rgba(0,0,0,0)')
             fillcolor = 'rgba(0,0,0,0)'
@@ -200,6 +203,7 @@ class Box(BasePlot):
             marker_symbol = 'circle'
             marker_line_color = series.color
 
+        # create a trace
         self.figure.add_trace(
             go.Box(x=series.series_data[self.config_obj.indy_var],
                    y=series.series_data['stat_value'],
@@ -369,7 +373,8 @@ class Box(BasePlot):
                                  },
                                  title_standoff=abs(self.config_obj.parameters['ylab_offset']),
                                  tickangle=self.config_obj.y_tickangle,
-                                 tickfont={'size': self.config_obj.y_tickfont_size}
+                                 tickfont={'size': self.config_obj.y_tickfont_size},
+                                 exponentformat='none'
                                  )
 
     def _add_y2axis(self) -> None:
@@ -391,7 +396,8 @@ class Box(BasePlot):
                                      },
                                      title_standoff=abs(self.config_obj.parameters['y2lab_offset']),
                                      tickangle=self.config_obj.y2_tickangle,
-                                     tickfont={'size': self.config_obj.y2_tickfont_size}
+                                     tickfont={'size': self.config_obj.y2_tickfont_size},
+                                     exponentformat='none'
                                      )
 
     def _sync_yaxis(self, yaxis_min: Union[float, None], yaxis_max: Union[float, None]) -> None:
@@ -518,7 +524,9 @@ class Box(BasePlot):
 
             for series in self.series_list:
                 file_object = open(filename, 'a')
-                file_object.write('\nbox stats\n')
+                file_object.write('\n')
+                file_object.write(' '.join([str(elem) for elem in series.series_name]))
+                file_object.write('\n')
                 file_object.close()
                 quantile_data = series.series_data['stat_value'].quantile([0, 0.25, 0.5, 0.75, 1]).iloc[::-1]
                 quantile_data.to_csv(filename, header=False, index=None, sep=' ', mode='a')
@@ -550,8 +558,7 @@ def main(config_filename=None):
     try:
         plot = Box(docs)
         plot.save_to_file()
-        if plot.config_obj.create_html:
-            plot.show_in_browser()
+        #plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
     except ValueError as ve:

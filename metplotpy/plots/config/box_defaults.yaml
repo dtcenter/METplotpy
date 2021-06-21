@@ -38,7 +38,7 @@ num_threads: -1
 plot_caption: Caption
 
 
-plot_filename: ./box.png
+plot_filename: ./box_expected.png
 plot_height: 8.5
 plot_res: 72
 plot_stat: median

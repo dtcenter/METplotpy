@@ -20,13 +20,13 @@ con_series:
 - 1
 - 1
 - 1
-create_html: 'True'
+create_html: 'False'
 derived_series_1:
 - - AFWAOCv3.5.1_d01 SPFH FBAR
   - NoahMPv3.5.1_d01 SPFH FBAR
   - DIFF
 derived_series_2: []
-dump_points_1: 'False'
+dump_points_1: 'True'
 dump_points_2: 'False'
 eqbound_high: 0.001
 eqbound_low: -0.001
@@ -104,31 +104,15 @@ plot_type: png16m
 plot_units: in
 plot_width: 11.0
 random_seed: null
-series_line_style:
-- '-'
-- '-'
-- '-'
-- '-'
-series_line_width:
-- 1
-- 1
-- 1
-- 1
+
+
 series_order:
 - 1
 - 2
 - 3
 - 4
-series_symbols:
-- .
-- .
-- .
-- .
-series_type:
-- b
-- b
-- b
-- b
+
+
 series_val_1:
   model:
   - AFWAOCv3.5.1_d01
