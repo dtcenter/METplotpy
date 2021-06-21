@@ -72,6 +72,7 @@ Center for Atmospheric Research (NCAR) is sponsored by NSF.
    hovmoeller
    spacetime
    release-notes
+   references
 
 
 Indices and tables
