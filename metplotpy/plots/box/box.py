@@ -523,13 +523,21 @@ class Box(BasePlot):
             filename = filename + '.points1'
 
             for series in self.series_list:
-                file_object = open(filename, 'a')
-                file_object.write('\n')
-                file_object.write(' '.join([str(elem) for elem in series.series_name]))
-                file_object.write('\n')
-                file_object.close()
-                quantile_data = series.series_data['stat_value'].quantile([0, 0.25, 0.5, 0.75, 1]).iloc[::-1]
-                quantile_data.to_csv(filename, header=False, index=None, sep=' ', mode='a')
+                for indy_val in self.config_obj.indy_vals:
+                    if calc_util.is_string_integer(indy_val):
+                        data_for_indy = series.series_data[
+                            series.series_data[self.config_obj.indy_var] == int(indy_val)]
+                    else:
+                        data_for_indy = series.series_data[
+                            series.series_data[self.config_obj.indy_var] == indy_val]
+
+                    file_object = open(filename, 'a')
+                    file_object.write('\n')
+                    file_object.write(' '.join([str(elem) for elem in series.series_name]) + ' ' + indy_val)
+                    file_object.write('\n')
+                    file_object.close()
+                    quantile_data = data_for_indy['stat_value'].quantile([0, 0.25, 0.5, 0.75, 1]).iloc[::-1]
+                    quantile_data.to_csv(filename, header=False, index=None, sep=' ', mode='a')
 
 
 def main(config_filename=None):
@@ -558,7 +566,7 @@ def main(config_filename=None):
     try:
         plot = Box(docs)
         plot.save_to_file()
-        #plot.show_in_browser()
+        # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
     except ValueError as ve:
