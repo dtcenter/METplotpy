@@ -122,7 +122,7 @@ class BoxConfig(Config):
         self.legend_border_color = "black"
 
         box_outline = self._get_bool('box_outline')
-        if box_outline:
+        if box_outline is True:
             self.boxpoints = 'outliers'
         else:
             self.boxpoints = False
@@ -130,7 +130,7 @@ class BoxConfig(Config):
         self.box_notch = self._get_bool('box_notch')
 
         self.box_pts = self._get_bool('box_pts')
-        if self.box_pts:
+        if self.box_pts is True:
             self.boxpoints = 'all'
 
     def _get_plot_disp(self) -> list:
