@@ -148,11 +148,69 @@ class LineSeries(Series):
 
             # find original series data
 
+            # perform grouping
+            series_val_1 = self.config.parameters['series_val_1']
+            group_to_value = dict()
+            group_to_value_index = 1
+            if series_val_1:
+                for key in series_val_1.keys():
+                    for val in series_val_1[key]:
+                        if ',' in val:
+                            new_name = 'Group_y1_' + str(group_to_value_index)
+                            group_to_value[new_name] = val
+                            group_to_value_index = group_to_value_index + 1
+
+            series_val_2 = self.config.parameters['series_val_2']
+            if series_val_2:
+                group_to_value_index = 1
+                if series_val_2:
+                    for key in series_val_2.keys():
+                        for val in series_val_2[key]:
+                            if ',' in val:
+                                new_name = 'Group_y2_' + str(group_to_value_index)
+                                group_to_value[new_name] = val
+                                group_to_value_index = group_to_value_index + 1
+
+
+            is_group_exists = False
             for series in self.series_list:
                 if set(series_name_1) == set(series.series_name):
                     series_data_1 = series.series_data
+                else:
+                    # try groups
+                    actual_group_name = list()
+
+                    for index, item in enumerate(series_name_1):
+                        if item in group_to_value:
+                            actual_group_name.append(group_to_value[item])
+                        else:
+                            actual_group_name.append(item)
+                    if set(actual_group_name) == set(series.series_name):
+                        series_data_1 = series.series_data
+                        is_group_exists = True
+
                 if set(series_name_2) == set(series.series_name):
                     series_data_2 = series.series_data
+                else:
+                    # try groups
+                    actual_group_name = list()
+
+                    for index, item in enumerate( series_name_2):
+                        if item in group_to_value:
+                            actual_group_name.append(group_to_value[item])
+                        else:
+                            actual_group_name.append(item)
+
+                    if set(actual_group_name) == set(series.series_name):
+                            series_data_2 = series.series_data
+                            is_group_exists = True
+
+
+            # we don't calulate derive curves if one of the series is a group
+            # raise an error
+            if is_group_exists:
+                raise NameError("Derived curve can't be calculated."
+                            " One or both series components is a group")
 
             # create a series name as a string
             series_name_str = utils.get_derived_curve_name([self.series_name[0],
@@ -212,34 +270,6 @@ class LineSeries(Series):
                         dbl_lo_ci = dbl_std_err
                         dbl_up_ci = dbl_std_err
                 elif series_ci == 'BOOT':
-                    stat_btcu = 0
-                    stat_btcl = 0
-                    if 'stat_btcu' in point_data.head() and 'stat_btcl' in point_data.head():
-                        stat_btcu = self._calc_point_stat(point_data['stat_btcu'].tolist())
-                        stat_btcl = self._calc_point_stat(point_data['stat_btcl'].tolist())
-                        if stat_btcu == -9999:
-                            stat_btcu = 0
-                        if stat_btcl == -9999:
-                            stat_btcl = 0
-
-                    dbl_lo_ci = point_stat - stat_btcl
-                    dbl_up_ci = stat_btcu - point_stat
-
-                elif series_ci == 'MET_PMR':
-                    stat_ncu = 0
-                    stat_ncl = 0
-                    if 'stat_ncu' in point_data.head() and 'stat_ncl' in point_data.head():
-                        stat_ncu = self._calc_point_stat(point_data['stat_ncu'].tolist())
-                        stat_ncl = self._calc_point_stat(point_data['stat_ncl'].tolist())
-                        if stat_ncu == -9999:
-                            stat_ncu = 0
-                        if stat_ncl == -9999:
-                            stat_ncl = 0
-
-                    dbl_lo_ci = point_stat - stat_ncl
-                    dbl_up_ci = stat_ncu - point_stat
-
-                elif series_ci == 'MET_BOOT':
                     stat_bcu = 0
                     stat_bcl = 0
                     if 'stat_bcu' in point_data.head() and 'stat_bcl' in point_data.head():
@@ -252,6 +282,20 @@ class LineSeries(Series):
 
                     dbl_lo_ci = point_stat - stat_bcl
                     dbl_up_ci = stat_bcu - point_stat
+
+                elif series_ci == 'NORM':
+                    stat_ncu = 0
+                    stat_ncl = 0
+                    if 'stat_ncu' in point_data.head() and 'stat_ncl' in point_data.head():
+                        stat_ncu = self._calc_point_stat(point_data['stat_ncu'].tolist())
+                        stat_ncl = self._calc_point_stat(point_data['stat_ncl'].tolist())
+                        if stat_ncu == -9999:
+                            stat_ncu = 0
+                        if stat_ncl == -9999:
+                            stat_ncl = 0
+
+                    dbl_lo_ci = point_stat - stat_ncl
+                    dbl_up_ci = stat_ncu - point_stat
 
             else:
                 dbl_lo_ci = None
