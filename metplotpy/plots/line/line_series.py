@@ -119,6 +119,9 @@ class LineSeries(Series):
                         filter_list[i] = int(filter_val)
 
                 all_filters.append((self.input_data[field].isin(filter_list)))
+
+            # filter by provided indy
+            all_filters.append((self.input_data[self.config.indy_var].isin(self.config.indy_vals)))
             # use numpy to select the rows where any record evaluates to True
             mask = np.array(all_filters).all(axis=0)
             self.series_data = self.input_data.loc[mask]

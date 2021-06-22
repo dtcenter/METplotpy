@@ -62,6 +62,7 @@ Center for Atmospheric Research (NCAR) is sponsored by NSF.
 
    installation
    line
+   box
    performance_diagram
    reliability_diagram
    roc_diagram
@@ -71,6 +72,7 @@ Center for Atmospheric Research (NCAR) is sponsored by NSF.
    hovmoeller
    spacetime
    release-notes
+   references
 
 
 Indices and tables

@@ -526,6 +526,9 @@ class Line(BasePlot):
                                               'scaleanchor': 'x'
                                               }
                                       )
+            # reverse x2axis if needed
+            if self.config_obj.xaxis_reverse is True:
+                self.figure.update_layout(xaxis2={'autorange': "reversed"})
 
             # need to add an invisible line with all values = None
             self.figure.add_trace(
@@ -558,9 +561,10 @@ class Line(BasePlot):
         Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
         """
         if self.config_obj.create_html is True:
-            # construct the fle name from plot_filename
+            # construct the file name from plot_filename
             name_arr = self.get_config_value('plot_filename').split('.')
-            html_name = name_arr[0] + ".html"
+            name_arr[-1] = 'html'
+            html_name = ".".join(name_arr)
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
