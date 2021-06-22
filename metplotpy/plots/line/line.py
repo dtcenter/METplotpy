@@ -526,6 +526,9 @@ class Line(BasePlot):
                                               'scaleanchor': 'x'
                                               }
                                       )
+            # reverse x2axis if needed
+            if self.config_obj.xaxis_reverse is True:
+                self.figure.update_layout(xaxis2={'autorange': "reversed"})
 
             # need to add an invisible line with all values = None
             self.figure.add_trace(

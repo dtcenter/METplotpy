@@ -156,6 +156,9 @@ class Box(BasePlot):
         yaxis_min = None
         yaxis_max = None
 
+        if self.config_obj.xaxis_reverse is True:
+            self.series_list.reverse()
+
         for series in self.series_list:
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
@@ -465,6 +468,9 @@ class Box(BasePlot):
                                               'scaleanchor': 'x'
                                               }
                                       )
+            # reverse x2axis if needed
+            if self.config_obj.xaxis_reverse is True:
+                self.figure.update_layout(xaxis2={'autorange':"reversed"})
 
             # need to add an invisible line with all values = None
             self.figure.add_trace(
@@ -487,8 +493,11 @@ class Box(BasePlot):
                                           'font': {
                                               'size': self.config_obj.legend_size,
                                               'color': "black"
-                                          }
+                                          },
+                                          'traceorder': 'normal'
                                           })
+        if self.config_obj.xaxis_reverse is True:
+            self.figure.update_layout(legend={'traceorder':'reversed'})
 
     def write_html(self) -> None:
         """
@@ -566,7 +575,7 @@ def main(config_filename=None):
     try:
         plot = Box(docs)
         plot.save_to_file()
-        # plot.show_in_browser()
+        plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
     except ValueError as ve:
