@@ -575,7 +575,7 @@ def main(config_filename=None):
     try:
         plot = Box(docs)
         plot.save_to_file()
-        plot.show_in_browser()
+        #plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
     except ValueError as ve:
