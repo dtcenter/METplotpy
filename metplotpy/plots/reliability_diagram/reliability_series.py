@@ -135,10 +135,10 @@ class ReliabilitySeries(Series):
                                                obar_data['stat_value'])]
             series_points_results = series_points_results.drop(columns=['stat_name'])
 
-            series_points_results['stat_bcl'] = \
-                series_points_results['stat_value'] - series_points_results['stat_bcl']
-            series_points_results['stat_bcu'] = \
-                series_points_results['stat_bcu'] - series_points_results['stat_value']
+            series_points_results['stat_btcl'] = \
+                series_points_results['stat_value'] - series_points_results['stat_btcl']
+            series_points_results['stat_btcu'] = \
+                series_points_results['stat_btcu'] - series_points_results['stat_value']
 
         else:
             # this is a derived series
@@ -146,20 +146,20 @@ class ReliabilitySeries(Series):
                 self.input_data.loc[lambda df: df['stat_name'] == 'PSTD_CALIBRATION', :]
             if self.series_name == 'median':
                 series_points_results = calibration_data.groupby('thresh_i')[
-                    'stat_value', 'stat_bcl', 'stat_bcu'].median().reset_index()
+                    'stat_value', 'stat_btcl', 'stat_btcu'].median().reset_index()
             elif self.series_name == 'mean':
                 series_points_results = calibration_data.groupby('thresh_i')[
-                    'stat_value', 'stat_bcl', 'stat_bcu'].mean().reset_index()
+                    'stat_value', 'stat_btcl', 'stat_btcu'].mean().reset_index()
             else:
                 series_points_results = calibration_data.copy()
                 series_points_results['stat_name'] = None
-                series_points_results['stat_bcl'] = None
-                series_points_results['stat_bcu'] = None
+                series_points_results['stat_btcl'] = None
+                series_points_results['stat_btcu'] = None
 
-            series_points_results['stat_bcl'] = \
-                series_points_results['stat_value'] - series_points_results['stat_bcl']
-            series_points_results['stat_bcu'] = \
-                series_points_results['stat_bcu'] - series_points_results['stat_value']
+            series_points_results['stat_btcl'] = \
+                series_points_results['stat_value'] - series_points_results['stat_btcl']
+            series_points_results['stat_btcu'] = \
+                series_points_results['stat_btcu'] - series_points_results['stat_value']
             series_points_results['thresh_ii'] = series_points_results['thresh_i'].copy()
 
             for i in range(1, len(series_points_results)):
