@@ -11,7 +11,7 @@ import math
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
-import pingouin as pg
+import metcalcpy.util.correlation as pg
 
 import metcalcpy.util.utils as utils
 from metcalcpy.sum_stat import calculate_statistic
