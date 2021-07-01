@@ -4,8 +4,8 @@ MJO Plots
 Description
 ~~~~~~~~~~~
 The compute_mjo_indices.py code (found in the METplotpy repository) supports the generation of RMM, OMI,
-and phase diagrams from MJO indices. These indicea are calculated by compute_mjo_indices.py in the METcalcpy
-repository. These are used as part of METplus use cases on generating these diagrams.
+and phase diagrams from MJO indices. These indices are calculated by compute_mjo_indices.py in the METcalcpy
+repository. These modules are used as part of METplus use cases on generating these three diagrams.
 
 
 Run from the Command Line
