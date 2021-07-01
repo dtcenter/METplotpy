@@ -10,7 +10,7 @@ import statistics
 
 import numpy as np
 from pandas import DataFrame
-import pingouin as pg
+import metcalcpy.util.correlation as pg
 from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
