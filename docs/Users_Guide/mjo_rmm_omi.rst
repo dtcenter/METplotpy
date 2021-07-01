@@ -27,8 +27,8 @@ modules from the METplotpy and METcalcpy repositories.
 Required Packages:
 ~~~~~~~~~~~~~~~~~~
 
-  - \*metplotpy
-  - \*numpy 
+  - metplotpy
+  - numpy 
 
 
 
