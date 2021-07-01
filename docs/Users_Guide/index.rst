@@ -71,6 +71,7 @@ Center for Atmospheric Research (NCAR) is sponsored by NSF.
    weather_regime
    hovmoeller
    spacetime
+   mjo_rmm_omi
    release-notes
    references
 
