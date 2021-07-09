@@ -4,7 +4,6 @@ Class Name: line_config.py
 Holds values set in the Line plot config file(s)
 """
 __author__ = 'Minna Win, Hank Fisher'
-__email__ = 'met_help@ucar.edu'
 
 import itertools
 

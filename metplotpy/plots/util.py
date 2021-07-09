@@ -4,7 +4,6 @@ import argparse
     Collection of utility functions used by multiple plotting classes
 """
 __author__ = 'Minna Win'
-__email__ = 'met_help@ucar.edu'
 
 import matplotlib
 import numpy as np
