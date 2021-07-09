@@ -4,7 +4,6 @@ Class Name: line_config.py
 Holds values set in the box plot config file(s)
 """
 __author__ = 'Tatiana Burek'
-__email__ = 'met_help@ucar.edu'
 
 import itertools
 

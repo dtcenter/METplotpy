@@ -4,7 +4,6 @@ Class Name: roc_diagram_config.py
 Holds values set in the ROC config file(s)
 """
 __author__ = 'Minna Win'
-__email__ = 'met_help@ucar.edu'
 
 
 import sys

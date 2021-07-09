@@ -2,7 +2,6 @@
 Class Name: box.py
  """
 __author__ = 'Hank Fisher, Tatiana Burek'
-__email__ = 'met_help@ucar.edu'
 
 import re
 from typing import Union

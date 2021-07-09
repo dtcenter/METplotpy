@@ -2,7 +2,6 @@
 Class Name: ROCDiagramSeries
  """
 __author__ = 'Minna Win'
-__email__ = 'met_help@ucar.edu'
 
 import sys
 

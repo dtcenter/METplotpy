@@ -2,7 +2,6 @@
 Class Name: PerformanceDiagramSeries
  """
 __author__ = 'Minna Win'
-__email__ = 'met_help@ucar.edu'
 
 import warnings
 import re
