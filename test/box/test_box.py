@@ -42,7 +42,7 @@ def cleanup():
 
 
 @pytest.mark.parametrize("test_input, expected",
-                         (["./box_expected.png", True],["./box.points1", True]))
+                         (["./box_expected.png", True],["./box.png", True],["./box.points1", True]))
 def test_files_exist(setup, test_input, expected):
     """
         Checking that the plot and data files are getting created
