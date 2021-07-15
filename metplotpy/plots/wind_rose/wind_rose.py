@@ -1,8 +1,8 @@
+
 """
 Class Name: wind_rose.py
  """
 __author__ = 'Tatiana Burek'
-__email__ = 'met_help@ucar.edu'
 
 import math
 from typing import Union

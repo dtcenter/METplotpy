@@ -2,7 +2,6 @@
 Class Name: reliability.py
  """
 __author__ = 'Tatiana Burek'
-__email__ = 'met_help@ucar.edu'
 
 import os
 import re

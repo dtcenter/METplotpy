@@ -6,7 +6,6 @@ METviewer values are keys, Matplotlib representations are the values.
 
 """
 __author__ = 'Minna Win'
-__email__ = 'met_help@ucar.edu'
 
 # CONVERSION FACTORS
 

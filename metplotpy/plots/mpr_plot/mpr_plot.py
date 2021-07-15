@@ -2,7 +2,6 @@
 Class Name: mpr_plot.py
  """
 __author__ = 'Tatiana Burek'
-__email__ = 'met_help@ucar.edu'
 
 from typing import Union
 import pandas as pd

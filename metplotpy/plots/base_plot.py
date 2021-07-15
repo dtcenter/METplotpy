@@ -1,9 +1,9 @@
+
 #!/usr/bin/env conda run -n blenny_363 python
 """
 Class Name: base_plot.py
  """
 __author__ = 'Tatiana Burek'
-__email__ = 'met_help@ucar.edu'
 
 import os
 import numpy as np

@@ -16,7 +16,6 @@ import metplotpy.plots.difficulty_index.mycolormaps as mcmap
 
 __author__ = 'Bill Campbell (NRL) and Lindsay Blank (NCAR)'
 __version__ = '0.1.0'
-__email__ = 'met_help@ucar.edu'
 
 # Enforce positive definiteness of quantities such as standard deviations
 EPS = np.finfo(np.float32).eps

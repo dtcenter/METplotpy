@@ -2,7 +2,7 @@
 Class Name: performance_diagram.py
  """
 __author__ = 'Minna Win'
-__email__ = 'met_help@ucar.edu'
+
 import os
 import re
 import matplotlib.pyplot as plt

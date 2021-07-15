@@ -4,7 +4,6 @@ Class Name: config.py
 Holds values set in the config file(s)
 """
 __author__ = 'Minna Win'
-__email__ = 'met_help@ucar.edu'
 
 import itertools
 from typing import Union
