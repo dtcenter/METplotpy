@@ -7,7 +7,6 @@ Version  Date
 
 __author__ = 'David Fillmore'
 __version__ = '0.1.0'
-__email__ = 'met_help@ucar.edu'
 
 """
 Import standard modules
