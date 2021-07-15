@@ -127,14 +127,24 @@ class LineSeries(Series):
             self.series_data = self.input_data.loc[mask]
 
             # sort data by date/time - needed for CI calculations
-            if 'fcst_valid_beg' in self.series_data.columns:
-                self.series_data = self.series_data.sort_values(['fcst_valid_beg', 'fcst_lead'])
-            if 'fcst_valid' in self.series_data.columns:
-                self.series_data = self.series_data.sort_values(['fcst_valid', 'fcst_lead'])
-            if 'fcst_init_beg' in self.series_data.columns:
-                self.series_data = self.series_data.sort_values(['fcst_init_beg', 'fcst_lead'])
-            if 'fcst_init' in self.series_data.columns:
-                self.series_data = self.series_data.sort_values(['fcst_init', 'fcst_lead'])
+            if 'fcst_lead' in self.series_data.columns:
+                if 'fcst_valid_beg' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_valid_beg', 'fcst_lead'])
+                if 'fcst_valid' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_valid', 'fcst_lead'])
+                if 'fcst_init_beg' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_init_beg', 'fcst_lead'])
+                if 'fcst_init' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_init', 'fcst_lead'])
+            else:
+                if 'fcst_valid_beg' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_valid_beg'])
+                if 'fcst_valid' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_valid'])
+                if 'fcst_init_beg' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_init_beg'])
+                if 'fcst_init' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_init'])
 
         else:
             # this is a derived series
@@ -171,7 +181,6 @@ class LineSeries(Series):
                                 group_to_value[new_name] = val
                                 group_to_value_index = group_to_value_index + 1
 
-
             is_group_exists = False
             for series in self.series_list:
                 if set(series_name_1) == set(series.series_name):
@@ -195,22 +204,21 @@ class LineSeries(Series):
                     # try groups
                     actual_group_name = list()
 
-                    for index, item in enumerate( series_name_2):
+                    for index, item in enumerate(series_name_2):
                         if item in group_to_value:
                             actual_group_name.append(group_to_value[item])
                         else:
                             actual_group_name.append(item)
 
                     if set(actual_group_name) == set(series.series_name):
-                            series_data_2 = series.series_data
-                            is_group_exists = True
-
+                        series_data_2 = series.series_data
+                        is_group_exists = True
 
             # we don't calulate derive curves if one of the series is a group
             # raise an error
             if is_group_exists:
                 raise NameError("Derived curve can't be calculated."
-                            " One or both series components is a group")
+                                " One or both series components is a group")
 
             # create a series name as a string
             series_name_str = utils.get_derived_curve_name([self.series_name[0],
@@ -333,18 +341,32 @@ class LineSeries(Series):
                 series_data_2.loc[series_data_2[self.config.indy_var] == indy]
 
             # validate data
-            if 'fcst_valid_beg' in stats_indy_1.columns:
-                unique_dates = \
-                    stats_indy_1[['fcst_valid_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
-            elif 'fcst_valid' in stats_indy_1.columns:
-                unique_dates = \
-                    stats_indy_1[['fcst_valid', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
-            elif 'fcst_init_beg' in stats_indy_1.columns:
-                unique_dates = \
-                    stats_indy_1[['fcst_init_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+            if 'fcst_lead' in stats_indy_1.columns:
+                if 'fcst_valid_beg' in stats_indy_1.columns:
+                    unique_dates = \
+                        stats_indy_1[['fcst_valid_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                elif 'fcst_valid' in stats_indy_1.columns:
+                    unique_dates = \
+                        stats_indy_1[['fcst_valid', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                elif 'fcst_init_beg' in stats_indy_1.columns:
+                    unique_dates = \
+                        stats_indy_1[['fcst_init_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                else:
+                    unique_dates = \
+                        stats_indy_1[['fcst_init', 'fcst_lead', 'stat_name"']].drop_duplicates().shape[0]
             else:
-                unique_dates = \
-                    stats_indy_1[['fcst_init', 'fcst_lead', 'stat_name"']].drop_duplicates().shape[0]
+                if 'fcst_valid_beg' in stats_indy_1.columns:
+                    unique_dates = \
+                        stats_indy_1[['fcst_valid_beg', 'stat_name']].drop_duplicates().shape[0]
+                elif 'fcst_valid' in stats_indy_1.columns:
+                    unique_dates = \
+                        stats_indy_1[['fcst_valid', 'stat_name']].drop_duplicates().shape[0]
+                elif 'fcst_init_beg' in stats_indy_1.columns:
+                    unique_dates = \
+                        stats_indy_1[['fcst_init_beg', 'stat_name']].drop_duplicates().shape[0]
+                else:
+                    unique_dates = \
+                        stats_indy_1[['fcst_init', 'stat_name"']].drop_duplicates().shape[0]
             if stats_indy_1.shape[0] != unique_dates:
                 raise ValueError(
                     'Derived curve can\'t be calculated. '

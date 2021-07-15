@@ -104,14 +104,24 @@ class ReliabilitySeries(Series):
                 self.series_data = self.input_data
 
             # sort data by date/time - needed for CI calculations
-            if 'fcst_valid_beg' in self.series_data.columns:
-                self.series_data = self.series_data.sort_values(['fcst_valid_beg', 'fcst_lead'])
-            if 'fcst_valid' in self.series_data.columns:
-                self.series_data = self.series_data.sort_values(['fcst_valid', 'fcst_lead'])
-            if 'fcst_init_beg' in self.series_data.columns:
-                self.series_data = self.series_data.sort_values(['fcst_init_beg', 'fcst_lead'])
-            if 'fcst_init' in self.series_data.columns:
-                self.series_data = self.series_data.sort_values(['fcst_init', 'fcst_lead'])
+            if 'fcst_lead' in self.series_data.columns:
+                if 'fcst_valid_beg' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_valid_beg', 'fcst_lead'])
+                if 'fcst_valid' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_valid', 'fcst_lead'])
+                if 'fcst_init_beg' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_init_beg', 'fcst_lead'])
+                if 'fcst_init' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_init', 'fcst_lead'])
+            else:
+                if 'fcst_valid_beg' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_valid_beg'])
+                if 'fcst_valid' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_valid'])
+                if 'fcst_init_beg' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_init_beg'])
+                if 'fcst_init' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_init'])
 
             obar_data = self.series_data.loc[lambda df: df['stat_name'] == 'PSTD_BASER', :]
             calibration_data = self.series_data.loc[lambda df: df['stat_name'] == 'PSTD_CALIBRATION', :]
