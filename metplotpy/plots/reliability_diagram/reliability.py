@@ -675,6 +675,7 @@ class Reliability(BasePlot):
             with open(output_file, "w+") as my_csv:
                 csv_writer = csv.writer(my_csv, delimiter=' ')
                 csv_writer.writerows(all_points_formatted)
+            my_csv.close()
 
         except TypeError:
             print('Can\'t save points to a file')
