@@ -367,6 +367,7 @@ class WindRosePlot(BasePlot):
             with open(output_file, "w+") as f:
                 for key, value in all_points_formatted.items():
                     f.write('%s:%s\n' % (key, value))
+            f.close()
 
         except TypeError:
             print('Can\'t save points to a file')
