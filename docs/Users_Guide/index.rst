@@ -64,6 +64,7 @@ Center for Atmospheric Research (NCAR) is sponsored by NSF.
    line
    box
    bar
+   ens_ss
    performance_diagram
    reliability_diagram
    roc_diagram
