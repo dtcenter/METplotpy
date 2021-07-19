@@ -1,5 +1,5 @@
 """
-Class Name: line_config.py
+Class Name: reliability_config.py
 
 Holds values set in the Line plot config file(s)
 """
