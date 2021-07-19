@@ -547,6 +547,7 @@ class Box(BasePlot):
                     file_object.close()
                     quantile_data = data_for_indy['stat_value'].quantile([0, 0.25, 0.5, 0.75, 1]).iloc[::-1]
                     quantile_data.to_csv(filename, header=False, index=None, sep=' ', mode='a')
+                    file_object.close()
 
 
 def main(config_filename=None):
