@@ -22,7 +22,8 @@ class Series:
         self.input_data = input_data
         self.y_axis = y_axis
         self.plot_disp = config.plot_disp[idx]
-        self.plot_stat = config.plot_stat
+        if hasattr(config, 'plot_stat'):
+            self.plot_stat = config.plot_stat
         self.color = config.colors_list[idx]
         if hasattr(config,'marker_list'):
             self.marker = config.marker_list[idx]
