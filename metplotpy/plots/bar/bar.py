@@ -419,6 +419,7 @@ class Bar(BasePlot):
             with open(filename, 'w') as f:
                 for series in self.series_list:
                     f.write(f"{series.series_points['dbl_med']}\n")
+            f.close()
 
 
 def main(config_filename=None):
