@@ -58,7 +58,7 @@ file is included with the source code.  If the user
 wishes to use all the default settings defined in the bar_defaults.yaml
 file, an empty custom configuration file can be specified instead.
 
-.. literalinclude:: ../../test/bar/custom_ens_ss.yaml
+.. literalinclude:: ../../test/ens_ss/custom_ens_ss.yaml
 
 
 
