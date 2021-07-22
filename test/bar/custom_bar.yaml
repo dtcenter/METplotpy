@@ -1,54 +1,66 @@
 alpha: 0.05
-caption_align: 0
+caption_align: 0.0
 caption_col: '#333333'
-caption_offset: 3
+caption_offset: 3.0
 caption_size: 0.8
 caption_weight: 1
 cex: 1
-colors: []
-con_series: []
+circular_block_bootstrap: 'True'
+colors:
+- '#ff0000'
+- '#8000ff'
+con_series:
+- 1
+- 1
+create_html: 'False'
 derived_series_1: []
-derived_series_2: []
-dump_points_1: 'False'
-dump_points_2: 'False'
+dump_points_1: 'True'
+eqbound_high: 0.001
+eqbound_low: -0.001
 event_equal: 'False'
-fcst_var_val_1: {}
-fcst_var_val_2: {}
+fcst_var_val_1:
+  TMP:
+  - ME
 fixed_vars_vals_input: {}
-grid_col: '#f5274a'
+grid_col: '#cccccc'
 grid_lty: 3
 grid_lwd: 1
 grid_on: 'True'
 grid_x: listX
-indy_stagger_1: 'False'
-indy_stagger_2: 'False'
-indy_vals: []
-indy_var: ''
+indy_label:
+- '12'
+- '24'
+indy_vals:
+- '120000'
+- '240000'
+indy_var: fcst_lead
 legend_box: o
 legend_inset:
   x: 0.0
   y: -0.25
 legend_ncol: 3
 legend_size: 0.8
-line_type: N/A
-list_stat_1: []
-list_stat_2: []
-list_static_val: {}
+line_type: None
+list_stat_1:
+- ME
+list_static_val:
+  fcst_var: TMP
 mar:
 - 8
 - 4
 - 5
 - 4
-method: ''
+method: bca
 mgp:
 - 1
 - 1
 - 0
 num_iterations: 1
 num_threads: -1
-plot_ci: []
-plot_disp: []
-plot_filename: /tmp/line.png
+plot_caption: ''
+plot_disp:
+- 'True'
+- 'True'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -56,16 +68,19 @@ plot_type: png16m
 plot_units: in
 plot_width: 11.0
 random_seed: null
-series_line_style: []
-series_line_width: []
-series_order: []
-series_symbols: []
-series_type: []
-series_val_1: {}
+
+series_order:
+- 1
+- 2
+
+
+series_val_1:
+  model:
+  - AFWAOCv3.5.1_d01
+  - NoahMPv3.5.1_d01
 series_val_2: {}
-show_nstats: 'False'
-show_signif: []
-stat_input: ../line/line.data
+show_nstats: 'True'
+
 sync_yaxes: 'False'
 title: test title
 title_align: 0.5
@@ -73,7 +88,6 @@ title_offset: -2
 title_size: 1.4
 title_weight: 2.0
 user_legend: []
-variance_inflation_factor: 'True'
 vert_plot: 'False'
 x2lab_align: 0.5
 x2lab_offset: -0.5
@@ -84,7 +98,7 @@ x2tlab_orient: 1
 x2tlab_perp: 1
 x2tlab_size: 0.8
 xaxis: test x_label
-xaxis_reverse: 'False'
+xaxis_reverse: 'True'
 xlab_align: 0.5
 xlab_offset: 2
 xlab_size: 1
@@ -115,3 +129,6 @@ ytlab_horiz: 0.5
 ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
+
+stat_input: ./bar.data
+plot_filename: ./bar.png
