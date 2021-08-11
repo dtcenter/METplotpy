@@ -1,15 +1,19 @@
 These are scripts from Mike Erickson at the Weather Prediction Center (WPC) for Practically Perfect and MET mode time domain plotting:
 
-    convertNEWSe20182nc.py  
     ERO_verif_s_vday1.py  
-    loadAllEROData.py  
-    METLoadEnsemble_NEW.py (removed 8/11/2021 no longer updated)
-    mtd_retroruns_save_NEWSeTEST.py (removed 8/11/2021 no longer updated)
     ERO_verif_p_vday1.py 
-    get_NEWSe_PAT2018.csh 
+    loadAllEROData.py  
+    
     METConFigGen.py
+    METLoadEnsemble.py
     METPlotEnsemble.py
+    
+    mtd_master_save_type1.py
+    mtd_master_save_type2.py
+    mtd_master_plot.py
+    mtd_master.py
     py2netcdf.py
+    convertNEWSe20182nc.py
 
 
 Description of latest code added on 8/11/2021:
