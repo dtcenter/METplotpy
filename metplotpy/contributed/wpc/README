@@ -11,6 +11,8 @@ These are scripts from Mike Erickson at the Weather Prediction Center (WPC) for 
     mtd_master_save_type1.py
     mtd_master_save_type2.py
     mtd_master_plot.py
+    mtd_master.py
     py2netcdf.py
+    convertNEWSe20182nc.py
 
 
