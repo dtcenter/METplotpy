@@ -44,15 +44,16 @@ import numpy as np
 ###################################################################################
 
 def py2netcdf_ANALY(GRIB_PATH_TEMP,latlon_dims,grid_delta,datetime_beg,datetime_end,vhr,lat,lon,data,var_name,var_name_long):
-    
+
 ##################COMMENT OUT WHEN IN FUNCTION MODE#################################
-#datetime_beg = datetime_ffg_beg
-#datetime_end = datetime_ffg_end
-#vhr          = 12
+#datetime_beg = datetime_beg_VER
+#datetime_end = datetime_end_VER
+#vhr          = validhour
 #lat          = lat[::-1,0]
 #lon          = lon[0,:] 
-#data         = flood_obs_sub[::-1,:]
+#data         = ero_ALL[::-1,:]
 #var_name     = 'ST4gFFG'
+#var_name_long= 'ERO Probability Grid'
 ####################################################################################
 
     #Static metadata
@@ -61,28 +62,28 @@ def py2netcdf_ANALY(GRIB_PATH_TEMP,latlon_dims,grid_delta,datetime_beg,datetime_
     var_FillValue = '-9999.f'
     
     #Convert datetime to a string
-    yrmonday_beg = ''.join(['{:04d}'.format(datetime_beg.year),'{:02d}'.format(datetime_beg.month), \
-        '{:02d}'.format(datetime_beg.day)])
-    hr_beg       = '{:02d}'.format(datetime_beg.hour)
-    min_beg      = '{:02d}'.format(datetime_beg.minute)
-    sec_beg      = '{:02d}'.format(datetime_beg.second)
-    yrmonday_end = ''.join(['{:04d}'.format(datetime_end.year),'{:02d}'.format(datetime_end.month), \
-        '{:02d}'.format(datetime_end.day)])
-    hr_end       = '{:02d}'.format(datetime_end.hour)
-    min_end      = '{:02d}'.format(datetime_end.minute)
-    sec_end      = '{:02d}'.format(datetime_end.second)
+    yrmonday_beg = ''.join(['{:04.0F}'.format(datetime_beg.year),'{:02.0F}'.format(datetime_beg.month), \
+        '{:02.0F}'.format(datetime_beg.day)])
+    hr_beg       = '{:02.0F}'.format(datetime_beg.hour)
+    min_beg      = '{:02.0F}'.format(datetime_beg.minute)
+    sec_beg      = '{:02.0F}'.format(datetime_beg.second)
+    yrmonday_end = ''.join(['{:04.0F}'.format(datetime_end.year),'{:02.0F}'.format(datetime_end.month), \
+        '{:02.0F}'.format(datetime_end.day)])
+    hr_end       = '{:02.0F}'.format(datetime_end.hour)
+    min_end      = '{:02.0F}'.format(datetime_end.minute)
+    sec_end      = '{:02.0F}'.format(datetime_end.second)
     
     #Determine distance beteween start and end dates in seconds
     time_delta_totsec = datetime_end - datetime_beg 
     time_delta_totsec = (time_delta_totsec.days*24*60*60)+time_delta_totsec.seconds
     
     #Determine total hour/min/sec length
-    time_delta_hr  = '{:02d}'.format(time_delta_totsec/(60*60))
-    time_delta_min = '{:02d}'.format((time_delta_totsec/60) - int(time_delta_hr)*60)
-    time_delta_sec = '{:02d}'.format(((time_delta_totsec) - int(time_delta_hr)*60*60 - int(time_delta_min)*60))
+    time_delta_hr  = '{:02.0F}'.format(time_delta_totsec/(60*60))
+    time_delta_min = '{:02.0F}'.format((time_delta_totsec/60) - int(time_delta_hr)*60)
+    time_delta_sec = '{:02.0F}'.format(((time_delta_totsec) - int(time_delta_hr)*60*60 - int(time_delta_min)*60))
     
     #############Convert Data to netCDF4##################
-    filesave = GRIB_PATH_TEMP+var_name+'_s'+yrmonday_beg+hr_beg+'_e'+yrmonday_end+hr_end+'_vhr'+'{:02d}'.format(int(vhr))+'.nc'
+    filesave = GRIB_PATH_TEMP+var_name+'_s'+yrmonday_beg+hr_beg+'_e'+yrmonday_end+hr_end+'_vhr'+'{:02.0F}'.format(int(vhr))+'.nc'
     
     subprocess.call('rm -rf '+filesave,stdout=open(os.devnull, 'wb'),stderr=open(os.devnull, 'wb'), shell=True)
     fid = Dataset(filesave, 'w', format='NETCDF4_CLASSIC')
@@ -195,40 +196,38 @@ def py2netcdf_FCST(GRIB_PATH_TEMP,latlon_dims,grid_delta,datetime_init,datetime_
     pre_acc_sec = int(pre_acc[0:2])*60*60+int(pre_acc[2:4])*60+int(pre_acc[4:6])
     
     #Convert datetime to a string for initialization time
-    yrmonday_init = ''.join(['{:04d}'.format(datetime_init.year),'{:02d}'.format(datetime_init.month), \
-        '{:02d}'.format(datetime_init.day)])
-    hr_init       = '{:02d}'.format(datetime_init.hour)
-    min_init      = '{:02d}'.format(datetime_init.minute)
-    sec_init      = '{:02d}'.format(datetime_init.second)
+    yrmonday_init = ''.join(['{:04.0F}'.format(datetime_init.year),'{:02.0F}'.format(datetime_init.month), \
+        '{:02.0F}'.format(datetime_init.day)])
+    hr_init       = '{:02.0F}'.format(datetime_init.hour)
+    min_init      = '{:02.0F}'.format(datetime_init.minute)
+    sec_init      = '{:02.0F}'.format(datetime_init.second)
     
     #Convert datetime to a string for beginning of accumulation interval
     datetime_beg = datetime_end - datetime.timedelta(seconds = pre_acc_sec)
-    yrmonday_beg = ''.join(['{:04d}'.format(datetime_beg.year),'{:02d}'.format(datetime_beg.month), \
-        '{:02d}'.format(datetime_beg.day)])
-    hr_beg       = '{:02d}'.format(datetime_beg.hour)
-    min_beg      = '{:02d}'.format(datetime_beg.minute)
-    sec_beg      = '{:02d}'.format(datetime_beg.second)
+    yrmonday_beg = ''.join(['{:04.0F}'.format(datetime_beg.year),'{:02.0F}'.format(datetime_beg.month), \
+        '{:02.0F}'.format(datetime_beg.day)])
+    hr_beg       = '{:02.0F}'.format(datetime_beg.hour)
+    min_beg      = '{:02.0F}'.format(datetime_beg.minute)
+    sec_beg      = '{:02.0F}'.format(datetime_beg.second)
     
     #Convert datetime to a string for end of accumulation interval
-    yrmonday_end = ''.join(['{:04d}'.format(datetime_end.year),'{:02d}'.format(datetime_end.month), \
-        '{:02d}'.format(datetime_end.day)])
-    hr_end       = '{:02d}'.format(datetime_end.hour)
-    min_end      = '{:02d}'.format(datetime_end.minute)
-    sec_end      = '{:02d}'.format(datetime_end.second)
-    
+    yrmonday_end = ''.join(['{:04.0F}'.format(datetime_end.year),'{:02.0F}'.format(datetime_end.month), \
+        '{:02.0F}'.format(datetime_end.day)])
+    hr_end       = '{:02.0F}'.format(datetime_end.hour)
+    min_end      = '{:02.0F}'.format(datetime_end.minute)
+    sec_end      = '{:02.0F}'.format(datetime_end.second)
 
-    
     #Determine distance beteween start and end dates in seconds
     time_delta_totsec = datetime_end - datetime_beg 
     time_delta_totsec = (time_delta_totsec.days*24*60*60)+time_delta_totsec.seconds
     
     #Determine total hour/min/sec length
-    time_delta_hr  = '{:02d}'.format(time_delta_totsec/(60*60))
-    time_delta_min = '{:02d}'.format((time_delta_totsec/60) - int(time_delta_hr)*60)
-    time_delta_sec = '{:02d}'.format(((time_delta_totsec) - int(time_delta_hr)*60*60 - int(time_delta_min)*60))
+    time_delta_hr  = '{:02.0F}'.format(time_delta_totsec/(60*60))
+    time_delta_min = '{:02.0F}'.format((time_delta_totsec/60) - int(time_delta_hr)*60)
+    time_delta_sec = '{:02.0F}'.format(((time_delta_totsec) - int(time_delta_hr)*60*60 - int(time_delta_min)*60))
     
     #############Convert Data to netCDF4##################
-    filesave = GRIB_PATH_TEMP+var_name+'_s'+yrmonday_beg+hr_beg+'_e'+yrmonday_end+hr_end+'_vhr'+'{:02d}'.format(int(vhr))+'.nc'
+    filesave = GRIB_PATH_TEMP+var_name+'_s'+yrmonday_beg+hr_beg+'_e'+yrmonday_end+hr_end+'_vhr'+'{:02.0F}'.format(int(vhr))+'.nc'
     
     subprocess.call('rm -rf '+filesave,stdout=open(os.devnull, 'wb'),stderr=open(os.devnull, 'wb'), shell=True)
     fid = Dataset(filesave, 'w', format='NETCDF4_CLASSIC')
@@ -292,3 +291,4 @@ def py2netcdf_FCST(GRIB_PATH_TEMP,latlon_dims,grid_delta,datetime_init,datetime_
     fid.close()
     
     return(filesave)
+
