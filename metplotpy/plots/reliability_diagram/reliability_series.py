@@ -22,7 +22,6 @@ class ReliabilitySeries(Series):
                  series_name: Union[list, tuple], y_axis: int = 1):
         self.series_list = series_list
         self.series_name = series_name
-        self.series_data = None
         super().__init__(config, idx, input_data, y_axis)
 
     def _create_all_fields_values_no_indy(self) -> dict:

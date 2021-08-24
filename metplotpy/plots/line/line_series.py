@@ -29,7 +29,6 @@ class LineSeries(Series):
                  series_name: Union[list, tuple], y_axis: int = 1):
         self.series_list = series_list
         self.series_name = series_name
-        self.series_data = None
         super().__init__(config, idx, input_data, y_axis)
 
     def _create_all_fields_values_no_indy(self) -> dict:
@@ -101,6 +100,7 @@ class LineSeries(Series):
             all_filters = []
 
             # create a set of filters for this series
+
             for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
                 filter_value = self.series_name[field_ind]
                 if "," in filter_value:
@@ -144,6 +144,9 @@ class LineSeries(Series):
                     self.series_data = self.series_data.sort_values(['fcst_init_beg'])
                 if 'fcst_init' in self.series_data.columns:
                     self.series_data = self.series_data.sort_values(['fcst_init'])
+
+            # print a message if needed for inconsistent beta_values
+            self._check_beta_value()
 
         else:
             # this is a derived series
@@ -213,7 +216,7 @@ class LineSeries(Series):
                         series_data_2 = series.series_data
                         is_group_exists = True
 
-            # we don't calulate derive curves if one of the series is a group
+            # we don't calculate derive curves if one of the series is a group
             # raise an error
             if is_group_exists:
                 raise NameError("Derived curve can't be calculated."
@@ -315,6 +318,8 @@ class LineSeries(Series):
             series_points_results['nstat'].append(len(point_data['stat_value']))
 
         return series_points_results
+
+
 
     def _calculate_derived_values(self, operation: str, series_data_1: DataFrame, series_data_2: DataFrame) -> None:
         """

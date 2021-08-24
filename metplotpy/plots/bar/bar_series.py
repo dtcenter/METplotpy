@@ -26,7 +26,6 @@ class BarSeries(Series):
                  series_name: Union[list, tuple], y_axis: int = 1):
         self.series_list = series_list
         self.series_name = series_name
-        self.series_data = None
         super().__init__(config, idx, input_data, y_axis)
 
     def _create_all_fields_values_no_indy(self) -> dict:
@@ -141,6 +140,9 @@ class BarSeries(Series):
                 self.series_data = self.input_data.loc[self.input_data[field] == series_name_str]
                 if len(self.series_data) > 0:
                     break
+
+            # print a message if needed for inconsistent beta_values
+            self._check_beta_value()
 
             # check if the input frame already has derived series ( from calculation agg stats )
             if len(self.series_data) == 0:

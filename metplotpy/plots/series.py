@@ -3,9 +3,6 @@ Class Name: series.py
  """
 __author__ = 'Minna Win'
 
-import itertools
-import metcalcpy.util.utils as utils
-
 
 class Series:
     """
@@ -23,7 +20,8 @@ class Series:
         self.plot_disp = config.plot_disp[idx]
         self.plot_stat = config.plot_stat
         self.color = config.colors_list[idx]
-        if hasattr(config,'marker_list'):
+        self.series_data = None
+        if hasattr(config, 'marker_list'):
             self.marker = config.marker_list[idx]
         if hasattr(config, 'linewidth_list'):
             self.linewidth = config.linewidth_list[idx]
@@ -69,3 +67,31 @@ class Series:
         :return: dictionary with field-values pairs for each axis
         """
         return {}
+
+    def _check_beta_value(self) -> None:
+        """
+        Checks if the current statistic is 'DMAP_GBETA' and prints a warning message
+        if the corresponding BETA_VALUE values changes
+        :return:
+        """
+        # get the stat
+        if 'stat_name' in self.all_fields_values_no_indy[self.y_axis].keys():
+            stat_value = self.all_fields_values_no_indy[self.y_axis]['stat_name'][0]
+        else:
+            stat_value = None
+
+        # get the series name
+        if hasattr(self, 'series_name') and self.series_name is not None:
+            name = self.series_name
+        else:
+            name = ''
+
+        # check and print the warning
+        if stat_value is not None \
+                and self.series_data is not None \
+                and stat_value == 'DMAP_GBETA' \
+                and 'beta_value' in self.series_data.columns:
+            unique_beta_value = self.series_data['beta_value'].unique()
+            if len(unique_beta_value) > 1:
+                print(f'WARNING: note that beta_value differs for one or more GBETA values for {name} '
+                      f'so that comparisons across cases may not be comparable.')

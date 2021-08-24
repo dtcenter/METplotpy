@@ -9,6 +9,9 @@ import matplotlib
 import numpy as np
 from typing import Union
 
+from plotly.graph_objects import Figure
+
+
 def read_config_from_command_line():
     """
         Read the "custom" config file from the command line
@@ -116,3 +119,35 @@ def pretty(low, high, number_of_intervals) -> Union[np.ndarray, list]:
     miny = np.floor(low / d) * d
     maxy = np.ceil(high / d) * d
     return np.arange(miny, maxy + 0.5 * d, d)
+
+
+def add_horizontal_line(figure: Figure, y: float, line_properties: dict) -> None:
+    """
+    Adds a horizontal line to the Plotly Figure
+    :param figure: Plotly plot to add a line to
+    :param y: y value for the line
+    :param line_properties: dictionary with line properties like color, width, dash
+    :return:
+    """
+    figure.add_shape(
+        type='line',
+        yref='y', y0=y, y1=y,
+        xref='paper', x0=0, x1=1,
+        line=line_properties,
+    )
+
+
+def add_vertical_line(figure: Figure, x: float, line_properties: dict) -> None:
+    """
+    Adds a vertical line to the Plotly Figure
+    :param figure: Plotly plot to add a line to
+    :param x: x value for the line
+    :param line_properties: dictionary with line properties like color, width, dash
+    :return:
+    """
+    figure.add_shape(
+        type='line',
+        yref='paper', y0=0, y1=1,
+        xref='x', x0=x, x1=x,
+        line=line_properties,
+    )
