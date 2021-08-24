@@ -1,14 +1,11 @@
 """
-Class Name: bar.py
+Class Name: ens_ss.py
  """
 __author__ = 'Tatiana Burek'
 
 import os
 import re
-import csv
-from operator import add
-from typing import Union
-from itertools import chain
+import itertools
 
 import yaml
 import numpy as np
@@ -18,22 +15,25 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
+from metcalcpy.event_equalize import event_equalize
 from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from plots.bar.bar_config import BarConfig
-from plots.bar.bar_series import BarSeries
+from plots.ens_ss.ens_ss_config import EnsSsConfig
+from plots.ens_ss.ens_ss_series import EnsSsSeries
 from plots.base_plot import BasePlot
 import plots.util as util
+import metcalcpy.util.utils as utils
 
-import metcalcpy.util.utils as calc_util
 
-
-class Bar(BasePlot):
-    """  Generates a Plotly bar plot for 1 or more traces (bars)
-         where each bar is represented by a text point data file.
+class EnsSs(BasePlot):
+    """  Generates a Plotly Ensemble spread-skill plot for 1 or more traces (lines)
+         where each line is represented by a text point data file.
+         RMSE of the ensemble mean should have roughly a 1-1 relationship with the ensemble spread
+         (I.e. standard deviation of the ensemble member values).
+         This plot measures that relationship.
     """
 
     def __init__(self, parameters: dict) -> None:
-        """ Creates a bar plot consisting of one or more bars (traces), based on
+        """ Creates a Ensemble spread-skill plot consisting of one or more lines (traces), based on
             settings indicated by parameters.
 
             Args:
@@ -42,32 +42,33 @@ class Bar(BasePlot):
         """
 
         # init common layout
-        super().__init__(parameters, "bar_defaults.yaml")
+        super().__init__(parameters, "ens_ss_defaults.yaml")
 
-        # instantiate a BarConfig object, which holds all the necessary settings from the
-        # config file that represents the BasePlot object (Bar).
-        self.config_obj = BarConfig(self.parameters)
+        # instantiate a EnsSsConfig object, which holds all the necessary settings from the
+        # config file that represents the BasePlot object (EnsSs).
+        self.config_obj = EnsSsConfig(self.parameters)
 
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val_1 and derived curves is"
+            raise ValueError("The number of series defined by series_val_1  is"
                              " inconsistent with the number of settings"
                              " required for describing each series. Please check"
                              " the number of your configuration file's plot_i,"
                              " plot_disp, series_order, user_legend,"
-                             " colors settings.")
+                             " colors, and series_symbols settings.")
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
-            self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
+            self._perform_event_equalization()
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
-        # such as bar color and criteria needed to subset the input dataframe.
+        # such as line color, marker symbol,
+        # line width, and criteria needed to subset the input dataframe.
         self.series_list = self._create_series(self.input_df)
 
         # create figure
@@ -77,12 +78,65 @@ class Bar(BasePlot):
         # create binary versions of the plot.
         self._create_figure()
 
+    def _perform_event_equalization(self):
+        """ Initialises EE criteria and performs EE
+
+                Args:
+        """
+        fix_vals_permuted_list = []
+        fix_vals_keys = []
+        # use provided fixed parameters for the initial criteria
+        if len(self.config_obj.fixed_vars_vals_input) > 0:
+            for key in self.config_obj.fixed_vars_vals_input:
+                vals_permuted = list(itertools.product(*self.config_obj.fixed_vars_vals_input[key].values()))
+                vals_permuted_list = [item for sublist in vals_permuted for item in sublist]
+                fix_vals_permuted_list.append(vals_permuted_list)
+
+            fix_vals_keys = list(self.config_obj.fixed_vars_vals_input.keys())
+
+        # add bin_n
+        fix_vals_keys.append('bin_n')
+        unique_bin_n = self.input_df['bin_n'].unique().tolist()
+        fix_vals_permuted_list.append(unique_bin_n)
+        if len(self.config_obj.series_val_names) > 0:
+            input_df_ee = None
+            all_fields_values_orig = self.config_obj.get_config_value('series_val_1').copy()
+            all_fields_values = {}
+            for field in reversed(list(all_fields_values_orig.keys())):
+                all_fields_values[field] = all_fields_values_orig.get(field)
+
+            for field_name, field_value in all_fields_values.items():
+                all_filters = []
+                for val in field_value:
+                    filter_list = [val]
+                    for i, filter_val in enumerate(filter_list):
+                        if utils.is_string_integer(filter_val):
+                            filter_list[i] = int(filter_val)
+
+                    all_filters.append((self.input_df[field_name].isin(filter_list)))
+
+                # use numpy to select the rows where any record evaluates to True
+                mask = np.array(all_filters).all(axis=0)
+                series_data_for_ee = self.input_df.loc[mask]
+                series_data_after_ee = \
+                    event_equalize(series_data_for_ee, "fcst_valid_beg",
+                                   self.config_obj.get_config_value('series_val_1'),
+                                   fix_vals_keys,
+                                   fix_vals_permuted_list, True,
+                                   False)
+                if input_df_ee is None:
+                    input_df_ee = series_data_after_ee
+                else:
+                    input_df_ee = [input_df_ee, series_data_after_ee]
+
+            self.input_df = input_df_ee
+
     def __repr__(self):
         """ Implement repr which can be useful for debugging this
             class.
         """
 
-        return f'Bar({self.parameters!r})'
+        return f'EnsSs({self.parameters!r})'
 
     def _read_input_data(self):
         """
@@ -103,8 +157,8 @@ class Bar(BasePlot):
         """
            Generate all the series objects that are to be displayed as specified by the plot_disp
            setting in the config file.  The points are all ordered by datetime.  Each series object
-           is represented by a bar in the diagram, so they also contain information
-           for bar width, colors and other plot-related/
+           is represented by a line in the diagram, so they also contain information
+           for line width, line- and marker-colors, line style, and other plot-related/
            appearance-related settings (which were defined in the config file).
 
            Args:
@@ -119,16 +173,11 @@ class Bar(BasePlot):
         series_list = []
 
         # add series for y1 axis
-        num_series_y1 = len(self.config_obj.get_series_y())
-        for i, name in enumerate(self.config_obj.get_series_y()):
-            series_obj = BarSeries(self.config_obj, i, input_data, series_list, name)
+        for i, name in enumerate(self.config_obj.get_series_y(1)):
+            series_obj = EnsSsSeries(self.config_obj, i, input_data, series_list, name)
             series_list.append(series_obj)
-
-        # add derived for y1 axis
-        for i, name in enumerate(self.config_obj.get_config_value('derived_series_1')):
-            series_obj = BarSeries(self.config_obj, num_series_y1 + i,
-                                   input_data, series_list, name)
-            series_list.append(series_obj)
+            if self.config_obj.ensss_pts_disp is True:
+                series_list.append(series_obj)
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
@@ -137,57 +186,111 @@ class Bar(BasePlot):
 
     def _create_figure(self):
         """
-        Create a bar plot from defaults and custom parameters
+        Create a Ensemble spread-skill plot from defaults and custom parameters
         """
         # create and draw the plot
         self.figure = self._create_layout()
         self._add_xaxis()
         self._add_yaxis()
+
+        self._add_y2axis()
         self._add_legend()
 
-        # placeholder for the number of stats
-        n_stats = [0] * len(self.config_obj.indy_vals)
-
-        if self.config_obj.xaxis_reverse is True:
-            self.series_list.reverse()
-
         # add series lines
-        for series in self.series_list:
+        i = 0
+        counter = 1
+        if self.config_obj.ensss_pts_disp is True:
+            counter = 2
+        # for series in self.series_list:
+        while i < len(self.series_list):
 
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
-            if series.plot_disp:
-                self._draw_series(series)
-
-                # aggregate number of stats
-                n_stats = list(map(add, n_stats, series.series_points['nstat']))
+            if self.series_list[i].plot_disp:
+                self._draw_series(self.series_list[i])
+            i = i + counter
 
         # apply y axis limits
         self._yaxis_limits()
+        self._y2axis_limits()
 
-        # add x2 axis
-        self._add_x2axis(n_stats)
-
-    def _draw_series(self, series: BarSeries) -> None:
+    def _add_y2axis(self) -> None:
         """
-        Draws the formatted Bar on the plot
-        :param series: Bar series object with data and parameters
+        Adds y2-axis if needed
         """
+        if self.config_obj.ensss_pts_disp is True:
+            self.figure.update_yaxes(title_text=
+                                     util.apply_weight_style(self.config_obj.yaxis_2,
+                                                             self.config_obj.parameters['y2lab_weight']
+                                                             ),
+                                     secondary_y=True,
+                                     linecolor=PLOTLY_AXIS_LINE_COLOR,
+                                     linewidth=PLOTLY_AXIS_LINE_WIDTH,
+                                     showgrid=False,
+                                     zeroline=False,
+                                     ticks="inside",
+                                     title_font={
+                                         'size': self.config_obj.y2_title_font_size
+                                     },
+                                     title_standoff=abs(self.config_obj.parameters['y2lab_offset']),
+                                     tickangle=self.config_obj.y2_tickangle,
+                                     tickfont={'size': self.config_obj.y2_tickfont_size}
+                                     )
 
-        y_points = series.series_points['dbl_med']
-        x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
+    def _y2axis_limits(self) -> None:
+        """
+        Apply limits on y2 axis if needed
+        """
+        if len(self.config_obj.parameters['y2lim']) > 0:
+            self.figure.update_layout(yaxis2={'range': [self.config_obj.parameters['y2lim'][0],
+                                                        self.config_obj.parameters['y2lim'][1]],
+                                              'autorange': False})
+
+    def _draw_series(self, series: EnsSsSeries) -> None:
+        """
+        Draws the formatted line on the plot
+
+        :param series: EnsSs series object with data and parameters
+        """
 
         # add the plot
         self.figure.add_trace(
-            go.Bar(
-                x=x_points,
-                y=y_points,
-                showlegend=True,
-                name=self.config_obj.user_legends[series.idx],
-                marker_color=self.config_obj.colors_list[series.idx],
-                marker_line_color=self.config_obj.colors_list[series.idx]
-            )
+            go.Scatter(x=series.series_points['spread_skill'],
+                       y=series.series_points['mse'],
+                       showlegend=True,
+                       mode=self.config_obj.mode[series.idx],
+                       textposition="top right",
+                       name=self.config_obj.user_legends[series.idx],
+                       line={'color': self.config_obj.colors_list[series.idx],
+                             'width': self.config_obj.linewidth_list[series.idx],
+                             'dash': self.config_obj.linestyles_list[series.idx]},
+                       marker_symbol=self.config_obj.marker_list[series.idx],
+                       marker_color=self.config_obj.colors_list[series.idx],
+                       marker_line_color=self.config_obj.colors_list[series.idx],
+                       marker_size=self.config_obj.marker_size[series.idx]
+                       ),
+            secondary_y=series.y_axis != 1
         )
+
+        # add PTS
+        if self.config_obj.ensss_pts_disp is True:
+            self.figure.add_trace(
+                go.Scatter(x=series.series_points['spread_skill'],
+                           y=series.series_points['pts'],
+                           showlegend=True,
+                           mode=self.config_obj.mode[series.idx + 1],
+                           textposition="top right",
+                           name=self.config_obj.user_legends[series.idx + 1],
+                           line={'color': self.config_obj.colors_list[series.idx + 1],
+                                 'width': self.config_obj.linewidth_list[series.idx + 1],
+                                 'dash': self.config_obj.linestyles_list[series.idx + 1]},
+                           marker_symbol=self.config_obj.marker_list[series.idx + 1],
+                           marker_color=self.config_obj.colors_list[series.idx + 1],
+                           marker_line_color=self.config_obj.colors_list[series.idx + 1],
+                           marker_size=self.config_obj.marker_size[series.idx + 1]
+                           ),
+                secondary_y=True
+            )
 
     def _create_layout(self) -> Figure:
         """
@@ -223,8 +326,8 @@ class Bar(BasePlot):
                  'xref': 'paper'
                  }
 
-        # create a layout
-        fig = make_subplots(specs=[[{"secondary_y": False}]])
+        # create a layout and allow y2 axis
+        fig = make_subplots(specs=[[{"secondary_y": True}]])
 
         # add size, annotation, title
         fig.update_layout(
@@ -235,13 +338,6 @@ class Bar(BasePlot):
             annotations=annotation,
             title=title,
             plot_bgcolor=PLOTLY_PAPER_BGCOOR
-        )
-        fig.update_layout(
-            xaxis={
-                'tickmode': 'array',
-                'tickvals': self.config_obj.indy_vals,
-                'ticktext': self.config_obj.indy_label
-            }
         )
         return fig
 
@@ -313,57 +409,12 @@ class Bar(BasePlot):
 
     def _yaxis_limits(self) -> None:
         """
-        Apply limits on y axis if needed
+        Apply limits on y2 axis if needed
         """
         if len(self.config_obj.parameters['ylim']) > 0:
             self.figure.update_layout(yaxis={'range': [self.config_obj.parameters['ylim'][0],
                                                        self.config_obj.parameters['ylim'][1]],
                                              'autorange': False})
-
-    def _add_x2axis(self, n_stats) -> None:
-        """
-        Creates x2axis based on the properties from the config file
-        and attaches it to the initial Figure
-
-        :param n_stats: - labels for the axis
-        """
-        if self.config_obj.show_nstats:
-            self.figure.update_layout(xaxis2={'title_text':
-                                                  util.apply_weight_style('NStats',
-                                                                          self.config_obj.parameters['x2lab_weight']
-                                                                          ),
-                                              'linecolor': PLOTLY_AXIS_LINE_COLOR,
-                                              'linewidth': PLOTLY_AXIS_LINE_WIDTH,
-                                              'overlaying': 'x',
-                                              'side': 'top',
-                                              'showgrid': False,
-                                              'zeroline': False,
-                                              'ticks': "inside",
-                                              'title_font': {
-                                                  'size': self.config_obj.x2_title_font_size
-                                              },
-                                              'title_standoff': abs(
-                                                  self.config_obj.parameters['x2lab_offset']
-                                              ),
-                                              'tickmode': 'array',
-                                              'tickvals': self.config_obj.indy_vals,
-                                              'ticktext': n_stats,
-                                              'tickangle': self.config_obj.x2_tickangle,
-                                              'tickfont': {
-                                                  'size': self.config_obj.x2_tickfont_size
-                                              },
-                                              'scaleanchor': 'x'
-                                              }
-                                      )
-            # reverse x2axis if needed
-            if self.config_obj.xaxis_reverse is True:
-                self.figure.update_layout(xaxis2={'autorange': "reversed"})
-
-            # need to add an invisible line with all values = None
-            self.figure.add_trace(
-                go.Scatter(y=[None] * len(self.config_obj.indy_vals), x=self.config_obj.indy_vals,
-                           xaxis='x2', showlegend=False)
-            )
 
     def remove_file(self):
         """
@@ -400,7 +451,7 @@ class Bar(BasePlot):
 
     def write_output_file(self) -> None:
         """
-        Formats series point data to the 2-dim arrays and saves them to the files
+        Formats y1 and y2 series point data to the 2-dim arrays and saves them to the files
         """
 
         # Open file, name it based on the stat_input config setting,
@@ -408,7 +459,10 @@ class Bar(BasePlot):
         # extension with .points1 extension
 
         if self.config_obj.dump_points_1 is True:
-            # create a file name from stat_input parameter
+            i = 0
+            counter = 1
+            if self.config_obj.ensss_pts_disp is True:
+                counter = 2
             match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
             if match:
                 filename = match.group(1)
@@ -416,15 +470,30 @@ class Bar(BasePlot):
                 filename = 'points'
             filename = filename + '.points1'
 
-            with open(filename, 'w') as f:
-                for series in self.series_list:
-                    f.write(f"{series.series_points['dbl_med']}\n")
-            f.close()
+            with open(filename, 'w') as file:
+                while i < len(self.series_list):
+                    file.writelines(
+                        map("{}\t{}\n".format,
+                            [round(num, 6) for num in self.series_list[i].series_points['spread_skill']],
+                            [round(num, 6) for num in self.series_list[i].series_points['mse']]))
+                    i = i + counter
+                # print PTS values
+                if self.config_obj.ensss_pts_disp is True:
+                    i = 0
+                    file.write('#PTS\n')
+                    while i < len(self.series_list):
+                        file.writelines(
+                            map("{}\t{}\n".format,
+                                [round(num, 6) for num in self.series_list[i].series_points['spread_skill']],
+                                [round(num, 6) for num in self.series_list[i].series_points['pts']])
+                        )
+                        i = i + counter
+                file.close()
 
 
 def main(config_filename=None):
     """
-            Generates a sample, default, bar plot using the
+            Generates a sample, default, Plotly Ensemble spread-skill plot using the
             default and custom config files on sample data found in this directory.
             The location of the input data is defined in either the default or
             custom config file.
@@ -445,7 +514,7 @@ def main(config_filename=None):
             print(exc)
 
     try:
-        plot = Bar(docs)
+        plot = EnsSs(docs)
         plot.save_to_file()
         # plot.show_in_browser()
         plot.write_html()

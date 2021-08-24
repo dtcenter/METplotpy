@@ -25,8 +25,8 @@ class BoxSeries(Series):
                  series_name: Union[list, tuple], y_axis: int = 1):
         self.series_list = series_list
         self.series_name = series_name
-        self.series_data = None
         super().__init__(config, idx, input_data, y_axis)
+
 
     def _create_all_fields_values_no_indy(self) -> dict:
         """
@@ -146,6 +146,9 @@ class BoxSeries(Series):
                 # no data with with the series name value was found
                 # - calculate derived statistic for the each box
                 self._calculate_derived_values(operation, series_data_1, series_data_2)
+
+        # print a message if needed for inconsistent beta_values
+        self._check_beta_value()
 
         series_points_results = {'nstat': []}
 
