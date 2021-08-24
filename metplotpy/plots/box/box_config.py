@@ -1,5 +1,5 @@
 """
-Class Name: line_config.py
+Class Name: box_config.py
 
 Holds values set in the box plot config file(s)
 """
