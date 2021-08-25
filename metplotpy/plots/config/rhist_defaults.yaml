@@ -1,0 +1,76 @@
+caption_align: 0.0
+caption_col: '#333333'
+caption_offset: 3.0
+caption_size: 0.8
+caption_weight: 1
+cex: 1
+colors: []
+create_html: 'False'
+dump_points_1: 'False'
+event_equal: 'False'
+fcst_var_val_1: null
+fixed_vars_vals_input: {}
+grid_col: '#cccccc'
+grid_lty: 3
+grid_lwd: 1
+grid_on: 'True'
+grid_x: listX
+indy_label: []
+indy_vals: []
+indy_var: ''
+legend_box: o
+legend_inset:
+  x: 0.0
+  y: -0.25
+legend_ncol: 3
+legend_size: 0.8
+line_type: None
+mar:
+- 8
+- 4
+- 5
+- 4
+mgp:
+- 1
+- 1
+- 0
+normalized_histogram: 'True'
+plot_caption: ''
+plot_disp: []
+
+plot_height: 8.5
+plot_res: 72
+plot_stat: median
+plot_type: png16m
+plot_units: in
+plot_width: 11.0
+series_order: []
+series_val_1: {}
+title: test title
+title_align: 0.5
+title_offset: -2
+title_size: 1.4
+title_weight: 2.0
+user_legend: []
+xaxis: test x_label
+xlab_align: 0.5
+xlab_offset: 2
+xlab_size: 1
+xlab_weight: 1
+xlim: []
+xtlab_decim: 0
+xtlab_horiz: 0.5
+xtlab_orient: 1
+xtlab_perp: -0.75
+xtlab_size: 1
+yaxis_1: test y_label
+ylab_align: 0.5
+ylab_offset: -2
+ylab_size: 1
+ylab_weight: 1
+ylim: []
+ytlab_horiz: 0.5
+ytlab_orient: 1
+ytlab_perp: 0.5
+ytlab_size: 1
+plot_filename: ./rhist_expected.png #required
