@@ -12,16 +12,23 @@ from tc_utils import read_tcrmw, format_valid_time, \
 
 def plot_cross_section(plotdir,
     valid_time, range_grid, pressure_grid,
-    wind_data, scalar_data,
+    wind_data, scalar_data, by_pressure_lvl,
     field='TMP', track_index=0):
     """
+       Generate the cross-section plot of the tangential and radial wind
     """
 
-    plot_height = False
+    if by_pressure_lvl:
+        print("by pressure level (mb)")
+    else:
+        print("by vertical interp (meters)")
 
-    fig = plt.figure(1, figsize=(8., 4.5))
-    ax = plt.axes()
+    # fig = plt.figure(1, figsize=(8., 4.5))
+    # ax = plt.axes()
+    fig,ax = plt.subplots(figsize=(8., 4.5))
+    fig2, ax2 = plt.subplots(figsize=(8., 4.5))
     ax.plot([1, 1], [1000, 50], color='lightgrey')
+    ax2.plot([1, 1], [1000, 50], color='lightgrey')
 
     plt.title(
         format_valid_time(int(valid_time[track_index])))
@@ -34,23 +41,6 @@ def plot_cross_section(plotdir,
     logging.debug(wind_tangential.shape)
     logging.debug(scalar_field.shape)
 
-    if plot_height:
-        mb_to_Pa = 100  # millibar to Pascal
-        m_to_km = 0.001 # meter to kilometer
-        temperature = np.mean(scalar_data['TMP'], axis=1)
-        surface_pressure = np.mean(scalar_data['PRMSL'], axis=1)
-        logging.debug(temperature.shape)
-        logging.debug(surface_pressure.shape)
-        height = height_from_pressure(surface_pressure[0, track_index],
-            temperature[0, :, track_index], mb_to_Pa * pressure_grid) \
-            * m_to_km
-        height = np.clip(height, 0, 20)
-        logging.info(height)
-        for k in range(len(pressure_grid)):
-            p = pressure_grid[k]
-            ax.plot([0, 20], [p, p], color='k', linewidth=1)
-            ax.annotate('%3.1f km' % height[k], xy=(19, 0.99 * p), color='k')
-
     wind_contour = ax.contour(range_grid, pressure_grid,
         wind_tangential[:,:,track_index].transpose(),
         levels=np.arange(5, 40, 5), colors='darkgreen', linewidths=1)
@@ -60,29 +50,61 @@ def plot_cross_section(plotdir,
         scalar_field[:,:,track_index].transpose(),
         levels=np.arange(250, 300, 10), colors='darkblue',
         linewidths=1)
+    scalar_contour = ax2.contour(range_grid, pressure_grid,
+                                scalar_field[:, :, track_index].transpose(),
+                                levels=np.arange(250, 300, 10), colors='darkblue',
+                                linewidths=1)
     ax.clabel(scalar_contour, colors='darkblue', fmt='%1.0f')
+    ax2.clabel(scalar_contour, colors='darkblue', fmt='%1.0f')
 
 
     ax.annotate('Tangential Wind (m s-1)', xy=(14, 350), color='darkgreen')
+    ax2.annotate('Radial Wind (m s-1)', xy=(14, 350), color='darkgreen')
     ax.annotate('Temperature (K)', xy=(14, 370), color='darkblue')
+    ax2.annotate('Temperature (K)', xy=(14, 370), color='darkblue')
 
     ax.set_xlabel(
         'Range (RMW = %4.1f km)' % track_data['RMW'][track_index])
+    ax2.set_xlabel(
+        'Range (RMW = %4.1f km)' % track_data['RMW'][track_index])
     ax.set_xticks(np.arange(1, 20))
+    ax2.set_xticks(np.arange(1, 20))
 
-    ax.set_ylabel('Pressure (mb)')
     ax.set_yscale('symlog')
-    ax.set_ylim(1000, 250)
-    ax.set_yticks(np.arange(1000, 250, -100))
-    ax.set_yticklabels(np.arange(1000, 250, -100))
+    ax2.set_yscale('symlog')
 
-    outfile = os.path.join(plotdir,
-        'cross_section_' + str(valid_time[track_index]))
+    if by_pressure_lvl:
+        ax.set_ylabel('Pressure (mb)')
+        ax2.set_ylabel('Pressure (mb)')
+        ax.set_ylim(1000, 250)
+        ax2.set_ylim(1000, 250)
+        ax.set_yticks(np.arange(1000, 250, -100))
+        ax2.set_yticks(np.arange(1000, 250, -100))
+        ax.set_yticklabels(np.arange(1000, 250, -100))
+        ax2.set_yticklabels(np.arange(1000, 250, -100))
+    else:
+        ax.set_ylabel('Height (m)')
+        ax2.set_ylabel('Height (m)')
+        ax.set_ylim(110, 10359)
+        ax2.set_ylim(110,10359)
+        ax.set_yticks(np.arange(110, 10359, 1000))
+        ax2.set_yticks(np.arange(110, 10359, 1000))
+        ax.set_yticklabels(np.arange(110, 10359, 1000))
+        ax2.set_yticklabels(np.arange(110, 10359, 1000))
+
+
+    tang_outfile = os.path.join(plotdir,
+        'tangential_cross_section_' + str(valid_time[track_index]))
+    rad_outfile = os.path.join(plotdir,
+                                'radial_cross_section_' + str(valid_time[track_index]))
     # plt.savefig(os.path.join(plotdir, 'tc_cross_section.png'), dpi=300)
     # plt.savefig(os.path.join(plotdir, 'tc_cross_section.pdf'))
 
-    plt.savefig(outfile + '.png', dpi=300)
-    plt.savefig(outfile + '.pdf')
+    fig.savefig(tang_outfile + '.png', dpi=300)
+    # fig.savefig(tang_outfile + '.pdf')
+    fig2.savefig(rad_outfile + '.png', dpi=300)
+    # fig2.savefig(rad_outfile + '.pdf')
+
 
 if __name__ == '__main__':
 
@@ -98,6 +120,10 @@ if __name__ == '__main__':
     parser.add_argument(
         '--filename', type=str, dest='filename',
         required=True)
+    parser.add_argument(
+        '--by_pressure_lvl', type=str, dest='by_pressure_lvl',
+        required=True)
+
 
     args = parser.parse_args()
 
@@ -119,4 +145,4 @@ if __name__ == '__main__':
     logging.debug(wind_data.keys())
 
     plot_cross_section(args.plotdir, valid_time, range_grid, pressure_grid,
-        wind_data, scalar_data)
+        wind_data, scalar_data, args.by_pressure_lvl)
