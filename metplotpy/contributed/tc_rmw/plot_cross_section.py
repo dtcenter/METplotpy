@@ -18,6 +18,14 @@ def plot_cross_section(plotdir,
        Generate the cross-section plot of the tangential and radial wind
     """
 
+    # azimuthal mean
+    wind_radial = np.mean(wind_data['radial'], axis=1)
+    wind_tangential = np.mean(wind_data['tangential'], axis=1)
+    scalar_field = np.mean(scalar_data[field], axis=1)
+    logging.debug(wind_radial.shape)
+    logging.debug(wind_tangential.shape)
+    logging.debug(scalar_field.shape)
+
     wind_types = ['tangential', 'radial']
     for wt in wind_types:
         fig, ax = plt.subplots(figsize=(8., 4.5))
@@ -25,14 +33,6 @@ def plot_cross_section(plotdir,
 
         plt.title(
             format_valid_time(int(valid_time[track_index])))
-
-        # azimuthal mean
-        wind_radial = np.mean(wind_data['radial'], axis=1)
-        wind_tangential = np.mean(wind_data['tangential'], axis=1)
-        scalar_field = np.mean(scalar_data[field], axis=1)
-        logging.debug(wind_radial.shape)
-        logging.debug(wind_tangential.shape)
-        logging.debug(scalar_field.shape)
 
         if wt == 'tangential':
             wind_contour = ax.contour(range_grid, pressure_grid,
@@ -56,6 +56,7 @@ def plot_cross_section(plotdir,
 
             ax.set_yscale('symlog')
 
+            # provide support for wind data in pressure or height
             if by_pressure_lvl:
                 ax.set_ylabel('Pressure (mb)')
                 ax.set_ylim(1000, 250)
@@ -69,9 +70,7 @@ def plot_cross_section(plotdir,
 
             tang_outfile = os.path.join(plotdir,
                                         'tangential_cross_section_' + str(valid_time[track_index]))
-            # plt.savefig(os.path.join(plotdir, 'tc_cross_section.png'), dpi=300)
-            # plt.savefig(os.path.join(plotdir, 'tc_cross_section.pdf'))
-
+            
             fig.savefig(tang_outfile + '.png', dpi=300)
             fig.savefig(tang_outfile + '.pdf')
         else:
@@ -96,6 +95,7 @@ def plot_cross_section(plotdir,
 
             ax.set_yscale('symlog')
 
+            # provide support for wind data in pressure or height
             if by_pressure_lvl:
                 ax.set_ylabel('Pressure (mb)')
                 ax.set_ylim(1000, 250)
@@ -109,8 +109,6 @@ def plot_cross_section(plotdir,
 
             rad_outfile = os.path.join(plotdir,
                                        'radial_cross_section_' + str(valid_time[track_index]))
-            # plt.savefig(os.path.join(plotdir, 'tc_cross_section.png'), dpi=300)
-            # plt.savefig(os.path.join(plotdir, 'tc_cross_section.pdf'))
 
             fig.savefig(rad_outfile + '.png', dpi=300)
             fig.savefig(rad_outfile + '.pdf')
