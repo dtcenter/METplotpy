@@ -32,7 +32,7 @@ class Line(BasePlot):
          where each line is represented by a text point data file.
     """
 
-    def __init__(self, parameters:dict) -> None:
+    def __init__(self, parameters: dict) -> None:
         """ Creates a line plot consisting of one or more lines (traces), based on
             settings indicated by parameters.
 
@@ -185,7 +185,7 @@ class Line(BasePlot):
             if series.plot_disp:
 
                 # collect min-max if we need to sync axis
-                if self.config_obj.sync_yaxes is True and series.y_axis == 1:
+                if self.config_obj.sync_yaxes is True:
                     yaxis_min, yaxis_max = self._find_min_max(series, yaxis_min, yaxis_max)
 
                 # apply staggering offset if applicable
