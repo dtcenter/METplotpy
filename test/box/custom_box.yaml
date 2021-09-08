@@ -72,8 +72,6 @@ list_stat_1:
 - FBAR
 list_stat_2:
 - MAE
-list_static_val:
-  fcst_var: SPFH
 mar:
 - 8
 - 4

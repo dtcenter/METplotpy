@@ -64,8 +64,6 @@ list_stat_1:
 - PSTD_BASER
 - PSTD_NI
 list_stat_2: []
-list_static_val:
-  fcst_var: PROB(APCP_03>1.270)
 mar:
 - 8
 - 4

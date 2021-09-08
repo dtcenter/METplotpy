@@ -45,8 +45,6 @@ legend_size: 0.8
 line_type: None
 list_stat_1: []
 list_stat_2: []
-list_static_val:
-  fcst_var: ''
 mar:
   - 8
   - 4
