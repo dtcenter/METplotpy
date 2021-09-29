@@ -135,7 +135,7 @@ if shp:
     fineprint += f"\nshape {shp.name}"
 fineprint += f"\nextent {extent}"
 fineprint += "\ncreated "+str(datetime.datetime.now(tz=None)).split('.')[0]
-fineprint_obj = plt.annotate(s=fineprint, xy=(5,5), xycoords='figure pixels', fontsize=4)
+fineprint_obj = plt.annotate(text=fineprint, xy=(5,5), xycoords='figure pixels', fontsize=4)
 
 plt.savefig(ofile, dpi=150)
 print('created ' + os.path.realpath(ofile))
