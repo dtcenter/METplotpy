@@ -16,13 +16,14 @@ Plot tendencies of t, q, u, or v from physics parameterizations, dynamics (non-p
 Total change is difference between state variable at t = 12 and t = 1, where t is the output timestep.
 """
 
+state_variables = ["tmp", "ugrd", "vgrd", "spfh"]
 
 # =============Arguments===================
 parser = argparse.ArgumentParser(description = "Vertical profile of FV3 diagnostic tendencies", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 # ==========Mandatory Arguments===================
 parser.add_argument("ifile", type=argparse.FileType("r"), help="FV3 history file")
 parser.add_argument("gfile", type=argparse.FileType("r"), help="FV3 grid spec file")
-parser.add_argument("variable", type=str, choices=["tmp","spfh","ugrd","vgrd"], default="t", help="variable")
+parser.add_argument("variable", type=str, choices=state_variables, default="t", help="variable")
 # ==========Optional Arguments===================
 parser.add_argument("-d", "--debug", action='store_true')
 parser.add_argument("--dtsec", type=float, default=300, help="model time step in seconds")

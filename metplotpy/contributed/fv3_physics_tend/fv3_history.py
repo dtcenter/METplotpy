@@ -17,14 +17,19 @@ Plot tendencies of t, q, u, or v from physics parameterizations, dynamics (non-p
 Total change is difference between state variable at t = 12 and t = 1, where t is the output timestep.
 """
 
+state_variables = ["tmp", "ugrd", "vgrd", "spfh"]
+fill_choices = ["resid"]
+for state_variable in state_variables:
+    fill_choices.extend(fv3.tendencies[state_variable])
+    fill_choices.extend([f"d{state_variable}", state_variable])
 
 # =============Arguments===================
 parser = argparse.ArgumentParser(description = "Horizontal plot of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 # ==========Mandatory Arguments===================
 parser.add_argument("ifile", type=argparse.FileType("r"), help="FV3 history file")
 parser.add_argument("gfile", type=argparse.FileType("r"), help="FV3 grid spec file")
-parser.add_argument("fill", type=str, choices = fv3.tendencies["tmp"] + fv3.tendencies["q"] + fv3.tendencies["u"] + fv3.tendencies["v"] + ["dtmp","tmp", "resid"], help='filled contour variable with 2 spatial dims and optional time and vertical dims.')
-parser.add_argument("variable", type=str, choices=["tmp","spfh","ugrd","vgrd"], default="t", help="variable")
+parser.add_argument("fill", type=str, choices = fill_choices, help='filled contour variable with 2 spatial dims and optional time and vertical dims.')
+parser.add_argument("variable", type=str, choices=state_variables, default="tmp", help="variable")
 # ==========Optional Arguments===================
 parser.add_argument("-d", "--debug", action='store_true')
 parser.add_argument("--dtsec", type=float, default=300, help="model time step in seconds")
@@ -32,7 +37,7 @@ parser.add_argument("-e", "--extent", nargs=4, type=float, default=None, help="m
 parser.add_argument("-l", "--levels", type=float, nargs="+", help="filled contour levels", default=None)
 parser.add_argument("--ncols", type=int, default=None, help="number of columns")
 parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
-parser.add_argument("-p", "--pfull", nargs='+', type=float, default=[500], help="pressure level(s) to plot")
+parser.add_argument("-p", "--pfull", nargs='+', type=float, default=[1000,925,850,700,500,300,200,100,0], help="pressure level(s) to plot")
 parser.add_argument("-s", "--shp", type=str, default=None, help="shape file directory for mask")
 
 args = parser.parse_args()
@@ -69,6 +74,8 @@ if debug:
 fv3ds = xarray.open_dataset(ifile.name)
 
 lasttime = fv3ds.time[-1] 
+# Extract tendencies DataArrays at last time, and multiply by dt * numdt.
+all_tend = fv3ds[fv3.tendencies[variable]].sel(time = lasttime).metpy.quantify()
 if fill not in fv3ds.variables and fill not in [f"d{variable}","resid"]:
     print("variable "+ fill + " not found")
     print("choices:", fv3ds.variables.keys())
@@ -76,10 +83,7 @@ if fill not in fv3ds.variables and fill not in [f"d{variable}","resid"]:
 
 fv3ds = fv3ds.assign_coords(lont=lont, latt=latt)
 
-
-# Grab tendencies Dataset at last time.
-all_tend = fv3ds[fv3.tendencies[variable]].sel(time = lasttime)
-numdt = state_variable.time.size
+numdt = fv3ds.time.size
 # Units of tendencies are K/s averaged over number of time steps within first forecast hour.
 # Multiply by time step and number of time steps
 all_tend *= dt * numdt
@@ -146,11 +150,12 @@ for ax in p.axes.flat:
         # If extent is not provided, use extent of unmasked data.
         ax.set_extent([dafill.lont.min(), dafill.lont.max(), dafill.latt.min(), dafill.latt.max()])
 
-# append time to title and output filename
+# add time to title and output filename
 root, ext = os.path.splitext(ofile)
 ofile = root + f".{lasttime.dt.strftime('%Y%m%d_%H%M%S').item()}" + ext
-
-# static parts of title and output file name
+title = f'{fill}  {lasttime.item()}'
+if "long_name" in dafill.attrs:
+    title = f'{dafill.attrs["long_name"]} ({fill})  {lasttime.item()}'
 plt.suptitle(title, wrap=True)
 
 fineprint  = os.path.realpath(ifile.name)
