@@ -2,6 +2,7 @@ import argparse
 import cartopy
 import cartopy.feature as cfeature
 import datetime
+import fv3
 import matplotlib.pyplot as plt
 from metpy.units import units
 import numpy as np
@@ -12,24 +13,9 @@ import sys
 import xarray
 
 """
-Plot physics tendencies:
-dt3dt_cnvgwd dt3dt_deepcnv dt3dt_lw dt3dt_mp dt3dt_orogwd dt3dt_pbl dt3dt_rdamp dt3dt_shalcnv dt3dt_sw
-
-The non-physics tendencies:
-'dt3dt_nophys'
-
-The temperature state to get the total tendency change (difference between t = 12 and t = 1, where t is the output timestep):
-’tmp’
-
+Plot tendencies of t, q, u, or v from physics parameterizations, dynamics (non-physics), their total, and residual.
+Total change is difference between state variable at t = 12 and t = 1, where t is the output timestep.
 """
-
-
-tmp_tendencies = ['dt3dt_cnvgwd','dt3dt_deepcnv','dt3dt_lw','dt3dt_mp','dt3dt_orogwd','dt3dt_pbl','dt3dt_rdamp','dt3dt_shalcnv','dt3dt_sw']
-q_tendencies = ['dq3dt_deepcnv','dq3dt_mp','dq3dt_pbl','dq3dt_shalcnv']
-u_tendencies = ['du3dt_cnvgwd','du3dt_deepcnv','du3dt_orogwd','du3dt_pbl','du3dt_rdamp','du3dt_shalcnv']
-v_tendencies = ['dv3dt_cnvgwd','dv3dt_deepcnv','dv3dt_orogwd','dv3dt_pbl','dv3dt_rdamp','dv3dt_shalcnv']
-physics_tendencies = q_tendencies
-nonphysics_tendencies = [f'd{var}3dt_nophys' for var in ["t","q","u","v"]]
 
 
 # =============Arguments===================
@@ -37,7 +23,8 @@ parser = argparse.ArgumentParser(description = "Horizontal plot of FV3 diagnosti
 # ==========Mandatory Arguments===================
 parser.add_argument("ifile", type=argparse.FileType("r"), help="FV3 history file")
 parser.add_argument("gfile", type=argparse.FileType("r"), help="FV3 grid spec file")
-parser.add_argument("fill", type=str, choices = tmp_tendencies + q_tendencies + u_tendencies + v_tendencies + nonphysics_tendencies + ["dtmp","tmp", "resid"], help='filled contour variable with 2 spatial dims and optional time and vertical dims.')
+parser.add_argument("fill", type=str, choices = fv3.tendencies["tmp"] + fv3.tendencies["q"] + fv3.tendencies["u"] + fv3.tendencies["v"] + ["dtmp","tmp", "resid"], help='filled contour variable with 2 spatial dims and optional time and vertical dims.')
+parser.add_argument("variable", type=str, choices=["tmp","spfh","ugrd","vgrd"], default="t", help="variable")
 # ==========Optional Arguments===================
 parser.add_argument("-d", "--debug", action='store_true')
 parser.add_argument("--dtsec", type=float, default=300, help="model time step in seconds")
@@ -52,6 +39,7 @@ args = parser.parse_args()
 gfile      = args.gfile
 ifile      = args.ifile
 fill       = args.fill
+variable   = args.variable
 debug      = args.debug
 dt         = args.dtsec * units.seconds
 extent     = args.extent
@@ -65,8 +53,8 @@ if debug:
     print(args)
 
 gds  = xarray.open_dataset(gfile.name)
-lont  = gds["grid_lont"]
-latt  = gds["grid_latt"]
+lont = gds["grid_lont"]
+latt = gds["grid_latt"]
 area = gds["area"]
 
 if ofile is None:
@@ -79,57 +67,59 @@ else:
 if debug:
     print(f"About to open {ifile}")
 fv3ds = xarray.open_dataset(ifile.name)
-if fill not in fv3ds.variables and fill not in ["dtmp","resid"]:
+
+lasttime = fv3ds.time[-1] 
+if fill not in fv3ds.variables and fill not in [f"d{variable}","resid"]:
     print("variable "+ fill + " not found")
     print("choices:", fv3ds.variables.keys())
     sys.exit(1)
 
-fv3ds = fv3ds.assign_coords(lont = lont, latt=latt)
+fv3ds = fv3ds.assign_coords(lont=lont, latt=latt)
 
-tmp = fv3ds["tmp"].metpy.quantify()
-lasttime = tmp.time[-1] # last time used to slice tendency Dataset
 
-# Grab Dataset with physics and non-physics tendencies at last time
-#all_tend = fv3ds[tmp_tendencies + nonphysics_tendencies].sel(time = lasttime)
-all_tend = fv3ds[tmp_tendencies].sel(time = lasttime)
-# Stack variables along "tendency" axis of new array
-all_tend = all_tend.to_array(dim="tendency")
+# Grab tendencies Dataset at last time.
+all_tend = fv3ds[fv3.tendencies[variable]].sel(time = lasttime)
+numdt = state_variable.time.size
 # Units of tendencies are K/s averaged over number of time steps within first forecast hour.
-all_tend *= units["K/s"] # to_array() got rid of units. restore them.
-numdt = tmp.time.size
 # Multiply by time step and number of time steps
 all_tend *= dt * numdt
-# Sum along new axis.
-all_tend_sum = all_tend.sum(dim="tendency")
 
-print(f"change in temperature")
-dtmp = tmp.sel(time = lasttime) - tmp.isel(time=0)
-dtmp.attrs["long_name"] = f"change in {tmp.attrs['long_name']}"
-resid = all_tend_sum - dtmp
-resid.attrs["long_name"] = "residual"
+# Stack variables along "tendency" axis of new array. Simpler code but long_name attrs are lost. # TODO preserve long_names 
+all_tend = all_tend.to_array(dim="tendency")
 
-if fill == "dtmp":
-    dafill = dtmp
-elif fill == "resid":
-    dafill = resid
-else:
-    print(f"reading {fill}")
-    dafill = fv3ds[fill]
-    print(f"grabbing last time")
-    dafill = dafill.isel(time = -1)
+print(f"total change in {variable}")
+state_variable = fv3ds[variable].metpy.quantify() # Tried metpy.quantify() with open_dataset, but pint.errors.UndefinedUnitError: 'dBz' is not defined in the unit registry
+dstate_variable = state_variable.sel(time = lasttime) - state_variable.isel(time=0)
+dstate_variable = dstate_variable.assign_coords(time=lasttime)
+dstate_variable.attrs["long_name"] = f"change in {state_variable.attrs['long_name']}"
+
+# Sum along "tendency" axis.
+resid = all_tend.sum(dim="tendency") - dstate_variable
+resid.attrs["long_name"] = f"all_tend - d{variable}"
+
+# Expand "tendency" axis with dstate_variable and resid.
+dstate_variable = dstate_variable.expand_dims(dim={"tendency":[f"d{variable}"]})
+resid = resid.expand_dims(dim={"tendency":["resid"]})
+
+# Concatentate DataArrays along "tendency" axis.
+all_tend = xarray.concat([all_tend,dstate_variable,resid], "tendency")
+dafill = all_tend.sel(tendency=fill).sel(pfull=pfull, method="nearest", tolerance=50.)
 
 if shp:
+    shp = shp.rstrip("/")
     # Add shapefile name to output filename
     shapename = os.path.basename(shp)
     root, ext = os.path.splitext(ofile)
     ofile = root + f".{shapename}" + ext
 
     # mask points outside shape
-    mask = st4.pts_in_shp(latt.values, lont.values, shp, debug=debug)
+    mask = st4.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
     mask = xarray.DataArray(mask, coords=[dafill.grid_yt, dafill.grid_xt])
-    dafill = dafill.where(mask, drop=True)
+    dafill = dafill.where(mask)
+    area     = area.where(mask).fillna(0)
 
-dafill = dafill.sel(pfull=pfull, method="nearest", tolerance=50.)
+totalarea = area.metpy.convert_units("km**2").sum()
+
 if not ncols:
     # Default # of cols is square root of # of panels
     ncols = int(np.ceil(np.sqrt(len(dafill))))
@@ -157,21 +147,19 @@ for ax in p.axes.flat:
         ax.set_extent([dafill.lont.min(), dafill.lont.max(), dafill.latt.min(), dafill.latt.max()])
 
 # append time to title and output filename
-title = f'{dafill.attrs["long_name"]} ({fill})  {lasttime.item()}'
 root, ext = os.path.splitext(ofile)
 ofile = root + f".{lasttime.dt.strftime('%Y%m%d_%H%M%S').item()}" + ext
 
 # static parts of title and output file name
 plt.suptitle(title, wrap=True)
 
-
-# TODO get fineprint to show again (with FacetGrid)
 fineprint  = os.path.realpath(ifile.name)
 if shp:
     fineprint += f"\nmask: {shp}"
+fineprint += f"\narea: {totalarea.values} {totalarea.metpy.units}"
 fineprint += f"\nextent: {extent}"
 fineprint += "\ncreated "+str(datetime.datetime.now(tz=None)).split('.')[0]
-fineprint_obj = plt.annotate(text=fineprint, xy=(0.01,0.01), xycoords='figure fraction', fontsize=10)
+fineprint_obj = plt.annotate(text=fineprint, xy=(0.01,0.01), xycoords='figure fraction', fontsize=6)
 
 
 plt.savefig(ofile, dpi=150)
