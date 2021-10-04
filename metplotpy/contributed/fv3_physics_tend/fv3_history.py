@@ -33,7 +33,6 @@ parser.add_argument("variable", type=str, choices=state_variables, default="tmp"
 parser.add_argument("-d", "--debug", action='store_true')
 parser.add_argument("--dtsec", type=float, default=300, help="model time step in seconds")
 parser.add_argument("-e", "--extent", nargs=4, type=float, default=None, help="minlon maxlon minlat maxlat")
-parser.add_argument("-l", "--levels", type=float, nargs="+", help="filled contour levels", default=None)
 parser.add_argument("--ncols", type=int, default=None, help="number of columns")
 parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
 parser.add_argument("-p", "--pfull", nargs='+', type=float, default=[1000,925,850,700,500,300,200,100,0], help="pressure level(s) to plot")
@@ -47,7 +46,6 @@ variable   = args.variable
 debug      = args.debug
 dt         = args.dtsec * units.seconds
 extent     = args.extent
-levels     = args.levels
 ncols      = args.ncols
 ofile      = args.ofile
 pfull      = args.pfull
@@ -72,6 +70,7 @@ if debug:
     print(f"About to open {ifile}")
 fv3ds = xarray.open_dataset(ifile.name)
 
+fv3ds = fv3ds.assign_coords(lont=lont, latt=latt) # lont and latt used by pcolorfill()
 lasttime = fv3ds.time[-1] 
 # Extract tendencies DataArrays at last time, and multiply by dt * numdt.
 all_tend = fv3ds[fv3.tendencies[variable]].sel(time = lasttime).metpy.quantify()
@@ -80,15 +79,14 @@ if fill not in fv3ds.variables and fill not in [f"d{variable}","resid"]:
     print("choices:", fv3ds.variables.keys())
     sys.exit(1)
 
-fv3ds = fv3ds.assign_coords(lont=lont, latt=latt)
-
 numdt = fv3ds.time.size
 # Units of tendencies are K/s averaged over number of time steps within first forecast hour.
 # Multiply by time step and number of time steps
 all_tend *= dt * numdt
-
-# Stack variables along "tendency" axis of new array. Simpler code but long_name attrs are lost. # TODO preserve long_names 
-all_tend = all_tend.to_array(dim="tendency")
+# Reassign original long_name attributes but replace "tendency" with "change".
+# long_name was correctly removed after multiplying by dt * numdt.
+for varname, da in all_tend.data_vars.items():
+    da.attrs["long_name"] = fv3ds[varname].attrs["long_name"].replace("tendency", "change")
 
 print(f"total change in {variable}")
 state_variable = fv3ds[variable].metpy.quantify() # Tried metpy.quantify() with open_dataset, but pint.errors.UndefinedUnitError: 'dBz' is not defined in the unit registry
@@ -96,17 +94,19 @@ dstate_variable = state_variable.sel(time = lasttime) - state_variable.isel(time
 dstate_variable = dstate_variable.assign_coords(time=lasttime)
 dstate_variable.attrs["long_name"] = f"change in {state_variable.attrs['long_name']}"
 
-# Sum along "tendency" axis.
-resid = all_tend.sum(dim="tendency") - dstate_variable
+# Sum along new "tendency" axis.
+resid = all_tend.to_array(dim="tendency").sum(dim="tendency") - dstate_variable
 resid.attrs["long_name"] = f"all_tend - d{variable}"
 
-# Expand "tendency" axis with dstate_variable and resid.
-dstate_variable = dstate_variable.expand_dims(dim={"tendency":[f"d{variable}"]})
-resid = resid.expand_dims(dim={"tendency":["resid"]})
-
-# Concatentate DataArrays along "tendency" axis.
-all_tend = xarray.concat([all_tend,dstate_variable,resid], "tendency")
-dafill = all_tend.sel(tendency=fill).sel(pfull=pfull, method="nearest", tolerance=50.)
+# Assign dafill.
+if fill == 'resid':
+    dafill = resid
+elif fill == variable:
+    dafill = state_variable
+elif fill == "d"+variable:
+    dafill = dstate_variable
+else:
+    dafill = all_tend[fill].sel(pfull=pfull, method="nearest", tolerance=50.)
 
 if shp:
     shp = shp.rstrip("/")
@@ -117,7 +117,7 @@ if shp:
 
     # mask points outside shape
     mask = fv3.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
-    mask = xarray.DataArray(mask, coords=[dafill.grid_yt, dafill.grid_xt])
+    mask = xarray.DataArray(mask, coords=[all_tend.grid_yt, all_tend.grid_xt])
     dafill = dafill.where(mask)
     area     = area.where(mask).fillna(0)
 
@@ -136,6 +136,8 @@ subplot_kws = dict(projection=cartopy.crs.LambertConformal(central_longitude=-97
 subplot_kws = dict(projection=cartopy.crs.PlateCarree())
 
 print("creating figure")
+# dequantify moves units from DataArray to Attributes. Now they show up in colorbar.
+dafill = dafill.metpy.dequantify()
 p = dafill.plot.pcolormesh(x="lont", y="latt", col="pfull", col_wrap=ncols, robust=True, infer_intervals=True, subplot_kws=subplot_kws) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
 for ax in p.axes.flat:
     ax.add_feature(cfeature.COASTLINE.with_scale('50m'), linewidth=0.3)
@@ -152,7 +154,7 @@ for ax in p.axes.flat:
 # add time to title and output filename
 root, ext = os.path.splitext(ofile)
 ofile = root + f".{lasttime.dt.strftime('%Y%m%d_%H%M%S').item()}" + ext
-title = f'{fill}  {lasttime.item()}'
+title = lasttime.item()
 if "long_name" in dafill.attrs:
     title = f'{dafill.attrs["long_name"]} ({fill})  {lasttime.item()}'
 plt.suptitle(title, wrap=True)
