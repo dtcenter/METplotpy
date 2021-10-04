@@ -8,7 +8,6 @@ from metpy.units import units
 import numpy as np
 import os
 import pdb
-import st4
 import sys
 import xarray
 
@@ -117,7 +116,7 @@ if shp:
     ofile = root + f".{shapename}" + ext
 
     # mask points outside shape
-    mask = st4.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
+    mask = fv3.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
     mask = xarray.DataArray(mask, coords=[dafill.grid_yt, dafill.grid_xt])
     dafill = dafill.where(mask)
     area     = area.where(mask).fillna(0)
