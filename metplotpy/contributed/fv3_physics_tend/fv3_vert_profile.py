@@ -7,7 +7,6 @@ from metpy.units import units
 import numpy as np
 import os
 import pdb
-import st4
 import sys
 import xarray
 
@@ -101,7 +100,7 @@ if shp:
     ofile = root + f".{shapename}" + ext
 
     # mask points outside shape
-    mask = st4.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
+    mask = fv3.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
     mask = xarray.DataArray(mask, coords=[all_tend.grid_yt, all_tend.grid_xt])
     all_tend = all_tend.where(mask)
     area     = area.where(mask).fillna(0)
@@ -117,6 +116,7 @@ all_tend = all_tend.weighted(area).mean(area.dims)
 
 print("plot area-weighted spatial average...")
 lines = all_tend.plot.line(y="pfull", ax=ax, hue="tendency")
+#TODO: get markers in legend entries automatically
 for line in lines[-2:]:
     line.set_marker('o')
 
