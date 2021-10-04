@@ -71,6 +71,10 @@ numdt = fv3ds.time.size
 # Units of tendencies are K/s averaged over number of time steps within first forecast hour.
 # Multiply by time step and number of time steps
 all_tend *= dt * numdt
+# Reassign original long_name attributes but replace "tendency" with "change".
+# long_name was correctly removed after multiplying by dt * numdt.
+for varname, da in all_tend.data_vars.items():
+    da.attrs["long_name"] = fv3ds[varname].attrs["long_name"].replace("tendency", "change")
 
 # Stack variables along "tendency" axis of new array. Simpler code but long_name attrs are lost. # TODO preserve long_names 
 all_tend = all_tend.to_array(dim="tendency")
