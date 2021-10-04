@@ -56,8 +56,6 @@ list_stat_1:
 - MAE
 list_stat_2:
 - ME
-list_static_val:
-  fcst_var: ME
 mar:
 - 8
 - 4
