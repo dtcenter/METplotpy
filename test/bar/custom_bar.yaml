@@ -43,8 +43,6 @@ legend_size: 0.8
 line_type: None
 list_stat_1:
 - ME
-list_static_val:
-  fcst_var: TMP
 mar:
 - 8
 - 4
