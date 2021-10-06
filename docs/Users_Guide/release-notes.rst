@@ -12,20 +12,17 @@ Version 1.1.0 release notes (20211006)
 beta3 release
 ^^^^^^^^^^^^^
 
-
 * New Plots:
 
-
-
 * Enhancements: 
-   * **Remove unused parameter 'list_static_val' (`#150 <https://github.com/dtcenter/METplotpy/issues/150>`_)
-   * **Change ',' as a separator for the series group to ':' (`#152 <https://github.com/dtcenter/METplotpy/issues/152>`_)
+   * **Remove unused parameter 'list_static_val'** (`#150 <https://github.com/dtcenter/METplotpy/issues/150>`_)
+   * **Change ',' as a separator for the series group to ':'** (`#152 <https://github.com/dtcenter/METplotpy/issues/152>`_)
 
 * Internal:
 
 
 * Bugfixes:
-   * **Change the names of the CI data columns from bcl/bcu to btcl/btcu (`#156 <https://github.com/dtcenter/METplotpy/issues/156>`_)
+   * **Change the names of the CI data columns from bcl/bcu to btcl/btcu** (`#156 <https://github.com/dtcenter/METplotpy/issues/156>`_)
 
 
 beta2 release
