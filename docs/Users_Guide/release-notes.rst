@@ -6,8 +6,27 @@ describes the bugfix, enhancement, or new feature: `METplotpy GitHub issues. <ht
 
 Version |version| release notes (|release_date|)
 ------------------------------------------------
-Version 1.1.0 release notes (20210831)
+Version 1.1.0 release notes (20211006)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+beta3 release
+^^^^^^^^^^^^^
+
+
+* New Plots:
+
+
+
+* Enhancements: 
+   * ** Remove unused parameter 'list_static_val' (`#150 <https://github.com/dtcenter/METplotpy/issues/150>`_)
+   * ** Change ',' as a separator for the series group to ':' (`#152 <https://github.com/dtcenter/METplotpy/issues/152>`_)
+
+* Internal:
+
+
+* Bugfixes:
+   * **Change the names of the CI data columns from bcl/bcu to btcl/btcu (`#156 <https://github.com/dtcenter/METplotpy/issues/156>`_)
+
 
 beta2 release
 ^^^^^^^^^^^^^
@@ -28,6 +47,7 @@ beta2 release
 
 beta1 release
 ^^^^^^^^^^^^^
+
 * New Plots:
    * **Create Box plot for METviewer** (`#119 <https://github.com/dtcenter/METplotpy/issues/119>`_)
    * **Recreate the functionality of plot_mpr.R** (`#9 <https://github.com/dtcenter/METplotpy/issues/9>`_)
