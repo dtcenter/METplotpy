@@ -18,8 +18,8 @@ beta3 release
 
 
 * Enhancements: 
-   * ** Remove unused parameter 'list_static_val' (`#150 <https://github.com/dtcenter/METplotpy/issues/150>`_)
-   * ** Change ',' as a separator for the series group to ':' (`#152 <https://github.com/dtcenter/METplotpy/issues/152>`_)
+   * **Remove unused parameter 'list_static_val' (`#150 <https://github.com/dtcenter/METplotpy/issues/150>`_)
+   * **Change ',' as a separator for the series group to ':' (`#152 <https://github.com/dtcenter/METplotpy/issues/152>`_)
 
 * Internal:
 
