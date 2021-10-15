@@ -106,6 +106,7 @@ class Config:
         # we want to subset data where column name is 'model', with coincident rows of 'SH_CMORPH'.
         self.series_val_names = self._get_series_val_names()
         self.series_ordering = None
+        self.indy_plot_val = self.get_config_value('indy_plot_val')
 
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
@@ -532,6 +533,51 @@ class Config:
             ordered_settings_list.insert(series, setting_to_order[idx])
 
         return ordered_settings_list
+
+    def create_list_by_plot_val_ordering(self, setting_to_order):
+        """
+        Generate a list of indy parameters settings based on what is set
+        in indy_plot_val in the config file.
+        If the  is specified:
+        -3
+        -1
+        -2
+
+        and indy_vals is set:
+        indy_vals:
+        -120000
+        -150000
+        -180000
+
+        Then the following is expected:
+        the first indy_val  is 150000
+        the second indy_val is 180000
+        the third indy_val is 120000
+
+
+        Args:
+
+            setting_to_order:  the name of the setting (eg indy_vals) to be
+                                        ordered based on the order indicated
+                                        in the config file under the indy_plot_val setting.
+
+        Returns:
+            a list reflecting the order that is consistent with what was set in indy_plot_val
+        """
+
+        # order the input list according to the series_order setting
+        ordered_settings_list = []
+        # create a natural order if series_ordering is missing
+        if self.indy_plot_val is None or len(self.indy_plot_val) == 0:
+            self.indy_plot_val = list(range(1, len(setting_to_order) + 1))
+
+        # Make the series ordering list zero-based to sync with Python's zero-based counting
+        indy_ordered_zb = [sorder - 1 for sorder in self.indy_plot_val]
+        for idx, indy in enumerate(indy_ordered_zb):
+            ordered_settings_list.insert(indy, setting_to_order[idx])
+
+        return ordered_settings_list
+
 
     def calculate_plot_dimension(self, config_value, output_units):
         '''
