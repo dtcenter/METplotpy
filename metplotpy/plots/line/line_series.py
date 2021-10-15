@@ -242,7 +242,8 @@ class LineSeries(Series):
         series_points_results = {'dbl_lo_ci': [], 'dbl_med': [], 'dbl_up_ci': [], 'nstat': []}
 
         # for each point calculate plot statistic and CI
-        for indy in self.config.indy_vals:
+        indy_vals_ordered = self.config.create_list_by_plot_val_ordering(self.config.indy_vals)
+        for indy in indy_vals_ordered:
             if utils.is_string_integer(indy):
                 indy = int(indy)
 
@@ -349,8 +350,9 @@ class LineSeries(Series):
         :param series_data_2: 2nd data frame sorted  by fcst_init_beg
         """
 
+        indy_vals_ordered = self.config.create_list_by_plot_val_ordering(self.config.indy_vals)
         # for each independent value
-        for indy in self.config.indy_vals:
+        for indy in indy_vals_ordered:
             if utils.is_string_integer(indy):
                 indy = int(indy)
 
