@@ -7,6 +7,12 @@ from typing import Union
 
 import numpy as np
 from pandas import DataFrame
+import pandas as pd
+from statsmodels.tsa.stattools import acf
+from statsmodels.graphics.tsaplots import plot_acf
+from statsmodels.tsa.api import VAR
+from statistics import mean
+
 
 import metcalcpy.util.utils as utils
 from plots import GROUP_SEPARATOR
@@ -159,9 +165,77 @@ class BoxSeries(Series):
                 indy = int(indy)
 
             point_data = self.series_data.loc[self.series_data[self.config.indy_var] == indy]
+            if list(self.config._get_fcst_vars(self.y_axis).keys())[0].startswith( 'REV_' ):
+                stats = self._calculate_mtd_revision_stats()
+
             series_points_results['nstat'].append(len(point_data['stat_value']))
 
         return series_points_results
+
+    def _calculate_mtd_revision_stats(self):
+        subset = self.series_data[['stat_value', 'revision_id']]
+        unique_ids = subset.revision_id.unique()
+        data_for_stats = []
+        data_for_stats_1 = []
+        for id in unique_ids:
+            data_for_id = subset[subset['revision_id'] == id]['stat_value'].tolist()
+            data_for_stats.extend(data_for_id)
+            data_for_stats_1.extend(data_for_id)
+            data_for_stats.extend([None])
+        if len(data_for_stats) > 0:
+            data_for_stats.pop()
+        acf_value = acf(data_for_stats, nlags=30, adjusted=False, missing='drop')
+        #print(acf_value)
+        acf_value_1 = acf(data_for_stats_1, nlags=30, adjusted=False,missing='drop')
+        #print(acf_value_1)
+
+        s = pd.Series(data_for_stats_1)
+        a=[ s.autocorr(lag=i) for i in range(len(data_for_stats_1)) ]
+
+
+        arr = np.array(data_for_stats_1)
+        xo = arr - arr.mean()
+        cors = [np.correlate(xo, self._shift(xo, i))[0] for i in range(30)]
+        b = cors / cors[0]
+
+        mean_val = mean(data_for_stats_1)
+
+        def func(a):
+            if a is not None:
+                return a-mean_val
+            else:
+                return None
+        xo1 = list(map(func, data_for_stats))
+        xo11 = list(map(func, data_for_stats_1))
+        acf_value = acf(xo1, nlags=30, adjusted=False, missing='drop')
+
+        bb=[]
+        for  i in range(30):
+            a=[]
+            shift = self._shift(xo11, i)
+            for j in range(len(xo11)):
+                a.append(xo11[j] * shift[j])
+            s = sum(a)
+            aa = s/len(data_for_stats)
+            bb.append(aa)
+
+        bb1 = []
+        for i in range(30):
+            bb1.append(bb[i]/bb[0])
+        print(bb1)
+
+
+
+
+
+    def _shift(self, x, b):
+        if (b <= 0):
+            return x
+        d = np.array(x)
+        d1 = d
+        d1[b:] = d[:-b]
+        d1[0:b] = 0
+        return d1
 
     def _calculate_derived_values(self,
                                   operation: str,
