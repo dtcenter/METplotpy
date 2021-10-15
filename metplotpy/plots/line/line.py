@@ -336,12 +336,14 @@ class Line(BasePlot):
 
         :param x_points_index: list of indexws for the original x -axis
         """
+
+        odered_indy_label = self.config_obj.create_list_by_plot_val_ordering(self.config_obj.indy_label)
         if self.config_obj.vert_plot is True:
             self.figure.update_layout(
                 yaxis={
                     'tickmode': 'array',
                     'tickvals': x_points_index,
-                    'ticktext': self.config_obj.indy_label
+                    'ticktext': odered_indy_label
                 }
             )
         else:
@@ -349,7 +351,7 @@ class Line(BasePlot):
                 xaxis={
                     'tickmode': 'array',
                     'tickvals': x_points_index,
-                    'ticktext': self.config_obj.indy_label
+                    'ticktext': odered_indy_label
                 }
             )
 
@@ -727,7 +729,7 @@ def main(config_filename=None):
     try:
         plot = Line(docs)
         plot.save_to_file()
-        #plot.show_in_browser()
+        plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
     except ValueError as val_er:
