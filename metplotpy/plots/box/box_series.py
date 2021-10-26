@@ -4,13 +4,12 @@ Class Name: LineSeries
 __author__ = 'Tatiana Burek'
 
 from typing import Union
+import re
 
 import numpy as np
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
-from plots import GROUP_SEPARATOR
-
 from plots.series import Series
 
 
@@ -27,7 +26,6 @@ class BoxSeries(Series):
         self.series_list = series_list
         self.series_name = series_name
         super().__init__(config, idx, input_data, y_axis)
-
 
     def _create_all_fields_values_no_indy(self) -> dict:
         """
@@ -82,7 +80,9 @@ class BoxSeries(Series):
             for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
                 filter_value = self.series_name[field_ind]
                 if utils.GROUP_SEPARATOR in filter_value:
-                    filter_list = filter_value.split(GROUP_SEPARATOR)
+                    filter_list = re.findall(utils.DATE_TIME_REGEX, filter_value)
+                    if len(filter_list) == 0:
+                        filter_list = filter_value.split(utils.GROUP_SEPARATOR)
                     # add the original value
                     filter_list.append(filter_value)
                 elif ";" in filter_value:
