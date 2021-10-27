@@ -6,6 +6,7 @@ __author__ = 'Tatiana Burek'
 from typing import Union
 import math
 import statistics
+import re
 
 import numpy as np
 from pandas import DataFrame
@@ -13,8 +14,6 @@ import metcalcpy.util.correlation as pg
 from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
-from plots import GROUP_SEPARATOR
-
 from plots.series import Series
 
 
@@ -105,7 +104,9 @@ class LineSeries(Series):
             for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
                 filter_value = self.series_name[field_ind]
                 if utils.GROUP_SEPARATOR in filter_value:
-                    filter_list = filter_value.split(GROUP_SEPARATOR)
+                    filter_list = re.findall(utils.DATE_TIME_REGEX, filter_value)
+                    if len(filter_list) == 0:
+                        filter_list = filter_value.split(utils.GROUP_SEPARATOR)
                     # add the original value
                     filter_list.append(filter_value)
                 elif ";" in filter_value:
@@ -242,7 +243,8 @@ class LineSeries(Series):
         series_points_results = {'dbl_lo_ci': [], 'dbl_med': [], 'dbl_up_ci': [], 'nstat': []}
 
         # for each point calculate plot statistic and CI
-        for indy in self.config.indy_vals:
+        indy_vals_ordered = self.config.create_list_by_plot_val_ordering(self.config.indy_vals)
+        for indy in indy_vals_ordered:
             if utils.is_string_integer(indy):
                 indy = int(indy)
 
@@ -349,8 +351,9 @@ class LineSeries(Series):
         :param series_data_2: 2nd data frame sorted  by fcst_init_beg
         """
 
+        indy_vals_ordered = self.config.create_list_by_plot_val_ordering(self.config.indy_vals)
         # for each independent value
-        for indy in self.config.indy_vals:
+        for indy in indy_vals_ordered:
             if utils.is_string_integer(indy):
                 indy = int(indy)
 
