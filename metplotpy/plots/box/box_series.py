@@ -5,15 +5,13 @@ __author__ = 'Tatiana Burek'
 
 from typing import Union
 import re
+import math
 
 import numpy as np
 from pandas import DataFrame
-import pandas as pd
-from statsmodels.tsa.stattools import acf
-from statsmodels.graphics.tsaplots import plot_acf
-from statsmodels.tsa.api import VAR
-from statistics import mean
-
+from statistics import mean, median
+from itertools import groupby
+from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
 from plots.series import Series
@@ -91,10 +89,6 @@ class BoxSeries(Series):
                         filter_list = filter_value.split(utils.GROUP_SEPARATOR)
                     # add the original value
                     filter_list.append(filter_value)
-                elif ";" in filter_value:
-                    filter_list = filter_value.split(';')
-                    # add the original value
-                    filter_list.append(filter_value)
                 else:
                     filter_list = [filter_value]
                 for i, filter_val in enumerate(filter_list):
@@ -165,7 +159,7 @@ class BoxSeries(Series):
                 indy = int(indy)
 
             point_data = self.series_data.loc[self.series_data[self.config.indy_var] == indy]
-            if list(self.config._get_fcst_vars(self.y_axis).keys())[0].startswith( 'REV_' ):
+            if list(self.config._get_fcst_vars(self.y_axis).keys())[0].startswith('REV_'):
                 stats = self._calculate_mtd_revision_stats()
 
             series_points_results['nstat'].append(len(point_data['stat_value']))
@@ -176,57 +170,150 @@ class BoxSeries(Series):
         subset = self.series_data[['stat_value', 'revision_id']]
         unique_ids = subset.revision_id.unique()
         data_for_stats = []
-        data_for_stats_1 = []
         for id in unique_ids:
             data_for_id = subset[subset['revision_id'] == id]['stat_value'].tolist()
             data_for_stats.extend(data_for_id)
-            data_for_stats_1.extend(data_for_id)
             data_for_stats.extend([None])
         if len(data_for_stats) > 0:
             data_for_stats.pop()
-        acf_value = acf(data_for_stats, nlags=30, adjusted=False, missing='drop')
-        #print(acf_value)
-        acf_value_1 = acf(data_for_stats_1, nlags=30, adjusted=False,missing='drop')
-        #print(acf_value_1)
 
-        s = pd.Series(data_for_stats_1)
-        a=[ s.autocorr(lag=i) for i in range(len(data_for_stats_1)) ]
-
-
-        arr = np.array(data_for_stats_1)
-        xo = arr - arr.mean()
-        cors = [np.correlate(xo, self._shift(xo, i))[0] for i in range(30)]
-        b = cors / cors[0]
-
-        mean_val = mean(data_for_stats_1)
+        mean_val = mean(elem for elem in data_for_stats if elem is not None)
 
         def func(a):
             if a is not None:
-                return a-mean_val
+                return a - mean_val
             else:
                 return None
-        xo1 = list(map(func, data_for_stats))
-        xo11 = list(map(func, data_for_stats_1))
-        acf_value = acf(xo1, nlags=30, adjusted=False, missing='drop')
 
-        bb=[]
-        for  i in range(30):
-            a=[]
-            shift = self._shift(xo11, i)
-            for j in range(len(xo11)):
-                a.append(xo11[j] * shift[j])
-            s = sum(a)
-            aa = s/len(data_for_stats)
-            bb.append(aa)
+        data_for_stats = list(map(func, data_for_stats))
+        acf_value = self.acf(data_for_stats, 'correlation', 2)
+        r = acf_value[1]
+        # qnorm((1 + 0.05)/2) = 0.06270678
+        p_value = 0.06270678 / math.sqrt(np.size(data_for_stats))
+        ww_run = self.run_test(data_for_stats, 'left.sided', 'median')['p_value']
+        if ww_run is None:
+            ww_run = None
+        else:
+            ww_run = round(ww_run, 2)
+        if p_value is None:
+            p_value = None
+        else:
+            p_value = round(p_value, 2)
+        if r is None:
+            r = None
+        else:
+            r = round(r, 2)
+        return {
+            'ww_run': ww_run,
+            'auto_cor_p' : p_value,
+            'auto_cor_r' : r
+        }
 
-        bb1 = []
-        for i in range(30):
-            bb1.append(bb[i]/bb[0])
-        print(bb1)
+    def run_test(self, x, alternative="two.sided", threshold='median') -> Union[None, dict]:
+        '''
+        Wald-Wolfowitz Runs Test.
+        Performs the Wald-Wolfowitz runs test of randomness for continuous data.
+        Mimicks runs.test Rscript function
+
+        :param x: a numeric vector containing the observations
+        :param alternative: a character string with the alternative hypothesis.
+            Must be one of "two.sided" (default), "left.sided" or "right.sided".
+        :param threshold: the cut-point to transform the data into a dichotomous vector
+            Must be one of "median" (default) or "mean".
+        :return: Wald-Wolfowitz Runs Test results as a dictionary
+        '''
+        if alternative != "two.sided" and alternative != "left.sided" and alternative != "right.sided":
+            print("must give a valid alternative")
+        x = [elem for elem in x if elem is not None]
+        if threshold == 'median':
+            x_threshold = median(x)
+        elif threshold == "mean":
+            x_threshold = mean(x)
+        else:
+            print('ERROR  incorrect threshold')
+            x_threshold = None
+        x = [elem for elem in x if elem != x_threshold]
+        res = [i - x_threshold for i in x]
+        s = np.sign(res)
+        n1 = 0
+        n2 = 0
+        for num in s:
+            if num > 0:
+                n1 += 1
+            elif num < 0:
+                n2 += 1
+        runs = [(k, sum(1 for i in g)) for k, g in groupby(s)]
+        r1 = 0
+        r2 = 0
+        for run in runs:
+            if run[0] == 1:
+                r1 += 1
+            elif run[0] == -1:
+                r2 += 1
+        n = n1 + n2
+        mu = 1 + 2 * n1 * n2 / (n1 + n2)
+        vr = 2 * n1 * n2 * (2 * n1 * n2 - n1 - n2) / (n * n * (n - 1))
+        rr = r1 + r2
+        pv = 0
+        # pvalue == "normal"
+        pv0 = norm.cdf((rr - mu) / math.sqrt(vr))
+        if alternative == "two.sided":
+            pv = 2 * min(pv0, 1 - pv0)
+        if alternative == "left.sided":
+            pv = pv0
+        if alternative == "right.sided":
+            pv = 1 - pv0
+
+        return {
+            'statistic': (rr - mu) / math.sqrt(vr),
+            'p_value': pv,
+            'runs': rr,
+            'mu': mu,
+            'var': vr
+        }
+
+    def acf(self, x, acf_type='correlation', lag_max=None) -> Union[list, None]:
+        '''
+        The function acf computes estimates of the autocovariance or autocorrelation function.
+        Args:
+            x - numeric array.
+            acf_type - character string giving the type of acf to be computed.
+                Allowed values are "correlation" (the default), "covariance".
+            lag_max - maximum lag at which to calculate the acf.
+                Default is 10*log10(N/m) where N is the number of observations and m the number of series.
+                Will be automatically limited to one less than the number of observations in the series.
 
 
+        :return:
+        '''
+        if acf_type not in ['covariance', 'correlation']:
+            print('ERROR  incorrect acf_type')
+            return None
 
+        acf_result = []
+        size = np.size(x)
+        mean_val = mean(elem for elem in x if elem is not None)
+        if lag_max is None:
+            lag_max = math.floor(10 * (math.log10(size) - math.log10(1)))
+        lag_max = int(min(lag_max, size - 1))
+        cov_0 = self._autocovariance(x, size, 0, mean_val)
+        for i in range(lag_max):
+            cov = self._autocovariance(x, size, i, mean_val)
+            if acf_type == 'covariance':
+                acf_result.append(cov)
+            elif acf_type == 'correlation':
+                acf_result.append(cov / cov_0)
 
+        return acf_result
+
+    def _autocovariance(self, Xi, N, k, Xs):
+        autoCov = 0
+        total = 0
+        for i in np.arange(0, N - k):
+            if Xi[i + k] is not None and Xi[i] is not None:
+                autoCov += ((Xi[i + k]) - Xs) * (Xi[i] - Xs)
+                total = total + 1
+        return (1 / (total + k)) * autoCov
 
     def _shift(self, x, b):
         if (b <= 0):
