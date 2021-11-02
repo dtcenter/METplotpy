@@ -232,6 +232,7 @@ class RHistogramConfig(HistogramConfig):
     """
         Prepares and organises rank histogram plot parameters
     """
+
     def __init__(self, parameters: dict) -> None:
         """ Reads in the plot settings from a Rank histogram plot config file.
 
@@ -241,3 +242,19 @@ class RHistogramConfig(HistogramConfig):
         """
         super().__init__(parameters)
         self.user_legends = self._get_user_legends('Rank Histogram')
+
+
+class PHistogramConfig(HistogramConfig):
+    """
+        Prepares and organises rank histogram plot parameters
+    """
+
+    def __init__(self, parameters: dict) -> None:
+        """ Reads in the plot settings from a Probability histogram plot config file.
+
+            Args:
+            @param parameters: dictionary containing user defined parameters
+
+        """
+        super().__init__(parameters)
+        self.user_legends = self._get_user_legends('Probability Histogram')
