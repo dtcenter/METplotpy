@@ -57,21 +57,22 @@ class Config:
         # bbox_to_anchor() setting used in determining
         # the location of the bounding box which defines
         # the legend.
+
         bbox_x = user_settings.get('bbox_x')
-        if bbox_x:
+        if bbox_x is not None:
             self.bbox_x = float(user_settings['bbox_x'])
 
         bbox_y = user_settings.get('bbox_y')
-        if bbox_y:
+        if bbox_y is not None:
             self.bbox_y = float(user_settings['bbox_y'])
 
         legend_magnification = user_settings.get('legend_size')
-        if legend_magnification:
+        if legend_magnification is not None:
             self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
 
         self.legend_ncol = self.get_config_value('legend_ncol')
         legend_box = self.get_config_value('legend_box')
-        if legend_box:
+        if legend_box is not None:
             legend_box = legend_box.lower()
             if legend_box == 'n':
                 # Don't draw a box around legend labels
@@ -80,6 +81,8 @@ class Config:
                 # Other choice is 'o'
                 # Enclose legend labels in a box
                 self.draw_box = True
+
+
 
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
