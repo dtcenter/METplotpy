@@ -213,6 +213,7 @@ class Box(BasePlot):
                    line=line_color,
                    fillcolor=fillcolor,
                    name=series.user_legends,
+                   showlegend=True,
                    # quartilemethod='linear', #"exclusive", "inclusive", or "linear"
                    boxmean=self.config_obj.box_avg,
                    boxpoints=self.config_obj.boxpoints,  # outliers, all, False
