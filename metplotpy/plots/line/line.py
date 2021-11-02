@@ -32,7 +32,7 @@ class Line(BasePlot):
          where each line is represented by a text point data file.
     """
 
-    def __init__(self, parameters:dict) -> None:
+    def __init__(self, parameters: dict) -> None:
         """ Creates a line plot consisting of one or more lines (traces), based on
             settings indicated by parameters.
 
@@ -185,7 +185,7 @@ class Line(BasePlot):
             if series.plot_disp:
 
                 # collect min-max if we need to sync axis
-                if self.config_obj.sync_yaxes is True and series.y_axis == 1:
+                if self.config_obj.sync_yaxes is True:
                     yaxis_min, yaxis_max = self._find_min_max(series, yaxis_min, yaxis_max)
 
                 # apply staggering offset if applicable
@@ -336,12 +336,14 @@ class Line(BasePlot):
 
         :param x_points_index: list of indexws for the original x -axis
         """
+
+        odered_indy_label = self.config_obj.create_list_by_plot_val_ordering(self.config_obj.indy_label)
         if self.config_obj.vert_plot is True:
             self.figure.update_layout(
                 yaxis={
                     'tickmode': 'array',
                     'tickvals': x_points_index,
-                    'ticktext': self.config_obj.indy_label
+                    'ticktext': odered_indy_label
                 }
             )
         else:
@@ -349,7 +351,7 @@ class Line(BasePlot):
                 xaxis={
                     'tickmode': 'array',
                     'tickvals': x_points_index,
-                    'ticktext': self.config_obj.indy_label
+                    'ticktext': odered_indy_label
                 }
             )
 
@@ -727,7 +729,7 @@ def main(config_filename=None):
     try:
         plot = Line(docs)
         plot.save_to_file()
-        plot.show_in_browser()
+        # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
     except ValueError as val_er:

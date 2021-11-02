@@ -6,6 +6,7 @@ __author__ = 'Tatiana Burek'
 from typing import Union
 import math
 import statistics
+import re
 
 import numpy as np
 from pandas import DataFrame
@@ -13,7 +14,6 @@ import metcalcpy.util.correlation as pg
 from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
-
 from plots.series import Series
 
 
@@ -103,8 +103,10 @@ class LineSeries(Series):
 
             for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
                 filter_value = self.series_name[field_ind]
-                if "," in filter_value:
-                    filter_list = filter_value.split(',')
+                if utils.GROUP_SEPARATOR in filter_value:
+                    filter_list = re.findall(utils.DATE_TIME_REGEX, filter_value)
+                    if len(filter_list) == 0:
+                        filter_list = filter_value.split(utils.GROUP_SEPARATOR)
                     # add the original value
                     filter_list.append(filter_value)
                 elif ";" in filter_value:
@@ -167,7 +169,7 @@ class LineSeries(Series):
             if series_val_1:
                 for key in series_val_1.keys():
                     for val in series_val_1[key]:
-                        if ',' in val:
+                        if GROUP_SEPARATOR in val:
                             new_name = 'Group_y1_' + str(group_to_value_index)
                             group_to_value[new_name] = val
                             group_to_value_index = group_to_value_index + 1
@@ -178,7 +180,7 @@ class LineSeries(Series):
                 if series_val_2:
                     for key in series_val_2.keys():
                         for val in series_val_2[key]:
-                            if ',' in val:
+                            if GROUP_SEPARATOR in val:
                                 new_name = 'Group_y2_' + str(group_to_value_index)
                                 group_to_value[new_name] = val
                                 group_to_value_index = group_to_value_index + 1
@@ -241,7 +243,8 @@ class LineSeries(Series):
         series_points_results = {'dbl_lo_ci': [], 'dbl_med': [], 'dbl_up_ci': [], 'nstat': []}
 
         # for each point calculate plot statistic and CI
-        for indy in self.config.indy_vals:
+        indy_vals_ordered = self.config.create_list_by_plot_val_ordering(self.config.indy_vals)
+        for indy in indy_vals_ordered:
             if utils.is_string_integer(indy):
                 indy = int(indy)
 
@@ -280,6 +283,20 @@ class LineSeries(Series):
                         dbl_lo_ci = dbl_std_err
                         dbl_up_ci = dbl_std_err
                 elif series_ci == 'BOOT':
+                    stat_btcu = 0
+                    stat_btcl = 0
+                    if 'stat_btcu' in point_data.head() and 'stat_btcl' in point_data.head():
+                        stat_btcu = self._calc_point_stat(point_data['stat_btcu'].tolist())
+                        stat_btcl = self._calc_point_stat(point_data['stat_btcl'].tolist())
+                        if stat_btcu == -9999:
+                            stat_btcu = 0
+                        if stat_btcl == -9999:
+                            stat_btcl = 0
+
+                    dbl_lo_ci = point_stat - stat_btcl
+                    dbl_up_ci = stat_btcu - point_stat
+
+                elif series_ci == 'MET_BOOT':
                     stat_bcu = 0
                     stat_bcl = 0
                     if 'stat_bcu' in point_data.head() and 'stat_bcl' in point_data.head():
@@ -293,7 +310,7 @@ class LineSeries(Series):
                     dbl_lo_ci = point_stat - stat_bcl
                     dbl_up_ci = stat_bcu - point_stat
 
-                elif series_ci == 'NORM':
+                elif series_ci == 'MET_PRM':
                     stat_ncu = 0
                     stat_ncl = 0
                     if 'stat_ncu' in point_data.head() and 'stat_ncl' in point_data.head():
@@ -334,8 +351,9 @@ class LineSeries(Series):
         :param series_data_2: 2nd data frame sorted  by fcst_init_beg
         """
 
+        indy_vals_ordered = self.config.create_list_by_plot_val_ordering(self.config.indy_vals)
         # for each independent value
-        for indy in self.config.indy_vals:
+        for indy in indy_vals_ordered:
             if utils.is_string_integer(indy):
                 indy = int(indy)
 

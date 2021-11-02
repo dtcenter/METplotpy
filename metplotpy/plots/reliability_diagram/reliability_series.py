@@ -7,6 +7,7 @@ from typing import Union
 import numpy as np
 
 import metcalcpy.util.utils as utils
+from plots import GROUP_SEPARATOR
 from plots.series import Series
 
 
@@ -83,8 +84,8 @@ class ReliabilitySeries(Series):
             # create a set of filters for this series
             for field_ind, field in enumerate(self.config.get_config_value('series_val_1').keys()):
                 filter_value = self.series_name[field_ind]
-                if "," in filter_value:
-                    filter_list = filter_value.split(',')
+                if utils.GROUP_SEPARATOR in filter_value:
+                    filter_list = filter_value.split(GROUP_SEPARATOR)
                 elif ";" in filter_value:
                     filter_list = filter_value.split(';')
                 else:

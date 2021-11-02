@@ -11,7 +11,7 @@ Python Requirements
 
 * Python 3.6.3
 
-* cartopy 0.17.0
+* cartopy 0.18.0
 
 * cmocean
 

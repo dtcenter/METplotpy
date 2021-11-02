@@ -163,7 +163,7 @@ class Box(BasePlot):
             # it isn't requested (as set in the config file)
             if series.plot_disp:
                 # collect min-max if we need to sync axis
-                if self.config_obj.sync_yaxes is True and series.y_axis == 1:
+                if self.config_obj.sync_yaxes is True:
                     yaxis_min, yaxis_max = self._find_min_max(series, yaxis_min, yaxis_max)
 
                 self._draw_series(series)

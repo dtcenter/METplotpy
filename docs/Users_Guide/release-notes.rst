@@ -6,11 +6,45 @@ describes the bugfix, enhancement, or new feature: `METplotpy GitHub issues. <ht
 
 Version |version| release notes (|release_date|)
 ------------------------------------------------
-Version 1.1.0 release notes (20210701)
+Version 1.1.0 release notes (20211006)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+beta3 release
+^^^^^^^^^^^^^
+
+* New Plots:
+
+* Enhancements: 
+   * **Remove unused parameter 'list_static_val'** (`#150 <https://github.com/dtcenter/METplotpy/issues/150>`_)
+   * **Change ',' as a separator for the series group to ':'** (`#152 <https://github.com/dtcenter/METplotpy/issues/152>`_)
+
+* Internal:
+
+
+* Bugfixes:
+   * **Change the names of the CI data columns from bcl/bcu to btcl/btcu** (`#156 <https://github.com/dtcenter/METplotpy/issues/156>`_)
+
+
+beta2 release
+^^^^^^^^^^^^^
+
+* New Plots:
+   * **Add the weather regime frequency plot to the weather regime code** (`#135 <https://github.com/dtcenter/METplotpy/issues/135>`_)
+   * **Create bar plot to be used by METviewer** (`#126 <https://github.com/dtcenter/METplotpy/issues/126>`_) 
+
+* Enhancements: 
+   * **Add support for plotting new G and GBETA statistics** (`#142 <https://github.com/dtcenter/METplotpy/issues/142>`_)
+   * **Create ens_ss plot to be used by METviewer** (`#137 <https://github.com/dtcenter/METplotpy/issues/137>`_)
+
+* Internal:
+
+* Bugfixes:
+   * **Line plot doesn't work if data column doesn't include "fcst_lead"** (`#129 <https://github.com/dtcenter/METplotpy/issues/129>`_)
+  
 
 beta1 release
 ^^^^^^^^^^^^^
+
 * New Plots:
    * **Create Box plot for METviewer** (`#119 <https://github.com/dtcenter/METplotpy/issues/119>`_)
    * **Recreate the functionality of plot_mpr.R** (`#9 <https://github.com/dtcenter/METplotpy/issues/9>`_)

@@ -10,6 +10,7 @@ import numpy as np
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
+from plots import GROUP_SEPARATOR
 
 from plots.series import Series
 
@@ -70,8 +71,8 @@ class BarSeries(Series):
             # create a set of filters for this series
             for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
                 filter_value = self.series_name[field_ind]
-                if "," in filter_value:
-                    filter_list = filter_value.split(',')
+                if utils.GROUP_SEPARATOR in filter_value:
+                    filter_list = filter_value.split(GROUP_SEPARATOR)
                     # add the original value
                     filter_list.append(filter_value)
                 elif ";" in filter_value:
