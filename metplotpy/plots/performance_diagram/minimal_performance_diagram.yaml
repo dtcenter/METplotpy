@@ -4,3 +4,6 @@
 # set in the performance_diagram_defaults.yaml configuration file will be
 # used.
 
+# Write points file. Set to True for METviewer use,
+# False otherwise
+dump_points_1: 'False'
