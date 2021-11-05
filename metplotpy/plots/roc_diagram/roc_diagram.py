@@ -290,7 +290,9 @@ class ROCDiagram(BasePlot):
 
         # "Dump" False Detection Rate (POFD) and PODY points to an output
         # file based on the output image filename (useful in debugging)
-        self.write_output_file()
+        # This output file is used by METviewer and not necessary for other uses.
+        if self.config_obj.dump_points == True :
+            self.write_output_file()
 
         for idx, series in enumerate(self.series_list):
             for i, thresh_val in enumerate(series.series_points[2]):
@@ -439,8 +441,9 @@ def main(config_filename=None):
     try:
         r = ROCDiagram(docs)
         r.save_to_file()
+
         r.write_html()
-        r.write_output_file()
+
         #r.show_in_browser()
     except ValueError as ve:
         print(ve)
