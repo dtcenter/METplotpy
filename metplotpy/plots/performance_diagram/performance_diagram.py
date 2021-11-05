@@ -264,8 +264,6 @@ class PerformanceDiagram(BasePlot):
         # "Dump" success ratio and PODY points to an output
         # file based on the output image filename (useful in debugging)
         if self.config_obj.dump_points_1 is True:
-            self.write_output_file()
-        else:
             # needed by METviewer
             self.write_output_file()
 
