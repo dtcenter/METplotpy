@@ -1,8 +1,9 @@
 ---
 # Minimal settings specific to performance diagram plot
-# No settings to over ride from this config file, so default values
+# Almost all default values that are 
 # set in the performance_diagram_defaults.yaml configuration file will be
-# used.
+# used (except for the dump_points_1 setting to avoid writing the intermediate file
+# used by METviewer).
 
 # Write points file. Set to True for METviewer use,
 # False otherwise
