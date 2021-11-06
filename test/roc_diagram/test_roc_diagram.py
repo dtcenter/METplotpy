@@ -1,17 +1,11 @@
 # !!!IMPORTANT!!!
 # activate conda environment in the testing subshell
-# Replace blenny_latest with your METplus Python 3.6.3
-# conda environment name
-# !!!!!!!!
 
-#!/usr/bin/env conda run -n blenny_latest python
 
 import pytest
 import os
-import sys
 import pandas as pd
-sys.path.append("../../..")
-from metplotpy.plots.roc_diagram import roc_diagram as roc
+from plots.roc_diagram import roc_diagram as roc
 from metcalcpy.compare_images import CompareImages
 import metcalcpy.util.ctc_statistics as ctc
 
@@ -65,7 +59,6 @@ def cleanup():
         # don't exist.  Ignore.
         pass
 
-
 @pytest.mark.parametrize("test_input,expected_boolean",(["./CTC_ROC_thresh_expected.png", True], ["./CTC_ROC_thresh.points1", True]))
 def test_files_exist(setup, test_input, expected_boolean):
     '''
@@ -87,6 +80,7 @@ def test_expected_CTC_thresh_points(setup):
     pofd = df.iloc[:, 0]
     pody = df.iloc[:, 1]
 
+    cleanup()
     for index, expected in enumerate(expected_pody):
         if ctc.round_half_up(expected) - ctc.round_half_up(pody[index]) == 0.0:
             pass
@@ -95,6 +89,7 @@ def test_expected_CTC_thresh_points(setup):
 
         # if we get here, then all elements matched in value and position
     assert True
+
 
     # do the same test for pofd
     for index, expected in enumerate(expected_pofd):
@@ -140,10 +135,6 @@ def test_expected_CTC_thresh_points_reversed(setup_rev_points):
 
         # if we get here, then all elements matched in value and position
     assert True
-
-
-
-
 
 def test_images_match(setup):
     '''
