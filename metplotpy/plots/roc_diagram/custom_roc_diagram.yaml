@@ -1,7 +1,7 @@
 ---
 # Write points file. Set to True for METviewer use,
 # False otherwise
-dump_points_1: 'False'
+dump_points_1: 'True'
 
 # Title settings
 title: "Custom: ROC PCT 20200507_074426 "
