@@ -6,7 +6,7 @@ title_weight: 4
 
 # Write points file. Set to True for METviewer use,
 # False otherwise
-dump_points_1: 'True'
+dump_points_1: 'False'
 
 # unsupported, Matplotlib align choices are left, right, center and
 # offset is automatically chosen to avoid labels and ticks on the topmost
