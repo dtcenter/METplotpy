@@ -1,0 +1,2 @@
+Running from command line, set your PYTHONPATH to
+$METplotpyDir/metplotpy:$METplotpyDir/metplotpy/plots:$METplotpyDir/metplotpy/plots/performance_diagram
