@@ -1,6 +1,5 @@
 import os
 import sys
-# sys.path.append("/Users/minnawin/feature_153_intermed_files/METplotpy/metplotpy")
 sys.path.append("../../")
 import yaml
 import pytest
