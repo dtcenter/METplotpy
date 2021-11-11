@@ -13,12 +13,12 @@ be found on the `METplus website <http://dtcenter.org/community-code/metplus>`_.
 It is important to note here that METplotpy is an evolving software package.
 This documentation describes the |release| release dated |release_date|.
 Intermediate releases may include bug fixes. METplotpy is also able to accept
-new modules contributed by the community. If you have code you would like to
-contribute, we will gladly consider your contribution. Please send create a
+new modules contributed by the community. If there is code you would like to
+contribute, we will gladly consider your contribution. Please create a
 post in the
 `METplus GitHub Discussions Forum <https://github.com/dtcenter/METplus/discussions>`_.
-We will then determine if we will be able to
-include the contribution in a future version.
+We will determine if we will be able to include the contribution in
+a future version.
 
 **Model Evaluation Tools Plot Py (METplotpy)  TERMS OF USE - IMPORTANT!**
 
@@ -26,7 +26,7 @@ Copyright |copyright|
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
 
-You may obtain a copy of the License at
+A copy of the License can be obtained at:
 
 http://www.apache.org/licenses/LICENSE-2.0
 
