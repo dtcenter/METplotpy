@@ -102,9 +102,6 @@ def test_expected_CTC_thresh_dump_points(setup_dump_points):
     pofd = df.iloc[:, 0]
     pody = df.iloc[:, 1]
 
-    path = os.path.join(os.getcwd(), 'intermed_files')
-    plot_file = 'CTC_ROC_thresh.points1'
-
     for index, expected in enumerate(expected_pody):
         if ctc.round_half_up(expected) - ctc.round_half_up(pody[index]) == 0.0:
             pass
@@ -123,6 +120,8 @@ def test_expected_CTC_thresh_dump_points(setup_dump_points):
             assert False
 
     # if we get here, then all elements matched in value and position
+    path = os.path.join(os.getcwd(), 'intermed_files')
+    plot_file = 'CTC_ROC_thresh.points1'
     os.remove(os.path.join(path, plot_file))
     assert True
 
