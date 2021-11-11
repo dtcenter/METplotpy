@@ -2,7 +2,7 @@
 # Custom settings specific to performance diagram plot
 # Write points file. Set to True for METviewer use,
 # False otherwise
-dump_points_1: 'True'
+dump_points_1: 'False'
 
 # Line and marker plots of series data of Success Rate (1-FAR) on x-axis vs. PODY on y-axis.
 title: Performance Diagram ("Custom title")
