@@ -20,11 +20,8 @@ con_series:
 create_html: 'True'
 derived_series_1: []
 derived_series_2: []
-dump_points_1: 'False'
+dump_points_1: 'True'
 dump_points_2: 'False'
-# Optional, uncomment and set to directory to store the .points1 file
-# that is used by METviewer (created when dump_points_1 is set to True)
-points_path: './intermed_files'
 event_equal: 'False'
 fcst_var_val_1: null
 fcst_var_val_2: null
@@ -67,15 +64,16 @@ plot_ci:
   - none
 plot_disp:
   - 'True'
-plot_filename: ./CTC_ROC_thresh.png
+plot_filename: ./CTC_ROC_thresh_dump_pts.png
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
 plot_type: png16m
 plot_units: in
 plot_width: 11.0
+points_path: './intermed_files'
 random_seed: null
-reverse_connection_order: 'False'
+reverse_connection_order: 'True'
 roc_ctc: true
 roc_pct: false
 series_line_style:
