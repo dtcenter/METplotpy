@@ -1,9 +1,9 @@
 Installation guide for METplotpy
 ===========================================
 
-METplotpy is written entirely in Python and uses YAML configuration files and relies
-on the METcalcpy package. The version numbers (when provided) indicate the *minimum* version
-number for that package.
+METplotpy is written entirely in Python and uses YAML configuration files
+and relies on the METcalcpy package. The version numbers (when provided)
+indicate the *minimum* version number for that package.
 
 
 Python Requirements
@@ -56,60 +56,72 @@ Python Requirements
 * xarray 0.16.2
 
 
-Install METcalcpy in your conda environment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Install METcalcpy in the conda environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is the recommended method for installation.
 
 Clone the METcalcpy repository from https://github.com/dtcenter/METcalcpy
 
-From within your *active* conda environment, cd to the METcalcpy/ directory.  This is the directory
-where you cloned the METcalcpy repository. In this directory, you should see a setup.py script
+From within the *active* conda environment,
 
-From the command line, run *pip install -e .*
+.. code-block:: ini
+		
+  cd to the METcalcpy/ directory.
 
-Do NOT forget the ending **'.'**  this indicates that you should use the setup.py in the current working directory.
+This is the directory where the METcalcpy repository was cloned. In
+this directory, find the setup.py script
+
+From the command line, run
+
+.. code-block:: ini
+		
+  pip install -e .
+
+Do NOT forget the ending **'.'**  This indicates using the setup.py in the
+current working directory.
  
-The *-e* option allows this installation to be editable, which is useful if you plan on updating your METcalcpy/metcalcpy
-source code.  This allows you to avoid reinstalling if you make any changes to your METcalcpy code.
+The *-e* option allows this installation to be editable, which is useful if
+the METcalcpy/metcalcpy source code needs updating. This step will avoid
+the need to reinstall if any changes are made to the METcalcpy code.
 
-Setting up your PYTHONPATH
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Setting up the PYTHONPATH
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is a workaround for users who can not or do not have permission to create conda environments.
+This is a workaround for users who can not or do not have permission to
+create conda environments.
 
-$METCALCPY_SOURCE is the path to where you downloaded/cloned the METcalcpy code.
+$METCALCPY_SOURCE is the path downloaded/cloned METcalcpy code.
 
 **command for csh:** 
 
-setenv PYTHONPATH $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:${PYTHONPATH}
+.. code-block:: ini
+
+  setenv PYTHONPATH $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:${PYTHONPATH}
 
 **command for bash:**
 
-export PYTHONPATH=\
+.. code-block:: ini
 
-$METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:${PYTHONPATH}
+  export PYTHONPATH=\
+  $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:${PYTHONPATH}
 
 Overview of Plots
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
-The plots in the METplotpy repository reside under one of two directories: *METplotpy/metplotpy/contributed* and
+The plots in the METplotpy repository reside under one of two directories:
+*METplotpy/metplotpy/contributed* or
 *METplotpy/metplotpy/plots*.
 
-The plots under the *METplotpy/metplotpy/contributed* directory correspond to plots that were either created prior
-to the creation of the METplotpy repository, and/or developed outside of the DTC.  The plots that reside in the
-*METplotpy/metplotpy/plots* directory were developed by the DTC and were primarily created to replace the R script
-implementation of plotting done in METviewer.  These plots were written using Python plotly,  with the exception of
-the performance diagram, which was written using Matplotlib.  The plots in the contributed directory may have different
-Python and third party Python package requirements that differ from the packages and versions
-specified in the 'Python Requirements' section.
+The plots under the *METplotpy/metplotpy/contributed* directory correspond
+to plots that were either created prior to the creation of the METplotpy
+repository, and/or developed outside of the DTC.
 
-
-
-
-
-
-
-
-
-
+The plots that reside in the *METplotpy/metplotpy/plots* directory were
+developed by the DTC and were primarily created to replace the R script
+implementation of plotting done in METviewer.  These plots were written
+using Python plotly, with the exception of the performance diagram, which
+was written using Matplotlib.  The plots in the contributed directory may
+have different Python and third party Python package requirements that
+differ from the packages and versions specified in the 'Python Requirements'
+section.
