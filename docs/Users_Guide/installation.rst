@@ -1,5 +1,5 @@
 ************
-INSTALLATION
+Installation
 ************
 
 Installation guide for METplotpy
