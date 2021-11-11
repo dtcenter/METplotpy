@@ -1,5 +1,9 @@
+************
+INSTALLATION
+************
+
 Installation guide for METplotpy
-===========================================
+================================
 
 METplotpy is written entirely in Python and uses YAML configuration files
 and relies on the METcalcpy package. The version numbers (when provided)
@@ -7,7 +11,7 @@ indicate the *minimum* version number for that package.
 
 
 Python Requirements
-~~~~~~~~~~~~~~~~~~~
+___________________
 
 * Python 3.6.3
 
@@ -57,7 +61,7 @@ Python Requirements
 
 
 Install METcalcpy in the conda environment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+__________________________________________
 
 This is the recommended method for installation.
 
@@ -87,7 +91,7 @@ will avoid the need to reinstall if any changes are made to the METcalcpy
 code.
 
 Setting up the PYTHONPATH
-~~~~~~~~~~~~~~~~~~~~~~~~~
+_________________________
 
 This is a workaround for users who can not or do not have permission to
 create conda environments.
@@ -108,7 +112,7 @@ $METCALCPY_SOURCE is the path downloaded/cloned METcalcpy code.
   $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:${PYTHONPATH}
 
 Overview of Plots
-~~~~~~~~~~~~~~~~~
+_________________
 
 The plots in the METplotpy repository reside under one of two directories:
 *METplotpy/metplotpy/contributed* or
