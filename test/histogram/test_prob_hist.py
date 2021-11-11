@@ -6,44 +6,40 @@
 
 # !/usr/bin/env conda run -n blenny_363 python
 
-import os
 import pytest
+import os
+from metplotpy.plots.histogram import prob_hist
 from metcalcpy.compare_images import CompareImages
-from metplotpy.plots.histogram import rhist
 
 
 @pytest.fixture
 def setup():
-    # Cleanup the plotfile and point1 output file from any previous run
+    # Cleanup the plotfile  output file from any previous run
     cleanup()
-    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
-    # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
-    custom_config_filename = "custom_rhist.yaml"
 
-    # Invoke the command to generate a Bar plot based on
-    # the custom_ens_ss.yaml custom config file.
-    rhist.main(custom_config_filename)
+    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    custom_config_filename = "prob_hist.yaml"
+
+    prob_hist.main(custom_config_filename)
 
 
 def cleanup():
-    # remove the rhist.png and .points files
+    # remove the rel_hist.png
     # from any previous runs
     try:
         path = os.getcwd()
-        plot_file = 'rhist.png'
-        points_file_1 = 'rhist.points1'
+        plot_file = './prob_hist.png'
         os.remove(os.path.join(path, plot_file))
-        os.remove(os.path.join(path, points_file_1))
-    except OSError as er:
+    except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
         pass
 
 
 @pytest.mark.parametrize("test_input, expected",
-                         (["./rhist.png", True],["./rhist.png", True],["./rhist.points1", True]))
-def test_files_exist( setup, test_input, expected):
+                         (["./prob_hist_expected.png", True],
+                          ["./prob_hist.png", True]))
+def test_files_exist(setup, test_input, expected):
     """
         Checking that the plot and data files are getting created
     """
@@ -57,6 +53,7 @@ def test_images_match(setup):
         newly created plot to verify that the plot hasn't
         changed in appearance.
     """
-    comparison = CompareImages('./rhist_expected.png', './rhist.png')
+    comparison = CompareImages("./prob_hist_expected.png",
+                               "./prob_hist.png")
     assert comparison.mssim == 1
     cleanup()
