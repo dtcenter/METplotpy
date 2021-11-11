@@ -4,6 +4,14 @@
 # False otherwise
 dump_points_1: 'False'
 
+# Optional, uncomment and set to directory to store the .points1 file
+# that is used by METviewer (created when dump_points_1 is set to True)
+# if dump_points_1 is True and this is uncommented, the points1 file
+# will be saved in the default location (i.e. where the input data file is stored).
+#points_path: /dir_to_save_points1_file
+
+
+
 # Line and marker plots of series data of Success Rate (1-FAR) on x-axis vs. PODY on y-axis.
 title: Performance Diagram ("Custom title")
 xaxis: Success Ratio
