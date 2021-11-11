@@ -1,5 +1,5 @@
 """
-Class Name: RhistSeries
+Class Name: HistSeries
  """
 __author__ = 'Tatiana Burek'
 
@@ -10,13 +10,16 @@ import metcalcpy.util.utils as utils
 from plots.series import Series
 
 
-class RhistSeries(Series):
+class HistSeries(Series):
     """
-        Represents a Rank histogram series object
+        Represents a generic histogram ser object
         of data points and their plotting style
         elements
 
     """
+
+    sum_by_columns = []
+    stat_value = ()
 
     def __init__(self, config, idx: int, input_data, series_list: list,
                  series_name: Union[list, tuple], y_axis: int = 1):
@@ -28,7 +31,7 @@ class RhistSeries(Series):
     def _create_all_fields_values_no_indy(self) -> dict:
         """
         Creates a dictionary with two keys that represents each axis
-        values - dictionaries of field values pairs of all series variables (without indy variable)
+        values - dictionaries of field values pairs of all ser variables (without indy variable)
         :return: dictionary with field-values pairs for each axis
         """
         all_fields_values_no_indy = {}
@@ -46,7 +49,7 @@ class RhistSeries(Series):
 
     def _create_series_points(self) -> list:
         """
-        Subset the data for the appropriate series.
+        Subset the data for the appropriate ser.
         Calculates values for each box
 
         Args:
@@ -56,7 +59,7 @@ class RhistSeries(Series):
 
         all_filters = []
 
-        # create a set of filters for this series
+        # create a set of filters for this ser
         for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
             filter_value = self.series_name[field_ind]
             filter_list = [filter_value]
@@ -73,17 +76,53 @@ class RhistSeries(Series):
         else:
             self.series_data = self.input_data
 
-        # group by i_value, series value, calculate sums of rank_i and store them as stat_value
-        sum_by_columns = ['i_value']
-        sum_by_columns.extend(self.config.series_val_names)
-        self.series_data = self.series_data.groupby(sum_by_columns).agg(
-            stat_value=('rank_i', 'sum')
-        ).reset_index()
+        # group by i_value, ser value, calculate sums of rank_i and store them as stat_value
+        columns = self.sum_by_columns.copy()
+        columns.extend(self.config.series_val_names)
+        self.series_data = self.series_data.groupby(columns) \
+            .agg(stat_value=self.stat_value).reset_index()
 
         if self.config.normalized_histogram is True:
             total_stat = self.series_data['stat_value'].sum()
-            series_points_results = self.series_data.loc[:, 'stat_value'].apply(lambda x: x / total_stat).tolist()
+            series_points_results = self.series_data.loc[:, 'stat_value'] \
+                .apply(lambda x: x / total_stat).tolist()
         else:
             series_points_results = self.series_data.loc[:, 'stat_value'].tolist()
 
         return series_points_results
+
+
+class RankHistSeries(HistSeries):
+    """
+        Represents a Rank histogram ser object
+        of data points and their plotting style
+        elements
+
+    """
+
+    sum_by_columns = ['i_value']
+    stat_value = 'rank_i', 'sum'
+
+
+class ProbHistSeries(HistSeries):
+    """
+        Represents a Probability Histogram ser object
+        of data points and their plotting style
+        elements
+
+    """
+
+    sum_by_columns = ['i_value', 'bin_size']
+    stat_value = 'bin_i', 'sum'
+
+
+class RelHistSeries(HistSeries):
+    """
+        Represents a Relative Histogram ser object
+        of data points and their plotting style
+        elements
+
+    """
+
+    sum_by_columns = ['i_value']
+    stat_value = 'ens_i', 'sum'
