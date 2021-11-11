@@ -1,8 +1,9 @@
-Line plot
-===========================================
+*********
+Line Plot
+*********
 
 Description
-~~~~~~~~~~~
+===========
 The line plot is a scatter plot where each point is connected by a line.
 It is used by METviewer for generating series plots.
 Refer to the METviewer documentation for details on how this
@@ -12,9 +13,10 @@ https://metviewer.readthedocs.io/en/latest/Users_Guide/seriesplots.html
 
 
 Example
-~~~~~~~
+=======
 
-**Sample Data**
+Sample Data
+___________
 
 The sample data used to create an example line plot is available in the
 *METplotpy* repository, where the line plot tests are located:
@@ -26,7 +28,8 @@ The data is text output from MET in columnar format.
 
 
 
-**Configuration Files**
+Configuration Files
+___________________
 
 The line plot utilizes YAML configuration files to indicate where input
 data is located and to set plot attributes. These plot attributes correspond
@@ -48,9 +51,10 @@ file if all default settings are to be applied.
 
 
 METplus Configuration
-~~~~~~~~~~~~~~~~~~~~~
+=====================
 
-**Default Configuration File**
+Default Configuration File
+__________________________
 
 The following is the `mandatory`, **line_defaults.yaml** configuration file,
 which serves as a good starting point for creating a line
@@ -58,7 +62,8 @@ plot as it represents the default values set in METviewer
 
 .. literalinclude:: ../../metplotpy/plots/config/line_defaults.yaml
 
-**Custom Configuration File**
+Custom Configuration File
+_________________________
 
 A second, `mandatory` configuration file is required, which is
 used to customize the settings to the line plot. The **custom_line.yaml**
@@ -71,7 +76,7 @@ file, an empty custom configuration file can be specified instead.
 
 
 Run from the Command Line
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 The **custom_line.yaml** configuration file, in combination with the
 **line_defaults.yaml** configuration file, generate a plot of
@@ -106,4 +111,3 @@ To generate the above plot using the **line_defaults.yaml** and
 * in addition, a **line.point1 (<outputfilename>.point1)** text file is also
   generated, which lists the independent and dependent variables that
   are plotted.  This information can be useful in debugging.
-
