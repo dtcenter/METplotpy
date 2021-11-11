@@ -1,5 +1,5 @@
 """
-Class Name: histogram_config.py
+Class Name: HistogramConfig
 
 Holds values set in the histograms plot config file(s)
 """
@@ -70,9 +70,9 @@ class HistogramConfig(Config):
         self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         ##############################################
-        # series parameters
+        # ser parameters
         self.series_ordering = self.get_config_value('series_order')
-        # Make the series ordering zero-based
+        # Make the ser ordering zero-based
         self.series_ordering_zb = [sorder - 1 for sorder in self.series_ordering]
         self.plot_disp = self._get_plot_disp()
         self.colors_list = self._get_colors()
@@ -99,16 +99,18 @@ class HistogramConfig(Config):
         self.normalized_histogram = self._get_bool('normalized_histogram')
         self.fixed_vars_vals_input = self.parameters['fixed_vars_vals_input']
 
+        self.points_path = self.get_config_value('points_path')
+
     def _get_plot_disp(self) -> list:
         """
-        Retrieve the values that determine whether to display a particular series
+        Retrieve the values that determine whether to display a particular ser
         and convert them to bool if needed
 
         Args:
 
         Returns:
                 A list of boolean values indicating whether or not to
-                display the corresponding series
+                display the corresponding ser
             """
 
         plot_display_config_vals = self.get_config_value('plot_disp')
@@ -133,15 +135,15 @@ class HistogramConfig(Config):
             Returns:
                 True if the number of settings for each of the above
                 settings is consistent with the number of
-                series (as defined by the cross product of the model
+                ser (as defined by the cross product of the model
                 and vx_mask defined in the series_val_1 setting)
 
         """
-        # Determine the number of series based on the number of
+        # Determine the number of ser based on the number of
         # permutations from the series_var setting in the
         # config file
 
-        # Numbers of values for other settings for series
+        # Numbers of values for other settings for ser
         num_plot_disp = len(self.plot_disp)
         num_series_ord = len(self.series_ordering)
         num_colors = len(self.colors_list)
@@ -156,9 +158,9 @@ class HistogramConfig(Config):
 
     def get_series_y(self) -> list:
         """
-        Creates an array of series components (excluding derived) tuples for the specified y-axis
+        Creates an array of ser components (excluding derived) tuples for the specified y-axis
         :param axis: y-axis (1 or 2)
-        :return: an array of series components tuples
+        :return: an array of ser components tuples
         """
         all_fields_values_orig = self.get_config_value('series_val_1').copy()
         all_fields_values = {}
@@ -170,12 +172,12 @@ class HistogramConfig(Config):
     def calculate_number_of_series(self) -> int:
         """
            From the number of items in the permutation list,
-           determine how many series "objects" are to be plotted.
+           determine how many ser "objects" are to be plotted.
 
            Args:
 
            Returns:
-               the number of series
+               the number of ser
 
         """
         # Retrieve the lists from the series_val_1 dictionary
@@ -191,21 +193,21 @@ class HistogramConfig(Config):
     def _get_user_legends(self, legend_label_type: str = '') -> list:
         """
         Retrieve the text that is to be displayed in the legend at the bottom of the plot.
-        Each entry corresponds to a series.
+        Each entry corresponds to a ser.
 
         Args:
                 @parm legend_label_type:  The legend label. Used when the user hasn't
                                           indicated a legend.
 
         Returns:
-                a list consisting of the series label to be displayed in the plot legend.
+                a list consisting of the ser label to be displayed in the plot legend.
 
         """
 
         all_user_legends = self.get_config_value('user_legend')
         legend_list = []
 
-        # create legend list for y-axis series
+        # create legend list for y-axis ser
         for idx, ser_components in enumerate(self.get_series_y()):
             if idx >= len(all_user_legends) or all_user_legends[idx].strip() == '':
                 # user did not provide the legend - create it
@@ -218,7 +220,7 @@ class HistogramConfig(Config):
                 # user provided a legend - use it
                 legend_list.append(all_user_legends[idx])
 
-        # if there is no series variables
+        # if there is no ser variables
         if len(legend_list) == 0:
             if len(all_user_legends) > 0:
                 legend_list.append(all_user_legends[0])
@@ -228,7 +230,7 @@ class HistogramConfig(Config):
         return self.create_list_by_series_ordering(legend_list)
 
 
-class RHistogramConfig(HistogramConfig):
+class RankHistogramConfig(HistogramConfig):
     """
         Prepares and organises rank histogram plot parameters
     """
@@ -244,9 +246,9 @@ class RHistogramConfig(HistogramConfig):
         self.user_legends = self._get_user_legends('Rank Histogram')
 
 
-class PHistogramConfig(HistogramConfig):
+class ProbHistogramConfig(HistogramConfig):
     """
-        Prepares and organises rank histogram plot parameters
+        Prepares and organises Probability Histogram  plot parameters
     """
 
     def __init__(self, parameters: dict) -> None:
@@ -258,3 +260,20 @@ class PHistogramConfig(HistogramConfig):
         """
         super().__init__(parameters)
         self.user_legends = self._get_user_legends('Probability Histogram')
+
+
+class RelHistogramConfig(HistogramConfig):
+    """
+        Prepares and organises Relative Histogram plot parameters
+    """
+
+    def __init__(self, parameters: dict) -> None:
+        """ Reads in the plot settings from a Relative Histogram or Histograms
+            of relative position plot config file.
+
+            Args:
+            @param parameters: dictionary containing user defined parameters
+
+        """
+        super().__init__(parameters)
+        self.user_legends = self._get_user_legends('Relative Histogram')
