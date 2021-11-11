@@ -4,11 +4,13 @@ caption_offset: 3.0
 caption_size: 0.8
 caption_weight: 1
 cex: 1
-colors: []
+colors:
+- '#ff0000'
+con_series:
+- 1
 create_html: 'False'
 dump_points_1: 'False'
 event_equal: 'False'
-fcst_var_val_1: null
 fixed_vars_vals_input: {}
 grid_col: '#cccccc'
 grid_lty: 3
@@ -16,36 +18,39 @@ grid_lwd: 1
 grid_on: 'True'
 grid_x: listX
 indy_label: []
+indy_plot_val: []
 indy_vals: []
 indy_var: ''
 legend_box: o
 legend_inset:
   x: 0.0
   y: -0.25
-legend_ncol: 3
+legend_ncol: 1
 legend_size: 0.8
 line_type: None
+list_stat_1: []
 mar:
-- 8
-- 4
-- 5
-- 4
+- 8.0
+- 4.0
+- 5.0
+- 4.0
 mgp:
-- 1
-- 1
-- 0
+- 1.0
+- 1.0
+- 0.0
 normalized_histogram: 'True'
 plot_caption: ''
-plot_disp: []
-
+plot_disp:
+- 'True'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
 plot_type: png16m
 plot_units: in
 plot_width: 11.0
-series_order: []
 series_val_1: {}
+series_order:
+- 1
 title: test title
 title_align: 0.5
 title_offset: -2
@@ -53,6 +58,7 @@ title_size: 1.4
 title_weight: 2.0
 user_legend: []
 xaxis: test x_label
+xaxis_reverse: 'False'
 xlab_align: 0.5
 xlab_offset: 2
 xlab_size: 1
@@ -73,4 +79,3 @@ ytlab_horiz: 0.5
 ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
-plot_filename: ./rhist_expected.png #required
