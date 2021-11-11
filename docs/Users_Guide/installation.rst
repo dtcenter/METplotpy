@@ -63,7 +63,7 @@ This is the recommended method for installation.
 
 Clone the METcalcpy repository from https://github.com/dtcenter/METcalcpy
 
-From within the *active* conda environment,
+From within the *active* conda environment:
 
 .. code-block:: ini
 		
@@ -72,18 +72,19 @@ From within the *active* conda environment,
 This is the directory where the METcalcpy repository was cloned. In
 this directory, find the setup.py script
 
-From the command line, run
+From the command line run:
 
 .. code-block:: ini
 		
   pip install -e .
 
-Do NOT forget the ending **'.'**  This indicates using the setup.py in the
-current working directory.
+Do NOT forget the ending period **'.'**  This indicates using the setup.py
+in the current working directory.
  
 The *-e* option allows this installation to be editable, which is useful if
-the METcalcpy/metcalcpy source code needs updating. This step will avoid
-the need to reinstall if any changes are made to the METcalcpy code.
+the METcalcpy/metcalcpy source code needs updating. Using the *-e* option
+will avoid the need to reinstall if any changes are made to the METcalcpy
+code.
 
 Setting up the PYTHONPATH
 ~~~~~~~~~~~~~~~~~~~~~~~~~
