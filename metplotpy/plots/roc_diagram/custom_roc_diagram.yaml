@@ -2,6 +2,9 @@
 # Write points file. Set to True for METviewer use,
 # False otherwise
 dump_points_1: 'False'
+# Optional, uncomment and set to directory to store the .points1 file
+# that is used by METviewer (created when dump_points_1 is set to True)
+# points_path: '/dir_to_save_points1_file'
 
 # Title settings
 title: "Custom: ROC PCT 20200507_074426 "
@@ -94,4 +97,5 @@ reverse_connection_order: False
 create_html: 'True'
 stat_input:  ./plot_20200507_074426.data
 plot_filename: ./roc_diagram_custom.png
+
 
