@@ -89,7 +89,7 @@ To generate the above plot using the **line_defaults.yaml** and
 
 * Verify the conda environment is running and has
   has the required Python packages outlined in the requirements
-  section
+  section.
 
 * Change directories on the command line:
 

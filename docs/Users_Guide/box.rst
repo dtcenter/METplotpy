@@ -100,10 +100,10 @@ To generate the above plot using the **box_defaults.yaml** and
 **custom_box.yaml** config files, perform the following:
 
 * Verify the conda environment is running and has has the required
-  Python packages outlined in the requirements section
+  Python packages outlined in the requirements section.
   
 * Provide the absolute path to the *stat_input* property from the
-  **custom_line.yaml**
+  **custom_line.yaml**.
 
 * Enter the following command:
 
