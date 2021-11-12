@@ -333,17 +333,16 @@ class WindRosePlot(BasePlot):
         # (the input data file) except replace the .data
         # extension with .points1 extension
         # otherwise use points_path path
+        points = dict()
+        for trace in self.traces:
+            points[trace.name] = trace.r
 
-        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        match = re.match(r'(.*)(.txt)', self.config_obj.parameters['stat_input'])
         if self.config_obj.dump_points is True and match:
             filename = match.group(1)
-            points = dict()
-            for trace in self.traces:
-                points[trace.name] = trace.r
-
             # replace the default path with the custom
             if self.config_obj.points_path is not None:
-                 # get the file name
+                # get the file name
                 path = filename.split(os.path.sep)
                 if len(path) > 0:
                     filename = path[-1]
@@ -354,6 +353,7 @@ class WindRosePlot(BasePlot):
             # save points
             filename = filename + '.points1'
             self._save_points(points, filename)
+
 
     @staticmethod
     def _save_points(points: dict, output_file: str) -> None:
