@@ -77,6 +77,7 @@ def test_files_exist(test_input, expected_bool):
         points_file = './intermed_files/plot_20200317_151252.points1'
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(path, points_file))
+        os.rmdir(os.path.join(path, './intermed_files'))
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
@@ -111,6 +112,7 @@ def test_files_exist(test_input, expected_bool):
         points_file = 'plot_20200317_151252.points1'
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(path, points_file))
+        os.rmdir(os.path.join(path,'./intermed_files'))
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
