@@ -59,4 +59,33 @@ def test_images_match(setup):
     '''
     comparison = CompareImages('reliability.png', 'reliability_expected.png')
     assert comparison.mssim == 1
-    #cleanup()
+    cleanup()
+
+@pytest.mark.parametrize("test_input,expected",
+                         (["./intermed_files/reliability.png", True], ["./intermed_files/reliability.points1", True]))
+def test_files_exist(test_input, expected):
+    '''
+        Checking that the plot and data files are getting created
+    '''
+    try:
+       os.mkdir(os.path.join(os.getcwd(), 'intermed_files'))
+    except FileExistsError as e:
+        pass
+
+    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    custom_config_filename = "./custom_reliability_points1.yaml"
+    r.main(custom_config_filename)
+
+    assert os.path.isfile(test_input) == expected
+    try:
+        path = os.getcwd()
+        plot_file = 'reliability.png'
+        points_file = 'reliability.points1'
+        subdir = os.path.join(path, './intermed_files')
+        os.remove(os.path.join(subdir, plot_file))
+        os.remove(os.path.join(subdir, points_file))
+        os.rmdir(subdir)
+    except OSError as e:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass
