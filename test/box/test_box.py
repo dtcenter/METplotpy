@@ -87,6 +87,7 @@ def test_points1_file_exist(test_input, expected):
         subdir = os.path.join(path, './intermed_files')
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(subdir, points_file_1))
+        os.rmdir(subdir)
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
@@ -114,7 +115,7 @@ def test_defaultpoints1_file_exist(test_input, expected):
         plot_file = 'box_defaultpoints1.png'
         points_file_1 = 'box.points1'
         os.remove(os.path.join(path, plot_file))
-        os.remove(os.path.join(path, points_file_1))
+        os.rmdir(os.path.join(path, points_file_1))
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
