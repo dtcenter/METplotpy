@@ -1,8 +1,10 @@
+********
 Box plot
-===========================================
+********
 
 Description
-~~~~~~~~~~~
+===========
+
 Box plots, or box and whisker plots, are a way to summarize a distribution
 of values using Tukey's 5-number summary
 (:ref:`Hoaglin et al., 1983<Hoaglin>`). The dark
@@ -23,9 +25,10 @@ https://metviewer.readthedocs.io/en/latest/Users_Guide/boxplot.html
 
 
 Example
-~~~~~~~
+=======
 
-**Sample Data**
+Sample Data
+___________
 
 The sample data used to create an example box plot is available in the METplotpy
 repository, where the box plot tests are located:
@@ -37,7 +40,8 @@ output from MET in columnar format.
 
 
 
-**Configuration Files**
+Configuration Files
+___________________
 
 The box plot utilizes YAML configuration files to indicate where input data is located and
 to set plot attributes. These plot attributes correspond to values that can be set via the METviewer
@@ -55,9 +59,10 @@ file if all default settings are to be applied.
 
 
 METplus Configuration
-~~~~~~~~~~~~~~~~~~~~~
+=====================
 
-**Default Configuration File**
+Default Configuration File
+__________________________
 
 The following is the `mandatory`, box_defaults.yaml configuration file,
 which serves as a good starting point for creating a line
@@ -65,7 +70,8 @@ plot as it represents the default values set in METviewer
 
 .. literalinclude:: ../../metplotpy/plots/config/box_defaults.yaml
 
-**Custom Configuration File**
+Custom Configuration File
+_________________________
 
 A second, `mandatory` configuration file is required, which is
 used to customize the settings to the box plot. The custom_box.yaml
@@ -78,7 +84,7 @@ file, an empty custom configuration file can be specified instead.
 
 
 Run from the Command Line
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 The custom_box.yaml configuration file, in combination with the
 box_defaults.yaml configuration file, generate a plot of
