@@ -106,7 +106,7 @@ To generate the above plot using the **line_defaults.yaml** and
 
 * a **line.png** output file will be created in the
   *$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line* directory, as
-  specified by the **custom_line.yaml** `plot_filename` value.
+  specified by the **custom_line.yaml plot_filename** value.
 
 * in addition, a **line.point1 (<outputfilename>.point1)** text file is also
   generated, which lists the independent and dependent variables that
