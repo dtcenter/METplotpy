@@ -107,7 +107,7 @@ To generate the above plot using the **box_defaults.yaml** and
 
 * Enter the following command:
 
-.. code_block:: ini
+.. code-block:: ini
 
    cd  $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/box
 
@@ -115,7 +115,7 @@ To generate the above plot using the **box_defaults.yaml** and
 * Enter the following command. Remember to replacy the <path_to> with the
   correct path:
 
-.. code_block:: ini
+.. code-block:: ini
        
   python box.py <path_to>custom_box.yaml  
 
