@@ -87,24 +87,24 @@ five series:
 To generate the above plot using the **line_defaults.yaml** and
 **custom_line.yaml** config files, perform the following:
 
-* verify the conda environment is running and has
+* Verify the conda environment is running and has
   has the required Python packages outlined in the requirements
   section
 
-* run the following on the command line:
+* Change directories on the command line:
 
 .. code-block:: ini
 
   cd  $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line
 
-* enter the following command:
+* Enter the following command:
 
 .. code-block:: ini
     
   python line.py ./custom_line.yaml
 
 
-* a **line.png** output file will be created in the
+* A **line.png** output file will be created in the
   *$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line* directory, as
   specified by the **custom_line.yaml plot_filename** value.
 
