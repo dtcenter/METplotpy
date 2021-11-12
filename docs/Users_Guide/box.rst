@@ -19,7 +19,7 @@ of the data. The points represent outliers: any data point more than
 that do not fall inside the whiskers. Outliers are extreme values.
 It is used by METviewer for generating box plots.
 Refer to the
-`METviewer documentation<https://metviewer.readthedocs.io/en/latest/Users_Guide/boxplot.html>`_
+`METviewer documentation <https://metviewer.readthedocs.io/en/latest/Users_Guide/boxplot.html>`_
 for details on how this plot is utilized:
 
 
