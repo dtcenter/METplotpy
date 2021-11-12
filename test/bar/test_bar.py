@@ -90,7 +90,7 @@ def test_point_and_plot_files_exist( test_input, expected):
         subdir = os.path.join(path, 'intermed_files')
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(subdir, points_file_1))
-        os.remove(intermed_dir)
+        os.rmdir(intermed_dir)
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
@@ -125,7 +125,7 @@ def test_point_and_plot_files_exist( test_input, expected):
         points_file_1 = 'bar.defaultpoints1'
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(path, points_file_1))
-        os.remove(intermed_dir)
+        os.rmdir(intermed_dir)
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
