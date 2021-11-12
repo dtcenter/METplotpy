@@ -107,17 +107,17 @@ To generate the above plot using the **box_defaults.yaml** and
 
 * Enter the following command:
 
-  .. code_block::
+.. code_block:: ini
 
-     cd  $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/box
+   cd  $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/box
 
 
 * Enter the following command. Remember to replacy the <path_to> with the
   correct path:
 
-    .. code_block::
+.. code_block:: ini
        
-    python box.py <path_to>custom_box.yaml  
+  python box.py <path_to>custom_box.yaml  
 
 
 * A **box.png** output file will be created in the
