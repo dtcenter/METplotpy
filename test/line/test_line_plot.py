@@ -65,3 +65,5 @@ def test_images_match(setup):
     comparison = CompareImages('./line_expected.png', actual_file)
     assert comparison.mssim == 1
     cleanup()
+
+
