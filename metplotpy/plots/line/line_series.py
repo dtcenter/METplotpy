@@ -15,6 +15,7 @@ from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
 from plots.series import Series
+from plots import GROUP_SEPARATOR
 
 
 class LineSeries(Series):
