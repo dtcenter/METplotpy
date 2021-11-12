@@ -4,6 +4,7 @@ Class Name: wind_rose.py
  """
 __author__ = 'Tatiana Burek'
 
+import os
 import math
 from typing import Union
 import pandas as pd
@@ -326,25 +327,33 @@ class WindRosePlot(BasePlot):
         Formats series point data to the 2-dim array and saves it to the files
         """
 
-        # Open file, name it based on the stat_input config setting,
+
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
+        # otherwise use points_path path
 
-        if self.config_obj.dump_points is True:
-
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points is True and match:
+            filename = match.group(1)
             points = dict()
             for trace in self.traces:
                 points[trace.name] = trace.r
 
-            # create a file name from stat_input parameter
-            match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-            if match:
-                filename_only = match.group(1)
-            else:
-                filename_only = 'wind_rose'
+            # replace the default path with the custom
+            if self.config_obj.points_path is not None:
+                 # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
 
             # save points
-            self._save_points(points, filename_only + ".points")
+            filename = filename + '.points1'
+            self._save_points(points, filename)
 
     @staticmethod
     def _save_points(points: dict, output_file: str) -> None:
