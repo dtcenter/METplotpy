@@ -18,10 +18,11 @@ of the data. The points represent outliers: any data point more than
 1.5 times the IQR away from the median. These are defined as values
 that do not fall inside the whiskers. Outliers are extreme values.
 It is used by METviewer for generating box plots.
-Refer to the METviewer documentation for details on how this
-plot is utilized:
+Refer to the
+`METviewer documentation<https://metviewer.readthedocs.io/en/latest/Users_Guide/boxplot.html>`_
+for details on how this plot is utilized:
 
-https://metviewer.readthedocs.io/en/latest/Users_Guide/boxplot.html
+
 
 
 Example
@@ -106,7 +107,7 @@ To generate the above plot using the **box_defaults.yaml** and
 * Provide the absolute path to the *stat_input* property from the
   **custom_line.yaml**.
 
-* Enter the following command:
+* Change directories on the command line:
 
 .. code-block:: ini
 
