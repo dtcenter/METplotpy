@@ -105,7 +105,7 @@ To generate the above plot using the **bar_defaults.yaml** and
   python ens_ss.py <path_to>custom_ens_ss.yaml
 
 
-* A **ens_ss.png** output file will be created in the
+* An **ens_ss.png** output file will be created in the
   *$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/ens_ss* directory, as
   specified by the **custom_ens_ss.yaml plot_filename** value.
 
