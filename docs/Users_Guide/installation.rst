@@ -9,6 +9,7 @@ METplotpy is written entirely in Python and uses YAML configuration files
 and relies on the METcalcpy package. The version numbers (when provided)
 indicate the *minimum* version number for that package.
 
+.. _python_req:
 
 Python Requirements
 ___________________
@@ -65,7 +66,8 @@ __________________________________________
 
 This is the recommended method for installation.
 
-Clone the METcalcpy repository from https://github.com/dtcenter/METcalcpy
+`Clone the METcalcpy repository from GitHub
+< https://github.com/dtcenter/METcalcpy>`_
 
 From within the *active* conda environment:
 
@@ -96,7 +98,7 @@ _________________________
 This is a workaround for users who can not or do not have permission to
 create conda environments.
 
-$METCALCPY_SOURCE is the path downloaded/cloned METcalcpy code.
+*$METCALCPY_SOURCE* is the path downloaded/cloned METcalcpy code.
 
 **command for csh:** 
 
@@ -128,5 +130,5 @@ implementation of plotting done in METviewer.  These plots were written
 using Python plotly, with the exception of the performance diagram, which
 was written using Matplotlib.  The plots in the contributed directory may
 have different Python and third party Python package requirements that
-differ from the packages and versions specified in the 'Python Requirements'
-section.
+differ from the packages and versions specified in the
+:numref:`python_req` section.
