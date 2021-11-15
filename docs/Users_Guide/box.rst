@@ -19,7 +19,8 @@ of the data. The points represent outliers: any data point more than
 that do not fall inside the whiskers. Outliers are extreme values.
 It is used by METviewer for generating box plots.
 Refer to the 
-`METviewer documentation <https://metviewer.readthedocs.io/en/latest/Users_Guide/boxplot.html>`_
+`METviewer documentation
+<https://metviewer.readthedocs.io/en/latest/Users_Guide/boxplot.html>`_
 for details on how this plot is utilized:
 
 
@@ -49,9 +50,9 @@ is located and to set plot attributes. These plot attributes correspond
 to values that can be set via the METviewer tool. YAML is a recursive acronym
 for "YAML Ain't Markup Language" and according to
 `yaml.org <https://yaml.org>`_,
-it is a "human-readable data-serialization language". It is commonly used for
+it is a "human-friendly data serialization language". It is commonly used for
 configuration files and in applications where data is being stored or
-transmitted".  Two configuration files are required, the first is a default
+transmitted.  Two configuration files are required, the first is a default
 configuration file, **box_defaults.yaml** that is found in the
 *$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.  All default
 configuration files are located in the
