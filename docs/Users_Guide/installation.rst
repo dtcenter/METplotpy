@@ -67,7 +67,7 @@ __________________________________________
 This is the recommended method for installation.
 
 `Clone the METcalcpy repository from GitHub
-< https://github.com/dtcenter/METcalcpy>`_
+<https://github.com/dtcenter/METcalcpy>`_
 
 From within the *active* conda environment:
 
