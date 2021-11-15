@@ -24,191 +24,221 @@ with better values falling closer to the top.
 Example
 =======
 
-**Sample Data**
+Sample Data
+___________
 
-The sample data used to create these plots is available in the METplotpy repository, where the 
-performance diagram scripts are located:
+The sample data used to create these plots is available in the METplotpy
+repository, where the performance diagram scripts are located:
 
-$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/plot_20200317_151252.data
+*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/plot_20200317_151252.data*
 
-$METPLOTPY_SOURCE is the directory where the METplotpy code is saved.  The data is text
-output from MET in columnar format.
+*$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved.
+The data is textoutput from MET in columnar format.
 
 
 
-**Configuration Files**
+Configuration Files
+___________________
 
-The performance diagram utilizes YAML configuration files to indicate where input data is located and 
-to set plot attributes. These plot attributes correspond to values that can be set via the METviewer 
-tool. YAML is a recursive acroynym for "YAML Ain't Markup Language" and according to yaml.org, 
-it is a "human-readable data-serialization language. It is commonly used for configuration files 
-and in applications where data is being stored or transmitted".  Two configuration files are required, 
-the first is a default configuration file, performance_diagram_defaults.yaml that is found in the 
-$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config directory. $METPLOTPY_SOURCE indicates the directory
-where the METplotpy source code has been saved.  The second required YAML configuration file is a 
-user-supplied "custom" configuration file that can be used to customize/override the default 
-settings in the performance_diagram_defaults.yaml file.  The custom configuration file can be an empty 
-file if all default settings are to be applied.   
+The performance diagram utilizes YAML configuration files to indicate where
+input data is located and to set plot attributes. These plot attributes
+correspond to values that can be set via the METviewer tool. YAML is a
+recursive acronym for "YAML Ain't Markup Language" and according to
+`yaml.org <https://yaml.org>`_,
+it is a "human-friendly data serialization language. It is commonly used for
+configuration files and in applications where data is being stored or
+transmitted.  Two configuration files are required, the first is a default
+configuration file, **performance_diagram_defaults.yaml** that is found in the 
+*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
+*$METPLOTPY_SOURCE* indicates the directory where the METplotpy source
+code has been saved.  The second required YAML configuration file is a 
+user-supplied "custom" configuration file that can be used to
+customize/override the default settings in the
+**performance_diagram_defaults.yaml** file.  The custom configuration file
+can be an empty file if all default settings are to be applied.   
 
-**Default Configuration File Settings**
+Default Configuration File Settings
+___________________________________
 
-* **title**   The title for the performance diagram
+* **title**   The title for the performance diagram.
 
 * **title_weight** 1=plain 2=bold 3=italic 4=bold italic
 
-* **title_align**   Unsupported by Matplotlib, included for consistency with METviewer
+* **title_align**   Unsupported by Matplotlib, included for consistency
+  with METviewer.
 
-* **title_offset**  Unsupported by Matplotlib, included for consistency with METviewer
+* **title_offset**  Unsupported by Matplotlib, included for consistency
+  with METviewer.
 
 * **title_size**   Magnifier value. Values above 1.0 create title 
   that is larger than the internal default size. Values less than
   1.0 create a title that is smaller than the internal default size.
 
-* **xaxis**  The label to the x-axis
+* **xaxis**  The label to the x-axis.
 
-* **yaxis_1**  The label to the bottom y-axis
+* **yaxis_1**  The label to the bottom y-axis.
 
 * **yaxis_2**  The label to the top y-axis (leave empty if second y-axis 
-  is not needed/required)
+  is not needed/required).
 
-* **plot_width**  width of plot in inches
+* **plot_width**  Width of plot in inches.
 
-* **plot_height** height of plot in inches
+* **plot_height** Height of plot in inches.
 
-* **plot_units**  units for plot: in for inches or cm for centimeters
+* **plot_units**  Units for plot: in for inches or cm for centimeters.
 
 * **plot_ci**  A list of values of the type of Confidence Intervals to apply.
   Choose either None for no confidence intervals or Norm for normalized
   confidence intervals.
                
 
-* **plot_disp**     A list of True/False values. True to display, False otherwise
+* **plot_disp**  A list of True/False values. True to display, False otherwise.
 
-* **series_order**  A list of values 1..n indicating the order of the series in the list
-  e.g. if the list is 3, then 1, then 2 this indicates that the first series in the list
-  is to be treated as the third, the second element in the list is to be treated as the
-  first series, and the third element in the list is to be treated as the second series.
+* **series_order**  A list of values 1..n indicating the order of the
+  series in the list.
+  e.g. if the list is 3, then 1, then 2 this indicates that the first
+  series in the list is to be treated as the third, the second element in
+  the list is to be treated as the first series, and the third element
+  in the list is to be treated as the second series.
  
-* **indy_var**     The independant variable
+* **indy_var**  The independent variable.
 
-* **indy_vals**    A list of independent variables
+* **indy_vals**  A list of independent variables.
 
-* **fcst_var_val_1**   Variables of interest
+* **fcst_var_val_1**  Variables of interest.
 
-* **fcst_var_val_2**   Second set of variables of interest
+* **fcst_var_val_2**  Second set of variables of interest.
                  
-* **series_val_1** Series values
+* **series_val_1**  Series values.
 
-* **series_val_2**  Second set of series values. Leave as empty
+* **series_val_2**  Second set of series values. Leave as empty.
 
-* **list_stat_1**   List of statistics of interest 
+* **list_stat_1**  List of statistics of interest .
 
-* **list_stat_2**   Second list of statistics of interest. Leave as empty list
+* **list_stat_2**  Second list of statistics of interest. Leave as empty
+  list.
 
-* **user_legend**   List of legend labels.  One for each series. If any list
+* **user_legend**  List of legend labels.  One for each series. If any list
   member is empty, a legend label will be created based on other information.
 
 * **legend_box**
-  'n' for no box around the legend
-  'o' for a box drawn around the legend
+  'n' for no box around the legend.
+  'o' for a box drawn around the legend.
 
-* **legend_ncol**    Integer value indicating how many columns of
-  legend labels
+* **legend_ncol**  Integer value indicating how many columns of
+  legend labels.
 
-* **legend_inset**   x and y values indicating position of the legend
+* **legend_inset**  x and y values indicating position of the legend.
 
-* **legend_size**    A magnification value.  Value greater than 1.
+* **legend_size**  A magnification value.  Value greater than 1.
   Produces a legend that is greater than an internal default value.
   Value less than 1.0 produces a legend smaller than an internal default size.
 
-* **plot_stat**  The statistics to plot: median, mean or sum
+* **plot_stat**  The statistics to plot: median, mean or sum.
 
-* **plot_contour_legend**  True for drawing a legend for contour lines, False otherwise
+* **plot_contour_legend**  True for drawing a legend for contour lines,
+  False otherwise.
 
-* **colors**   A list of colors one for each series. Define as color name or hexadecimal values  
+* **colors**  A list of colors one for each series. Define as color
+  name or hexadecimal values.
 
-* **series_line_width**   A list of widths for each series line.  Values greater than 1 result
-  in a thicker line.
+* **series_line_width**  A list of widths for each series line.
+  Values greater than 1 result in a thicker line.
 
-* **series_symbols**     A list of symbols to apply for each series:
-  'o' for circle, 's' for square, 'H' for ring, 'd' for diamond, '^' for triangle
+* **series_symbols**  A list of symbols to apply for each series:
+  'o' for circle, 's' for square, 'H' for ring, 'd' for diamond,
+  '^' for triangle.
 
-* **series_line_style**  A list of line styles to apply to the corresponding series:
+* **series_line_style**  A list of line styles to apply to the
+  corresponding series:
   '-' for solid line
   '--' for dashed line
-  ':' for dotted line
+  ':' for dotted line.
 
-* **event_equal**      True to perform event equalization on data, False otherwise
+* **event_equal**  True to perform event equalization on data, False otherwise.
 
-* **annotation_template**  Annotation for y-value.  Leave empty if no annotation is desired.
-  Otherwise indicate template with "%y <units>".  Double quotes around annotation is needed.
+* **annotation_template**  Annotation for y-value.  Leave empty if
+  no annotation is desired.
+  Otherwise, indicate template with "%y <units>".  Double quotes around
+  annotation are needed.
 
-* **plot_caption**     Caption text, leave empty if no caption is desired
+* **plot_caption**  Caption text, leave empty if no caption is desired.
 
-* **caption_weight**   1=plain text 2=bold 3=italic 4=bold italic
+* **caption_weight**  1=plain text 2=bold 3=italic 4=bold italic.
 
-* **caption_col**      Color of caption, color name or hexadecimal value
+* **caption_col**  Color of caption, color name or hexadecimal value.
 
-* **caption_size**     Relative magnification of an internal default font size
+* **caption_size**  Relative magnification of an internal default font size.
 
-* **caption_offset**   The up/down position relative to the x-axis
+* **caption_offset**  The up/down position relative to the x-axis.
 
-* **caption_align**    The left/right position relative to the y-axis
+* **caption_align**  The left/right position relative to the y-axis.
 
-* **xlab_size**        Size of the x label as a magnification of an internal default size
+* **xlab_size**  Size of the x label as a magnification of an internal
+  default size.
 
-* **xlab_align**       up/down positioning relative to x-axis
+* **xlab_align**  Up/down positioning relative to x-axis.
 
-* **xlab_offset**      left/right position relative to the y-axis 
+* **xlab_offset**  Left/right position relative to the y-axis.
 
-* **xlab_weight**     1=plain text 2=bold 3=italic 4=bold italic
+* **xlab_weight**  1=plain text 2=bold 3=italic 4=bold italic.
 
-* **xtlab_orient**    unsupported by Matplotlib, kept for consistency with METviewer
+* **xtlab_orient**  Unsupported by Matplotlib, kept for consistency
+  with METviewer.
 
-* **xtlab_size**      unsupported by Matplotlib, kept for consistency with METviewer
+* **xtlab_size**  Unsupported by Matplotlib, kept for consistency
+  with METviewer.
 
-* **ylab_align**      left/right position of y label
+* **ylab_align**  Left/right position of y label.
 
-* **ylab_offset**     up/down position of y label
+* **ylab_offset**  up/down position of y label.
 
-* **ylab_weight**     1=plain text 2=bold 3=italic 4=bold italic
+* **ylab_weight**  1=plain text 2=bold 3=italic 4=bold italic.
 
-* **ytlab_orient**    y-tick label orientation
+* **ytlab_orient**  y-tick label orientation.
 
-* **ytlab_size**      size of y-tick labels as a magnification of an internal default size
+* **ytlab_size**  Size of y-tick labels as a magnification of an
+  internal default size.
 
-* **stat_input**      path and filename of the input MET stat file
+* **stat_input**  Path and filename of the input MET stat file.
 
-* **plot_filename**   path and filename of the output performance diagram PNG file
-  Only PNG output is currently supported.
+* **plot_filename**  Path and filename of the output performance diagram
+  PNG file.  Only PNG output is currently supported.
 
 Run from the Command Line
 =========================
 
 To generate a default performance diagram (i.e. using settings in the 
-performance_diagram_defaults.yaml configuration file), clone the code from the METplotpy 
-repository at github.com/dtcenter/METplotpy:
+**performance_diagram_defaults.yaml** configuration file), clone the code
+from the `METplotpy repository at GitHub
+<https://github.com/dtcenter/METplotpy>`_
+From the command line:
 
-    ``cd $METPLOTPY_SOURCE``
+.. code-block:: ini
+		
+   cd $METPLOTPY_SOURCE`
+   git clone https://github.com/dtcenter/METplotpy
 
-    ``git clone https://github.com/dtcenter/METplotpy``
+Change directory to
+*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram*, where
+*$METPLOTPY_SOURCE* is the directory where the code was cloned   
 
-Change directory to $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram, where
-$METPLOTPY_SOURCE is the directory where you cloned the code.   
+.. code-block:: ini
+		
+   cd $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram
 
 
-      ``cd METplotpy/metplotpy/plots/performance_diagram``
+Activate the conda environment, which has all the Python requirements
+outlined in the :ref:`Installation guide<python_req>`.
 
+Run the following on the command line:
 
-Activate your conda environment, which has all the Python requirements outlined in the Installation
-guide.  
+.. code-block:: ini
 
-Run the following at the command line:
+  python performance_diagram.py ./minimal_performance_diagram.yaml
 
-``python performance_diagram.py ./minimal_performance_diagram.yaml``
-
-This will create a PNG file performance_diagram_default.png in the directory from where you ran 
-the python command above.
+This will create a PNG file, **performance_diagram_default.png**, in the
+same directory where the python command ran.
 
 
 
