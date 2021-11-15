@@ -33,7 +33,7 @@ repository, where the performance diagram scripts are located:
 *$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/plot_20200317_151252.data*
 
 *$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved.
-The data is textoutput from MET in columnar format.
+The data is text output from MET in columnar format.
 
 
 
@@ -62,7 +62,7 @@ ___________________________________
 
 * **title**   The title for the performance diagram.
 
-* **title_weight** 1=plain 2=bold 3=italic 4=bold italic
+* **title_weight** 1=plain 2=bold 3=italic 4=bold italic.
 
 * **title_align**   Unsupported by Matplotlib, included for consistency
   with METviewer.
@@ -211,17 +211,17 @@ Run from the Command Line
 To generate a default performance diagram (i.e. using settings in the 
 **performance_diagram_defaults.yaml** configuration file), clone the code
 from the `METplotpy repository at GitHub
-<https://github.com/dtcenter/METplotpy>`_
+<https://github.com/dtcenter/METplotpy>`_.
 From the command line:
 
 .. code-block:: ini
 		
-   cd $METPLOTPY_SOURCE`
+   cd $METPLOTPY_SOURCE
    git clone https://github.com/dtcenter/METplotpy
 
 Change directory to
 *$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram*, where
-*$METPLOTPY_SOURCE* is the directory where the code was cloned   
+*$METPLOTPY_SOURCE* is the directory where the code was cloned.  
 
 .. code-block:: ini
 		
@@ -241,12 +241,17 @@ This will create a PNG file, **performance_diagram_default.png**, in the
 same directory where the python command ran.
 
 
+To generate a slightly modified plot, re-run the above command using the
+custom_performance_diagram.yaml file:
 
-To generate a slightly modified plot, re-run the above command using the custom_performance_diagram.yaml file:
+.. code-block:: ini
+		
+  python performance_diagram.py ./custom_performance_diagram.yaml
 
-``python performance_diagram.py ./custom_performance_diagram.yaml``
-
-This will create a PNG file, performance_diagram_custom.png, which will differ in appearance from the default
-plot.  These plots use the plot_20200317_151252.data that is found in the METplotpy/metplotpy/plots/performance_diagram
-directory, and creates the PNG plot in addition to a plot_2020-317_151252.points1 file.  The latter is a text
-file that contains the x- and y-values that are being plotted and is useful in debugging.  
+This will create a PNG file, **performance_diagram_custom.png**, which
+will differ in appearance from the default plot.  These plots use the
+**plot_20200317_151252.data** that is found in the
+*METplotpy/metplotpy/plots/performance_diagram* directory, and creates the
+PNG plot in addition to a **plot_2020-317_151252.points1** file.  The
+latter is a text file that contains the x- and y-values that are being
+plotted and is useful in debugging.  
