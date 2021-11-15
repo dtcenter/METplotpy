@@ -7,7 +7,7 @@ Description
 
 Performance diagrams are used to show the relationship between categorical
 statistics, with  axes representing detection and success (1 - false alarm)
-rates Roebber, 2009).  
+rates (:ref:`Roebber, 2009<Roebber>`).  
 The simplest input to the performance diagram is the MET contingency
 table statistics (CTS)  output.  This output can be produced by many of
 the MET tools (Point-Stat, Grid-Stat, etc.). 
