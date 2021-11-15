@@ -6,8 +6,10 @@ Description
 ===========
 The line plot is a scatter plot where each point is connected by a line.
 It is used by METviewer for generating series plots.
-Refer to the METviewer documentation for details on how this
-plot is utilized:
+Refer to the
+`METviewer documentation
+<https://metviewer.readthedocs.io/en/latest/Users_Guide/boxplot.html>`_
+documentation for details on how this plot is utilized:
 
 https://metviewer.readthedocs.io/en/latest/Users_Guide/seriesplots.html
 
