@@ -1,23 +1,28 @@
-Performance diagram
-===========================================
+*******************
+Performance Diagram
+*******************
 
 Description
-~~~~~~~~~~~
+===========
 
-Performance diagrams are used to show the relationship between categorical statistics, with 
-axes representing detection and success(1 - false alarm) rates Roebber, 2009).  
-The simplest input to the performance diagram is the MET contingency table statistics (CTS) 
-output.  This output can be produced by many of the MET tools (Point-Stat, Grid-Stat, etc.). 
+Performance diagrams are used to show the relationship between categorical
+statistics, with  axes representing detection and success (1 - false alarm)
+rates Roebber, 2009).  
+The simplest input to the performance diagram is the MET contingency
+table statistics (CTS)  output.  This output can be produced by many of
+the MET tools (Point-Stat, Grid-Stat, etc.). 
 
 
-There are several reference lines on the performance diagram.  The dashed lines that radiate
-from the origin are lines of equal frequency bias.  Labels for the frequency bias amount are
-at the end of each line. The diagonal represents a perfect frequency bias score of 1.  Curves
-of equal Critical Success Index (CSI) connect the top of the plot to the right side.  CSI 
-amounts are listed to the right side of the plot, with better values falling closer to the top.
+There are several reference lines on the performance diagram.  The dashed
+lines that radiate from the origin are lines of equal frequency bias.
+Labels for the frequency bias amount are at the end of each line. The
+diagonal represents a perfect frequency bias score of 1.  Curves of
+equal Critical Success Index (CSI) connect the top of the plot to the
+right side.  CSI amounts are listed to the right side of the plot,
+with better values falling closer to the top.
 
 Example
-~~~~~~~
+=======
 
 **Sample Data**
 
@@ -178,7 +183,7 @@ file if all default settings are to be applied.
   Only PNG output is currently supported.
 
 Run from the Command Line
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 To generate a default performance diagram (i.e. using settings in the 
 performance_diagram_defaults.yaml configuration file), clone the code from the METplotpy 
