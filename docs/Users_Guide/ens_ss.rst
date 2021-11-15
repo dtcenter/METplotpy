@@ -1,16 +1,18 @@
+**************************
 Ensemble spread-skill plot
-===========================================
+**************************
 
 Description
-~~~~~~~~~~~
+===========
 The theory is that RMSE of the ensemble mean should have roughly a 1-1 relationship
 with the ensemble spread (I.e. standard deviation of the ensemble member values).
 Ensemble spread-skill plot measures that relationship.
 
 Example
-~~~~~~~
+=======
 
-**Sample Data**
+Sample Data
+___________
 
 The sample data used to create an example Ensemble spread-skill plot is available in the METplotpy
 repository, where the Ensemble spread-skill plot tests are located:
@@ -22,7 +24,8 @@ output from MET in columnar format.
 
 
 
-**Configuration Files**
+Configuration Files
+___________________
 
 The Ensemble spread-skill plot utilizes YAML configuration files to indicate where input data is located and
 to set plot attributes. These plot attributes correspond to values that can be set via the METviewer
@@ -40,9 +43,10 @@ file if all default settings are to be applied.
 
 
 METplus Configuration
-~~~~~~~~~~~~~~~~~~~~~
+=====================
 
-**Default Configuration File**
+Default Configuration File
+__________________________
 
 The following is the `mandatory`, bar_defaults.yaml configuration file,
 which serves as a good starting point for creating a line
@@ -50,7 +54,8 @@ plot as it represents the default values set in METviewer
 
 .. literalinclude:: ../../metplotpy/plots/config/ens_ss_defaults.yaml
 
-**Custom Configuration File**
+Custom Configuration File
+_________________________
 
 A second, `mandatory` configuration file is required, which is
 used to customize the settings to the bar plot. The custom_bar.yaml
@@ -63,7 +68,7 @@ file, an empty custom configuration file can be specified instead.
 
 
 Run from the Command Line
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 The custom_bar.yaml configuration file, in combination with the
 bar_defaults.yaml configuration file, generate a plot of
@@ -93,5 +98,6 @@ custom_bar.yaml config files, perform the following:
   specified by the custom_ens_ss.yaml `plot_filename` value.
 
 * in addition, a ens_ss.point1 (<outputfilename>.point1) text file is also
-  generated, which lists the statistics used to create the plot(s).  This information can be useful in debugging.
+  generated, which lists the statistics used to create the plot(s).  This
+  information can be useful in debugging.
 
