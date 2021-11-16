@@ -8,7 +8,7 @@ Description
 ROC (Receiver Operating Characteristic) curves are useful in weather
 forecasting.  ROC curve plots show the true positive rate (sensitivity)
 versus the false positive rate (1 - specificity) for different cut-off
-points ofa parameter.  In addition to creating ROC diagrams directly
+points of a parameter.  In addition to creating ROC diagrams directly
 from the source code in the METplotpy repository, ROC diagrams can be
 generated through METviewer.  For more information on ROC diagrams, please
 refer to the
@@ -57,11 +57,11 @@ METplus Configuration
 
 Default Configuration File
 _________________________
-_
+
 The following is the *mandatory*, **roc_diagram_defaults.yaml**
 configuration file,
 which serves as a good starting point for creating a ROC diagram
-plot as it represents the default values set in METviewer
+plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/roc_diagram_defaults.yaml
 
