@@ -52,18 +52,18 @@ for "YAML Ain't Markup Language" and according to
 `yaml.org <https://yaml.org>`_,
 it is a "human-friendly data serialization language". It is commonly used for
 configuration files and in applications where data is being stored or
-transmitted.  Two configuration files are required, the first is a default
-configuration file, **box_defaults.yaml** that is found in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.  All default
+transmitted. Two configuration files are required. The first is a default
+configuration file, **box_defaults.yaml**, which is found in the
+*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory. All default
 configuration files are located in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.  Note,
-*$METPLOTPY_SOURCE* is the user-specified directory where the METplotpy
-source code has been saved.  The second required YAML configuration file is
-a user-supplied "custom" configuration file that is used to customize/override
-the default settings in the **box_defaults.yaml** file.  The custom
-configuration file can be an empty file if all default settings are to
-be applied.
+*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
+Note: *$METPLOTPY_SOURCE* is the user-specified directory where the
+METplotpy source code has been saved.
 
+The second required configuration file is a user-supplied “custom”
+configuration file. This  file is used to customize/override the default
+settings in the **box_defaults.yaml** file. The custom configuration
+file can be an empty file if all default settings are to be applied.
 
 METplus Configuration
 =====================

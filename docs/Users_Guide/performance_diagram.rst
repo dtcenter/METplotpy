@@ -47,30 +47,35 @@ recursive acronym for "YAML Ain't Markup Language" and according to
 `yaml.org <https://yaml.org>`_,
 it is a "human-friendly data serialization language. It is commonly used for
 configuration files and in applications where data is being stored or
-transmitted.  Two configuration files are required, the first is a default
-configuration file, **performance_diagram_defaults.yaml** that is found in the 
+transmitted. Two configuration files are required. The first is a
+default configuration file, **performance_diagram_defaults.yaml**,
+which is found in the
+*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory. All default
+configuration files are located in the
 *$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
-*$METPLOTPY_SOURCE* indicates the directory where the METplotpy source
-code has been saved.  The second required YAML configuration file is a 
-user-supplied "custom" configuration file that can be used to
-customize/override the default settings in the
-**performance_diagram_defaults.yaml** file.  The custom configuration file
-can be an empty file if all default settings are to be applied.   
+Note: *$METPLOTPY_SOURCE* is the user-specified directory where the
+METplotpy source code has been saved.
+
+The second required configuration file is a user-supplied “custom”
+configuration file. This  file is used to customize/override the default
+settings in the **performance_diagram_defaults.yaml** file. The custom
+configuration file can be an empty file if all default settings are to
+be applied.
 
 Default Configuration File Settings
 ___________________________________
 
-* **title**   The title for the performance diagram.
+* **title**  The title for the performance diagram.
 
-* **title_weight** 1=plain 2=bold 3=italic 4=bold italic.
+* **title_weight**  1=plain 2=bold 3=italic 4=bold italic.
 
-* **title_align**   Unsupported by Matplotlib, included for consistency
+* **title_align**  Unsupported by Matplotlib, included for consistency
   with METviewer.
 
 * **title_offset**  Unsupported by Matplotlib, included for consistency
   with METviewer.
 
-* **title_size**   Magnifier value. Values above 1.0 create title 
+* **title_size**  Magnifier value. Values above 1.0 create title 
   that is larger than the internal default size. Values less than
   1.0 create a title that is smaller than the internal default size.
 
@@ -177,9 +182,9 @@ ___________________________________
 * **xlab_size**  Size of the x label as a magnification of an internal
   default size.
 
-* **xlab_align**  Up/down positioning relative to x-axis.
+* **xlab_align**  The up/down positioning relative to x-axis.
 
-* **xlab_offset**  Left/right position relative to the y-axis.
+* **xlab_offset**  The left/right position relative to the y-axis.
 
 * **xlab_weight**  1=plain text 2=bold 3=italic 4=bold italic.
 
@@ -189,13 +194,13 @@ ___________________________________
 * **xtlab_size**  Unsupported by Matplotlib, kept for consistency
   with METviewer.
 
-* **ylab_align**  Left/right position of y label.
+* **ylab_align**  The left/right position of y label.
 
-* **ylab_offset**  up/down position of y label.
+* **ylab_offset**  The up/down position of y label.
 
-* **ylab_weight**  1=plain text 2=bold 3=italic 4=bold italic.
+* **ylab_weight**  1=plain text, 2=bold, 3=italic, 4=bold italic.
 
-* **ytlab_orient**  y-tick label orientation.
+* **ytlab_orient**  The y-tick label orientation.
 
 * **ytlab_size**  Size of y-tick labels as a magnification of an
   internal default size.
