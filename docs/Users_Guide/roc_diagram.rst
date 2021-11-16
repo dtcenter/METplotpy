@@ -56,7 +56,7 @@ METplus Configuration
 
 
 Default Configuration File
-_________________________
+__________________________
 
 The following is the *mandatory*, **roc_diagram_defaults.yaml**
 configuration file,
