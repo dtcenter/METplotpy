@@ -67,7 +67,7 @@ ___________________________________
 
 * **title**  The title for the performance diagram.
 
-* **title_weight**  1=plain 2=bold 3=italic 4=bold italic.
+* **title_weight**  1=plain, 2=bold, 3=italic, 4=bold italic.
 
 * **title_align**  Unsupported by Matplotlib, included for consistency
   with METviewer.
@@ -101,7 +101,7 @@ ___________________________________
 
 * **series_order**  A list of values 1..n indicating the order of the
   series in the list.
-  e.g. if the list is 3, then 1, then 2 this indicates that the first
+  e.g. If the list is 3, then 1, then 2 this indicates that the first
   series in the list is to be treated as the third, the second element in
   the list is to be treated as the first series, and the third element
   in the list is to be treated as the second series.
@@ -118,22 +118,22 @@ ___________________________________
 
 * **series_val_2**  Second set of series values. Leave as empty.
 
-* **list_stat_1**  List of statistics of interest .
+* **list_stat_1**  List of statistics of interest.
 
-* **list_stat_2**  Second list of statistics of interest. Leave as empty
+* **list_stat_2**  Second list of statistics of interest. Leave as an empty
   list.
 
 * **user_legend**  List of legend labels.  One for each series. If any list
   member is empty, a legend label will be created based on other information.
 
 * **legend_box**
-  'n' for no box around the legend.
-  'o' for a box drawn around the legend.
+  The 'n' for no box around the legend.
+  The 'o' for a box drawn around the legend.
 
 * **legend_ncol**  Integer value indicating how many columns of
   legend labels.
 
-* **legend_inset**  x and y values indicating position of the legend.
+* **legend_inset**  The x and y values indicating position of the legend.
 
 * **legend_size**  A magnification value.  Value greater than 1.
   Produces a legend that is greater than an internal default value.
@@ -142,7 +142,7 @@ ___________________________________
 * **plot_stat**  The statistics to plot: median, mean or sum.
 
 * **plot_contour_legend**  True for drawing a legend for contour lines,
-  False otherwise.
+  false otherwise.
 
 * **colors**  A list of colors one for each series. Define as color
   name or hexadecimal values.
@@ -156,20 +156,20 @@ ___________________________________
 
 * **series_line_style**  A list of line styles to apply to the
   corresponding series:
-  '-' for solid line
-  '--' for dashed line
+  '-' for solid line, 
+  '--' for dashed line, 
   ':' for dotted line.
 
-* **event_equal**  True to perform event equalization on data, False otherwise.
+* **event_equal**  True to perform event equalization on data, false otherwise.
 
-* **annotation_template**  Annotation for y-value.  Leave empty if
+* **annotation_template**  Annotation for the y-value.  Leave empty if
   no annotation is desired.
   Otherwise, indicate template with "%y <units>".  Double quotes around
   annotation are needed.
 
 * **plot_caption**  Caption text, leave empty if no caption is desired.
 
-* **caption_weight**  1=plain text 2=bold 3=italic 4=bold italic.
+* **caption_weight**  1=plain text, 2=bold, 3=italic, 4=bold italic.
 
 * **caption_col**  Color of caption, color name or hexadecimal value.
 
@@ -186,7 +186,7 @@ ___________________________________
 
 * **xlab_offset**  The left/right position relative to the y-axis.
 
-* **xlab_weight**  1=plain text 2=bold 3=italic 4=bold italic.
+* **xlab_weight**  1=plain text, 2=bold, 3=italic, 4=bold italic.
 
 * **xtlab_orient**  Unsupported by Matplotlib, kept for consistency
   with METviewer.
@@ -247,7 +247,7 @@ same directory where the python command ran.
 
 
 To generate a slightly modified plot, re-run the above command using the
-custom_performance_diagram.yaml file:
+**custom_performance_diagram.yaml** file:
 
 .. code-block:: ini
 		
