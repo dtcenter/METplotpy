@@ -7,7 +7,7 @@ Description
 Reliability diagrams are useful in displaying the conditional bias of
 probabilistic forecasts.
 For more information about reliability diagrams, refer to the
-`METviewer documentation <https://metviewer.readthedocs.io/en/latest/Users_Guide/reliabilityplots.html>`_
+`METviewer documentation <https://metviewer.readthedocs.io/en/latest/Users_Guide/reliabilityplots.html>`_.
 
 Example
 =======
@@ -55,7 +55,7 @@ METplotpy Configuration
 Default Configuration File
 __________________________
 
-The following is the *mandatory, **reliability_defaults.yaml** configuration
+The following is the *mandatory*, **reliability_defaults.yaml** configuration
 file, which serves as a good starting point for creating a reliability
 diagram plot as it represents the default values set in METviewer.
 
@@ -100,7 +100,7 @@ config files.  Then, perform the following:
 
    cd $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/reliability_diagram
 
-* enter the following command:
+* Enter the following command:
 
 .. code-block:: ini
 
