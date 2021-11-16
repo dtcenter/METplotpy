@@ -1,17 +1,19 @@
+*******************
 Reliability Diagram
-===================
+*******************
 
 Description
-~~~~~~~~~~~
-Reliability diagrams are useful in displaying the conditional bias of probabilistic forecasts.
-For more information about reliability diagrams, refer to the METviewer documentation:
-
-https://metviewer.readthedocs.io/en/latest/Users_Guide/reliabilityplots.html
+===========
+Reliability diagrams are useful in displaying the conditional bias of
+probabilistic forecasts.
+For more information about reliability diagrams, refer to the
+`METviewer documentation <https://metviewer.readthedocs.io/en/latest/Users_Guide/reliabilityplots.html>`_
 
 Example
-~~~~~~~
+=======
 
-**Sample Data**
+Sample Data
+___________
 
 The sample data used to create an example reliability diagram is available in the METplotpy
 repository, where the reliabilty diagram code is located:
@@ -22,7 +24,8 @@ $METPLOTPY_SOURCE is the directory where the METplotpy code is saved.  The data 
 output from MET in columnar format.
 
 
-**Configuration Files**
+Configuration Files
+___________________
 
 The reliability diagram utilizes YAML configuration files to indicate where input data is located and
 to set plot attributes. These plot attributes correspond to values that can be set via the METviewer
@@ -39,10 +42,11 @@ settings in the reliability_defaults.yaml file.  The custom configuration file c
 file if all default settings are to be applied.
 
 METplotpy Configuration
-~~~~~~~~~~~~~~~~~~~~~~~
+=======================
 
 
-**Default Configuration File**
+Default Configuration File
+__________________________
 
 The following is the `mandatory`, reliability_defaults.yaml configuration file,
 which serves as a good starting point for creating a reliability diagram
@@ -50,7 +54,8 @@ plot as it represents the default values set in METviewer
 
 .. literalinclude:: ../../metplotpy/plots/config/reliability_defaults.yaml
 
-**Custom Configuration File**
+Custom Configuration File
+_________________________
 
 A second, `mandatory` configuration file is required, which is
 used to customize the settings to the reliability diagram plot. The custom_reliability.yaml
@@ -68,7 +73,7 @@ can be specified instead:
 
 
 Run from the Command Line
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 The reliability diagram plot that uses only the default values defined in
 the reliability_defaults.yaml configuration file looks like the following:
