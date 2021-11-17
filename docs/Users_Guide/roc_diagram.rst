@@ -59,6 +59,13 @@ plot as it represents the default values set in METviewer
 
 .. literalinclude:: ../../metplotpy/plots/config/roc_diagram_defaults.yaml
 
+Modify the `stat_input` setting in this default config file to ensure that the data file is accessible.
+Open the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/roc_diagram_defaults.yaml file and replace
+the relative path in the stat_input entry `stat_input:  ../../../test/roc_diagram/plot_20200507_074426.data`
+with the path to your working directory.  For example, if your working directory is /username/working_dir,
+then the stat_input will look like the following:
+
+`stat_input:  /username/working_dir/METplotpy/test/roc_diagram/plot_20200507_074426.data`
 
 **Custom Configuration File**
 
@@ -73,17 +80,24 @@ copy this custom config file to your working directory:
 ``cp $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/custom_roc_diagram.yaml $WORKING_DIR/custom_roc_diagram.yaml``
 
 
-Modify the `stat_input` and `plot_filename` settings in the
+Modify the `stat_input` setting in the
 $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/roc_diagram_defaults.yaml
 file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory
 by replacing the relative paths (e.g. `./plot_20200507_074426.data`) with the full path
-(e.g. `/yourdir/METplotpy/test/roc_diagram/plot_20200507_074426.data`).
+(e.g. `/username/working_dir/METplotpy/test/roc_diagram/plot_20200507_074426.data`).  Make the same
+modifications to the `plot_filename` setting, for example:
+
+`stat_input: /username/working_dir/METplotpy/test/roc_diagram/plot_20200507_074426.data`
+
+`plot_filename: /username/working_dir/output_plots/roc_diagram_custom.png`
+
+
 
 If you wish to save the intermediate `.points1` file (used by METviewer but also useful for debugging), set the following configuration values:
 
-**dump_points_1 setting: 'True'**
+`dump_points_1 setting: 'True'`
 
-**points_path: `/dir_to_save_points1_file`**
+`points_path: '/dir_to_save_points1_file'`
 
 Replace the `'/dir_to_save_points1_file'` to the directory where you
 wish to save the file
@@ -98,8 +112,8 @@ copy this file to your working directory:
 
 ``cp $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/minimal_roc_diagram.yaml $WORKING_DIR/minimal_roc_diagram.yaml``
 
-Modify the `stat_input` setting in the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml
-file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory by replacing
+Modify the `stat_input` setting in the $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/minimal_roc_diagram.yaml
+file to explicitly point to the $METPLOTPY_SOURCE/METplotpy/test/roc_diagram directory by replacing
 the relative paths (e.g. `./plot_20200507_074426.data`) with the full path (e.g. `/yourdir/METplotpy/test/roc_diagram/plot_20200507_074426.data`).
 
 Modify the `plot_filename` setting to explicitly point to the directory of the plot, using the full path.
@@ -112,14 +126,14 @@ Replace `your_dir` with the actual working directory (i.e. the directory that co
 If you wish to save the intermediate `.points1` file (used by METviewer and useful for debugging), add the following lines to your minimal_roc_diagram.yaml
 file (under the comment block):
 
-**dump_points_1: 'True'**
+`dump_points_1: 'True'`
 
-**points_path: '/dir_to_save_points1_file'**
+`points_path: '/dir_to_save_points1_file'`
 
 replace the `'/dir_to_save_points1_file'` to the directory where you wish to save the `.points1` file.
 
 Modify the `stat_input` and `plot_filename` settings in the $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/minimal_roc_diagram.yaml
-file to explicitly point to the $METPLOTPY_SOURCE/METplotpy/roc_diagram directory by replacing
+file to explicitly point to the $METPLOTPY_SOURCE/METplotpy/test/roc_diagram directory by replacing
 the relative paths (e.g. `./plot_20200507_074426.data`) with the full path (e.g. `/yourdir/METplotpy/test/roc_diagram/plot_20200507_074426.data`).
 
 
