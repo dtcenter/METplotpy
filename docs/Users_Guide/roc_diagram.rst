@@ -96,7 +96,7 @@ can be specified instead:
 
 copy this file to your working directory:
 
-``cp $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/minimal_roc_diagram.yaml $WORKING_DIR/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml``
+``cp $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/minimal_roc_diagram.yaml $WORKING_DIR/minimal_roc_diagram.yaml``
 
 Modify the `stat_input` setting in the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml
 file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory by replacing
