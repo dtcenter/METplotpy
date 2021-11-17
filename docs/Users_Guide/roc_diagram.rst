@@ -72,9 +72,11 @@ copy this custom config file to your working directory:
 ``cp $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/custom_roc_diagram.yaml $WORKING_DIR/custom_roc_diagram.yaml``
 
 
-Modify the `stat_input` and `plot_filename` settings in the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/roc_diagram_defaults.yaml
-file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory by replacing
-the relative paths (e.g. `./plot_20200507_074426.data`) with the full path (e.g. `/yourdir/METplotpy/metplotpy/plots/roc_diagram/plot_20200507_074426.data).
+Modify the `stat_input` and `plot_filename` settings
+in the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/roc_diagram_defaults.yaml file to explicitly point to the
+$METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory by replacing
+the relative paths (e.g. `./plot_20200507_074426.data`) with the full path
+(e.g. `/yourdir/METplotpy/metplotpy/plots/roc_diagram/plot_20200507_074426.data).
 
 If you wish to save the intermediate .points1 file (used by METviewer but also useful for debugging), set the following configuration values:
 
