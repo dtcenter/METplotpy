@@ -65,11 +65,11 @@ A second, `mandatory` configuration file is required, which is
 used to customize the settings to the ROC diagram plot. The custom_roc_diagram.yaml
 file is included with the source code and looks like the following:
 
-.. literalinclude:: $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/custom_roc_diagram.yaml
+.. literalinclude:: ../../metplotpy/plots/roc_diagram/custom_roc_diagram.yaml
 
 copy this custom config file to your working directory:
 
-``cp $METPLOTPY_SOURCE/metplotpy/plots/config/custom_roc_diagram.yaml $WORKING_DIR/custom_roc_diagram.yaml``
+``cp $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/custom_roc_diagram.yaml $WORKING_DIR/custom_roc_diagram.yaml``
 
 
 Modify the `stat_input` and `plot_filename` settings in the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/roc_diagram_defaults.yaml
