@@ -68,16 +68,16 @@ file is included with the source code and looks like the following:
 
 copy this custom config file to your working directory:
 
-``cp $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/custom_roc_diagram.yaml $WORKING_DIR/custom_roc_diagram.yaml``
+``cp $METPLOTPY_SOURCE/test/roc_diagram/custom_roc_diagram.yaml $WORKING_DIR/custom_roc_diagram.yaml``
 
 
 Modify the `stat_input` and `plot_filename` settings in the
 $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/roc_diagram_defaults.yaml
 file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory
 by replacing the relative paths (e.g. `./plot_20200507_074426.data`) with the full path
-(e.g. `/yourdir/METplotpy/metplotpy/plots/roc_diagram/plot_20200507_074426.data`).
+(e.g. `/yourdir/METplotpy/test/roc_diagram/plot_20200507_074426.data`).
 
-If you wish to save the intermediate `.points1 file` (used by METviewer but also useful for debugging), set the following configuration values:
+If you wish to save the intermediate `.points1` file (used by METviewer but also useful for debugging), set the following configuration values:
 
 **dump_points_1 setting: 'True'**
 
@@ -86,11 +86,11 @@ If you wish to save the intermediate `.points1 file` (used by METviewer but also
 Replace the `'/dir_to_save_points1_file'` to the directory where you
 wish to save the file
 
-If you wish to use all the **default** settings defined in the roc_diagram_defaults.yaml
+If you wish to use the **default** settings defined in the roc_diagram_defaults.yaml
 file, an "empty" custom configuration file (minimal_roc_diagram_defaults.yaml)
 can be specified instead:
 
-.. literalinclude:: ../../metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml
+.. literalinclude:: ../../test/roc_diagram/minimal_roc_diagram.yaml
 
 copy this file to your working directory:
 
@@ -98,7 +98,7 @@ copy this file to your working directory:
 
 Modify the `stat_input` setting in the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml
 file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory by replacing
-the relative paths (e.g. `./plot_20200507_074426.data`) with the full path (e.g. `/yourdir/METplotpy/metplotpy/plots/roc_diagram/plot_20200507_074426.data`).
+the relative paths (e.g. `./plot_20200507_074426.data`) with the full path (e.g. `/yourdir/METplotpy/test/roc_diagram/plot_20200507_074426.data`).
 
 Modify the `plot_filename` setting to explicitly point to the directory of the plot, using the full path.
 
@@ -121,7 +121,7 @@ replace the `'/dir_to_save_points1_file'` to the directory where you wish to sav
 
 Modify the `stat_input` and `plot_filename` settings in the $METPLOTPY_SOURCE/metplotpy/plots/config/minimal_roc_diagram.yaml
 file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory by replacing
-the relative paths (e.g. `./plot_20200507_074426.data`) with the full path (e.g. `/yourdir/METplotpy/metplotpy/plots/roc_diagram/plot_20200507_074426.data`).
+the relative paths (e.g. `./plot_20200507_074426.data`) with the full path (e.g. `/yourdir/METplotpy/test/roc_diagram/plot_20200507_074426.data`).
 
 
 Run from the Command Line
@@ -133,8 +133,9 @@ the roc_diagram_defaults.yaml configuration file looks like the following:
 .. image:: roc_diagram_default.png
 
 
-To generate the above plot, use the roc_diagram_defaults.yaml and
-the empty custom configuration file, minimal_roc_diagram.yaml.
+To generate the above plot, use the "empty" custom configuration file, minimal_roc_diagram.yaml.  The default config
+file does not need to be explicitly listed, it is automatically loaded by the plotting
+code.
 
 Perform the following:
 
