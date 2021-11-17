@@ -70,7 +70,7 @@ file is included with the source code and looks like the following:
 
 copy this custom config file to your working directory:
 
-``cp $METPLOTPY_SOURCE/test/roc_diagram/custom_roc_diagram.yaml $WORKING_DIR/custom_roc_diagram.yaml``
+``cp $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/custom_roc_diagram.yaml $WORKING_DIR/custom_roc_diagram.yaml``
 
 
 Modify the `stat_input` and `plot_filename` settings in the
