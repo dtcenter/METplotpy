@@ -58,7 +58,6 @@ plot as it represents the default values set in METviewer
 .. literalinclude:: ../../metplotpy/plots/config/roc_diagram_defaults.yaml
 
 
-
 **Custom Configuration File**
 
 A second, `mandatory` configuration file is required, which is
