@@ -132,9 +132,10 @@ the roc_diagram_defaults.yaml configuration file looks like the following:
 .. image:: roc_diagram_default.png
 
 
-To generate the above plots, use the roc_diagram_defaults.yaml and
+To generate the above plot, use the roc_diagram_defaults.yaml and
 the empty custom configuration file, minimal_roc_diagram.yaml.
-Then, perform the following:
+
+Perform the following:
 
 * if using a conda environment, verify that you are running in the conda environment that
   has the required Python packages outlined in the requirements
