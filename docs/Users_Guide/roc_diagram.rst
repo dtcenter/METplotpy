@@ -22,9 +22,10 @@ Sample data used to create an example ROC diagram is
 available in the METplotpy repository, where the ROC diagram
 code is located:
 
-$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/plot_20200507_074426.data
+$METPLOTPY_SOURCE/METplotpy/test/roc_diagram/plot_20200507_074426.data
 
-`$METPLOTPY_SOURCE` is the directory where you have installed the METplotpy source code.
+`$METPLOTPY_SOURCE` is the directory where you have installed the METplotpy source code
+(e.g. /username/myworkspace).
 
 
 
@@ -38,12 +39,13 @@ and in applications where data is being stored or transmitted".  Two configurati
 the first is a default configuration file, roc_diagram_defaults.yaml that is found in the
 $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config directory.  All default
 configuration files are located in the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config
-directory.  $METPLOTPY_SOURCE is the user-specified directory
+directory.  Default configuration files are automatically loaded by the plotting code and do not
+need to be explicitly specified when generating a plot. $METPLOTPY_SOURCE is the user-specified directory
 where the METplotpy source code has been saved. $WORKING_DIR is the directory where you can copy the necessary
-YAML configuration files.  The second, required YAML configuration file is a
+YAML configuration files and where you have read/write permissions.  The second, required YAML configuration file is a
 user-supplied "custom" configuration file that is used to customize/override the default
 settings in the roc_diagram_defaults.yaml file.  The custom configuration file can be an empty
-file if all default settings are to be applied.
+file if default settings are to be applied.
 
 METplus Configuration
 ~~~~~~~~~~~~~~~~~~~~~
@@ -64,7 +66,7 @@ A second, `mandatory` configuration file is required, which is
 used to customize the settings to the ROC diagram plot. The custom_roc_diagram.yaml
 file is included with the source code and looks like the following:
 
-.. literalinclude:: ../../metplotpy/plots/roc_diagram/custom_roc_diagram.yaml
+.. literalinclude:: ../../test/roc_diagram/custom_roc_diagram.yaml
 
 copy this custom config file to your working directory:
 
@@ -94,7 +96,7 @@ can be specified instead:
 
 copy this file to your working directory:
 
-``cp $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml $WORKING_DIR/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml``
+``cp $METPLOTPY_SOURCE/test/roc_diagram/minimal_roc_diagram.yaml $WORKING_DIR/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml``
 
 Modify the `stat_input` setting in the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml
 file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory by replacing
