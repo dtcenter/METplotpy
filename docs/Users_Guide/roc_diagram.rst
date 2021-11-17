@@ -77,13 +77,13 @@ file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram di
 by replacing the relative paths (e.g. `./plot_20200507_074426.data`) with the full path
 (e.g. `/yourdir/METplotpy/metplotpy/plots/roc_diagram/plot_20200507_074426.data`).
 
-If you wish to save the intermediate .points1 file (used by METviewer but also useful for debugging), set the following configuration values:
+If you wish to save the intermediate `.points1 file` (used by METviewer but also useful for debugging), set the following configuration values:
 
 **dump_points_1 setting: 'True'**
 
 **points_path: `/dir_to_save_points1_file`**
 
-replace the `'/dir_to_save_points1_file'` to the directory where you
+Replace the `'/dir_to_save_points1_file'` to the directory where you
 wish to save the file
 
 If you wish to use all the **default** settings defined in the roc_diagram_defaults.yaml
@@ -96,7 +96,7 @@ copy this file to your working directory:
 
 ``cp $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml $WORKING_DIR/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml``
 
-Modify the `stat_input` setting in the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/roc_diagram_defaults.yaml
+Modify the `stat_input` setting in the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml
 file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory by replacing
 the relative paths (e.g. `./plot_20200507_074426.data`) with the full path (e.g. `/yourdir/METplotpy/metplotpy/plots/roc_diagram/plot_20200507_074426.data`).
 
@@ -119,7 +119,7 @@ file (under the comment block):
 
 replace the `'/dir_to_save_points1_file'` to the directory where you wish to save the `.points1` file.
 
-Modify the `stat_input` and `plot_filename` settings in the $METPLOTPY_SOURCE/metplotpy/plots/config/roc_diagram_defaults.yaml
+Modify the `stat_input` and `plot_filename` settings in the $METPLOTPY_SOURCE/metplotpy/plots/config/minimal_roc_diagram.yaml
 file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory by replacing
 the relative paths (e.g. `./plot_20200507_074426.data`) with the full path (e.g. `/yourdir/METplotpy/metplotpy/plots/roc_diagram/plot_20200507_074426.data`).
 
