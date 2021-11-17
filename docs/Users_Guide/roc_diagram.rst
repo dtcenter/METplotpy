@@ -24,6 +24,7 @@ code is located:
 
 $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/plot_20200507_074426.data
 
+`$METPLOTPY_SOURCE` is the directory where you have installed the METplotpy source code.
 
 
 
@@ -68,7 +69,7 @@ file is included with the source code and looks like the following:
 
 copy this custom config file to your working directory:
 
-cp $METPLOTPY_SOURCE/metplotpy/plots/config/custom_roc_diagram.yaml $WORKING_DIR/custom_roc_diagram.yaml
+``cp $METPLOTPY_SOURCE/metplotpy/plots/config/custom_roc_diagram.yaml $WORKING_DIR/custom_roc_diagram.yaml``
 
 
 Modify the `stat_input` and `plot_filename` settings in the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/roc_diagram_defaults.yaml
@@ -81,7 +82,7 @@ If you wish to save the intermediate .points1 file (used by METviewer but also u
 
 **points_path: `/dir_to_save_points1_file`**
 
-except replace the `'/dir_to_save_points1_file'` to the directory where you
+replace the `'/dir_to_save_points1_file'` to the directory where you
 wish to save the file
 
 If you wish to use all the **default** settings defined in the roc_diagram_defaults.yaml
@@ -92,18 +93,21 @@ can be specified instead:
 
 copy this file to your working directory:
 
-cp $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml $WORKING_DIR/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml
+``cp $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml $WORKING_DIR/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml``
 
-Modify the `stat_input` and `plot_filename` settings in the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/roc_diagram_defaults.yaml
+Modify the `stat_input` setting in the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/roc_diagram_defaults.yaml
 file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory by replacing
 the relative paths (e.g. `./plot_20200507_074426.data`) with the full path (e.g. `/yourdir/METplotpy/metplotpy/plots/roc_diagram/plot_20200507_074426.data`).
 
+Modify the `plot_filename` setting to explicitly point to the directory of the plot, using the full path.
 
-python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py $HOME/your_dir/minimal_roc_diagram.yaml
+``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py your_dir/minimal_roc_diagram.yaml``
 
 or
 
-python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py $HOME/your_dir/minimal_roc_diagram.yaml
+``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py your_dir/minimal_roc_diagram.yaml``
+
+Replace `your_dir` with the actual working directory (i.e. the directory that corresponds to $WORKING_DIR) where you saved all your custom configuration files.
 
 If you wish to save the intermediate `.points1` file (used by METviewer and useful for debugging), add the following lines to your minimal_roc_diagram.yaml
 file (under the comment block):
@@ -112,8 +116,7 @@ file (under the comment block):
 
 **points_path: '/dir_to_save_points1_file'**
 
-except replace the `'/dir_to_save_points1_file'` to the directory where you wish to save the
-.points1 file.
+replace the `'/dir_to_save_points1_file'` to the directory where you wish to save the `.points1` file.
 
 Modify the `stat_input` and `plot_filename` settings in the $METPLOTPY_SOURCE/metplotpy/plots/config/roc_diagram_defaults.yaml
 file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory by replacing
@@ -133,7 +136,7 @@ To generate the above plots, use the roc_diagram_defaults.yaml and
 the empty custom configuration file, minimal_roc_diagram.yaml.
 Then, perform the following:
 
-* verify that you are running in the conda environment that
+* if using a conda environment, verify that you are running in the conda environment that
   has the required Python packages outlined in the requirements
   section
 
@@ -146,10 +149,10 @@ Then, perform the following:
 
 
 * a `roc_diagram_default.png` output file will be created in the
-  directory you specified in the plot_filename configuration setting in the roc_diagram_defaults.yaml config file.
+  directory you specified in the `plot_filename` configuration setting in the `roc_diagram_defaults.yaml` config file.
 
 To generate a **customized** ROC diagram (i.e. some or all default configuration settings are
-overridden), use the custom_roc_diagram.yaml config file.
+overridden), use the `custom_roc_diagram.yaml` config file.
 
 * enter the following command:
 
@@ -159,7 +162,7 @@ In this example, this custom config file changes the title and axis labels.
 
 .. image:: roc_diagram_custom.png
 
-* This plot is saved in the directory specified in the plot_filename config setting in the custom roc_diagram.yaml config file.
+* This plot is saved in the directory specified in the `plot_filename` config setting in the custom roc_diagram.yaml config file.
 
 
 
