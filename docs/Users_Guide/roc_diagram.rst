@@ -106,9 +106,6 @@ Modify the `plot_filename` setting to explicitly point to the directory of the p
 
 ``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py your_dir/minimal_roc_diagram.yaml``
 
-or
-
-``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py your_dir/minimal_roc_diagram.yaml``
 
 Replace `your_dir` with the actual working directory (i.e. the directory that corresponds to $WORKING_DIR) where you saved all your custom configuration files.
 
@@ -121,8 +118,8 @@ file (under the comment block):
 
 replace the `'/dir_to_save_points1_file'` to the directory where you wish to save the `.points1` file.
 
-Modify the `stat_input` and `plot_filename` settings in the $METPLOTPY_SOURCE/metplotpy/plots/config/minimal_roc_diagram.yaml
-file to explicitly point to the $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram directory by replacing
+Modify the `stat_input` and `plot_filename` settings in the $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/minimal_roc_diagram.yaml
+file to explicitly point to the $METPLOTPY_SOURCE/METplotpy/roc_diagram directory by replacing
 the relative paths (e.g. `./plot_20200507_074426.data`) with the full path (e.g. `/yourdir/METplotpy/test/roc_diagram/plot_20200507_074426.data`).
 
 
