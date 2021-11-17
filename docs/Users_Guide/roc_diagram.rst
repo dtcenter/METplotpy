@@ -54,7 +54,7 @@ The following is the `mandatory`, roc_diagram_defaults.yaml configuration file,
 which serves as a good starting point for creating a ROC diagram
 plot as it represents the default values set in METviewer
 
-.. literalinclude:: $METPLOTPY_SOURCE/metplotpy/plots/config/roc_diagram_defaults.yaml
+.. literalinclude:: ../../metplotpy/plots/config/roc_diagram_defaults.yaml
 
 
 
@@ -88,7 +88,7 @@ If you wish to use all the **default** settings defined in the roc_diagram_defau
 file, an "empty" custom configuration file (minimal_roc_diagram_defaults.yaml)
 can be specified instead:
 
-.. literalinclude:: $METPLOTPY_SOURCE/metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml
+.. literalinclude:: ../../metplotpy/plots/roc_diagram/minimal_roc_diagram.yaml
 
 copy this file to your working directory:
 
