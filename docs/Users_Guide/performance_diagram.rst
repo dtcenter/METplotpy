@@ -163,8 +163,7 @@ Run from the Command Line
 To generate a default performance diagram (i.e. using settings in the 
 performance_diagram_defaults.yaml configuration file), perform the following:
 
-* clone the code from the METplotpy
-repository at github.com/dtcenter/METplotpy:
+* clone the code from the METplotpy repository at github.com/dtcenter/METplotpy:
 
     ``cd $METPLOTPY_SOURCE``
 
@@ -191,5 +190,3 @@ To generate a slightly modified, **customized** plot, re-run the above command u
 .. image:: performance_diagram_custom.png
 
 * a performance_diagram_custom.png output file will be created in the directory you specified in the `plot_filename` config setting in the custom performance_diagram.yaml config file.
-
-

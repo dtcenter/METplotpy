@@ -163,8 +163,7 @@ the roc_diagram_defaults.yaml configuration file looks like the following:
 
 Perform the following:
 
-* clone the code from the METplotpy
-repository at github.com/dtcenter/METplotpy:
+* clone the code from the METplotpy repository at github.com/dtcenter/METplotpy:
 
     ``cd $METPLOTPY_SOURCE``
 
