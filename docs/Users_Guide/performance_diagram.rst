@@ -190,7 +190,6 @@ To generate a slightly modified, **customized** plot, re-run the above command u
 
 .. image:: performance_diagram_custom.png
 
-* a performance_diagram_custom.png output file will be created in the directory you specified in the
-`plot_filename` config setting in the custom performance_diagram.yaml config file.
+* a performance_diagram_custom.png output file will be created in the directory you specified in the `plot_filename` config setting in the custom performance_diagram.yaml config file.
 
 
