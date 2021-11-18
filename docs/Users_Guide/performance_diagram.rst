@@ -180,7 +180,9 @@ https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html
 ``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/minimal_performance_diagram.yaml``
 
 This will create a PNG file performance_diagram_default.png in the directory that you specified in the `plot_filename`
-setting of your performance_diagram_defaults.yaml config file.
+setting of your performance_diagram_defaults.yaml config file:
+
+.. image:: performance_diagram_default.png
 
 To generate a slightly modified, **customized** plot, re-run the above command using the custom_performance_diagram.yaml file:
 
