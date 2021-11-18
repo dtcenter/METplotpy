@@ -59,19 +59,6 @@ the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/roc_diagram_defaults.yaml
 
-
-**NOTE: These instructions are applicable if you have read and write permissions to the files in the $METPLOTPY_SOURCE
-directory and plan on using the minimal_roc_diagram.yaml config file without modifications.**
-
-Modify the `stat_input` setting (input data file) in this default config file to ensure that the data file is accessible.
-Open the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/roc_diagram_defaults.yaml file and replace
-the relative path in the stat_input entry `stat_input:  ../../../test/roc_diagram/plot_20200507_074426.data`
-with the path to your $METPLOTPY_SOURCE directory.  For example, if your $METPLOTPY_SOURCE is /username/plotting,
-then the `stat_input` setting will look like the following:
-
-`stat_input:  /username/plotting/METplotpy/test/roc_diagram/plot_20200507_074426.data`
-
-
 **Custom Configuration File**
 
 
