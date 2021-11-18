@@ -7,7 +7,10 @@ Description
 Performance diagrams are used to show the relationship between categorical statistics, with 
 axes representing detection and success(1 - false alarm) rates Roebber, 2009).  
 The simplest input to the performance diagram is the MET contingency table statistics (CTS) 
-output.  This output can be produced by many of the MET tools (Point-Stat, Grid-Stat, etc.). 
+output.  This output can be produced by many of the MET tools (Point-Stat, Grid-Stat, etc.).
+For more information on Performance diagrams, please refer to the METviewer documentation:
+
+https://metviewer.readthedocs.io/en/latest/Users_Guide/perfdiag.html
 
 
 There are several reference lines on the performance diagram.  The dashed lines that radiate
@@ -15,6 +18,12 @@ from the origin are lines of equal frequency bias.  Labels for the frequency bia
 at the end of each line. The diagonal represents a perfect frequency bias score of 1.  Curves
 of equal Critical Success Index (CSI) connect the top of the plot to the right side.  CSI 
 amounts are listed to the right side of the plot, with better values falling closer to the top.
+
+.. image:: performance_diagram_default.png
+
+
+
+
 
 Example
 ~~~~~~~
@@ -24,7 +33,7 @@ Example
 The sample data used to create these plots is available in the METplotpy repository, where the 
 performance diagram scripts are located:
 
-$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/plot_20200317_151252.data
+$METPLOTPY_SOURCE/METplotpy/test/performance_diagram/plot_20200317_151252.data
 
 $METPLOTPY_SOURCE is the directory where the METplotpy code is saved.  The data is text
 output from MET in columnar format.
@@ -40,142 +49,115 @@ it is a "human-readable data-serialization language. It is commonly used for con
 and in applications where data is being stored or transmitted".  Two configuration files are required, 
 the first is a default configuration file, performance_diagram_defaults.yaml that is found in the 
 $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config directory. $METPLOTPY_SOURCE indicates the directory
-where the METplotpy source code has been saved.  The second required YAML configuration file is a 
+where the METplotpy source code has been saved.  All default
+configuration files are located in the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config
+directory.  **Default configuration files are automatically loaded by the plotting code and do not
+need to be explicitly specified when generating a plot**.  The second required YAML configuration file is a
 user-supplied "custom" configuration file that can be used to customize/override the default 
 settings in the performance_diagram_defaults.yaml file.  The custom configuration file can be an empty 
-file if all default settings are to be applied.   
+file if default settings are to be applied.
 
 **Default Configuration File Settings**
 
-* **title**   The title for the performance diagram
+METplus Configuration
+~~~~~~~~~~~~~~~~~~~~~
 
-* **title_weight** 1=plain 2=bold 3=italic 4=bold italic
+**Default Configuration File**
 
-* **title_align**   Unsupported by Matplotlib, included for consistency with METviewer
+The following is the `mandatory`, performance_diagram_defaults.yaml configuration file,
+which serves as a starting point for creating a performance diagram plot,  as it represents
+the default values set in METviewer.
 
-* **title_offset**  Unsupported by Matplotlib, included for consistency with METviewer
+**NOTE**: This default configuration file is automatically loaded by performance_diagram.py.
 
-* **title_size**   Magnifier value. Values above 1.0 create title 
-  that is larger than the internal default size. Values less than
-  1.0 create a title that is smaller than the internal default size.
+.. literalinclude:: ../../metplotpy/plots/config/performance_diagram_defaults.yaml
 
-* **xaxis**  The label to the x-axis
+Modify the `stat_input` setting (input data file) in this default config file to ensure that the data file is accessible.
+Open the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/performance_diagram_defaults.yaml file and replace
+the relative path in the stat_input entry `stat_input:  ../../test/performance_diagram/plot_20200317_151252.data`
+with the path to your $METPLOTPY_SOURCE directory.  For example, if your $METPLOTPY_SOURCE is /username/plotting,
+then the `stat_input` setting will look like the following:
 
-* **yaxis_1**  The label to the bottom y-axis
+`stat_input:  /username/plotting/METplotpy/test/performance_diagram/plot_20200317_151252.data`
 
-* **yaxis_2**  The label to the top y-axis (leave empty if second y-axis 
-  is not needed/required)
 
-* **plot_width**  width of plot in inches
+**Custom Configuration File**
 
-* **plot_height** height of plot in inches
+A second, `mandatory` configuration file is required, which is
+used to customize the settings to the performance diagram plot.
+The custom_performance_diagram.yaml  file is included with the
+source code and looks like the following:
 
-* **plot_units**  units for plot: in for inches or cm for centimeters
+.. literalinclude:: ../../test/performance_diagram/custom_performance_diagram.yaml
 
-* **plot_ci**  A list of values of the type of Confidence Intervals to apply.
-  Choose either None for no confidence intervals or Norm for normalized
-  confidence intervals.
-               
+copy this custom config file from the directory where you saved the source code to your working directory:
 
-* **plot_disp**     A list of True/False values. True to display, False otherwise
+``cp $METPLOTPY_SOURCE/METplotpy/test/performance_diagram/custom_performance_diagram.yaml $WORKING_DIR/custom_performance_diagram.yaml``
 
-* **series_order**  A list of values 1..n indicating the order of the series in the list
-  e.g. if the list is 3, then 1, then 2 this indicates that the first series in the list
-  is to be treated as the third, the second element in the list is to be treated as the
-  first series, and the third element in the list is to be treated as the second series.
- 
-* **indy_var**     The independant variable
 
-* **indy_vals**    A list of independent variables
+Modify the `stat_input` and `plot_filename` settings in the
+$METPLOTPY_SOURCE/METplotpy/test/performance_diagram/custom_performance_diagram.yaml
+file to explicitly point to the $METPLOTPY_SOURCE/METplotpy/test/performance_diagram/performance_diagram directory (where
+the custom config files and sample data reside).  Replace the relative path `./plot_20200317_151252.data`
+with the full path `$WORKING_DIR/METplotpy/test/performance_diagram/plot_20200317_151252.data`
 
-* **fcst_var_val_1**   Variables of interest
+For example:
 
-* **fcst_var_val_2**   Second set of variables of interest
-                 
-* **series_val_1** Series values
+`stat_input: /username/working_dir/METplotpy/test/performance_diagram/plot_20200317_151252.data`
 
-* **series_val_2**  Second set of series values. Leave as empty
+`plot_filename: /username/working_dir/output_plots/performance_diagram_custom.png`
 
-* **list_stat_1**   List of statistics of interest 
+where $WORKING_DIR was replaced with the actual name of the directory.  In this example, the
+/username/working_dir/output_plots directory exists and has the appropriate read and write permissions.
 
-* **list_stat_2**   Second list of statistics of interest. Leave as empty list
+If you wish to save the intermediate `.points1` file (used by METviewer and useful for debugging), set the
+`dump_points_1` setting to True and uncomment or add (if it doesn't exist) the `points_path` setting:
 
-* **user_legend**   List of legend labels.  One for each series. If any list
-  member is empty, a legend label will be created based on other information.
+`dump_points_1: 'True'`
 
-* **legend_box**
-  'n' for no box around the legend
-  'o' for a box drawn around the legend
+`points_path: '/dir_to_save_points1_file'`
 
-* **legend_ncol**    Integer value indicating how many columns of
-  legend labels
+Replace the `'/dir_to_save_points1_file'` to the directory where you wish to save the `.points1` file.
+Make sure that this directory exists and has the appropriate read and write permissions.
 
-* **legend_inset**   x and y values indicating position of the legend
 
-* **legend_size**    A magnification value.  Value greater than 1.
-  Produces a legend that is greater than an internal default value.
-  Value less than 1.0 produces a legend smaller than an internal default size.
+**Using defaults**
 
-* **plot_stat**  The statistics to plot: median, mean or sum
+If you wish to use the **default** settings defined in the performance_diagram_defaults.yaml
+file, specify a minimal custom configuration file (minimal_performance_diagram_defaults.yaml), which consists of only a comment
+block, but can be any empty file:
 
-* **plot_contour_legend**  True for drawing a legend for contour lines, False otherwise
+.. literalinclude:: ../../test/performance_diagram/minimal_performance_diagram.yaml
 
-* **colors**   A list of colors one for each series. Define as color name or hexadecimal values  
+copy this file to your working directory:
 
-* **series_line_width**   A list of widths for each series line.  Values greater than 1 result
-  in a thicker line.
+``cp $METPLOTPY_SOURCE/METplotpy/test/performance_diagram/minimal_performance_diagram.yaml $WORKING_DIR/minimal_performance_diagram.yaml``
 
-* **series_symbols**     A list of symbols to apply for each series:
-  'o' for circle, 's' for square, 'H' for ring, 'd' for diamond, '^' for triangle
+Add the `stat_input` (input data) and `plot_filename` (output file/plot) settings to the $WORKING_DIR/minimal_performance_diagram.yaml
+file (anywhere below the comment block). This explicitly indicates where the
+sample data and custom configuration files are located.  Set the `stat_input` to
+`$METPLOTPY_SOURCE/METplotpy/test/performance_diagram/plot_20200317_151252.data` and set the
+`plot_filename` to  $WORKING_DIR/output_plots/performance_diagram_default.png:
 
-* **series_line_style**  A list of line styles to apply to the corresponding series:
-  '-' for solid line
-  '--' for dashed line
-  ':' for dotted line
+`stat_input: $METPLOTPY_SOURCE/METplotpy/test/performance_diagram/plot_20200317_151252.data`
 
-* **event_equal**      True to perform event equalization on data, False otherwise
+`plot_filename: $WORKING_DIR/output_plots/performance_diagram_default.png`
 
-* **annotation_template**  Annotation for y-value.  Leave empty if no annotation is desired.
-  Otherwise indicate template with "%y <units>".  Double quotes around annotation is needed.
+Where `$WORKING_DIR` is the working directory where you are saving all your custom
+configuration files. **NOTE**: You may specify the `plot_filename` (output directory) to a directory other than the
+$WORKING_DIR/output_plots, as long as it is an existing directory where you have read and write permissions.
 
-* **plot_caption**     Caption text, leave empty if no caption is desired
+If you wish to save the intermediate `.points1` file (used by METviewer and useful for debugging), add the following
+lines to your minimal_performance_diagram.yaml file (anywhere below the comment block):
 
-* **caption_weight**   1=plain text 2=bold 3=italic 4=bold italic
+`dump_points_1: 'True'`
 
-* **caption_col**      Color of caption, color name or hexadecimal value
+`points_path: '/dir_to_save_points1_file'`
 
-* **caption_size**     Relative magnification of an internal default font size
 
-* **caption_offset**   The up/down position relative to the x-axis
+Replace the `'/dir_to_save_points1_file'` to the directory where you wish to save the `.points1` file.
+Make sure that this directory exists and has the appropriate read and write permissions.
 
-* **caption_align**    The left/right position relative to the y-axis
-
-* **xlab_size**        Size of the x label as a magnification of an internal default size
-
-* **xlab_align**       up/down positioning relative to x-axis
-
-* **xlab_offset**      left/right position relative to the y-axis 
-
-* **xlab_weight**     1=plain text 2=bold 3=italic 4=bold italic
-
-* **xtlab_orient**    unsupported by Matplotlib, kept for consistency with METviewer
-
-* **xtlab_size**      unsupported by Matplotlib, kept for consistency with METviewer
-
-* **ylab_align**      left/right position of y label
-
-* **ylab_offset**     up/down position of y label
-
-* **ylab_weight**     1=plain text 2=bold 3=italic 4=bold italic
-
-* **ytlab_orient**    y-tick label orientation
-
-* **ytlab_size**      size of y-tick labels as a magnification of an internal default size
-
-* **stat_input**      path and filename of the input MET stat file
-
-* **plot_filename**   path and filename of the output performance diagram PNG file
-  Only PNG output is currently supported.
 
 Run from the Command Line
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -195,23 +177,31 @@ $METPLOTPY_SOURCE is the directory where you cloned the code.
       ``cd METplotpy/metplotpy/plots/performance_diagram``
 
 
-Activate your conda environment, which has all the Python requirements outlined in the Installation
-guide.  
+if using a conda environment, activate your conda environment (which has all the Python requirements outlined in the Installation
+guide).
+
+
+* cd to the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram
+  directory
 
 Run the following at the command line:
 
-``python performance_diagram.py ./minimal_performance_diagram.yaml``
+``python performance_diagram.py $WORKING_DIR/minimal_performance_diagram.yaml``
 
-This will create a PNG file performance_diagram_default.png in the directory from where you ran 
-the python command above.
+This will create a PNG file performance_diagram_default.png in the directory that you specified in the `plot_filename`
+setting of your performance_diagram_defaults.yaml config file.
+
+To generate a slightly modified, **customized** plot, re-run the above command using the custom_performance_diagram.yaml file:
+
+``python performance_diagram.py $WORKING_DIR/custom_performance_diagram.yaml``
+
+.. image:: performance_diagram_custom.png
+
+* This plot is saved in the directory you specified in the `plot_filename` config setting in the custom roc_diagram.yaml config file.
 
 
 
-To generate a slightly modified plot, re-run the above command using the custom_performance_diagram.yaml file:
 
-``python performance_diagram.py ./custom_performance_diagram.yaml``
 
-This will create a PNG file, performance_diagram_custom.png, which will differ in appearance from the default
-plot.  These plots use the plot_20200317_151252.data that is found in the METplotpy/metplotpy/plots/performance_diagram
-directory, and creates the PNG plot in addition to a plot_2020-317_151252.points1 file.  The latter is a text
+in addition to a plot_2020-317_151252.points1 file.  The latter is a text
 file that contains the x- and y-values that are being plotted and is useful in debugging.  
