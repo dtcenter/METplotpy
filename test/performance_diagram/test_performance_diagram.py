@@ -17,7 +17,7 @@ def setup():
     # print("\ncustom config file: ", custom_config_filename, '\n')
 
     # Invoke the command to generate a Performance Diagram based on
-    # the custom_performance_diagram.yaml custom config file.
+    # the test_custom_performance_diagram.yaml custom config file.
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
     # roc.main(custom_config_filename)
@@ -64,7 +64,7 @@ def test_files_exist(test_input, expected_bool):
         pass
 
     # Invoke the command to generate a Performance Diagram based on
-    # the custom_performance_diagram.yaml custom config file.
+    # the test_custom_performance_diagram.yaml custom config file.
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
     # roc.main(custom_config_filename)
@@ -99,7 +99,7 @@ def test_files_exist(test_input, expected_bool):
         pass
 
     # Invoke the command to generate a Performance Diagram based on
-    # the custom_performance_diagram.yaml custom config file.
+    # the test_custom_performance_diagram.yaml custom config file.
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
     # roc.main(custom_config_filename)
@@ -120,19 +120,19 @@ def test_files_exist(test_input, expected_bool):
 
 
 
-def test_images_match(setup):
-    '''
-        Compare an expected plot with the
-        newly created plot to verify that the plot hasn't
-        changed in appearance.
-    '''
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
-    custom_config_filename = "./custom_performance_diagram.yaml"
-    pd.main(custom_config_filename)
-
-    path = os.getcwd()
-    plot_file = 'performance_diagram_actual.png'
-    actual_file = os.path.join(path, plot_file)
-    comparison = CompareImages('./performance_diagram_expected.png',actual_file)
-    assert comparison.mssim == 1
-    cleanup()
+# def test_images_match(setup):
+#     '''
+#         Compare an expected plot with the
+#         newly created plot to verify that the plot hasn't
+#         changed in appearance.
+#     '''
+#     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+#     custom_config_filename = "performance_diagram/custom_performance_diagram.yaml"
+#     pd.main(custom_config_filename)
+#
+#     path = os.getcwd()
+#     plot_file = 'performance_diagram_actual.png'
+#     actual_file = os.path.join(path, plot_file)
+#     comparison = CompareImages('./performance_diagram_expected.png',actual_file)
+#     assert comparison.mssim == 1
+#     cleanup()
