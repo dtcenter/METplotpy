@@ -80,7 +80,7 @@ from the MET tool grid_diag), perform these steps:
 
    setenv PYTHONPATH $METPLOTPY_SRC_DIR/metplotpy:$METPLOTPY_SRC_DIR/metplotpy/plots
 
-  *for ksh*:
+*for ksh*:
 
  .. code-block:: ini
 
@@ -101,9 +101,9 @@ Replace $METPLOTPY_SRC_DIR with the directory where the source code is saved.
   python histogram_2d.py --input grid_diag_temperature.nc --datadir $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d
 
 
-  A **tmp_z2_p500.png** output file will be created in the
-  *$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d* directory, as
-  specified by the **histogram_2d_defaults.yaml plot_filename** setting.
+A **tmp_z2_p500.png** output file will be created in the
+*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d* directory, as
+specified by the **histogram_2d_defaults.yaml plot_filename** setting.
 
 
 
