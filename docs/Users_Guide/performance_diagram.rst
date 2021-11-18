@@ -70,6 +70,10 @@ the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/performance_diagram_defaults.yaml
 
+**NOTE: These instructions are applicable if you have read and write permissions to the files in the $METPLOTPY_SOURCE
+directory and plan on using the minimal_performance_diagram.yaml config file without modifications. **
+
+
 Modify the `stat_input` setting (input data file) in this default config file to ensure that the data file is accessible.
 Open the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/performance_diagram_defaults.yaml file and replace
 the relative path in the stat_input entry `stat_input:  ../../test/performance_diagram/plot_20200317_151252.data`
@@ -88,35 +92,43 @@ source code and looks like the following:
 
 .. literalinclude:: ../../test/performance_diagram/custom_performance_diagram.yaml
 
-copy this custom config file from the directory where you saved the source code to your working directory:
+Copy this custom config file from the directory where you saved the source code to your working directory:
 
 ``cp $METPLOTPY_SOURCE/METplotpy/test/performance_diagram/custom_performance_diagram.yaml $WORKING_DIR/custom_performance_diagram.yaml``
 
 
-Modify the `stat_input` and `plot_filename` settings in the
+Modify the `stat_input` setting in the
 $METPLOTPY_SOURCE/METplotpy/test/performance_diagram/custom_performance_diagram.yaml
 file to explicitly point to the $METPLOTPY_SOURCE/METplotpy/test/performance_diagram/performance_diagram directory (where
 the custom config files and sample data reside).  Replace the relative path `./plot_20200317_151252.data`
-with the full path `$WORKING_DIR/METplotpy/test/performance_diagram/plot_20200317_151252.data`
+with the full path `$METPLOTPY_SOURCE/METplotpy/test/performance_diagram/plot_20200317_151252.data`.  Modify the `plot_filename`
+setting to point to the output path where your plot will be saved, including the name of your plot.
 
 For example:
 
-`stat_input: /username/working_dir/METplotpy/test/performance_diagram/plot_20200317_151252.data`
+`stat_input: /username/myworkspace/METplotpy/test/performance_diagram/plot_20200317_151252.data`
 
 `plot_filename: /username/working_dir/output_plots/performance_diagram_custom.png`
 
-where $WORKING_DIR was replaced with the actual name of the directory.  In this example, the
-/username/working_dir/output_plots directory exists and has the appropriate read and write permissions.
+where /username/myworkspace/ is $METPLOTPY_SOURCE and /username/working_dir is $WORKING_DIR.  Make sure that the
+$WORKING_DIR directory you specify exists and has the appropriate read and write permissions.  You may
+change the path listed for `plot_filename` to the output directory of your choice.  If this is not set, then the
+`plot_filename` setting specified in the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/performance_diagram_defaults.yaml
+configuration file will be used.
 
 If you wish to save the intermediate `.points1` file (used by METviewer and useful for debugging), set the
-`dump_points_1` setting to True and uncomment or add (if it doesn't exist) the `points_path` setting:
+`dump_points_1` setting to True.  Uncomment or add (if it doesn't exist) the `points_path` setting:
 
 `dump_points_1: 'True'`
 
 `points_path: '/dir_to_save_points1_file'`
 
 Replace the `'/dir_to_save_points1_file'` to the directory where you wish to save the `.points1` file.
-Make sure that this directory exists and has the appropriate read and write permissions.
+If points_path is commented out (indicated by a '#' symbol in front of it), remove the '#' symbol to uncomment
+the points_path so that it will be used by the code.  Make sure that this directory exists and has the
+appropriate read and write permissions.  **NOTE**: the `points_path` setting
+is **optional** and does not need to be defined in your configuration file unless you wish to save the intermediate
+.points1 file.
 
 
 **Using defaults**
@@ -127,12 +139,12 @@ block, but can be any empty file:
 
 .. literalinclude:: ../../test/performance_diagram/minimal_performance_diagram.yaml
 
-copy this file to your working directory:
+Copy this file to your working directory:
 
 ``cp $METPLOTPY_SOURCE/METplotpy/test/performance_diagram/minimal_performance_diagram.yaml $WORKING_DIR/minimal_performance_diagram.yaml``
 
-Add the `stat_input` (input data) and `plot_filename` (output file/plot) settings to the $WORKING_DIR/minimal_performance_diagram.yaml
-file (anywhere below the comment block). This explicitly indicates where the
+Add the `stat_input` (input data) and `plot_filename` (output file/plot path) settings to the $WORKING_DIR/minimal_performance_diagram.yaml
+file (anywhere below the comment block). The `stat_input` setting explicitly indicates where the
 sample data and custom configuration files are located.  Set the `stat_input` to
 `$METPLOTPY_SOURCE/METplotpy/test/performance_diagram/plot_20200317_151252.data` and set the
 `plot_filename` to  $WORKING_DIR/output_plots/performance_diagram_default.png:
