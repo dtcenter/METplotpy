@@ -165,9 +165,9 @@ Perform the following:
 
 * clone the code from the METplotpy repository at github.com/dtcenter/METplotpy:
 
-    ``cd $METPLOTPY_SOURCE``
+``cd $METPLOTPY_SOURCE``
 
-    ``git clone https://github.com/dtcenter/METplotpy``
+``git clone https://github.com/dtcenter/METplotpy``
 
 
 * if using a conda environment, verify that you are running in the conda environment that
