@@ -1,0 +1,6 @@
+---
+# Minimal settings specific to performance diagram plot
+# All default values that are
+# set in the performance_diagram_defaults.yaml configuration file will be
+# used
+
