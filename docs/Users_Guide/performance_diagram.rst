@@ -71,7 +71,7 @@ the default values set in METviewer.
 .. literalinclude:: ../../metplotpy/plots/config/performance_diagram_defaults.yaml
 
 **NOTE: These instructions are applicable if you have read and write permissions to the files in the $METPLOTPY_SOURCE
-directory and plan on using the minimal_performance_diagram.yaml config file without modifications. **
+directory and plan on using the minimal_performance_diagram.yaml config file without modifications.**
 
 
 Modify the `stat_input` setting (input data file) in this default config file to ensure that the data file is accessible.
