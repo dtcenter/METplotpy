@@ -181,7 +181,7 @@ if using a conda environment, activate your conda environment (which has all the
 guide).
 
 
-* cd to the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram
+* cd to the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram
   directory
 
 Run the following at the command line:
@@ -197,7 +197,7 @@ To generate a slightly modified, **customized** plot, re-run the above command u
 
 .. image:: performance_diagram_custom.png
 
-* This plot is saved in the directory you specified in the `plot_filename` config setting in the custom roc_diagram.yaml config file.
+* This plot is saved in the directory you specified in the `plot_filename` config setting in the custom performance_diagram.yaml config file.
 
 
 
