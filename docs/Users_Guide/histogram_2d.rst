@@ -1,8 +1,9 @@
+*****************
 Histogram_2d plot
-===========================================
+*****************
 
 Description
-~~~~~~~~~~~
+===========
 
 The output from the MET grid_diag tool can be visualized as a 2D-histogram by invoking the
 histogram_2d.py plotting script from the command line.
@@ -13,9 +14,10 @@ https://met.readthedocs.io/en/latest/Users_Guide/grid-diag.html
 
 
 Example
-~~~~~~~
+=======
 
-**Sample Data**
+Sample Data
+___________
 
 The sample data used to create an example 2d histogram is available in the METplotpy
 repository, where the histogram_2d.py code is located:
@@ -25,7 +27,8 @@ $METPLOTPY_SOURCE/METplotpy/metplotpy/test/histogram_2d/histogram_2d.py
 $METPLOTPY_SOURCE is the directory where the METplotpy code is saved.  The data is text
 output from the MET grid_diag tool, in netCDF format.
 
-**Configuration File**
+Configuration File
+__________________
 
 The histogram_2d utilizes a default YAML configuration file to indicate the plot attributes such as titles,
 the plot size, the output plot name, and the variable of interest to plot.  The input data file and directory are
@@ -35,7 +38,7 @@ where the METplotpy source code has been saved.  To customize the plot attribute
 changes in the histogram_2d_defaults.yaml config file.
 
 Run from the Command Line
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 The histogram_2d_defaults.yaml configuration file, in combination with the
 grid_diag_temperature.nc netCDF data file (generated from the MET tool grid_diag),
