@@ -23,8 +23,6 @@ amounts are listed to the right side of the plot, with better values falling clo
 
 
 
-
-
 Example
 ~~~~~~~
 
@@ -163,45 +161,36 @@ Run from the Command Line
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To generate a default performance diagram (i.e. using settings in the 
-performance_diagram_defaults.yaml configuration file), clone the code from the METplotpy 
+performance_diagram_defaults.yaml configuration file), perform the following:
+
+* clone the code from the METplotpy
 repository at github.com/dtcenter/METplotpy:
 
     ``cd $METPLOTPY_SOURCE``
 
     ``git clone https://github.com/dtcenter/METplotpy``
 
-Change directory to $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram, where
-$METPLOTPY_SOURCE is the directory where you cloned the code.   
 
+* if using a conda environment, verify that you are running in the conda environment that
+  has the required Python packages outlined in the Python Requirements
+  section:
 
-      ``cd METplotpy/metplotpy/plots/performance_diagram``
+https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html
 
+* Run the following at the command line:
 
-if using a conda environment, activate your conda environment (which has all the Python requirements outlined in the Installation
-guide).
-
-
-* cd to the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram
-  directory
-
-Run the following at the command line:
-
-``python performance_diagram.py $WORKING_DIR/minimal_performance_diagram.yaml``
+``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/minimal_performance_diagram.yaml``
 
 This will create a PNG file performance_diagram_default.png in the directory that you specified in the `plot_filename`
 setting of your performance_diagram_defaults.yaml config file.
 
 To generate a slightly modified, **customized** plot, re-run the above command using the custom_performance_diagram.yaml file:
 
-``python performance_diagram.py $WORKING_DIR/custom_performance_diagram.yaml``
+``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/custom_performance_diagram.yaml``
 
 .. image:: performance_diagram_custom.png
 
-* This plot is saved in the directory you specified in the `plot_filename` config setting in the custom performance_diagram.yaml config file.
+* a performance_diagram_custom.png output file will be created in the directory you specified in the
+`plot_filename` config setting in the custom performance_diagram.yaml config file.
 
 
-
-
-
-in addition to a plot_2020-317_151252.points1 file.  The latter is a text
-file that contains the x- and y-values that are being plotted and is useful in debugging.  

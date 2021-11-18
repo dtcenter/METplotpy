@@ -163,18 +163,26 @@ the roc_diagram_defaults.yaml configuration file looks like the following:
 
 Perform the following:
 
-* if using a conda environment, verify that you are running in the conda environment that
-  has the required Python packages outlined in the requirements
-  section
+* clone the code from the METplotpy
+repository at github.com/dtcenter/METplotpy:
 
-* cd to the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram
-  directory
+    ``cd $METPLOTPY_SOURCE``
+
+    ``git clone https://github.com/dtcenter/METplotpy``
+
+
+* if using a conda environment, verify that you are running in the conda environment that
+  has the required Python packages outlined in the Python Requirements
+  section:
+
+https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html
+
 
 To generate the above **"defaults"** plot (i.e using default configuration settings), use the "minimal" custom configuration file, minimal_roc_diagram.yaml.
 
 * enter the following command:
 
-  ``python roc_diagram.py $WORKING_DIR/minimal_roc_diagram.yaml``
+  ``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/minimal_roc_diagram.yaml``
 
 
 * a `roc_diagram_default.png` output file will be created in the
@@ -185,13 +193,14 @@ to be overridden), use the `custom_roc_diagram.yaml` config file.
 
 * enter the following command:
 
-``python roc_diagram.py $WORKING_DIR/custom_roc_diagram.yaml``
+``python $METPLOTPY_SOURCE/METPlotpy/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/custom_roc_diagram.yaml``
 
 In this example, this custom config file changes the title and axis labels.
 
 .. image:: roc_diagram_custom.png
 
-* This plot is saved in the directory you specified in the `plot_filename` config setting in the custom roc_diagram.yaml config file.
+* a custom_roc_diagram.png output file will be created in the directory you specified in the `plot_filename`
+configuration setting in the custom roc_diagram.yaml config file.
 
 
 
