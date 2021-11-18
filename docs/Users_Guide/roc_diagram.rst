@@ -43,7 +43,7 @@ directory.  **Default configuration files are automatically loaded by the plotti
 need to be explicitly specified when generating a plot**. The second, required YAML configuration file is a
 user-supplied "custom" configuration file that is used to customize/override the default
 settings in the roc_diagram_defaults.yaml file.  The custom configuration file can be an empty
-file if default settings are to be applied.  
+file if default settings are to be applied.
 
 METplus Configuration
 ~~~~~~~~~~~~~~~~~~~~~
@@ -100,16 +100,16 @@ where $WORKING_DIR was replaced with the actual name of the directory.  In this 
 /username/working_dir/output_plots directory exists and has the appropriate read and write permissions.
 
 
-If you wish to save the intermediate `.points1` file (used by METviewer but also useful for debugging), set the following configuration values:
+If you wish to save the intermediate `.points1` file (used by METviewer and useful for debugging), set the `dump_points_1`
+setting to True and uncomment or add (if it doesn't exist) the `points_path` setting:
 
-`dump_points_1 setting: 'True'`
-
-And add this line (anywhere in the file) if it doesn't already exist, to set the optional points_path:
+`dump_points_1: 'True'`
 
 `points_path: '/dir_to_save_points1_file'`
 
-
-Replace the `'/dir_to_save_points1_file'` to the directory where you wish to save the file.
+Replace the `'/dir_to_save_points1_file'` to the directory where you wish to save the file.  **NOTE**: the `points_path` setting
+is **optional** and does not need to be defined in your configuration file unless you wish to save the intermediate .points1
+file.
 
 
 **Using defaults**
@@ -138,8 +138,8 @@ Where `$WORKING_DIR` is the working directory where you are saving all your cust
 configuration files. **NOTE**: You may specify the `plot_filename` (output directory) to a directory other than the
 $WORKING_DIR/output_plots, as long as it is an existing directory where you have read and write permissions.
 
-If you wish to save the intermediate `.points1` file (used by METviewer and useful for debugging), add the following lines to your minimal_roc_diagram.yaml
-file (anywhere below the comment block):
+If you wish to save the intermediate `.points1` file (used by METviewer and useful for debugging), add the following
+lines to your minimal_roc_diagram.yaml file (anywhere below the comment block):
 
 `dump_points_1: 'True'`
 
@@ -147,7 +147,9 @@ file (anywhere below the comment block):
 
 
 Replace the `'/dir_to_save_points1_file'` to the directory where you wish to save the `.points1` file.
-Make sure that this directory exists and has the appropriate read and write permissions.
+Make sure that this directory exists and has the appropriate read and write permissions. **NOTE**: the `points_path` setting
+is **optional** and does not need to be defined in your configuration file unless you wish to save the intermediate .points1
+file.
 
 
 Run from the Command Line
