@@ -40,12 +40,10 @@ the first is a default configuration file, roc_diagram_defaults.yaml that is fou
 $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config directory.  All default
 configuration files are located in the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config
 directory.  **Default configuration files are automatically loaded by the plotting code and do not
-need to be explicitly specified when generating a plot**. $METPLOTPY_SOURCE is the user-specified directory
-where the METplotpy source code has been saved. $WORKING_DIR is the directory where you can copy the necessary
-YAML configuration files and where you have read/write permissions.  The second, required YAML configuration file is a
+need to be explicitly specified when generating a plot**. The second, required YAML configuration file is a
 user-supplied "custom" configuration file that is used to customize/override the default
 settings in the roc_diagram_defaults.yaml file.  The custom configuration file can be an empty
-file if default settings are to be applied.
+file if default settings are to be applied.  
 
 METplus Configuration
 ~~~~~~~~~~~~~~~~~~~~~
