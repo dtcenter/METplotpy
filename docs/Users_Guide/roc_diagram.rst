@@ -124,7 +124,7 @@ Add the `stat_input` (input data) and `plot_filename` (output file/plot path) se
 file (anywhere below the comment block). The `stat_input` setting explicitly indicates where the
 sample data and custom configuration files are located.  Set the `stat_input` to
 `$METPLOTPY_SOURCE/METplotpy/test/roc_diagram/plot_20200507_074426.data` and set the
-`plot_filename` to  $WORKING_DIR/output_plots/roc_diagram_default.png:
+`plot_filename` to $WORKING_DIR/output_plots/roc_diagram_default.png:
 
 `stat_input: $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/plot_20200507_074426.data`
 
@@ -207,7 +207,7 @@ In this example, this custom config file changes the title and axis labels.
 
 .. image:: roc_diagram_custom.png
 
-* a custom_roc_diagram.png output file will be created in the directory you specified in the `plot_filename` configuration setting in the custom roc_diagram.yaml config file.
+* a custom_roc_diagram.png output file will be created in the directory you specified in the `plot_filename` configuration setting in the custom_roc_diagram.yaml config file.
 
 
 
