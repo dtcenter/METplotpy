@@ -24,7 +24,7 @@ def setup():
 
 
     # Invoke the command to generate a Performance Diagram based on
-    # the custom_performance_diagram.yaml custom config file.
+    # the test_custom_performance_diagram.yaml custom config file.
     roc.main(custom_config_filename)
 
 @pytest.fixture
@@ -40,7 +40,7 @@ def setup_rev_points():
 
 
     # Invoke the command to generate a Performance Diagram based on
-    # the custom_performance_diagram.yaml custom config file.
+    # the test_custom_performance_diagram.yaml custom config file.
     roc.main(custom_config_filename)
 
 
@@ -56,12 +56,16 @@ def setup_dump_points():
     # the config directory containing all the default config files.
     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
     custom_config_filename = "./CTC_ROC_thresh_dump_pts.yaml"
-    print("\n current directory: ", os.getcwd())
-    print("\ncustom config file: ", custom_config_filename, '\n')
+    # print("\n current directory: ", os.getcwd())
+    # print("\ncustom config file: ", custom_config_filename, '\n')
+    try:
+        os.mkdir(os.path.join(os.getcwd(), 'intermed_files'))
+    except FileExistsError as e:
+        pass
 
 
     # Invoke the command to generate a Performance Diagram based on
-    # the custom_performance_diagram.yaml custom config file.
+    # the test_custom_performance_diagram.yaml custom config file.
     roc.main(custom_config_filename)
 
 def cleanup():
@@ -76,6 +80,9 @@ def cleanup():
 
         os.remove(os.path.join(path, points_file))
         os.remove(os.path.join(path, html_file))
+        intermed_path = os.path.join(path, "intermed_files")
+        os.remove(os.path.join(intermed_path, plot_file))
+        os.rmdir(intermed_path)
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
@@ -111,7 +118,6 @@ def test_expected_CTC_thresh_dump_points(setup_dump_points):
     # if we get here, then all elements matched in value and position
     assert True
 
-
     # do the same test for pofd
     for index, expected in enumerate(expected_pofd):
         if ctc.round_half_up(expected) - ctc.round_half_up(pofd[index]) == 0.0:
@@ -120,12 +126,23 @@ def test_expected_CTC_thresh_dump_points(setup_dump_points):
             assert False
 
     # if we get here, then all elements matched in value and position
-    path = os.path.join(os.getcwd(), 'intermed_files')
-    plot_file = 'CTC_ROC_thresh.points1'
-    os.remove(os.path.join(path, plot_file))
     assert True
 
-
+    # clean up the intermediate subdirectory and other files
+    try:
+        path = os.getcwd()
+        plot_file = 'CTC_ROC_thresh.png'
+        points_file = 'CTC_ROC_thresh.points1'
+        html_file = '.html'
+        intermed_path = os.path.join(path, "intermed_files")
+        os.remove(os.path.join(intermed_path, points_file))
+        os.rmdir(intermed_path)
+        os.remove(os.path.join(path, plot_file))
+        os.remove(os.path.join(path, html_file))
+    except OSError as e:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass
 
 def test_expected_CTC_thresh_points_reversed(setup_rev_points):
     '''

@@ -22,9 +22,6 @@ derived_series_1: []
 derived_series_2: []
 dump_points_1: 'False'
 dump_points_2: 'False'
-# Optional, uncomment and set to directory to store the .points1 file
-# that is used by METviewer (created when dump_points_1 is set to True)
-points_path: './intermed_files'
 event_equal: 'False'
 fcst_var_val_1: null
 fcst_var_val_2: null
