@@ -22,7 +22,6 @@ def setup():
     # print("\n current directory: ", os.getcwd())
     # print("\ncustom config file: ", custom_config_filename, '\n')
 
-
     # Invoke the command to generate a Performance Diagram based on
     # the test_custom_performance_diagram.yaml custom config file.
     roc.main(custom_config_filename)
@@ -63,7 +62,6 @@ def setup_dump_points():
     except FileExistsError as e:
         pass
 
-
     # Invoke the command to generate a Performance Diagram based on
     # the test_custom_performance_diagram.yaml custom config file.
     roc.main(custom_config_filename)
@@ -75,14 +73,9 @@ def cleanup():
     try:
         path = os.getcwd()
         plot_file = 'CTC_ROC_thresh.png'
-        points_file = 'CTC_ROC_thresh.points1'
         html_file = '.html'
-
-        os.remove(os.path.join(path, points_file))
         os.remove(os.path.join(path, html_file))
-        intermed_path = os.path.join(path, "intermed_files")
-        os.remove(os.path.join(intermed_path, plot_file))
-        os.rmdir(intermed_path)
+        os.remove(os.path.join(path, plot_file))
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
@@ -125,15 +118,13 @@ def test_expected_CTC_thresh_dump_points(setup_dump_points):
         else:
             assert False
 
-    # if we get here, then all elements matched in value and position
-    assert True
-
+    # different cleanup than what is provided by cleanup()
     # clean up the intermediate subdirectory and other files
     try:
         path = os.getcwd()
-        plot_file = 'CTC_ROC_thresh.png'
-        points_file = 'CTC_ROC_thresh.points1'
+        plot_file = 'CTC_ROC_thresh_dump_pts.png'
         html_file = '.html'
+        points_file = 'CTC_ROC_thresh.points1'
         intermed_path = os.path.join(path, "intermed_files")
         os.remove(os.path.join(intermed_path, points_file))
         os.rmdir(intermed_path)
@@ -143,6 +134,9 @@ def test_expected_CTC_thresh_dump_points(setup_dump_points):
         # Typically when files have already been removed or
         # don't exist.  Ignore.
         pass
+
+    # if we get here, then all elements matched in value and position
+    assert True
 
 def test_expected_CTC_thresh_points_reversed(setup_rev_points):
     '''
@@ -177,6 +171,20 @@ def test_expected_CTC_thresh_points_reversed(setup_rev_points):
         # if we get here, then all elements matched in value and position
     assert True
 
+    # different cleanup than what is provided by cleanup()
+    try:
+        path = os.getcwd()
+        plot_file = 'CTC_ROC_thresh.png'
+        points_file = 'CTC_ROC_thresh.points1'
+        html_file = '.html'
+        os.remove(os.path.join(path, points_file))
+        os.remove(os.path.join(path, plot_file))
+        os.remove(os.path.join(path, html_file))
+    except OSError as e:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass
+
 def test_images_match(setup):
     '''
         Compare an expected plot with the
@@ -193,3 +201,14 @@ def test_images_match(setup):
     comparison = CompareImages('./CTC_ROC_thresh.png',actual_file)
     assert comparison.mssim == 1
 
+    # cleanup
+    # different cleanup than what is provided by cleanup()
+    try:
+        plot_file = 'CTC_ROC_thresh.png'
+        html_file = '.html'
+        os.remove(os.path.join(path, plot_file))
+        os.remove(os.path.join(path, html_file))
+    except OSError as e:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass
