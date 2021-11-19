@@ -76,12 +76,12 @@ from the MET tool grid_diag), perform these steps:
 
   *for csh*:
   
-.. code-block:: ini
+  .. code-block:: ini
 
       setenv PYTHONPATH $METPLOTPY_SRC_DIR/metplotpy:$METPLOTPY_SRC_DIR/metplotpy/plots
 
 
-   
+  
   *for ksh*:
 
  .. code-block:: ini
