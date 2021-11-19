@@ -22,7 +22,7 @@ def setup():
     custom_config_filename = "./custom_line_groups.yaml"
 
     # Invoke the command to generate a Performance Diagram based on
-    # the custom_performance_diagram.yaml custom config file.
+    # the test_custom_performance_diagram.yaml custom config file.
     l.main(custom_config_filename)
 
 
@@ -84,7 +84,7 @@ def test_files_exist(setup, test_input, expected):
     custom_config_filename = "./custom_line_groups2.yaml"
 
     # Invoke the command to generate a Performance Diagram based on
-    # the custom_performance_diagram.yaml custom config file.
+    # the test_custom_performance_diagram.yaml custom config file.
     l.main(custom_config_filename)
     assert os.path.isfile(test_input) == expected
     cleanup()
