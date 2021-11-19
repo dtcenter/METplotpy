@@ -188,7 +188,7 @@ to be overridden), use the `custom_roc_diagram.yaml` config file.
 
 * enter the following command:
 
-``python $METPLOTPY_SOURCE/METPlotpy/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/custom_roc_diagram.yaml``
+``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/custom_roc_diagram.yaml``
 
 In this example, this custom config file changes the title and axis labels.
 
