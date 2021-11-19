@@ -173,6 +173,19 @@ Perform the following:
 https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html
 
 
+* set the METPLOTPY_BASE environment variable to point to $METPLOTPY_SOURCE/METplotpy/metplotpy
+
+for ksh:
+
+``export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy``
+
+for csh:
+
+``setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy``
+
+Replacing the $METPLOTPY_SOURCE with the directory where the METplotpy source code was saved.
+
+
 To generate the above **"defaults"** plot (i.e using default configuration settings), use the "minimal" custom configuration file, minimal_roc_diagram.yaml.
 
 * enter the following command:

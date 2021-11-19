@@ -175,6 +175,18 @@ performance_diagram_defaults.yaml configuration file), perform the following:
 
 https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html
 
+* set the METPLOTPY_BASE environment variable to point to $METPLOTPY_SOURCE/METplotpy/metplotpy
+
+for ksh:
+
+``export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy``
+
+for csh:
+
+``setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy``
+
+Replacing the $METPLOTPY_SOURCE with the directory where the METplotpy source code was saved.
+
 * Run the following at the command line:
 
 ``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/minimal_performance_diagram.yaml``
