@@ -78,7 +78,7 @@ from the MET tool grid_diag), perform these steps:
   
 .. code-block:: ini
 
-   setenv PYTHONPATH $METPLOTPY_SRC_DIR/metplotpy:$METPLOTPY_SRC_DIR/metplotpy/plots
+      setenv PYTHONPATH $METPLOTPY_SRC_DIR/metplotpy:$METPLOTPY_SRC_DIR/metplotpy/plots
 
 
    
