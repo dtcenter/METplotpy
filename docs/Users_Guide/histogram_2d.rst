@@ -10,7 +10,7 @@ by invoking the **histogram_2d.py** plotting script from the command line.
 
 For more information about the MET grid_diag tool, please refer to the
 `documentation
-<https://met.readthedocs.io/en/latest/Users_Guide/grid-diag.html>`_
+<https://met.readthedocs.io/en/latest/Users_Guide/grid-diag.html>`_.
 
 
 Example
@@ -58,14 +58,14 @@ from the MET tool grid_diag), perform these steps:
 * Verify the conda environment is running and has has the required Python
   packages outlined in the requirements section.
 
-* Clone the METplotpy repository from GitHub:
+* Clone the METplotpy repository from GitHub.  First, make the directory:
 
 .. code-block:: ini
 		
    mkdir $METPLOTPY_SRC_DIR
 
-* $METPLOTPY_SRC_DIR is the directory where the code will be saved.
-  Enter the follwing commands:
+* *$METPLOTPY_SRC_DIR* is the directory where the code will be saved.
+  Enter the following commands:
 
 .. code-block:: ini
 		
@@ -88,7 +88,7 @@ from the MET tool grid_diag), perform these steps:
 
     export PYTHONPATH=$METPLOTPY_SRC_DIR/metplotpy:$METPLOTPY_SRC_DIR/metplotpy/plots
 
-Replace $METPLOTPY_SRC_DIR with the directory where the source code is saved.
+Replace *$METPLOTPY_SRC_DIR* with the directory where the source code is saved.
 
 * Change directories:
 
