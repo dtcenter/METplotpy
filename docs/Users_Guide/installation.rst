@@ -60,6 +60,7 @@ ___________________
 
 * xarray 0.16.2
 
+.. _METcalcpy_conda:
 
 Install METcalcpy in the conda environment
 __________________________________________
