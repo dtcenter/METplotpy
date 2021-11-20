@@ -131,7 +131,7 @@ configuration files. **NOTE**: You may specify the `plot_filename` (output direc
 $WORKING_DIR/output_plots, as long as it is an existing directory where you have read and write permissions.
 
 **NOTE**: This default plot does not display any of the data points. It is to be used as a template for
-setting up margins, captions, label sizes, etc.
+setting up margins, captions, label sizes, etc.  
 
 Run from the Command Line
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -167,20 +167,17 @@ To generate the above **"defaults"** plot (i.e using default configuration setti
 
 * enter the following command:
 
-  ``python line.py ./minimal_line.yaml``
+  ``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line/line.py $WORKING_DIR/minimal_line.yaml``
+
 
 
 * a `line_default.png` output file will be created in the
   directory you specified in the `plot_filename` configuration setting in the `line_defaults.yaml` config file.
 
-To generate a **customized** line diagram (i.e. some or all default configuration settings are
-to be overridden), use the `custom_line.yaml` config file.
+.. image:: line_default.png
 
-* enter the following command:
-
-``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line/line.py $WORKING_DIR/custom_line.yaml``
-
-.. image:: line.png
+**NOTE**: This default plot does not display any of the data points. It is to be used as a template for
+setting up margins, captions, label sizes, etc.
 
 
 
