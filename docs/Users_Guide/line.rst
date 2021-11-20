@@ -111,7 +111,6 @@ file, specify a minimal custom configuration file (minimal_line.yaml), which con
 block, but can be any empty file (if you have write permissions for the output filename path corresponding to the
 `plot_filename` setting in the default configuration file. Otherwise you will need to specify a `plot_filename` in your
 minimal_line.yaml file):
- :
 
 .. literalinclude:: ../../test/line/minimal_line.yaml
 
