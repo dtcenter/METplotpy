@@ -75,7 +75,7 @@ Copy this custom config file from the directory where you saved the source code 
 
 Modify the `stat_input` setting in the
 $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/custom_roc_diagram.yaml
-file to explicitly point to the $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/roc_diagram directory (where
+file to explicitly point to the $METPLOTPY_SOURCE/METplotpy/test/roc_diagram directory (where
 the custom config files and sample data reside).  Replace the relative path `./plot_20200507_074426.data`
 with the full path `$METPLOTPY_SOURCE/METplotpy/test/roc_diagram/plot_20200507_074426.data`.  Modify the `plot_filename`
 setting to point to the output path where your plot will be saved, including the name of your plot.
@@ -158,13 +158,6 @@ the roc_diagram_defaults.yaml configuration file looks like the following:
 
 
 Perform the following:
-
-* clone the code from the METplotpy repository at github.com/dtcenter/METplotpy:
-
-``cd $METPLOTPY_SOURCE``
-
-``git clone https://github.com/dtcenter/METplotpy``
-
 
 * if using a conda environment, verify that you are running in the conda environment that
   has the required Python packages outlined in the Python Requirements

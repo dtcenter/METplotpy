@@ -162,13 +162,6 @@ Run from the Command Line
 To generate a default performance diagram (i.e. using settings in the 
 performance_diagram_defaults.yaml configuration file), perform the following:
 
-* clone the code from the METplotpy repository at github.com/dtcenter/METplotpy:
-
-``cd $METPLOTPY_SOURCE``
-
-``git clone https://github.com/dtcenter/METplotpy``
-
-
 * if using a conda environment, verify that you are running in the conda environment that
   has the required Python packages outlined in the Python Requirements
   section:
