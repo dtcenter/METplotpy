@@ -47,7 +47,7 @@ num_iterations: 1
 num_threads: -1
 plot_ci: []
 plot_disp: []
-plot_filename: /tmp/line.png
+plot_filename: /tmp/line_default.png
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
