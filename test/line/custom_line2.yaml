@@ -28,8 +28,8 @@ derived_series_1:
   - GTS RH MAE
   - DIFF
 derived_series_2: []
-dump_points_1: 'False'
-dump_points_2: 'False'
+dump_points_1: 'True'
+dump_points_2: 'True'
 event_equal: 'True'
 fcst_var_val_1:
   RH:
@@ -102,6 +102,7 @@ plot_stat: median
 plot_type: png16m
 plot_units: in
 plot_width: 11.0
+plots_path: ./intermed_files
 random_seed: null
 series_line_style:
 - '-'

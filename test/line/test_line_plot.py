@@ -19,7 +19,7 @@ def setup():
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
-    custom_config_filename = "dev_custom_line.yaml"
+    custom_config_filename = "custom_line.yaml"
 
     # Invoke the command to generate a Performance Diagram based on
     # the test_custom_performance_diagram.yaml custom config file.
@@ -44,13 +44,51 @@ def cleanup():
 
 
 @pytest.mark.parametrize("test_input,expected",
-                         (["./line.png", True], ["./line.points1", True], ["./line.points2", True]))
+                         (["./line.png", True], ["./line.points1", False], ["./line.points2", False]))
 def test_files_exist(setup, test_input, expected):
     '''
-        Checking that the plot and data files are getting created
+        Checking that the plot file is getting created but the
+        .points1 and .points2 files are NOT
     '''
     assert os.path.isfile(test_input) == expected
     cleanup()
+
+@pytest.mark.parametrize("test_input,expected",
+                         (["./line.png", True], ["./line.points1", True], ["./line.points2", True]))
+def test_points_files_exist(test_input, expected):
+    '''
+        Checking that the plot and point data files are getting created
+    '''
+
+    # create the intermediate directory to store the .points1 and .points2 files
+    try:
+       os.mkdir(os.path.join(os.getcwd(), 'intermed_files'))
+    except FileExistsError as e:
+        pass
+
+
+
+    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    custom_config_filename = "custom_line2.yaml"
+    l.main(custom_config_filename)
+
+    # test for expected values
+    assert os.path.isfile(test_input) == expected
+
+    # cleanup intermediate files and plot
+    try:
+        path = os.getcwd()
+        plot_file = 'line.png'
+        points_file_1 = 'line.points1'
+        points_file_2 = 'line.points2'
+        intermed_path = os.path.join(path, 'intermed_files')
+        os.remove(os.path.join(path, plot_file))
+        os.remove(os.path.join(intermed_path, points_file_1))
+        os.remove(os.path.join(intermed_path, points_file_2))
+    except OSError as e:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass
 
 
 # def test_images_match(setup):
