@@ -22,7 +22,7 @@ def setup():
     custom_config_filename = "./custom_reliability_use_defaults.yaml"
 
     # Invoke the command to generate a Performance Diagram based on
-    # the custom_performance_diagram.yaml custom config file.
+    # the test_custom_performance_diagram.yaml custom config file.
     r.main(custom_config_filename)
 
 
