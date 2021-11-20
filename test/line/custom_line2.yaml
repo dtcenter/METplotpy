@@ -102,7 +102,7 @@ plot_stat: median
 plot_type: png16m
 plot_units: in
 plot_width: 11.0
-plots_path: ./intermed_files
+points_path: ./intermed_files
 random_seed: null
 series_line_style:
 - '-'

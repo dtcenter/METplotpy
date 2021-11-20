@@ -54,7 +54,7 @@ def test_files_exist(setup, test_input, expected):
     cleanup()
 
 @pytest.mark.parametrize("test_input,expected",
-                         (["./line.png", True], ["./line.points1", True], ["./line.points2", True]))
+                         (["./line.png", True], ["./intermed_files/line.points1", True], ["./intermed_files/line.points2", True]))
 def test_points_files_exist(test_input, expected):
     '''
         Checking that the plot and point data files are getting created
