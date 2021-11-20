@@ -59,7 +59,7 @@ A second, `mandatory` configuration file is required, which is
 used to customize the settings to the reliability diagram plot. The custom_reliability.yaml
 file is included with the source code and looks like the following:
 
-.. literalinclude:: ../../metplotpy/plots/reliability_diagram/custom_reliability_diagram.yaml
+.. literalinclude:: ../../test/reliability_diagram/custom_reliability_diagram.yaml
 
 Copy this custom config file from the directory where you saved the source code to your working directory:
 
