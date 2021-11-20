@@ -1,5 +1,5 @@
 alpha: 0.05
-caption_align: 0
+caption_align: 0.0
 caption_col: '#333333'
 caption_offset: 3
 caption_size: 0.8
@@ -45,9 +45,10 @@ mgp:
 - 0
 num_iterations: 1
 num_threads: -1
+plot_caption: 'Caption'
 plot_ci: []
 plot_disp: []
-plot_filename: /tmp/line_default.png
+plot_filename: ./line_default.png
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -64,7 +65,7 @@ series_val_1: {}
 series_val_2: {}
 show_nstats: 'False'
 show_signif: []
-stat_input: ../line/line.data
+stat_input: ../../../test/line/line.data
 sync_yaxes: 'False'
 title: test title
 title_align: 0.5
