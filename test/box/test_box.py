@@ -22,7 +22,7 @@ def setup():
     custom_config_filename = "custom_box.yaml"
 
     # Invoke the command to generate a Performance Diagram based on
-    # the custom_performance_diagram.yaml custom config file.
+    # the test_custom_performance_diagram.yaml custom config file.
     box.main(custom_config_filename)
 
 
@@ -33,8 +33,9 @@ def cleanup():
         path = os.getcwd()
         plot_file = 'box.png'
         points_file_1 = 'box.points1'
-        os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(path, points_file_1))
+        os.remove(os.path.join(path, plot_file))
+
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
@@ -42,7 +43,7 @@ def cleanup():
 
 
 @pytest.mark.parametrize("test_input, expected",
-                         (["./box_expected.png", True],["./box.png", True],["./box.points1", True]))
+                         (["./box.png", True],["./box.points1", True]))
 def test_files_exist(setup, test_input, expected):
     """
         Checking that the plot and data files are getting created
@@ -114,8 +115,9 @@ def test_defaultpoints1_file_exist(test_input, expected):
         path = os.getcwd()
         plot_file = 'box_defaultpoints1.png'
         points_file_1 = 'box.points1'
+        os.remove(os.path.join(path, points_file_1))
         os.remove(os.path.join(path, plot_file))
-        os.rmdir(os.path.join(path, points_file_1))
+
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
