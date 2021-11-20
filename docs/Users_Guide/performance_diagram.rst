@@ -122,7 +122,8 @@ is **optional** and does not need to be defined in your configuration file unles
 
 If you wish to use the **default** settings defined in the performance_diagram_defaults.yaml
 file, specify a minimal custom configuration file (minimal_performance_diagram_defaults.yaml), which consists of only a comment
-block, but can be any empty file:
+block, but can be any empty file (if you have write permissions for the output filename path corresponding to the
+`plot_filename` setting in the default configuration file. Otherwise you will need to specify a `plot_filename` in your minimal_performance_diagram.yaml file):
 
 .. literalinclude:: ../../test/performance_diagram/minimal_performance_diagram.yaml
 
@@ -185,7 +186,7 @@ Replacing the $METPLOTPY_SOURCE with the directory where the METplotpy source co
 ``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/minimal_performance_diagram.yaml``
 
 This will create a PNG file performance_diagram_default.png in the directory that you specified in the `plot_filename`
-setting of your performance_diagram_defaults.yaml config file:
+setting of your minimal_performance_diagram.yaml config file:
 
 .. image:: performance_diagram_default.png
 
@@ -195,4 +196,4 @@ To generate a slightly modified, **customized** plot, re-run the above command u
 
 .. image:: performance_diagram_custom.png
 
-* a performance_diagram_custom.png output file will be created in the directory you specified in the `plot_filename` config setting in the custom performance_diagram.yaml config file.
+* a performance_diagram_custom.png output file will be created in the directory you specified in the `plot_filename` config setting in the custom_performance_diagram.yaml config file.

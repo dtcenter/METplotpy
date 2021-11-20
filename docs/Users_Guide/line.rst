@@ -108,7 +108,10 @@ file.
 
 If you wish to use the **default** settings defined in the line_defaults.yaml
 file, specify a minimal custom configuration file (minimal_line.yaml), which consists of only a comment
-block, but can be any empty file:
+block, but can be any empty file (if you have write permissions for the output filename path corresponding to the
+`plot_filename` setting in the default configuration file. Otherwise you will need to specify a `plot_filename` in your
+minimal_line.yaml file):
+ :
 
 .. literalinclude:: ../../test/line/minimal_line.yaml
 
@@ -131,7 +134,7 @@ configuration files. **NOTE**: You may specify the `plot_filename` (output direc
 $WORKING_DIR/output_plots, as long as it is an existing directory where you have read and write permissions.
 
 **NOTE**: This default plot does not display any of the data points. It is to be used as a template for
-setting up margins, captions, label sizes, etc.  
+setting up margins, captions, label sizes, etc.
 
 Run from the Command Line
 ~~~~~~~~~~~~~~~~~~~~~~~~~

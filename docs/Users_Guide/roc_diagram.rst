@@ -111,8 +111,9 @@ file.
 **Using defaults**
 
 If you wish to use the **default** settings defined in the roc_diagram_defaults.yaml
-file, specify a minimal custom configuration file (minimal_roc_diagram_defaults.yaml), which consists of only a comment
-block, but can be any empty file:
+file, specify a minimal custom configuration file (minimal_roc_diagram.yaml), which consists of only a comment
+block, but can be any empty file (if you have write permissions for the output filename path corresponding to the
+`plot_filename` setting in the default configuration file. Otherwise you will need to specify a `plot_filename` in your minimal_roc_diagram.yaml file):
 
 .. literalinclude:: ../../test/roc_diagram/minimal_roc_diagram.yaml
 
@@ -187,7 +188,7 @@ To generate the above **"defaults"** plot (i.e using default configuration setti
 
 
 * a `roc_diagram_default.png` output file will be created in the
-  directory you specified in the `plot_filename` configuration setting in the `roc_diagram_defaults.yaml` config file.
+  directory you specified in the `plot_filename` configuration setting in the `roc_diagram_minimal.yaml` config file.
 
 To generate a **customized** ROC diagram (i.e. some or all default configuration settings are
 to be overridden), use the `custom_roc_diagram.yaml` config file.
