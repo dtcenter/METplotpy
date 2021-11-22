@@ -103,8 +103,7 @@ Run from the Command Line
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The custom_ens_ss.yaml configuration file, in combination with the
-ens_ss_defaults.yaml configuration file, generate a plot of
-five four:
+ens_ss_defaults.yaml configuration file, generates the following plot:
 
 .. image:: ens_ss.png
 
