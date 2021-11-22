@@ -6,7 +6,7 @@ Description
 ===========
 
 
-The **CBL_plot.py** is the plotting only a portion of the original **CBL.py**
+The **CBL_plot.py** is plotting only a portion of the original **CBL.py**
 script created by Doug Miller at the University of Illinois.
 
 For more background on this plot, please refer to the `METplus use case
