@@ -100,7 +100,7 @@ For example:
 where /username/myworkspace/ is $METPLOTPY_SOURCE and /username/working_dir is $WORKING_DIR.  Make sure that the
 $WORKING_DIR directory you specify exists and has the appropriate read and write permissions.  You may
 change the path listed for `plot_filename` to the output directory of your choice.  If this is not set, then the
-`plot_filename` setting specified in the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/bar_diagram_defaults.yaml
+`plot_filename` setting specified in the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/bar_defaults.yaml
 configuration file will be used.
 
 If you wish to save the intermediate `.points1` file (used by METviewer and useful for debugging), set the `dump_points_1`
@@ -152,5 +152,5 @@ Replacing the $METPLOTPY_SOURCE with the directory where the METplotpy source co
   ``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/bar/bar.py $WORKING_DIR/custom_bar.yaml``
 
 
-*  a bar.png output file will be created in the directory you specified in the `plot_filename` configuration setting in the custom_roc_diagram.yaml config file.
+*  a bar.png output file will be created in the directory you specified in the `plot_filename` configuration setting in the custom_bar.yaml config file.
 
