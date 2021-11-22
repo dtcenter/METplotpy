@@ -1,10 +1,11 @@
+*******************
 Weather Regime plot
-====================
+*******************
 
 Description
-~~~~~~~~~~~
+===========
 
-The plot_weather_regime.py script contains the plotting portion for 3 scripts (elbow.py, Calc_EOF.py, and K_means.py)
+The **plot_weather_regime.py** script contains the plotting portion for 3 scripts (elbow.py, Calc_EOF.py, and K_means.py)
 that were originally created Doug Miller at the script created by Univerity of Illinois. A METplus
 use case illustrates how to use this plot:
 
@@ -12,7 +13,7 @@ https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserS
 
 
 Required Packages
-~~~~~~~~~~~~~~~~~
+=================
 
 * Python 3.6.3
 
@@ -39,7 +40,7 @@ Required Packages
 * eofs
 
 Description
-~~~~~~~~~~~
+===========
 
 The plot_weather_regime.py script contains the plotting portion for 3 scripts (elbow.py, Calc_EOF.py, and K_means.py) that were originally created Doug Miller at the script created by Univerity of Illinois.
 
@@ -59,7 +60,7 @@ is the plot that should be generated when you run plot_K_means in plot_weather_r
 
 
 How to Use
-~~~~~~~~~~~
+===========
 
 **Import plot_weather_regime in your script like so**:
 
