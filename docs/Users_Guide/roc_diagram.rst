@@ -188,7 +188,7 @@ To generate the above **"defaults"** plot (i.e using default configuration setti
 
 
 * a `roc_diagram_default.png` output file will be created in the
-  directory you specified in the `plot_filename` configuration setting in the `roc_diagram_minimal.yaml` config file.
+  directory you specified in the `plot_filename` configuration setting in the `minimal_roc_diagram.yaml` config file.
 
 To generate a **customized** ROC diagram (i.e. some or all default configuration settings are
 to be overridden), use the `custom_roc_diagram.yaml` config file.
