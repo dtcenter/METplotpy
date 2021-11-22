@@ -104,28 +104,20 @@ def test_point_and_plot_files_exist( test_input, expected):
     """
     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
     custom_config_filename = "custom_defaultpoints1_bar.yaml"
-    intermed_dir = os.path.join(os.getcwd(), 'intermed_files')
-    try:
-        os.mkdir(intermed_dir)
-    except FileExistsError as e:
-        pass
 
     # Invoke the command to generate a Bar plot based on
     # the custom_bar.yaml custom config file.
     bar.main(custom_config_filename)
 
-
     assert os.path.isfile(test_input) == expected
 
     # remove the .png and .points files
-
     try:
         path = os.getcwd()
         plot_file = 'bar_defaultpoints1.png'
-        points_file_1 = 'bar.defaultpoints1'
+        points_file_1 = 'bar.points1'
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(path, points_file_1))
-        os.rmdir(intermed_dir)
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
