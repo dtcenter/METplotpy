@@ -139,7 +139,7 @@ occurrence of each cluster.
 **output_plotname:**  The full path and filename of the output plot
 file, a **.png** version will be written.
 
-**plevels** A list containing integers of the contour levels used in
+**plevels:** A list containing integers of the contour levels used in
 the plots.
 
 **Invoke the plotting functions:**
