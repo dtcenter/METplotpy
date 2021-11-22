@@ -133,5 +133,4 @@ Replacing the $METPLOTPY_SOURCE with the directory where the METplotpy source co
   ``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plotsens_ss.py $WORKING_DIR/custom_ens_ss.yaml``
 
 
-* a `ens_ss.png` output file will be created in the
-directory you specified in the `plot_filename` configuration setting in the custom_ens_ss.yaml configuration file.
+* a `ens_ss.png` output file will be created in the directory you specified in the `plot_filename` configuration setting in the custom_ens_ss.yaml configuration file.
