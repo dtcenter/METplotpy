@@ -93,7 +93,7 @@ squared distances.
 **plot_title:**  A string that gives the name of the title of the plot.
 
 **output_plotname:**  The full path and filename of the output plot file,
-a **.png** version is written
+a **.png** version will be written.
 
 For plot_eof
 ____________
@@ -125,9 +125,9 @@ In the code, generate the following as numpy arrays
 (except wrnum, output_plotname, and plevels).
 
 **inputi:**  A numpy array containing the K means for the weather
-regime classification
+regime classification.
 
-**wrnum_**  An integer giving the number of weather regimes.
+**wrnum:**  An integer giving the number of weather regimes.
 
 **lons:** A numpy array of the longitude values under consideration.
 
@@ -142,7 +142,7 @@ file, a **.png** version will be written.
 **plevels** A list containing integers of the contour levels used in
 the plots.
 
-**Invoke the plotting functions**
+**Invoke the plotting functions:**
 
 .. code-block:: ini
 
@@ -152,8 +152,8 @@ the plots.
 
    pwr.plot_K_means(kmeans,wrnum,lons,lats,perc,plot_outname,plevels)
 
-**Output**  A **.png** version of the elbow line plot, eof contour map
-plots, and weather regime map plots if all three are requeste. The output
+**Output:**  A **.png** version of the elbow line plot, eof contour map
+plots, and weather regime map plots if all three are requested. The output
 will be located based on what was specified (path and name) in the
 **output_plotname**.
 
