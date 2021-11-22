@@ -51,14 +51,14 @@ originally created by Doug Miller at the  University of Illinois.
 
 These files are used by the image comparison test:
 
-* **obs_elbow.png**  This plot should be generated when
-  plot_elbow in **plot_weather_regime.py** is run.
+* **obs_elbow.png**  Run plot_elbow in **plot_weather_regime.py**
+  to create this plot.
 
-* **obs_eof.png**  This plot should be generated when
-  plot_eof in **plot_weather_regime.py** is run.
+* **obs_eof.png**  Run plot_eof in **plot_weather_regime.py**
+  to create this plot.
 
-* **obs_kmeans.png**  This plot should be generated when
-  plot_K_means in **plot_weather_regime.py** is run.
+* **obs_kmeans.png**  Run plot_K_means in **plot_weather_regime.py**
+  to create this plot.
 
 
 How to Use
@@ -70,64 +70,73 @@ How to Use
 
    import plot_weather_regime as pwr
 
-**For plot_elbow**  In the code, generate the following as numpy
+For plot_elbow
+______________
+
+In the code, generate the following as numpy
 arrays (except K, pot_title, and output_plotname).
 
-**K**  A range beginning at 1 and ending with the number of clusters used
+**K:**  A range beginning at 1 and ending with the number of clusters used
 in the weather regime analysis.
 
-**d**  A numpy array containing the differences between the curve and the
+**d:**  A numpy array containing the differences between the curve and the
 line.
 
-**mi**  A numpy array containing the location of the maximum distance.
+**mi:**  A numpy array containing the location of the maximum distance.
 
-**line**  A numpy array representing the straight line from the sum of
+**line:**  A numpy array representing the straight line from the sum of
 squared difference for all clusters.
 
-**curve**  A numpy array containing the actual values of the sum of
+**curve:**  A numpy array containing the actual values of the sum of
 squared distances.
 
-**plot_title**  A string that gives the name of the title of the plot.
+**plot_title:**  A string that gives the name of the title of the plot.
 
-**output_plotname**  The full path and filename of the output plot file,
+**output_plotname:**  The full path and filename of the output plot file,
 a **.png** version is written
 
-**For plot_eof**  In the code, generate the following as numpy arrays
+For plot_eof
+____________
+
+In the code, generate the following as numpy arrays
 (except wrnum, output_plotname, and plevels).
 
-**eof**  A numpy array containing the first 10 eof values.
+**eof:**  A numpy array containing the first 10 eof values.
 
-**wrnum**  An integer giving the number of weather regimes.
+**wrnum:**  An integer giving the number of weather regimes.
 
-**variance_fractions**  A numpy array containing the fractions of the
+**variance_fractions:**  A numpy array containing the fractions of the
 total variance accounted for by each EOF mode.
 
-**lons**  A numpy array of the longitude values under consideration.
+**lons:**  A numpy array of the longitude values under consideration.
 
-**lats**  A numpy array of the latitude values under consideration.
+**lats:**  A numpy array of the latitude values under consideration.
 
-**output_plotname**  The full path and filename of the output plot
+**output_plotname:**  The full path and filename of the output plot
 file, a **.png** version will be written.
 
-**plevels**  A list containing integers of the contour levels used
+**plevels:**  A list containing integers of the contour levels used
 in the plots.
 
-**For plot_K_means**  In the code, generate the following as numpy arrays
+For plot_K_means
+________________
+
+In the code, generate the following as numpy arrays
 (except wrnum, output_plotname, and plevels).
 
-**inputi**  A numpy array containing the K means for the weather
+**inputi:**  A numpy array containing the K means for the weather
 regime classification
 
-**wrnum**  An integer giving the number of weather regimes.
+**wrnum_**  An integer giving the number of weather regimes.
 
-**lons** A numpy array of the longitude values under consideration.
+**lons:** A numpy array of the longitude values under consideration.
 
-**lats**  A numpy array of the latitude values under consideration.
+**lats:**  A numpy array of the latitude values under consideration.
 
-**perc**  A numpy array of the size wrnum containing the frequency of
+**perc:**  A numpy array of the size wrnum containing the frequency of
 occurrence of each cluster.
 
-**output_plotname**  The full path and filename of the output plot
+**output_plotname:**  The full path and filename of the output plot
 file, a **.png** version will be written.
 
 **plevels** A list containing integers of the contour levels used in
