@@ -23,6 +23,7 @@ Required Packages
 * Cartopy 0.17.1
 
 * metcalcpy  (refer to :numref:`METcalcpy_conda`)
+  
 * numpy
 
 * psutil
