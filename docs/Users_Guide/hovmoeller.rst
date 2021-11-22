@@ -16,7 +16,7 @@ in the default configuration.
 
 Please refer to the `METplus use case documentation
 <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsPrecip_obsOnly_Hovmoeller.html#sphx-glr-generated-model-applications-s2s-userscript-obsprecip-obsonly-hovmoeller-py>`_
-for instructions on how to generate a Hovmoeller diagram:
+for instructions on how to generate a Hovmoeller diagram.
 
 
 
@@ -26,17 +26,16 @@ Example
 Sample Data
 ___________
 
-The sample data used to create an example hovmoeller plot is available in the s2s `METplus data tar file.
-<https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/v4.0/sample_data-s2s-4.0.tgz>`_
-
-In the directory,
+The sample data used to create an example hovmoeller plot is available in
+the `s2s METplus data tar file.
+<https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/v4.0/sample_data-s2s-4.0.tgz>`_, in the directory,
 *model_applications/s2s/UserScript_obsPrecip_obsOnly_Hovmoeller*.
 
 
 Configuration Files
 ___________________
 
-There is an example YAML config file in 
+There is an example YAML config file located in 
 *$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/hovmoeller.yml*
 
 Run from the Command Line
