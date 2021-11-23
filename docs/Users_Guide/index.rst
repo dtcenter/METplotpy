@@ -1,14 +1,15 @@
-============
+************
 User's Guide
-============
+************
 
 **Foreword: A note to METplotpy users**
 
-This User's guide is provided as an aid to users of METplotpy.  METplotpy
+This User's Guide is provided as an aid to users of METplotpy.  METplotpy
 contains packages for plotting in METplus as stand-alone, or part of METplus
 use case, METplus wrappers, METexpress, or METviewer. It is also a component
 of the unified METplus verification framework. More details about METplus can
-be found on the `METplus website <http://dtcenter.org/community-code/metplus>`_.
+be found on the
+`METplus website <http://dtcenter.org/community-code/metplus>`_.
 
 It is important to note here that METplotpy is an evolving software package.
 This documentation describes the |release| release dated |release_date|.
@@ -26,15 +27,15 @@ Copyright |copyright|
 Licensed under the Apache License, Version 2.0 (the "License");
 You may not use this file except in compliance with the License.
 
-A copy of the License can be obtained here:
+A copy of the License can be obtained `here.
+<http://www.apache.org/licenses/LICENSE-2.0>`_
 
-http://www.apache.org/licenses/LICENSE-2.0
 
-
-Unless required by applicable law or agreed to in writing, software distributed under
-the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
-ANY KIND, either express or implied. See the License for the specific language
-governing permissions and limitations under the License.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 .. _citations:
 
@@ -44,7 +45,7 @@ The citation for this User's Guide should be:
 
 |author_list|, |release_year|: The METplotpy Version |version| User's Guide.
 Developmental Testbed Center.
-Available at: https://github.com/dtcenter/METplotpy/releases.
+Available `here. <https://github.com/dtcenter/METplotpy/releases>`_
 
 **Acknowledgments**
 
@@ -54,8 +55,8 @@ NOAA/National Weather Service, NOAA/Joint Technology Transfer Program (JTTI),
 NOAA/Subseasonal to Seasonal (S2S) Project, NOAA/Unified Forecast System
 Research to Operations Project (UFS R2O), Met Office and the Naval Research
 Laboratory (NRL). Thanks also go to the staff at the Developmental Testbed
-Center for their help, advice, and many types of support.Finally, the National
-Center for Atmospheric Research (NCAR) is sponsored by NSF.
+Center (DTC) for their help, advice, and many types of support.
+Finally, the National Center for Atmospheric Research (NCAR), sponsored by NSF.
 
 
 .. toctree::
