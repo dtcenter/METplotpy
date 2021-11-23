@@ -1,6 +1,6 @@
-************
-User's Guide
-************
+**************
+User's Guide 2
+**************
 
 
 **Foreword: A note to METplotpy users**
