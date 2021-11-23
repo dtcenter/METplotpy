@@ -1,12 +1,6 @@
-============
+************
 User's Guide
-============
-
-.. Please note, using * above, resulted in a warning log error. This works
-   if the = sign is used.  It doesn't match the other chapters formatting
-   but it runs without an error.
-   Lisa Goodrich
-   11/23/21
+************
 
 **Foreword: A note to METplotpy users**
 
