@@ -1,10 +1,9 @@
 """
-Class Name: line_config.py
+Class Name: reliability_config.py
 
 Holds values set in the Line plot config file(s)
 """
 __author__ = 'Tatiana Burek'
-__email__ = 'met_help@ucar.edu'
 
 import itertools
 

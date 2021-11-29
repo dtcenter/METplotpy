@@ -2,7 +2,6 @@
 Class Name: reliability.py
  """
 __author__ = 'Tatiana Burek'
-__email__ = 'met_help@ucar.edu'
 
 import os
 import re
@@ -206,8 +205,8 @@ class Reliability(BasePlot):
         self._add_noresolution_line(series.series_points['stat_value'][0])
 
         y_points = series.series_points['stat_value'].tolist()
-        stat_bcu = all(v == 0 for v in series.series_points['stat_bcu'])
-        stat_bcl = all(v == 0 for v in series.series_points['stat_bcl'])
+        stat_bcu = all(v == 0 for v in series.series_points['stat_btcu'])
+        stat_bcl = all(v == 0 for v in series.series_points['stat_btcl'])
 
         error_y_visible = True
 
@@ -231,8 +230,8 @@ class Reliability(BasePlot):
                                 marker_size=self.config_obj.marker_size[series.idx],
                                 error_y={'type': 'data',
                                          'symmetric': False,
-                                         'array': series.series_points['stat_bcu'],
-                                         'arrayminus': series.series_points['stat_bcl'],
+                                         'array': series.series_points['stat_btcu'],
+                                         'arrayminus': series.series_points['stat_btcl'],
                                          'visible': error_y_visible,
                                          'thickness': self.config_obj.linewidth_list[series.idx]}
 
@@ -607,12 +606,12 @@ class Reliability(BasePlot):
 
             # get points from each series
             for series in self.series_list:
-                series.series_points['stat_bcl'] \
-                    = series.series_points['stat_value'] - series.series_points['stat_bcl']
-                series.series_points['stat_bcu'] \
-                    = series.series_points['stat_value'] + series.series_points['stat_bcu']
+                series.series_points['stat_btcl'] \
+                    = series.series_points['stat_value'] - series.series_points['stat_btcl']
+                series.series_points['stat_btcu'] \
+                    = series.series_points['stat_value'] + series.series_points['stat_btcu']
                 columns_for_print \
-                    = series.series_points[["thresh_i", "stat_value", 'stat_bcl', 'stat_bcu']]
+                    = series.series_points[["thresh_i", "stat_value", 'stat_btcl', 'stat_btcu']]
                 all_points_1.append(columns_for_print.head().values.tolist())
 
             all_points_1 = [item for sublist in all_points_1 for item in sublist]
@@ -675,6 +674,7 @@ class Reliability(BasePlot):
             with open(output_file, "w+") as my_csv:
                 csv_writer = csv.writer(my_csv, delimiter=' ')
                 csv_writer.writerows(all_points_formatted)
+            my_csv.close()
 
         except TypeError:
             print('Can\'t save points to a file')

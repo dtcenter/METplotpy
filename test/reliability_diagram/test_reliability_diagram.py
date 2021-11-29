@@ -31,7 +31,7 @@ def cleanup():
     # from any previous runs
     try:
         path = os.getcwd()
-        plot_file = 'line.png'
+        plot_file = 'reliability.png'
         points_file_1 = 'reliability.points1'
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(path, points_file_1))
@@ -42,7 +42,7 @@ def cleanup():
 
 
 @pytest.mark.parametrize("test_input,expected",
-                         (["./reliability_expected.png", True], ["./reliability.points1", True]))
+                         (["./reliability.png", True], ["./reliability.points1", True]))
 def test_files_exist(setup, test_input, expected):
     '''
         Checking that the plot and data files are getting created
@@ -57,9 +57,6 @@ def test_images_match(setup):
         newly created plot to verify that the plot hasn't
         changed in appearance.
     '''
-    path = os.getcwd()
-    plot_file = 'reliability_expected.png'
-    actual_file = os.path.join(path, plot_file)
-    comparison = CompareImages('./reliability_expected.png', actual_file)
+    comparison = CompareImages('reliability.png', 'reliability_expected.png')
     assert comparison.mssim == 1
-    cleanup()
+    #cleanup()

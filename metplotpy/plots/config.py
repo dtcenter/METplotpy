@@ -4,7 +4,6 @@ Class Name: config.py
 Holds values set in the config file(s)
 """
 __author__ = 'Minna Win'
-__email__ = 'met_help@ucar.edu'
 
 import itertools
 from typing import Union
@@ -58,19 +57,32 @@ class Config:
         # bbox_to_anchor() setting used in determining
         # the location of the bounding box which defines
         # the legend.
-        self.bbox_x = float(user_settings['bbox_x'])
-        self.bbox_y = float(user_settings['bbox_y'])
-        legend_magnification = user_settings['legend_size']
-        self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
+
+        bbox_x = user_settings.get('bbox_x')
+        if bbox_x is not None:
+            self.bbox_x = float(user_settings['bbox_x'])
+
+        bbox_y = user_settings.get('bbox_y')
+        if bbox_y is not None:
+            self.bbox_y = float(user_settings['bbox_y'])
+
+        legend_magnification = user_settings.get('legend_size')
+        if legend_magnification is not None:
+            self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
+
         self.legend_ncol = self.get_config_value('legend_ncol')
-        legend_box = self.get_config_value('legend_box').lower()
-        if legend_box == 'n':
-            # Don't draw a box around legend labels
-            self.draw_box = False
-        else:
-            # Other choice is 'o'
-            # Enclose legend labels in a box
-            self.draw_box = True
+        legend_box = self.get_config_value('legend_box')
+        if legend_box is not None:
+            legend_box = legend_box.lower()
+            if legend_box == 'n':
+                # Don't draw a box around legend labels
+                self.draw_box = False
+            else:
+                # Other choice is 'o'
+                # Enclose legend labels in a box
+                self.draw_box = True
+
+
 
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
@@ -97,6 +109,7 @@ class Config:
         # we want to subset data where column name is 'model', with coincident rows of 'SH_CMORPH'.
         self.series_val_names = self._get_series_val_names()
         self.series_ordering = None
+        self.indy_plot_val = self.get_config_value('indy_plot_val')
 
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
@@ -149,17 +162,23 @@ class Config:
                 - a dictionary that holds the legend settings that
                   are set in METviewer
         """
-        legend_box = self.get_config_value('legend_box').lower()
+        legend_box = self.get_config_value('legend_box')
+        if legend_box:
+            legend_box = legend_box.lower()
+
         legend_ncol = self.get_config_value('legend_ncol')
         legend_inset = self.get_config_value('legend_inset')
-        legend_bbox_x = legend_inset['x']
-        legend_bbox_y = legend_inset['y']
-        legend_size = self.get_config_value('legend_size')
-        legend_settings = dict(bbox_x=legend_bbox_x,
+        if legend_inset:
+            legend_bbox_x = legend_inset['x']
+            legend_bbox_y = legend_inset['y']
+            legend_size = self.get_config_value('legend_size')
+            legend_settings = dict(bbox_x=legend_bbox_x,
                                bbox_y=legend_bbox_y,
                                legend_size=legend_size,
                                legend_ncol=legend_ncol,
                                legend_box=legend_box)
+        else:
+            legend_settings = dict()
 
         return legend_settings
 
@@ -517,6 +536,51 @@ class Config:
             ordered_settings_list.insert(series, setting_to_order[idx])
 
         return ordered_settings_list
+
+    def create_list_by_plot_val_ordering(self, setting_to_order):
+        """
+        Generate a list of indy parameters settings based on what is set
+        in indy_plot_val in the config file.
+        If the  is specified:
+        -3
+        -1
+        -2
+
+        and indy_vals is set:
+        indy_vals:
+        -120000
+        -150000
+        -180000
+
+        Then the following is expected:
+        the first indy_val  is 150000
+        the second indy_val is 180000
+        the third indy_val is 120000
+
+
+        Args:
+
+            setting_to_order:  the name of the setting (eg indy_vals) to be
+                                        ordered based on the order indicated
+                                        in the config file under the indy_plot_val setting.
+
+        Returns:
+            a list reflecting the order that is consistent with what was set in indy_plot_val
+        """
+
+        # order the input list according to the series_order setting
+        ordered_settings_list = []
+        # create a natural order if series_ordering is missing
+        if self.indy_plot_val is None or len(self.indy_plot_val) == 0:
+            self.indy_plot_val = list(range(1, len(setting_to_order) + 1))
+
+        # Make the series ordering list zero-based to sync with Python's zero-based counting
+        indy_ordered_zb = [sorder - 1 for sorder in self.indy_plot_val]
+        for idx, indy in enumerate(indy_ordered_zb):
+            ordered_settings_list.insert(indy, setting_to_order[idx])
+
+        return ordered_settings_list
+
 
     def calculate_plot_dimension(self, config_value, output_units):
         '''

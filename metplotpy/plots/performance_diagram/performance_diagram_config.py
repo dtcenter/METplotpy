@@ -6,7 +6,6 @@ Class Name: performance_diagram_config.py
 Holds values set in the Performance Diagram config file(s)
 """
 __author__ = 'Minna Win'
-__email__ = 'met_help@ucar.edu'
 
 import re
 from plots.config import Config

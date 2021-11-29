@@ -1,4 +1,4 @@
-fcst_var	thresh_i	stat_name	stat_value	stat_bcl	stat_bcu	nstats
+fcst_var	thresh_i	stat_name	stat_value	stat_btcl	stat_btcu	nstats
 PROB(APCP_03>1.270)	0.0	PSTD_CALIBRATION	0.0036102	NA	NA	1
 PROB(APCP_03>1.270)	0.0	PSTD_BASER	0.0036102	NA	NA	1
 PROB(APCP_03>1.270)	0.0	PSTD_NI	25760.0	NA	NA	1

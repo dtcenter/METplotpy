@@ -2,7 +2,6 @@
 Class Name: scatter.py
  """
 __author__ = 'Hank Fisher'
-__email__ = 'met_help@ucar.edu'
 
 import plotly.graph_objects as go
 import yaml

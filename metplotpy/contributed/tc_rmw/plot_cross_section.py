@@ -56,17 +56,21 @@ def plot_cross_section(config, plotdir,
             format_valid_time(int(valid_time[track_index])))
 
         if wt == 'tangential':
+            #
+            # Tangential wind
+            #
+
+            # read in the config options for tangential_contour_level_start, tangential_contour_level_end, and
+            # tangential_contour_level_stepsize
+            start = config['tangential_contour_level_start']
+            end = config['tangential_contour_level_end']
+            step = config['tangential_contour_level_stepsize']
             wind_contour = ax.contour(range_grid, pressure_grid,
                                       wind_tangential[:, :, track_index].transpose(),
-                                      levels=np.arange(5, 40, 5), colors='darkgreen', linewidths=1)
+                                      levels=np.arange(start, end, step), colors='darkgreen', linewidths=1)
             ax.clabel(wind_contour, colors='darkgreen', fmt='%1.0f')
 
-            # TODO
-            # read in the config options for contour_level_start, contour_level_end, and
-            # contour_level_stepsize
-            start = config['contour_level_start']
-            end = config['contour_level_end']
-            step = config['contour_level_stepsize']
+
             scalar_contour = ax.contour(range_grid, pressure_grid,
                                         scalar_field[:, :, track_index].transpose(),
                                         levels=np.arange(250, 300, 10), colors='darkblue',
@@ -105,18 +109,18 @@ def plot_cross_section(config, plotdir,
             fig.savefig(tang_outfile + '.png', dpi=300)
             fig.savefig(tang_outfile + '.pdf')
         else:
+            #
             # Radial wind
-            # TODO
-            # read in the config options for contour_level_start, contour_level_end, and
-            # contour_level_stepsize
-            start = config['contour_level_start']
-            end = config['contour_level_end']
-            step = config['contour_level_stepsize']
-            print("start: ", start, " end: ", end, " stepsize: ", step)
+            #
+
+            # read in the config options for radial_contour_level_start, radial_contour_level_end, and
+            # radial_contour_level_stepsize
+            start = config['radial_contour_level_start']
+            end = config['radial_contour_level_end']
+            step = config['radial_contour_level_stepsize']
             wind_contour = ax.contour(range_grid, pressure_grid,
                                       wind_radial[:, :, track_index].transpose(),
                                       levels=np.arange(start,end,step), colors='darkgreen', linewidths=1)
-            # print('wind_radial values: ', wind_radial[:, :, track_index])
             ax.clabel(wind_contour, colors='darkgreen', fmt='%1.0f')
 
 
