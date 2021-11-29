@@ -38,7 +38,21 @@ vertical_levels:
 
 
 vertical_level_stepsize:
+  - -100
   # the step size between levels (e.g. -100 mb when vertical level is by pressure
   # or 200 meters when vertical level is by height)
-  - -100
-#  - 500
+
+#  500
+
+contour_level_start: -2
+
+  # for tangential winds using the test data
+  # 250
+contour_level_end: 2
+
+  # - 300 for tangential winds
+
+contour_level_stepsize: 0.2
+  # - 10 for tangential winds
+
+
