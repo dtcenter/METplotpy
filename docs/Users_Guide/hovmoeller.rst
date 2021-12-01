@@ -11,7 +11,7 @@ Hovmoeller class supports only time along the vertical axis and
 longitude along the horizontal axis. This can be generalized in future
 releases to allow, for instance, time on the horizontal and latitude on
 the vertical. The examples are based on tropical diagnostics applications,
-so a meridional average of precipitation from 5 S to 5 N has been setup
+so a meridional average of precipitation from 5 S to 5 N has been set up
 in the default configuration.
 
 Please refer to the `METplus use case documentation
@@ -26,7 +26,7 @@ Example
 Sample Data
 ___________
 
-The sample data used to create an example hovmoeller plot is available in
+The sample data used to create an example Hovmoeller plot is available in
 the `s2s METplus data tar file.
 <https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/v4.0/sample_data-s2s-4.0.tgz>`_  Look in the directory,
 *model_applications/s2s/UserScript_obsPrecip_obsOnly_Hovmoeller*.
@@ -36,7 +36,7 @@ Configuration Files
 ___________________
 
 There is an example YAML config file located in 
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/hovmoeller.yml*
+*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/hovmoeller.yaml*
 
 Run from the Command Line
 =========================
