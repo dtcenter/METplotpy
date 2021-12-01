@@ -12,7 +12,16 @@ A `METplus use case
 <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_WeatherRegime.html#sphx-glr-generated-model-applications-s2s-userscript-obsera-obsonly-weatherregime-py>`_
 illustrates how to use this plot.
 
+These files are used by the image comparison test:
 
+* **obs_elbow.png**  Run plot_elbow in **plot_weather_regime.py**
+  to create this plot.
+
+* **obs_eof.png**  Run plot_eof in **plot_weather_regime.py**
+  to create this plot.
+
+* **obs_kmeans.png**  Run plot_K_means in **plot_weather_regime.py**
+  to create this plot.
 
 
 Required Packages
@@ -42,24 +51,6 @@ Required Packages
 
 * eofs
 
-Description
-===========
-
-The **plot_weather_regime.py** script contains the plotting portion for
-3 scripts (**elbow.py, Calc_EOF.py**, and **K_means.py**) that were
-originally created by Doug Miller at the  University of Illinois.
-
-These files are used by the image comparison test:
-
-* **obs_elbow.png**  Run plot_elbow in **plot_weather_regime.py**
-  to create this plot.
-
-* **obs_eof.png**  Run plot_eof in **plot_weather_regime.py**
-  to create this plot.
-
-* **obs_kmeans.png**  Run plot_K_means in **plot_weather_regime.py**
-  to create this plot.
-
 
 How to Use
 ===========
@@ -85,7 +76,7 @@ line.
 **mi:**  A numpy array containing the location of the maximum distance.
 
 **line:**  A numpy array representing the straight line from the sum of
-squared difference for all clusters.
+squared differences for all clusters.
 
 **curve:**  A numpy array containing the actual values of the sum of
 squared distances.
