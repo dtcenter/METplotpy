@@ -27,15 +27,22 @@ def plot_cross_section(config, ds, itime=0):
 
     scalar_contour = ax.contour(ds['range'],
                                 ds[config['vertical_coord_name']],
-                                field_azi_mean.transpose())
+                                field_azi_mean.transpose(),
+                                levels=np.arange(config['contour_level_start'], config['contour_level_end'], config['contour_level_stepsize']),
+                                colors=config['contour_line_colors'], linewidths=int(config['line_width'])
+                                )
+    plt.title(config['plot_title'])
+    ax.clabel(scalar_contour, colors=config['contour_label_color'],fmt=config['contour_label_fmt'])
 
-    fig.savefig('test.png', dpi=300)
-    fig.savefig('test.pdf')
+    ax.set_xlabel(config['x_label'])
+    ax.set_ylabel(config['y_label'])
+    ax.set_xticks(np.arange(config['x_tick_start'], config['x_tick_end']))
+    ax.set_yticks(np.arange(config['y_tick_start'], config['y_tick_end'], config['y_tick_stepsize']))
+    ax.set_yscale(config['y_scale'])
+    # ax.set_ylim(config['y_lim_start'], config['y_lim_end'])
+    fig.savefig(config['plot_filename'] + '.png', dpi=config['plot_res'])
+    fig.savefig(config['plot_filename'] + '.pdf')
 
-    """
-                                levels=, colors='darkblue',
-                                linewidths=1)
-    """
 
 if __name__ == '__main__':
 

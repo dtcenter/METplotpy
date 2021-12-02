@@ -9,6 +9,47 @@ vertical_coord_name:
 field:
     'TMP'
 
-contour_level_start: 280
-contour_level_end: 310
+contour_level_start: 0
+contour_level_end: 500
 contour_level_stepsize: 5
+
+#
+# contour plot appearance customizations
+#
+line_width: 2
+contour_line_colors: 'darkblue'
+contour_label_color: 'orange'
+contour_label_fmt: '%1.0f'
+
+# axis labels
+# x-axis is in units of RMW
+x_label: 'RMW (meters)'
+y_label: 'Height (meters)'
+
+# x-ticks
+x_tick_start: 1
+x_tick_end: 20
+
+# y-ticks
+y_tick_start: 0
+y_tick_end: 3000
+y_tick_stepsize: 100
+
+# y-axis limits
+y_lim_start: 1000
+y_lim_end: 250
+
+# y_scale
+#y_scale: 'symlog'
+y_scale: 'linear'
+
+# plot title
+plot_title: 'Temperature Cross-section'
+
+# plot name
+plot_filename: 'test'
+
+# plot resolution in dpi (dot per square inch)
+plot_res: 300
+
+
