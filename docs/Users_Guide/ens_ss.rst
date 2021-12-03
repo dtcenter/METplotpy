@@ -29,14 +29,14 @@ to set plot attributes. These plot attributes correspond to values that can be s
 tool. YAML is a recursive acroynym for "YAML Ain't Markup Language" and according to yaml.org,
 it is a "human-readable data-serialization language". It is commonly used for configuration files
 and in applications where data is being stored or transmitted".  Two configuration files are required,
-the first is a default configuration file, bar_defaults.yaml that is found in the
+the first is a default configuration file, ens_ss_defaults.yaml that is found in the
 $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config directory.  All default
 configuration files are located in the $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config
 directory.  $METPLOTPY_SOURCE is the user-specified directory
 where the METplotpy source code has been saved.  **Default configuration files are automatically loaded by the plotting code and do not
 need to be explicitly specified when generating a plot**. The second required YAML configuration file is a
 user-supplied "custom" configuration file that is used to customize/override the default
-settings in the bar_defaults.yaml file.  The custom configuration file can be an empty
+settings in the ens_ss_defaults.yaml file.  The custom configuration file can be an empty
 file if all default settings are to be applied.
 
 
@@ -54,9 +54,9 @@ plot as it represents the default values set in METviewer
 **Custom Configuration File**
 
 A second, `mandatory` configuration file is required, which is
-used to customize the settings to the bar plot. The custom_bar.yaml
+used to customize the settings to the plot. The custom_ens_ss.yaml
 file is included with the source code.  If the user
-wishes to use all the default settings defined in the bar_defaults.yaml
+wishes to use all the default settings defined in the ens_ss_defaults.yaml
 file, an empty custom configuration file can be specified instead.
 
 .. literalinclude:: ../../test/ens_ss/custom_ens_ss.yaml
@@ -133,4 +133,4 @@ Replacing the $METPLOTPY_SOURCE with the directory where the METplotpy source co
   ``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plotsens_ss.py $WORKING_DIR/custom_ens_ss.yaml``
 
 
-* a `ens_ss.png` output file will be created in the directory you specified in the `plot_filename` configuration setting in the custom_ens_ss.yaml configuration file.
+* an `ens_ss.png` output file will be created in the directory you specified in the `plot_filename` configuration setting in the custom_ens_ss.yaml configuration file.
