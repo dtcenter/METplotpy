@@ -23,7 +23,8 @@ https://dtcenter.ucar.edu/dfiles/code/METplus/METplotpy/tcrmw/tc_rmw_example.nc.
 
 Perform the conversion from pressure levels to height levels by following the instructions:
 
-https://metcalcpy.readthedocs.io/en/latest/Users_Guide/vertical_interpolation.html
+https://metcalcpy.readthedocs.io/en/feature_34_vertical_interp/Users_Guide/vertical_interpolation.html
+
 
 The output directory you specified in the *height_from_pressure_tcrmw.sh* shell script is where your
 tc_rmw_example_vertical_interp.nc file is located.  This output file will be used as input
@@ -71,7 +72,7 @@ compatible version number for your operating system and existing packages.
 
 **Python 3.7** or above
 
-METcalcpy 1.1.0
+METcalcpy (use the same version as METplotpy)
 
 matplotlib 3.4.3
 
