@@ -13,7 +13,7 @@ import xarray as xr
 matplotlib.use('Agg')
 
 
-def plot_cross_section(config, ds, itime=0):
+def plot_cross_section(config, ds, args, itime=0):
 
     fig, ax = plt.subplots(figsize=(8., 4.5))
 
@@ -29,7 +29,7 @@ def plot_cross_section(config, ds, itime=0):
                                 ds[config['vertical_coord_name']],
                                 field_azi_mean.transpose(),
                                 levels=np.arange(config['contour_level_start'], config['contour_level_end'], config['contour_level_stepsize']),
-                                colors=config['contour_line_colors'], linewidths=int(config['line_width'])
+                                colors=config['contour_line_colors'], linewidths=(config['line_width'])
                                 )
     plt.title(config['plot_title'])
     ax.clabel(scalar_contour, colors=config['contour_label_color'],fmt=config['contour_label_fmt'])
@@ -39,9 +39,10 @@ def plot_cross_section(config, ds, itime=0):
     ax.set_xticks(np.arange(config['x_tick_start'], config['x_tick_end']))
     ax.set_yticks(np.arange(config['y_tick_start'], config['y_tick_end'], config['y_tick_stepsize']))
     ax.set_yscale(config['y_scale'])
-    # ax.set_ylim(config['y_lim_start'], config['y_lim_end'])
-    fig.savefig(config['plot_filename'] + '.png', dpi=config['plot_res'])
-    fig.savefig(config['plot_filename'] + '.pdf')
+    ax.set_ylim(config['y_lim_start'], config['y_lim_end'])
+    plot_outdir = args.plotdir
+    fig.savefig(os.path.join(plot_outdir,config['plot_filename'] + '.png'), dpi=config['plot_res'])
+    fig.savefig(os.path.join(plot_outdir,config['plot_filename'] + '.pdf'))
 
 
 if __name__ == '__main__':
@@ -75,4 +76,4 @@ if __name__ == '__main__':
     """
     ds = xr.open_dataset(os.path.join(args.datadir, args.filename))
 
-    plot_cross_section(config, ds)
+    plot_cross_section(config, ds, args)

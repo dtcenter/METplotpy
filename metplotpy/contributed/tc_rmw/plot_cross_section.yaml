@@ -36,8 +36,8 @@ y_tick_end: 3000
 y_tick_stepsize: 100
 
 # y-axis limits
-y_lim_start: 1000
-y_lim_end: 250
+y_lim_start: 0
+y_lim_end: 6000
 
 # y_scale
 #y_scale: 'symlog'
