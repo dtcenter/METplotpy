@@ -1,52 +1,73 @@
+"""
+plot_cross_section
+"""
+__author__ = 'David Fillmore'
+
 import os
-import sys
 import argparse
 import yaml
-
 import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
-
 import numpy as np
 import xarray as xr
 
 matplotlib.use('Agg')
 
 
-def plot_cross_section(config, ds, args, itime=0):
+def plot_cross_section(config, data_set, args):
+    """
+        Generate the cross-section plot of the field specified in the YAML config file
+        (e.g. plot_cross_section.yaml)
 
-    fig, ax = plt.subplots(figsize=(8., 4.5))
+       Args:
+          @param config: The config object of items in the YAML configuration file (used to
+                         customize the appearance of the plot).
+          @param data_set: The xarray dataset (gridded data, either netCDF or grib2).
+          @param args: The command line arguments indicating the location of input and output dirs, etc.
+
+       Returns:
+       None, generates output files: .png and .pdf versions of the cross-section plot.
 
     """
-    (range, azimuth, lev, track_point)
-    """
-    field = ds[config['field']]
-    print(field.shape)
-    field_azi_mean = np.mean(field, axis=1)[:,:,itime]
-    print(field_azi_mean.shape)
 
-    scalar_contour = ax.contour(ds['range'],
-                                ds[config['vertical_coord_name']],
+    # pylint raises issues with the use of 'ax' for matplotlib calls,
+    # Keep the use of 'ax' as this is commonly used
+    # pylint: disable=invalid-name
+
+
+    plot_width = config['plot_size_width']
+    plot_height = config['plot_size_height']
+    fig, ax = plt.subplots(figsize=(plot_width, plot_height))
+
+    field = data_set[config['field']]
+    itime = config['index_time_slice']
+    field_azi_mean = np.mean(field, axis=1)[:, :, itime]
+
+    scalar_contour = ax.contour(data_set['range'],
+                                data_set[config['vertical_coord_name']],
                                 field_azi_mean.transpose(),
-                                levels=np.arange(config['contour_level_start'], config['contour_level_end'], config['contour_level_stepsize']),
-                                colors=config['contour_line_colors'], linewidths=(config['line_width'])
+                                levels=np.arange(config['contour_level_start'],
+                                                 config['contour_level_end'],
+                                                 config['contour_level_stepsize']),
+                                                 colors=config['contour_line_colors'],
+                                                 linewidths=(config['line_width'])
                                 )
     plt.title(config['plot_title'])
-    ax.clabel(scalar_contour, colors=config['contour_label_color'],fmt=config['contour_label_fmt'])
-
+    ax.clabel(scalar_contour, colors=config['contour_label_color'], fmt=config['contour_label_fmt'])
     ax.set_xlabel(config['x_label'])
     ax.set_ylabel(config['y_label'])
     ax.set_xticks(np.arange(config['x_tick_start'], config['x_tick_end']))
-    ax.set_yticks(np.arange(config['y_tick_start'], config['y_tick_end'], config['y_tick_stepsize']))
+    ax.set_yticks(np.arange(config['y_tick_start'],
+                            config['y_tick_end'],
+                            config['y_tick_stepsize']))
     ax.set_yscale(config['y_scale'])
     ax.set_ylim(config['y_lim_start'], config['y_lim_end'])
     plot_outdir = args.plotdir
-    fig.savefig(os.path.join(plot_outdir,config['plot_filename'] + '.png'), dpi=config['plot_res'])
-    fig.savefig(os.path.join(plot_outdir,config['plot_filename'] + '.pdf'))
+    fig.savefig(os.path.join(plot_outdir, config['plot_filename'] + '.png'), dpi=config['plot_res'])
+    fig.savefig(os.path.join(plot_outdir, config['plot_filename'] + '.pdf'))
 
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser(
         description='Plot Tropical Cyclone Cross Section')
 
@@ -63,17 +84,16 @@ if __name__ == '__main__':
                         required=True,
                         help='configuration file')
 
-    args = parser.parse_args()
+    input_args = parser.parse_args()
 
     """
     Read YAML configuration file
     """
-    config = yaml.load(
-        open(args.config), Loader=yaml.FullLoader)
+    plotting_config = yaml.load(
+        open(input_args.config), Loader=yaml.FullLoader)
 
     """
-    Read dataset
+    Read dataset and call for plotting
     """
-    ds = xr.open_dataset(os.path.join(args.datadir, args.filename))
-
-    plot_cross_section(config, ds, args)
+    input_data = xr.open_dataset(os.path.join(input_args.datadir, input_args.filename))
+    plot_cross_section(plotting_config, input_data, input_args)
