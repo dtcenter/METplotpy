@@ -13,6 +13,9 @@ contour_level_start: 0
 contour_level_end: 500
 contour_level_stepsize: 5
 
+# time slice of interest
+index_time_slice: 0
+
 #
 # contour plot appearance customizations
 #
@@ -23,7 +26,7 @@ contour_label_fmt: '%1.0f'
 
 # axis labels
 # x-axis is in units of RMW
-x_label: 'RMW (meters)'
+x_label: 'units of RMW'
 y_label: 'Height (meters)'
 
 # x-ticks
@@ -46,10 +49,15 @@ y_scale: 'linear'
 # plot title
 plot_title: 'Temperature Cross-section'
 
-# plot name
-plot_filename: 'test'
+# plot name (only provide the filename without the extension,
+# png and pdf files will be generated)
+plot_filename: 'example'
 
 # plot resolution in dpi (dot per square inch)
 plot_res: 300
+
+# plot size in inches width, height
+plot_size_width: 8
+plot_size_height: 4.5
 
 
