@@ -55,6 +55,8 @@ Python Requirements
 
 * xarray 0.16.2
 
+* yaml
+
 
 Install METcalcpy in your conda environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
