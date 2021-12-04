@@ -49,7 +49,7 @@ field:
    'TMP'
 
 You can modify the *plot_filename* to give your output plot a different name.  Two different file
-types are generated, a *.png* file and a *.pdf* file,, In the *plot_cross_section.yaml* configuration
+types are generated, a *.png* file and a *.pdf* file. In the *plot_cross_section.yaml* configuration
 file, the plot that will be created will be named example.png and example.pdf.
 
 There are configuration settings to set the labels to the x-axis and y-axis, the plot size, plot
