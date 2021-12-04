@@ -71,29 +71,14 @@ Open the *test_plot_cross_section.sh* script in an editor of your choice.
 Modify the *datadir*, *plotdir*, *filename*, and *configfile* values in the *test_plot_cross_section.sh* script to
 point to the appropriate locations:
 
-*datadir* is the location of the input netCDF file (the directory where you saved the
-output from the METcalcpy vertical interpolation)
+* *datadir* is the location of the input netCDF file (the directory where you saved the output from the METcalcpy vertical interpolation)
 
-*plotdir* is the location of the output plot
+* *plotdir* is the location of the output plot
 
-*filename* is the name of the input netCDF file (*tc_rmw_example_vertical_interp.nc* that was created
-from running the METcalcpy vertical interpolation)
+* *filename* is the name of the input netCDF file (*tc_rmw_example_vertical_interp.nc* that was created from running the METcalcpy vertical interpolation)
 
-*configfile* is the YAML config file that is used to set plot customizations (line colors, labels, etc.)
+* *configfile* is the YAML config file that is used to set plot customizations (line colors, labels, etc.)
 
-for example, in the test_plot_cross_section.sh script:
-
-``export datadir=/home/mydir/data/vertically_interpolated``
-
-``export plotdir=/home/mydir/output/plots``
-
-``export filename=tc_rmw_example_vertical_interp.nc``
-
-``export configfile=/home/mydir/METplotpy/metplotpy/contributed/tc_rmw/plot_cross_section.yaml``
-
-
-where */home/mydir* in the example above is where most of the sub-directories and files are located.  You
-can organize your directories to match your workflow.
 
 Save and close the *test_plot_cross_section.sh* script.
 
@@ -123,8 +108,8 @@ To generate the plot, perform the following:
 
 
 
-Specific version numbers are specified when necessary.  If versions are not specified, use a
-compatible version number for your operating system and existing packages.
+*Specific version numbers are specified when necessary.  If versions are not specified, use a
+compatible version number for your operating system and existing packages.*
 
 * If you are running in a conda environment, verify that you are running the conda environment that has the above Python packages installed.
 
