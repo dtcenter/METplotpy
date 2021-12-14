@@ -23,7 +23,7 @@ def parse_args():
     # ==========Mandatory Arguments===================
     parser.add_argument("historyfile", type=argparse.FileType("r"), help="FV3 history file")
     parser.add_argument("gridfile", type=argparse.FileType("r"), help="FV3 grid spec file")
-    parser.add_argument("variable", type=str, choices=state_variables, default="tmp", help="variable")
+    parser.add_argument("statevariable", type=str, choices=state_variables, default="tmp", help="state variable")
     # ==========Optional Arguments===================
     parser.add_argument("-d", "--debug", action='store_true')
     parser.add_argument("--resid", action="store_true", help="calculate residual")
@@ -39,7 +39,7 @@ def main():
     args = parse_args()
     gfile      = args.gridfile
     ifile      = args.historyfile
-    variable   = args.variable
+    variable   = args.statevariable
     debug      = args.debug
     resid      = args.resid
     dt         = args.dtsec * units.seconds
@@ -89,7 +89,7 @@ def main():
     tendency = f"{variable} tendency"
     all_tend = all_tend.to_array(dim=tendency)
 
-    print(f"total change in {variable}")
+    print(f"calculate d{variable}")
     state_variable = fv3ds[variable].metpy.quantify() # Tried metpy.quantify() with open_dataset, but pint.errors.UndefinedUnitError: 'dBz' is not defined in the unit registry
     dstate_variable = state_variable.sel(time = lasttime) - state_variable.isel(time=0)
     dstate_variable = dstate_variable.assign_coords(time=lasttime)
@@ -117,7 +117,7 @@ def main():
         # mask points outside shape
         mask = fv3.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
         mask = xarray.DataArray(mask, coords=[all_tend.grid_yt, all_tend.grid_xt])
-        all_tend = all_tend.where(mask)
+        all_tend = all_tend.where(mask, drop=True)
         area     = area.where(mask).fillna(0)
 
     totalarea = area.metpy.convert_units("km**2").sum()
