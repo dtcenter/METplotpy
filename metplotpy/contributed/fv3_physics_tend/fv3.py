@@ -44,7 +44,7 @@ def pts_in_shp(lats, lons, shp, debug=False):
             print("I don't know how to process 3-D polygons (i.e. POLYGON Z).")
             sys.exit(1)
         if isinstance(g, multipolygon.MultiPolygon):
-            for mp in g:
+            for mp in g.geoms:
                 mask = mask | matplotlib.path.Path(mp.exterior.coords).contains_points(ll_array)
         else:
             mask = mask | matplotlib.path.Path(g.exterior.coords).contains_points(ll_array)
