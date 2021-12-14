@@ -76,7 +76,7 @@ all_tend *= dt * numdt
 for varname, da in all_tend.data_vars.items():
     da.attrs["long_name"] = fv3ds[varname].attrs["long_name"].replace("tendency", "change")
 
-# Stack variables along "tendency" axis of new array. Simpler code but long_name attrs are lost. # TODO preserve long_names 
+# Stack variables along "tendency" axis of new DataArray.
 all_tend = all_tend.to_array(dim="tendency")
 
 print(f"total change in {variable}")
