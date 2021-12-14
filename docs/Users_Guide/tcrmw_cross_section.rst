@@ -16,14 +16,10 @@ Example
 
 **Sample Data**
 
-The sample data used to convert pressure level data to height level is available in the METplotpy
-data tar file:
-
-https://dtcenter.ucar.edu/dfiles/code/METplus/METplotpy/tcrmw/tc_rmw_example.nc.gz
-
-Perform the conversion from pressure levels to height levels by following the instructions:
+Create the sample data by performing the conversion from pressure levels to height levels by following the instructions:
 
 https://metcalcpy.readthedocs.io/en/feature_34_vertical_interp/Users_Guide/vertical_interpolation.html
+
 
 
 The output directory you specified in the *height_from_pressure_tcrmw.sh* shell script (in the METcalcpy
