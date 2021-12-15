@@ -12,23 +12,24 @@ import sys
 import xarray
 
 """
-Plot tendencies of t, q, u, or v from physics parameterizations, dynamics (non-physics), their total, and residual.
+Plan view of tendencies of t, q, u, or v from physics parameterizations, dynamics (non-physics), their total, and residual.
 Total change is difference between state variable at t = 12 and t = 1, where t is the output timestep.
 """
 
 state_variables = fv3.tendencies.keys()
 
 def parse_args():
-    fill_choices = ["resid"]
-    for state_variable in state_variables:
+    # Populate list of choices for contour fill argument.
+    fill_choices = ["resid"] # residual tendency
+    for state_variable in state_variables: # tendencies for each state variable
         fill_choices.extend(fv3.tendencies[state_variable])
-    fill_choices = ["_".join(x.split("_")[1:]) for x in fill_choices]
+    fill_choices = ["_".join(x.split("_")[1:]) for x in fill_choices] # Just the physics/parameterization string after the "_"
     for state_variable in state_variables:
-        fill_choices.append(f"d{state_variable}")
-    fill_choices = set(fill_choices)
+        fill_choices.append(f"d{state_variable}") # total change in state variable
+    fill_choices = set(fill_choices) # no repeats (same physics/parameterization used for multiple state variables). 
 
     # =============Arguments===================
-    parser = argparse.ArgumentParser(description = "Horizontal plot of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description = "Plan view plot of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # ==========Mandatory Arguments===================
     parser.add_argument("historyfile", type=argparse.FileType("r"), help="FV3 history file")
     parser.add_argument("gridfile", type=argparse.FileType("r"), help="FV3 grid spec file")
@@ -142,15 +143,14 @@ def main():
     nrows = int(np.ceil(len(all_tend)/ncols))
 
 
-    # TODO: get LambertConformal to show any data (it is just a white screen)
     # central lon/lat from https://github.com/NOAA-EMC/regional_workflow/blob/release/public-v1/ush/Python/plot_allvars.py
     subplot_kws = dict(projection=cartopy.crs.LambertConformal(central_longitude=-97.6, central_latitude=35.4, standard_parallels=None))
-    subplot_kws = dict(projection=cartopy.crs.PlateCarree())
 
     print("creating figure")
     # dequantify moves units from DataArray to Attributes. Now they show up in colorbar.
     all_tend = all_tend.metpy.dequantify()
-    p = all_tend.plot.pcolormesh(x="lont", y="latt", col="pfull", col_wrap=ncols, robust=True, infer_intervals=True, subplot_kws=subplot_kws) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
+    p = all_tend.plot.pcolormesh(x="lont", y="latt", col="pfull", col_wrap=ncols, robust=True, infer_intervals=True, transform=cartopy.crs.PlateCarree(),
+            subplot_kws=subplot_kws) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
     for ax in p.axes.flat:
         ax.add_feature(cfeature.COASTLINE.with_scale('50m'), linewidth=0.3)
         ax.add_feature(cfeature.BORDERS.with_scale('50m'), linewidth=0.3)
