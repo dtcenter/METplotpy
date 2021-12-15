@@ -136,6 +136,7 @@ def main():
 
     totalarea = area.metpy.convert_units("km**2").sum()
 
+    # Make default dimensions of facetgrid kind of square.
     if not ncols:
         # Default # of cols is square root of # of panels
         ncols = int(np.ceil(np.sqrt(len(all_tend))))
