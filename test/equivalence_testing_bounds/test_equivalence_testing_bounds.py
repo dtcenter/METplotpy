@@ -21,8 +21,8 @@ def setup():
     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
     custom_config_filename = "./custom_equivalence_testing_bounds.yaml"
 
-    # Invoke the command to generate an equivalence testing boundary plot based on
-    # the custom config file.
+    # Invoke the command to generate a Performance Diagram based on
+    # the custom_performance_diagram.yaml custom config file.
     etb.main(custom_config_filename)
 
 
@@ -64,39 +64,3 @@ def test_images_match(setup):
     comparison = CompareImages('./equivalence_testing_bounds_expected.png', actual_file)
     assert comparison.mssim == 1
     cleanup()
-
-
-@pytest.mark.parametrize("test_input,expected",
-                         (["./intermed_files/equivalence_testing_bounds.png", True],
-                          ["./intermed_files/equivalence_testing_bounds.points1", True]))
-def test_files_exist(test_input, expected):
-    '''
-        Checking that the plot and data files are getting created
-    '''
-
-    intermed_dir = os.path.join(os.getcwd(), 'intermed_files')
-    try:
-        os.mkdir(intermed_dir)
-    except FileExistsError as e:
-        pass
-
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
-    custom_config_filename = "./custom_equivalence_testing_bounds2.yaml"
-
-    # Invoke the command to generate an equivalence testing boundary plot based on
-    # the custom config file.
-    etb.main(custom_config_filename)
-
-    assert os.path.isfile(test_input) == expected
-    try:
-        path = os.getcwd()
-        plot_file = 'equivalence_testing_bounds.png'
-        points_file_1 = 'equivalence_testing_bounds.points1'
-        subdir = os.path.join(path, 'intermed_files')
-        os.remove(os.path.join(subdir, plot_file))
-        os.remove(os.path.join(subdir, points_file_1))
-        os.rmdir(intermed_dir)
-    except OSError as e:
-        # Typically when files have already been removed or
-        # don't exist.  Ignore.
-        pass

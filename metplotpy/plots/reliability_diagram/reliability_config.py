@@ -1,5 +1,5 @@
 """
-Class Name: reliability_config.py
+Class Name: line_config.py
 
 Holds values set in the Line plot config file(s)
 """
@@ -42,9 +42,6 @@ class ReliabilityConfig(Config):
         self.blended_grid_col = util.alpha_blending(self.parameters['grid_col'], 0.5)
         self.variance_inflation_factor = self._get_bool('variance_inflation_factor')
         self.dump_points_1 = self._get_bool('dump_points_1')
-        # Optional setting, indicates *where* to save the dump_points_1 file
-        # used by METviewer
-        self.points_path = self.get_config_value('points_path')
         self.create_html = self._get_bool('create_html')
         self.add_noskill_line = self._get_bool('add_noskill_line')
         self.add_skill_line = self._get_bool('add_skill_line')

@@ -20,7 +20,7 @@ con_series:
 create_html: 'True'
 derived_series_1: []
 derived_series_2: []
-dump_points_1: 'True'
+dump_points_1: 'False'
 dump_points_2: 'False'
 event_equal: 'False'
 fcst_var_val_1: null

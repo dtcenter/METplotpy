@@ -1,4 +1,0 @@
-set the PYTHONPATH to the following, if running via command line:
-/Users$INSTALL_DIR/METplotpy:$INSTALL_DIR/METplotpy/metplotpy:$INSTALL_DIR/METplotpy/metplotpy/plots:/$INSTALL_DIR/METplotpy/metplotpy/plots/performance_diagram
-
-

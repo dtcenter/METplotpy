@@ -1,4 +1,4 @@
-fcst_var	model	thresh_i	stat_name	stat_value	stat_btcl	stat_btcu	nstats
+fcst_var	model	thresh_i	stat_name	stat_value	stat_bcl	stat_bcu	nstats
 APCP_03_ENS_FREQ_ge12.7	rap0_3_spptens	0.0	PSTD_CALIBRATION	0.0054421	0.0051893849999999995	0.00567898	936
 APCP_03_ENS_FREQ_ge12.7	rap0_3_spptens	0.0	PSTD_BASER	0.0054421	0.005205204999999999	0.00568962	936
 APCP_03_ENS_FREQ_ge12.7	rap0_3_spptens	0.0	PSTD_NI	29292882.0	28642479.375	29970707.0	936

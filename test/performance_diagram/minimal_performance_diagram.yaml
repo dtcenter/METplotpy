@@ -1,9 +1,0 @@
----
-# Minimal settings specific to performance diagram plot
-# All default values that are
-# set in the performance_diagram_defaults.yaml configuration file will be
-# used.
-# Leave "empty" (as-is) to use all the settings in the performance_diagram.default.yaml
-# as long as you have write permissions for the directory specified in the `plot_filename`
-# setting. Otherwise, specify an appropriate plot_filename setting here (below this comment block)
-

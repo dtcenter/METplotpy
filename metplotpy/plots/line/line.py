@@ -23,6 +23,7 @@ from plots.line.line_config import LineConfig
 from plots.line.line_series import LineSeries
 from plots.base_plot import BasePlot
 import plots.util as util
+
 import metcalcpy.util.utils as calc_util
 
 
@@ -31,7 +32,7 @@ class Line(BasePlot):
          where each line is represented by a text point data file.
     """
 
-    def __init__(self, parameters: dict) -> None:
+    def __init__(self, parameters:dict) -> None:
         """ Creates a line plot consisting of one or more lines (traces), based on
             settings indicated by parameters.
 
@@ -184,7 +185,7 @@ class Line(BasePlot):
             if series.plot_disp:
 
                 # collect min-max if we need to sync axis
-                if self.config_obj.sync_yaxes is True:
+                if self.config_obj.sync_yaxes is True and series.y_axis == 1:
                     yaxis_min, yaxis_max = self._find_min_max(series, yaxis_min, yaxis_max)
 
                 # apply staggering offset if applicable
@@ -335,14 +336,12 @@ class Line(BasePlot):
 
         :param x_points_index: list of indexws for the original x -axis
         """
-
-        odered_indy_label = self.config_obj.create_list_by_plot_val_ordering(self.config_obj.indy_label)
         if self.config_obj.vert_plot is True:
             self.figure.update_layout(
                 yaxis={
                     'tickmode': 'array',
                     'tickvals': x_points_index,
-                    'ticktext': odered_indy_label
+                    'ticktext': self.config_obj.indy_label
                 }
             )
         else:
@@ -350,7 +349,7 @@ class Line(BasePlot):
                 xaxis={
                     'tickmode': 'array',
                     'tickvals': x_points_index,
-                    'ticktext': odered_indy_label
+                    'ticktext': self.config_obj.indy_label
                 }
             )
 
@@ -526,9 +525,6 @@ class Line(BasePlot):
                                               'scaleanchor': 'x'
                                               }
                                       )
-            # reverse x2axis if needed
-            if self.config_obj.xaxis_reverse is True:
-                self.figure.update_layout(xaxis2={'autorange': "reversed"})
 
             # need to add an invisible line with all values = None
             self.figure.add_trace(
@@ -561,10 +557,9 @@ class Line(BasePlot):
         Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
         """
         if self.config_obj.create_html is True:
-            # construct the file name from plot_filename
+            # construct the fle name from plot_filename
             name_arr = self.get_config_value('plot_filename').split('.')
-            name_arr[-1] = 'html'
-            html_name = ".".join(name_arr)
+            html_name = name_arr[0] + ".html"
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
@@ -574,15 +569,13 @@ class Line(BasePlot):
         Formats y1 and y2 series point data to the 2-dim arrays and saves them to the files
         """
 
-        # if points_path parameter doesn't exist,
-        # open file, name it based on the stat_input config setting,
+        # Open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
-        # otherwise use points_path path
-        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-        if self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is True and match:
 
-            # create 2-dim array for y1 points and fill it with 0
+        if self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is True:
+
+            # create 2-dim array for y1 points and feel it with 0
             all_points_1 = [[0 for x in range(len(self.config_obj.all_series_y1) * 3)] for y in
                             range(len(self.config_obj.indy_vals))]
             if self.config_obj.series_vals_2:
@@ -605,20 +598,19 @@ class Line(BasePlot):
                     self._record_points(all_points_2, series_idx_y2, series)
                     series_idx_y2 = series_idx_y2 + 1
 
-            # replace the default path with the custom
-            filename = match.group(1)
-            if self.config_obj.points_path is not None:
-                # get the file name
-                path = filename.split(os.path.sep)
-                if len(path) > 0:
-                    filename = path[-1]
-                else:
-                    filename = '.' + os.path.sep
-                filename = self.config_obj.points_path + os.path.sep + filename
+            # create a file name from stat_input parameter
+            match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+            if match:
+                filename_only = match.group(1)
+            else:
+                filename_only = 'points'
 
             # save points
-            self._save_points(all_points_1, filename + ".points1")
-            self._save_points(all_points_2, filename + ".points2")
+            if self.config_obj.dump_points_1 is True:
+                self._save_points(all_points_1, filename_only + ".points1")
+
+            if self.config_obj.series_vals_2 and self.config_obj.dump_points_2 is True:
+                self._save_points(all_points_2, filename_only + ".points2")
 
     @staticmethod
     def _find_min_max(series: LineSeries, yaxis_min: Union[float, None],
@@ -699,7 +691,6 @@ class Line(BasePlot):
             with open(output_file, "w+") as my_csv:
                 csv_writer = csv.writer(my_csv, delimiter=' ')
                 csv_writer.writerows(all_points_formatted)
-            my_csv.close()
 
         except TypeError:
             print('Can\'t save points to a file')
@@ -731,7 +722,7 @@ def main(config_filename=None):
     try:
         plot = Line(docs)
         plot.save_to_file()
-        # plot.show_in_browser()
+        #plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
     except ValueError as val_er:

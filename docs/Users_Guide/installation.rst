@@ -11,7 +11,9 @@ Python Requirements
 
 * Python 3.6.3
 
-* cartopy 0.18.0
+* bootstrapped 0.0.2 
+
+* cartopy 0.17.0
 
 * cmocean
 
@@ -33,6 +35,8 @@ Python Requirements
 
 * pandas 1.0.1
 
+* pingouin 0.3.8
+
 * plotly 4.9.0
 
 * python-kaleido 0.2.1
@@ -52,8 +56,6 @@ Python Requirements
 * scipy 1.5.1
 
 * statsmodels 0.11.1
-
-* yaml
 
 * xarray 0.16.2
 

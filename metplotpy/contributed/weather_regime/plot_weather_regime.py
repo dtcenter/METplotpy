@@ -95,22 +95,3 @@ def plot_K_means(inputi,wrnum,lons,lats,perc,output_plotname,plevels):
     fmt='png'
     full_output_plot = output_plotname + "." + fmt
     plt.savefig(full_output_plot,format=fmt,dpi=400, bbox_inches='tight')
-
-
-def plot_wr_frequency(WRmean,wrnum,dlen,plot_title,output_plotname):
-
-    days = np.arange(1,dlen+1)
-    plt.figure(figsize=(10,5))
-
-    for ww in np.arange(np.int(wrnum)):
-        plt.plot(days,WRmean[ww],label='WR'+str(ww+1)+'')
-
-    plt.ylabel('Number of WR days per week')
-    plt.xlabel('Week of DJF')
-    plt.title(plot_title)
-    plt.legend()
-    plt.xlim([1,dlen+1])
-
-    fmt='png'
-    full_output_plot = output_plotname + "." + fmt
-    plt.savefig(full_output_plot,format=fmt,dpi=400, bbox_inches='tight')
