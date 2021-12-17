@@ -4,8 +4,8 @@ import xarray as xr
 
 def create_test_data(filename_in):
     """
-
-    :param filename_in: the full filename (path + filename) of the test data
+        Generate simple dataset for the histogram_2d plot
+    :param filename_in: the full filename (path + filename) that will be assigned to the test data
     :return:
     """
     print('Creating test data')
