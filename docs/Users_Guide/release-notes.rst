@@ -17,6 +17,7 @@ beta4 release
 
 * Enhancements: 
    * **Change the names of the CI data columns from bcl/bcu to btcl/btcu** (`#156 <https://github.com/dtcenter/METplotpy/issues/156>`_)
+   * **Write any intermediary files to a user-specified directory** (`#153 <https://github.com/dtcenter/METplotpy/issues/153>`_)
 
 * Internal:
 
