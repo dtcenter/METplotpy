@@ -290,7 +290,9 @@ class ROCDiagram(BasePlot):
 
         # "Dump" False Detection Rate (POFD) and PODY points to an output
         # file based on the output image filename (useful in debugging)
-        self.write_output_file()
+        # This output file is used by METviewer and not necessary for other uses.
+        if self.config_obj.dump_points_1 == True :
+            self.write_output_file()
 
         for idx, series in enumerate(self.series_list):
             for i, thresh_val in enumerate(series.series_points[2]):
@@ -360,14 +362,25 @@ class ROCDiagram(BasePlot):
 
         """
 
-        # Open file, name it based on the stat_input config setting,
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
-        input_filename = self.config_obj.stat_input
-        match = re.match(r'(.*)(.data)', input_filename)
-        if match:
-            filename_only = match.group(1)
-            output_file = filename_only + ".points1"
+        # otherwise use points_path path
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True and match:
+            filename = match.group(1)
+            # replace the default path with the custom
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
+
+            output_file = filename + '.points1'
 
             # make sure this file doesn't already
             # exit, delete it if it does
@@ -439,8 +452,9 @@ def main(config_filename=None):
     try:
         r = ROCDiagram(docs)
         r.save_to_file()
+
         r.write_html()
-        r.write_output_file()
+
         #r.show_in_browser()
     except ValueError as ve:
         print(ve)

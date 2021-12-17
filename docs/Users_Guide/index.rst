@@ -16,6 +16,7 @@ Intermediate releases may include bug fixes. METplotpy is also able to accept
 new modules contributed by the community. If you have code you would like to
 contribute, we will gladly consider your contribution. Please create a post
 in the
+
 `METplus GitHub Discussions Forum <https://github.com/dtcenter/METplus/discussions>`_.
 We will then determine if we will be able to
 include the contribution in a future version.
@@ -64,6 +65,9 @@ Center for Atmospheric Research (NCAR) is sponsored by NSF.
 
    installation
    line
+   box
+   bar
+   ens_ss
    performance_diagram
    reliability_diagram
    roc_diagram
@@ -72,7 +76,9 @@ Center for Atmospheric Research (NCAR) is sponsored by NSF.
    weather_regime
    hovmoeller
    spacetime
+   mjo_rmm_omi
    release-notes
+   references
 
 
 Indices and tables

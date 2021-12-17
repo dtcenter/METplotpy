@@ -205,8 +205,8 @@ class Reliability(BasePlot):
         self._add_noresolution_line(series.series_points['stat_value'][0])
 
         y_points = series.series_points['stat_value'].tolist()
-        stat_bcu = all(v == 0 for v in series.series_points['stat_bcu'])
-        stat_bcl = all(v == 0 for v in series.series_points['stat_bcl'])
+        stat_bcu = all(v == 0 for v in series.series_points['stat_btcu'])
+        stat_bcl = all(v == 0 for v in series.series_points['stat_btcl'])
 
         error_y_visible = True
 
@@ -230,8 +230,8 @@ class Reliability(BasePlot):
                                 marker_size=self.config_obj.marker_size[series.idx],
                                 error_y={'type': 'data',
                                          'symmetric': False,
-                                         'array': series.series_points['stat_bcu'],
-                                         'arrayminus': series.series_points['stat_bcl'],
+                                         'array': series.series_points['stat_btcu'],
+                                         'arrayminus': series.series_points['stat_btcl'],
                                          'visible': error_y_visible,
                                          'thickness': self.config_obj.linewidth_list[series.idx]}
 
@@ -595,37 +595,46 @@ class Reliability(BasePlot):
         Formats series point data to the 2-dim array and saves it to the files
         """
 
-        # Open file, name it based on the stat_input config setting,
+
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
+        # otherwise use points_path path
 
-        if self.config_obj.dump_points_1 is True:
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True and match:
 
             # create an array for y1 points
             all_points_1 = []
 
             # get points from each series
             for series in self.series_list:
-                series.series_points['stat_bcl'] \
-                    = series.series_points['stat_value'] - series.series_points['stat_bcl']
-                series.series_points['stat_bcu'] \
-                    = series.series_points['stat_value'] + series.series_points['stat_bcu']
+                series.series_points['stat_btcl'] \
+                    = series.series_points['stat_value'] - series.series_points['stat_btcl']
+                series.series_points['stat_btcu'] \
+                    = series.series_points['stat_value'] + series.series_points['stat_btcu']
                 columns_for_print \
-                    = series.series_points[["thresh_i", "stat_value", 'stat_bcl', 'stat_bcu']]
+                    = series.series_points[["thresh_i", "stat_value", 'stat_btcl', 'stat_btcu']]
                 all_points_1.append(columns_for_print.head().values.tolist())
 
             all_points_1 = [item for sublist in all_points_1 for item in sublist]
 
-            # create a file name from stat_input parameter
-            match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-            if match:
-                filename_only = match.group(1)
-            else:
-                filename_only = 'points'
+            filename = match.group(1)
+            # replace the default path with the custom
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
+
+            filename = filename + '.points1'
 
             # save points
-            if self.config_obj.dump_points_1 is True:
-                self._save_points(all_points_1, filename_only + ".points1")
+            self._save_points(all_points_1, filename)
 
     def _calc_stag_adjustments(self) -> list:
         """
@@ -674,6 +683,7 @@ class Reliability(BasePlot):
             with open(output_file, "w+") as my_csv:
                 csv_writer = csv.writer(my_csv, delimiter=' ')
                 csv_writer.writerows(all_points_formatted)
+            my_csv.close()
 
         except TypeError:
             print('Can\'t save points to a file')

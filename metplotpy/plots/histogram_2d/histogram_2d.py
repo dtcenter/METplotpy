@@ -13,12 +13,11 @@ Import standard modules
 """
 import os
 import sys
-import argparse
-import logging
+import re
 import yaml
-import numpy as np
 import xarray as xr
 import plotly.graph_objects as go
+import plots.util as util
 
 """
 Import BasePlot class
@@ -30,18 +29,28 @@ class Histogram_2d(BasePlot):
     """
     Class to create a Plotly Histogram_2d plot from a 2D data array
     """
-    def __init__(self, parameters, data):
+
+    def __init__(self, parameters):
         default_conf_filename = 'histogram_2d_defaults.yaml'
 
         super().__init__(parameters, default_conf_filename)
-        logging.debug(self.parameters)
+        # logging.debug(self.parameters)
 
-        self.data = data
-        self.dims = data.dims
-        self.coords = data.coords
+        # Read in input data, location specified in config file
+        self.input_file = self.get_config_value('stat_input')
+        self.input_ds = self._read_input_data()
+        self.data = self.input_ds[self.get_config_value('var_name')]
+        self.dims = self.data.dims
+        self.coords = self.data.coords
+
+        # Optional setting, indicates *where* to save the dump_points_1 file
+        # used by METviewer
+        self.points_path = self.get_config_value('points_path')
+        self.dump_points_1 = self.get_config_value('dump_points_1')
+        self.dump_points_2 = self.get_config_value('dump_points_2')
 
         # normalized probability distribution function
-        self.pdf = data / data.sum()
+        self.pdf = self.data / self.data.sum()
 
         self.figure = go.Figure()
 
@@ -70,99 +79,113 @@ class Histogram_2d(BasePlot):
             yaxis_title=self.get_config_value('yaxis_title'),
         )
 
+    def save_to_file(self):
+        """Saves the image to a file specified in the config file.
+         Prints a message if fails
 
-def create_test_data(filename_in):
-    logging.debug('Creating test data')
-    nx, ny = 21, 21
-    x_coord = np.linspace(-2, 2, nx)
-    y_coord = np.linspace(-2, 2, ny)
-    x_mesh, y_mesh = np.meshgrid(x_coord, y_coord, indexing='ij')
-    f_mesh = 4 - np.square(x_mesh - y_mesh + 1)
-    f_mesh = np.clip(f_mesh, 0, 4)
-    logging.debug(f_mesh.max())
-    f_array = xr.DataArray(f_mesh,
-        dims=['x', 'y'],
-        coords={'x': x_coord, 'y': y_coord})
-    ds = xr.Dataset({'hist_x_y': f_array})
-    ds.to_netcdf(filename_in)
+        Args:
+
+        Returns:
+
+        """
+        image_name = self.get_config_value('plot_filename')
+        if self.figure:
+            try:
+                self.figure.write_image(image_name)
+
+            except FileNotFoundError:
+                print("Can't save to file " + image_name)
+            except ValueError as ex:
+                print(ex)
+        else:
+            print("Oops!  The figure was not created. Can't save.")
+
+    def write_output_file(self):
+        """
+            No intermediate files to write, this plot is currently
+            not incorporated into METviewer.
+
+        :return:
+        """
+        print("No intermediate points1 file created. This plot type is not integrated into METviewer")
+
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
+        # (the input data file) except replace the .data
+        # extension with .points1 extension
+        # otherwise use points_path path
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True and match:
+            filename = match.group(1)
+            # replace the default path with the custom
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
+
+            output_file = filename + '.points1'
+
+            # make sure this file doesn't already
+            # exist, delete it if it does
+            try:
+                if os.stat(output_file).st_size == 0:
+                    fileobj = open(output_file, 'a')
+                else:
+                    os.remove(output_file)
+            except FileNotFoundError as fnfe:
+                # OK if no file was found
+                pass
 
 
-if __name__ == "__main__":
-    """
-    Parse command line arguments
-    """
+
+        pass
+
+    def _read_input_data(self):
+        """
+                Read the input data file and store as an xarray
+                dataset.
+
+                Args:
+
+                Returns: an xarray dataset representation of the gridded input data
+
+        """
+        try:
+            ds = xr.open_dataset(self.input_file)
+        except IOError as ioe:
+            print("Unable to open input file")
+            sys.exit(1)
+        return ds
+
+
+def main(config_filename=None):
     metplotpy_base = os.getenv('METPLOTPY_BASE')
     if not metplotpy_base:
         metplotpy_base = ''
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str,
-        default=os.path.join(metplotpy_base,
-        'plots', 'config', 'histogram_2d_defaults.yaml'),
-        help='configuration file')
-    parser.add_argument('--datadir', type=str,
-        default=os.getenv('DATA_DIR'),
-        help='top-level data directory (default $DATA_DIR)')
-    parser.add_argument('--input', type=str,
-        required=True,
-        help='input file name')
-    parser.add_argument('--logfile', type=str,
-        default=sys.stdout,
-        help='log file (default stdout)')
-    parser.add_argument('--debug', action='store_true',
-        help='set logging level to debug')
-    parser.add_argument('--test', action='store_true',
-                        help='internal test')
-    args = parser.parse_args()
 
-    """
-    Setup logging
-    """
-    logging_level = logging.DEBUG if args.debug else logging.INFO
-    logging.basicConfig(stream=args.logfile, level=logging_level)
-
-    if os.path.isdir(args.datadir):
-        logging.info(args.datadir)
+    # Retrieve the contents of the custom config file to over-ride
+    # or augment settings defined by the default config file.
+    if not config_filename:
+        config_file = util.read_config_from_command_line()
     else:
-        logging.error(args.datadir + ' not found')
-        sys.exit(1)
-    logging.info(args.input)
+        config_file = config_filename
 
-    """
-    Construct input filename
-    """
-    filename_in = os.path.join(args.datadir, args.input)
+    with open(config_file, 'r') as stream:
+        try:
+            docs = yaml.load(stream, Loader=yaml.FullLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
 
-    """
-    Create test dataset
-    """
-    if args.test:
-        create_test_data(filename_in)
-
-    """
-    Read YAML configuration file
-    """
     try:
-        config = yaml.load(
-            open(args.config), Loader=yaml.FullLoader)
-        logging.info(config)
-    except yaml.YAMLError as exc:
-        logging.error(exc)
+        h = Histogram_2d(docs)
+        h.save_to_file()
+    except ValueError as ve:
+        print(ve)
 
-    """
-    Read dataset
-    """
-    try:
-        logging.info('Opening ' + filename_in)
-        ds = xr.open_dataset(filename_in)
-    except IOError as exc:
-        logging.error('Unable to open ' + filename_in)
-        logging.error(exc)
-        sys.exit(1)
-    logging.debug(ds)
 
-    data = ds[config['var_name']]
-
-    plot = Histogram_2d(None, data)
-
-    #plot.show_in_browser()
-    plot.save_to_file()
+if __name__ == "__main__":
+    main()

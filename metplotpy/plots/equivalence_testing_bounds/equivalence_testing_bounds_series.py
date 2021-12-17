@@ -1,5 +1,5 @@
 """
-Class Name: LineSeries
+Class Name: EquivalenceTestingBoundSeries
  """
 __author__ = 'Tatiana Burek'
 
@@ -10,10 +10,11 @@ import math
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
-import pingouin as pg
+import metcalcpy.util.correlation as pg
 
 import metcalcpy.util.utils as utils
 from metcalcpy.sum_stat import calculate_statistic
+from plots import GROUP_SEPARATOR
 from plots.line.line_series import LineSeries
 
 
@@ -49,8 +50,8 @@ class EquivalenceTestingBoundsSeries(LineSeries):
             # create a set of filters for this series
             for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
                 filter_value = self.series_name[field_ind]
-                if "," in filter_value:
-                    filter_list = filter_value.split(',')
+                if utils.GROUP_SEPARATOR in filter_value:
+                    filter_list = filter_value.split(GROUP_SEPARATOR)
                 elif ";" in filter_value:
                     filter_list = filter_value.split(';')
                 else:

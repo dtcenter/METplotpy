@@ -263,7 +263,9 @@ class PerformanceDiagram(BasePlot):
 
         # "Dump" success ratio and PODY points to an output
         # file based on the output image filename (useful in debugging)
-        self.write_output_file()
+        if self.config_obj.dump_points_1 is True:
+            # needed by METviewer
+            self.write_output_file()
 
         for i, series in enumerate(self.series_list):
             # Don't generate the plot for this series if
@@ -366,21 +368,35 @@ class PerformanceDiagram(BasePlot):
     def write_output_file(self):
         """
             Writes the 1-FAR and PODY data points that are
-            being plotted
+            being plotted. Saves the points1 file to either a default location
+            (ie where the input data is stored) or to a location specified in
+            the custom config file under the optional points_path config setting.
 
         """
 
-        # Open file, name it based on the stat_input config setting,
+
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
-        input_filename = self.config_obj.stat_input
-        match = re.match(r'(.*)(.data)', input_filename)
-        if match:
-            filename_only = match.group(1)
-            output_file = filename_only + ".points1"
+        # otherwise use points_path path
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True and match:
+            filename = match.group(1)
+            # replace the default path with the custom
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
+
+            output_file = filename + '.points1'
 
             # make sure this file doesn't already
-            # exit, delete it if it does
+            # exist, delete it if it does
             try:
                 if os.stat(output_file).st_size == 0:
                     fileobj = open(output_file, 'a')

@@ -7,6 +7,7 @@ from typing import Union
 import numpy as np
 
 import metcalcpy.util.utils as utils
+from plots import GROUP_SEPARATOR
 from plots.series import Series
 
 
@@ -22,7 +23,6 @@ class ReliabilitySeries(Series):
                  series_name: Union[list, tuple], y_axis: int = 1):
         self.series_list = series_list
         self.series_name = series_name
-        self.series_data = None
         super().__init__(config, idx, input_data, y_axis)
 
     def _create_all_fields_values_no_indy(self) -> dict:
@@ -84,8 +84,8 @@ class ReliabilitySeries(Series):
             # create a set of filters for this series
             for field_ind, field in enumerate(self.config.get_config_value('series_val_1').keys()):
                 filter_value = self.series_name[field_ind]
-                if "," in filter_value:
-                    filter_list = filter_value.split(',')
+                if utils.GROUP_SEPARATOR in filter_value:
+                    filter_list = filter_value.split(GROUP_SEPARATOR)
                 elif ";" in filter_value:
                     filter_list = filter_value.split(';')
                 else:
@@ -103,14 +103,24 @@ class ReliabilitySeries(Series):
                 self.series_data = self.input_data
 
             # sort data by date/time - needed for CI calculations
-            if 'fcst_valid_beg' in self.series_data.columns:
-                self.series_data = self.series_data.sort_values(['fcst_valid_beg', 'fcst_lead'])
-            if 'fcst_valid' in self.series_data.columns:
-                self.series_data = self.series_data.sort_values(['fcst_valid', 'fcst_lead'])
-            if 'fcst_init_beg' in self.series_data.columns:
-                self.series_data = self.series_data.sort_values(['fcst_init_beg', 'fcst_lead'])
-            if 'fcst_init' in self.series_data.columns:
-                self.series_data = self.series_data.sort_values(['fcst_init', 'fcst_lead'])
+            if 'fcst_lead' in self.series_data.columns:
+                if 'fcst_valid_beg' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_valid_beg', 'fcst_lead'])
+                if 'fcst_valid' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_valid', 'fcst_lead'])
+                if 'fcst_init_beg' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_init_beg', 'fcst_lead'])
+                if 'fcst_init' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_init', 'fcst_lead'])
+            else:
+                if 'fcst_valid_beg' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_valid_beg'])
+                if 'fcst_valid' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_valid'])
+                if 'fcst_init_beg' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_init_beg'])
+                if 'fcst_init' in self.series_data.columns:
+                    self.series_data = self.series_data.sort_values(['fcst_init'])
 
             obar_data = self.series_data.loc[lambda df: df['stat_name'] == 'PSTD_BASER', :]
             calibration_data = self.series_data.loc[lambda df: df['stat_name'] == 'PSTD_CALIBRATION', :]
@@ -134,10 +144,10 @@ class ReliabilitySeries(Series):
                                                obar_data['stat_value'])]
             series_points_results = series_points_results.drop(columns=['stat_name'])
 
-            series_points_results['stat_bcl'] = \
-                series_points_results['stat_value'] - series_points_results['stat_bcl']
-            series_points_results['stat_bcu'] = \
-                series_points_results['stat_bcu'] - series_points_results['stat_value']
+            series_points_results['stat_btcl'] = \
+                series_points_results['stat_value'] - series_points_results['stat_btcl']
+            series_points_results['stat_btcu'] = \
+                series_points_results['stat_btcu'] - series_points_results['stat_value']
 
         else:
             # this is a derived series
@@ -145,20 +155,20 @@ class ReliabilitySeries(Series):
                 self.input_data.loc[lambda df: df['stat_name'] == 'PSTD_CALIBRATION', :]
             if self.series_name == 'median':
                 series_points_results = calibration_data.groupby('thresh_i')[
-                    'stat_value', 'stat_bcl', 'stat_bcu'].median().reset_index()
+                    'stat_value', 'stat_btcl', 'stat_btcu'].median().reset_index()
             elif self.series_name == 'mean':
                 series_points_results = calibration_data.groupby('thresh_i')[
-                    'stat_value', 'stat_bcl', 'stat_bcu'].mean().reset_index()
+                    'stat_value', 'stat_btcl', 'stat_btcu'].mean().reset_index()
             else:
                 series_points_results = calibration_data.copy()
                 series_points_results['stat_name'] = None
-                series_points_results['stat_bcl'] = None
-                series_points_results['stat_bcu'] = None
+                series_points_results['stat_btcl'] = None
+                series_points_results['stat_btcu'] = None
 
-            series_points_results['stat_bcl'] = \
-                series_points_results['stat_value'] - series_points_results['stat_bcl']
-            series_points_results['stat_bcu'] = \
-                series_points_results['stat_bcu'] - series_points_results['stat_value']
+            series_points_results['stat_btcl'] = \
+                series_points_results['stat_value'] - series_points_results['stat_btcl']
+            series_points_results['stat_btcu'] = \
+                series_points_results['stat_btcu'] - series_points_results['stat_value']
             series_points_results['thresh_ii'] = series_points_results['thresh_i'].copy()
 
             for i in range(1, len(series_points_results)):
