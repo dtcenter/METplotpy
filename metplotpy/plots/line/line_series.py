@@ -15,6 +15,7 @@ from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
 from plots.series import Series
+from plots import GROUP_SEPARATOR
 
 
 class LineSeries(Series):
@@ -169,7 +170,7 @@ class LineSeries(Series):
             if series_val_1:
                 for key in series_val_1.keys():
                     for val in series_val_1[key]:
-                        if GROUP_SEPARATOR in val:
+                        if utils.GROUP_SEPARATOR in val:
                             new_name = 'Group_y1_' + str(group_to_value_index)
                             group_to_value[new_name] = val
                             group_to_value_index = group_to_value_index + 1

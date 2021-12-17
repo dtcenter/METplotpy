@@ -1,0 +1,6 @@
+# minimal config file that uses all the settings in the
+# default configuration file, custom_box.yaml
+# leave "empty" to use all the settings in the line_default.yaml
+# as long as you have write permissions for the directory specified in the `plot_filename`
+# setting.
+#Otherwise, specify an appropriate plot_filename setting here (below this comment block)

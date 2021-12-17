@@ -19,8 +19,8 @@ def setup():
     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
     custom_config_filename = "rel_hist.yaml"
 
-    # Invoke the command to generate a Performance Diagram based on
-    # the custom_performance_diagram.yaml custom config file.
+    # Invoke the command to generate a histogram based on
+    # the rel_hist.yaml custom config file.
     rel_hist.main(custom_config_filename)
 
 

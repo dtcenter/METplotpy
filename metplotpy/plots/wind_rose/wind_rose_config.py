@@ -37,5 +37,8 @@ class WindRoseConfig(Config):
         self.plot_width = self.get_config_value('plot_width')
         self.plot_height = self.get_config_value('plot_height')
         self.dump_points = self.get_config_value('dump_points')
+        # Optional setting, indicates *where* to save the dump_points_1 file
+        # used by METviewer
+        self.points_path = self.get_config_value('points_path')
         self.show_in_browser = self.get_config_value('show_in_browser')
 

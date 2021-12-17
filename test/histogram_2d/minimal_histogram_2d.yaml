@@ -1,0 +1,5 @@
+# minimal custom config file.  Use all default settings in the histogram_2d_defaults.yaml
+# configuration file
+
+#stat_input: <your-path-to>/METplotpy/test/histogram_2d/grid_diag_temperature.nc
+#plot_filename: <your-path-to>/METplotpy/test/histogram_2d/tmp_z2_p500.png

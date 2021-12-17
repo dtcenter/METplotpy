@@ -4,6 +4,7 @@ Class Name: box.py
 __author__ = 'Hank Fisher, Tatiana Burek'
 
 import re
+import os
 from typing import Union
 from operator import add
 from itertools import chain
@@ -518,17 +519,24 @@ class Box(BasePlot):
         Formats y1 and y2 series point data to the 2-dim arrays and saves them to the files
         """
 
-        # Open file, name it based on the stat_input config setting,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
+        # otherwise use points_path path
 
-        if self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is True:
-            # create a file name from stat_input parameter
-            match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-            if match:
-                filename = match.group(1)
-            else:
-                filename = 'points'
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is True and match:
+            filename = match.group(1)
+            # replace the default path with the custom
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
+
             filename = filename + '.points1'
 
             for series in self.series_list:

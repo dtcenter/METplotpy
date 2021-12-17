@@ -3,6 +3,13 @@
 # Line and marker plots of series data of Success Rate (1-FAR) on x-axis vs. PODY on y-axis.
 title: Performance Diagram ("Custom title")
 xaxis: Success Ratio
+
+dump_points_1: 'True'
+
+# Do not set the points_path so that the points1 path is saved in the same directory as the
+# input data.
+#points_path: './intermed_files'
+
 # support two y-axes
 yaxis_1: Probability of Detection (PODY)
 yaxis_2: ''
@@ -96,5 +103,5 @@ series_line_style:
   # dotted line
   - ":"
 stat_input:  ./plot_20200317_151252.data
-plot_filename: ./performance_diagram_custom.png
-event_equal: False
+plot_filename: ./performance_diagram_defaultpoints1.png
+event_equalize: False
