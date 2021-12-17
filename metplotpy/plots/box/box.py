@@ -1,7 +1,9 @@
 """
 Class Name: box.py
  """
+
 __author__ = 'Hank Fisher, Tatiana Burek'
+
 
 import re
 import os
