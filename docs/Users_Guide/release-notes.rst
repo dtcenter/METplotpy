@@ -12,10 +12,8 @@ Version 1.1.0 release notes (20211006)
 beta3 release
 ^^^^^^^^^^^^^
 
-
 * New Plots:
  * **Create histogram plots to be used by METviewer** (`#141 <https://github.com/dtcenter/METplotpy/issues/141>`_)
-
 
 * Enhancements: 
    * **Change the names of the CI data columns from bcl/bcu to btcl/btcu** (`#156 <https://github.com/dtcenter/METplotpy/issues/156>`_)
