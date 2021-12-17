@@ -25,8 +25,7 @@ from netCDF4 import num2date
 Import BasePlot class
 """
 #from plots.base_plot import BasePlot
-sys.path.append("..") # Adds higher directory to python modules path.
-from base_plot import BasePlot
+from ..base_plot import BasePlot
 
 
 class Hovmoeller(BasePlot):
@@ -142,9 +141,7 @@ if __name__ == "__main__":
     """
     Parse command line arguments
     """
-    parser = argparse.ArgumentParser(description="Hovmoeller diagram", 
-         epilog="METPLOTPY_BASE needs to be set to your METplotpy/metplotpy directory")
-
+    parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str,
                         default=os.path.join(os.getenv('METPLOTPY_BASE'),
                         'plots', 'config', 'hovmoeller_defaults.yaml'),
@@ -161,7 +158,6 @@ if __name__ == "__main__":
     parser.add_argument('--debug', action='store_true',
                         help='set logging level to debug')
     args = parser.parse_args()
-    parser.print_help()
 
     """
     Setup logging
@@ -215,6 +211,6 @@ if __name__ == "__main__":
 
     plot = Hovmoeller(None, time, lon, data)
 
-    #plot.show_in_browser()
+    plot.show_in_browser()
     plot.save_to_file()
 

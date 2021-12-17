@@ -87,7 +87,7 @@ plot_disp:
 - 'True'
 - 'True'
 - 'True'
-plot_filename: ./line_groups.png
+plot_filename: ./line_groups_expected.png
 plot_height: 8.5
 plot_res: 72
 plot_stat: median

@@ -2,10 +2,6 @@
 # Default settings specific to ROC diagram plot
 # Line and marker plots of false alarm rate (x-axis) vs probability of detection (y-axis).
 
-# Write points file. Set to True for METviewer use,
-# False otherwise
-dump_points_1: 'False'
-
 # Title settings
 title: ROC CTC # required
 title_align:  0.5 # optional
@@ -16,7 +12,7 @@ title_weight: 2.0 #required
 
 plot_width: 11 #required
 plot_height: 8.5 #required
-plot_res: 72 #required
+plot_res: 7 #required
 plot_units:  in #required
 
 # one of the following MUST be set to False whilst the other
@@ -108,8 +104,6 @@ ytlab_orient: 1 #optional
 ytlab_perp: 0.5 #optional
 ytlab_size: 1 #required
 
-reverse_connection_order: False
-
 create_html: True  #optional
-stat_input:  ../../test/roc_diagram/plot_20200507_074426.data #required
+stat_input:  ./plot_20200507_074426.data #required
 plot_filename: ./roc_diagram_default.png #required

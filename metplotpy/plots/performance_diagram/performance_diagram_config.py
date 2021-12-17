@@ -28,13 +28,6 @@ class PerformanceDiagramConfig(Config):
         # init common layout
         super().__init__(parameters)
 
-        # Write (or not write) output points file provided by METviewer
-        self.dump_points_1 = self._get_bool('dump_points_1')
-
-        # Optional setting, indicates *where* to save the dump_points_1 file
-        # used by METviewer
-        self.points_path = self.get_config_value('points_path')
-
         # use this setting to determine the ordering of colors, lines, and markers
         self.series_ordering = self._get_series_order()
 

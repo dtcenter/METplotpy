@@ -53,6 +53,8 @@ line_type: sl1l2
 list_stat_1:
 - ME
 list_stat_2: []
+list_static_val:
+  fcst_var: DPT
 low_eqbound: -0.001
 mar:
 - 8

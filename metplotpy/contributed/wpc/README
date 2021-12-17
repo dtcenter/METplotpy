@@ -1,33 +1,14 @@
 These are scripts from Mike Erickson at the Weather Prediction Center (WPC) for Practically Perfect and MET mode time domain plotting:
 
+    convertNEWSe20182nc.py  
     ERO_verif_s_vday1.py  
-    ERO_verif_p_vday1.py 
     loadAllEROData.py  
-    
+    METLoadEnsemble_NEW.py
+    mtd_retroruns_save_NEWSeTEST.py
+    ERO_verif_p_vday1.py 
+    get_NEWSe_PAT2018.csh 
     METConFigGen.py
-    METLoadEnsemble.py
     METPlotEnsemble.py
-    
-    mtd_master_save_type1.py
-    mtd_master_save_type2.py
-    mtd_master_plot.py
-    mtd_master.py
     py2netcdf.py
-    convertNEWSe20182nc.py
-
-
-Description of latest code added on 8/11/2021:
-ERO_verif_s_vday1.py - Runs the WPC ERO verification code and saves the most recent data
-ERO_verif_p_vday1.py - Using the data from ERO_verif_s_vday1.py, creates a series of plots for the WPC ERO verification
-loadAllEROData.py - A series of definitions that loads/calculates the WPC ERO verification.
-
-METConFigGen.py - A series of primitive definitions that creates MET configuration files
-METLoadEnsemble.py - A series of definitions that loads/prepares data for MTD
-METPlotEnsemble.py - A series of definitions that plots MTD output
-
-mtd_master_save_type1.py - Code that runs MTD for user selected models/ensembles (type 1)
-mtd_master_save_type2.py - Code that runs MTD for user selected models/ensembles (type 2)
-mtd_master_plot.py - Code that plots MTD output
-py2netcdf.py - Some simple definitions that convert python output to netCDF.
 
 

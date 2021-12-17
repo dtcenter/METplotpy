@@ -1,0 +1,25 @@
+---
+plot_filename: /tmp/boxplot.png
+
+legend:
+  x: 0.5
+  y: -0.3
+  font:
+    family: sans-serif
+    size: 12
+    color: black
+  bgcolor: # set to white in default config
+  bordercolor: # black in default config
+  borderwidth: 2
+
+connect_data_gaps: true
+title: Box plot of point data
+xaxis:
+  title: X
+yaxis:
+  title: accumulated precip amounts (cm)
+boxes:
+  - name: Data1
+    data_file:
+      ./box2_plot_data.txt
+    color: blue

@@ -22,7 +22,7 @@ def setup():
     custom_config_filename = "./custom_reliability_use_defaults.yaml"
 
     # Invoke the command to generate a Performance Diagram based on
-    # the test_custom_performance_diagram.yaml custom config file.
+    # the custom_performance_diagram.yaml custom config file.
     r.main(custom_config_filename)
 
 
@@ -31,7 +31,7 @@ def cleanup():
     # from any previous runs
     try:
         path = os.getcwd()
-        plot_file = 'reliability.png'
+        plot_file = 'line.png'
         points_file_1 = 'reliability.points1'
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(path, points_file_1))
@@ -42,7 +42,7 @@ def cleanup():
 
 
 @pytest.mark.parametrize("test_input,expected",
-                         (["./reliability.png", True], ["./reliability.points1", True]))
+                         (["./reliability_expected.png", True], ["./reliability.points1", True]))
 def test_files_exist(setup, test_input, expected):
     '''
         Checking that the plot and data files are getting created
@@ -57,35 +57,9 @@ def test_images_match(setup):
         newly created plot to verify that the plot hasn't
         changed in appearance.
     '''
-    comparison = CompareImages('reliability.png', 'reliability_expected.png')
+    path = os.getcwd()
+    plot_file = 'reliability_expected.png'
+    actual_file = os.path.join(path, plot_file)
+    comparison = CompareImages('./reliability_expected.png', actual_file)
     assert comparison.mssim == 1
     cleanup()
-
-@pytest.mark.parametrize("test_input,expected",
-                         (["./intermed_files/reliability.png", True], ["./intermed_files/reliability.points1", True]))
-def test_files_exist(test_input, expected):
-    '''
-        Checking that the plot and data files are getting created
-    '''
-    try:
-       os.mkdir(os.path.join(os.getcwd(), 'intermed_files'))
-    except FileExistsError as e:
-        pass
-
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
-    custom_config_filename = "./custom_reliability_points1.yaml"
-    r.main(custom_config_filename)
-
-    assert os.path.isfile(test_input) == expected
-    try:
-        path = os.getcwd()
-        plot_file = 'reliability.png'
-        points_file = 'reliability.points1'
-        subdir = os.path.join(path, './intermed_files')
-        os.remove(os.path.join(subdir, plot_file))
-        os.remove(os.path.join(subdir, points_file))
-        os.rmdir(subdir)
-    except OSError as e:
-        # Typically when files have already been removed or
-        # don't exist.  Ignore.
-        pass
