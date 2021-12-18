@@ -1,0 +1,95 @@
+---
+# "Default" settings specific to the Taylor diagram plot
+#
+title: Taylor Diagram ("Default title")
+title_weight: 4
+title_size: 1.8
+
+# Unsupported actions by Matplotlib.
+# Matplotlib align choices are left, right, center and
+# offset is automatically chosen to avoid labels and ticks on the topmost
+# x-axis
+title_align: 0.5
+title_offset: -2
+
+# Perform event equalization to check for missing data
+event_equal: False
+
+#
+# ---unused settings---
+# These settings are not relevant to the Taylor diagram,
+# leave these set to False.
+#
+
+dump_points_1: False
+dump_points_2: False
+vert_plot: False
+x_reverse: False
+num_stats: False
+indy1_stag: False
+indy2_stag: False
+sync_axes: False
+log_y1: False
+log_y2: False
+
+# used in calculation of confidence intervals
+variance_inflation_factor: False
+
+# ---end of unused settings----
+
+xaxis: Standard Deviation
+yaxis_1: Standard Deviation
+yaxis_2:
+
+# x-axis ticks
+#these are unsupported
+xtlab_orient: 1
+xtlab_size: 1
+
+# x-axis labels
+xlab_size:  1
+#up-down positioning
+xlab_align: .5
+#left-right positioning
+xlab_offset: 2
+# text weight: plain text, bold, italic, bold italic
+xlab_weight: 1
+
+# y-axis labels
+ylab_size: 1
+#left-right positioning
+ylab_align: 0.5
+#up-down positioning
+ylab_offset:  -2
+# text weight: plain text, bold, italic, bold italic
+ylab_weight: 1
+
+
+# y-axis ticks
+ytlab_orient: 1
+ytlab_size: 1.3
+
+# The underlying Taylor diagram (grid lines, etc.)
+
+# Available choices are: solid line: "-", dashed line: "--", dotted line: ":"
+grid_lty: "--"
+# Hexadecimal value or color name
+grid_col: "#cccccc"
+grid_linewidth: 1
+# Used by METviewer
+grid_x: "listX"
+plot_width: 11
+plot_height: 8.5
+plot_res: 72
+plot_units: in
+plot_type: png16m
+
+
+
+
+
+
+
+
+
+
