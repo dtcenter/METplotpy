@@ -18,7 +18,7 @@ event_equal: False
 #
 # ---unused settings---
 # These settings are not relevant to the Taylor diagram,
-# leave these set to False.
+# do not change the values.
 #
 
 dump_points_1: False
@@ -83,6 +83,47 @@ plot_height: 8.5
 plot_res: 72
 plot_units: in
 plot_type: png16m
+plot_ci:
+# No confidence intervals plotted in Taylor diagram, so these settings have no effect
+  - None
+  - None
+  - None
+  - None
+  - None
+  - None
+  - None
+plot_disp:
+  - True
+  - True
+  - True
+  - True
+  - True
+  - True
+  - True
+
+series_order:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+con_series:
+# Only useful for line plots where consecutive points may be interspersed with NA values
+# no effect in Taylor diagram.
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+
+
+
+
+
 
 
 
