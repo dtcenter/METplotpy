@@ -107,7 +107,7 @@ file, an empty custom configuration file (custom_reliability_use_defaults.yaml)
 can be specified (as long you have write permissions for the output filename path corresponding to the
 `plot_filename` setting in the default configuration file. Otherwise you will need to specify a `plot_filename` in your minimal_box.yaml file):
 
-.. literalinclude:: ../../metplotpy/plots/reliability_diagram/custom_reliability_use_defaults.yaml
+.. literalinclude:: ../../test/reliability_diagram/custom_reliability_use_defaults.yaml
 
 Copy this file to your working directory:
 
