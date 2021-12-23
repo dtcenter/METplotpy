@@ -13,10 +13,11 @@ title: Taylor Diagram ("Default title")
 title_weight: 4
 title_size: 1.8
 
-
-
 # Event equalization to check for missing data
+# not applicable for this plot, but METviewer expects this
+# setting
 event_equal: False
+
 fcst_var_val_1:
   - DLWRF
 series_val_1:
@@ -37,9 +38,12 @@ series_val_1:
 
 
 # Unsupported actions by Matplotlib.
-# Matplotlib align choices are left, right, center and
+
+# Matplotlib align choices are left, right, center (default) and
 # offset is automatically chosen to avoid labels and ticks on the topmost
 # x-axis
+# To work around what METviewer is expecting (a numerical value),
+# set title_align to -1.5 for 'left', 1.5 for 'right', any other value for 'center'
 title_align: 0.5
 title_offset: -2
 
@@ -91,7 +95,7 @@ mar:
 # applicable for Matplotlib plotting.
 create_html: 'False'
 
-# end of settings that are unsupported due to limitations in MATPLOTLIB
+# end of settings that are unsupported due to limitations in Matplotlib
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # ---unused or unsupported settings---
@@ -102,7 +106,7 @@ dump_points_1: False
 dump_points_2: False
 # not relevant since there aren't any intermediate files being
 # created
-points_path: '' 
+points_path: ''
 vert_plot: False
 x_reverse: False
 num_stats: False
@@ -137,7 +141,7 @@ xlab_offset: 2
 xlab_weight: 1
 
 # y-axis labels
-yaxis: Standard Deviation
+yaxis_1: Standard Deviation
 ylab_size: 1
 #left-right positioning
 ylab_align: 0.5
@@ -161,7 +165,7 @@ colors:
   - "#7f00ffFF"
 
 # legend settings
-use_legend:
+user_legend:
   - ""
   - ""
   - ""
@@ -201,8 +205,11 @@ grid_linewidth: 1
 grid_x: "listX"
 plot_width: 11
 plot_height: 8.5
+# plot resolution in dpi (dots per inch)
 plot_res: 72
+# other option is mm (millimeters)
 plot_units: in
+# only png plots are generated, this setting is expected by METviewer
 plot_type: png16m
 plot_ci:
 # No confidence intervals plotted in Taylor diagram, so these settings have no effect
