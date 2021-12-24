@@ -48,6 +48,8 @@ class TaylorDiagramConfig(Config):
         self.user_legends = self._get_user_legends("Model XYZ")
         self.plot_units = self.get_config_value('plot_units')
         self.plot_resolution = self.get_config_value('plot_res')
+        self.show_gamma = self.get_config_value('taylor_show_gamma')
+        self.values_of_corr = self.get_config_value('taylor_voc')
 
         # Convert the plot height and width to inches if units aren't in
         # inches.
@@ -64,7 +66,6 @@ class TaylorDiagramConfig(Config):
         if self.y_tickangle in constants.YAXIS_ORIENTATION.keys():
             self.y_tickangle = constants.YAXIS_ORIENTATION[self.y_tickangle]
         self.y_tickfont_size = self.parameters['ytlab_size'] * constants.MPL_FONT_SIZE_DEFAULT
-
 
         # legend style settings as defined in METviewer:
         # legend box, ncol, inset
@@ -193,6 +194,8 @@ class TaylorDiagramConfig(Config):
         self.plot_caption = self.get_config_value('plot_caption')
         # plain text, bold, italic, bold italic are choices in METviewer UI
         self.caption_weight = self.get_config_value('caption_weight')
+
+
 
     def _get_plot_disp(self) -> list:
         """
