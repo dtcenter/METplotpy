@@ -4,7 +4,7 @@
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 # input file
-stat_input: ../../test/taylor_diagram/plot_20211217_180054.data
+stat_input: ../../../test/taylor_diagram/plot_20211217_180054.data
 
 # output file/plot
 plot_filename: ./plot_20211217_180054.png
@@ -128,6 +128,16 @@ series_type:
   - "b"
   - "b"
 
+# line width (no lines in Taylor diagram, only points)
+lwd:
+  - 5
+  - 5
+  - 5
+  - 5
+  - 5
+  - 5
+  - 5
+
 # ---end of unused or unsupported settings----
 
 # x-axis labels
@@ -195,6 +205,11 @@ caption_align: 0 # -.1 in performance diagram
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # The underlying Taylor diagram (grid lines, etc.)
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+# Draw the standard deviation arcs on the diagram
+taylor_show_gamma: True
+# Show only positive values of correlation
+taylor_voc: True
 
 # Available choices are: solid line: "-", dashed line: "--", dotted line: ":"
 grid_lty: "--"
