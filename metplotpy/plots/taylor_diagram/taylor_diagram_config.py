@@ -34,7 +34,7 @@ class TaylorDiagramConfig(Config):
         self.points_path = self.get_config_value('points_path')
 
         # settings for determining ordering of colors, lines, markers, etc.
-        self.series_ordering = self._get_series_order('series_order')
+        self.series_ordering = self._get_series_order()
 
         # Make series ordering zero-based to achieve consistency with Python,
         # which is zero-based.
@@ -43,8 +43,8 @@ class TaylorDiagramConfig(Config):
         self.plot_disp = self._get_plot_disp()
         self.colors_list = self._get_colors()
         self.marker_list = self._get_markers()
-        self.linewidth_list = self._get_linewidths()
-        self.linestyles_list = self._get_linestyles()
+        # self.linewidth_list = self._get_linewidths()
+        # self.linestyles_list = self._get_linestyles()
         self.user_legends = self._get_user_legends("Model XYZ")
         self.plot_units = self.get_config_value('plot_units')
         self.plot_resolution = self.get_config_value('plot_res')
@@ -257,13 +257,12 @@ class TaylorDiagramConfig(Config):
         num_markers = len(self.marker_list)
         num_series_ord = len(self.series_ordering)
         num_colors = len(self.colors_list)
-        num_line_widths = len(self.linewidth_list)
-        num_linestyles = len(self.linestyles_list)
+        # num_line_widths = len(self.linewidth_list)
+        # num_linestyles = len(self.linestyles_list)
         status = False
 
         if num_series == num_plot_disp == \
-                    num_markers == num_series_ord == num_colors  \
-                    == num_line_widths == num_linestyles:
+                    num_markers == num_series_ord == num_colors:
             status = True
         return status
 
@@ -285,3 +284,18 @@ class TaylorDiagramConfig(Config):
             fcst_var_val_dict = {}
 
         return fcst_var_val_dict
+
+    def _get_series_order(self):
+        """
+            Get the order number for each series
+
+            Args:
+
+            Returns:
+            a list of unique values representing the ordinal value of the corresponding series
+
+        """
+        ordinals = self.get_config_value('series_order')
+        series_order_list = [ord for ord in ordinals]
+        return series_order_list
+
