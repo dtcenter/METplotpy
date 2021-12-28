@@ -71,11 +71,16 @@ class LineConfig(Config):
 
         ##############################################
         # y2-axis parameters
-        self.y2_title_font_size = self.parameters['y2lab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.y2_tickangle = self.parameters['y2tlab_orient']
+        self.y2_title_font_size = self.get_config_value('y2lab_size')
+        if self.y2_title_font_size is not None:
+            self.y2_title_font_size = self.y2_title_font_size + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.y2_tickangle = self.get_config_value('y2tlab_orient')
         if self.y2_tickangle in constants.YAXIS_ORIENTATION.keys():
             self.y2_tickangle = constants.YAXIS_ORIENTATION[self.y2_tickangle]
-        self.y2_tickfont_size = self.parameters['y2tlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+        self.y2_tickfont_size = self.get_config_value('y2tlab_size')
+        if self.y2_tickfont_size is not None:
+            self.y2_tickfont_size = self.y2_tickfont_size + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
         # x-axis parameters
@@ -128,6 +133,7 @@ class LineConfig(Config):
         else:
             self.legend_orientation = 'h'
         self.legend_border_color = "black"
+        self.points_path = self.get_config_value('points_path')
 
     def _get_plot_disp(self) -> list:
         """
@@ -415,7 +421,10 @@ class LineConfig(Config):
         :param axis: y-axis (1 or 2)
         :return: an array of series components tuples
         """
-        all_fields_values_orig = self.get_config_value('series_val_' + str(axis)).copy()
+        if self.get_config_value('series_val_' + str(axis)) is not None:
+            all_fields_values_orig = all_fields_values_orig = self.get_config_value('series_val_' + str(axis)).copy()
+        else:
+            all_fields_values_orig = {}
         all_fields_values = {}
         for x in reversed(list(all_fields_values_orig.keys())):
             all_fields_values[x] = all_fields_values_orig.get(x)
@@ -423,7 +432,9 @@ class LineConfig(Config):
         if self._get_fcst_vars(axis):
             all_fields_values['fcst_var'] = list(self._get_fcst_vars(axis).keys())
 
-        all_fields_values['stat_name'] = self.get_config_value('list_stat_' + str(axis))
+        stat_name = self.get_config_value('list_stat_' + str(axis))
+        if stat_name is not None:
+            all_fields_values['stat_name'] = stat_name
         return utils.create_permutations_mv(all_fields_values, 0)
 
     def _get_all_series_y(self, axis: int) -> list:
