@@ -1,5 +1,5 @@
 """
-Class Name: LineSeries
+Class Name: EquivalenceTestingBoundSeries
  """
 __author__ = 'Tatiana Burek'
 

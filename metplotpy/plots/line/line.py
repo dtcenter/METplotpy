@@ -581,13 +581,15 @@ class Line(BasePlot):
         Formats y1 and y2 series point data to the 2-dim arrays and saves them to the files
         """
 
-        # Open file, name it based on the stat_input config setting,
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
+        # otherwise use points_path path
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is True and match:
 
-        if self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is True:
-
-            # create 2-dim array for y1 points and feel it with 0
+            # create 2-dim array for y1 points and fill it with 0
             all_points_1 = [[0 for x in range(len(self.config_obj.all_series_y1) * 3)] for y in
                             range(len(self.config_obj.indy_vals))]
             if self.config_obj.series_vals_2:
@@ -610,19 +612,20 @@ class Line(BasePlot):
                     self._record_points(all_points_2, series_idx_y2, series)
                     series_idx_y2 = series_idx_y2 + 1
 
-            # create a file name from stat_input parameter
-            match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-            if match:
-                filename_only = match.group(1)
-            else:
-                filename_only = 'points'
+            # replace the default path with the custom
+            filename = match.group(1)
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
 
             # save points
-            if self.config_obj.dump_points_1 is True:
-                self._save_points(all_points_1, filename_only + ".points1")
-
-            if self.config_obj.series_vals_2 and self.config_obj.dump_points_2 is True:
-                self._save_points(all_points_2, filename_only + ".points2")
+            self._save_points(all_points_1, filename + ".points1")
+            self._save_points(all_points_2, filename + ".points2")
 
     @staticmethod
     def _find_min_max(series: LineSeries, yaxis_min: Union[float, None],

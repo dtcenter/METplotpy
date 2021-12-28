@@ -27,7 +27,7 @@ def setup():
 
 
 def cleanup():
-    # remove the bbar.png and .points files
+    # remove the .png and .points files
     # from any previous runs
     try:
         path = os.getcwd()
@@ -60,3 +60,36 @@ def test_images_match(setup):
     comparison = CompareImages('./ens_ss_expected.png', './ens_ss.png')
     assert comparison.mssim == 1
     cleanup()
+
+
+@pytest.mark.parametrize("test_input, expected",
+                         (["./intermed_files/ens_ss.png", True], ["./intermed_files/ens_ss.points1", True]))
+def test_files_exist(test_input, expected):
+    """
+        Checking that the plot and data files are getting created
+    """
+    try:
+        os.mkdir(os.path.join(os.getcwd(), './intermed_files'))
+    except FileExistsError as e:
+        pass
+    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    custom_config_filename = "custom2_ens_ss.yaml"
+
+    # Invoke the command to generate a Bar plot based on
+    # the custom_ens_ss.yaml custom config file.
+    ens_ss.main(custom_config_filename)
+    assert os.path.isfile(test_input) == expected
+    cleanup()
+    try:
+        path = os.getcwd()
+        subdir = os.path.join(path, "./intermed_files")
+        plot_file = 'ens_ss.png'
+        points_file_1 = 'ens_ss.points1'
+        os.remove(os.path.join(subdir, plot_file))
+        os.remove(os.path.join(subdir, points_file_1))
+        os.rmdir(subdir)
+    except OSError as e:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass
+

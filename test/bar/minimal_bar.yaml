@@ -1,0 +1,6 @@
+---
+# This is the minimal configuration file you must provide
+# If there is no content, as we have here, then all the
+# settings in the default config file, bar_defaults.yaml
+# will be employed.  A plot named /tmp/bar.png will be
+# created.
