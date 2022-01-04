@@ -151,3 +151,13 @@ def add_vertical_line(figure: Figure, x: float, line_properties: dict) -> None:
         xref='x', x0=x, x1=x,
         line=line_properties,
     )
+
+def abline(x_value: float, intercept: float, slope: float) -> float:
+    """
+    Calculates y coordinate based on x-value, intercept and slope
+    :param x_value: x coordinate
+    :param intercept:  intercept
+    :param slope: slope
+    :return: y value
+    """
+    return slope * x_value + intercept
