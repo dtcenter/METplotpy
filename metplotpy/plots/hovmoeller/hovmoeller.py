@@ -24,7 +24,7 @@ from netCDF4 import num2date
 """
 Import BasePlot class
 """
-from plots.base_plot import BasePlot
+from ..base_plot import BasePlot
 # sys.path.append("..") # Adds higher directory to python modules path.
 # from base_plot import BasePlot
 
