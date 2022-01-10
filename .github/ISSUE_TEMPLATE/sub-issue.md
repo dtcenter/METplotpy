@@ -2,7 +2,10 @@
 name: Sub-Issue
 about: Break an issue down into smaller parts
 title: ''
+
 labels: 'alert: NEED ACCOUNT KEY, alert: NEED MORE DEFINITION, alert: NEED PROJECT ASSIGNMENT, type: sub-issue'
+
+
 assignees: ''
 
 ---

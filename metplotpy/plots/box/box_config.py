@@ -28,6 +28,11 @@ class BoxConfig(Config):
         """
         super().__init__(parameters)
 
+        ##############################################
+        # Optional setting, indicates *where* to save the dump_points_1 file
+        # used by METviewer
+        self.points_path = self.get_config_value('points_path')
+
         # plot parameters
         self.grid_on = self._get_bool('grid_on')
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')

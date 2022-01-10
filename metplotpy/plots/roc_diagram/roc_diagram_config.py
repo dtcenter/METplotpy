@@ -29,6 +29,13 @@ class ROCDiagramConfig(Config):
         # Boolean value to indicate whether to make the METviewer plot interactive
         self.create_html = self._get_bool('create_html')
 
+        # Write (or not write) output points file provided by METviewer
+        self.dump_points_1 = self._get_bool('dump_points_1')
+
+        # Optional setting, indicates *where* to save the dump_points_1 file
+        # used by METviewer
+        self.points_path = self.get_config_value('points_path')
+
         # use this setting to determine the ordering of colors, lines, and markers
         self.series_ordering = self._get_series_order()
 
@@ -62,7 +69,6 @@ class ROCDiagramConfig(Config):
         self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
         self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
         self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-
 
         # Caption settings
         self.caption = self.get_config_value('plot_caption')

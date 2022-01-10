@@ -6,10 +6,30 @@ When applicable, release notes are followed by the GitHub issue number which
 describes the bugfix, enhancement, or new feature: `METplotpy GitHub issues. <https://github.com/dtcenter/METplotpy/issues>`_
 
 Version |version| release notes (|release_date|)
-================================================
+________________________________________________
 
-Version 1.1.0 release notes (20211006)
-______________________________________
+Version 1.1.0 release notes (20211217)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+beta4 release
+^^^^^^^^^^^^^
+
+* New Plots:
+   * **Create histogram plots to be used by METviewer** (`#141 <https://github.com/dtcenter/METplotpy/issues/141>`_)
+
+* Enhancements: 
+   * **Change the names of the CI data columns from bcl/bcu to btcl/btcu** (`#156 <https://github.com/dtcenter/METplotpy/issues/156>`_)
+   * **Write any intermediary files to a user-specified directory** (`#153 <https://github.com/dtcenter/METplotpy/issues/153>`_)
+
+* Internal:
+
+
+* Bugfixes:
+   * **Revision series for MODE-TD** (`#157 <https://github.com/dtcenter/METplotpy/issues/157>`_)
+
+   * **Plots with groups with date values don't get created** (`#163 <https://github.com/dtcenter/METplotpy/issues/163>`_)
+
+   * **Incorrect rendering of plot_val indy values** (`#161 <https://github.com/dtcenter/METplotpy/issues/161>`_)
 
 beta3 release
 _____________
@@ -27,9 +47,6 @@ _____________
 
 
 * Bugfixes:
-  
-   * **Change the names of the CI data columns from bcl/bcu to btcl/btcu**
-     (`#156 <https://github.com/dtcenter/METplotpy/issues/156>`_).
 
 
 beta2 release

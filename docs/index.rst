@@ -4,7 +4,6 @@ METplotpy version |version|
 Developed by the `Developmental Testbed Center <https://dtcenter.org/>`_,
 Boulder, CO
 
-hello
 
 .. image:: _static/METplus_banner_photo_web.png
 
