@@ -23,9 +23,8 @@ The sample data used to create an example line plot is available in the
 *$METPLOTPY_SOURCE/METplotpy/metplotpy/test/line/line.data*
 
 *$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved
-(e.g. /username/myworkspace).  The data is text
-output from MET in columnar format.
-
+(e.g. /username/myworkspace).  The data is text output from MET in
+columnar format.
 
 
 Configuration Files
@@ -88,13 +87,15 @@ saved to the working directory:
   cp $METPLOTPY_SOURCE/METplotpy/test/line/custom_line.yaml $WORKING_DIR/custom_line.yaml
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_SOURCE/METplotpy/test/line/custom_line.yaml*
-file to explicitly point to the *$METPLOTPY_SOURCE/METplotpy/test/line*
+*$METPLOTPY_SOURCE/METplotpy/test/line/custom_line.yaml* file to
+explicitly point to the *$METPLOTPY_SOURCE/METplotpy/test/line*
 directory (where the custom config files and sample data reside).
-Replace the relative path *./line.data*
-with the full path *$METPLOTPY_SOURCE/METplotpy/test/line/line.data*.
-Modify the *plot_filename* setting to point to the output path where the
-plot will be saved, including the name of the plot.
+Replace the relative path *./line.data* with the full path
+*$METPLOTPY_SOURCE/METplotpy/test/line/line.data*
+(including replacing *$METPLOTPY_SOURCE* with the full path to the METplotpy
+installation on the system).  Modify the *plot_filename*
+setting to point to the output path where the plot will be saved,
+including the name of the plot.
 
 For example:
 
@@ -120,7 +121,7 @@ setting to True. Uncomment or add (if it doesn't exist) the
 
 *points_path: '/dir_to_save_points1_file'*
 
-Replace the **/dir_to_save_points1_file** to the same directory where
+Replace the */dir_to_save_points1_file* to the same directory where
 the **.points1** file is saved.
 If *points_path* is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment the points_path so that it will be
@@ -184,42 +185,59 @@ To generate the above plot using the **line_defaults.yaml** and
 
 * If the conda environment is being used, verify the conda environment
   is running and has the required
-  `Python packages <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html>`_
+  `Python packages
+  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html>`_
   outlined in the requirements section.
 
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_SOURCE/METplotpy/metplotpy*.
 
-For the ksh environment:
+  For the ksh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 		
-  export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
+    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
 
-For the csh environment:
+  For the csh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
 
-Replacing the *$METPLOTPY_SOURCE* with the directory where the METplotpy
-source code was saved.
+  Replacing the *$METPLOTPY_SOURCE* with the directory where the METplotpy
+  source code was saved.
 
-To generate the above **"defaults"** plot (i.e using default configuration
-settings), use the "minimal" custom configuration file, **minimal_line.yaml**.
+  To generate the above **"custom"** plot (i.e using some custom
+  configuration settings), use the custom configuration file,
+  **custom_line.yaml**.
+
+* Enter the following command:
+  
+  .. code-block:: ini
+
+    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line/line.py $WORKING_DIR/custom_line.yaml
+
+
+* A **line.png** output file will be created in the director specified in
+  the *plot_filename* configuration setting in the **line.yaml** config file.
+
+
+  To generate the **"defaults"** plot below (i.e using default configuration
+  settings), use the "minimal" custom configuration file,
+  **minimal_line.yaml**.
 
 * Enter the following command:
 
-.. code-block:: ini
+  .. code-block:: ini
     
-  python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line/line.py $WORKING_DIR/minimal_line.yaml
+    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line/line.py $WORKING_DIR/minimal_line.yaml
 
 * A **line_default.png** output file will be created in the
   directory specified in the *plot_filename* configuration setting
   in the **line_defaults.yaml** config file.
 
-.. image:: line_default.png
+  .. image:: line_default.png
 
-**NOTE**: This default plot does not display any of the data points.
-It is to be used as a template for
-setting up margins, captions, label sizes, etc.
+  **NOTE**: This default plot does not display any of the data points.
+  It is to be used as a template for
+  setting up margins, captions, label sizes, etc.

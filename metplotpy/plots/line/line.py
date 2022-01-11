@@ -23,6 +23,8 @@ from plots.line.line_config import LineConfig
 from plots.line.line_series import LineSeries
 from plots.base_plot import BasePlot
 import plots.util as util
+from plots.series import Series
+
 import metcalcpy.util.utils as calc_util
 
 
@@ -30,6 +32,9 @@ class Line(BasePlot):
     """  Generates a Plotly line plot for 1 or more traces (lines)
          where each line is represented by a text point data file.
     """
+
+    defaults_name = 'line_defaults.yaml'
+
 
     def __init__(self, parameters: dict) -> None:
         """ Creates a line plot consisting of one or more lines (traces), based on
@@ -41,7 +46,9 @@ class Line(BasePlot):
         """
 
         # init common layout
-        super().__init__(parameters, "line_defaults.yaml")
+        super().__init__(parameters, self.defaults_name)
+
+        self.allow_secondary_y = True
 
         # instantiate a LineConfig object, which holds all the necessary settings from the
         # config file that represents the BasePlot object (Line).
@@ -208,7 +215,7 @@ class Line(BasePlot):
         # add x2 axis
         self._add_x2axis(n_stats)
 
-    def _draw_series(self, series: LineSeries, x_points_index_adj: list) -> None:
+    def _draw_series(self, series: Series, x_points_index_adj: Union[list, None] = None) -> None:
         """
         Draws the formatted line with CIs if needed on the plot
 
@@ -291,7 +298,7 @@ class Line(BasePlot):
                  }
 
         # create a layout and allow y2 axis
-        fig = make_subplots(specs=[[{"secondary_y": True}]])
+        fig = make_subplots(specs=[[{"secondary_y": self.allow_secondary_y}]])
 
         # add size, annotation, title
         fig.update_layout(
