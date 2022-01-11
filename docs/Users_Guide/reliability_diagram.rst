@@ -194,42 +194,42 @@ the "empty" custom configuration file and the
 
 Perform the following:
 
-* Clone the code from the METplotpy repository at
-  `<github.com/dtcenter/METplotpy>`_ (To see the page, login to Github):
+* Clone the code from the `METplotpy repository
+  <https://github.com/dtcenter/METplotpy>`_ (To see the page, login to Github):
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  cd $METPLOTPY_SOURCE
-  git clone https://github.com/dtcenter/METplotpy
+    cd $METPLOTPY_SOURCE
+    git clone https://github.com/dtcenter/METplotpy
 
 * If using a conda environment, verify the conda environment is
   running and has has the required Python packages outlined in
   the `requirements section
-  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html>`_.
+  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_.
 
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_SOURCE/METplotpy/metplotpy*.
 
-For the ksh environment:
+  For the ksh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
+    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
 
-For the csh environment:
+  For the csh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
 
-Replacing the *$METPLOTPY_SOURCE* with the directory where the
-METplotpy source code was saved.
+  Replacing the *$METPLOTPY_SOURCE* with the directory where the
+  METplotpy source code was saved.
 
 * Enter the following command:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/reliability_diagram/reliability.py $WORKING_DIR/custom_reliability_use_defaults.yaml
+    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/reliability_diagram/reliability.py $WORKING_DIR/custom_reliability_use_defaults.yaml
 
 * A **default_reliability_diagram.png** output file will be created in the
   directory specified in the *plot_filename* configuration setting
@@ -237,19 +237,19 @@ METplotpy source code was saved.
   The filename is specified by the *plot_filename* value in the
   **reliability_defaults.yaml** config file.
 
-To generate a **customized** reliability diagram (i.e. some or all
-default configuration settings are to be overridden), use the
-**custom_reliability_diagram.yaml** config file.
+  To generate a **customized** reliability diagram (i.e. some or all
+  default configuration settings are to be overridden), use the
+  **custom_reliability_diagram.yaml** config file.
 
 * Enter the following command:
 
-.. code-block:: ini
+  .. code-block:: ini
 		
-  python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/reliability_diagram/reliability.py $WORKING_DIR/custom_reliability_diagram.yaml
+    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/reliability_diagram/reliability.py $WORKING_DIR/custom_reliability_diagram.yaml
 
-In this example, this custom config file changes the color of the boxes.
+  In this example, this custom config file changes the color of the boxes.
 
-.. image:: custom_reliability_diagram.png
+  .. image:: custom_reliability_diagram.png
 
 * A **custom_reliability_diagram.png** output file will be created in
   the directory specified in the *plot_filename* configuration setting
