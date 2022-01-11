@@ -21,7 +21,7 @@ repository, where the line plot tests are located:
 
 $METPLOTPY_SOURCE/METplotpy/metplotpy/test/line/line.data
 
-$METPLOTPY_SOURCE is the directory where the METplotpy code is saved (e.g. /username/myworkspace)..  The data is text
+$METPLOTPY_SOURCE is the directory where the METplotpy code is saved (e.g. /username/myworkspace).  The data is text
 output from MET in columnar format.
 
 
@@ -75,7 +75,7 @@ Modify the `stat_input` setting in the
 $METPLOTPY_SOURCE/METplotpy/test/line/custom_line.yaml
 file to explicitly point to the $METPLOTPY_SOURCE/METplotpy/test/line directory (where
 the custom config files and sample data reside).  Replace the relative path `./line.data`
-with the full path `$METPLOTPY_SOURCE/METplotpy/test/line/line.data`.  Modify the `plot_filename`
+with the full path `$METPLOTPY_SOURCE/METplotpy/test/line/line.data` (including replacing $METPLOTPY_SOURCE with the full path to the METplotpy installation on your system).  Modify the `plot_filename`
 setting to point to the output path where your plot will be saved, including the name of your plot.
 
 For example:
@@ -165,7 +165,17 @@ for csh:
 
 Replacing the $METPLOTPY_SOURCE with the directory where the METplotpy source code was saved.
 
-To generate the above **"defaults"** plot (i.e using default configuration settings), use the "minimal" custom configuration file, minimal_line.yaml.
+To generate the above **"custom"** plot (i.e using some custom configuration settings), use the custom configuration file, custom_line.yaml.
+
+* enter the following command:
+
+  ``python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line/line.py $WORKING_DIR/custom_line.yaml``
+
+
+* a `line.png` output file will be created in the directory you specified in the `plot_filename` configuration setting in the `line.yaml` config file.
+
+
+To generate the **"defaults"** plot below (i.e using default configuration settings), use the "minimal" custom configuration file, minimal_line.yaml.
 
 * enter the following command:
 
