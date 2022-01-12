@@ -2,7 +2,7 @@
 input_dir: "/d1/projects/METplus/METplus_Plotting_Data/grid_to_grid/201706130000/grid_stat"
 
 # The directory where you wish to save the plots
-output_dir: '/Volumes/d1/minnawin/METplus_Plotting_Output/grid_to_grid/201706130000/grid_stat/plots'
+output_dir: '/d1/METplus_Plotting_Data/grid_to_grid/output'
 
 # Indicate the fcst and obs raw fields of interest and the corresponding diff field
     # e.g. nc_fcst_var: FCST_TMP_P850_FULL
