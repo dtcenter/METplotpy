@@ -190,28 +190,29 @@ Perform the following to generate the plots:
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_SOURCE/METplotpy/metplotpy*.
 
-For the ksh environment:
+  For the ksh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
+    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
 
-For the csh environment:
+  For the csh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
 
-Replacing the *$METPLOTPY_SOURCE* with the directory where the
-METplotpy source code was saved.
+  Replacing the *$METPLOTPY_SOURCE* with the directory where the
+  METplotpy source code was saved.
 
-The **custom_box.yaml** configuration file, in combination with the
-**box_defaults.yaml** configuration file, generates a customized box plot:
+  The **custom_box.yaml** configuration file, in combination with the
+  **box_defaults.yaml** configuration file, generates a customized
+  box plot:
 
-.. image:: box.png
+  .. image:: box.png
 
-To generate the above plot using the **box_defaults.yaml** and
-**custom_box.yaml** config files, perform the following:
+  To generate the above plot using the **box_defaults.yaml** and
+  **custom_box.yaml** config files, perform the following:
 
 * If the conda environment is being used, verify the conda environment
   is running and has the required
@@ -219,16 +220,16 @@ To generate the above plot using the **box_defaults.yaml** and
   <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html>`_
   outlined in the requirements section.
 
-The **minimal_box.yaml** configuration file, in combination with the
-**box_defaults.yaml** configuration file, generates a "default" box plot.
-**The purpose of this is to provide a
-template/starting point for setting up the margins, plot size, labels, etc.
-and does not plot any data**:
+  The **minimal_box.yaml** configuration file, in combination with the
+  **box_defaults.yaml** configuration file, generates a "default" box plot.
+  **The purpose of this is to provide a
+  template/starting point for setting up the margins, plot size, labels, etc.
+  and does not plot any data**:
 
-.. image:: box_default.png
+  .. image:: box_default.png
 
-To generate the above *"defaults"* plot (i.e using default configuration
-settings), use the "minimal" custom configuration file, **minimal_box.yaml**.
+  To generate the above *"defaults"* plot (i.e using default configuration
+  settings), use the "minimal" custom configuration file, **minimal_box.yaml**.
 
 
 * Enter the following command.

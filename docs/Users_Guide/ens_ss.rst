@@ -58,7 +58,7 @@ METplus Configuration
 Default Configuration File
 __________________________
 
-The following is the `mandatory`, **ens_ss_defaults.yaml** configuration
+The following is the *mandatory*, **ens_ss_defaults.yaml** configuration
 file, which serves as a good starting point for creating a line
 plot as it represents the default values set in METviewer
 
@@ -83,9 +83,9 @@ was saved to the working directory:
   cp $METPLOTPY_SOURCE/METplotpy/test/ens_ss/custom_ens_ss.yaml $WORKING_DIR/custom_ens_ss.yaml
 
 Modify the *stat_input* setting in the
-$METPLOTPY_SOURCE/METplotpy/test/ens_ss/custom_ens_ss.yaml
+*$METPLOTPY_SOURCE/METplotpy/test/ens_ss/custom_ens_ss.yaml*
 file to explicitly point to the
-$METPLOTPY_SOURCE/METplotpy/test/ens_ss directory (where
+*$METPLOTPY_SOURCE/METplotpy/test/ens_ss* directory (where
 the custom config files and sample data reside).  Replace the relative path,
 *./ens_ss.data*, with the full path,
 *$METPLOTPY_SOURCE/METplotpy/test/ens_ss/ens_ss.data*.  Modify the
@@ -98,8 +98,8 @@ For example:
 
 *plot_filename: /username/working_dir/output_plots/ens_ss.png*
 
-This is where /username/myworkspace/ is $METPLOTPY_SOURCE and
-/username/working_dir is $WORKING_DIR.  Make sure that the
+This is where */username/myworkspace/* is $METPLOTPY_SOURCE and
+*/username/working_dir* is $WORKING_DIR.  Make sure that the
 $WORKING_DIR directory that is specified exists and has the appropriate
 read and write permissions.  The path listed for *plot_filename* may
 be changed to the output directory of one’s choosing. If this is not set,
@@ -124,9 +124,8 @@ If points_path is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment
 the points_path so that it will be used by the code.  Make sure that
 this directory exists and has the appropriate read and write permissions.
-**NOTE**: the *points_path* setting
-is **optional** and does not need to be defined unless saving the
-intermediate **.points1** file is desired.
+**NOTE**: the *points_path* setting is **optional** and does not need
+to be defined unless saving the intermediate **.points1** file is desired.
 
 
 Run from the Command Line
@@ -146,27 +145,27 @@ Perform the following:
 * Set the METPLOTPY_BASE environment variable to point to
   $METPLOTPY_SOURCE/METplotpy/metplotpy
 
-For the ksh environment:
+  For the ksh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
+    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
 
-For the csh environment:
+  For the csh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
 
-Replacing the $METPLOTPY_SOURCE with the directory where the METplotpy
-source code was saved.
+  Replacing the $METPLOTPY_SOURCE with the directory where the METplotpy
+  source code was saved.
 
 
 * Enter the following command:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  python $METPLOTPY_SOURCE/METplotpy/metplotpy/plotsens_ss.py $WORKING_DIR/custom_ens_ss.yaml
+    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plotsens_ss.py $WORKING_DIR/custom_ens_ss.yaml
 
 * An **ens_ss.png** output file will be created in the directory specified
   in the *plot_filename* configuration setting in the

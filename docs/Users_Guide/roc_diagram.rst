@@ -27,7 +27,7 @@ code is located:
 
 *$METPLOTPY_SOURCE/METplotpy/test/roc_diagram/plot_20200507_074426.data*
 
-`$METPLOTPY_SOURCE` is the directory where the METplotpy source code
+*$METPLOTPY_SOURCE* is the directory where the METplotpy source code
 is installed. (e.g. /username/myworkspace).
 
 Configuration Files
@@ -207,51 +207,51 @@ Perform the following:
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_SOURCE/METplotpy/metplotpy*
 
-For the ksh environment:
+  For the ksh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
+    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
 
-For the csh environment:
+  For the csh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
 
-Replacing the $METPLOTPY_SOURCE with the directory where the
-METplotpy source code was saved.
+  Replacing the $METPLOTPY_SOURCE with the directory where the
+  METplotpy source code was saved.
 
 
-To generate the above **"defaults"** plot (i.e using default
-configuration settings), use the "minimal" custom configuration file,
-**minimal_roc_diagram.yaml**.
+  To generate the above **"defaults"** plot (i.e using default
+  configuration settings), use the "minimal" custom configuration file,
+  **minimal_roc_diagram.yaml**.
 
 * Enter the following command:
   
-.. code-block:: ini
+  .. code-block:: ini
 
-  python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/minimal_roc_diagram.yaml
+    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/minimal_roc_diagram.yaml
 
 
 * A **roc_diagram_default.png** output file will be created in the
   directory specified in the *plot_filename* configuration setting
   in the **minimal_roc_diagram.yaml** config file.
 
-To generate a **customized** ROC diagram (i.e. some or all default
-configuration settings are to be overridden), use the
-**custom_roc_diagram.yaml** config file.
+  To generate a **customized** ROC diagram (i.e. some or all default
+  configuration settings are to be overridden), use the
+  **custom_roc_diagram.yaml** config file.
 
 * Enter the following command:
 
-.. code-block:: ini
+  .. code-block:: ini
 		
-  python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/custom_roc_diagram.yaml
+    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/custom_roc_diagram.yaml
 
 
-In this example, this custom config file changes the title and axis labels.
+  In this example, this custom config file changes the title and axis labels.
 
-.. image:: roc_diagram_custom.png
+  .. image:: roc_diagram_custom.png
 
 * A **custom_roc_diagram.png** output file will be created in the
   directory that was specified in the *plot_filename* configuration

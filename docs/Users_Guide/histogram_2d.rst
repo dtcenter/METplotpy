@@ -34,7 +34,8 @@ The histogram_2d utilizes YAML configuration files to indicate where
 input data is located and to set plot attributes. **NOTE**: The
 histogram_2d plot is currently **not** integrated into the METviewer tool,
 and as a result the configuration file has fewer settings than the
-other plot types that are available through the METviewer tool.  YAML is a recursive acroynym for "YAML Ain't Markup Language" and according to
+other plot types that are available through the METviewer tool.  YAML is
+a recursive acroynym for "YAML Ain't Markup Language" and according to
 `yaml.org <https://yaml.org>`_, it is a "human-friendly data serialization
 language". It is commonly used for configuration files and in applications
 where data is being stored or transmitted.  Two configuration files are
@@ -74,8 +75,8 @@ _________________________
 
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to the histogram_2d plot. The
-**custom_histogram_2d.yaml** file is included with the source code and l
-ooks like the following:
+**custom_histogram_2d.yaml** file is included with the source code and
+looks like the following:
 
 .. literalinclude:: ../../test/histogram_2d/custom_histogram_2d.yaml
 
@@ -135,7 +136,7 @@ ______________
 To use the **default** settings defined in the **histogram_2d_defaults.yaml**
 file, specify a minimal custom configuration file
 (**minimal_histogram_2d.yaml**), which consists of only a comment
-block, but can be any empty file. **NOTE** If the user has write
+block, but can be any empty file. **NOTE**: If the user has write
 permissions for the output filename path corresponding to the
 *plot_filename* setting in the default configuration file, the user
 can use the **minimal_histogram_2d.yaml** configuration
@@ -188,63 +189,63 @@ Perform the following:
 
 * Clone the METplotpy repository from GitHub.  First, make the directory:
 
-.. code-block:: ini
+  .. code-block:: ini
 		
-   mkdir $METPLOTPY_SRC_DIR
+     mkdir $METPLOTPY_SRC_DIR
 
 * *$METPLOTPY_SRC_DIR* is the directory where the code will be saved.
   Enter the following:
 
-.. code-block:: ini
+  .. code-block:: ini
 		
-    cd $METPLOTPY_SRC_DIR
-    git clone https://github.com/dtcenter/METplotpy
+      cd $METPLOTPY_SRC_DIR
+      git clone https://github.com/dtcenter/METplotpy
 
 * Set the PYTHONPATH to point to the location of the METplotpy code:
 
 
-For the csh environment*:
+  For the csh environment*:
   
-.. code-block:: ini
+  .. code-block:: ini
 
-  setenv PYTHONPATH $METPLOTPY_SRC_DIR/metplotpy:$METPLOTPY_SRC_DIR/metplotpy/plots
+    setenv PYTHONPATH $METPLOTPY_SRC_DIR/metplotpy:$METPLOTPY_SRC_DIR/metplotpy/plots
   
-For the ksh environment:
+  For the ksh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  export PYTHONPATH=$METPLOTPY_SRC_DIR/metplotpy:$METPLOTPY_SRC_DIR/metplotpy/plots
+    export PYTHONPATH=$METPLOTPY_SRC_DIR/metplotpy:$METPLOTPY_SRC_DIR/metplotpy/plots
 
-Replace *$METPLOTPY_SRC_DIR* with the directory where the source code is saved.
+  Replace *$METPLOTPY_SRC_DIR* with the directory where the source code is saved.
 
-To generate the above **"defaults"** plot (i.e using default configuration
-settings), use the "minimal" custom configuration file,
-**minimal_histogram_2d.yaml**.
+  To generate the above **"defaults"** plot (i.e using default configuration
+  settings), use the "minimal" custom configuration file,
+  **minimal_histogram_2d.yaml**.
 
 * Enter the following command:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d/histogram_2d.py $WORKING_DIR/minimal_histogram_2d.yaml
+    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d/histogram_2d.py $WORKING_DIR/minimal_histogram_2d.yaml
 
 
 * A **tmp_z2_p500.png** output file will be created in the
   directory specified in the *plot_filename* configuration setting
   in the **minimal_histogram_2d.yaml** config file.
 
-To generate a **customized** histogram_2d plot (i.e. some or all
-default configuration settings are to be overridden), use the
-**custom_histogram_2d.yaml** config file.
+  To generate a **customized** histogram_2d plot (i.e. some or all
+  default configuration settings are to be overridden), use the
+  **custom_histogram_2d.yaml** config file.
 
 * Enter the following command:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-  python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d/histogram_2d.py $WORKING_DIR/custom_histogram_2d.yaml
+    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d/histogram_2d.py $WORKING_DIR/custom_histogram_2d.yaml
 
-In this example, this custom config file changes the title and font size.
+  In this example, this custom config file changes the title and font size.
 
-.. image:: custom_tmp_z2_p500.png
+  .. image:: custom_tmp_z2_p500.png
 
 * A **custom_tmp_z2_p500.png** output file will be created in the directory
   specified in the *plot_filename* configuration setting in the

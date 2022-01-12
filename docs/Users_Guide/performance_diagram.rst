@@ -34,7 +34,7 @@ ___________
 The sample data used to create these plots is available in the METplotpy
 repository, where the performance diagram scripts are located:
 
-$METPLOTPY_SOURCE/METplotpy/test/performance_diagram/plot_20200317_151252.data
+*$METPLOTPY_SOURCE/METplotpy/test/performance_diagram/plot_20200317_151252.data*
 
 *$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved.
 The data is text output from MET in columnar format.
@@ -57,8 +57,8 @@ which is found in the
 source code has been saved.  All default
 configuration files are located in the
 *$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
-**Default configuration files are automatically loaded by
-the plotting code and do not need to be explicitly specified when
+**Default configuration files are automatically loaded by the
+plotting code and do not need to be explicitly specified when
 generating a plot**.
 
 The second required configuration file is a user-supplied “custom”
@@ -117,14 +117,14 @@ For example:
 
 *plot_filename: /username/working_dir/output_plots/performance_diagram_custom.png*
 
-This is where /username/myworkspace/ is $METPLOTPY_SOURCE and
-/username/working_dir is $WORKING_DIR.  Make sure that the
+This is where */username/myworkspace/* is $METPLOTPY_SOURCE and
+*/username/working_dir* is $WORKING_DIR.  Make sure that the
 $WORKING_DIR directory that is specified exists and has the
 appropriate read and write permissions. The path listed for
 *plot_filename* may be changed to the output directory of one’s choosing.
 If this is not set, then the
 *plot_filename* setting specified in the
-$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/performance_diagram_defaults.yaml
+*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/performance_diagram_defaults.yaml*
 configuration file will be used.
 
 To save the intermediate **.points1** file (used by METviewer and useful
@@ -179,10 +179,10 @@ files are located.  Set the *stat_input* to
 
 *plot_filename: $WORKING_DIR/output_plots/performance_diagram_default.png*
 
-This is where *$WORKING_DIR* is the working directory where all of
+*$WORKING_DIR* is the working directory where all of
 the custom configuration files are being saved.
 **NOTE**: The *plot_filename* (output directory) may be specified
-to a directory other than the $WORKING_DIR/output_plots, as long as
+to a directory other than the *$WORKING_DIR/output_plots*, as long as
 it is an existing directory where the author has read and write permissions.
 
 To save the intermediate **.points1** file (used by METviewer and useful
@@ -214,41 +214,41 @@ perform the following:
 * Set the METPLOTPY_BASE environment variable to point to
   $METPLOTPY_SOURCE/METplotpy/metplotpy
 
-For the ksh environment:
+  For the ksh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 		
-  export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
+    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
 
-For the csh environment:
+  For the csh environment:
 
-.. code-block:: ini
+  .. code-block:: ini
 		
-  setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
 
-Replacing the $METPLOTPY_SOURCE with the directory where the
-METplotpy source code was saved.
+  Replacing the $METPLOTPY_SOURCE with the directory where the
+  METplotpy source code was saved.
 
 * Run the following on the command line:
 
-.. code-block:: ini  
+  .. code-block:: ini  
 
-  python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/minimal_performance_diagram.yaml
+    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/minimal_performance_diagram.yaml
 
-This will create a PNG file, **performance_diagram_default.png**,
-in the directory that was specified in the `plot_filename`
-setting of the **minimal_performance_diagram.yaml** config file:
+  This will create a PNG file, **performance_diagram_default.png**,
+  in the directory that was specified in the *plot_filename*
+  setting of the **minimal_performance_diagram.yaml** config file:
 
-.. image:: performance_diagram_default.png
+  .. image:: performance_diagram_default.png
 
-To generate a slightly modified, **customized** plot, re-run the above
-command using the **custom_performance_diagram.yaml** file:
+  To generate a slightly modified, **customized** plot, re-run the above
+  command using the **custom_performance_diagram.yaml** file:
 
-.. code-block:: ini
+  .. code-block:: ini
 		
-  python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/custom_performance_diagram.yaml
+    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/custom_performance_diagram.yaml
 
-.. image:: performance_diagram_custom.png
+  .. image:: performance_diagram_custom.png
 
 * A **performance_diagram_custom.png** output file will be created in
   the directory that was  specified in the *plot_filename* config setting
