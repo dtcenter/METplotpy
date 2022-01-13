@@ -159,7 +159,7 @@ sample data and custom configuration files are located.  Set the
 *stat_input* to
 *$METPLOTPY_SOURCE/METplotpy/test/roc_diagram/plot_20200507_074426.data*
 and set the
-*plot_filename* to $WORKING_DIR/output_plots/roc_diagram_default.png:
+*plot_filename* to *$WORKING_DIR/output_plots/roc_diagram_default.png*:
 
 *stat_input: $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/plot_20200507_074426.data*
 
