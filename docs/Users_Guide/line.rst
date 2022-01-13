@@ -196,7 +196,7 @@ To generate the above plot using the **line_defaults.yaml** and
 
   .. code-block:: ini
 		
-    export METPLOTPY_BASE\=$METPLOTPY_SOURCE/METplotpy/metplotpy
+    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
 
   For the csh environment:
 
