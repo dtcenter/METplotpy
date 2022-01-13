@@ -28,7 +28,7 @@ code is located:
 *$METPLOTPY_SOURCE/METplotpy/test/roc_diagram/plot_20200507_074426.data*
 
 *$METPLOTPY_SOURCE* is the directory where the METplotpy source code
-is installed. (e.g. /username/myworkspace).
+is installed. (e.g. */username/myworkspace*).
 
 Configuration Files
 ___________________

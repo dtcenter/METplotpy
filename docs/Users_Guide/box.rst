@@ -38,7 +38,7 @@ METplotpy repository, where the box plot tests are located:
 *$METPLOTPY_SOURCE/METplotpy/metplotpy/test/box/box.data*
 
 *$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved
-(e.g. /username/myworkspace).  The data is text output from MET in
+(e.g. */username/myworkspace*).  The data is text output from MET in
 columnar format.
 
 Configuration Files

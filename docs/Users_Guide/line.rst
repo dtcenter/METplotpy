@@ -23,7 +23,7 @@ The sample data used to create an example line plot is available in the
 *$METPLOTPY_SOURCE/METplotpy/metplotpy/test/line/line.data*
 
 *$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved
-(e.g. /username/myworkspace).  The data is text output from MET in
+(e.g. */username/myworkspace*).  The data is text output from MET in
 columnar format.
 
 
@@ -168,8 +168,8 @@ configuration files are being saved. **NOTE**: If the *plot_filename*
 to that directory.
 
 **NOTE**: This default plot does not display any of the data points.
-It is to be used as a template for
-setting up margins, captions, label sizes, etc.
+It is to be used as a template for setting up margins, captions,
+label sizes, etc.
 
 Run from the Command Line
 =========================
