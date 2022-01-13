@@ -183,10 +183,10 @@ five series:
 To generate the above plot using the **line_defaults.yaml** and
 **custom_line.yaml** config files, perform the following:
 
-* If the conda environment is being used, verify the conda environment
+* If using the conda environment, verify the conda environment
   is running and has the required
   `Python packages
-  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html>`_
+  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_
   outlined in the requirements section.
 
 * Set the METPLOTPY_BASE environment variable to point to

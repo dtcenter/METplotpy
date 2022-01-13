@@ -179,7 +179,7 @@ configuration files are being saved. **NOTE**: If the *plot_filename*
 *$WORKING_DIR/output_plots*, the user must have read and write permissions
 to that directory.
 
-**NOTE** This file does not plot any data, its purpose is to provide a
+**NOTE**: This file does not plot any data, its purpose is to provide a
 template for setting the margins, plot size, labels, etc.
 
 Run from the Command Line
@@ -217,7 +217,7 @@ Perform the following to generate the plots:
 * If the conda environment is being used, verify the conda environment
   is running and has the required
   `Python packages
-  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html>`_
+  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_
   outlined in the requirements section.
 
   The **minimal_box.yaml** configuration file, in combination with the

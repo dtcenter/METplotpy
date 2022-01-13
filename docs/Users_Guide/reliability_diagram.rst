@@ -202,7 +202,7 @@ Perform the following:
     cd $METPLOTPY_SOURCE
     git clone https://github.com/dtcenter/METplotpy
 
-* If using a conda environment, verify the conda environment is
+* If using the conda environment, verify the conda environment is
   running and has has the required Python packages outlined in
   the `requirements section
   <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_.

@@ -138,9 +138,10 @@ The **custom_ens_ss.yaml** configuration file, in combination with the
 
 Perform the following:
 
-* Verify the conda environment is running and has has the required
+* If the conda environment is being used,
+  verify the conda environment is running and has has the required
   Python packages outlined in the `requirements section.
-  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html>`_
+  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_
   
 * Set the METPLOTPY_BASE environment variable to point to
   $METPLOTPY_SOURCE/METplotpy/metplotpy

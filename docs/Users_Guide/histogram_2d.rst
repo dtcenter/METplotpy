@@ -185,7 +185,7 @@ Perform the following:
 * If using a conda environment, verify that the conda environment is
   running and has the required Python packages outlined in the
   `Python Requirements section
-  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html>`_:
+  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_:
 
 * Clone the METplotpy repository from GitHub.  First, make the directory:
 
