@@ -135,7 +135,7 @@ Uncomment or add (if it doesn't exist) the *points_path* setting:
 
 *points_path: '/dir_to_save_points1_file'*
 
-Replace the **/dir_to_save_points1_file** to the same directory where the
+Replace the */dir_to_save_points1_file* to the same directory where the
 **.points1** file is saved.
 If *points_path* is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment
@@ -212,7 +212,7 @@ perform the following:
    <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation-requirements.html>`_
 
 * Set the METPLOTPY_BASE environment variable to point to
-  $METPLOTPY_SOURCE/METplotpy/metplotpy
+  *$METPLOTPY_SOURCE/METplotpy/metplotpy*.
 
   For the ksh environment:
 
