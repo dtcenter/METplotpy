@@ -196,7 +196,7 @@ To generate the above plot using the **line_defaults.yaml** and
 
   .. code-block:: ini
 		
-    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
+    export METPLOTPY_BASE\=$METPLOTPY_SOURCE/METplotpy/metplotpy
 
   For the csh environment:
 
@@ -218,7 +218,7 @@ To generate the above plot using the **line_defaults.yaml** and
     python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line/line.py $WORKING_DIR/custom_line.yaml
 
 
-* A **line.png** output file will be created in the director specified in
+* A **line.png** output file will be created in the directory specified in
   the *plot_filename* configuration setting in the **line.yaml** config file.
 
 
