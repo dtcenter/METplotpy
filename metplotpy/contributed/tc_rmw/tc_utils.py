@@ -123,7 +123,14 @@ def radial_tangential_winds(
     valid_time, range_grid, azimuth_grid, pressure_grid, wind_data):
     """
     Compute radial and tangential components from zonal and meridional components.
+
+    Args:
+
+    Returns:
+        radial_tangential_wind_data:  a dictionary containing the radial and tangential
+                                      wind data
     """
+    radial_tangential_wind_data = {}
     n_t = len(valid_time)
     n_r = len(range_grid)
     n_a = len(azimuth_grid)
@@ -144,8 +151,10 @@ def radial_tangential_winds(
 
     wind_radial = np.cos(theta) * wind_data['U'] + np.sin(theta) * wind_data['V']
     wind_tangential = - np.sin(theta) * wind_data['U'] + np.cos(theta) * wind_data['V']
-    wind_data['radial'] = wind_radial
-    wind_data['tangential'] = wind_tangential
+    radial_tangential_wind_data['radial'] = wind_radial
+    radial_tangential_wind_data['tangential'] = wind_tangential
+
+    return radial_tangential_wind_data
 
 def height_from_pressure(surface_pressure, virtual_temperature, pressure):
     """
