@@ -6,7 +6,7 @@ Description
 ===========
 
 The **plot_weather_regime.py** script contains the plotting portion for
-3 scripts (**elbow.py, Calc_EOF.py**, and **K_means.py**)
+three scripts (**elbow.py, Calc_EOF.py**, and **K_means.py**)
 These were originally created by Doug Miller at the University of Illinois.
 A `METplus use case
 <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_WeatherRegime.html#sphx-glr-generated-model-applications-s2s-userscript-obsera-obsonly-weatherregime-py>`_
@@ -14,13 +14,13 @@ illustrates how to use this plot.
 
 These files are used by the image comparison test:
 
-* **obs_elbow.png**  Run plot_elbow in **plot_weather_regime.py**
+* **obs_elbow.png**:  Run "plot_elbow" in **plot_weather_regime.py**
   to create this plot.
 
-* **obs_eof.png**  Run plot_eof in **plot_weather_regime.py**
+* **obs_eof.png**:  Run "plot_eof" in **plot_weather_regime.py**
   to create this plot.
 
-* **obs_kmeans.png**  Run plot_K_means in **plot_weather_regime.py**
+* **obs_kmeans.png**:  Run "plot_K_means" in **plot_weather_regime.py**
   to create this plot.
 
 
@@ -55,7 +55,7 @@ Required Packages
 How to Use
 ===========
 
-**Import plot_weather_regime into the script:**
+Import plot_weather_regime into the script:
 
 .. code-block:: ini
 
@@ -133,7 +133,7 @@ file, a **.png** version will be written.
 **plevels:** A list containing integers of the contour levels used in
 the plots.
 
-**Invoke the plotting functions:**
+Invoke the plotting functions:
 
 .. code-block:: ini
 
@@ -143,8 +143,8 @@ the plots.
 
    pwr.plot_K_means(kmeans,wrnum,lons,lats,perc,plot_outname,plevels)
 
-**Output:**  A **.png** version of the elbow line plot, eof contour map
-plots, and weather regime map plots if all three are requested. The output
+The output will be **.png** version of the elbow line plot, eof contour map
+plots, and weather regime map plots, if all three are requested. The output
 will be located based on what was specified (path and name) in the
 **output_plotname**.
 
