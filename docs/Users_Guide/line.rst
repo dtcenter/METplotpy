@@ -43,9 +43,9 @@ configuration file, **line_defaults.yaml**, which is found in the
 *$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory. All default
 configuration files are located in the
 *$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
-**Note**: *$METPLOTPY_SOURCE* is the user-specified directory where the
+*$METPLOTPY_SOURCE* is the user-specified directory where the
 METplotpy source code has been saved. **Default configuration files are
-automatically loaded by the plotting code and do notneed to be explicitly
+automatically loaded by the plotting code and do not need to be explicitly
 specified when generating a plot**.
 
 The second required configuration file is a user-supplied “custom”
@@ -61,7 +61,7 @@ __________________________
 
 The following is the *mandatory*, **line_defaults.yaml** configuration file,
 which serves as a good starting point for creating a line
-plot as it represents the default values set in METviewer
+plot as it represents the default values set in METviewer.
 
 **NOTE**: This default configuration file is automatically loaded by
 **line.py**.

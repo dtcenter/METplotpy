@@ -60,7 +60,7 @@ __________________________
 
 The following is the *mandatory*, **ens_ss_defaults.yaml** configuration
 file, which serves as a good starting point for creating a line
-plot as it represents the default values set in METviewer
+plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/ens_ss_defaults.yaml
 
