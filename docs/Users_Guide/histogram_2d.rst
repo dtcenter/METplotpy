@@ -204,7 +204,7 @@ Perform the following:
 * Set the PYTHONPATH to point to the location of the METplotpy code:
 
 
-  For the csh environment*:
+  For the csh environment:
   
   .. code-block:: ini
 
