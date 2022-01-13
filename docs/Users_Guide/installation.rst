@@ -58,9 +58,9 @@ ___________________
 
 * statsmodels 0.11.1
 
-* yaml
-
 * xarray 0.16.2
+
+* yaml  
 
 .. _METcalcpy_conda:
 
