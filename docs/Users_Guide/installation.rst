@@ -70,16 +70,12 @@ __________________________________________
 This is the recommended method for installation.
 
 Clone the `METcalcpy repository from GitHub
-<https://github.com/dtcenter/METcalcpy>`_
+<https://github.com/dtcenter/METcalcpy>`_.
 
-From within the *active* conda environment:
-
-.. code-block:: ini
-		
-  cd to the METcalcpy/ directory.
-
-This is the directory where the METcalcpy repository was cloned. In
-this directory, find the setup.py script
+From within the *active* conda environment, change directories
+to the METcalcpy directory. This is the directory where the 
+METcalcpy repository was cloned. In this directory, 
+find the **setup.py** script.
 
 From the command line run:
 
@@ -87,11 +83,11 @@ From the command line run:
 		
   pip install -e .
 
-Do NOT forget the ending period **'.'**  This indicates using the setup.py
-in the current working directory.
+Do NOT forget the ending period **'.'**  This indicates the **setup.py**
+is being used in the current working directory.
  
 The *-e* option allows this installation to be editable, which is useful if
-the METcalcpy/metcalcpy source code needs updating. Using the *-e* option
+the *METcalcpy/metcalcpy* source code needs updating. Using the *-e* option
 will avoid the need to reinstall if any changes are made to the METcalcpy
 code.
 
@@ -103,13 +99,13 @@ create conda environments.
 
 *$METCALCPY_SOURCE* is the path downloaded/cloned METcalcpy code.
 
-**command for csh:** 
+**Command for csh:** 
 
 .. code-block:: ini
 
   setenv PYTHONPATH $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:${PYTHONPATH}
 
-**command for bash:**
+**Command for bash:**
 
 .. code-block:: ini
 
