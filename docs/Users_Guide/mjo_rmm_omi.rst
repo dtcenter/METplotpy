@@ -20,12 +20,12 @@ There are `METplus use cases
 which illustrate how to generate RMM and OMI plots:
 
 * To generate an RMM diagram, follow the instructions under the
-
-  `Make a Phase Diagram plot from input RMM or OMI link <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_PhaseDiagram.html#sphx-glr-generated-model-applications-s2s-userscript-obsera-obsonly-phasediagram-py>`_
+  `Make a Phase Diagram plot from input RMM or OMI link
+  <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_PhaseDiagram.html#sphx-glr-generated-model-applications-s2s-userscript-obsera-obsonly-phasediagram-py>`_.
 
 * To generate an OMI diagram, follow the instructions under the
-
-  `Make OMI plot from calculated MJO Indices link <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_OMI.html#sphx-glr-generated-model-applications-s2s-userscript-obsera-obsonly-omi-py>`_
+  `Make OMI plot from calculated MJO Indices link
+  <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_OMI.html#sphx-glr-generated-model-applications-s2s-userscript-obsera-obsonly-omi-py>`_.
 
 Instructions for obtaining sample data and all necessary configuration files
 are indicated in the use cases. The use cases invoke the necessary
