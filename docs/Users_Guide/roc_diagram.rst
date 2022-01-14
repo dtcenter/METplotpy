@@ -250,7 +250,7 @@ Perform the following:
 
 
   In this example, this custom config file changes the title and axis labels. The caption magnification, caption weight, and title offset
-  values were modified.  The user will need to experiment with these values to achieve the desired appearance.
+  values were modified, resulting in the drastically different plot shown below.  The user will need to experiment with these values to achieve the desired appearance.
    
 
   .. image:: roc_diagram_custom.png
