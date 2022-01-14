@@ -242,16 +242,24 @@ Perform the following:
   configuration settings are to be overridden), use the
   **custom_roc_diagram.yaml** config file.
 
+<<<<<<< HEAD
 *  Enter the following command:
+=======
+* Enter the following command:
+>>>>>>> a0f41c5aff527b7cc916e74eb5401f16cce806b2
 
   .. code-block:: ini
 		
     python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/custom_roc_diagram.yaml
 
 
+<<<<<<< HEAD
   In this example, this custom config file changes the title and axis labels. The caption magnification, caption weight, and title offset
   values were modified, resulting in the drastically different plot shown below.  The user will need to experiment with these values to achieve the desired appearance.
    
+=======
+  In this example, this custom config file changes the title and axis labels.
+>>>>>>> a0f41c5aff527b7cc916e74eb5401f16cce806b2
 
   .. image:: roc_diagram_custom.png
 
