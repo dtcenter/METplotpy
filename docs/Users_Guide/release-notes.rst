@@ -8,8 +8,25 @@ describes the bugfix, enhancement, or new feature: `METplotpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ________________________________________________
 
-Version 1.1.0 release notes (20211217)
+Version 1.1.0 release notes (20220114)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+beta5 release
+^^^^^^^^^^^^^
+
+* New Plots:
+   * **Vertical interpolation of fields between pressure and height coordinates (`_#37 <https://github.com/dtcenter/METplotpy/issues/37>`_)
+   * **Add the Python implementation of the ECLV plot type (`_#171 <https://github.com/dtcenter/METplotpy/issues/171> `_)
+   * **Add supporting functionality for ECLV plot (`_#128 <https://github.com/dtcenter/METcalcpy/issues/128> `_)
+   
+* Enhancements: 
+   * **Enhance hovmoeller.py to log more error messages in failure mode (`_#182 <https://github.com/dtcenter/METplotpy/issues/182>`_)
+
+* Internal:
+   * **Modify formatting of METplotpy documentation to make it consistent with other METplus components (`_#155 <https://github.com/dtcenter/METplotpy/issues/155>`_)
+
+* Bugfixes:
+
 
 beta4 release
 ^^^^^^^^^^^^^
