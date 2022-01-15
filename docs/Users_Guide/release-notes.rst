@@ -15,15 +15,15 @@ beta5 release
 ^^^^^^^^^^^^^
 
 * New Plots:
-   * **Vertical interpolation of fields between pressure and height coordinates (`#37<https://github.com/dtcenter/METplotpy/issues/37>`_)
-   * **Add the Python implementation of the ECLV plot type (`#171 <https://github.com/dtcenter/METplotpy/issues/171>`_)
-   * **Add supporting functionality for ECLV plot (`#128 <https://github.com/dtcenter/METplotpy/issues/128>`_)
+   * **Vertical interpolation of fields between pressure and height coordinates** (`#37 <https://github.com/dtcenter/METplotpy/issues/37>`_)
    
+   * **Add the Python implementation of the ECLV plot type** (`#171 <https://github.com/dtcenter/METplotpy/issues/171>`_)
+  
 * Enhancements: 
-   * **Enhance hovmoeller.py to log more error messages in failure mode (`#182 <https://github.com/dtcenter/METplotpy/issues/182>`_)
+   * **Enhance hovmoeller.py to log more error messages in failure mode** (`#182 <https://github.com/dtcenter/METplotpy/issues/182>`_)
 
 * Internal:
-   * **Modify formatting of METplotpy documentation to make it consistent with other METplus components (`#155 <https://github.com/dtcenter/METplotpy/issues/155>`_)
+   * Modify formatting of METplotpy documentation to make it consistent with other METplus components (`#155 <https://github.com/dtcenter/METplotpy/issues/155>`_)
 
 * Bugfixes:
 
