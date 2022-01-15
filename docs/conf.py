@@ -25,9 +25,9 @@ author_list = 'Win-Gildenmeister, M., T. Burek, H. Fisher, D. Adriaansen, C. Kal
 version = 'develop'
 verinfo = version
 release = f'{version}'
-release_year = '2021'
+release_year = '2022'
 
-release_date = f'{release_year}-12-17'
+release_date = f'{release_year}-01-14'
 
 copyright = f'{release_year}, {author}'
 
