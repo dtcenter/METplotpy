@@ -265,7 +265,6 @@ series_symbols:
   - "."
   - "."
 
-
 con_series:
 # Only useful for line plots where consecutive points may be interspersed with NA values
 # these values have no use for the Taylor diagram.

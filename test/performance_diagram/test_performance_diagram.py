@@ -47,7 +47,7 @@ def test_plot_exists(setup, test_input, expected_bool):
     '''
 
     assert os.path.isfile(test_input) == expected_bool
-    cleanup()
+    # cleanup()
 
 @pytest.mark.parametrize("test_input,expected_bool",(["./performance_diagram_actual_points1.png", True], ["./intermed_files/plot_20200317_151252.points1", True]))
 def test_files_exist(test_input, expected_bool):
