@@ -24,8 +24,8 @@ from netCDF4 import num2date
 """
 Import BasePlot class
 """
-#from plots.base_plot import BasePlot
-sys.path.append("..") # Adds higher directory to python modules path.
+#from ..base_plot import BasePlot
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 from base_plot import BasePlot
 
 
@@ -216,5 +216,11 @@ if __name__ == "__main__":
     plot = Hovmoeller(None, time, lon, data)
 
     #plot.show_in_browser()
-    plot.save_to_file()
+    try:
+        plot.save_to_file()
+    except FileNotFoundError:
+        print("ERROR Can't save to file ")
+    except ValueError as ex:
+        print(ex)
+
 

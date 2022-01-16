@@ -2,9 +2,7 @@
 name: Task
 about: Describe something that needs to be done
 title: ''
-
 labels: 'alert: NEED ACCOUNT KEY, alert: NEED MORE DEFINITION, alert: NEED PROJECT ASSIGNMENT, type: task'
-
 assignees: ''
 
 ---

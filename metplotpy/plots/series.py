@@ -3,7 +3,6 @@ Class Name: series.py
  """
 __author__ = 'Minna Win'
 
-
 import itertools
 import metcalcpy.util.utils as utils
 

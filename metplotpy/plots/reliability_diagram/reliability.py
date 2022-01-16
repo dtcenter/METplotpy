@@ -23,17 +23,6 @@ from plots.reliability_diagram.reliability_config import ReliabilityConfig
 from plots.reliability_diagram.reliability_series import ReliabilitySeries
 
 
-def abline(x_value: float, intercept: float, slope: float) -> float:
-    """
-    Calculates y coordinate based on x-value, intercept and slope
-    :param x_value: x coordinate
-    :param intercept:  intercept
-    :param slope: slope
-    :return: y value
-    """
-    return slope * x_value + intercept
-
-
 class Reliability(BasePlot):
     """  Generates a Plotly line plot for 1 or more traces (lines)
          where each line is represented by a text point data file.
@@ -292,7 +281,7 @@ class Reliability(BasePlot):
                 intercept = 0.5 * o_bar
                 self.figure.add_trace(
                     go.Scatter(x=[0, 1],
-                               y=[abline(0, intercept, 0.5), abline(1, intercept, 0.5)],
+                               y=[util.abline(0, intercept, 0.5), util.abline(1, intercept, 0.5)],
                                line={'color': 'red',
                                      'dash': 'dash',
                                      'width': 1},
@@ -304,7 +293,7 @@ class Reliability(BasePlot):
                 # create annotation
                 self.figure.add_annotation(
                     x=1,
-                    y=abline(1, intercept, 0.5),
+                    y=util.abline(1, intercept, 0.5),
                     xref="x",
                     yref="y",
                     text="No-Skill",
@@ -329,7 +318,7 @@ class Reliability(BasePlot):
         if self.config_obj.add_skill_line is True:
             self.figure.add_trace(
                 go.Scatter(x=[0, 1],
-                           y=[abline(0, 0, 1), abline(1, 0, 1)],
+                           y=[util.abline(0, 0, 1), util.abline(1, 0, 1)],
                            line={'color': 'grey',
                                  'width': 1},
                            showlegend=False,
@@ -339,7 +328,7 @@ class Reliability(BasePlot):
             )
             self.figure.add_annotation(
                 x=1,
-                y=abline(1, 0, 1),
+                y=util.abline(1, 0, 1),
                 xref="x",
                 yref="y",
                 text="Perfect reliability",
@@ -363,7 +352,7 @@ class Reliability(BasePlot):
             if o_bar and o_bar is not None:
                 self.figure.add_trace(
                     go.Scatter(x=[0, 1],
-                               y=[abline(0, o_bar, 0), abline(1, o_bar, 0)],
+                               y=[util.abline(0, o_bar, 0), util.abline(1, o_bar, 0)],
                                line={'color': 'red',
                                      'dash': 'dash',
                                      'width': 1},
@@ -373,7 +362,7 @@ class Reliability(BasePlot):
                                )
                 )
                 self.figure.add_trace(
-                    go.Scatter(x=[abline(0, o_bar, 0), abline(1, o_bar, 0)],
+                    go.Scatter(x=[util.abline(0, o_bar, 0), util.abline(1, o_bar, 0)],
                                y=[0, 1],
                                line={'color': 'red',
                                      'dash': 'dash',
@@ -385,7 +374,7 @@ class Reliability(BasePlot):
                 )
                 self.figure.add_annotation(
                     x=1,
-                    y=abline(1, o_bar, 0),
+                    y=util.abline(1, o_bar, 0),
                     xref="x",
                     yref="y",
                     text="No-resolution",
@@ -715,7 +704,7 @@ def main(config_filename=None):
     try:
         plot = Reliability(docs)
         plot.save_to_file()
-        #plot.show_in_browser()
+        # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
     except ValueError as val_er:
