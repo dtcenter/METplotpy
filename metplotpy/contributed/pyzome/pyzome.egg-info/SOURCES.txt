@@ -1,0 +1,15 @@
+AUTHORS.rst
+CONTRIBUTING.rst
+LICENSE
+MANIFEST.in
+README.rst
+requirements.txt
+setup.cfg
+setup.py
+versioneer.py
+pyzome.egg-info/PKG-INFO
+pyzome.egg-info/SOURCES.txt
+pyzome.egg-info/dependency_links.txt
+pyzome.egg-info/entry_points.txt
+pyzome.egg-info/requires.txt
+pyzome.egg-info/top_level.txt

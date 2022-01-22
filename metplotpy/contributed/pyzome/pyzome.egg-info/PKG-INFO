@@ -1,0 +1,38 @@
+Metadata-Version: 2.1
+Name: pyzome
+Version: 1.1.0b3.post157.dev0+g8d954de
+Summary: Python package for doing computations and analyses with zonal mean atmospheric variables.
+Home-page: https://github.com/zdlawrence/pyzome
+Author: Zachary D. Lawrence
+Author-email: 
+License: BSD (3-clause)
+Platform: UNKNOWN
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3
+Requires-Python: >=3.7
+License-File: LICENSE
+License-File: AUTHORS.rst
+
+======
+pyzome
+======
+
+.. image:: https://img.shields.io/travis/zdlawrence/pyzome.svg
+        :target: https://travis-ci.org/zdlawrence/pyzome
+
+.. image:: https://img.shields.io/pypi/v/pyzome.svg
+        :target: https://pypi.python.org/pypi/pyzome
+
+
+Python package for doing computations and analyses with zonal mean atmospheric variables.
+
+* Free software: 3-clause BSD license
+* Documentation: (COMING SOON!) https://zdlawrence.github.io/pyzome.
+
+Features
+--------
+
+* TODO
+
+
