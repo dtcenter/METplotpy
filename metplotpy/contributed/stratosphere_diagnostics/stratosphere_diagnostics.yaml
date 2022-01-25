@@ -1,0 +1,60 @@
+input_data_path: /Volumes/d1/minnawin/METplotpy_Data/Stratosphere/
+input_datafile: SSWC_v1.0_varFull_ERAi_d20130106_s20121107_e20130307_c20160701.nc
+output_plot_path: /Volumes/d1/minnawin/output/stratosphere
+
+# Variables used in plotting
+variables:
+  # time variable name in input data
+  - timeEv60
+  # lat variable name in input data
+  - lat
+  # lon variable name in input data
+  - lon
+  # U-component of wind variable name in input data
+  - uwndFull_TS
+  # V-component of wind variable name in input data
+  - vwndFull_TS
+  # Temperature variable name in input data
+  - tempFull_TS
+  # Level variable name in input data
+  - geopFull_TS
+
+# Meridional mean temperature plot settings
+meridional_mean_time_index: 30
+meridional_mean_contour_level_start: -60
+meridional_mean_contour_level_end: 60
+meridional_mean_contour_level_step_size: 5
+meridional_mean_yscale: log
+
+# Must include the .png extension to the filename
+meridional_mean_temperature_output_plotname: meridional_mean_temperature.png
+
+# Zonal mean plot temperature plot settings
+zonal_mean_time_index: 30
+zonal_mean_yscale: log
+zonal_mean_contour_level_start: 200
+zonal_mean_contour_level_end: 300
+zonal_mean_contour_level_step_size: 10
+
+# Must include the .png extension to the filename
+zonal_mean_temperature_output_plotname: zonal_mean_temperature.png
+
+
+# Zonal mean wind plot settings.
+# Must include the .png extension to the filename
+zonal_mean_wind_output_plotname: zonal_mean_wind.png
+zonal_mean_wind_latitude: 60
+# pressure in hPa
+zonal_mean_wind_pressure_hpa: 10
+
+# Polar cap meridional mean temperature plot settings.
+polar_cap_meridional_mean_temp_output_plotname: polar_cap_meridional_mean_temp.png
+polar_cap_lat_start: 60
+polar_cap_lat_end: 90
+# pressure in hPa
+polar_cap_pressure_hpa: 10
+
+
+
+
+
