@@ -1,6 +1,6 @@
-input_data_path: /Volumes/d1/minnawin/METplotpy_Data/Stratosphere/
+input_data_path: /path/to/input/directory
 input_datafile: SSWC_v1.0_varFull_ERAi_d20130106_s20121107_e20130307_c20160701.nc
-output_plot_path: /Volumes/d1/minnawin/output/stratosphere
+output_plot_path: /path/to/output
 
 # Variables used in plotting
 variables:
