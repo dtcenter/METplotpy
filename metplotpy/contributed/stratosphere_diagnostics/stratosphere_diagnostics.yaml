@@ -1,8 +1,23 @@
+#
+# Input and Output Information
+#
 input_data_path: /path/to/input/directory
 input_datafile: SSWC_v1.0_varFull_ERAi_d20130106_s20121107_e20130307_c20160701.nc
 output_plot_path: /path/to/output
+#
+# Output plot filenames
+# ***Must include the .png extension to the filename***
+zonal_mean_wind_contour_output_plotname: zonal_mean_wind_contour.png
+zonal_mean_temperature_output_plotname: zonal_mean_temperature_contour.png
+zonal_mean_wind_output_plotname: zonal_mean_wind.png
+polar_cap_meridional_mean_temp_output_plotname: polar_cap_meridional_mean_temp.png
 
-# Variables used in plotting
+#
+# Variables used in plotting, corresponding to the names in the input datafile.
+# When using your own data, replace the time, temperature, level, and wind variable names
+# that correspond to your data's variable names (e.g if your time variable name is 'time',
+# replace timeEv60 with 'time').
+#
 variables:
   # time variable name in input data
   - timeEv60
@@ -19,40 +34,42 @@ variables:
   # Level variable name in input data
   - geopFull_TS
 
-# Meridional mean temperature plot settings
-meridional_mean_time_index: 30
-meridional_mean_contour_level_start: -60
-meridional_mean_contour_level_end: 60
-meridional_mean_contour_level_step_size: 5
-meridional_mean_yscale: log
+#
+# Contour plot settings
+#
 
-# Must include the .png extension to the filename
-meridional_mean_temperature_output_plotname: meridional_mean_temperature.png
+#
+# Zonal mean wind contour plot settings
+#
+zonal_mean_wind_contour_time_index: 30
+zonal_mean_wind_contour_level_start: -60
+zonal_mean_wind_contour_level_end: 60
+zonal_mean_wind_contour_level_step_size: 5
+zonal_mean_wind_yscale: log
 
-# Zonal mean plot temperature plot settings
-zonal_mean_time_index: 30
-zonal_mean_yscale: log
-zonal_mean_contour_level_start: 200
-zonal_mean_contour_level_end: 300
-zonal_mean_contour_level_step_size: 10
+#
+# Zonal mean temperature contour plot settings
+#
+zonal_mean_temp_contour_time_index: 30
+zonal_mean_temp_contour_level_start: 200
+zonal_mean_temp_contour_level_end: 300
+zonal_mean_temp_contour_level_step_size: 10
+zonal_mean_temp_yscale: log
 
-# Must include the .png extension to the filename
-zonal_mean_temperature_output_plotname: zonal_mean_temperature.png
-
-
-# Zonal mean wind plot settings.
-# Must include the .png extension to the filename
-zonal_mean_wind_output_plotname: zonal_mean_wind.png
+#
+#  Line plot settings for zonal mean wind plot.
+#
 zonal_mean_wind_latitude: 60
 # pressure in hPa
 zonal_mean_wind_pressure_hpa: 10
 
-# Polar cap meridional mean temperature plot settings.
-polar_cap_meridional_mean_temp_output_plotname: polar_cap_meridional_mean_temp.png
+# Line plot settings for polar cap meridional mean temperature plot.
 polar_cap_lat_start: 60
 polar_cap_lat_end: 90
 # pressure in hPa
 polar_cap_pressure_hpa: 10
+
+
 
 
 
