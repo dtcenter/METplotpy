@@ -74,7 +74,7 @@ The sample dataset is a netCDF file:
 To obtain this data follow these steps, based on the instructions from the `section 2.6 of the METplus installation
 section <https://metplus.readthedocs.io/en/develop/Users_Guide/installation.html>`_ :
 
-* Create a directory where you will save the sample data, hereafter referred to as $INPUT_DATA.
+* Create a directory where you will save the sample data, hereafter referred to as $INPUT_DATA_DIR.
 
 * Go to the `sample input data link <https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/>`_.
 
@@ -82,9 +82,9 @@ section <https://metplus.readthedocs.io/en/develop/Users_Guide/installation.html
 
 * Click on the sample_data_s2s-X.Y.tgz (where X.Y is the version number).
 
-* Copy this compressed tar ball to your $INPUT_DATA.
+* Copy this compressed tar ball to your $INPUT_DATA_DIR directory.
 
-* Change directory to the $INPUT_DATA directory.
+* Change directory to the $INPUT_DATA_DIR directory.
 
 * Uncompress the tar ball:
 
@@ -92,8 +92,8 @@ section <https://metplus.readthedocs.io/en/develop/Users_Guide/installation.html
 
     `tar -zxvf sample_data_s2s-4.1.tgz`
 
-The file you need is in the $INPUT_DIR/model_applications/s2s/UserScript_obsERA_obsOnly_Stratosphere
-directory, where **$INPUT_DIR** is the directory you created to store your sample data.
+The file you need is in the $INPUT_DATA_DIR/model_applications/s2s/UserScript_obsERA_obsOnly_Stratosphere
+directory, where **$INPUT_DATA_DIR** is the directory you created to store your sample data.
 
 
 METplus Configuration
@@ -119,7 +119,7 @@ directory where you have write and execute privileges):
 
 Modify the *input_data_path* setting in the *$WORKING_DIR/stratosphere_diagnostics.yaml* by
 replacing the */path/to/input/directory* entry with the directory where you saved your sample data.
-This is the $INPUT_DIR you used from the **Sample Data** section above.
+This is the $INPUT_DATA_DIR you used from the **Sample Data** section above.
 
 Replace the *output_plot_path* setting from */path/to/output* to a directory where
 you wish to store your output.
