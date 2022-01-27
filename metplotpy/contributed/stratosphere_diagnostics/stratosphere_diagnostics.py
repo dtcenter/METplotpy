@@ -205,8 +205,8 @@ def main(config_filename=None):
         dataset = retrieve_data(config)
 
         # generate the plots
-        # plot_zonal_mean_wind_contour(config, dataset)
-        # plot_zonal_mean_temperature_contour(config, dataset)
+        plot_zonal_mean_wind_contour(config, dataset)
+        plot_zonal_mean_temperature_contour(config, dataset)
         plot_zonal_mean_wind(config, dataset)
         plot_polar_zonal_mean_temperature(config, dataset)
     except ValueError as val_er:
