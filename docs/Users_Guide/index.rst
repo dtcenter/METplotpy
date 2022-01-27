@@ -80,6 +80,7 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    spacetime
    mjo_rmm_omi
    tcrmw_cross_section
+   stratosphere_diagnostics
    release-notes
    references
 
