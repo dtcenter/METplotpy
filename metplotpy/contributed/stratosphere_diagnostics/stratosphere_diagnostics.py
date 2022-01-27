@@ -76,7 +76,7 @@ def retrieve_data(config: dict) -> xarray.Dataset:
 
 
 
-def plot_meridional_mean_temperature(config_obj:dict, dataset:xarray.Dataset) -> None:
+def plot_zonal_mean_wind_contour(config_obj:dict, dataset:xarray.Dataset) -> None:
     '''
 
         Input:
@@ -85,21 +85,21 @@ def plot_meridional_mean_temperature(config_obj:dict, dataset:xarray.Dataset) ->
                         variables of interest.
 
         Returns:
-        :return: None creates a contour plot latitude vs atmospheric pressure level of the
-                 meridional mean temperature
+        :return: None creates a contour plot of latitude vs atmospheric pressure level of the
+                zonal mean wind
     '''
 
     plt.figure(0)
-    output_plotname = config_obj.get('meridional_mean_temperature_output_plotname')
+    output_plotname = config_obj.get('zonal_mean_wind_contour_output_plotname')
     output_plot_file = create_output_file(config_obj, output_plotname)
 
     u_zonal_mean = zonal_mean(dataset.u_wind)
 
-    time_index = config_obj.get('meridional_mean_time_index')
-    contour_start = config_obj.get('meridional_mean_contour_level_start')
-    contour_end = config_obj.get('meridional_mean_contour_level_end')
-    contour_step = config_obj.get('meridional_mean_contour_level_step_size')
-    yscale = config_obj.get('meridional_mean_yscale')
+    time_index = config_obj.get('zonal_mean_wind_contour_time_index')
+    contour_start = config_obj.get('zonal_mean_wind_contour_level_start')
+    contour_end = config_obj.get('zonal_mean_wind_contour_level_end')
+    contour_step = config_obj.get('zonal_mean_wind_contour_level_step_size')
+    yscale = config_obj.get('zonal_mean_wind_yscale')
 
     # Vary the index over time.
     u_zonal_mean.isel(time=time_index).plot.contourf(levels=np.arange(contour_start, contour_end, contour_step))
@@ -108,7 +108,7 @@ def plot_meridional_mean_temperature(config_obj:dict, dataset:xarray.Dataset) ->
 
     plt.savefig(output_plot_file)
 
-def plot_zonal_mean_temperature(config_obj:dict, dataset:xarray.Dataset) -> None:
+def plot_zonal_mean_temperature_contour(config_obj:dict, dataset:xarray.Dataset) -> None:
     '''
 
         Input:
@@ -124,12 +124,11 @@ def plot_zonal_mean_temperature(config_obj:dict, dataset:xarray.Dataset) -> None
     plt.figure(1)
     output_plotname = config_obj.get('zonal_mean_temperature_output_plotname')
     output_plot_file = create_output_file(config_obj, output_plotname)
-
-    time_index = config_obj.get('zonal_mean_time_index')
-    contour_start = config_obj.get('zonal_mean_contour_level_start')
-    contour_end = config_obj.get('zonal_mean_contour_level_end')
-    contour_step = config_obj.get('zonal_mean_contour_level_step_size')
-    yscale = config_obj.get('zonal_mean_yscale')
+    time_index = config_obj.get('zonal_mean_temp_contour_time_index')
+    contour_start = config_obj.get('zonal_mean_temp_contour_level_start')
+    contour_end = config_obj.get('zonal_mean_temp_contour_level_end')
+    contour_step = config_obj.get('zonal_mean_temp_contour_level_step_size')
+    yscale = config_obj.get('zonal_mean_temp_yscale')
 
     temperature_zonal_mean = zonal_mean(dataset.temperature)
     temperature_zonal_mean.isel(time=time_index).plot.contourf(
@@ -204,8 +203,10 @@ def main(config_filename=None):
     try:
         # do any preparations
         dataset = retrieve_data(config)
-        plot_meridional_mean_temperature(config, dataset)
-        plot_zonal_mean_temperature(config, dataset)
+
+        # generate the plots
+        # plot_zonal_mean_wind_contour(config, dataset)
+        # plot_zonal_mean_temperature_contour(config, dataset)
         plot_zonal_mean_wind(config, dataset)
         plot_polar_zonal_mean_temperature(config, dataset)
     except ValueError as val_er:
