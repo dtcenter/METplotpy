@@ -553,9 +553,9 @@ class Config:
         -180000
 
         Then the following is expected:
-        the first indy_val  is 150000
-        the second indy_val is 180000
-        the third indy_val is 120000
+        the first indy_val  is 1850000
+        the second indy_val is 120000
+        the third indy_val is 150000
 
 
         Args:
