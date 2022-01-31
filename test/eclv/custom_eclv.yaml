@@ -76,7 +76,7 @@ show_nstats: 'True'
 show_signif:
 - 'False'
 - 'False'
-title: Sumple ECLV plot for ECLV data
+title: Simple ECLV plot for ECLV data
 title_align: 0.5
 title_offset: -2
 title_size: 1.4
