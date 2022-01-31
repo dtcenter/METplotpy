@@ -14,10 +14,8 @@ color_palette: green_red
 colors:
 - '#000000'
 
-contour_diff: 'False'
 contour_intervals: 10
 create_html: 'False'
-derived_series_1: []
 dump_points_1: 'False'
 equalize_by_indep: 'False'
 event_equal: 'False'

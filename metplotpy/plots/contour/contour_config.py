@@ -104,7 +104,6 @@ class ContourConfig(Config):
         self.points_path = self.get_config_value('points_path')
 
         ##############################################
-        self.contour_diff = self._get_bool('contour_diff')
         self.contour_intervals = self.get_config_value('contour_intervals')
         self.color_palette = self._get_colorscale()
         self.add_color_bar = self._get_bool('add_color_bar')

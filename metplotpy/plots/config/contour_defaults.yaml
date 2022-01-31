@@ -14,7 +14,6 @@ color_palette: green_red
 colors:
 - '#000000'
 
-contour_diff: 'False'
 contour_intervals: 10
 create_html: 'False'
 dump_points_1: 'False'
