@@ -23,18 +23,16 @@ fcst_var_val_1:
 series_val_1:
   # series_var_1
   model:
-    # series_val_1
     - suite3_MEDIAN
   # series_var2
   vx_mask:
-    # series_val_n n=1-7
     - Bondville
-    - Desert Rock
-    - Fort Peck
-    - Goodwin Creek
-    - Penn State
-    - Sioux Falls
-    - Table Mountain
+    - Desert_Rock
+    - Fort_Peck
+    - Goodwin_Creek
+    - Penn_State
+    - Sioux_Falls
+    - Table_Mountain
 
 
 # Unsupported actions by Matplotlib.
