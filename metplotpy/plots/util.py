@@ -11,6 +11,22 @@ from typing import Union
 
 from plotly.graph_objects import Figure
 
+COLORSCALES = {
+    'green_red': ['#E6FFE2', '#B3FAAD', '#74F578', '#30D244', '#00A01E', '#F6A1A2', '#E26667', '#C93F41', '#A42526'],
+    'blue_white_brown': ['#1962CF', '#3E94F2', '#B4F0F9', '#00A01E', '#4AF058', '#C7FFC0', '#FFFFFF', '#FFE97F',
+                         '#FF3A20', '#A50C0F', '#E1BFB5', '#A0786F', '#643D34'],
+    'cm_colors': ["#80FFFF", "#95FFFF", "#AAFFFF", "#BFFFFF", "#D4FFFF", "#EAFFFF", "#FFFFFF", "#FFEAFF", "#FFD5FF",
+                  "#FFBFFF", "#FFAAFF", "#FF95FF", "#FF80FF"],
+    'topo_colors': ["#4C00FF", "#0000FF", "#004CFF", "#0099FF", "#00E5FF", "#00FF4D", "#1AFF00", "#80FF00", "#E6FF00",
+                    "#FFFF00", "#FFE53B", "#FFDB77", "#FFE0B3"],
+    'terrain_colors': ["#00A600", "#24B300", "#4CBF00", "#7ACC00", "#ADD900", "#E6E600", "#E7CB21", "#E9BA43",
+                       "#EBB165", "#EDB387", "#EFBEAA", "#F0D3CE", "#F2F2F2"],
+    'heat_colors': ["#FF0000", "#FF1C00", "#FF3900", "#FF5500", "#FF7100", "#FF8E00", "#FFAA00", "#FFC600", "#FFE300",
+                    "#FFFF00", "#FFFF2A", "#FFFF80", "#FFFFD5"],
+    'rainbow': ["#FF0000", "#FF7600", "#FFEB00", "#9DFF00", "#27FF00", "#00FF4E", "#00FFC4", "#00C4FF", "#004EFF",
+                "#2700FF", "#9D00FF", "#FF00EB", "#FF0076"]
+}
+
 
 def read_config_from_command_line():
     """
@@ -151,6 +167,7 @@ def add_vertical_line(figure: Figure, x: float, line_properties: dict) -> None:
         xref='x', x0=x, x1=x,
         line=line_properties,
     )
+
 
 def abline(x_value: float, intercept: float, slope: float) -> float:
     """
