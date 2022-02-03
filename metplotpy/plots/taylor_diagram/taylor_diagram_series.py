@@ -11,25 +11,11 @@ from plots.series import Series
 import metcalcpy.util.utils as calcpy_utils
 
 
-# To suppress FutureWarning raised by pandas due to
-# standoff between numpy and Python with respect to
-# comparing a string to scalar.  Note, this is also
-# an issue observed in Scikit, matplotlib, and TensorFlow.
-# Workaround solution from Stack Overflow:
-# https://stackoverflow.com/questions/40659212/
-# futurewarning-elementwise-comparison-failed-
-# returning-scalar-but-in-the-futur#46721064
-# and GitHub issue in numpy repo:
-# https://github.com/numpy/numpy/issues/6784
-# warnings.simplefilter(action='ignore', category=FutureWarning)
-# Instead, use pandas' astype to convert what you are comparing
-# to a string, otherwise, you might end up with an empty
-# dataframe and then an empty plot.
 
 class TaylorDiagramSeries(Series):
     """
        Represents a Taylor Diagram series object of data points:
-       standard deviation, correlation coefficient, and RMSE from
+       standard deviation, correlation coefficient from
        MET output file.
     """
 
@@ -78,7 +64,7 @@ class TaylorDiagramSeries(Series):
     def _create_series_points(self) -> collections.namedtuple:
         """
            Subset the MET output data into an individual series consisting of values of standard
-           deviation, correlation coefficient, and RMSE (root mean square error).
+           deviation and correlation coefficient
 
            Args:
             Returns:
@@ -101,7 +87,6 @@ class TaylorDiagramSeries(Series):
         # retrieve the row of data corresponding to this current permutation/series
         fstdev_query = qstr + " & " + 'stat_name == "FSTDEV"'
         ostdev_query = qstr + " & " + 'stat_name == "OSTDEV"'
-        rmse_query = qstr + " & " + 'stat_name == "RMSE"'
         corr_query = qstr + " & " + 'stat_name == "PR_CORR"'
 
         fstdev_results = self.subsetted_df.query(fstdev_query)['stat_value'].values[0]
@@ -109,11 +94,10 @@ class TaylorDiagramSeries(Series):
 
         # for the stdev, pick the max value between fstdev and ostdev
         stdev_results = max(fstdev_results, ostdev_results)
-        rmse_results = self.subsetted_df.query(rmse_query)['stat_value'].values[0]
         corr_results = self.subsetted_df.query(corr_query)['stat_value'].values[0]
 
         # Create a named tuple to return
-        TaylorStats = namedtuple('TaylorStats', ['stdev', 'rmse', 'pr_corr'])
-        series_stats = TaylorStats(stdev=stdev_results, rmse=rmse_results, pr_corr=corr_results)
+        TaylorStats = namedtuple('TaylorStats', ['fstdev', 'ostdev', 'pr_corr'])
+        series_stats = TaylorStats(fstdev=fstdev_results, ostdev=ostdev_results, pr_corr=corr_results)
 
         return series_stats
