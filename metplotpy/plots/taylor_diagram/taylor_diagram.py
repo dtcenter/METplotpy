@@ -17,6 +17,8 @@ import mpl_toolkits.axisartist.grid_finder as gf
 import numpy as np
 import yaml
 import pandas as pd
+
+import series
 from plots.base_plot import BasePlot
 import plots.util as util
 from taylor_diagram_config import TaylorDiagramConfig
@@ -113,13 +115,38 @@ class TaylorDiagram(BasePlot):
             series_list.append(series_obj)
         return series_list
 
+    def _get_max_std(self) -> float:
+        """
+           Search the list of series objects (self.series_list) and find the maximum standard deviation
+           (either FSTDEV or OSTDEV).
+
+           Args:
+
+           Returns:
+               max_std: The normalized maximum standard deviation (OSTDEV or FSTDEV)
+                        amongst all the series objects.
+        """
+
+
+        for idx, series in enumerate(self.series_list):
+            if idx == 0:
+                cur = running_max = max(series.series_points.fstdev, series.series_points.ostdev)
+            else:
+                cur = max(series.series_points.fstdev, series.series_points.ostdev)
+            if cur > running_max:
+                # keep track of the corresponding ostdev value for normalizing the stdev.
+                corresponding_ostdev = series.series_points.ostdev
+                corresponding_fstdev = series.series_points.fstdev
+                running_max = cur
+
+
+        return corresponding_fstdev/corresponding_ostdev
+
     def _create_figure(self) -> None:
         """
            Generate a Taylor diagram in Matplotlib, using the code from
            Yannick Copin <yannick.copin@laposte.net>:
            https://gist.github.com/ycopin/3342888
-
-
 
            Args:
 
@@ -130,33 +157,33 @@ class TaylorDiagram(BasePlot):
         tr = PolarAxes.PolarTransform()
 
         # value of the reference standard deviation
-        refstd: float = 1.0
-        srange: tuple = (0, 1.5)
+        refstd = 1.0
+        stdev_range = (0, 1.5)
 
         # Correlation labels
-        rlocs: np.array = np.array([0, 0.2, 0.4, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1])
+        rlocs = np.array([0, 0.2, 0.4, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1])
 
         # Create diagram of positive correlations
         pos_correlation_only: bool = self.config_obj.values_of_corr
         if pos_correlation_only:
-            tmax: float = np.pi / 2
+            tick_max: float = np.pi / 2
         else:
             # create diagram of positive and negative correlations
-            tmax: float = np.pi
+            tick_max = np.pi
             rlocs = np.concatenate((-rlocs[:0:-1], rlocs))
 
         # Convert to polar angles
-        tlocs: float = np.arccos(rlocs)
-        gl1 = gf.FixedLocator(tlocs)
-        tf1 = gf.DictFormatter(dict(zip(tlocs, map(str, rlocs))))
+        tick_locations: float = np.arccos(rlocs)
+        gl1 = gf.FixedLocator(tick_locations)
+        tf1 = gf.DictFormatter(dict(zip(tick_locations, map(str, rlocs))))
 
         # Standard deviation axis exent, in units of reference stddev
-        smin: float = srange[0] * refstd
-        smax: float = srange[1] * refstd
+        stdev_min: float = stdev_range[0] * refstd
+        stdev_max: float = stdev_range[1] * refstd
 
         ghelper = fa.GridHelperCurveLinear(
             tr,
-            extremes=(0, tmax, smin, smax),
+            extremes=(0, tick_max, stdev_min, stdev_max),
             grid_locator1=gl1, tick_formatter1=tf1)
 
         fig = plt.figure()
@@ -188,7 +215,7 @@ class TaylorDiagram(BasePlot):
         ax.axis["right"].major_ticklabels.set_axis_direction(
             "bottom" if pos_correlation_only else "left")
 
-        if smin:
+        if stdev_min:
             ax.axis["bottom"].toggle(ticklabels=False, label=False)
         else:
             # unused
@@ -199,28 +226,46 @@ class TaylorDiagram(BasePlot):
 
         # Add reference point and stddev contour
         l, = ax.plot([0], refstd, marker='o', color="black", markerfacecolor="none", markersize=5, ls=':', label='_')
-        t = np.linspace(0, tmax)
+        t = np.linspace(0, tick_max)
         r = np.zeros_like(t) + refstd
         ax.plot(t, r, 'k--', label='_')
 
         # add contours
-        rs, ts = np.meshgrid(np.linspace(smin, smax), np.linspace(0, tmax))
-
+        rs, ts = np.meshgrid(np.linspace(stdev_min, stdev_max), np.linspace(0, tick_max))
         # compute centered RMS difference
         rms: float = np.sqrt(refstd ** 2 + rs ** 2 - 2 * refstd * rs * np.cos(ts))
         levels = 5
-        contours = ax.contour(ts, rs, rms, levels, colors='darkgreen', linestyles=':', alpha=0.9)
-        ax.clabel(contours, inline=True, fontsize=8, fmt='%.1f', colors='k')
+        if self.config_obj.show_gamma:
+            contours = ax.contour(ts, rs, rms, levels, colors='darkgreen', linestyles=':', alpha=0.9)
+            ax.clabel(contours, inline=True, fontsize=8, fmt='%.1f', colors='k')
 
-        # standard deviation lines
-        draw_gamma = self.config_obj.show_gamma
-        if draw_gamma:
-            # draw the standard deviation lines
-            maxsd = 1.5
+        legends_list = self.config_obj.user_legends
+        for series in self.series_list:
+            series_idx = series.series_order
+            stdev = series.series_points.fstdev/series.series_points.ostdev
+            correlation = series.series_points.pr_corr
+            marker = self.config_obj.marker_list[series_idx]
+            marker_colors = self.config_obj.colors_list[series_idx]
+            ax.plot(np.arccos(correlation), stdev, marker=marker, ms=10, ls='',
+                    color=marker_colors,label=legends_list[series_idx] )
+
+
+            # Add a figure legend
+            # fig.legend(dia.samplePoints,
+            #        [p.get_label() for p in dia.samplePoints],
+            #        numpoints=1, prop=dict(size='small'), loc='upper right')
+            # fig.legend(prop=dict(size='small'), loc='upper center', bbox_to_anchor=(0.5, 0.05), ncol=3)
+            fig.legend(bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y), loc='upper center',
+                   ncol=self.config_obj.legend_ncol,
+                   prop={'size': self.config_obj.legend_size},
+                   frameon=self.config_obj.draw_box)
+
 
         plt.plot()
         # plt.show()
         plt.savefig(self.config_obj.output_image)
+
+
 
 
 def main(config_filename=None):
