@@ -45,7 +45,7 @@ class TaylorDiagramConfig(Config):
         self.marker_list = self._get_markers()
         # self.linewidth_list = self._get_linewidths()
         # self.linestyles_list = self._get_linestyles()
-        self.user_legends = self._get_user_legends("Model XYZ")
+        self.user_legends = self._get_user_legends("")
         self.plot_units = self.get_config_value('plot_units')
         self.plot_resolution = self.get_config_value('plot_res')
         self.show_gamma = self.get_config_value('taylor_show_gamma')
