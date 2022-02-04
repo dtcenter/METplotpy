@@ -287,13 +287,13 @@ class PerformanceDiagram(BasePlot):
                 if series.marker == '.' or series.marker == 'o':
                     plt.plot(sr_points, pody_points, linestyle=series.linestyle,
                              linewidth=linewidth,
-                             color=series.color, marker=series.marker,
+                             color=self.config_obj.colors_list[i], marker=series.marker,
                              label=series.user_legends,
                              alpha=0.5, ms=9)
                 else:
                     plt.plot(sr_points, pody_points, linestyle=series.linestyle,
                              linewidth=linewidth,
-                             color=series.color, marker=series.marker,
+                             color=self.config_obj.colors_list[i], marker=series.marker,
                              label=series.user_legends,
                              alpha=0.5, ms=6)
 
@@ -317,7 +317,7 @@ class PerformanceDiagram(BasePlot):
                     # elinewidth explicitly set it to the current linewidth of this
                     # series line
                     plt.errorbar(sr_points, pody_points, yerr=pody_errs,
-                                 color=series.color, ecolor=None, ms=1, capsize=2,
+                                 color=self.config_obj.colors_list[i], ecolor=None, ms=1, capsize=2,
                                  elinewidth=self.config_obj.linewidth_list[i])
 
         # example settings, legend is outside of plot along the bottom
