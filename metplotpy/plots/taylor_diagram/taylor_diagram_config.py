@@ -7,7 +7,6 @@ Holds values set in the Taylor Diagram configuration files
 
 __author__ = "Minna Win"
 
-import re
 from plots.config import Config
 import plots.constants as constants
 
@@ -190,11 +189,17 @@ class TaylorDiagramConfig(Config):
         self.grid_color = self.get_config_value('grid_col')
         self.grid_linewidth = self.get_config_value('grid_linewidth')
 
-        # captions
+        # Caption settings
+        self.caption = self.get_config_value('plot_caption')
+        mv_caption_weight = self.get_config_value('caption_weight')
+        self.caption_color = self.get_config_value('caption_col')
         self.plot_caption = self.get_config_value('plot_caption')
-        # plain text, bold, italic, bold italic are choices in METviewer UI
-        self.caption_weight = self.get_config_value('caption_weight')
 
+        # Need to use a combination of Matplotlib's font weight and font style to
+        # re-create the METviewer caption weight. Use the
+        # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
+        # what was requested in METviewer
+        self.caption_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_caption_weight]
 
 
     def _get_plot_disp(self) -> list:
