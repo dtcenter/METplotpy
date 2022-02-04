@@ -57,7 +57,7 @@ class TaylorDiagramSeries(Series):
         # based on this to simplify the query string for subsetting based on
         # the series val names and variable permutations.
         fcst_var_val = self.fcst_vars_1
-        subsetted_df = df_by_columns[df_by_columns['fcst_var'] == str(fcst_var_val[0])]
+        subsetted_df = df_by_columns[df_by_columns['fcst_var'] == str(fcst_var_val)]
 
         return subsetted_df
 
