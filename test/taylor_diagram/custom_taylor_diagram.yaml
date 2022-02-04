@@ -1,3 +1,5 @@
 ---
 # custom config file to override some of the settings in the
 # default config file taylor_diagram_defaults.yaml
+stat_input: ./plot_dlwr_sample.data
+plot_filename: ./plot_dlwr_sample.png
