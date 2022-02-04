@@ -2,23 +2,25 @@
 Class Name: taylor_diagram.py
 
 Generates a Taylor diagram using the Matplotlib code from
-Yannick Copin <yannick.copin@laposte.net>:https://gist.github.com/ycopin/3342888
+Yannick Copin <yannick.copin@laposte.net>
 (with some slight modifications) for creating the axis and plot's look-and-feel.
-Incorporated with the functionality originally found in the R implementation used by
+Incorporated to support the functionality originally provided by the R implementation used by
 METviewer.
  """
 __author__ = 'Minna Win'
 
 import warnings
 import matplotlib.pyplot as plt
+import numpy
+import pandas
+from matplotlib.font_manager import FontProperties
 from matplotlib.projections import PolarAxes
 import mpl_toolkits.axisartist.floating_axes as fa
 import mpl_toolkits.axisartist.grid_finder as gf
 import numpy as np
 import yaml
 import pandas as pd
-
-import series
+import constants
 from plots.base_plot import BasePlot
 import plots.util as util
 from taylor_diagram_config import TaylorDiagramConfig
@@ -30,7 +32,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 class TaylorDiagram(BasePlot):
     """  Generates a Taylor diagram
          A setting is over-ridden in the default configuration file if
-         it is defined in the custom configuration file.
+         that same setting is defined in the custom configuration file.
 
     """
 
@@ -86,21 +88,18 @@ class TaylorDiagram(BasePlot):
         return df
 
 
-    def _create_series(self, input_df):
+    def _create_series(self, input_df: pandas.DataFrame) -> list:
         """
-           Generate all the series objects that are to be displayed as specified by the plot_disp
-           setting in the config file.  The points are all ordered by datetime.  Each series object
-           is represented by a line in the performance diagram, so they also contain information
-           for line width, line- and marker-colors, line style, and other plot-related/
-           appearance-related settings (which were defined in the config file).
+           Generate all the series objects that are to be plotted.  Each series corresponds to
+           a permutation of all the series_val_1 variables.
 
            Args:
 
-               :param input_df:  pandas dataframe representation of the input data that was created
+               @param input_df:  pandas dataframe representation of the input data that was created
                                  by MET.
 
            Returns:
-               a list of series objects that are to be displayed
+               a list of series objects (as named tuples) that represent the values to be plotted.
 
 
         """
@@ -115,32 +114,6 @@ class TaylorDiagram(BasePlot):
             series_list.append(series_obj)
         return series_list
 
-    def _get_max_std(self) -> float:
-        """
-           Search the list of series objects (self.series_list) and find the maximum standard deviation
-           (either FSTDEV or OSTDEV).
-
-           Args:
-
-           Returns:
-               max_std: The normalized maximum standard deviation (OSTDEV or FSTDEV)
-                        amongst all the series objects.
-        """
-
-
-        for idx, series in enumerate(self.series_list):
-            if idx == 0:
-                cur = running_max = max(series.series_points.fstdev, series.series_points.ostdev)
-            else:
-                cur = max(series.series_points.fstdev, series.series_points.ostdev)
-            if cur > running_max:
-                # keep track of the corresponding ostdev value for normalizing the stdev.
-                corresponding_ostdev = series.series_points.ostdev
-                corresponding_fstdev = series.series_points.fstdev
-                running_max = cur
-
-
-        return corresponding_fstdev/corresponding_ostdev
 
     def _create_figure(self) -> None:
         """
@@ -148,32 +121,42 @@ class TaylorDiagram(BasePlot):
            Yannick Copin <yannick.copin@laposte.net>:
            https://gist.github.com/ycopin/3342888
 
+           Plot the normalized OSTDEV and PR_CORR values from output created by MET.
+
            Args:
 
            Returns:
 
         """
 
-        tr = PolarAxes.PolarTransform()
-
-        # value of the reference standard deviation
+        # value of the reference standard deviation,etc.
+        # use these values as we are normalizing the standard deviation.
         refstd = 1.0
-        stdev_range = (0, 1.5)
+        stdev_min = 0
+        radmax = 1.5
+        stdev_max = radmax * refstd
+        stdev_range = (stdev_min, stdev_max)
+
+        fig = plt.figure(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
+
+        tr = PolarAxes.PolarTransform()
 
         # Correlation labels
         rlocs = np.array([0, 0.2, 0.4, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1])
 
         # Create diagram of positive correlations
-        pos_correlation_only: bool = self.config_obj.values_of_corr
+        pos_correlation_only = self.config_obj.values_of_corr
         if pos_correlation_only:
-            tick_max: float = np.pi / 2
+            # positive correlation only
+            tick_max = np.pi / 2
         else:
             # create diagram of positive and negative correlations
             tick_max = np.pi
             rlocs = np.concatenate((-rlocs[:0:-1], rlocs))
 
         # Convert to polar angles
-        tick_locations: float = np.arccos(rlocs)
+        tick_locations: numpy.array = np.arccos(rlocs)
+        # positions
         gl1 = gf.FixedLocator(tick_locations)
         tf1 = gf.DictFormatter(dict(zip(tick_locations, map(str, rlocs))))
 
@@ -186,13 +169,9 @@ class TaylorDiagram(BasePlot):
             extremes=(0, tick_max, stdev_min, stdev_max),
             grid_locator1=gl1, tick_formatter1=tf1)
 
-        fig = plt.figure()
         rect = 111
         ax = fa.FloatingSubplot(fig, rect, grid_helper=ghelper)
         fig.add_subplot(ax)
-
-        # Add a grid of the standard deviation rays
-        ax.grid(True, color='blue', ls=":")
 
         #
         # Adjust axes
@@ -213,59 +192,96 @@ class TaylorDiagram(BasePlot):
         ax.axis["right"].set_axis_direction("top")
         ax.axis["right"].toggle(ticklabels=True)
         ax.axis["right"].major_ticklabels.set_axis_direction(
-            "bottom" if pos_correlation_only else "left")
+            "bottom")
+        ax.axis["right"].label.set_text("Standard deviation")
+        ax.axis["bottom"].toggle(ticklabels=False, label=False)
 
-        if stdev_min:
-            ax.axis["bottom"].toggle(ticklabels=False, label=False)
-        else:
-            # unused
-            ax.axis["bottom"].set_visible(False)
+        # Graphical axes
+        self._ax = ax
+        # Polar coordinates
+        self.ax = ax.get_aux_axes(tr)
 
-        # Graphical axes, polar coordinates
-        ax = ax.get_aux_axes(tr)
+        # Add a grid of the standard deviation rays
+        self._ax.grid(True, color='blue', ls=":")
 
         # Add reference point and stddev contour
-        l, = ax.plot([0], refstd, marker='o', color="black", markerfacecolor="none", markersize=5, ls=':', label='_')
+        l, = self.ax.plot([0], refstd, marker='o', color="black", markerfacecolor="none", markersize=5, ls=':', label='_')
         t = np.linspace(0, tick_max)
         r = np.zeros_like(t) + refstd
-        ax.plot(t, r, 'k--', label='_')
+        self.ax.plot(t, r, 'k--', label='_')
 
-        # add contours
+        # add RMSE contours
         rs, ts = np.meshgrid(np.linspace(stdev_min, stdev_max), np.linspace(0, tick_max))
+
         # compute centered RMS difference
-        rms: float = np.sqrt(refstd ** 2 + rs ** 2 - 2 * refstd * rs * np.cos(ts))
+        rms = np.sqrt(refstd ** 2 + rs ** 2 - 2 * refstd * rs * np.cos(ts))
         levels = 5
         if self.config_obj.show_gamma:
-            contours = ax.contour(ts, rs, rms, levels, colors='darkgreen', linestyles=':', alpha=0.9)
-            ax.clabel(contours, inline=True, fontsize=8, fmt='%.1f', colors='k')
+            contours = self.ax.contour(ts, rs, rms, levels, colors="#cccccc", linestyles='-', alpha=0.9)
+            self.ax.clabel(contours, inline=True, fontsize=8, fmt='%.1f', colors='k')
 
         legends_list = self.config_obj.user_legends
         for series in self.series_list:
             series_idx = series.series_order
+
+            # normalize the OSTDEV: ostdev/fstdev
             stdev = series.series_points.fstdev/series.series_points.ostdev
             correlation = series.series_points.pr_corr
             marker = self.config_obj.marker_list[series_idx]
             marker_colors = self.config_obj.colors_list[series_idx]
-            ax.plot(np.arccos(correlation), stdev, marker=marker, ms=10, ls='',
-                    color=marker_colors,label=legends_list[series_idx] )
 
+            # Only plot this series if plot_disp setting is True
+            if self.config_obj.plot_disp[series_idx]:
+                self.ax.plot(np.arccos(correlation), stdev, marker=marker, ms=10, ls='',
+                             color=marker_colors, label=legends_list[series_idx])
 
-            # Add a figure legend
-            # fig.legend(dia.samplePoints,
-            #        [p.get_label() for p in dia.samplePoints],
-            #        numpoints=1, prop=dict(size='small'), loc='upper right')
-            # fig.legend(prop=dict(size='small'), loc='upper center', bbox_to_anchor=(0.5, 0.05), ncol=3)
-            fig.legend(bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y), loc='upper center',
+        # use FontProperties to re-create the weights used in METviewer
+        fontobj = FontProperties()
+        font_title = fontobj.copy()
+        font_title.set_size(self.config_obj.title_size)
+        style = self.config_obj.title_weight[0]
+        wt = self.config_obj.title_weight[1]
+        font_title.set_style(style)
+        font_title.set_weight(wt)
+
+        plt.title(self.config_obj.title,
+                      fontproperties=font_title,
+                      color=constants.DEFAULT_TITLE_COLOR,
+                      pad=28)
+
+        # Plot the caption, leverage FontProperties to re-create the 'weights' menu in
+        # METviewer (i.e. use a combination of style and weight to create the bold italic
+        # caption weight in METviewer)
+        fontobj = FontProperties()
+        font = fontobj.copy()
+        font.set_size(self.config_obj.caption_size)
+        style = self.config_obj.caption_weight[0]
+        wt = self.config_obj.caption_weight[1]
+        font.set_style(style)
+        font.set_weight(wt)
+        plt.figtext(self.config_obj.caption_align, self.config_obj.caption_offset, self.config_obj.plot_caption,
+                    fontproperties=font, color=self.config_obj.caption_color)
+
+        # Add a figure legend
+        fig.legend(bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y), loc='upper center',
                    ncol=self.config_obj.legend_ncol,
                    prop={'size': self.config_obj.legend_size},
                    frameon=self.config_obj.draw_box)
 
-
+        plt.tight_layout()
         plt.plot()
-        # plt.show()
-        plt.savefig(self.config_obj.output_image)
 
-
+        # Save the figure, based on whether we are displaying only positive correlations or all
+        # correlations.
+        if pos_correlation_only:
+            # Setting the bbox_inches keeps the legend box always within the plot boundaries.  This *may* result
+            # in a distorted plot.
+            plt.savefig(self.config_obj.output_image, dpi=self.config_obj.plot_resolution, bbox_inches="tight")
+        else:
+            # setting bbox_inches causes a loss in the title, especially when there are numerous legend
+            # items.  The legend inset 'y' value will likely need to
+            # be modified to keep all legend items on the plot.
+            plt.savefig(self.config_obj.output_image, dpi=self.config_obj.plot_resolution)
 
 
 def main(config_filename=None):
@@ -295,7 +311,6 @@ def main(config_filename=None):
             print(exc)
 
     try:
-        # create a performance diagram
         TaylorDiagram(docs)
 
     except ValueError as value_error:
