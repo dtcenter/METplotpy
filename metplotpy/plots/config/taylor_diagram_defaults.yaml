@@ -9,7 +9,7 @@ stat_input: ../../../test/taylor_diagram/plot_20211217_180054.data
 # output file/plot
 plot_filename: ./plot_20211217_180054.png
 
-title: Taylor Diagram ("Default title")
+title: Downward Longwave Radiative Flux Taylor Diagram
 title_weight: 4
 title_size: 1.8
 
@@ -114,7 +114,7 @@ sync_axes: False
 log_y1: False
 log_y2: False
 
-# used in the calculation of confidence intervals
+# used in the calculation of confidence intervals but not used here
 variance_inflation_factor: False
 
 series_type:
@@ -136,7 +136,7 @@ lwd:
   - 5
   - 5
 
-# ---end of unused or unsupported settings----
+
 
 # x-axis labels
 xaxis: Standard Deviation
@@ -162,14 +162,16 @@ ylab_weight: 1
 ytlab_orient: 1
 ytlab_size: 1.3
 
+# ---end of unused or unsupported settings----
+
 # colors for each model, hexadecimal or color name
 colors:
   - "#ff0000FF"
   - "#ffd400FF"
   - "#55ff00FF"
-  - "#00ff7FF"
-  - "00aaffFF"
-  - "1500ffFF"
+  - "#00ffff"
+  - "#00aaffFF"
+  - "#1500ffFF"
   - "#7f00ffFF"
 
 # legend settings
@@ -182,9 +184,13 @@ user_legend:
   - ""
   - ""
 legend_box: 'box'
+
+
 legend_inset:
-  x: 0.0
-  y: -0.25
+  x: 0.1
+  y: -.1
+  # use this value for taylor_voc =False
+  #y: 0
 legend_ncol: 4
 legend_size: 0.8
 
@@ -193,10 +199,10 @@ plot_caption: "Caption -Taylor Diagram default settings"
 caption_weight: 4
 caption_col: "#333333"
 # relative magnification of caption size
-caption_size: "0.8" # 1.3 in performance diagram
+caption_size: "8"
 # axis perpendicular location adjustment
-# (up/down 3.8 is max value, 2.9 is min value)
-caption_offset: 3
+# (up/down)
+caption_offset: 0
 # axis parallel location adjustment (left/right)
 caption_align: 0 # -.1 in performance diagram
 
@@ -207,19 +213,24 @@ caption_align: 0 # -.1 in performance diagram
 # Draw the standard deviation arcs on the diagram
 taylor_show_gamma: True
 # Show only positive values of correlation
-taylor_voc: True
+taylor_voc: False
 
-# Available choices are: solid line: "-", dashed line: "--", dotted line: ":"
+# These are expected/used by METviewer but cannot
+# be applied to the underlying Taylor diagram plot. Grid
+# linestyle and colors cannot be changed.
 grid_lty: "--"
 # Hexadecimal value or color name
 grid_col: "#cccccc"
 grid_linewidth: 1
-# Used by METviewer
 grid_x: "listX"
+
+# These can be applied to the Taylor diagram
+# to determine the size and resolution of the plot.
 plot_width: 11
-plot_height: 8.5
+plot_height: 9
 # plot resolution in dpi (dots per inch)
 plot_res: 72
+
 # other option is mm (millimeters)
 plot_units: in
 # only png plots are generated, this setting is expected by METviewer
@@ -255,7 +266,7 @@ series_order:
 # Other supported symbols: small circle = ".", ring/hexagon = "H", rhombus/diamond="d"
 series_symbols:
   # point
-  - "."
+  - "d"
   - "."
   - "."
   - "."
@@ -283,8 +294,6 @@ show_signif:
   - 'False'
   - 'False'
   - 'False'
-
-
 
 
 
