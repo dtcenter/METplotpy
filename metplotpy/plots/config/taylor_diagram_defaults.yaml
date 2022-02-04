@@ -18,8 +18,7 @@ title_size: 1.8
 # setting
 event_equal: False
 
-fcst_var_val_1:
-  - DLWRF
+fcst_var_val_1: DLWRF
 series_val_1:
   # series_var_1
   model:
