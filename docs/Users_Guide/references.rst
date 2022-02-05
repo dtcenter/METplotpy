@@ -17,7 +17,7 @@ References
 
 .. _Taylor:
 | Taylor, K. E., 2001. Summarizing multiple aspects of model performance
-| in a single diagram. Journal of Geophysical Research, 106(D7),
-| 7183-7192.
-| doi: https://doi.org/10.1029/2000JD900719
+|    in a single diagram. Journal of Geophysical Research, 106(D7),
+|    7183-7192.
+|    doi: https://doi.org/10.1029/2000JD900719
 
