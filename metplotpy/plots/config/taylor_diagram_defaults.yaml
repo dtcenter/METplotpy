@@ -1,24 +1,74 @@
 ---
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# "Default" settings specific to the Taylor diagram plot
+# "Default" settings for the Taylor diagram plot
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-# input file
-stat_input: ../../../test/taylor_diagram/plot_20211217_180054.data
+# caption settings
+plot_caption: "Caption -Taylor Diagram default settings"
+caption_weight: 4
+caption_col: "#333333"
+# relative magnification of caption size
+caption_size: "8"
+# axis perpendicular location adjustment
+# (up/down)
+caption_offset: 0
+# axis parallel location adjustment (left/right)
+caption_align: 0 # -.1 in performance diagram
 
-# output file/plot
-plot_filename: ./plot_20211217_180054.png
-
-title: Downward Longwave Radiative Flux Taylor Diagram
-title_weight: 4
-title_size: 1.8
-
-# Event equalization to check for missing data
-# not applicable for this plot, but METviewer expects this
-# setting
-event_equal: False
+# colors for each model, hexadecimal or color name
+colors:
+  - "#ff0000FF"
+  - "#ffd400FF"
+  - "#55ff00FF"
+  - "#00ffff"
+  - "#00aaffFF"
+  - "#1500ffFF"
+  - "#7f00ffFF"
 
 fcst_var_val_1: DLWRF
+
+legend_box: 'box'
+
+legend_inset:
+  x: 0.1
+  y: -.1
+  # use this value for taylor_voc =False
+  #y: 0
+legend_ncol: 4
+legend_size: 0.8
+
+# Turn on/off plotting of specific points/series
+plot_disp:
+  - True
+  - True
+  - True
+  - True
+  - True
+  - True
+  - True
+
+# output file/plot
+plot_filename: ./taylor_diagram_default.png
+
+# These can be applied to the Taylor diagram
+# to determine the size and resolution of the plot.
+plot_width: 11
+plot_height: 9
+# plot resolution in dpi (dots per inch)
+plot_res: 72
+
+# series symbols
+# Other supported symbols: small circle = ".", ring/hexagon = "H", rhombus/diamond="d"
+series_symbols:
+  # point
+  - "d"
+  - "."
+  - "."
+  - "."
+  - "."
+  - "."
+  - "."
+
 series_val_1:
   # series_var_1
   model:
@@ -33,6 +83,33 @@ series_val_1:
     - Sioux_Falls
     - Table_Mountain
 
+# input file
+stat_input: ../../../test/taylor_diagram/plot_dlwr_sample.data
+
+# Draw the standard deviation arcs on the diagram
+taylor_show_gamma: True
+# Show only positive values of correlation
+taylor_voc: False
+
+title: Downward Longwave Radiative Flux Taylor Diagram
+title_weight: 4
+title_size: 1.8
+
+# legend settings
+user_legend:
+  - ""
+  - ""
+  - ""
+  - ""
+  - ""
+  - ""
+  - ""
+
+
+#
+# UNSUPPORTED or UNUSED settings BUT REQUIRED/USED by METviewer
+#  Do not modify the settings below this section
+#
 
 # Unsupported actions by Matplotlib.
 
@@ -92,13 +169,12 @@ mar:
 # applicable for Matplotlib plotting.
 create_html: 'False'
 
-# end of settings that are unsupported due to limitations in Matplotlib
 
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# ---unused or unsupported settings---
-# These settings are not relevant to the Taylor diagram,
-# or they are unsupported (but METviewer is expecting these settings)
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# Event equalization to check for missing data
+# not applicable for this plot, but METviewer expects this
+# setting
+event_equal: False
+
 dump_points_1: False
 dump_points_2: False
 # not relevant since there aren't any intermediate files being
@@ -136,7 +212,6 @@ lwd:
   - 5
 
 
-
 # x-axis labels
 xaxis: Standard Deviation
 xlab_size:  1
@@ -161,58 +236,12 @@ ylab_weight: 1
 ytlab_orient: 1
 ytlab_size: 1.3
 
-# ---end of unused or unsupported settings----
 
-# colors for each model, hexadecimal or color name
-colors:
-  - "#ff0000FF"
-  - "#ffd400FF"
-  - "#55ff00FF"
-  - "#00ffff"
-  - "#00aaffFF"
-  - "#1500ffFF"
-  - "#7f00ffFF"
-
-# legend settings
-user_legend:
-  - ""
-  - ""
-  - ""
-  - ""
-  - ""
-  - ""
-  - ""
-legend_box: 'box'
-
-
-legend_inset:
-  x: 0.1
-  y: -.1
-  # use this value for taylor_voc =False
-  #y: 0
-legend_ncol: 4
-legend_size: 0.8
-
-# caption settings
-plot_caption: "Caption -Taylor Diagram default settings"
-caption_weight: 4
-caption_col: "#333333"
-# relative magnification of caption size
-caption_size: "8"
-# axis perpendicular location adjustment
-# (up/down)
-caption_offset: 0
-# axis parallel location adjustment (left/right)
-caption_align: 0 # -.1 in performance diagram
 
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # The underlying Taylor diagram (grid lines, etc.)
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #
-# Draw the standard deviation arcs on the diagram
-taylor_show_gamma: True
-# Show only positive values of correlation
-taylor_voc: False
 
 # These are expected/used by METviewer but cannot
 # be applied to the underlying Taylor diagram plot. Grid
@@ -223,12 +252,6 @@ grid_col: "#cccccc"
 grid_linewidth: 1
 grid_x: "listX"
 
-# These can be applied to the Taylor diagram
-# to determine the size and resolution of the plot.
-plot_width: 11
-plot_height: 9
-# plot resolution in dpi (dots per inch)
-plot_res: 72
 
 # other option is mm (millimeters)
 plot_units: in
@@ -243,14 +266,6 @@ plot_ci:
   - None
   - None
   - None
-plot_disp:
-  - True
-  - True
-  - True
-  - True
-  - True
-  - True
-  - True
 
 series_order:
   - 1
@@ -260,18 +275,6 @@ series_order:
   - 5
   - 6
   - 7
-
-# series symbols
-# Other supported symbols: small circle = ".", ring/hexagon = "H", rhombus/diamond="d"
-series_symbols:
-  # point
-  - "d"
-  - "."
-  - "."
-  - "."
-  - "."
-  - "."
-  - "."
 
 con_series:
 # Only useful for line plots where consecutive points may be interspersed with NA values
@@ -293,9 +296,6 @@ show_signif:
   - 'False'
   - 'False'
   - 'False'
-
-
-
 
 
 
