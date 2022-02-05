@@ -1,0 +1,3 @@
+# minimal yaml file
+stat_input: path-to/plot_dlwr_sample.data
+plot_filename: path-to/plot_dlwr_sample.png

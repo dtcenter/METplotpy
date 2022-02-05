@@ -86,3 +86,15 @@ def test_neg_and_pos_corr_images_match():
     # Clean up
     os.remove(os.path.join(path, plot_file))
 
+def test_custom_plot_exists():
+    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    test_config_filename = "custom_taylor_diagram.yaml"
+    td.main(test_config_filename)
+
+    # Verify that a plot was generated
+    plot_file = "../../docs/Users_Guide/taylor_diagram_custom.png"
+    path = os.getcwd()
+    assert os.path.isfile(plot_file) == True
+
+    # Clean up
+    # os.remove(os.path.join(path, plot_file))
