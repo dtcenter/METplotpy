@@ -89,8 +89,17 @@ class TaylorDiagramSeries(Series):
         ostdev_query = qstr + " & " + 'stat_name == "OSTDEV"'
         corr_query = qstr + " & " + 'stat_name == "PR_CORR"'
 
-        fstdev_results = self.subsetted_df.query(fstdev_query)['stat_value'].values[0]
-        ostdev_results = self.subsetted_df.query(ostdev_query)['stat_value'].values[0]
+
+        # This works in stand-alone, but not within METviewer
+        # fstdev_row = self.subsetted_df.query(fstdev_query)['stat_value'].values[0]
+        # Break up the filtering/subsetting into simpler statements, as METviewer is having
+        # issues with chaining pandas commands.
+        fstdev_row: pandas.Series = self.subsetted_df.query(fstdev_query)
+        # Don't use fstdev_row['stat_value'].values[0], as the values[0] syntax may
+        # cause issues within METviewer. *Note*: This syntax works for stand-alone/command line invocation.
+        fstdev_results = fstdev_row['stat_value'].values.min()
+        ostdev_row: pandas.Series = self.subsetted_df.query(ostdev_query)
+        ostdev_results = ostdev_row['stat_value'].values.min()
 
         # for the stdev, pick the max value between fstdev and ostdev
         stdev_results = max(fstdev_results, ostdev_results)
