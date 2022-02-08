@@ -70,6 +70,7 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    box
    bar
    ens_ss
+   contour
    performance_diagram
    reliability_diagram
    roc_diagram

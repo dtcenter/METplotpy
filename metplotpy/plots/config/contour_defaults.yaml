@@ -1,23 +1,31 @@
+add_color_bar: 'True'
+add_contour_overlay: 'True'
+alpha: 0.05
+
 caption_align: 0.0
 caption_col: '#333333'
 caption_offset: 3.0
 caption_size: 0.8
 caption_weight: 1
 cex: 1
+circular_block_bootstrap: 'True'
+cl_step: 0.05
+color_palette: green_red
 colors:
-- '#ff0000'
-- '#8000ff'
-con_series:
-- 1
-- 1
+- '#000000'
+
+contour_intervals: 10
 create_html: 'False'
 dump_points_1: 'False'
-fixed_vars_vals_input: {}
-grid_col: '#cccccc'
-grid_lty: 3
-grid_lwd: 1
-grid_on: 'True'
-grid_x: listX
+equalize_by_indep: 'False'
+event_equal: 'False'
+fcst_var_val_1: {}
+
+indy_label: []
+indy_vals: []
+
+indy_var: ''
+list_stat_1: []
 legend_box: o
 legend_inset:
   x: 0.0
@@ -38,12 +46,10 @@ mgp:
 num_iterations: 1
 num_threads: -1
 plot_caption: ''
-plot_ci:
-- std
-- std
+
 plot_disp:
 - 'True'
-- 'True'
+plot_filename: /tmp/contour.png
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -51,41 +57,26 @@ plot_type: png16m
 plot_units: in
 plot_width: 11.0
 random_seed: null
+reverse_x: 'False'
+reverse_y: 'False'
 series_line_style:
-- '-'
 - '-'
 series_line_width:
 - 1
-- 1
 series_order:
 - 1
-- 2
-series_symbols:
-- .
-- .
-series_type:
-- b
-- b
-series_val_1:
-  model:
-  - SREF
-  fcst_lev:
-  - P500
-  - P850
-show_nstats: 'True'
-show_signif:
-- 'False'
-- 'False'
-title: Simple ECLV plot for ECLV data
+
+series_val_1: {}
+
+stat_input: ../../../test/contour/contour.data
+title: test title
 title_align: 0.5
 title_offset: -2
 title_size: 1.4
 title_weight: 2.0
 user_legend: []
-variance_inflation_factor: 'False'
-vert_plot: 'False'
+
 xaxis: test x_label
-xaxis_reverse: 'False'
 xlab_align: 0.5
 xlab_offset: 2
 xlab_size: 1
@@ -96,6 +87,7 @@ xtlab_horiz: 0.5
 xtlab_orient: 1
 xtlab_perp: -0.75
 xtlab_size: 1
+
 yaxis_1: test y_label
 ylab_align: 0.5
 ylab_offset: -2
@@ -106,6 +98,3 @@ ytlab_horiz: 0.5
 ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
-
-stat_input: ./eclv.data
-plot_filename: ./eclv.png

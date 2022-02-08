@@ -176,6 +176,13 @@ class Line(BasePlot):
         # create a vertical plot if needed
         self._adjust_for_vertical(x_points_index)
 
+        # reverse xaxis if needed
+        if self.config_obj.xaxis_reverse is True:
+            if self.config_obj.vert_plot is True:
+                self.figure.update_yaxes(autorange="reversed")
+            else:
+                self.figure.update_xaxes(autorange="reversed")
+
         # placeholder for the number of stats
         n_stats = [0] * len(self.config_obj.indy_vals)
 
@@ -381,9 +388,7 @@ class Line(BasePlot):
                                  tickangle=self.config_obj.x_tickangle,
                                  tickfont={'size': self.config_obj.x_tickfont_size}
                                  )
-        # reverse xaxis if needed
-        if self.config_obj.xaxis_reverse is True:
-            self.figure.update_xaxes(autorange="reversed")
+
 
     def _add_yaxis(self) -> None:
         """
