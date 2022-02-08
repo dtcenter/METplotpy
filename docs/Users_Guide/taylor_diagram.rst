@@ -35,7 +35,7 @@ Sample Data
 ___________
 
 The sample data used to create these plots is available in the METplotpy
-repository, where the performance diagram scripts are located:
+repository, where the Taylor diagram scripts are located:
 
 *$METPLOTPY_SOURCE/METplotpy/test/taylor_diagram/dlwr_sample.data*
 
