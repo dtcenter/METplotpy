@@ -155,10 +155,9 @@ Copy this file to the working directory:
 		
   cp $METPLOTPY_SOURCE/METplotpy/test/taylor_diagram/minimal_taylor_diagram.yaml $WORKING_DIR/minimal_taylor_diagram.yaml
 
-Add the *stat_input* (input data) and *plot_filename*
-(output file/plot path) settings to the
-*$WORKING_DIR/minimal_taylor_diagram.yaml*
-file (anywhere below the comment block). The *stat_input* setting
+If the *stat_input* and *plot_filename* settings (output file/plot path) are missing, add
+these settings to the *$WORKING_DIR/minimal_taylor_diagram.yaml*
+file (anywhere below the comment block).  The *stat_input* setting
 explicitly indicates where the sample data and custom configuration
 files are located.  Set the *stat_input* to
 *$METPLOTPY_SOURCE/METplotpy/test/taylor_diagram/dlwr_sample.data* and set the
@@ -219,8 +218,8 @@ perform the following:
 
   .. image:: taylor_diagram_default.png
 
-  To generate a slightly modified, **customized** plot, re-run the above
-  command using the **custom_taylor_diagram.yaml** file:
+  To generate a slightly modified, **customized** plot, run the
+  command (below) using the **custom_taylor_diagram.yaml** file:
 
   .. code-block:: ini
 		
@@ -231,7 +230,7 @@ perform the following:
 * A **taylor_diagram_custom.png** output file will be created in
   the directory that was  specified in the *plot_filename* config setting
   in the **custom_taylor_diagram.yaml** config file.  This customized plot has a different
-  title text, title size, title font style, caption text, and different symbols than the default
+  output filename, title text, title size, title font style, caption text, and different symbols than the default
   plot, as shown below:
 
 .. image:: custom_taylor_diagram.png
