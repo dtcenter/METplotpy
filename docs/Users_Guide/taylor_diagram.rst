@@ -15,6 +15,7 @@ For more information on Taylor diagrams, please refer to the
 `METviewer documentation
 <https://metviewer.readthedocs.io/en/latest/Users_Guide/taylordiag.html>`_.
 
+Examples of Taylor diagrams are shown below.
 
 A Taylor diagram of sample Downward Longwave Radiative Flux (DLWR) data of only positive correlation
 values:
