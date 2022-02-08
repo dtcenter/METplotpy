@@ -226,10 +226,12 @@ perform the following:
 		
     python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/taylor_diagram/taylor_diagram.py $WORKING_DIR/custom_taylor_diagram.yaml
 
-  .. image:: taylor_diagram_custom.png
+
 
 * A **taylor_diagram_custom.png** output file will be created in
   the directory that was  specified in the *plot_filename* config setting
   in the **custom_taylor_diagram.yaml** config file.  This customized plot has a different
   title text, title size, title font style, caption text, and different symbols than the default
-  plot.
+  plot, as shown below:
+
+.. image:: custom_taylor_diagram.png
