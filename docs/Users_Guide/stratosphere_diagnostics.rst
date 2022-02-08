@@ -169,7 +169,7 @@ Perform the following:
 
     * polar_cap_meridional_mean_temp.png
 
-These plots correspond to the plots show above.
+These plots correspond to the plots shown above.
 
 
 
