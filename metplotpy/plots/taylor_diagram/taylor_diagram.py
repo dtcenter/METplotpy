@@ -10,6 +10,7 @@ METviewer.
 __author__ = 'Minna Win'
 
 import warnings
+import logging
 import matplotlib.pyplot as plt
 import numpy
 import pandas
@@ -59,14 +60,20 @@ class TaylorDiagram(BasePlot):
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
         # such as the criteria needed to subset the input dataframe.
-        self.series_list = self._create_series(self.input_df)
+        try:
+            self.series_list = self._create_series(self.input_df)
+        except:
+            logging.error("Error while creating Taylor series object")
 
         # create figure
         # pylint:disable=assignment-from-no-return
         # Need to have a self.figure that we can pass along to
         # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
-        self.figure = self._create_figure()
+        try:
+            self.figure = self._create_figure()
+        except:
+            logging.exception("Error when creating figure")
 
     def _read_input_data(self) -> pd.DataFrame:
         """
@@ -114,7 +121,6 @@ class TaylorDiagram(BasePlot):
             series_list.append(series_obj)
         return series_list
 
-
     def _create_figure(self) -> None:
         """
            Generate a Taylor diagram in Matplotlib, using the code from
@@ -135,7 +141,7 @@ class TaylorDiagram(BasePlot):
         stdev_min = 0
         radmax = 1.5
         stdev_max = radmax * refstd
-        stdev_range = (stdev_min, stdev_max)
+        # stdev_range = (stdev_min, stdev_max)
 
         fig = plt.figure(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
@@ -161,8 +167,12 @@ class TaylorDiagram(BasePlot):
         tf1 = gf.DictFormatter(dict(zip(tick_locations, map(str, rlocs))))
 
         # Standard deviation axis exent, in units of reference stddev
-        stdev_min: float = stdev_range[0] * refstd
-        stdev_max: float = stdev_range[1] * refstd
+
+        # DEBUG
+        # stdev_min: float = stdev_range[0] * refstd
+        # stdev_max: float = stdev_range[1] * refstd
+        stdev_min: float = stdev_min * refstd
+        stdev_max: float = stdev_max* refstd
 
         ghelper = fa.GridHelperCurveLinear(
             tr,
@@ -216,24 +226,31 @@ class TaylorDiagram(BasePlot):
         # compute centered RMS difference
         rms = np.sqrt(refstd ** 2 + rs ** 2 - 2 * refstd * rs * np.cos(ts))
         levels = 5
-        if self.config_obj.show_gamma:
-            contours = self.ax.contour(ts, rs, rms, levels, colors="#cccccc", linestyles='-', alpha=0.9)
-            self.ax.clabel(contours, inline=True, fontsize=8, fmt='%.1f', colors='k')
+
+        try:
+            if self.config_obj.show_gamma:
+                contours = self.ax.contour(ts, rs, rms, levels, colors="#cccccc", linestyles='-', alpha=0.9)
+                self.ax.clabel(contours, inline=True, fontsize=8, fmt='%.1f', colors='k')
+        except:
+            logging.exception("Inside create_figure, error with setting countours")
 
         legends_list = self.config_obj.user_legends
-        for series in self.series_list:
-            series_idx = series.series_order
+        try:
+            for series in self.series_list:
+                series_idx = series.series_order
 
-            # normalize the OSTDEV: ostdev/fstdev
-            stdev = series.series_points.fstdev/series.series_points.ostdev
-            correlation = series.series_points.pr_corr
-            marker = self.config_obj.marker_list[series_idx]
-            marker_colors = self.config_obj.colors_list[series_idx]
+                # normalize the OSTDEV: ostdev/fstdev
+                stdev = series.series_points.fstdev/series.series_points.ostdev
+                correlation = series.series_points.pr_corr
+                marker = self.config_obj.marker_list[series_idx]
+                marker_colors = self.config_obj.colors_list[series_idx]
 
-            # Only plot this series if plot_disp setting is True
-            if self.config_obj.plot_disp[series_idx]:
-                self.ax.plot(np.arccos(correlation), stdev, marker=marker, ms=10, ls='',
-                             color=marker_colors, label=legends_list[series_idx])
+                # Only plot this series if plot_disp setting is True
+                if self.config_obj.plot_disp[series_idx]:
+                    self.ax.plot(np.arccos(correlation), stdev, marker=marker, ms=10, ls='',
+                                 color=marker_colors, label=legends_list[series_idx])
+        except:
+            logging.exception("Error when attempting to plot the current series.")
 
         # use FontProperties to re-create the weights used in METviewer
         fontobj = FontProperties()
