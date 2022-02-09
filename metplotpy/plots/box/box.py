@@ -1,7 +1,7 @@
 """
 Class Name: box.py
  """
-__author__ = 'Hank Fisher, Tatiana Burek'
+__author__ = 'Hank Fisher'
 
 import re
 from typing import Union
