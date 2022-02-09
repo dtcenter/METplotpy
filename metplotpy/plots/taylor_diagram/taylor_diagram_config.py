@@ -48,7 +48,8 @@ class TaylorDiagramConfig(Config):
         self.plot_units = self.get_config_value('plot_units')
         self.plot_resolution = self.get_config_value('plot_res')
         self.show_gamma = self.get_config_value('taylor_show_gamma')
-        self.values_of_corr = self.get_config_value('taylor_voc')
+        self.values_of_corr = self._get_bool('taylor_voc')
+
 
         # Convert the plot height and width to inches if units aren't in
         # inches.
