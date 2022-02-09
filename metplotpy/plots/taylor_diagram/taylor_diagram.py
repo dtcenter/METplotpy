@@ -62,8 +62,8 @@ class TaylorDiagram(BasePlot):
         # such as the criteria needed to subset the input dataframe.
         try:
             self.series_list = self._create_series(self.input_df)
-        except:
-            logging.error("Error while creating Taylor series object")
+        except AttributeError as ae:
+            print("Attribute Error encountered while creating a Taylor series object")
 
         # create figure
         # pylint:disable=assignment-from-no-return
@@ -72,8 +72,11 @@ class TaylorDiagram(BasePlot):
         # create binary versions of the plot.
         try:
             self.figure = self._create_figure()
-        except:
-            logging.exception("Error when creating figure")
+        except AttributeError as ae:
+            print("Attribute Error encountered when creating figure.")
+        except ValueError:
+            print("Value Error encountered when creating figure.")
+
 
     def _read_input_data(self) -> pd.DataFrame:
         """
@@ -227,12 +230,9 @@ class TaylorDiagram(BasePlot):
         rms = np.sqrt(refstd ** 2 + rs ** 2 - 2 * refstd * rs * np.cos(ts))
         levels = 5
 
-        try:
-            if self.config_obj.show_gamma:
-                contours = self.ax.contour(ts, rs, rms, levels, colors="#cccccc", linestyles='-', alpha=0.9)
-                self.ax.clabel(contours, inline=True, fontsize=8, fmt='%.1f', colors='k')
-        except:
-            logging.exception("Inside create_figure, error with setting countours")
+        if self.config_obj.show_gamma:
+            contours = self.ax.contour(ts, rs, rms, levels, colors="#cccccc", linestyles='-', alpha=0.9)
+            self.ax.clabel(contours, inline=True, fontsize=8, fmt='%.1f', colors='k')
 
         legends_list = self.config_obj.user_legends
         try:
