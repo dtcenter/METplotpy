@@ -29,7 +29,7 @@ class TaylorDiagramSeries(Series):
             Args:
               :param input_df: The pandas dataframe representation of the full data to be subset.
             Returns:
-                subsetted_df:  The portion of the full dataset that corresponds to the column header(s)
+                df_by_columns:  The portion of the full dataset that corresponds to the column header(s)
                             and rows of interest.
 
         """
@@ -53,13 +53,7 @@ class TaylorDiagramSeries(Series):
 
         df_by_columns = df_by_columns[relevant_columns]
 
-        # only one fcst var value allowed for Taylor diagram, first subset
-        # based on this to simplify the query string for subsetting based on
-        # the series val names and variable permutations.
-        fcst_var_val = self.fcst_vars_1
-        subsetted_df = df_by_columns[df_by_columns['fcst_var'] == str(fcst_var_val)]
-
-        return subsetted_df
+        return df_by_columns
 
     def _create_series_points(self) -> collections.namedtuple:
         """
