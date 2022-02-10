@@ -21,7 +21,16 @@ Read tendencies of temperature, moisture, and momentum due to physics parameteri
 
 ## Installation
 
-Install METplotpy into your conda environment as described in [METplotpy installation instructions](https://github.com/dtcenter/METplotpy/blob/main_v1.0/docs/Users_Guide/installation.rst#install-metcalcpy-in-your-conda-environment)
+On NCAR's casper:
+```csh
+module reset
+module load conda
+conda deactivate
+conda activate npl-2202
+
+```
+
+Then install METplotpy into your conda environment as described in [METplotpy installation instructions](https://github.com/dtcenter/METplotpy/blob/main_v1.0/docs/Users_Guide/installation.rst#install-metcalcpy-in-your-conda-environment)
 
 ## Plot plan view
 
