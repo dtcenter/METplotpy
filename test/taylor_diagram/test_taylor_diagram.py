@@ -92,9 +92,9 @@ def test_custom_plot_exists():
     td.main(test_config_filename)
 
     # Verify that a plot was generated
-    plot_file = "../../docs/Users_Guide/taylor_diagram_custom.png"
+    plot_file = "../../docs/Users_Guide/custom_taylor_diagram.png"
     path = os.getcwd()
     assert os.path.isfile(plot_file) == True
 
     # Clean up
-    # os.remove(os.path.join(path, plot_file))
+    os.remove(os.path.join(path, plot_file))
