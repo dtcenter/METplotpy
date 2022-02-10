@@ -92,7 +92,7 @@ _________________________
 
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to the Taylor diagram plot.
-The **custom_taylor_diagram.yaml**  file is included with the
+The **taylor_diagram_custom.yaml**  file is included with the
 source code and looks like the following:
 
 .. literalinclude:: ../../test/taylor_diagram/taylor_diagram_custom.yaml
@@ -105,7 +105,7 @@ code was saved to the working directory:
   cp $METPLOTPY_SOURCE/METplotpy/test/taylor_diagram/taylor_diagram_custom.yaml $WORKING_DIR/taylor_diagram_custom.yaml
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_SOURCE/METplotpy/test/taylor_diagram/custom_taylor_diagram.yaml*
+*$METPLOTPY_SOURCE/METplotpy/test/taylor_diagram/taylor_diagram_custom.yaml*
 file to explicitly point to the
 *$METPLOTPY_SOURCE/METplotpy/test/taylor_diagram/taylor_diagram*
 directory (where the custom config files and sample data reside).
@@ -219,18 +219,18 @@ perform the following:
   .. image:: taylor_diagram_default.png
 
   To generate a slightly modified, **customized** plot, run the
-  command (below) using the **custom_taylor_diagram.yaml** file:
+  command (below) using the **taylor_diagram_custom.yaml** file:
 
   .. code-block:: ini
 		
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/taylor_diagram/taylor_diagram.py $WORKING_DIR/custom_taylor_diagram.yaml
+    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/taylor_diagram/taylor_diagram.py $WORKING_DIR/taylor_diagram_custom.yaml
 
 
 
 * A **taylor_diagram_custom.png** output file will be created in
   the directory that was  specified in the *plot_filename* config setting
-  in the **custom_taylor_diagram.yaml** config file.  This customized plot has a different
+  in the **taylor_diagram_custom.yaml** config file.  This customized plot has a different
   output filename, title text, title size, title font style, caption text, and different symbols than the default
   plot, as shown below:
 
-.. image:: custom_taylor_diagram.png
+.. image:: taylor_diagram_custom.png
