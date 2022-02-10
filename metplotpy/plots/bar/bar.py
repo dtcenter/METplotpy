@@ -162,6 +162,12 @@ class Bar(BasePlot):
                 # aggregate number of stats
                 n_stats = list(map(add, n_stats, series.series_points['nstat']))
 
+        # add custom lines
+        if len(self.series_list) > 0:
+            self._add_lines(
+                sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique()),
+                self.config_obj)
+
         # apply y axis limits
         self._yaxis_limits()
 
@@ -402,7 +408,6 @@ class Bar(BasePlot):
         """
         Formats series point data to the 2-dim arrays and saves them to the files
         """
-
 
         # if points_path parameter doesn't exist,
         # open file, name it based on the stat_input config setting,
