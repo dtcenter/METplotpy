@@ -1,5 +1,4 @@
-
-#!/usr/bin/env conda run -n blenny_363 python
+# !/usr/bin/env conda run -n blenny_363 python
 """
 Class Name: base_plot.py
  """
@@ -9,6 +8,7 @@ import os
 import numpy as np
 import yaml
 
+from plots.config import Config
 
 class BasePlot:
     """A class that provides methods for building Plotly plot's common features
@@ -353,6 +353,46 @@ class BasePlot:
             self.figure.show()
         else:
             print("Oops!  The figure was not created. Can't show")
+
+    def _add_lines(self, x_points_index: list, config_obj: Config) -> None:
+        """ Adds custom horizontal and/or vertical line to the plot.
+            All line's metadata is in the config_obj.lines
+            Args:
+                @x_points_index - list of x-values that are used to create a plot
+                @config_obj - plot's configurations
+            Returns:
+        """
+        if hasattr(config_obj, 'lines') and config_obj.lines is not None:
+            shapes = []
+            for line in config_obj.lines:
+                # draw horizontal line
+                if line['type'] == 'horiz_line':
+                    shapes.append(dict(
+                        type='line',
+                        yref='y', y0=line['position'], y1=line['position'],
+                        xref='paper', x0=0, x1=0.95,
+                        line={'color': line['color'],
+                              'dash': line['line_style'],
+                              'width': line['line_width']},
+                    ))
+                elif line['type'] == 'vert_line':
+                    # draw vertical line
+                    ordered_indy_label = config_obj.create_list_by_plot_val_ordering(config_obj.indy_label)
+                    try:
+                        index = ordered_indy_label.index(line['position'])
+                        shapes.append(dict(
+                            type='line',
+                            yref='paper', y0=0, y1=1,
+                            xref='x', x0=x_points_index[index], x1=x_points_index[index],
+                            line={'color': line['color'],
+                                  'dash': line['line_style'],
+                                  'width': line['line_width']},
+                        ))
+                    except ValueError:
+                        print(f'WARNING: vertical line with position {line["position"]} can\'t be created')
+                # ignore everything else
+
+            self.figure.update_layout(shapes=shapes)
 
     @staticmethod
     def get_array_dimensions(data):
