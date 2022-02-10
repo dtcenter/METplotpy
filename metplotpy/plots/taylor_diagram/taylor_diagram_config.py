@@ -47,7 +47,7 @@ class TaylorDiagramConfig(Config):
         self.user_legends = self._get_user_legends("")
         self.plot_units = self.get_config_value('plot_units')
         self.plot_resolution = self.get_config_value('plot_res')
-        self.show_gamma = self.get_config_value('taylor_show_gamma')
+        self.show_gamma = self._get_bool('taylor_show_gamma')
         self.values_of_corr = self._get_bool('taylor_voc')
 
 
@@ -190,6 +190,9 @@ class TaylorDiagramConfig(Config):
         self.grid_color = self.get_config_value('grid_col')
         self.grid_linewidth = self.get_config_value('grid_linewidth')
 
+        # use this setting to determine the ordering of colors, lines, and markers
+        self.series_ordering = self._get_series_order()
+
         # Caption settings
         self.caption = self.get_config_value('plot_caption')
         mv_caption_weight = self.get_config_value('caption_weight')
@@ -203,6 +206,20 @@ class TaylorDiagramConfig(Config):
         self.caption_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_caption_weight]
 
 
+    def _get_series_order(self):
+        """
+            Get the order number for each series
+
+            Args:
+
+            Returns:
+            a list of unique values representing the ordinal value of the corresponding series
+
+        """
+        ordinals = self.get_config_value('series_order')
+        series_order_list = [ord for ord in ordinals]
+        return series_order_list
+
     def _get_plot_disp(self) -> list:
         """
             Retrieve the boolean values that determine whether to display a particular series
@@ -215,8 +232,18 @@ class TaylorDiagramConfig(Config):
         """
 
         plot_display_vals = self.get_config_value('plot_disp')
-        plot_display_bools = [pd for pd in plot_display_vals]
+
+        # Convert these string values to the boolean values they represent to avoid
+        # inconsistent results.
+        plot_display_bools = []
+        for cur_pd in plot_display_vals:
+            if cur_pd.lower() == 'true':
+                plot_display_bools.append(True)
+            else:
+                plot_display_bools.append(False)
+
         plot_display_bools_ordered = self.create_list_by_series_ordering(plot_display_bools)
+
         return plot_display_bools_ordered
 
     def _get_markers(self) -> list:
