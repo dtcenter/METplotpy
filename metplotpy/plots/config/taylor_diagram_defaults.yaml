@@ -31,7 +31,7 @@ legend_box: 'box'
 
 legend_inset:
   x: 0.1
-  y: -0.1
+  y: -0.25
 legend_ncol: 4
 legend_size: 0.8
 
