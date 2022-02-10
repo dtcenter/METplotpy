@@ -95,14 +95,14 @@ used to customize the settings to the Taylor diagram plot.
 The **custom_taylor_diagram.yaml**  file is included with the
 source code and looks like the following:
 
-.. literalinclude:: ../../test/taylor_diagram/custom_taylor_diagram.yaml
+.. literalinclude:: ../../test/taylor_diagram/taylor_diagram_custom.yaml
 
 Copy this custom config file from the directory where the source
 code was saved to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/METplotpy/test/taylor_diagram/custom_taylor_diagram.yaml $WORKING_DIR/custom_taylor_diagram.yaml
+  cp $METPLOTPY_SOURCE/METplotpy/test/taylor_diagram/taylor_diagram_custom.yaml $WORKING_DIR/taylor_diagram_custom.yaml
 
 Modify the *stat_input* setting in the
 *$METPLOTPY_SOURCE/METplotpy/test/taylor_diagram/custom_taylor_diagram.yaml*
