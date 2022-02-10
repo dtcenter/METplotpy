@@ -56,12 +56,15 @@ Variables read from fv3_history.nc:
 - dt3dt_shalcnv
 - dt3dt_sw
 
-Final temperature to derive cumulative change (difference between t = 12 and t = 1, where t is the output timestep) and compare to tendencies
-- tmp
-
 ### non-physics tendency
  - dt3dt_nophys
 
-Similar variables for *q* (moisture), *u*, and *v*-wind.
+Final temperature to derive cumulative change (difference between t = 12 and t = 1, where t is the output timestep) and compare to tendencies
+- tmp
 
-## Output
+Similar tendency variables for *q* (moisture), *u*, and *v*-wind. Final state variable names:
+- tmp
+- spfh
+- ugrd
+- vgrd
+ 
