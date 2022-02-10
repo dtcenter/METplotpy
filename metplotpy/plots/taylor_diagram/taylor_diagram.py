@@ -234,23 +234,19 @@ class TaylorDiagram(BasePlot):
             contours = self.ax.contour(ts, rs, rms, levels, colors="#cccccc", linestyles='-', alpha=0.9)
             self.ax.clabel(contours, inline=True, fontsize=8, fmt='%.1f', colors='k')
 
-        legends_list = self.config_obj.user_legends
-        try:
-            for series in self.series_list:
-                series_idx = series.series_order
+        for i, series in enumerate(self.series_list):
 
-                # normalize the OSTDEV: ostdev/fstdev
-                stdev = series.series_points.fstdev/series.series_points.ostdev
-                correlation = series.series_points.pr_corr
-                marker = self.config_obj.marker_list[series_idx]
-                marker_colors = self.config_obj.colors_list[series_idx]
+            # normalize the OSTDEV: ostdev/fstdev
+            stdev = series.series_points.fstdev / series.series_points.ostdev
+            correlation = series.series_points.pr_corr
+            marker = self.config_obj.marker_list[i]
+            marker_colors = self.config_obj.colors_list[i]
 
-                # Only plot this series if plot_disp setting is True
-                if self.config_obj.plot_disp[series_idx]:
-                    self.ax.plot(np.arccos(correlation), stdev, marker=marker, ms=10, ls='',
-                                 color=marker_colors, label=legends_list[series_idx])
-        except:
-            logging.exception("Error when attempting to plot the current series.")
+            # Only plot this series if plot_disp setting is True
+            legend = self.config_obj.user_legends[i]
+            if self.config_obj.plot_disp[i]:
+                self.ax.plot(np.arccos(correlation), stdev, marker=marker, ms=10, ls='',
+                             color=marker_colors, label=legend)
 
         # use FontProperties to re-create the weights used in METviewer
         fontobj = FontProperties()
