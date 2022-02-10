@@ -31,19 +31,19 @@ legend_box: 'box'
 
 legend_inset:
   x: 0.1
-  y: 0.1 #-.1
+  y: -0.1
 legend_ncol: 4
 legend_size: 0.8
 
 # Turn on/off plotting of specific points/series
 plot_disp:
-  - True
-  - True
-  - True
-  - True
-  - True
-  - True
-  - True
+  - 'True'
+  - 'True'
+  - 'True'
+  - 'True'
+  - 'True'
+  - 'True'
+  - 'True'
 
 # output file/plot
 plot_filename: ./taylor_diagram_default.png
@@ -92,10 +92,10 @@ series_val_1:
 stat_input: ../../../test/taylor_diagram/plot_dlwr_sample.data
 
 # Draw the standard deviation arcs on the diagram
-taylor_show_gamma: True
+taylor_show_gamma: 'True'
 
 # Show only positive values of correlation
-taylor_voc: False
+taylor_voc: 'False'
 
 title: Downward Longwave Radiative Flux Taylor Diagram
 title_weight: 4
@@ -179,21 +179,21 @@ create_html: 'False'
 # Event equalization to check for missing data
 # not applicable for this plot, but METviewer expects this
 # setting
-event_equal: False
+event_equal: 'False'
 
-dump_points_1: False
-dump_points_2: False
+dump_points_1: 'False'
+dump_points_2: 'False'
 # not relevant since there aren't any intermediate files being
 # created
 points_path: ''
-vert_plot: False
-x_reverse: False
-num_stats: False
-indy1_stag: False
-indy2_stag: False
-sync_axes: False
-log_y1: False
-log_y2: False
+vert_plot: 'False'
+x_reverse: 'False'
+num_stats: 'False'
+indy1_stag: 'False'
+indy2_stag: 'False'
+sync_axes: 'False'
+log_y1: 'False'
+log_y2: 'False'
 
 # used in the calculation of confidence intervals but not used here
 variance_inflation_factor: False
