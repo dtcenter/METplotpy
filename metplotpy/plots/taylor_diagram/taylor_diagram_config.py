@@ -232,8 +232,18 @@ class TaylorDiagramConfig(Config):
         """
 
         plot_display_vals = self.get_config_value('plot_disp')
-        plot_display_bools = [pd for pd in plot_display_vals]
-        plot_display_bools_ordered = self.create_list_by_series_ordering(plot_display_bools)
+        plot_display_strings = [pd for pd in plot_display_vals]
+        plot_display_strings_ordered = self.create_list_by_series_ordering(plot_display_strings)
+
+        # Convert each string to the boolean representation
+        plot_display_bools_ordered = []
+        for cur in plot_display_strings_ordered:
+            bool_str = str(cur).lower()
+            if bool_str == 'true':
+                plot_display_bools_ordered.append(True)
+            else:
+                plot_display_bools_ordered.append(False)
+
         return plot_display_bools_ordered
 
     def _get_markers(self) -> list:
