@@ -35,7 +35,6 @@ class Line(BasePlot):
 
     defaults_name = 'line_defaults.yaml'
 
-
     def __init__(self, parameters: dict) -> None:
         """ Creates a line plot consisting of one or more lines (traces), based on
             settings indicated by parameters.
@@ -213,7 +212,7 @@ class Line(BasePlot):
                 n_stats = list(map(add, n_stats, series.series_points['nstat']))
 
         # add custom lines
-        self._add_lines(x_points_index)
+        self._add_lines(x_points_index, self.config_obj)
 
         # apply y axis limits
         self._yaxis_limits()
@@ -391,7 +390,6 @@ class Line(BasePlot):
                                  tickangle=self.config_obj.x_tickangle,
                                  tickfont={'size': self.config_obj.x_tickfont_size}
                                  )
-
 
     def _add_yaxis(self) -> None:
         """
@@ -719,41 +717,8 @@ class Line(BasePlot):
         except TypeError:
             print('Can\'t save points to a file')
 
-    def _add_lines(self,x_points_index):
-        for line in self.config_obj.lines:
 
-            if line['type'] == 'horiz_line':
-                yref = 'y'
-                y_0 = line['position']
-                y_1 = line['position']
-                xref = 'paper'
-                x_0 = 0
-                x_1 = 0.95
-            else:
-                odered_indy_label = self.config_obj.create_list_by_plot_val_ordering(self.config_obj.indy_label)
-                try:
-                    index = odered_indy_label.index(str(line['position']))
-                    yref = 'paper'
-                    y_0 = 0
-                    y_1 = 1
-                    xref = 'x'
-                    x_0 = x_points_index[index]
-                    x_1 = x_points_index[index]
-                except ValueError:
-                    print(f'WARNING: vertical line with position {line["position"]} can\'t be created')
-                    yref = None
 
-            if yref is not None:
-                self.figure.update_layout(shapes=[
-                    dict(
-                        type='line',
-                        yref=yref, y0=y_0, y1=y_1,
-                            xref=xref, x0=x_0, x1=x_1,
-                        line={'color': line['color'],
-                                'dash': 'dash',
-                                'width': line['lwd']},
-                    )
-                ])
 
 def main(config_filename=None):
     """
