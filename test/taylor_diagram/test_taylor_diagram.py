@@ -84,17 +84,17 @@ def test_neg_and_pos_corr_images_match():
     assert comparison.mssim >= .99
 
     # Clean up
-    os.remove(os.path.join(path, plot_file))
+    # os.remove(os.path.join(path, plot_file))
 
 def test_custom_plot_exists():
     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
-    test_config_filename = "custom_taylor_diagram.yaml"
+    test_config_filename = "taylor_diagram_custom.yaml"
     td.main(test_config_filename)
 
     # Verify that a plot was generated
-    plot_file = "../../docs/Users_Guide/custom_taylor_diagram.png"
+    plot_file = "./taylor_diagram_custom.png"
     path = os.getcwd()
     assert os.path.isfile(plot_file) == True
 
     # Clean up
-    os.remove(os.path.join(path, plot_file))
+    # os.remove(os.path.join(path, plot_file))
