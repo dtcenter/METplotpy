@@ -110,6 +110,7 @@ class Config:
         self.series_val_names = self._get_series_val_names()
         self.series_ordering = None
         self.indy_plot_val = self.get_config_value('indy_plot_val')
+        self.lines = self.get_config_value('lines')
 
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
@@ -653,3 +654,5 @@ class Config:
         if 'indy_label' in self.parameters.keys():
             return self.get_config_value('indy_label')
         return self.indy_vals
+
+
