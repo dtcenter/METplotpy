@@ -276,7 +276,17 @@ class TaylorDiagram(BasePlot):
                     fontproperties=font, color=self.config_obj.caption_color)
 
         # Add a figure legend
-        fig.legend(bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y), loc='upper center',
+
+        # Make some adjustments to the legend box for METviewer default settings when show_gamma is set to
+        # False and only positive correlations are to be shown.
+        # The default in METviewer for the y-offset of the bbox is y=-0.25 and when y=-.1,
+        # the legend box remains in the plot. An adjustment was alread made: y = default y_offset + 0.15
+        # in the taylor_diagram_config.py script.  Add another 0.2 to get the bbox y offset value to .1
+        if self.config_obj.values_of_corr is False:
+            bbox_y = self.config_obj.bbox_y + 0.2
+        else:
+            bbox_y = self.config_obj.bbox_y
+        fig.legend(bbox_to_anchor=(self.config_obj.bbox_x, bbox_y), loc='upper center',
                    ncol=self.config_obj.legend_ncol,
                    prop={'size': self.config_obj.legend_size},
                    frameon=self.config_obj.draw_box)
