@@ -84,7 +84,7 @@ def test_neg_and_pos_corr_images_match():
     assert comparison.mssim >= .99
 
     # Clean up
-    # os.remove(os.path.join(path, plot_file))
+    os.remove(os.path.join(path, plot_file))
 
 def test_custom_plot_exists():
     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
@@ -97,4 +97,4 @@ def test_custom_plot_exists():
     assert os.path.isfile(plot_file) == True
 
     # Clean up
-    # os.remove(os.path.join(path, plot_file))
+    os.remove(os.path.join(path, plot_file))
