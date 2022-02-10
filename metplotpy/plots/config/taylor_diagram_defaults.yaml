@@ -13,7 +13,7 @@ caption_size: "8"
 # (up/down)
 caption_offset: 0
 # axis parallel location adjustment (left/right)
-caption_align: 0 # -.1 in performance diagram
+caption_align: 0
 
 # hexadecimal or color name
 colors:
