@@ -1,7 +1,10 @@
 # FV3 physics plotting package
 Python scripts to plot physics tendencies from FV3 model
 
-## Required Python modules
+## Description
+Read tendencies of temperature, moisture, and momentum due to physics parameterizations. Visualize spatial composites of each term over many time snapshots, calculate domain-average vertical profiles over a user-specified region, and plot the residual, which is defined as the difference between the total tendency change and the sum of the physics and non-physics tendencies.
+
+## Python requirements
 
 - argparse
 - cartopy
@@ -16,10 +19,24 @@ Python scripts to plot physics tendencies from FV3 model
 - sys
 - xarray
 
-## Description
-Read tendencies of temperature, moisture, and momentum due to physics parameterizations. Visualize spatial composites of each term over many time snapshots, calculate domain-average vertical profiles over a user-specified region, and plot the residual, which is defined as the difference between the total tendency change and the sum of the physics and non-physics tendencies.
+## Installation
 
-## Input
+Install METplotpy into your conda environment as described in [METplotpy installation instructions](https://github.com/dtcenter/METplotpy/blob/main_v1.0/docs/Users_Guide/installation.rst#install-metcalcpy-in-your-conda-environment)
+
+## Plot plan view
+
+```python
+python fv3_planview.py fv3_history.nc grid_spec.nc tmp nophys
+```
+
+## Plot vertical profile
+
+```python
+python fv3_vert_profile.py fv3_history.nc grid_spec.nc tmp
+```
+
+
+## Required input
 
 FV3 output and grid specifications. [Grid description in UFS Short Range Weather App user manual](https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options)
 
@@ -46,7 +63,5 @@ Final temperature to derive cumulative change (difference between t = 12 and t =
  - dt3dt_nophys
 
 Similar variables for *q* (moisture), *u*, and *v*-wind.
-
-## How to use
 
 ## Output
