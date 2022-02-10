@@ -73,7 +73,7 @@ class TaylorDiagramSeries(Series):
         self.subsetted_df = self._subset_data(self.input_data)
 
         # Determine which series this corresponds to.
-        cur_perm = permutations_list[self.idx]
+        cur_perm = permutations_list[self.series_order]
 
         qstr = self.series_val_names[0] + "==" + '"' + cur_perm[0] + '"' + " & " + self.series_val_names[
             1] + "==" + '"' + cur_perm[1] + '"'
