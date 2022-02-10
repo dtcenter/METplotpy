@@ -5,7 +5,7 @@ Taylor Diagram
 Description
 ===========
 
-The `Taylor diagram <https://metviewer.readthedocs.io/en/latest/Users_Guide/references.html>`_  was invented by
+The `Taylor diagram <https://metplotpy.readthedocs.io/en/feature_149_taylor_diagram/Users_Guide/references.html>`_  was invented by
 Karl E. Taylor in 1994 and is useful in quantifying the correspondence between
 models and a "reference" based on the Pearson correlation coefficient, the root-mean-square
 error (RMSE), and the standard deviation.  Taylor diagrams have been widely used for climate and other
@@ -17,12 +17,12 @@ For more information on Taylor diagrams, please refer to the
 
 Examples of Taylor diagrams are shown below.
 
-A Taylor diagram of sample Downward Longwave Radiative Flux (DLWR) data of only positive correlation
+A Taylor diagram of sample Downward Longwave Radiative Flux (DLWR) data displaying only positive correlation
 values:
 
 .. image:: taylor_pos_corr_plot.png
 
-A Taylor diagram of sample Downward Longwave Radiative Flux (DLWR) data of negative and
+A Taylor diagram of sample Downward Longwave Radiative Flux (DLWR) data displaying negative and
 positive correlation values:
 
 .. image:: taylor_neg_and_pos_corr_plot.png
