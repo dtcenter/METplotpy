@@ -43,7 +43,7 @@ FV3 output and grid specifications. [Grid description in UFS Short Range Weather
 - fv3_history.nc
 - grid_spec.nc
 
-Variables read from fv3_history.nc:
+Potential tendency variables read from fv3_history.nc:
 
 ### physics tendencies
 - dt3dt_cnvgwd
@@ -59,12 +59,10 @@ Variables read from fv3_history.nc:
 ### non-physics tendency
  - dt3dt_nophys
 
-Final temperature to derive cumulative change (difference between t = 12 and t = 1, where t is the output timestep) and compare to tendencies
-- tmp
+Similar tendency variables for *q* (moisture), *u*, and *v*-wind. 
 
-Similar tendency variables for *q* (moisture), *u*, and *v*-wind. Final state variable names:
+Potential state variables used to derive cumulative change (final minus initial time) and to compare cumulative change to tendencies:
 - tmp
 - spfh
 - ugrd
 - vgrd
- 
