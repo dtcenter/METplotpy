@@ -100,7 +100,7 @@ class PerformanceDiagramSeries(Series):
             if len(self.series_val_names) > 1:
                 series_var_val_str = cur_perm[i]
             else:
-                series_var_val_str = cur_perm
+                series_var_val_str = cur_perm[0]
             if i == 0:
                 query_str = col_str + " == " + '"' + series_var_val_str + '"'
             else:

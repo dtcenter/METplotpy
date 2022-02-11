@@ -1,0 +1,305 @@
+---
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# "Default" settings for the Taylor diagram plot
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+# caption settings
+plot_caption: "Caption -Taylor Diagram default settings"
+caption_weight: 4
+caption_col: "#333333"
+# relative magnification of caption size
+caption_size: "8"
+# axis perpendicular location adjustment
+# (up/down)
+caption_offset: 0
+# axis parallel location adjustment (left/right)
+caption_align: 0
+
+# hexadecimal or color name
+colors:
+  - "#ff0000" # red
+  - "#ffd400" # goldenrod
+  - "#55ff00" # lime green
+  - "#00ff7f"  # green
+  - "#00aaff" # light blue
+  - "#1500ff" # royal blue
+  - "#7f00ff" # purple
+
+fcst_var_val_1: DLWRF
+
+legend_box: 'box'
+
+legend_inset:
+  x: 0.1
+  y: -0.25
+legend_ncol: 4
+legend_size: 0.8
+
+# Turn on/off plotting of specific points/series
+plot_disp:
+  - 'True'
+  - 'True'
+  - 'True'
+  - 'True'
+  - 'True'
+  - 'True'
+  - 'True'
+
+# output file/plot
+plot_filename: ./taylor_diagram_default.png
+
+# size and resolution of the plot.
+plot_width: 11
+plot_height: 9
+# plot resolution in dpi (dots per inch)
+plot_res: 72
+
+series_order:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+
+# Other supported symbols: small circle = ".", ring/hexagon = "H", rhombus/diamond="d"
+series_symbols:
+  # point
+  - "d"
+  - "."
+  - "."
+  - "."
+  - "."
+  - "."
+  - "."
+
+series_val_1:
+  # series_var_1
+  model:
+    - suite3_MEDIAN
+  # series_var2
+  vx_mask:
+    - Bondville
+    - Desert_Rock
+    - Fort_Peck
+    - Goodwin_Creek
+    - Penn_State
+    - Sioux_Falls
+    - Table_Mountain
+
+# input file
+stat_input: ../../../test/taylor_diagram/plot_dlwr_sample.data
+
+# Draw the standard deviation arcs on the diagram
+taylor_show_gamma: 'True'
+
+# Show only positive values of correlation
+taylor_voc: 'False'
+
+title: Downward Longwave Radiative Flux Taylor Diagram
+title_weight: 4
+title_size: 1.8
+
+# legend settings
+user_legend:
+  - ""
+  - ""
+  - ""
+  - ""
+  - ""
+  - ""
+  - ""
+
+
+#
+# UNSUPPORTED or UNUSED settings BUT REQUIRED/USED by METviewer
+#  Do not modify the settings below this section
+#
+
+# Unsupported actions by Matplotlib.
+
+# Matplotlib align choices are left, right, center (default) and
+# offset is automatically chosen to avoid labels and ticks on the topmost
+# x-axis
+# To work around what METviewer is expecting (a numerical value),
+# set title_align to -1.5 for 'left', 1.5 for 'right', any other value for 'center'
+title_align: 0.5
+title_offset: -2
+
+# x-axis ticks
+#these are unsupported
+xtlab_orient: 1
+xtlab_size: 1
+xtlab_perp: -0.75
+xtlab_horiz: 0.5
+xtlab_freq: 0
+x2tlab_orient: 1
+x2tlab_size: 0.8
+x2tlab_perp: 1
+x2tlab_horiz: 0.5
+
+# y-axis ticks
+# these are unsupported
+ytlab_perp: 0.5
+ytlab_horiz: 0.5
+y2tlab_orient: 1
+y2tlab_perp: 0.5
+y2tlab_horiz: 0.5
+y2tlab_size: 1
+
+# second y-axis ticks
+# these are unsupported as this diagram doesn't have
+# a second y-axis
+y2lab_size: 1
+y2lab_offset: 1
+y2lab_align: 0.5
+
+# second x-axis settings, not necessary
+# for this diagram, expected by METviewer
+x2lab_size: 0.8
+x2lab_offset: -0.5
+x2lab_align: 0.5
+
+# magnification
+cex: 1
+
+# margins (Matplotlib doesn't have this level of granularity for margins)
+mar:
+  - 8
+  - 4
+  - 5
+  - 4
+
+# create html relevant only for Plotly interactivity in METviewer, not
+# applicable for Matplotlib plotting.
+create_html: 'False'
+
+
+# Event equalization to check for missing data
+# not applicable for this plot, but METviewer expects this
+# setting
+event_equal: 'False'
+
+dump_points_1: 'False'
+dump_points_2: 'False'
+# not relevant since there aren't any intermediate files being
+# created
+points_path: ''
+vert_plot: 'False'
+x_reverse: 'False'
+num_stats: 'False'
+indy1_stag: 'False'
+indy2_stag: 'False'
+sync_axes: 'False'
+log_y1: 'False'
+log_y2: 'False'
+
+# used in the calculation of confidence intervals but not used here
+variance_inflation_factor: False
+
+series_type:
+  - "b"
+  - "b"
+  - "b"
+  - "b"
+  - "b"
+  - "b"
+  - "b"
+
+# line width (no lines in Taylor diagram, only points)
+lwd:
+  - 5
+  - 5
+  - 5
+  - 5
+  - 5
+  - 5
+  - 5
+
+# x-axis labels
+xaxis: Standard Deviation
+xlab_size:  1
+#up-down positioning
+xlab_align: .5
+#left-right positioning
+xlab_offset: 2
+# text weight: plain text, bold, italic, bold italic
+xlab_weight: 1
+
+# y-axis labels
+yaxis_1: Standard Deviation
+ylab_size: 1
+#left-right positioning
+ylab_align: 0.5
+#up-down positioning
+ylab_offset:  -2
+# text weight: plain text, bold, italic, bold italic
+ylab_weight: 1
+
+# y-axis ticks
+ytlab_orient: 1
+ytlab_size: 1.3
+
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# The underlying Taylor diagram (grid lines, etc.)
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+
+# These are expected/used by METviewer but cannot
+# be applied to the underlying Taylor diagram plot. Grid
+# linestyle and colors cannot be changed.
+grid_lty: "--"
+# Hexadecimal value or color name
+grid_col: "#cccccc"
+grid_linewidth: 1
+grid_x: "listX"
+
+
+# other option is mm (millimeters)
+plot_units: in
+# only png plots are generated, this setting is expected by METviewer
+plot_type: png16m
+plot_ci:
+# No confidence intervals plotted in Taylor diagram, so these settings have no effect
+  - None
+  - None
+  - None
+  - None
+  - None
+  - None
+  - None
+
+
+con_series:
+# Only useful for line plots where consecutive points may be interspersed with NA values
+# these values have no use for the Taylor diagram.
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+  - 1
+
+# not relevant for this plot, these values are expected by METviewer
+show_signif:
+  - 'False'
+  - 'False'
+  - 'False'
+  - 'False'
+  - 'False'
+  - 'False'
+  - 'False'
+
+
+
+
+
+
+
+
+
+
+

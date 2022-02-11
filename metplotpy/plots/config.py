@@ -41,7 +41,7 @@ class Config:
         self.plot_caption = self.get_config_value('plot_caption')
         # plain text, bold, italic, bold italic are choices in METviewer UI
         self.caption_weight = self.get_config_value('caption_weight')
-        self.caption_color = self.get_config_value('caption_color')
+        self.caption_color = self.get_config_value('caption_col')
         # relative magnification
         self.caption_size = self.get_config_value('caption_size')
 
@@ -111,7 +111,7 @@ class Config:
         self.series_ordering = None
         self.indy_plot_val = self.get_config_value('indy_plot_val')
 
-    def get_config_value(self, *args):
+    def get_config_value(self, *args:Union[str,int,float]) -> None:
         """Gets the value of a configuration parameter.
         Looks for parameter in the user parameter dictionary
 
@@ -124,7 +124,7 @@ class Config:
 
         return self._get_nested(self.parameters, args)
 
-    def _get_nested(self, data, args):
+    def _get_nested(self, data:dict, args:tuple) -> None:
         """Recursive function that uses the tuple with keys to find a value
         in multidimensional dictionary.
 
@@ -151,7 +151,7 @@ class Config:
                 return self._get_nested(value, args[1:])
         return None
 
-    def _get_legend_style(self):
+    def _get_legend_style(self) -> dict:
         """
             Retrieve the legend style settings that are set
             in the METviewer tool
@@ -182,7 +182,7 @@ class Config:
 
         return legend_settings
 
-    def _get_series_vals(self, index):
+    def _get_series_vals(self, index:int) -> list:
         """
             Get a tuple of lists of all the variable values that correspond to the inner
             key of the series_val dictionaries (series_val_1 and series_val_2).
@@ -221,7 +221,7 @@ class Config:
     def _get_series_columns(self, index):
         ''' Retrieve the column name that corresponds to this '''
 
-    def _get_fcst_vars(self, index):
+    def _get_fcst_vars(self, index: int) -> list:
         """
            Retrieve a list of the inner keys (fcst_vars) to the fcst_var_val dictionary.
 
@@ -251,7 +251,7 @@ class Config:
 
         return all_fcst_vars
 
-    def _get_series_val_names(self):
+    def _get_series_val_names(self) -> list:
         """
             Get a list of all the variable value names (i.e. inner key of the
             series_val dictionary). These values will be used with lists of
@@ -275,7 +275,7 @@ class Config:
             return [*series_val_dict.keys()]
         return []
 
-    def calculate_number_of_series(self):
+    def calculate_number_of_series(self) -> int:
         """
            From the number of items in the permutation list,
            determine how many series "objects" are to be plotted.
@@ -297,7 +297,7 @@ class Config:
 
         return len(permutations)
 
-    def _get_colors(self):
+    def _get_colors(self) -> list:
         """
            Retrieves the colors used for lines and markers, from the
            config file (default or custom).
@@ -358,7 +358,7 @@ class Config:
         linewidths = self.get_config_value('series_line_width')
         return self.create_list_by_series_ordering(list(linewidths))
 
-    def _get_linestyles(self):
+    def _get_linestyles(self) -> list:
         """
             Retrieve all the linestyles from the config file.
 
@@ -372,15 +372,15 @@ class Config:
         return linestyle_list_ordered
 
 
-    def _get_user_legends(self, legend_label_type):
+    def _get_user_legends(self, legend_label_type: str ) -> list:
         """
            Retrieve the text that is to be displayed in the legend at the bottom of the plot.
            Each entry corresponds to a series.
 
            Args:
-               @parm legend_label_type:  The legend label, such as 'Performance' that indicates
-                                    the type of series line. Used when the user hasn't
-                                    indicated a legend.
+               @parm legend_label_type:  The legend label, such as 'Performance',
+                                         used when the user hasn't indicated a legend in the
+                                         configuration file.
 
            Returns:
                a list consisting of the series label to be displayed in the plot legend.
@@ -446,7 +446,7 @@ class Config:
         legends_list_ordered = self.create_list_by_series_ordering(ll_list)
         return legends_list_ordered
 
-    def _get_plot_resolution(self):
+    def _get_plot_resolution(self) -> int:
         """
             Retrieve the plot_res and plot_unit to determine the dpi
             setting in matplotlib.
@@ -487,7 +487,7 @@ class Config:
         # dpi used by matplotlib
         return dpi
 
-    def create_list_by_series_ordering(self, setting_to_order):
+    def create_list_by_series_ordering(self, setting_to_order: str) -> list:
         """
             Generate a list of series plotting settings based on what is set
             in series_order in the config file.
@@ -537,7 +537,7 @@ class Config:
 
         return ordered_settings_list
 
-    def create_list_by_plot_val_ordering(self, setting_to_order):
+    def create_list_by_plot_val_ordering(self, setting_to_order: str) -> list:
         """
         Generate a list of indy parameters settings based on what is set
         in indy_plot_val in the config file.
@@ -553,9 +553,9 @@ class Config:
         -180000
 
         Then the following is expected:
-        the first indy_val  is 150000
-        the second indy_val is 180000
-        the third indy_val is 120000
+        the first indy_val  is 1850000
+        the second indy_val is 120000
+        the third indy_val is 150000
 
 
         Args:
@@ -582,7 +582,7 @@ class Config:
         return ordered_settings_list
 
 
-    def calculate_plot_dimension(self, config_value, output_units):
+    def calculate_plot_dimension(self, config_value: int , output_units: str) -> int:
         '''
            To calculate the width or height that defines the size of the plot.
            Matplotlib defines these values in inches, Python plotly defines these

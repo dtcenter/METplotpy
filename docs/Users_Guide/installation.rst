@@ -30,7 +30,7 @@ ___________________
 
 * matplotlib 3.3.0
 
-* metcalcpy 
+* metcalcpy (same version as this version of METplotpy)
 
 * netcdf4 1.5.1.2
 
