@@ -17,13 +17,13 @@ caption_align: 0
 
 # hexadecimal or color name
 colors:
-  - "#ff0000FF"
-  - "#ffd400FF"
-  - "#55ff00FF"
-  - "#00ffff"
-  - "#00aaffFF"
-  - "#1500ffFF"
-  - "#7f00ffFF"
+  - "#ff0000" # red
+  - "#ffd400" # goldenrod
+  - "#55ff00" # lime green
+  - "#00ff7f"  # green
+  - "#00aaff" # light blue
+  - "#1500ff" # royal blue
+  - "#7f00ff" # purple
 
 fcst_var_val_1: DLWRF
 
