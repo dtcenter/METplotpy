@@ -70,7 +70,7 @@ Potential tendency variables to read from fv3_history.nc:
 |  *non-physics tendency*    |*dt3dt_nophys*|*dq3dt_nophys*    |*du3dt_nophys*|*dv3dt_nophys* |
 
 
-Potential state variables used to derive cumulative change (final minus initial time) and to compare cumulative change to tendencies:
+State variables used to derive cumulative change (final minus initial time) and to compare cumulative change to tendencies:
 |              | temperature | specific humidity | u-wind | v-wind |
 | ------------ | ----------- | ----------------- | ------ | ------ |
 |state variable|    tmp      |    spfh           | ugrd   | vgrd   |
