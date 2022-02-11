@@ -7,6 +7,7 @@ __author__ = 'Tatiana Burek'
 import os
 import numpy as np
 import yaml
+from typing import Union
 
 from plots.config import Config
 
@@ -354,7 +355,7 @@ class BasePlot:
         else:
             print("Oops!  The figure was not created. Can't show")
 
-    def _add_lines(self, x_points_index: list, config_obj: Config) -> None:
+    def _add_lines(self, config_obj: Config ,x_points_index : Union[list, None] = None) -> None:
         """ Adds custom horizontal and/or vertical line to the plot.
             All line's metadata is in the config_obj.lines
             Args:
@@ -377,13 +378,17 @@ class BasePlot:
                     ))
                 elif line['type'] == 'vert_line':
                     # draw vertical line
-                    ordered_indy_label = config_obj.create_list_by_plot_val_ordering(config_obj.indy_label)
                     try:
-                        index = ordered_indy_label.index(line['position'])
+                        if x_points_index is None:
+                            val = line['position']
+                        else:
+                            ordered_indy_label = config_obj.create_list_by_plot_val_ordering(config_obj.indy_label)
+                            index = ordered_indy_label.index(line['position'])
+                            val = x_points_index[index]
                         shapes.append(dict(
                             type='line',
                             yref='paper', y0=0, y1=1,
-                            xref='x', x0=x_points_index[index], x1=x_points_index[index],
+                            xref='x', x0=val, x1=val,
                             line={'color': line['color'],
                                   'dash': line['line_style'],
                                   'width': line['line_width']},
