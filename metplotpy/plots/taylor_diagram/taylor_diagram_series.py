@@ -75,8 +75,22 @@ class TaylorDiagramSeries(Series):
         # Determine which series this corresponds to.
         cur_perm = permutations_list[self.series_order]
 
-        qstr = self.series_val_names[0] + "==" + '"' + cur_perm[0] + '"' + " & " + self.series_val_names[
-            1] + "==" + '"' + cur_perm[1] + '"'
+        for i, svn in enumerate(self.series_val_names):
+            # qstr = self.series_val_names[0] + "==" + '"' + cur_perm[0] + '"' + " & " + self.series_val_names[
+            #       1] + "==" + '"' + cur_perm[1] + '"'
+
+            column_name = svn
+
+            # If we have more than one item in the series_val1, treat this
+            # differently than if there is only one item
+            if len(self.series_val_names) > 1:
+                series_var_val_str = cur_perm[i]
+            else:
+                series_var_val_str = cur_perm[0]
+            if i == 0:
+                qstr = column_name+ " == " + '"' + series_var_val_str + '"'
+            else:
+                qstr = qstr + " and " + column_name + " == " + '"' + series_var_val_str + '"'
 
         # retrieve the row of data corresponding to this current permutation/series
         fstdev_query = qstr + " & " + 'stat_name == "FSTDEV"'
