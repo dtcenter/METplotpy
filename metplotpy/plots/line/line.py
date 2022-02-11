@@ -212,7 +212,7 @@ class Line(BasePlot):
                 n_stats = list(map(add, n_stats, series.series_points['nstat']))
 
         # add custom lines
-        self._add_lines(x_points_index, self.config_obj)
+        self._add_lines(self.config_obj, x_points_index)
 
         # apply y axis limits
         self._yaxis_limits()

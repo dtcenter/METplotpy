@@ -85,6 +85,10 @@ class ROCDiagram(BasePlot):
         # create binary versions of the plot.
         self.figure = self._create_figure()
 
+        # add custom lines
+        if len(self.series_list) > 0:
+            self._add_lines(self.config_obj)
+
     def _read_input_data(self):
         """
             Read the input data file (either CTC or PCT linetype)
@@ -315,6 +319,7 @@ class ROCDiagram(BasePlot):
                     secondary_y=False
                 )
 
+
             def add_trace_copy(trace):
                 """Adds separate traces for markers and a legend.
                    This is a fix for not printing 'Aa' in the legend
@@ -332,6 +337,8 @@ class ROCDiagram(BasePlot):
 
             if self.config_obj.add_point_thresholds:
                 fig.for_each_trace(add_trace_copy)
+
+
         return fig
 
     def save_to_file(self):

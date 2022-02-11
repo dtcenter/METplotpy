@@ -156,6 +156,9 @@ class Reliability(BasePlot):
             # it isn't requested (as set in the config file)
             if series.plot_disp:
                 self._draw_series(series, x_points_index_adj)
+        # add custom lines
+        if len(self.series_list) > 0:
+            self._add_lines(self.config_obj)
 
     def _draw_series(self, series: ReliabilitySeries, x_points_index_adj: list) -> None:
         """

@@ -210,6 +210,10 @@ class EnsSs(BasePlot):
                 self._draw_series(self.series_list[i])
             i = i + counter
 
+        # add custom lines
+        if len(self.series_list) > 0:
+            self._add_lines(self.config_obj)
+
         # apply y axis limits
         self._yaxis_limits()
         self._y2axis_limits()

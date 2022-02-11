@@ -165,8 +165,9 @@ class Bar(BasePlot):
         # add custom lines
         if len(self.series_list) > 0:
             self._add_lines(
-                sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique()),
-                self.config_obj)
+                self.config_obj,
+                sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique())
+                )
 
         # apply y axis limits
         self._yaxis_limits()
