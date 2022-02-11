@@ -24,7 +24,7 @@ class Series:
         self.plot_disp = config.plot_disp[idx]
         if hasattr(config, 'plot_stat'):
             self.plot_stat = config.plot_stat
-        if hasattr(config, 'colors'):
+        if hasattr(config, 'colors_list'):
             self.color = config.colors_list[idx]
         self.series_data = None
         if hasattr(config, 'marker_list'):
