@@ -41,7 +41,7 @@ class Config:
         self.plot_caption = self.get_config_value('plot_caption')
         # plain text, bold, italic, bold italic are choices in METviewer UI
         self.caption_weight = self.get_config_value('caption_weight')
-        self.caption_color = self.get_config_value('caption_color')
+        self.caption_color = self.get_config_value('caption_col')
         # relative magnification
         self.caption_size = self.get_config_value('caption_size')
 
