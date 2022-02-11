@@ -13,7 +13,7 @@ Earth science models but can be useful in the evaluation of models from other do
 
 For more information on Taylor diagrams, please refer to the
 `METviewer documentation
-<https://metplotpy.readthedocs.io/en/develop/Users_Guide/taylordiag.html>`_.
+<https://metviewer.readthedocs.io/en/develop/Users_Guide/taylordiag.html>`_.
 
 Examples of Taylor diagrams are shown below.
 
