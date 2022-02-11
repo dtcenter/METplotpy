@@ -82,6 +82,8 @@ class Config:
                 # Enclose legend labels in a box
                 self.draw_box = True
 
+
+
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
         # interest.  The keys correspond to the column names
@@ -108,7 +110,6 @@ class Config:
         self.series_val_names = self._get_series_val_names()
         self.series_ordering = None
         self.indy_plot_val = self.get_config_value('indy_plot_val')
-        self.lines = self._get_lines()
 
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
@@ -172,10 +173,10 @@ class Config:
             legend_bbox_y = legend_inset['y']
             legend_size = self.get_config_value('legend_size')
             legend_settings = dict(bbox_x=legend_bbox_x,
-                                   bbox_y=legend_bbox_y,
-                                   legend_size=legend_size,
-                                   legend_ncol=legend_ncol,
-                                   legend_box=legend_box)
+                               bbox_y=legend_bbox_y,
+                               legend_size=legend_size,
+                               legend_ncol=legend_ncol,
+                               legend_box=legend_box)
         else:
             legend_settings = dict()
 
@@ -370,6 +371,7 @@ class Config:
         linestyle_list_ordered = self.create_list_by_series_ordering(list(linestyles))
         return linestyle_list_ordered
 
+
     def _get_user_legends(self, legend_label_type):
         """
            Retrieve the text that is to be displayed in the legend at the bottom of the plot.
@@ -395,6 +397,7 @@ class Config:
         #        vx_mask:
         #          - CONUS
         # The constructed legend label will be "NoahMPv3.5.1_d01 CONUS Performance"
+
 
         # Check for empty list as setting in the config file
         legends_list = []
@@ -429,7 +432,7 @@ class Config:
             return [legend_label_type]
 
         perms = utils.create_permutations(series_list)
-        for idx, ll in enumerate(legends_list):
+        for idx,ll in enumerate(legends_list):
             if ll == ' ':
                 if len(series_list) > 1:
                     label_parts = [perms[idx][0], ' ', perms[idx][1], ' ', legend_label_type]
@@ -578,6 +581,7 @@ class Config:
 
         return ordered_settings_list
 
+
     def calculate_plot_dimension(self, config_value, output_units):
         '''
            To calculate the width or height that defines the size of the plot.
@@ -649,53 +653,3 @@ class Config:
         if 'indy_label' in self.parameters.keys():
             return self.get_config_value('indy_label')
         return self.indy_vals
-
-    def _get_lines(self) -> Union[list, None]:
-        """
-         Initialises the custom lines properties and returns a validated list
-         Args:
-
-         Returns:
-             :return: list of lines properties  or None
-         """
-
-        # get property value from the parameters
-        lines = self.get_config_value('lines')
-
-        # if the property exists - proceed
-        if lines is not None:
-            # validate data and replace the values
-            for line in lines:
-
-                # validate line_type
-                line_type = line['type']
-                if line_type not in ('horiz_line', 'vert_line') :
-                    print(f'WARNING: custom line type {line["type"]} is not supported')
-                    line['type'] = None
-                else:
-                    # convert position to float if line_type=horiz_line
-                    if line['type'] == 'horiz_line':
-                        try:
-                            line['position'] = float(line['position'])
-                        except ValueError:
-                            print(f'WARNING: custom line position {line["position"]} is invalid')
-                            line['type'] = None
-                    else:
-                        # convert position to string if line_type=vert_line
-                        line['position'] = str(line['position'])
-
-                    # convert line_style
-                    line_style = line['line_style']
-                    if line_style in constants.LINE_STYLE_TO_PLOTLY_DASH.keys():
-                        line['line_style'] = constants.LINE_STYLE_TO_PLOTLY_DASH[line_style]
-                    else:
-                        line['line_style'] = None
-
-                    # convert line_width to float
-                    try:
-                        line['line_width'] = float(line['line_width'])
-                    except ValueError:
-                        print(f'WARNING: custom line width {line["line_width"]} is invalid')
-                        line['type'] = None
-
-        return lines
