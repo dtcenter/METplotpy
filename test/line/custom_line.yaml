@@ -198,3 +198,15 @@ ytlab_horiz: 0.5
 ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
+
+lines:
+- color: '#8000ff'
+  line_width: '2'
+  position: '11'
+  type: horiz_line
+  line_style: '--'
+- line_style: '-'
+  color: '#000000'
+  line_width: 1
+  position: "18"
+  type: vert_line
