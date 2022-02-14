@@ -119,60 +119,7 @@ def read_tcrmw_levels(filename, levels=['L0']):
 
     return valid_time, lat_grid, lon_grid, wind_data, scalar_data
 
-def radial_tangential_winds(
-    valid_time, range_grid, azimuth_grid, pressure_grid, wind_data):
-    """
-    Compute radial and tangential components from zonal and meridional components.
 
-    Args:
-
-    Returns:
-        radial_tangential_wind_data:  a dictionary containing the radial and tangential
-                                      wind data
-    """
-    radial_tangential_wind_data = {}
-    n_t = len(valid_time)
-    n_r = len(range_grid)
-    n_a = len(azimuth_grid)
-    n_p = len(pressure_grid)
-    logging.info('(n_t, n_r, n_a, n_p)=' + str((n_t, n_r, n_a, n_p)))
-
-    # e_r = cos(theta) e_x + sin(theta) e_y
-    # e_theta = - sin(theta) e_x + cos(theta) e_y
-    theta = np.empty((n_r, n_a, n_p, n_t), dtype=np.float32)
-    # theta = math.pi / 2 - (math.pi / 180) * azimuth_grid
-    for i in range(n_r):
-        for k in range(n_p):
-            for t in range(n_t):
-                # theta[i, :, k, t] = math.pi / 2 - (math.pi / 180) * azimuth_grid[:]
-                theta[i, :, k, t] = (math.pi / 180) * azimuth_grid[:] + math.pi / 2
-    mask = np.greater(theta, 2 * math.pi)
-    theta[mask] = theta[mask] - 2 * math.pi
-
-    wind_radial = np.cos(theta) * wind_data['U'] + np.sin(theta) * wind_data['V']
-    wind_tangential = - np.sin(theta) * wind_data['U'] + np.cos(theta) * wind_data['V']
-    radial_tangential_wind_data['radial'] = wind_radial
-    radial_tangential_wind_data['tangential'] = wind_tangential
-
-    return radial_tangential_wind_data
-
-def height_from_pressure(surface_pressure, virtual_temperature, pressure):
-    """
-    Z_2 - Z_1 = (R_d / g) <T_v> log(p_1 / p_2)
-    R_d / g = 29.3
-    <T_v> = integral_p_2^p_1 T_v(p) (dp / p) / log(p_1 / p_2)
-    """
-    logging.debug(surface_pressure)
-    logging.debug(virtual_temperature)
-    logging.debug(pressure)
-    nlev = len(pressure)
-    height = np.empty(nlev)
-    height[0] = 29.3 * virtual_temperature[0] * np.log(surface_pressure / pressure[0])
-    for k in range(1, nlev):
-        height[k] = height[k - 1] \
-        + 29.3 * (virtual_temperature[k - 1] + virtual_temperature[k]) / 2 \
-        * np.log(pressure[k - 1] / pressure[k])
-    return height
 
 if __name__ == '__main__':
     print(format_valid_time(2019050123))
