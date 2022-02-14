@@ -221,6 +221,12 @@ class Hist(BasePlot):
         for series in self.series_list:
             self._draw_series(series)
 
+        # add custom lines
+        if len(self.series_list) > 0:
+            self._add_lines(
+                self.config_obj
+            )
+
     def _draw_series(self, series: HistSeries) -> None:
         """
         Draws the formatted Bar on the plot

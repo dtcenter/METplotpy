@@ -35,7 +35,6 @@ class Line(BasePlot):
 
     defaults_name = 'line_defaults.yaml'
 
-
     def __init__(self, parameters: dict) -> None:
         """ Creates a line plot consisting of one or more lines (traces), based on
             settings indicated by parameters.
@@ -211,6 +210,9 @@ class Line(BasePlot):
 
                 # aggregate number of stats
                 n_stats = list(map(add, n_stats, series.series_points['nstat']))
+
+        # add custom lines
+        self._add_lines(self.config_obj, x_points_index)
 
         # apply y axis limits
         self._yaxis_limits()
@@ -388,7 +390,6 @@ class Line(BasePlot):
                                  tickangle=self.config_obj.x_tickangle,
                                  tickfont={'size': self.config_obj.x_tickfont_size}
                                  )
-
 
     def _add_yaxis(self) -> None:
         """
@@ -715,6 +716,8 @@ class Line(BasePlot):
 
         except TypeError:
             print('Can\'t save points to a file')
+
+
 
 
 def main(config_filename=None):
