@@ -11,6 +11,7 @@ from typing import Union
 
 from plots.config import Config
 
+
 class BasePlot:
     """A class that provides methods for building Plotly plot's common features
      like title, axis, legend.
@@ -355,12 +356,12 @@ class BasePlot:
         else:
             print("Oops!  The figure was not created. Can't show")
 
-    def _add_lines(self, config_obj: Config ,x_points_index : Union[list, None] = None) -> None:
+    def _add_lines(self, config_obj: Config, x_points_index: Union[list, None] = None) -> None:
         """ Adds custom horizontal and/or vertical line to the plot.
             All line's metadata is in the config_obj.lines
             Args:
-                @x_points_index - list of x-values that are used to create a plot
                 @config_obj - plot's configurations
+                @x_points_index - list of x-values that are used to create a plot
             Returns:
         """
         if hasattr(config_obj, 'lines') and config_obj.lines is not None:
@@ -397,6 +398,7 @@ class BasePlot:
                         print(f'WARNING: vertical line with position {line["position"]} can\'t be created')
                 # ignore everything else
 
+            # draw lines
             self.figure.update_layout(shapes=shapes)
 
     @staticmethod
