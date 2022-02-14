@@ -524,18 +524,16 @@ class Config:
 
         """
 
-        # order the input list according to the series_order setting
-        ordered_settings_list = []
         # create a natural order if series_ordering is missing
         if self.series_ordering is None:
             self.series_ordering = list(range(1, len(setting_to_order) + 1))
 
         # Make the series ordering list zero-based to sync with Python's zero-based counting
         series_ordered_zb = [sorder - 1 for sorder in self.series_ordering]
-        for idx, series in enumerate(series_ordered_zb):
-            ordered_settings_list.insert(series, setting_to_order[idx])
 
-        return ordered_settings_list
+        # Reorder the settings according to the zero based series order.
+        settings_reordered = [setting_to_order[i] for i in series_ordered_zb]
+        return settings_reordered
 
     def create_list_by_plot_val_ordering(self, setting_to_order: str) -> list:
         """
