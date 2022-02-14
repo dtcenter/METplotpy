@@ -201,7 +201,7 @@ if __name__ == "__main__":
     data = [np.random.randn(500), np.random.randn(500) + 1]
     try:
         histogram = Histogram(None, data)
-        histogram.show_in_browser()
+        # histogram.show_in_browser()
         histogram.save_to_file()
     except ValueError as ve:
         print(ve)
