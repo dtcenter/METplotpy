@@ -5,9 +5,9 @@ __author__ = 'Tatiana Burek'
 
 import yaml
 
-from .. import util
-from ..histogram.hist import Hist
-from ..histogram.hist_series import HistSeries
+from metplotpy.plots import util
+from metplotpy.plots.histogram.hist import Hist
+from metplotpy.plots.histogram.hist_series import HistSeries
 
 
 class RelHist(Hist):

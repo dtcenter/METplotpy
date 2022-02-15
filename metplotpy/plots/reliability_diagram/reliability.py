@@ -16,11 +16,11 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
-from ..constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from ..base_plot import BasePlot
-from .. import util
-from ..reliability_diagram.reliability_config import ReliabilityConfig
-from ..reliability_diagram.reliability_series import ReliabilitySeries
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots import util
+from metplotpy.plots.reliability_diagram.reliability_config import ReliabilityConfig
+from metplotpy.plots.reliability_diagram.reliability_series import ReliabilitySeries
 
 
 class Reliability(BasePlot):

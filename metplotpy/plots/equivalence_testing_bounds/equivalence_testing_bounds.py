@@ -14,13 +14,13 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
-from ..constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from ..equivalence_testing_bounds.equivalence_testing_bounds_series \
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.equivalence_testing_bounds.equivalence_testing_bounds_series \
     import EquivalenceTestingBoundsSeries
-from ..line.line_config import LineConfig
-from ..line.line_series import LineSeries
-from ..base_plot import BasePlot
-from .. import util
+from metplotpy.plots.line.line_config import LineConfig
+from metplotpy.plots.line.line_series import LineSeries
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots import util
 
 import metcalcpy.util.utils as calc_util
 

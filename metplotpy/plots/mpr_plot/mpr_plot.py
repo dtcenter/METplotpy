@@ -14,12 +14,12 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.io as pio
 
-from ..base_plot import BasePlot
-from ..constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 
-from ..mpr_plot.mpr_plot_config import MprPlotConfig
-from ..wind_rose.wind_rose import WindRosePlot
-from .. import util
+from metplotpy.plots.mpr_plot.mpr_plot_config import MprPlotConfig
+from metplotpy.plots.wind_rose.wind_rose import WindRosePlot
+from metplotpy.plots import util
 
 
 class MprPlotInfo():

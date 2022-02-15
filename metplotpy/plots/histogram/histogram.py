@@ -9,7 +9,7 @@ import yaml
 import pandas as pd
 import numpy as np
 
-from ..base_plot import BasePlot
+from metplotpy.plots.base_plot import BasePlot
 
 
 class Histogram(BasePlot):

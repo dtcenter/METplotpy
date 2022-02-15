@@ -12,12 +12,12 @@ from matplotlib.font_manager import FontProperties
 import numpy as np
 import yaml
 import pandas as pd
-from ..base_plot import BasePlot
+from metplotpy.plots.base_plot import BasePlot
 import metcalcpy.util.utils as calc_util
 from .performance_diagram_config import PerformanceDiagramConfig
 from .performance_diagram_series import PerformanceDiagramSeries
-from .. import util
-from .. import constants
+from metplotpy.plots import util
+from metplotpy.plots import constants
 import warnings
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)

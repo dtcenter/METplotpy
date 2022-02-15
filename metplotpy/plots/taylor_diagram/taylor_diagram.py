@@ -21,9 +21,9 @@ import mpl_toolkits.axisartist.grid_finder as gf
 import numpy as np
 import yaml
 import pandas as pd
-from .. import constants
-from ..base_plot import BasePlot
-from .. import util
+from metplotpy.plots import constants
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots import util
 from .taylor_diagram_config import TaylorDiagramConfig
 from .taylor_diagram_series import TaylorDiagramSeries
 
