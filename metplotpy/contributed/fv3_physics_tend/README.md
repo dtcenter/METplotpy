@@ -57,7 +57,7 @@ Potential tendency variables to read from fv3_history.nc:
 ### variables to plot
 |     physics tendencies     | temperature | specific humidity |   u-wind    |   v-wind    |
 | -------------------------- | ----------- | ----------------- | ----------- | ----------- |
-|convective gravity wave drag| dt3dt_cnvgwd|                   |du3dt_cnvgwd |dv3dt_cnvgwd |
+|convective gravity wave drag| dt3dt_congwd|                   |du3dt_congwd |dv3dt_congwd |
 |      deep convection       |dt3dt_deepcnv| dq3dt_deepcnv     |du3dt_deepcnv|dv3dt_deepcnv|
 |    long wave radiation     | dt3dt_lw    |                   |             |             |
 |      microphysics          | dt3dt_mp    |    dq3dt_mp       |             |             |
