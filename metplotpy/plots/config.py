@@ -110,8 +110,9 @@ class Config:
         self.series_val_names = self._get_series_val_names()
         self.series_ordering = None
         self.indy_plot_val = self.get_config_value('indy_plot_val')
+        self.lines = self._get_lines()
 
-    def get_config_value(self, *args:Union[str,int,float]) -> None:
+    def get_config_value(self, *args:Union[str,int,float]):
         """Gets the value of a configuration parameter.
         Looks for parameter in the user parameter dictionary
 
@@ -124,7 +125,7 @@ class Config:
 
         return self._get_nested(self.parameters, args)
 
-    def _get_nested(self, data:dict, args:tuple) -> None:
+    def _get_nested(self, data:dict, args:tuple):
         """Recursive function that uses the tuple with keys to find a value
         in multidimensional dictionary.
 
@@ -651,3 +652,53 @@ class Config:
         if 'indy_label' in self.parameters.keys():
             return self.get_config_value('indy_label')
         return self.indy_vals
+
+    def _get_lines(self) -> Union[list, None]:
+        """
+         Initialises the custom lines properties and returns a validated list
+         Args:
+
+         Returns:
+             :return: list of lines properties  or None
+         """
+
+        # get property value from the parameters
+        lines = self.get_config_value('lines')
+
+        # if the property exists - proceed
+        if lines is not None:
+            # validate data and replace the values
+            for line in lines:
+
+                # validate line_type
+                line_type = line['type']
+                if line_type not in ('horiz_line', 'vert_line') :
+                    print(f'WARNING: custom line type {line["type"]} is not supported')
+                    line['type'] = None
+                else:
+                    # convert position to float if line_type=horiz_line
+                    if line['type'] == 'horiz_line':
+                        try:
+                            line['position'] = float(line['position'])
+                        except ValueError:
+                            print(f'WARNING: custom line position {line["position"]} is invalid')
+                            line['type'] = None
+                    else:
+                        # convert position to string if line_type=vert_line
+                        line['position'] = str(line['position'])
+
+                    # convert line_style
+                    line_style = line['line_style']
+                    if line_style in constants.LINE_STYLE_TO_PLOTLY_DASH.keys():
+                        line['line_style'] = constants.LINE_STYLE_TO_PLOTLY_DASH[line_style]
+                    else:
+                        line['line_style'] = None
+
+                    # convert line_width to float
+                    try:
+                        line['line_width'] = float(line['line_width'])
+                    except ValueError:
+                        print(f'WARNING: custom line width {line["line_width"]} is invalid')
+                        line['type'] = None
+
+        return lines

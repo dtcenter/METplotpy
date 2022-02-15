@@ -155,6 +155,10 @@ class Eclv(Line):
                 for series_points in series.series_points:
                     n_stats = list(map(add, n_stats, series_points['nstat']))
 
+        # add custom lines
+        if len(self.series_list) > 0:
+            self._add_lines(self.config_obj)
+
         # apply y axis limits
         self._yaxis_limits()
 
