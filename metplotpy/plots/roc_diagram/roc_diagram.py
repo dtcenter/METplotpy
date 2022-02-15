@@ -10,12 +10,11 @@ import sys
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-sys.path.append("../../../")
-import plots.util as util
-import plots.constants as constants
-from plots.base_plot import BasePlot
-from plots.roc_diagram.roc_diagram_config import ROCDiagramConfig
-from plots.roc_diagram.roc_diagram_series import ROCDiagramSeries
+from .. import util
+from .. import constants
+from ..base_plot import BasePlot
+from ..roc_diagram.roc_diagram_config import ROCDiagramConfig
+from ..roc_diagram.roc_diagram_series import ROCDiagramSeries
 import metcalcpy.util.utils as calc_util
 
 

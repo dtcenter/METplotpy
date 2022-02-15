@@ -14,12 +14,12 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
-from plots.constants import PLOTLY_PAPER_BGCOOR
-from plots.base_plot import BasePlot
-import plots.util as util
-from plots.contour.contour_config import ContourConfig
-from plots.contour.contour_series import ContourSeries
-from plots.series import Series
+from ..constants import PLOTLY_PAPER_BGCOOR
+from ..base_plot import BasePlot
+from .. import util
+from ..contour.contour_config import ContourConfig
+from ..contour.contour_series import ContourSeries
+from ..series import Series
 
 import metcalcpy.util.utils as calc_util
 

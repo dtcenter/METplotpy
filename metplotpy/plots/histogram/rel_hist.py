@@ -5,10 +5,9 @@ __author__ = 'Tatiana Burek'
 
 import yaml
 
-import plots.util as util
-from plots.histogram.hist import Hist
-
-from plots.histogram.hist_series import HistSeries
+from .. import util
+from ..histogram.hist import Hist
+from ..histogram.hist_series import HistSeries
 
 
 class RelHist(Hist):

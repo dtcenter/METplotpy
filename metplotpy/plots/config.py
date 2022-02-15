@@ -9,7 +9,7 @@ import itertools
 from typing import Union
 
 import metcalcpy.util.utils as utils
-import constants as constants
+from . import constants
 
 
 class Config:

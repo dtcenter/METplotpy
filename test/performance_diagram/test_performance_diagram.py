@@ -1,8 +1,8 @@
 import os
 import sys
-sys.path.append("../../")
 import pytest
-from plots.performance_diagram import performance_diagram as pd
+
+from metplotpy.plots.performance_diagram import performance_diagram as pd
 from metcalcpy.compare_images import CompareImages
 
 @pytest.fixture

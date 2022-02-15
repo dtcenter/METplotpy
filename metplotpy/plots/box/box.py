@@ -19,11 +19,11 @@ from plotly.graph_objects import Figure
 
 import metcalcpy.util.utils as calc_util
 
-from plots.base_plot import BasePlot
-from plots.box.box_config import BoxConfig
-from plots.box.box_series import BoxSeries
-import plots.util as util
-from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from ..base_plot import BasePlot
+from ..box.box_config import BoxConfig
+from ..box.box_series import BoxSeries
+from .. import util
+from ..constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 
 
 class Box(BasePlot):

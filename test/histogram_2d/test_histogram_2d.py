@@ -1,8 +1,8 @@
 import os
 import sys
-sys.path.append("../../")
 import pytest
-from plots.histogram_2d import histogram_2d as h2d
+
+from metplotpy.plots.histogram_2d import histogram_2d as h2d
 from metcalcpy.compare_images import CompareImages
 
 @pytest.fixture

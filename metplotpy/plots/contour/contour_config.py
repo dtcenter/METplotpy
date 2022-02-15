@@ -5,9 +5,9 @@ Holds values set in the Contour plot config file(s)
 """
 __author__ = 'Tatiana Burek'
 
-from plots.config import Config
-import plots.constants as constants
-import plots.util as util
+from ..config import Config
+from .. import constants
+from .. import util
 
 import metcalcpy.util.utils as utils
 

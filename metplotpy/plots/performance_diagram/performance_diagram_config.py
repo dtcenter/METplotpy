@@ -8,8 +8,8 @@ Holds values set in the Performance Diagram config file(s)
 __author__ = 'Minna Win'
 
 import re
-from plots.config import Config
-import plots.constants as constants
+from ..config import Config
+from .. import constants
 
 class PerformanceDiagramConfig(Config):
 

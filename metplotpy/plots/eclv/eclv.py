@@ -14,13 +14,13 @@ import itertools
 import plotly.graph_objects as go
 
 from metcalcpy.event_equalize import event_equalize
-from plots.base_plot import BasePlot
-from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH
-from plots.eclv.eclv_config import EclvConfig
-from plots.eclv.eclv_series import EclvSeries
-from plots.line.line import Line
-import plots.util as util
-from plots.series import Series
+from ..base_plot import BasePlot
+from ..constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH
+from ..eclv.eclv_config import EclvConfig
+from ..eclv.eclv_series import EclvSeries
+from ..line.line import Line
+from .. import util
+from ..series import Series
 
 import metcalcpy.util.utils as calc_util
 

@@ -21,11 +21,11 @@ import mpl_toolkits.axisartist.grid_finder as gf
 import numpy as np
 import yaml
 import pandas as pd
-import plots.constants as constants
-from plots.base_plot import BasePlot
-import plots.util as util
-from taylor_diagram_config import TaylorDiagramConfig
-from taylor_diagram_series import TaylorDiagramSeries
+from .. import constants
+from ..base_plot import BasePlot
+from .. import util
+from .taylor_diagram_config import TaylorDiagramConfig
+from .taylor_diagram_series import TaylorDiagramSeries
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 

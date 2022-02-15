@@ -5,7 +5,7 @@
 import pytest
 import os
 import pandas as pd
-from plots.roc_diagram import roc_diagram as roc
+from metplotpy.plots.roc_diagram import roc_diagram as roc
 from metcalcpy.compare_images import CompareImages
 import metcalcpy.util.ctc_statistics as ctc
 

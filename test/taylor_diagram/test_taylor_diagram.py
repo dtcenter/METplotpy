@@ -1,8 +1,7 @@
 import os
 import sys
-sys.path.append("../../")
 import pytest
-from plots.taylor_diagram import taylor_diagram as td
+from metplotpy.plots.taylor_diagram import taylor_diagram as td
 from metcalcpy.compare_images import CompareImages
 
 

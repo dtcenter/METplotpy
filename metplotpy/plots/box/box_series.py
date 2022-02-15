@@ -10,7 +10,7 @@ import numpy as np
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
-from plots.series import Series
+from ..series import Series
 
 
 class BoxSeries(Series):

@@ -5,9 +5,9 @@ __author__ = 'Tatiana Burek'
 
 import yaml
 
-from plots.histogram.hist import Hist
-import plots.util as util
-from plots.histogram.hist_series import HistSeries
+from ..histogram.hist import Hist
+from .. import util
+from ..histogram.hist_series import HistSeries
 
 
 class RankHist(Hist):

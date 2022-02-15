@@ -2,7 +2,6 @@ import os, sys
 import xarray as xr
 import pytest
 import yaml
-sys.path.append("../..")
 from metplotpy.contributed.hovmoeller.hovmoeller_calc import lat_avg
 import metplotpy.contributed.hovmoeller.hovmoeller_plotly as hov
 

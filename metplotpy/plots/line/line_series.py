@@ -14,8 +14,8 @@ import metcalcpy.util.correlation as pg
 from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
-from plots.series import Series
-from plots import GROUP_SEPARATOR
+from ..series import Series
+from .. import GROUP_SEPARATOR
 
 
 class LineSeries(Series):

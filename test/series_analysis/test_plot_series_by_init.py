@@ -5,8 +5,7 @@ import os, shutil, sys
 import yaml
 import warnings
 import matplotlib
-sys.path.append("../../metplotpy")
-from contributed.series_analysis.plot_series_by_init import PlotSeriesByInit
+from metplotpy.contributed.series_analysis.plot_series_by_init import PlotSeriesByInit
 
 # ignore the MatplotlibFutureDeprecation warning which does not affect this code
 # since changes must be made to Cartopy
