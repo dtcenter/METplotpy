@@ -49,8 +49,8 @@ def main():
     if debug:
         print(args)
     gds  = xarray.open_dataset(gfile.name)
-    lont = gds["grid_lont"]
-    latt = gds["grid_latt"]
+    lont = gds[fv3.lon_name]
+    latt = gds[fv3.lat_name]
     area = gds["area"]
 
     if ofile is None:
@@ -63,7 +63,7 @@ def main():
     fig, ax = plt.subplots()
     plt.subplots_adjust(bottom=0.18) # add space at bottom for fine print
     ax.invert_yaxis() # pressure increases from top to bottom
-    gl = ax.grid(b=True, color="grey", alpha=0.5, lw=0.5)
+    gl = ax.grid(visible=True, color="grey", alpha=0.5, lw=0.5)
 
     # Open input file
     if debug:
