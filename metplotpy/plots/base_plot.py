@@ -9,7 +9,7 @@ import numpy as np
 import yaml
 from typing import Union
 
-from plots.config import Config
+from config import Config
 
 
 class BasePlot:
