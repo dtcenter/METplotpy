@@ -19,13 +19,14 @@ Total change is difference between state variable at t = 12 and t = 1, where t i
 state_variables = fv3.tendencies.keys()
 
 def parse_args():
-    # Populate list of choices for contour fill argument.
-    fill_choices = ["resid"] # residual tendency
+    # Populate list of choices for contour fill variable argument.
+    fill_choices = []
     for state_variable in state_variables: # tendencies for each state variable
         fill_choices.extend(fv3.tendencies[state_variable])
     fill_choices = ["_".join(x.split("_")[1:]) for x in fill_choices] # Just the physics/parameterization string after the "_"
     for state_variable in state_variables:
         fill_choices.append(f"d{state_variable}") # total change in state variable
+    fill_choices.append("resid") # residual tendency
     fill_choices = set(fill_choices) # no repeats (same physics/parameterization used for multiple state variables). 
 
     # =============Arguments===================
@@ -61,9 +62,9 @@ def main():
 
     if debug:
         print(args)
-    gds  = xarray.open_dataset(gfile.name)
-    lont = gds["grid_lont"]
-    latt = gds["grid_latt"]
+    gds = xarray.open_dataset(gfile.name)
+    lont = gds[fv3.lon_name]
+    latt = gds[fv3.lat_name]
     area = gds["area"]
 
     if ofile is None:
@@ -98,7 +99,10 @@ def main():
 
     # Stack variables along new tendency axis of new DataArray.
     tendency = f"{variable} tendency"
+    long_names = [all_tend[da].attrs["long_name"] for da in all_tend] # Make list of long_names before .to_array() loses them.
     all_tend = all_tend.to_array(dim=tendency)
+    # Assign long_names to a new DataArray coordinate. It will have the same shape as tendency dimension. 
+    all_tend = all_tend.assign_coords({"long_name":(tendency,long_names)})
 
     print(f"calculate d{variable}")
     state_variable = fv3ds[variable].metpy.quantify() # Tried metpy.quantify() with open_dataset, but pint.errors.UndefinedUnitError: 'dBz' is not defined in the unit registry
@@ -120,6 +124,7 @@ def main():
         all_tend = all_tend.sel({tendency:fill})
 
     all_tend = all_tend.sel(pfull=pfull, method="nearest", tolerance=50.)
+   
 
     if shp:
         shp = shp.rstrip("/")
@@ -161,9 +166,9 @@ def main():
     # add time to title and output filename
     root, ext = os.path.splitext(ofile)
     ofile = root + f".{lasttime.dt.strftime('%Y%m%d_%H%M%S').item()}" + ext
-    title = lasttime.item()
-    if "long_name" in all_tend.attrs:
-        title = f'{all_tend.attrs["long_name"]} ({fill})  {lasttime.item()}'
+    title = f'{lasttime.item()}'
+    if 'long_name' in all_tend.coords:
+        title = f'{all_tend.coords["long_name"].data}  {lasttime.item()}'
     plt.suptitle(title, wrap=True)
 
     fineprint  = f"history: {os.path.realpath(ifile.name)}"
