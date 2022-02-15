@@ -6,7 +6,7 @@ from metplotpy.contributed.hovmoeller.hovmoeller_calc import lat_avg
 import metplotpy.contributed.hovmoeller.hovmoeller_plotly as hov
 
 def get_config():
-    config_file = "./hovmoeller.yaml"
+    config_file = os.path.join(os.path.dirname(__file__),"hovmoeller.yaml")
 
     with open(config_file, 'r') as stream:
         try:
