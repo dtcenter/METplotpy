@@ -3,8 +3,8 @@ import numpy as np
 import xarray as xr
 import pytest
 sys.path.append("../../")
-# import metplotpy.contributed.spacetime_plot.spacetime_plot as stp
-import spacetime_plot.yaml_environment_util as util
+import metplotpy.contributed.spacetime_plot.spacetime_plot as stp
+import yaml_environment_util as util
 
 
 # Use the logic in the spectra_plot_power script to
