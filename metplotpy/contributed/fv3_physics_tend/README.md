@@ -11,6 +11,7 @@ Read tendencies of temperature, moisture, and momentum due to physics parameteri
 - datetime
 - matplotlib.path
 - matplotlib.pyplot
+- matplotlib.ticker
 - metpy.units
 - numpy
 - os

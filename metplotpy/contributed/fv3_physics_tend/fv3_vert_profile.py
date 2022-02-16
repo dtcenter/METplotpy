@@ -3,6 +3,7 @@ import cartopy
 import datetime
 import fv3 # get dictionary of variable names for each type of tendency, string name of lat and lon variables
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
 from metpy.units import units
 import numpy as np
 import os
@@ -64,7 +65,10 @@ def main():
     fig, ax = plt.subplots()
     plt.subplots_adjust(bottom=0.18) # add space at bottom for fine print
     ax.invert_yaxis() # pressure increases from top to bottom
-    gl = ax.grid(visible=True, color="grey", alpha=0.5, lw=0.5)
+    ax.grid(visible=True, color="grey", alpha=0.5, lw=0.5)
+    ax.yaxis.set_major_locator(MultipleLocator(100))
+    ax.yaxis.set_minor_locator(MultipleLocator(25))
+    ax.grid(which='minor', alpha=0.3, lw=0.4)
 
     # Open input file
     if debug:
@@ -108,7 +112,7 @@ def main():
     resid = total_change.sum(dim=tendency) - dstate_variable
     resid.attrs["long_name"] = f"total_change - d{variable}"
 
-    if resid:
+    if resid is not None:
         # Expand tendency axis with dstate_variable and resid.
         dstate_variable = dstate_variable.expand_dims(dim={tendency:[f"d{variable}"]})
         resid = resid.expand_dims(dim={tendency:["resid"]})
@@ -151,9 +155,12 @@ def main():
         # [-2:] means take last two elements of da2plot.
         special_lines = list(zip(lines, ax.get_legend().legendHandles))[-2:]
         special_marker = 'o'
+        special_marker_size = 3
         for line, leghandle in special_lines:
             line.set_marker(special_marker)
+            line.set_markersize(special_marker_size)
             leghandle.set_marker(special_marker)
+            leghandle.set_markersize(special_marker_size)
 
     # Annotate figure with details about figure creation. 
     fineprint  = f"history: {os.path.realpath(ifile.name)}"
