@@ -1,7 +1,7 @@
 import argparse
 import cartopy
 import datetime
-import fv3 # get expected variable names for each type of tendency
+import fv3 # get dictionary of variable names for each type of tendency, string name of lat and lon variables
 import matplotlib.pyplot as plt
 from metpy.units import units
 import numpy as np
@@ -11,8 +11,9 @@ import sys
 import xarray
 
 """
-Plot tendencies of t, q, u, or v from physics parameterizations, dynamics (non-physics), their total, and residual.
-Total change is difference between state variable at t = 12 and t = 1, where t is the output timestep.
+Vertical profile of tendencies of t, q, u, or v from physics parameterizations, dynamics (non-physics), their total, and residual.
+Total change is the actual change in state variable from first time to last time. Total change differs from cumulative change
+attributed to physics and non-physics tendencies when residual is not zero.
 """
 
 state_variables = fv3.tendencies.keys()
@@ -76,18 +77,25 @@ def main():
     numdt = fv3ds.time.size
     # Units of tendencies are K/s averaged over number of time steps within first forecast hour.
     # Multiply by time step and number of time steps
-    all_tend *= dt * numdt
+    total_change = all_tend * dt * numdt
     # Reassign original long_name attributes but replace "tendency" with "change".
     # long_name was correctly removed after multiplying by dt * numdt.
-    for varname, da in all_tend.data_vars.items():
+    for varname, da in total_change.data_vars.items():
         da.attrs["long_name"] = fv3ds[varname].attrs["long_name"].replace("tendency", "change")
+
+
     # Remove characters up to and including 1st underscore (e.g. du3dt_) in DataArray name.
-    name_dict = {da : "_".join(da.split("_")[1:]) for da in all_tend.data_vars} 
-    all_tend = all_tend.rename(name_dict)
+    # for example dt3dt_pbl -> pbl
+    name_dict = {da : "_".join(da.split("_")[1:]) for da in total_change.data_vars} 
+    total_change = total_change.rename(name_dict)
+
 
     # Stack variables along new tendency axis of new DataArray.
     tendency = f"{variable} tendency"
-    all_tend = all_tend.to_array(dim=tendency)
+    # In fv3_planview.py we keep track of long_names, but this causes trouble in 
+    # fv3_vert_profile if resid=True and we add dstate_variable and resid.
+    # Those DataArrays won't have a long_name coordinate.
+    total_change = total_change.to_array(dim=tendency)
 
     print(f"calculate d{variable}")
     state_variable = fv3ds[variable].metpy.quantify() # Tried metpy.quantify() with open_dataset, but pint.errors.UndefinedUnitError: 'dBz' is not defined in the unit registry
@@ -95,18 +103,21 @@ def main():
     dstate_variable = dstate_variable.assign_coords(time=lasttime)
     dstate_variable.attrs["long_name"] = f"change in {state_variable.attrs['long_name']}"
 
-    if resid:
-        # Sum along tendency axis.
-        resid = all_tend.sum(dim=tendency) - dstate_variable
-        resid.attrs["long_name"] = f"all_tend - d{variable}"
+    # Sum along tendency axis and subtract change in state variable.
+    # This is residual.
+    resid = total_change.sum(dim=tendency) - dstate_variable
+    resid.attrs["long_name"] = f"total_change - d{variable}"
 
+    if resid:
         # Expand tendency axis with dstate_variable and resid.
         dstate_variable = dstate_variable.expand_dims(dim={tendency:[f"d{variable}"]})
         resid = resid.expand_dims(dim={tendency:["resid"]})
 
         # Add dstate_variable and resid DataArrays to tendency axis.
-        all_tend = xarray.concat([all_tend,dstate_variable,resid], tendency)
+        total_change = xarray.concat([total_change,dstate_variable,resid], tendency)
 
+
+    da2plot = total_change
     if shp:
         shp = shp.rstrip("/")
         # Add shapefile name to output filename
@@ -116,34 +127,35 @@ def main():
 
         # mask points outside shape
         mask = fv3.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
-        mask = xarray.DataArray(mask, coords=[all_tend.grid_yt, all_tend.grid_xt])
-        all_tend = all_tend.where(mask, drop=True)
+        mask = xarray.DataArray(mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
+        da2plot = da2plot.where(mask, drop=True)
         area     = area.where(mask).fillna(0)
 
     totalarea = area.metpy.convert_units("km**2").sum()
 
-    # append time to output filename
+    # Append time to output filename
     root, ext = os.path.splitext(ofile)
     ofile = root + f".{lasttime.dt.strftime('%Y%m%d_%H%M%S').item()}" + ext
 
     # area-weighted spatial average
-    all_tend = all_tend.weighted(area).mean(area.dims)
+    da2plot = da2plot.weighted(area).mean(area.dims)
 
     print("plot area-weighted spatial average...")
-    lines = all_tend.plot.line(y="pfull", ax=ax, hue=tendency)
+    lines = da2plot.plot.line(y="pfull", ax=ax, hue=tendency)
 
-    if resid:
+    if resid is not None: # resid might have been turned from a Boolean to a DataArray.
         # Add special marker to dstate_variable and residual lines.
         # DataArray plot legend handles differ from the plot lines, for some reason. So if you 
         # change the style of a line later, it is not automatically changed in the legend.
         # zip d{variable}, resid line and their respective legend handles together and change their style together.
-        # [-2:] means take last two elements of all_tend.
+        # [-2:] means take last two elements of da2plot.
         special_lines = list(zip(lines, ax.get_legend().legendHandles))[-2:]
         special_marker = 'o'
         for line, leghandle in special_lines:
             line.set_marker(special_marker)
             leghandle.set_marker(special_marker)
 
+    # Annotate figure with details about figure creation. 
     fineprint  = f"history: {os.path.realpath(ifile.name)}"
     fineprint += f"\ngrid_spec: {os.path.realpath(gfile.name)}"
     if shp: fineprint += f"\nmask: {shp}"
