@@ -52,26 +52,25 @@ FV3 output and grid specifications. [Grid description in UFS Short Range Weather
 - fv3_history.nc
 - grid_spec.nc
 
-Potential tendency variables read from fv3_history.nc:
+Potential tendency variables to read from fv3_history.nc:
 
-### physics tendencies
-- dt3dt_cnvgwd
-- dt3dt_deepcnv 
-- dt3dt_lw
-- dt3dt_mp
-- dt3dt_orogwd
-- dt3dt_pbl
-- dt3dt_rdamp
-- dt3dt_shalcnv
-- dt3dt_sw
+### variables to plot
+|     physics tendencies     | temperature | specific humidity |   u-wind    |   v-wind    |
+| -------------------------- | ----------- | ----------------- | ----------- | ----------- |
+|convective gravity wave drag| dt3dt_congwd|                   |du3dt_congwd |dv3dt_congwd |
+|      deep convection       |dt3dt_deepcnv| dq3dt_deepcnv     |du3dt_deepcnv|dv3dt_deepcnv|
+|    long wave radiation     | dt3dt_lw    |                   |             |             |
+|      microphysics          | dt3dt_mp    |    dq3dt_mp       |             |             |
+|orographic gravity wave drag| dt3dt_orogwd|                   |du3dt_orogwd |dv3dt_orogwd |
+|   planetary boundary layer | dt3dt_pbl   |  dq3dt_pbl        |du3dt_pbl    |dv3dt_pbl    |
+|      Rayleigh damping      | dt3dt_rdamp |                   |du3dt_rdamp  | dv3dt_rdamp |
+|     shallow convection     |dt3dt_shalcnv|dq3dt_shalcnv      |du3dt_shalcnv|dv3dt_shalcnv|
+|     short wave radiation   |   dt3dt_sw  |                   |             |             |
+|     total physics          | dt3dt_phys  | dqdt_phys         |du3dt_phys   | dv3dt_phys  |
+|  *non-physics tendency*    |*dt3dt_nophys*|*dq3dt_nophys*    |*du3dt_nophys*|*dv3dt_nophys* |
 
-### non-physics tendency
- - dt3dt_nophys
 
-Similar tendency variables for *q* (moisture), *u*, and *v*-wind. 
-
-Potential state variables used to derive cumulative change (final minus initial time) and to compare cumulative change to tendencies:
-- tmp
-- spfh
-- ugrd
-- vgrd
+State variables used to derive cumulative change (final minus initial time) and to compare cumulative change to tendencies:
+|              | temperature | specific humidity | u-wind | v-wind |
+| ------------ | ----------- | ----------------- | ------ | ------ |
+|state variable|    tmp      |    spfh           | ugrd   | vgrd   |
