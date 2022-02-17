@@ -18,7 +18,7 @@ def setup():
     cleanup()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom_line.yaml"
 
     # Invoke the command to generate a Performance Diagram based on
@@ -68,7 +68,7 @@ def test_points_files_exist(test_input, expected):
 
 
 
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom_line2.yaml"
     l.main(custom_config_filename)
 
