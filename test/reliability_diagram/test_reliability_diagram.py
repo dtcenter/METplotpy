@@ -50,7 +50,7 @@ def test_files_exist(setup, test_input, expected):
     assert os.path.isfile(test_input) == expected
     cleanup()
 
-
+@pytest.mark.skip("depends on machine on which this is run")
 def test_images_match(setup):
     '''
         Compare an expected plot with the
