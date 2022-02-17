@@ -55,10 +55,20 @@ jobs:
         pip install statsmodels==0.12.1
         pip install xarray==0.16
         
-  
-    # Clone this repo
+      
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+      
+       # Clone this repo
     - name: Checkout
-      uses: actions/checkout@v2
+      run: |
+          /usr/bin/git clone https://github.com/dtcenter/METplotpy
+          cd METplotpy
+          /usr/bin/git checkout ${extract_branch}
+          python -m pip install -e .
+
 
     - name: Test with pytest
       run: |
