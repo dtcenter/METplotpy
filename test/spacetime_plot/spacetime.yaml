@@ -1,9 +1,0 @@
-
-# directory where the input data resides
-plotdata: "/d1/projects/METcalcpy/METcalcpy_Data/"
-
-# directory where the output plot will be saved
-plotpath: "/home/minnawin/METplotpy/output"
-
-condapath: !ENV ${CONDA}
-
