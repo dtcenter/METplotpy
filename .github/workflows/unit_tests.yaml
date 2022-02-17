@@ -78,7 +78,31 @@ jobs:
           pytest test_bar.py
           cd ../box
           pytest test_box.py
-          
+          cd ../contour
+          pytest test_contour.py
+          cd ../eclv
+          pytest test_eclv.py
+          cd ../ens_ss
+          pytest test_ens_ss.py
+          cd ../equivalence_testing_bounds
+          pytest test_equivalence_testing_bounds.py
+          cd ../import
+          pytest test_import.py
+          cd ../line
+          pytest test_line_groups_plot.py
+          pytest test_line_plot.py
+          cd ../mpr_plot
+          pytest test_mpr_plot.py
+          cd ../performance_diagram
+          pytest test_performance_diagram.py
+          cd ../reliability_diagram
+          pytest test_reliability_diagram.py
+          cd ../roc_diagram
+          pytest test_roc_diagram.py
+          cd taylor_diagram
+          pytest test_taylor_diagram.py
+          cd ../wind_rose
+          pytest test_wind_rose.py
           
     
           
