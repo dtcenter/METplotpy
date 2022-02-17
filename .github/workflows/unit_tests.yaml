@@ -44,7 +44,7 @@ jobs:
         pip install numpy==1.19.5
         pip install pandas==1.1.5
         pip install plotly==4.9.0
-        pip install imutils==0.53
+        pip install imutils==0.5.3
         pip install kaliedo==0.2.1
         pip install matplotlib==3.3.4
         pip install pytest==6.2.5
