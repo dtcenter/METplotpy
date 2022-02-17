@@ -90,7 +90,7 @@ def test_points_files_exist(test_input, expected):
         # don't exist.  Ignore.
         pass
 
-
+@pytest.mark.skip()
 def test_images_match(setup):
     '''
         Compare an expected plot with the
