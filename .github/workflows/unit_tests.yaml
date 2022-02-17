@@ -75,12 +75,10 @@ jobs:
       run: |
           cd test
           cd bar 
-          ls
+          pytest test_bar.py
           cd ../box
-          ls
-          #cd pytest test_bar.py
-          #cd ../box
-          #cd pytest test_box.py
+          pytest test_box.py
+          
           
     
           
