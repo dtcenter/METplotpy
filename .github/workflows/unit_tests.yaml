@@ -71,10 +71,13 @@ jobs:
 
 
     - name: Test with pytest
+      env:
+        PYTHONPATH: "."
       run: |
         
           cd test/bar
           python -m pytest test_bar.py
+    
           
          
          
