@@ -1,9 +1,5 @@
-import sys
-sys.path.append("../..")
 import example_difficulty_index as edi
-import math
-import pytest
-import warnings
+
 
 def test_difficulty_index_plot():
     """

@@ -24,9 +24,7 @@ from netCDF4 import num2date
 """
 Import BasePlot class
 """
-#from ..base_plot import BasePlot
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-from base_plot import BasePlot
+from metplotpy.plots.base_plot import BasePlot
 
 
 class Hovmoeller(BasePlot):

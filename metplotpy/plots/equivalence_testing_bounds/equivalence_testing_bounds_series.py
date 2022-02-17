@@ -14,8 +14,8 @@ import metcalcpy.util.correlation as pg
 
 import metcalcpy.util.utils as utils
 from metcalcpy.sum_stat import calculate_statistic
-from plots import GROUP_SEPARATOR
-from plots.line.line_series import LineSeries
+from .. import GROUP_SEPARATOR
+from ..line.line_series import LineSeries
 
 
 class EquivalenceTestingBoundsSeries(LineSeries):

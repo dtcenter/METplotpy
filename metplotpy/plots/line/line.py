@@ -18,12 +18,12 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
-from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from plots.line.line_config import LineConfig
-from plots.line.line_series import LineSeries
-from plots.base_plot import BasePlot
-import plots.util as util
-from plots.series import Series
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.line.line_config import LineConfig
+from metplotpy.plots.line.line_series import LineSeries
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots import util
+from metplotpy.plots.series import Series
 
 import metcalcpy.util.utils as calc_util
 

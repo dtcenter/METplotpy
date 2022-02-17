@@ -7,9 +7,9 @@ __author__ = 'Tatiana Burek'
 
 import itertools
 
-from plots.config import Config
-import plots.constants as constants
-import plots.util as util
+from ..config import Config
+from .. import constants
+from .. import util
 
 import metcalcpy.util.utils as utils
 

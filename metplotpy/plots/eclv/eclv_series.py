@@ -9,7 +9,7 @@ import numpy as np
 from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
-from plots.line.line_series import LineSeries
+from ..line.line_series import LineSeries
 
 
 class EclvSeries(LineSeries):

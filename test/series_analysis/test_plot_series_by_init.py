@@ -1,18 +1,18 @@
 """Tests for the plot_series_by_init.py script, on the TMP variable using
    the sample data on the host 'eyewall': /d1/METplus_Plotting_Data/series_by_init
 """
-import os, shutil, sys
+import os
+import pytest
 import yaml
 import warnings
 import matplotlib
-sys.path.append("../../metplotpy")
-from contributed.series_analysis.plot_series_by_init import PlotSeriesByInit
+# from metplotpy.contributed.series_analysis.plot_series_by_init import PlotSeriesByInit
 
 # ignore the MatplotlibFutureDeprecation warning which does not affect this code
 # since changes must be made to Cartopy
 warnings.simplefilter(action='ignore', category=matplotlib.cbook.mplDeprecation)
 
-
+@pytest.mark.skip('Requires large dataset to run and special packages, uncomment import to run')
 def test_expected_files_created():
     """
         Testing that the expected png files for OBAR and FBAR are created in
@@ -63,4 +63,5 @@ def test_expected_files_created():
 
 
 if __name__ == "__main__":
-    test_expected_files_created()
+    # test_expected_files_created()
+    pass

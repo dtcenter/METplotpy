@@ -17,12 +17,13 @@ import re
 import yaml
 import xarray as xr
 import plotly.graph_objects as go
-import plots.util as util
+
+from .. import util
 
 """
 Import BasePlot class
 """
-from plots.base_plot import BasePlot
+from ..base_plot import BasePlot
 
 
 class Histogram_2d(BasePlot):

@@ -16,10 +16,10 @@ from pathlib import Path
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from plots.base_plot import BasePlot
-from plots.wind_rose.wind_rose_config import WindRoseConfig
-from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-import plots.util as util
+from metplotpy.plots.base_plot import BasePlot
+from .wind_rose_config import WindRoseConfig
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots import util
 
 
 class WindRosePlot(BasePlot):

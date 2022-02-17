@@ -3,7 +3,7 @@ Class Name: wind_rose_config.py
 
 Holds values set in the Wind Rose config file(s)
 """
-from plots.config import Config
+from ..config import Config
 
 
 class WindRoseConfig(Config):

@@ -6,7 +6,7 @@ Holds values set in the ECLV plot config file(s)
 __author__ = 'Tatiana Burek'
 
 import itertools
-from plots.line.line_config import LineConfig
+from ..line.line_config import LineConfig
 
 
 class EclvConfig(LineConfig):
