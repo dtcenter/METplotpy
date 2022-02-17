@@ -1,6 +1,4 @@
 import os
-import sys
-import pytest
 from metplotpy.plots.taylor_diagram import taylor_diagram as td
 from metcalcpy.compare_images import CompareImages
 
