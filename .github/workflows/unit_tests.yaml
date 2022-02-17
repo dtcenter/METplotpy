@@ -52,12 +52,14 @@ jobs:
         pip install scikit-image==0.16.2
         pip install scikit-learn==0.23.2
         pip install scipy==1.5.3
+        pip install statsmodels==0.12.1
         pip install xarray==0.16
-        
         
         
     - name: Test with pytest
       run: |
+          cd METplotpy
+          python -m pip install -e .
           cd test/bar
           pytest test_bar.py
           cd test/box
