@@ -1,5 +1,4 @@
 import os
-import sys
 import pytest
 
 from metplotpy.plots.performance_diagram import performance_diagram as pd
