@@ -6,7 +6,7 @@ from metcalcpy.compare_images import CompareImages
 
 
 def test_pos_corr_file_exists():
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     test_config_filename = "test_pos_corr.yaml"
     td.main(test_config_filename)
 
@@ -26,7 +26,7 @@ def test_pos_corr_file_exists():
 
 
 def test_pos_corr_file_exists():
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     test_config_filename = "test_pos_corr.yaml"
     td.main(test_config_filename)
 
@@ -58,7 +58,7 @@ def test_pos_corr_file_exists():
 #          os.remove(os.path.join(path, plot_file))
 
 def test_neg_and_pos_corr_file_exists():
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     test_config_filename = "test_neg_and_pos_corr.yaml"
     td.main(test_config_filename)
 
@@ -72,25 +72,25 @@ def test_neg_and_pos_corr_file_exists():
 
 # Not reliable when the expected image is generated on a Mac and then this
 # test is run on non-Mac machine.
-# def test_neg_and_pos_corr_images_match():
-#     os.environ['METPLOTPY_BASE'] = "../../metplotpy"
-#     test_config_filename = "test_neg_and_pos_corr.yaml"
-#     td.main(test_config_filename)
-#
-#     # Verify that a plot was generated
-#     plot_file = "test_neg_and_pos_corr_plot.png"
-#     expected_file = "expected_neg_and_pos_corr_plot.png"
-#     path = os.getcwd()
-#
-#     # image comparison, with allowance of .99 match instead of 100% match
-#     comparison = CompareImages(plot_file, expected_file)
-#     assert comparison.mssim >= .99
-#
-#     # Clean up
-#     os.remove(os.path.join(path, plot_file))
+def test_neg_and_pos_corr_images_match():
+    os.environ['METPLOTPY_BASE'] = "../../"
+    test_config_filename = "test_neg_and_pos_corr.yaml"
+    td.main(test_config_filename)
+
+    # Verify that a plot was generated
+    plot_file = "test_neg_and_pos_corr_plot.png"
+    expected_file = "expected_neg_and_pos_corr_plot.png"
+    path = os.getcwd()
+
+    # image comparison, with allowance of .99 match instead of 100% match
+    comparison = CompareImages(plot_file, expected_file)
+    assert comparison.mssim >= .99
+
+    # Clean up
+    os.remove(os.path.join(path, plot_file))
 
 def test_custom_plot_exists():
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     test_config_filename = "taylor_diagram_custom.yaml"
     td.main(test_config_filename)
 
