@@ -18,7 +18,7 @@ def setup():
     cleanup()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom_ens_ss.yaml"
 
     # Invoke the command to generate a Bar plot based on
@@ -72,7 +72,7 @@ def test_files_exist(test_input, expected):
         os.mkdir(os.path.join(os.getcwd(), './intermed_files'))
     except FileExistsError as e:
         pass
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom2_ens_ss.yaml"
 
     # Invoke the command to generate a Bar plot based on
