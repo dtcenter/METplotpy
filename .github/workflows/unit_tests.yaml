@@ -56,25 +56,22 @@ jobs:
         pip install xarray==0.16
         
       
-    - name: Extract branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
+#     - name: Extract branch name
+#       shell: bash
+#       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+#       id: extract_branch
       
-       # Clone this repo
-    - name: Checkout
-      run: |
-          /usr/bin/git clone https://github.com/dtcenter/METplotpy
-          /usr/bin/git checkout ${extract_branch}
-          python -m pip install -e .
+#        # Clone this repo
+#     - name: Checkout
+#       run: |
+#           /usr/bin/git clone https://github.com/dtcenter/METplotpy
+#           /usr/bin/git checkout ${extract_branch}
+#           python -m pip install -e .
 
 
     - name: Test with pytest
       run: |
-        
-          cd test/bar
-          python 
-          import metplotpy
+          pytest test/
     
           
          
