@@ -55,7 +55,11 @@ jobs:
         pip install statsmodels==0.12.1
         pip install xarray==0.16
         
-        
+  
+    # Clone this repo
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Test with pytest
       run: |
           cd METplotpy
