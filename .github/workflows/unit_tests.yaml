@@ -97,7 +97,7 @@ jobs:
           pytest test_reliability_diagram.py
           cd ../roc_diagram
           pytest test_roc_diagram.py
-          cd taylor_diagram
+          cd ../taylor_diagram
           pytest test_taylor_diagram.py
           cd ../wind_rose
           pytest test_wind_rose.py
