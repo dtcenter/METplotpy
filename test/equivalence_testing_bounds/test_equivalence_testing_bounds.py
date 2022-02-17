@@ -18,7 +18,7 @@ def setup():
     cleanup()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../.."
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "./custom_equivalence_testing_bounds.yaml"
 
     # Invoke the command to generate an equivalence testing boundary plot based on
@@ -80,7 +80,7 @@ def test_files_exist(test_input, expected):
     except FileExistsError as e:
         pass
 
-    os.environ['METPLOTPY_BASE'] = "../../.."
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "./custom_equivalence_testing_bounds2.yaml"
 
     # Invoke the command to generate an equivalence testing boundary plot based on
