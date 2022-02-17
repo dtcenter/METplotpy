@@ -5,10 +5,10 @@
 
 """
 
-import os, sys, re
+import os, re
 import pytest
 import yaml
-sys.path.append("../../")
+
 # from metplotpy.contributed.series_analysis.plot_series_by_lead_all import PlotSeriesByLeadAll
 # from metplotpy.contributed.series_analysis.plot_series_by_grouping import PlotSeriesByGrouping
 # from metplotpy.contributed.series_analysis.animate_series_by_lead_all import AnimateSeriesByLeadAll
