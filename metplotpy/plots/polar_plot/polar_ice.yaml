@@ -1,4 +1,4 @@
-input_file: "/home/fisherh/grid_stat_north_000000L_20210305_120000V_pairs.nc"
+input_file: "~/grid_stat_north_000000L_20210305_120000V_pairs.nc"
 forecast_netcdf_var_name: "FCST_ice_coverage_SURFACE_FULL"
 obs_netcdf_var_name: "OBS_ice_coverage_SURFACE_FULL"
 diff_netcdf_var_name: "DIFF_ice_coverage_SURFACE_ice_coverage_SURFACE_FULL"

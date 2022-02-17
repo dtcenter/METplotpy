@@ -141,6 +141,8 @@ def process_one_day(config,hemisphere):
     imageDir = os.environ.get("OUTPUT_BASE",".")
     imageDir = imageDir+"/ice_images"
     met_grid_stat_ice = os.environ.get("INPUT_FILE_NAME","grid_stat_north_000000L_20210305_120000V_pairs.nc")
+    #Add the line below so that a ~ can be used to 
+    #grab file in a users home directory
     input_file = os.path.expanduser(met_grid_stat_ice)
         
     # separate the images by date
