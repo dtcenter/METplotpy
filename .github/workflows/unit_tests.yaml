@@ -74,7 +74,7 @@ jobs:
       run: |
           cd METplotpy
           python -m pip install -e .
-          cd test/bar
+          cd /METplotpy/test/bar
           pytest test_bar.py
-          cd test/box
+          cd /METplotpy/test/box
          
