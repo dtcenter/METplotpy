@@ -24,12 +24,13 @@ import pandas as pd
 from pyproj import Geod
 import pyresample as pyr
 from datetime import datetime, date
+import PIL 
 from PIL import Image
 import io
 import sqlite3
 import os, sys
 import subprocess
-from mmab_toolkit import MidpointNormalize, add_mmab_logos
+#from mmab_toolkit import MidpointNormalize, add_mmab_logos
 #import ipdb; ipdb.set_trace()
 
 # something pandas needs
@@ -202,13 +203,14 @@ def make_maps(imageDir,hemisphere,theDate,
     ax1 = plt.subplot2grid((4,1),(0,0),rowspan=3,projection=crs)
     #plt.pcolormesh(nlon,nlat,diff,cmap='bwr',transform=ccrs.PlateCarree(),
     #               norm=MidpointNormalize(midpoint=0.,vmin=diff.min(),vmax=diff.max()))
-    plt.pcolormesh(nlon,nlat,diff,cmap='bwr',transform=ccrs.PlateCarree(),
-                   norm=MidpointNormalize(midpoint=0.,vmin=-0.5,vmax=0.5))
+    #plt.pcolormesh(nlon,nlat,diff,cmap='bwr',transform=ccrs.PlateCarree(),
+    #               norm=MidpointNormalize(midpoint=0.,vmin=-0.5,vmax=0.5))
+    plt.pcolormesh(nlon,nlat,diff,cmap='bwr',transform=ccrs.PlateCarree())
     plt.tick_params(labelsize='x-small')
     ax1.add_feature(cfeature.LAND,zorder=1)    
     ax1.coastlines(zorder=1)
     ax1.gridlines()
-    add_mmab_logos()
+    #add_mmab_logos()
     cb=plt.colorbar()
     cb.ax.tick_params(labelsize='x-small')
     plt.title('RTOFS minus OSTIA sea ice concentration for ' + theDate,fontsize='small')
@@ -261,7 +263,7 @@ def plot_stats(imageDir,hemisphere,theDate,dbfile,lookback='180 d'):
     plt.ylabel('Sea Ice Concentration Difference',fontsize='small')
     plt.xlabel('Date',fontsize='small')
     plt.title('RTOFS minus OSTIA Sea Ice Concentration\n'+hemisphere.capitalize()+'ern Hemisphere '+theDate,fontsize='small')
-    add_mmab_logos()
+    #add_mmab_logos()
     saveImage(imageDir+'/ice_stats_'+hemisphere+'.png',dpi=150)
     plt.close()
 
@@ -275,7 +277,7 @@ def plot_stats(imageDir,hemisphere,theDate,dbfile,lookback='180 d'):
         plt.legend(fontsize='small')
         plt.xlabel('Date',fontsize='small')
         plt.title(name+' for RTOFS minus OSTIA Sea Ice Concentration\n'+hemisphere.capitalize()+'ern Hemisphere '+theDate,fontsize='small')
-        add_mmab_logos()
+        #add_mmab_logos()
         saveImage(imageDir+'/ice_stats_'+param+'_'+hemisphere+'.png',dpi=150)
         plt.close()
 
@@ -295,7 +297,7 @@ def plot_stats(imageDir,hemisphere,theDate,dbfile,lookback='180 d'):
     plt.ylabel('Sea Ice Extent and Area $x10^6 (km^2)$',fontsize='small')
     plt.xlabel('Date',fontsize='small')
     plt.title(hemisphere.capitalize()+'ern Hemisphere Ice Extent and Area '+theDate,fontsize='small')
-    add_mmab_logos()
+    #add_mmab_logos()
     saveImage(imageDir+'/ice_extent_area_'+hemisphere+'.png',dpi=150)
     plt.close()
     return
