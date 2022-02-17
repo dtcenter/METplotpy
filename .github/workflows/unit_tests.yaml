@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.6"]
+        python-version: ["3.6.3"]
 
     steps:
     - uses: actions/checkout@v2
@@ -52,7 +52,7 @@ jobs:
         pip install scikit-image==0.16.2
         pip install scikit-learn==0.23.2
         pip install scipy==1.5.3
-        pip install xarray==0.18.2
+        pip install xarray==0.16
         
         
         
