@@ -14,9 +14,9 @@ import metcalcpy.util.correlation as pg
 from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
-from ..plots import GROUP_SEPARATOR
+from .. import GROUP_SEPARATOR
 
-from ..plots.series import Series
+from ..series import Series
 
 
 class EnsSsSeries(Series):
