@@ -86,8 +86,6 @@ jobs:
           pytest test_ens_ss.py
           cd ../equivalence_testing_bounds
           pytest test_equivalence_testing_bounds.py
-          cd ../import
-          pytest test_import.py
           cd ../line
           pytest test_line_groups_plot.py
           pytest test_line_plot.py
