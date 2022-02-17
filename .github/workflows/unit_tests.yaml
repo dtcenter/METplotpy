@@ -74,8 +74,7 @@ jobs:
       run: |
         
           cd test/bar
-          pytest test_bar.py
-          cd test/box
-          ls
+          python -m pytest test_bar.py
+          
          
          
