@@ -4,7 +4,7 @@
    directory.
 """
 
-import os, sys
+import os
 import pytest
 import yaml
 # Import used to perform image_comparison with an identified baseline of plots.
