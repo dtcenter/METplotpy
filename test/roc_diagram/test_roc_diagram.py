@@ -185,6 +185,7 @@ def test_expected_CTC_thresh_points_reversed(setup_rev_points):
         # don't exist.  Ignore.
         pass
 
+@pytest.mark.skip()
 def test_images_match(setup):
     '''
         Compare an expected plot with the
