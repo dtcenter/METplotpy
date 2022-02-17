@@ -73,7 +73,12 @@ jobs:
 
     - name: Test with pytest
       run: |
-          pytest test/
+          cd test
+          cd bar 
+          cd pytest test_bar.py
+          cd ../box
+          cd pytest test_box.py
+          
     
           
          
