@@ -47,6 +47,7 @@ jobs:
         pip install imutils==0.5.3
         pip install kaleido==0.2.1
         pip install matplotlib==3.3.4
+        pip install opencv-python==4.5.62
         pip install pytest==6.2.5
         pip install PyYAML==5.4.1
         pip install scikit-image==0.16.2
