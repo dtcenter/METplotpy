@@ -18,7 +18,8 @@ def setup():
     cleanup()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    #os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom_box.yaml"
 
     # Invoke the command to generate a Performance Diagram based on
@@ -70,7 +71,7 @@ def test_points1_file_exist(test_input, expected):
         Checking that the plot is created and points1 output files is created
         where specified in the custom_box_points1.yaml file
     """
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom_box_points1.yaml"
     try:
        os.mkdir(os.path.join(os.getcwd(), './intermed_files'))
@@ -102,7 +103,7 @@ def test_defaultpoints1_file_exist(test_input, expected):
         Checking that the plot is created and points1 output files is created
         in the default location (i.e. the current working dir, where the box.data file resides)
     """
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom_box_defaultpoints1.yaml"
 
     # Invoke the command to generate a box plot based on
