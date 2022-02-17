@@ -1,0 +1,30 @@
+# replace with the location and name of your choosing:
+plot_filename: ../../../test/histogram_2d/custom_tmp_z2_p500.png
+
+height: 800
+width: 1200
+font_size: 15
+
+var_name: 'hist_TMP_Z2_TMP_P500'
+
+
+title: 'Customized 2D Histogram of TMP Z2 and TMP_P500 values '
+xaxis_title: 'x'
+yaxis_title: 'y'
+
+normalize_to_pdf: False
+
+pdf_min: 0.0
+pdf_max: 4.0
+
+# The points_path is optional and no intermediate file is created in this plot type.
+# This plot type is not integrated into METviewer, so no .points1 file is expected.
+# In addition, the dump_points_1 and dump_points_2 settings are unused as they are
+# also unused.
+# points_path: /directory/to/write/intermediate-file
+# dump_points_1: 'False'
+# dump_points_2: 'False'
+
+# the input data file (replace ./ with the full path)
+stat_input: ./grid_diag_temperature.nc
+
