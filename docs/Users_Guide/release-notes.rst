@@ -9,7 +9,7 @@ Version |version| release notes (|release_date|)
 ________________________________________________
 
 
-Version 1.1.0 release notes (20220114)
+Version 1.1.0 release notes (20220218)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 beta6 release
