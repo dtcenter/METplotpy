@@ -228,7 +228,7 @@ def process_one_day(config,hemisphere):
 
     # compute various statistics
     print('computing statistics')
-    diff=rice2-nice2
+    diff=nice2-rice2
     bins=100
 
     # draw pictures
