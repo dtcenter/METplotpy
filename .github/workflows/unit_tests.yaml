@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# This workflow will install Python dependencies, run tests the specified Python version
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: Python package
@@ -57,18 +57,11 @@ jobs:
         pip install statsmodels==0.12.1
         pip install xarray==0.16
         
-      
+#   Checking the branch name, not necessary but useful when setting things up. 
 #     - name: Extract branch name
 #       shell: bash
 #       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
 #       id: extract_branch
-      
-#        # Clone this repo
-#     - name: Checkout
-#       run: |
-#           /usr/bin/git clone https://github.com/dtcenter/METplotpy
-#           /usr/bin/git checkout ${extract_branch}
-#           python -m pip install -e .
 
 
     - name: Test with pytest
