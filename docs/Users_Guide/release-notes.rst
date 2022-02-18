@@ -8,8 +8,36 @@ describes the bugfix, enhancement, or new feature: `METplotpy GitHub issues. <ht
 Version |version| release notes (|release_date|)
 ________________________________________________
 
+
 Version 1.1.0 release notes (20220114)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+beta6 release
+^^^^^^^^^^^^^
+
+* New Plots:
+
+   * **Create output for polar plots (contributed code)** (`#118 <https://github.com/dtcenter/METplotpy/issues/118>`_)
+
+   * **Create plots for the Stratosphere Diagnostics (contributed code)** (`#170 <https://github.com/dtcenter/METplotpy/issues/170>`_)
+
+   * **Add the Python implementation of the Countour plot type** (`#181 <https://github.com/dtcenter/METplotpy/issues/181>`_)
+
+
+
+* Enhancements: 
+
+   * **Add the functionality to add a line (horizonal or vertical) to the plots** (`#140 <https://github.com/dtcenter/METplotpy/issues/140>`_)
+
+   * **Generate the Python version of the Taylor diagram** (`#149 <https://github.com/dtcenter/METplotpy/issues/149>`_)
+
+* Internal:
+
+* Bugfixes:
+
+   * **Line plot doesn't reverse X values correctly when vert_plot is True** (`#190 <https://github.com/dtcenter/METplotpy/issues/190>`_)
+
+   * **Series ordering does not work correctly in the line plote** (`#194 <https://github.com/dtcenter/METplotpy/issues/194>`_)
 
 beta5 release
 ^^^^^^^^^^^^^
