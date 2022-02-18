@@ -19,7 +19,7 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'METplotpy'
-copyright = '2021, NCAR'
+copyright = '2022, NCAR'
 author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Win-Gildenmeister, M., T. Burek, H. Fisher, D. Adriaansen, C. Kalb, D. Fillmore, T. Jensen and L. Goodrich'
 version = 'develop'
@@ -27,7 +27,7 @@ verinfo = version
 release = f'{version}'
 release_year = '2022'
 
-release_date = f'{release_year}-01-14'
+release_date = f'{release_year}-02-18'
 
 copyright = f'{release_year}, {author}'
 
