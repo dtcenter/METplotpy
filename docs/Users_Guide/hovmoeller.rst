@@ -97,9 +97,9 @@ To generate the example Hovmoeller plot (i.e. using settings in the
 
    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/hovmoeller/hovmoeller.py --config $WORKING_DIR/hovmoeller_defaults.yaml --datadir $WORKING_DIR/data/hovmoeller  --input precip.erai.sfc.1p0.2x.2014-2016.nc
 
-   where $METPLOTPY_SOURCE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
-   directory where you have read and write permissions and where you are storing all your input data and where you
-   copied the default config file.
+where $METPLOTPY_SOURCE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
+directory where you have read and write permissions and where you are storing all your input data and where you
+copied the default config file.
 
 
 A plot named **erai_precip.png** will be generated in the directory from where you ran the above command:
