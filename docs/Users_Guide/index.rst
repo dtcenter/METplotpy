@@ -71,6 +71,7 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    bar
    ens_ss
    contour
+   difficulty_index
    performance_diagram
    reliability_diagram
    roc_diagram
