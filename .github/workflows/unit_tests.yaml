@@ -1,0 +1,101 @@
+# This workflow will install Python dependencies, run tests the specified Python version
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python package
+
+on:
+  push:
+    branches: 
+      - develop
+      - develop-ref
+      - feature_*
+      - main_*
+      - bugfix_*
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.6.7"]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Retrieve METcalcpy repository develop branch
+      run: |
+         /usr/bin/git clone https://github.com/dtcenter/METcalcpy
+         cd METcalcpy
+         /usr/bin/git checkout develop
+         python -m pip install -e .
+            
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install numpy==1.19.5
+        pip install pandas==1.1.5
+        pip install plotly==4.9.0
+        pip install imutils==0.5.3
+        pip install kaleido==0.2.1
+        pip install matplotlib==3.3.4
+        pip install netcdf4==1.5.7
+        pip install opencv-python==4.5.5.62
+        pip install pytest==6.2.5
+        pip install PyYAML==5.4.1
+        pip install scikit-image==0.16.2
+        pip install scikit-learn==0.23.2
+        pip install scipy==1.5.3
+        pip install statsmodels==0.12.1
+        pip install xarray==0.16
+        
+#   Checking the branch name, not necessary but useful when setting things up. 
+#     - name: Extract branch name
+#       shell: bash
+#       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+#       id: extract_branch
+
+
+    - name: Test with pytest
+      run: |
+          cd test
+          cd bar 
+          pytest test_bar.py
+          cd ../box
+          pytest test_box.py
+          cd ../contour
+          pytest test_contour.py
+          cd ../eclv
+          pytest test_eclv.py
+          cd ../ens_ss
+          pytest test_ens_ss.py
+          cd ../equivalence_testing_bounds
+          pytest test_equivalence_testing_bounds.py
+          cd ../line
+          pytest test_line_groups_plot.py
+          pytest test_line_plot.py
+          cd ../mpr_plot
+          pytest test_mpr_plot.py
+          cd ../performance_diagram
+          pytest test_performance_diagram.py
+          cd ../reliability_diagram
+          pytest test_reliability_diagram.py
+          cd ../roc_diagram
+          pytest test_roc_diagram.py
+          cd ../taylor_diagram
+          pytest test_taylor_diagram.py
+          cd ../wind_rose
+          pytest test_wind_rose.py
+          
+    
+          
+         
+         
