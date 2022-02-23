@@ -6,9 +6,9 @@ __author__ = 'Tatiana Burek'
 from typing import Union
 import yaml
 
-from plots.histogram.hist import Hist
-from plots.histogram.hist_series import HistSeries
-import plots.util as util
+from metplotpy.plots.histogram.hist import Hist
+from metplotpy.plots.histogram.hist_series import HistSeries
+from metplotpy.plots import util
 
 
 class ProbHist(Hist):

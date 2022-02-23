@@ -7,10 +7,9 @@ __author__ = 'Minna Win'
 
 
 import sys
-sys.path.append("../../../")
-from plots.config import Config
-import plots.util as util
-import plots.constants as constants
+from ..config import Config
+from .. import util
+from .. import constants
 
 class ROCDiagramConfig(Config):
     def __init__(self, parameters):

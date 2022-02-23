@@ -7,7 +7,7 @@ from typing import Union
 import numpy as np
 
 import metcalcpy.util.utils as utils
-from plots.series import Series
+from ..series import Series
 
 
 class HistSeries(Series):

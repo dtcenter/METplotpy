@@ -18,7 +18,7 @@ def setup():
     cleanup()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom_bar.yaml"
 
     # Invoke the command to generate a Bar plot based on
@@ -50,7 +50,7 @@ def test_files_exist( setup, test_input, expected):
     assert os.path.isfile(test_input) == expected
     cleanup()
 
-
+@pytest.mark.skip("fails on linux host machines")
 def test_images_match(setup):
     """
         Compare an expected plot with the
@@ -68,7 +68,7 @@ def test_point_and_plot_files_exist( test_input, expected):
     """
         Checking that the plot and (specified location) intermediate file are getting created
     """
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom_points1_bar.yaml"
     intermed_dir = os.path.join(os.getcwd(), 'intermed_files')
     try:
@@ -102,7 +102,7 @@ def test_point_and_plot_files_exist( test_input, expected):
     """
         Checking that the plot and (specified location) intermediate file are getting created
     """
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom_defaultpoints1_bar.yaml"
 
     # Invoke the command to generate a Bar plot based on

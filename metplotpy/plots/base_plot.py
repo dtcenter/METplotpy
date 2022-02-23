@@ -9,7 +9,7 @@ import numpy as np
 import yaml
 from typing import Union
 
-from plots.config import Config
+from .config import Config
 
 
 class BasePlot:
@@ -39,7 +39,7 @@ class BasePlot:
         # Determine location of the default YAML config files and then
         # read defaults stored in YAML formatted file into the dictionary
         if 'METPLOTPY_BASE' in os.environ:
-            location = os.path.join(os.environ['METPLOTPY_BASE'], 'plots/config')
+            location = os.path.join(os.environ['METPLOTPY_BASE'], 'metplotpy/plots/config')
         else:
             location = os.path.realpath(os.path.join(os.getcwd(), '../config'))
 

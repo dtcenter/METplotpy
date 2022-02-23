@@ -5,13 +5,12 @@ __author__ = 'Minna Win'
 
 import sys
 
-sys.path.append("../../")
 import pandas as pd
 import re
 import metcalcpy.util.ctc_statistics as cstats
 import metcalcpy.util.pstd_statistics as pstats
 import metcalcpy.util.utils as utils
-from plots.series import Series
+from ..series import Series
 
 
 class ROCDiagramSeries(Series):

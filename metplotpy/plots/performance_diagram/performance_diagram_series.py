@@ -6,7 +6,7 @@ __author__ = 'Minna Win'
 import warnings
 import re
 import metcalcpy.util.utils as utils
-from plots.series import Series
+from ..series import Series
 
 
 # To suppress FutureWarning raised by pandas due to

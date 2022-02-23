@@ -7,7 +7,7 @@ import collections
 from collections import namedtuple
 import pandas
 
-from plots.series import Series
+from ..series import Series
 import metcalcpy.util.utils as calcpy_utils
 
 

@@ -18,7 +18,7 @@ def setup():
     cleanup()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "./custom_reliability_use_defaults.yaml"
 
     # Invoke the command to generate a Performance Diagram based on
@@ -50,7 +50,7 @@ def test_files_exist(setup, test_input, expected):
     assert os.path.isfile(test_input) == expected
     cleanup()
 
-
+@pytest.mark.skip("depends on machine on which this is run")
 def test_images_match(setup):
     '''
         Compare an expected plot with the
@@ -72,7 +72,7 @@ def test_files_exist(test_input, expected):
     except FileExistsError as e:
         pass
 
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "./custom_reliability_points1.yaml"
     r.main(custom_config_filename)
 

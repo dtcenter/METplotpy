@@ -7,8 +7,8 @@ from typing import Union
 import numpy as np
 
 import metcalcpy.util.utils as utils
-from plots import GROUP_SEPARATOR
-from plots.series import Series
+from .. import GROUP_SEPARATOR
+from ..series import Series
 
 
 class ReliabilitySeries(Series):

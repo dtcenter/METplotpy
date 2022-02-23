@@ -5,15 +5,16 @@
 
 """
 
-import os, sys, re
+import os, re
+import pytest
 import yaml
-sys.path.append("../../")
-from metplotpy.contributed.series_analysis.plot_series_by_lead_all import PlotSeriesByLeadAll
-from metplotpy.contributed.series_analysis.plot_series_by_grouping import PlotSeriesByGrouping
-from metplotpy.contributed.series_analysis.animate_series_by_lead_all import AnimateSeriesByLeadAll
-from metplotpy.contributed.series_analysis import animate_utilities as au
 
+# from metplotpy.contributed.series_analysis.plot_series_by_lead_all import PlotSeriesByLeadAll
+# from metplotpy.contributed.series_analysis.plot_series_by_grouping import PlotSeriesByGrouping
+# from metplotpy.contributed.series_analysis.animate_series_by_lead_all import AnimateSeriesByLeadAll
+# from metplotpy.contributed.series_analysis import animate_utilities as au
 
+@pytest.mark.skip("needs special packages and large dataset to run")
 def test_get_info():
     """
         Verify that the get_info() function in plot_series_by_lead_all.py
@@ -58,6 +59,7 @@ def test_get_info():
 
     assert (match_counter == num_expected)
 
+@pytest.mark.skip("needs special packages and large dataset to run")
 def test_series_lead_group_plots():
     ''' Test that the expected png files are created by the plot_series_by_grouping module'''
 
@@ -110,6 +112,7 @@ def test_series_lead_group_plots():
     # print("Number of matches: ", match_counter)
     assert (match_counter == num_expected)
 
+@pytest.mark.skip("needs special packages and large dataset to run")
 def test_series_lead_group_animations():
     ''' Test that the expected gif files (animations) are created by the plot_series_by_grouping module'''
 
@@ -156,6 +159,7 @@ def test_series_lead_group_animations():
     num_expected = len(expected_files)
     assert (match_counter == num_expected)
 
+@pytest.mark.skip("needs special packages and large dataset to run")
 def test_animation_series_by_lead():
     ''' Test that the expected gif files (animations) are created by the
         animate_series_by_lead module.

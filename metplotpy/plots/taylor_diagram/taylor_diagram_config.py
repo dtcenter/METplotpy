@@ -7,8 +7,8 @@ Holds values set in the Taylor Diagram configuration files
 
 __author__ = "Minna Win"
 
-from plots.config import Config
-import plots.constants as constants
+from ..config import Config
+from .. import constants
 
 class TaylorDiagramConfig(Config):
     """

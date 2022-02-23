@@ -1,13 +1,12 @@
-import os, sys
+import os
 import xarray as xr
 import pytest
 import yaml
-sys.path.append("../..")
 from metplotpy.contributed.hovmoeller.hovmoeller_calc import lat_avg
 import metplotpy.contributed.hovmoeller.hovmoeller_plotly as hov
 
 def get_config():
-    config_file = "./hovmoeller.yaml"
+    config_file = os.path.join(os.path.dirname(__file__),"hovmoeller.yaml")
 
     with open(config_file, 'r') as stream:
         try:
@@ -16,6 +15,7 @@ def get_config():
         except yaml.YAMLError as exc:
             print(exc)
 
+@pytest.mark.skip("needs large netCDF file to run")
 def test_get_timestr():
     """ Tests that the function get_timestr (in hovmoeller_plotly.py) returns a list
         of timestrings (i.e. a non-zero length list).
@@ -37,7 +37,7 @@ def test_get_timestr():
 
     assert (len(actual_timestr) > 0)
 
-
+@pytest.mark.skip("needs large netCDF file to run")
 def test_output_plot_created():
 
     """ Check for the presence of the expected plot
@@ -88,7 +88,7 @@ def test_output_plot_created():
     else:
         assert False
 
-
+@pytest.mark.skip("needs large netCDF file to run")
 def test_get_latstring():
     '''
        Verify that the lat string created is expected
@@ -107,6 +107,7 @@ def test_get_latstring():
     expected_str = '0N - 5S'
     assert latstr == expected_str
 
+@pytest.mark.skip("needs large netCDF file to run")
 def test_get_clevels():
    '''
       test that the get_clevels() function is behaving correctly
@@ -121,7 +122,7 @@ def test_get_clevels():
        assert expected[var][1] == cmax
        assert expected[var][2] == cspac
 
-
+@pytest.mark.skip("needs large netCDF file to run")
 def test_get_clevels_bogus_var():
    '''
       test that the get_clevels() function is behaving correctly

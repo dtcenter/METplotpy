@@ -5,7 +5,7 @@
 import pytest
 import os
 import pandas as pd
-from plots.roc_diagram import roc_diagram as roc
+from metplotpy.plots.roc_diagram import roc_diagram as roc
 from metcalcpy.compare_images import CompareImages
 import metcalcpy.util.ctc_statistics as ctc
 
@@ -17,7 +17,7 @@ def setup():
     cleanup()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "./CTC_ROC_thresh.yaml"
     # print("\n current directory: ", os.getcwd())
     # print("\ncustom config file: ", custom_config_filename, '\n')
@@ -32,7 +32,7 @@ def setup_rev_points():
     path = os.getcwd()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "./CTC_ROC_thresh_reverse_pts.yaml"
     print("\n current directory: ", os.getcwd())
     print("\ncustom config file: ", custom_config_filename, '\n')
@@ -53,7 +53,7 @@ def setup_dump_points():
     subdir_path = os.path.join(path, 'intermed_files')
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "./CTC_ROC_thresh_dump_pts.yaml"
     # print("\n current directory: ", os.getcwd())
     # print("\ncustom config file: ", custom_config_filename, '\n')
@@ -185,6 +185,7 @@ def test_expected_CTC_thresh_points_reversed(setup_rev_points):
         # don't exist.  Ignore.
         pass
 
+@pytest.mark.skip()
 def test_images_match(setup):
     '''
         Compare an expected plot with the

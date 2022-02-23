@@ -6,7 +6,7 @@ __author__ = 'Tatiana Burek'
 from typing import Union
 import numpy as np
 
-from plots.series import Series
+from ..series import Series
 
 
 class ContourSeries(Series):

@@ -10,9 +10,9 @@ import numpy as np
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
-from plots import GROUP_SEPARATOR
+from .. import GROUP_SEPARATOR
 
-from plots.series import Series
+from ..series import Series
 
 
 class BarSeries(Series):
