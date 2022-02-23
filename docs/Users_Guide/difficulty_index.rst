@@ -35,6 +35,16 @@ code is located:
 
 *$METPLOTPY_SOURCE/METplotpy/test/difficulty_index/swh_North_Pacific_5dy_ensemble.npz*
 
+Copy this sample input file to your working directory, where you have read and write privileges:
+
+.. code-block:: ini
+
+    cp $METPLOTPY_SOURCE/METplotpy/test/difficulty_index/swh_North_Pacific_5dy_ensemble.npz $WORKING_DIR
+
+Where *$METPLOTPY_SOURCE* is the directory where you saved the METplotpy source code and *$WORKING_DIR* is the
+directory you created to store input data.
+
+
 Required Packages
 _________________
 
@@ -50,13 +60,69 @@ Configuration Files
 ___________________
 
 No configuration files are used to generate the difficulty index plot. All the settings for the plot are incorporated in
-the mycolormaps.py and plot_difficulty_index.py code.
+the mycolormaps.py and plot_difficulty_index.py code.  The example_difficulty_index.py script imports these modules to
+create six sample plots.
 
 METplus Configuration
 =====================
 
-Default Configuration File
-__________________________
+Run from the Command Line
+=========================
+
+To generate the sample difficulty index plots, perform the following:
+
+*  If using the conda environment, verify the conda environment
+   is running and has has the required Python packages outlined in the **Required Packages** section above.
+
+
+Where $METPLOTPY_SOURCE is the directory where you saved the METplotpy source code and $WORKING_DIR is the directory
+you created earlier to store the sample input data.
+
+* Change directory to the $WORKING_DIR:
+
+    .. code-block:: ini
+
+      cd $WORKING_DIR
+
+where *$WORKING_DIR* is the directory where you copied all the necessary files (e.g. /home/users/someuser/working_dir).
+
+
+* Run the following on the command line:
+
+  .. code-block:: ini
+
+    python example_difficulty_index.py
+
+
+You will generate the following six files:
+
+   **swh_North_Pacific_5dy_mean.png**:
+
+     .. image:: swh_North_Pacific_5dy_mean.png
+
+   **swh_North_Pacific_5dy_std.png**:
+
+     .. image:: swh_North_Pacific_5dy_std.png
+
+   **swh_North_Pacific_difficulty_index_10_00_feet.png**:
+
+     .. image:: swh_North_Pacific_difficulty_index_10_00_feet.png
+
+   **swh_North_Pacific_difficulty_index_11_00_feet.png**:
+
+     .. image:: swh_North_Pacific_difficulty_index_11_00_feet.png
+
+   **swh_North_Pacific_difficulty_index_12_00_feet.png**:
+
+     .. image:: swh_North_Pacific_difficulty_index_12_00_feet.png
+
+   **swh_North_Pacific_difficulty_index_9_00_feet.png**:
+
+     .. image:: swh_North_Pacific_difficulty_index_9_00_feet.png
+
+
+
+
 
 
 
