@@ -29,6 +29,6 @@ angularaxis_ticktext:
   - 'E'
   - 'S'
   - 'W'
-plot_filename: ./wind_rose_default.png
+plot_filename: ./wind_rose_custom.png
 dump_points: True
 show_in_browser: False
