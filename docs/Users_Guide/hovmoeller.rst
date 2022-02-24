@@ -90,6 +90,7 @@ To generate the example Hovmoeller plot (i.e. using settings in the
 
   .. code-block:: ini
 
+    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy
 
 * Run the following on the command line:
 
