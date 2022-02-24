@@ -210,7 +210,7 @@ perform the following:
    <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation-requirements.html>`_
 
 * Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_SOURCE/METplotpy/metplotpy*.
+  *$METPLOTPY_SOURCE/METplotpy*.
 
   For the ksh environment:
 
