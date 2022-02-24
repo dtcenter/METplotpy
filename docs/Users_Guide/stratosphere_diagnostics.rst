@@ -135,19 +135,19 @@ Perform the following:
   Python packages specified in the **Required Packages** section above.
 
 * Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_SOURCE/METplotpy/metplotpy*
+  *$METPLOTPY_SOURCE/METplotpy*
 
   For the ksh environment:
 
   .. code-block:: ini
 
-    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
+    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy
 
   For the csh environment:
 
   .. code-block:: ini
 
-    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy
 
   Replacing the $METPLOTPY_SOURCE with the directory where the
   METplotpy source code was saved.
