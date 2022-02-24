@@ -14,8 +14,8 @@ import yaml
 import pandas as pd
 from metplotpy.plots.base_plot import BasePlot
 import metcalcpy.util.utils as calc_util
-from .performance_diagram_config import PerformanceDiagramConfig
-from .performance_diagram_series import PerformanceDiagramSeries
+from metplotpy.plots.performance_diagram.performance_diagram_config import PerformanceDiagramConfig
+from metplotpy.plots.performance_diagram.performance_diagram_series import PerformanceDiagramSeries
 from metplotpy.plots import util
 from metplotpy.plots import constants
 import warnings
