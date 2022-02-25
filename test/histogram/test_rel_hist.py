@@ -46,6 +46,7 @@ def test_files_exist(setup, test_input, expected):
     assert os.path.isfile(test_input) == expected
     cleanup()
 
+@pytest.skip("Image comparison typically unreliable when testing on different machines/environments.")
 def test_images_match(setup):
     """
         Compare an expected plot with the
