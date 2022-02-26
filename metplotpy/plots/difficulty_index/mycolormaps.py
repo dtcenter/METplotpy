@@ -1,3 +1,14 @@
+# ============================*
+ # ** Copyright UCAR (c) 2021
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ** NAVAL Research Lab (NRL)
+ # ============================*
+ 
+ 
+ 
 # -*- coding: utf-8 -*-
 """
 Created on Wed Apr  8 16:57:07 2020
