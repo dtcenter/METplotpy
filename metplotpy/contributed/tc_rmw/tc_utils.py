@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 import os
 import sys
 import logging
@@ -118,6 +128,35 @@ def read_tcrmw_levels(filename, levels=['L0']):
     file_id.close()
 
     return valid_time, lat_grid, lon_grid, wind_data, scalar_data
+   
+   
+def radial_tangential_winds(
+    valid_time, range_grid, azimuth_grid, pressure_grid, wind_data):
+    """
+    Compute radial and tangential components from zonal and meridional components.
+    """
+    n_t = len(valid_time)
+    n_r = len(range_grid)
+    n_a = len(azimuth_grid)
+    n_p = len(pressure_grid)
+    logging.info('(n_t, n_r, n_a, n_p)=' + str((n_t, n_r, n_a, n_p)))
+
+    # e_r = cos(theta) e_x + sin(theta) e_y
+    # e_theta = - sin(theta) e_x + cos(theta) e_y
+    theta = np.empty((n_r, n_a, n_p, n_t), dtype=np.float32)
+    # theta = math.pi / 2 - (math.pi / 180) * azimuth_grid
+    for i in range(n_r):
+        for k in range(n_p):
+            for t in range(n_t):
+                # theta[i, :, k, t] = math.pi / 2 - (math.pi / 180) * azimuth_grid[:]
+                theta[i, :, k, t] = (math.pi / 180) * azimuth_grid[:] + math.pi / 2
+    mask = np.greater(theta, 2 * math.pi)
+    theta[mask] = theta[mask] - 2 * math.pi
+
+    wind_radial = np.cos(theta) * wind_data['U'] + np.sin(theta) * wind_data['V']
+    wind_tangential = - np.sin(theta) * wind_data['U'] + np.cos(theta) * wind_data['V']
+    wind_data['radial'] = wind_radial
+    wind_data['tangential'] = wind_tangential   
 
 
 
