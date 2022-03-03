@@ -17,28 +17,23 @@ Example
 Sample Data
 ___________
 
-The sample data used to create an example line plot is available in the
-*METplotpy* repository, where the line plot tests are located:
+The data is text output from MET in columnar format. The sample data used to
+create an example line plot is available in the
+`METplotpy <https://github.com/dtcenter/METplotpy>`_ repository, where the line plot tests are located:
 
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/test/line/line.data*
+*$METPLOTPY_BASE/metplotpy/test/line/line.data*
 
-*$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved
-(e.g. */username/myworkspace*).  The data is text output from MET in
-columnar format.
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-**IMPORTANT** if you *forked* or *cloned* the METplotpy repository, your METplotpy
-source code will be located in this directory structure: *$METPLOTPY_SOURCE/METplotpy*.
-If you *uncompressed* the zip or tar'd gzip file from the "Releases" link of the METplotpy repository,
-your directory structure will resemble *$METPLOTPY_SOURCE/METplotpy-x.y.z-beta<n>* for a
-beta version, or *$METPLOTPY_SOURCE/METplotpy-x.y.z* for a major release.  If the source code
-was retrieved by the zip or gzip'd tar ball, then the plot tests will be located in the
+e.g.
 
-*$METPLOTPY_SOURCE/METplotpy-x.y.z/metplotpy/test/<plot-type>* directory (for a major release).
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
 
-Remember to replace **$METPLOTPY_SOURCE/METplotpy** with **$METPLOTPY_SOURCE/METplotpy-x.y.z** (where x.y.z
-is the version number) in all the instructions below.
-The following instructions are based on source code that was obtained by cloning or forking the code in the
-Github repository.
+or
+
+*/usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
+the Github repository.  The *x.y.z* is the release number.
+
 
 Configuration Files
 ___________________
@@ -53,10 +48,10 @@ It is commonly used for configuration files and in applications where
 data is being stored or
 transmitted. Two configuration files are required. The first is a default
 configuration file, **line_defaults.yaml**, which is found in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory. All default
+*$METPLOTPY_BASE/metplotpy/plots/config* directory. All default
 configuration files are located in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
-*$METPLOTPY_SOURCE* is the user-specified directory where the
+*$METPLOTPY_BASE/metplotpy/plots/config* directory.
+*$METPLOTPY_BASE* is base directory where the
 METplotpy source code has been saved. **Default configuration files are
 automatically loaded by the plotting code and do not need to be explicitly
 specified when generating a plot**.
@@ -93,25 +88,21 @@ file, an empty custom configuration file can be specified instead.
 .. literalinclude:: ../../test/line/custom_line.yaml
 
 
-**Note**:  For the following instructions, remember to replace $METPLOTPY_SOURCE/METplotpy
-with $METPLOTPY_SOURCE/METplotpy-x.y.z (where x.y.z is the version number) if the
-source code was retrieved by downloading the zip or gzip'd tar file:
-
 Copy this custom config file from the directory where the source code was
 saved to the working directory:
 
 .. code-block:: ini
 		
-  cp $METPLOTPY_SOURCE/METplotpy/test/line/custom_line.yaml $WORKING_DIR/custom_line.yaml
+  cp $METPLOTPY_BASE/test/line/custom_line.yaml $WORKING_DIR/custom_line.yaml
 
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_SOURCE/METplotpy/test/line/custom_line.yaml* file to
-explicitly point to the *$METPLOTPY_SOURCE/METplotpy/test/line*
+*$METPLOTPY_BASE/test/line/custom_line.yaml* file to
+explicitly point to the *$METPLOTPY_BASE/test/line*
 directory (where the custom config files and sample data reside).
 Replace the relative path *./line.data* with the full path
-*$METPLOTPY_SOURCE/METplotpy/test/line/line.data*
-(including replacing *$METPLOTPY_SOURCE* with the full path to the METplotpy
+*$METPLOTPY_BASE/test/line/line.data*
+(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
 installation on the system).  Modify the *plot_filename*
 setting to point to the output path where the plot will be saved,
 including the name of the plot.
@@ -122,16 +113,14 @@ For example:
 
 *plot_filename: /username/working_dir/output_plots/line.png*
 
-This is where */username/myworkspace/* is *$METPLOTPY_SOURCE* and
-*/username/working_dir* is *$WORKING_DIR*.  Make sure that the
+This is where */username/myworkspace/METplotpy* corresponds to *$METPLOTPY_BASE* and
+*/username/working_dir* corresponds to *$WORKING_DIR*.  Make sure that the
 *$WORKING_DIR* directory that is specified exists and has the appropriate
 read and write permissions.  The path listed for *plot_filename* may be
-changed to the output directory of one's  choosing.  If this is not set,
+changed to the output directory of one's choosing.  If this is not set,
 then the *plot_filename* setting specified in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/line_defaults.yaml*
-configuration file will be used.  Replace *$METPLOTPY_SOURCE/METplotpy* with
-*$METPLOTPY_SOURCE/METplotpy_x.y.z* (where x.y.z is the version number)
-if the source code was downloaded as zip or gzip'd tar file.
+*$METPLOTPY_BASE/metplotpy/plots/config/line_defaults.yaml*
+configuration file will be used.
 
 To save the intermediate **.points1** file (used by METviewer and is useful
 for debugging but not required), set the *dump_points_1*
@@ -165,15 +154,11 @@ Otherwise the user  will need to specify a *plot_filename* in the
 .. literalinclude:: ../../test/line/minimal_line.yaml
 
 
-**NOTE**: For the following instructions, remember to replace *$METPLOTPY_SOURCE/METplotpy* with
-*$METPLOTPY_SOURCE/METplotpy_x.y.z* (where x.y.z is the version number)
-if the source code was downloaded as zip or gzip'd tar file.
-
 Copy this file to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/METplotpy/test/line/minimal_line.yaml $WORKING_DIR/minimal_line.yaml
+  cp $METPLOTPY_BASE/test/line/minimal_line.yaml $WORKING_DIR/minimal_line.yaml
 
 
 Add the *stat_input* (input data) and *plot_filename* (output file/plot path)
@@ -181,10 +166,10 @@ settings to the **$WORKING_DIR/minimal_line.yaml**
 file (anywhere below the comment block). The *stat_input* setting
 explicitly indicates where the sample data and custom configuration
 files are located.  Set the *stat_input* to
-*$METPLOTPY_SOURCE/METplotpy/test/line/line.data* and set the
+*$METPLOTPY_BASE/test/line/line.data* and set the
 *plot_filename* to *$WORKING_DIR/output_plots/line_default.png*:
 
-*stat_input: $METPLOTPY_SOURCE/METplotpy/test/line/line.data*
+*stat_input: $METPLOTPY_BASE/test/line/line.data*
 
 *plot_filename: $WORKING_DIR/output_plots/line_default.png*
 
@@ -217,26 +202,21 @@ To generate the above plot using the **line_defaults.yaml** and
   outlined in the requirements section.
 
 * Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_SOURCE/METplotpy*.
-
-**NOTE**: In the instructions below remember to replace $METPLOTPY_SOURCE/METplotpy
-with $METPLOTPY_SOURCE/METplotpy-x.y.z (where x.y.z is the version number) if the source code
-was downloaded as a zip or gzip'd tar file.
+  *$METPLOTPY_BASE*.
 
   For the ksh environment:
 
   .. code-block:: ini
 		
-    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy
+    export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
 
-    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_BASE
 
-  Replacing the *$METPLOTPY_SOURCE* with the directory where the METplotpy
-  source code was saved.
+  Recall that *$METPLOTPY_BASE* is the directory path indicating where the METplotpy source code was saved.
 
   To generate the above **"custom"** plot (i.e using some custom
   configuration settings), use the custom configuration file,
@@ -246,7 +226,7 @@ was downloaded as a zip or gzip'd tar file.
   
   .. code-block:: ini
 
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line/line.py $WORKING_DIR/custom_line.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/line/line.py $WORKING_DIR/custom_line.yaml
 
 
 * A **line.png** output file will be created in the directory specified in
@@ -261,7 +241,7 @@ was downloaded as a zip or gzip'd tar file.
 
   .. code-block:: ini
     
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/line/line.py $WORKING_DIR/minimal_line.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/line/line.py $WORKING_DIR/minimal_line.yaml
 
 
 * A **line_default.png** output file will be created in the
