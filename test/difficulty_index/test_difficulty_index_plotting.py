@@ -1,4 +1,4 @@
-import example_difficulty_index as edi
+from . import example_difficulty_index as edi
 
 
 def test_difficulty_index_plot():
