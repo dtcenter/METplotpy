@@ -32,14 +32,24 @@ Example
 Sample Data
 ___________
 
+
+The data is text output from MET in columnar format.
 The sample data used to create an example box plot is available in the
 METplotpy repository, where the box plot tests are located:
 
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/test/box/box.data*
+*$METPLOTPY_BASE/metplotpy/test/box/box.data*
 
-*$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved
-(e.g. */username/myworkspace*).  The data is text output from MET in
-columnar format.
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved
+
+e.g.
+
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+
+or
+
+*/usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
+the Github repository.  The *x.y.z* is the release number.
+
 
 Configuration Files
 ___________________
@@ -53,10 +63,10 @@ it is a "human-friendly data serialization language". It is commonly used for
 configuration files and in applications where data is being stored or
 transmitted. Two configuration files are required. The first is a default
 configuration file, **box_defaults.yaml**, which is found in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory. All default
+*$METPLOTPY_BASE/metplotpy/plots/config* directory. All default
 configuration files are located in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
-*$METPLOTPY_SOURCE* is the user-specified directory where the
+*$METPLOTPY_BASE/metplotpy/plots/config* directory.
+*$METPLOTPY_BASE* is the user-specified directory where the
 METplotpy source code has been saved. **Default configuration files
 are automatically loaded by the plotting code and do not need to be
 explicitly specified when generating a plot**.
@@ -94,14 +104,16 @@ saved to the working directory:
 
 .. code-block:: ini
 		
-  cp $METPLOTPY_SOURCE/METplotpy/test/box/custom_box.yaml $WORKING_DIR/custom_box.yaml
+  cp $METPLOTPY_BASE/test/box/custom_box.yaml $WORKING_DIR/custom_box.yaml
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_SOURCE/METplotpy/test/box/custom_box.yaml*
-file to explicitly point to the *$METPLOTPY_SOURCE/METplotpy/test/box*
+*$METPLOTPY_BASE/test/box/custom_box.yaml*
+file to explicitly point to the *$METPLOTPY_BASE/test/box*
 directory (where the custom config files and sample data reside).
 Replace the relative path *./box.data*
-with the full path *$METPLOTPY_SOURCE/METplotpy/test/box/box.data*.
+with the full path *$METPLOTPY_BASE/test/box/box.data*
+(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
+installation on the system).
 Modify the *plot_filename* setting to point to the output path where the
 plot will be saved, including the name of the plot.
 
@@ -111,7 +123,7 @@ For example:
 
 *plot_filename: /username/working_dir/output_plots/box.png*
 
-This is where */username/myworkspace/* is *$METPLOTPY_SOURCE* and
+This is where */username/myworkspace/METplotpy* is *$METPLOTPY_BASE* and
 */username/working_dir* is *$WORKING_DIR*.  Make sure that the
 *$WORKING_DIR* directory that is specified exists and has the appropriate
 read and write permissions.
@@ -119,7 +131,7 @@ read and write permissions.
 The path listed for *plot_filename* may be
 changed to the output directory of one's  choosing.  If this is not set,
 then the *plot_filename* setting specified in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/box_defaults.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/config/box_defaults.yaml*
 configuration file will be used.
 
 To save the intermediate **.points1** file (used by METviewer and useful
@@ -159,17 +171,17 @@ Copy this file to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/METplotpy/test/box/minimal_box.yaml $WORKING_DIR/minimal_box.yaml
+  cp $METPLOTPY_BASE/test/box/minimal_box.yaml $WORKING_DIR/minimal_box.yaml
 
 Add the *stat_input* (input data) and *plot_filename* (output file/plot path)
 settings to the **$WORKING_DIR/minimal_box.yaml**
 file (anywhere below the comment block). The *stat_input* setting
 explicitly indicates where the sample data and custom configuration
 files are located.  Set the *stat_input* to
-*$METPLOTPY_SOURCE/METplotpy/test/box/box.data* and set the
+*$METPLOTPY_BASE/test/box/box.data* and set the
 *plot_filename* to **$WORKING_DIR/output_plots/box_default.png**:
 
-*stat_input: $METPLOTPY_SOURCE/METplotpy/test/box/box.data*
+*stat_input: $METPLOTPY_BASE/test/box/box.data*
 
 *plot_filename: $WORKING_DIR/output_plots/box_default.png*
 
@@ -187,22 +199,28 @@ Run from the Command Line
 
 Perform the following to generate the plots:
 
+* If using the conda environment, verify the conda environment
+  is running and has the required
+  `Python packages
+  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_
+  outlined in the requirements section.
+
 * Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_SOURCE/METplotpy*.
+  *$METPLOTPY_BASE*.
 
   For the ksh environment:
 
   .. code-block:: ini
 
-    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy
+    export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
 
-    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_BASE
 
-  Replacing the *$METPLOTPY_SOURCE* with the directory where the
+  Recall that *$METPLOTPY_BASE* is the directory path indicating where the
   METplotpy source code was saved.
 
   The **custom_box.yaml** configuration file, in combination with the
@@ -214,11 +232,9 @@ Perform the following to generate the plots:
   To generate the above plot using the **box_defaults.yaml** and
   **custom_box.yaml** config files, perform the following:
 
-* If the conda environment is being used, verify the conda environment
-  is running and has the required
-  `Python packages
-  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_
-  outlined in the requirements section.
+  .. code-block:: ini
+
+     python $METPLOTPY_BASE/metplotpy/plots/box/box.py $WORKING_DIR/custom_box.yaml
 
   The **minimal_box.yaml** configuration file, in combination with the
   **box_defaults.yaml** configuration file, generates a "default" box plot.
@@ -236,7 +252,7 @@ Perform the following to generate the plots:
 
   .. code-block:: ini
        
-   python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/box/box.py $WORKING_DIR/minimal_box.yaml
+   python $METPLOTPY_BASE/metplotpy/plots/box/box.py $WORKING_DIR/minimal_box.yaml
 
 * A **box_default.png** output file will be created in the
   directory specified in the *plot_filename* configuration setting in

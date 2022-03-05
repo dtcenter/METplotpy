@@ -1,4 +1,4 @@
-**************************
+x**************************
 Ensemble spread-skill plot
 **************************
 
@@ -14,14 +14,25 @@ Example
 Sample Data
 ___________
 
+The data is text output from MET in columnar format.
 The sample data used to create an example Ensemble spread-skill plot is
 available in the METplotpy
 repository, where the Ensemble spread-skill plot tests are located:
 
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/test/ens_ss/ens_ss.data*
+*$METPLOTPY_BASE/metplotpy/test/ens_ss/ens_ss.data*
 
-*$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved.
-The data is text output from MET in columnar format.
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
+
+e.g.
+
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+
+or
+
+*/usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
+the Github repository.  The *x.y.z* is the release number.
+
+
 
 
 
@@ -38,10 +49,10 @@ and in applications where data is being stored or transmitted.
 Two configuration files are required. The first is a default
 configuration file, **ens_ss_defaults.yaml**,
 which is found in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory. All default
+*$METPLOTPY_BASE/metplotpy/plots/config* directory. All default
 configuration files are located in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
-$METPLOTPY_SOURCE is the user-specified directory
+*$METPLOTPY_BASE/metplotpy/plots/config* directory.
+$METPLOTPY_BASE is the user-specified directory
 where the METplotpy source code has been saved.  **Default configuration
 files are automatically loaded by the plotting code and do not
 need to be explicitly specified when generating a plot**.
@@ -80,15 +91,17 @@ was saved to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/METplotpy/test/ens_ss/custom_ens_ss.yaml $WORKING_DIR/custom_ens_ss.yaml
+  cp $METPLOTPY_BASE/test/ens_ss/custom_ens_ss.yaml $WORKING_DIR/custom_ens_ss.yaml
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_SOURCE/METplotpy/test/ens_ss/custom_ens_ss.yaml*
+*$METPLOTPY_BASE/test/ens_ss/custom_ens_ss.yaml*
 file to explicitly point to the
-*$METPLOTPY_SOURCE/METplotpy/test/ens_ss* directory (where
+*$METPLOTPY_BASE/test/ens_ss* directory (where
 the custom config files and sample data reside).  Replace the relative path,
 *./ens_ss.data*, with the full path,
-*$METPLOTPY_SOURCE/METplotpy/test/ens_ss/ens_ss.data*.  Modify the
+*$METPLOTPY_BASE/test/ens_ss/ens_ss.data*
+(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
+installation on the system).  Modify the
 *plot_filename* setting to point to the directory of the plot, using
 the full path, including the name of the plot.
 
@@ -98,13 +111,13 @@ For example:
 
 *plot_filename: /username/working_dir/output_plots/ens_ss.png*
 
-This is where */username/myworkspace/* is $METPLOTPY_SOURCE and
+This is where */username/myworkspace/METplotpy* is $METPLOTPY_BASE and
 */username/working_dir* is $WORKING_DIR.  Make sure that the
 $WORKING_DIR directory that is specified exists and has the appropriate
 read and write permissions.  The path listed for *plot_filename* may
 be changed to the output directory of one’s choosing. If this is not set,
 then the plot_filename setting specified in the 
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/ens_ss_defaults.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/config/ens_ss_defaults.yaml*
 configuration file will be used.
 
 To save the intermediate **.points1** file (used by METviewer and
@@ -144,29 +157,29 @@ Perform the following:
   <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_
   
 * Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_SOURCE/METplotpy*.
+  *$METPLOTPY_BASE*.
 
   For the ksh environment:
 
   .. code-block:: ini
 
-    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy
+    export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
 
-    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_BASE
 
-  Replacing the $METPLOTPY_SOURCE with the directory where the METplotpy
-  source code was saved.
+  Recall that *$METPLOTPY_BASE* is the directory path indicating where the METplotpy source code was saved.
+
 
 
 * Enter the following command:
 
   .. code-block:: ini
 
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plotsens_ss.py $WORKING_DIR/custom_ens_ss.yaml
+    python $METPLOTPY_BASE/metplotpy/plotsens_ss.py $WORKING_DIR/custom_ens_ss.yaml
 
 * An **ens_ss.png** output file will be created in the directory specified
   in the *plot_filename* configuration setting in the

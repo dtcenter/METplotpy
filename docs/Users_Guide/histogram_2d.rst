@@ -22,7 +22,7 @@ ___________
 The sample data used to create an example 2d histogram is available in the
 METplotpy repository, where the **histogram_2d.py** code is located:
 
-*$METPLOTPY_SOURCE/METplotpy/test/histogram_2d/grid_diag_temperature.nc*
+*$METPLOTPY_BASE/test/histogram_2d/grid_diag_temperature.nc*
 
 *$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved.
 The data in netCDF format.
@@ -41,9 +41,9 @@ language". It is commonly used for configuration files and in applications
 where data is being stored or transmitted.  Two configuration files are
 required. The first is a default configuration file,
 **histogram_2d_defaults.yaml** that is found in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.  All default
+*$METPLOTPY_BASE/metplotpy/plots/config* directory.  All default
 configuration files are located in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config*
+*$METPLOTPY_BASE/metplotpy/plots/config*
 directory.  **Default configuration files are automatically loaded by
 the plotting code and do not need to be explicitly specified when
 generating a plot**.
@@ -85,16 +85,16 @@ is saved to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/METplotpy/test/histogram_2d/custom_histogram_2d.yaml $WORKING_DIR/custom_histogram_2d.yaml
+  cp $METPLOTPY_BASE/test/histogram_2d/custom_histogram_2d.yaml $WORKING_DIR/custom_histogram_2d.yaml
 
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_SOURCE/METplotpy/test/histogram_2d/custom_histogram_2d.yaml*
+*$METPLOTPY_BASE/test/histogram_2d/custom_histogram_2d.yaml*
 file to explicitly point to the
-*$METPLOTPY_SOURCE/METplotpy/test/histogram_2d* directory (where
+*$METPLOTPY_BASE/test/histogram_2d* directory (where
 the custom config files and sample data reside).  Replace the relative path
 *./grid_diag_temperature.nc* with the full path
-*$METPLOTPY_SOURCE/METplotpy/test/histogram_2d/grid_diag_temperature.nc*.
+*$METPLOTPY_BASE/test/histogram_2d/grid_diag_temperature.nc*.
 Modify the *plot_filename* setting to point to the output path where the
 plot will be saved, including the name of the plot.
 
@@ -110,7 +110,7 @@ $WORKING_DIR directory that is specified exists and has the appropriate
 read and write permissions.  The path listed for *plot_filename* may
 be changed to the output directory of one's choosing.  If this is not
 set, then the *plot_filename* setting specified in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/histogram_2d_defaults.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/config/histogram_2d_defaults.yaml*
 configuration file will be used.   **NOTE**: This may cause issues
 if the user does not have write permissions for the *plot_filename*
 directory in the **histogram_2d_defaults.yaml** configuration file.
@@ -149,18 +149,18 @@ Copy this file to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/METplotpy/test/histogram_2d/minimal_histogram_2d.yaml $WORKING_DIR/minimal_histogram_2d.yaml
+  cp $METPLOTPY_BASE/test/histogram_2d/minimal_histogram_2d.yaml $WORKING_DIR/minimal_histogram_2d.yaml
 
 Add the *stat_input* (input data) and *plot_filename* (output file/plot path)
 setting to the *$WORKING_DIR/minimal_histogram_2d.yaml* file (anywhere
 below the comment block). The *stat_input* setting explicitly indicates
 where the sample data and custom configuration files are located.  Set the
 *stat_input* to
-*$METPLOTPY_SOURCE/METplotpy/test/histogram_2d/grid_diag_temperature.nc*
+*$METPLOTPY_BASE/test/histogram_2d/grid_diag_temperature.nc*
 and set the
 *plot_filename* to *$WORKING_DIR/output_plots/tmp_z2_p500.png*:
 
-*stat_input: $METPLOTPY_SOURCE/METplotpy/test/histogram_2d/grid_diag_temperature.nc*
+*stat_input: $METPLOTPY_BASE/test/histogram_2d/grid_diag_temperature.nc*
 
 *plot_filename: $WORKING_DIR/output_plots/tmp_z2_p500.png*
 
@@ -226,7 +226,7 @@ Perform the following:
 
   .. code-block:: ini
 
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d/histogram_2d.py $WORKING_DIR/minimal_histogram_2d.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/histogram_2d/histogram_2d.py $WORKING_DIR/minimal_histogram_2d.yaml
 
 
 * A **tmp_z2_p500.png** output file will be created in the
@@ -241,7 +241,7 @@ Perform the following:
 
   .. code-block:: ini
 
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/histogram_2d/histogram_2d.py $WORKING_DIR/custom_histogram_2d.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/histogram_2d/histogram_2d.py $WORKING_DIR/custom_histogram_2d.yaml
 
   In this example, this custom config file changes the title and font size.
 

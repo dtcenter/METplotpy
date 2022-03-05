@@ -24,13 +24,24 @@ Example
 Sample Data
 ___________
 
+The data is text output from MET in columnar format.
 The sample data used to create these plots is available in the METplotpy
 repository:
 
-*$METPLOTPY_SOURCE/METplotpy/test/contour/contour.data*
+*$METPLOTPY_BASE/test/contour/contour.data*
 
-*$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved.
-The data is text output from MET in columnar format.
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
+
+e.g.
+
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+
+or
+
+*/usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
+the Github repository.  The *x.y.z* is the release number.
+
+
 
 Configuration Files
 ___________________
@@ -45,11 +56,11 @@ configuration files and in applications where data is being stored or
 transmitted. Two configuration files are required. The first is a
 default configuration file, **contour_defaults.yaml**,
 which is found in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
-*$METPLOTPY_SOURCE* indicates the directory where the METplotpy
+*$METPLOTPY_BASE/metplotpy/plots/config* directory.
+*$METPLOTPY_BASE* indicates the directory where the METplotpy
 source code has been saved.  All default
 configuration files are located in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
+*$METPLOTPY_BASE/metplotpy/plots/config* directory.
 **Default configuration files are automatically loaded by the
 plotting code and do not need to be explicitly specified when
 generating a plot**.
@@ -89,16 +100,18 @@ code was saved to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/METplotpy/test/contour/custom_contour.yaml $WORKING_DIR/custom_contour.yaml
+  cp $METPLOTPY_BASE/test/contour/custom_contour.yaml $WORKING_DIR/custom_contour.yaml
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_SOURCE/METplotpy/test/contour/custom_contour.yaml*
+*$METPLOTPY_BASE/test/contour/custom_contour.yaml*
 file to explicitly point to the
-*$METPLOTPY_SOURCE/METplotpy/test/contour*
+*$METPLOTPY_BASE/test/contour*
 directory (where the custom config files and sample data reside).
 Replace the relative path *./contour.data*
 with the full path
-*$METPLOTPY_SOURCE/METplotpy/test/contour/contour.data*.
+*$METPLOTPY_BASE/test/contour/contour.data*
+(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
+installation on the system).
 Modify the *plot_filename* setting to point to the output path where the
 plot will be saved, including the name of the plot.
 
@@ -108,14 +121,14 @@ For example:
 
 *plot_filename: /username/working_dir/output_plots/contour_custom.png*
 
-This is where */username/myworkspace/* is $METPLOTPY_SOURCE and
+This is where */username/myworkspace/METplotpy* is $METPLOTPY_BASE and
 */username/working_dir* is $WORKING_DIR.  Make sure that the
 $WORKING_DIR directory that is specified exists and has the
 appropriate read and write permissions. The path listed for
 *plot_filename* may be changed to the output directory of one’s choosing.
 If this is not set, then the
 *plot_filename* setting specified in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/contour_defaults.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/config/contour_defaults.yaml*
 configuration file will be used.
 
 To save the intermediate **.points1** file (used by METviewer and useful
@@ -151,28 +164,28 @@ perform the following:
    <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation-requirements.html>`_
 
 * Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_SOURCE/METplotpy*.
+  *$METPLOTPY_BASE*.
 
   For the ksh environment:
 
   .. code-block:: ini
 		
-    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy
+    export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
 		
-    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_BASE
 
-  Replacing the $METPLOTPY_SOURCE with the directory where the
-  METplotpy source code was saved.
+  Recall that *$METPLOTPY_BASE* is the directory path indicating where the METplotpy source code was saved.
+
 
 * Run the following on the command line:
 
   .. code-block:: ini  
 
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/contour/contour.py $WORKING_DIR/custom_contour.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/contour/contour.py $WORKING_DIR/custom_contour.yaml
 
   This will create a PNG file, **contour.png**,
   in the directory that was specified in the *plot_filename*
