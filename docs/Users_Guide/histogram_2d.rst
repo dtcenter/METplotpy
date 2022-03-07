@@ -19,13 +19,22 @@ Example
 Sample Data
 ___________
 
-The sample data used to create an example 2d histogram is available in the
+The data is in netCDF format.  The sample data used to create an example 2d histogram is available in the
 METplotpy repository, where the **histogram_2d.py** code is located:
 
 *$METPLOTPY_BASE/test/histogram_2d/grid_diag_temperature.nc*
 
-*$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved.
-The data in netCDF format.
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
+
+e.g.
+
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+
+or
+
+*/usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
+the Github repository.  The *x.y.z* is the release number.
+
 
 Configuration File
 __________________
@@ -94,7 +103,9 @@ file to explicitly point to the
 *$METPLOTPY_BASE/test/histogram_2d* directory (where
 the custom config files and sample data reside).  Replace the relative path
 *./grid_diag_temperature.nc* with the full path
-*$METPLOTPY_BASE/test/histogram_2d/grid_diag_temperature.nc*.
+*$METPLOTPY_BASE/test/histogram_2d/grid_diag_temperature.nc*
+(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
+installation on the system).
 Modify the *plot_filename* setting to point to the output path where the
 plot will be saved, including the name of the plot.
 
@@ -104,7 +115,7 @@ For example:
 
 *plot_filename: /username/working_dir/output_plots/custom_tmp_z2_p500.png*
 
-This is where */username/myworkspace/* is $METPLOTPY_SOURCE and
+This is where */username/myworkspace/METplotpy* is $METPLOTPY_BASE and
 */username/working_dir* is $WORKING_DIR.  Make sure that the
 $WORKING_DIR directory that is specified exists and has the appropriate
 read and write permissions.  The path listed for *plot_filename* may
@@ -191,14 +202,14 @@ Perform the following:
 
   .. code-block:: ini
 		
-     mkdir $METPLOTPY_SRC_DIR
+     mkdir $METPLOTPY_BASE
 
-* *$METPLOTPY_SRC_DIR* is the directory where the code will be saved.
+* *$METPLOTPY_BASE* is the directory where the source code is saved.
   Enter the following:
 
   .. code-block:: ini
 		
-      cd $METPLOTPY_SRC_DIR
+      cd $METPLOTPY_BASE
       git clone https://github.com/dtcenter/METplotpy
 
 * Set the PYTHONPATH to point to the location of the METplotpy code:
@@ -208,15 +219,15 @@ Perform the following:
   
   .. code-block:: ini
 
-    setenv PYTHONPATH $METPLOTPY_SRC_DIR/metplotpy:$METPLOTPY_SRC_DIR/metplotpy/plots
+    setenv PYTHONPATH $METPLOTPY_BASE/metplotpy:$METPLOTPY_BASE/metplotpy/plots
   
   For the ksh environment:
 
   .. code-block:: ini
 
-    export PYTHONPATH=$METPLOTPY_SRC_DIR/metplotpy:$METPLOTPY_SRC_DIR/metplotpy/plots
+    export PYTHONPATH=$METPLOTPY_BASE/metplotpy:$METPLOTPY_BASE/metplotpy/plots
 
-  Replace *$METPLOTPY_SRC_DIR* with the directory where the source code is saved.
+  Replace *$METPLOTPY_BASE* with the directory where the source code is saved.
 
   To generate the above **"defaults"** plot (i.e using default configuration
   settings), use the "minimal" custom configuration file,
