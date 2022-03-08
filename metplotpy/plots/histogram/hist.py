@@ -59,7 +59,7 @@ class Hist(BasePlot):
         # instantiate a HistogramConfig object, which holds all the necessary settings from the
         # config file that represents the BasePlot object.
         self.config_obj = \
-            getattr(sys.modules['hist_config'],
+            getattr(sys.modules['metplotpy.plots.histogram.hist_config'],
                     self.config_obj_name)(self.parameters)
 
         # Check that we have all the necessary settings for each ser
@@ -193,7 +193,7 @@ class Hist(BasePlot):
         """
         series_list = []
         hist_series_type = \
-            getattr(sys.modules['plots.histogram.hist_series'], self.series_obj)
+            getattr(sys.modules['metplotpy.plots.histogram.hist_series'], self.series_obj)
 
         # create ser in teh correct order
         for i, name in enumerate(self.config_obj.get_series_y()):
