@@ -21,13 +21,27 @@ Example
 Sample Data
 ___________
 
+The data used to create a wind rose plot is columnar text output from MET for the MPR (matched pair)
+line type.
 The sample data used to create these plots is available in the METplotpy
 repository, where the wind rose diagram test scripts are located:
 
-*$METPLOTPY_SOURCE/METplotpy/test/wind rose_diagram/point_stat_mpr.txt*
+*$METPLOTPY_BASE/test/wind rose_diagram/point_stat_mpr.txt*
 
-*$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved.
-The data is columnar text output from MET for the MPR (matched pair) line type.
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
+
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
+
+e.g.
+
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+
+or
+
+*/usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
+the Github repository.  The *x.y.z* is the release number.
+
+
 
 Configuration Files
 ___________________
@@ -42,11 +56,11 @@ configuration files and in applications where data is being stored or
 transmitted. Two configuration files are required. The first is a
 default configuration file, **wind_rose_diagram_defaults.yaml**,
 which is found in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
-*$METPLOTPY_SOURCE* indicates the directory where the METplotpy
+*$METPLOTPY_BASE/metplotpy/plots/config* directory.
+*$METPLOTPY_BASE* indicates the directory where the METplotpy
 source code has been saved.  All default
 configuration files are located in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
+*$METPLOTPY_BASE/metplotpy/plots/config* directory.
 **Default configuration files are automatically loaded by the
 plotting code and do not need to be explicitly specified when
 generating a plot**.
@@ -88,23 +102,28 @@ code was saved to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/METplotpy/test/wind_rose/wind_rose_custom.yaml $WORKING_DIR/wind_rose_custom.yaml
+  cp $METPLOTPY_BASE/test/wind_rose/wind_rose_custom.yaml $WORKING_DIR/wind_rose_custom.yaml
 
-Notice that this is a copy of the wind_rose_default.yaml file. We will simply change the title of the custom plot to
-customize the plot.  **NOTE**: You do not need to include all the configuration settings in your custom configuration
-file. You only need to include the settings you wish to override.
+Notice that this has many of the same settings found in the the wind_rose_default.yaml file. We will simply change
+the title of the custom plot to customize the plot.  **NOTE**: You do not need to include all the configuration
+settings in your custom configuration file. You only need to include the settings you wish to override.
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_SOURCE/METplotpy/test/wind_rose/wind_rose_custom.yaml*
+*$METPLOTPY_BASE/test/wind_rose/wind_rose_custom.yaml*
 file to explicitly point to the
-*$METPLOTPY_SOURCE/METplotpy/test/wind_rose/wind_rose*
+*$METPLOTPY_BASE/test/wind_rose/wind_rose*
 directory (where the custom config files and sample data reside).
 Replace the relative path *./point_stat_mpr.txt*
 with the full path
-*$METPLOTPY_SOURCE/METplotpy/test/wind_rose/point_stat_mpr.txt*.
+*$METPLOTPY_BASE/test/wind_rose/point_stat_mpr.txt*
+(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
+installation on the system).
 Modify the *plot_filename* setting to point to the output path where the
 plot will be saved, including the name of the plot.
 Modify the title from: *title: Wind Rose* to *title: Custom Wind Rose*
+Uncomment the entry (indicated by a '#' symbol in front of it; remove the '#' symbol to uncomment)
+for the **stat_input** setting to indicate where the input data is located and indicate the full path
+and name of the input data file.
 
 
 For example:
@@ -115,14 +134,14 @@ For example:
 
 *title: Custom Wind Rose*
 
-This is where */username/myworkspace/* is $METPLOTPY_SOURCE and
+This is where */username/myworkspace/METplotpy* is $METPLOTPY_BASE and
 */username/working_dir* is $WORKING_DIR.  Make sure that the
 $WORKING_DIR directory that is specified exists and has the
 appropriate read and write permissions. The path listed for
 *plot_filename* may be changed to the output directory of one’s choosing.
 If this is not set, then the
 *plot_filename* setting specified in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/wind_rose_defaults.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/config/wind_rose_defaults.yaml*
 configuration file will be used.
 
 To save the intermediate **.points1** file (used by METviewer and useful
@@ -161,7 +180,7 @@ Copy this file to the working directory:
 
 .. code-block:: ini
 		
-  cp $METPLOTPY_SOURCE/METplotpy/test/wind_rose/minimal_wind_rose.yaml $WORKING_DIR/minimal_wind_rose.yaml
+  cp $METPLOTPY_BASE/test/wind_rose/minimal_wind_rose.yaml $WORKING_DIR/minimal_wind_rose.yaml
 
 Add the *stat_input* (input data) and *plot_filename*
 (output file/plot path) settings to the
@@ -169,11 +188,11 @@ Add the *stat_input* (input data) and *plot_filename*
 file (anywhere below the comment block). The *stat_input* setting
 explicitly indicates where the sample data and custom configuration
 files are located.  Set the *stat_input* to
-*$METPLOTPY_SOURCE/METplotpy/test/wind_rose/point_stat_mpr.txt* and set the
+*$METPLOTPY_BASE/test/wind_rose/point_stat_mpr.txt* and set the
 *plot_filename* to
 *$WORKING_DIR/output_plots/wind_rose_default.png*:
 
-*stat_input: $METPLOTPY_SOURCE/METplotpy/test/wind_rose/point_stat_mpr.txt*
+*stat_input: $METPLOTPY_BASE/test/wind_rose/point_stat_mpr.txt*
 
 *plot_filename: $WORKING_DIR/output_plots/wind_rose_default.png*
 
@@ -210,28 +229,28 @@ perform the following:
    <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation-requirements.html>`_
 
 * Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_SOURCE/METplotpy*.
+  *$METPLOTPY_BASE*.
 
   For the ksh environment:
 
   .. code-block:: ini
 		
-    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy
+    export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
 		
-    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_BASE
 
-  Replacing the $METPLOTPY_SOURCE with the directory where the
+  Replacing the $METPLOTPY_BASE with the directory where the
   METplotpy source code was saved.
 
 * Run the following on the command line:
 
   .. code-block:: ini  
 
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/wind_rose/wind_rose.py $WORKING_DIR/minimal_wind_rose.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/wind_rose/wind_rose.py $WORKING_DIR/minimal_wind_rose.yaml
 
   This will create a PNG file, **wind_rose_default.png**,
   in the directory that was specified in the *plot_filename*
@@ -244,7 +263,7 @@ perform the following:
 
   .. code-block:: ini
 		
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/wind_rose/wind_rose.py $WORKING_DIR/wind_rose_custom.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/wind_rose/wind_rose.py $WORKING_DIR/wind_rose_custom.yaml
 
   .. image:: wind_rose_custom.png
 
