@@ -54,15 +54,15 @@ Configuration Files
 ___________________
 
 There is a YAML config file located in
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/hovmoeller_defaults.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/config/hovmoeller_defaults.yaml*
 
 Copy this configuration file from where you saved the METplotpy source code to your working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/hovmoeller_defaults.yaml $WORKING_DIR/hovmoeller_defaults.yaml
+  cp $METPLOTPY_BASE/metplotpy/plots/config/hovmoeller_defaults.yaml $WORKING_DIR/hovmoeller_defaults.yaml
 
-$METPLOTPY_SOURCE is the directory where you saved the METplotpy code, and $WORKING_DIR is the directory where you
+$METPLOTPY_BASE is the directory where you saved the METplotpy code, and $WORKING_DIR is the directory where you
 have read and write permissions.
 
 
@@ -77,28 +77,28 @@ To generate the example Hovmoeller plot (i.e. using settings in the
    **Required Packages** section above.
 
 * Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_SOURCE/METplotpy*. where $METPLOTPY_SOURCE is the directory where you saved the
+  *$METPLOTPY_BASE*. where $METPLOTPY_BASE is the directory where you saved the
   METplotpy source code (e.g. /home/someuser).
 
   For the ksh environment:
 
   .. code-block:: ini
 
-    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy
+    export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
 
-    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_BASE
 
 * Run the following on the command line:
 
 .. code-block:: ini
 
-   python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/hovmoeller/hovmoeller.py --config $WORKING_DIR/hovmoeller_defaults.yaml --datadir $WORKING_DIR/data/hovmoeller  --input precip.erai.sfc.1p0.2x.2014-2016.nc
+   python $METPLOTPY_BASE/metplotpy/plots/hovmoeller/hovmoeller.py --config $WORKING_DIR/hovmoeller_defaults.yaml --datadir $WORKING_DIR/data/hovmoeller  --input precip.erai.sfc.1p0.2x.2014-2016.nc
 
-where $METPLOTPY_SOURCE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
+where $METPLOTPY_BASE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
 directory where you have read and write permissions and where you are storing all your input data and where you
 copied the default config file.
 
