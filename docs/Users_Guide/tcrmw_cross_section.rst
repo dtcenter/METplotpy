@@ -7,7 +7,7 @@ Description
 Generate cross-section plots for TC-RMW data based on *height levels* using output
 from the METcalcpy vertical interpolation module, *vertical_interpolation.py*:
 
-https://metcalcpy.readthedocs.io/en/feature_34_vertical_interp/Users_Guide/vertical_interpolation.html
+https://metcalcpy.readthedocs.io/en/develop/Users_Guide/vertical_interpolation.html
 
 
 Example
@@ -18,7 +18,7 @@ Example
 
 Create the sample data by performing the conversion from pressure levels to height levels by following the instructions:
 
-https://metcalcpy.readthedocs.io/en/feature_34_vertical_interp/Users_Guide/vertical_interpolation.html
+https://metcalcpy.readthedocs.io/en/develop/Users_Guide/vertical_interpolation.html
 
 
 
