@@ -204,7 +204,7 @@ Perform the following:
 		
      mkdir $METPLOTPY_BASE
 
-* *$METPLOTPY_BASE* is the directory where the source code is saved.
+* *$METPLOTPY_BASE* is the directory where the source code is66TAW saved.
   Enter the following:
 
   .. code-block:: ini
