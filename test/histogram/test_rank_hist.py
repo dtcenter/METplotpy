@@ -18,7 +18,7 @@ def setup():
     cleanup()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../"
+    os.environ['METPLOTPY_BASE'] = "../../../metplotpy"
     custom_config_filename = "rank_hist.yaml"
 
     rank_hist.main(custom_config_filename)
@@ -36,6 +36,10 @@ def cleanup():
         # don't exist.  Ignore.
         pass
 
+<<<<<<< HEAD
+=======
+#@pytest.mark.skip("needs updating to reflect changes to histogram code")
+>>>>>>> 30d6e8934ef546b8763321301525e846bc0d988a
 @pytest.mark.parametrize("test_input, expected",
                          (["./rank_hist_expected.png", True],
                           ["./rank_hist.png", True]))
@@ -46,7 +50,11 @@ def test_files_exist(setup, test_input, expected):
     assert os.path.isfile(test_input) == expected
     cleanup()
 
+<<<<<<< HEAD
 @pytest.mark.skip("Image comparison typically unreliable when testing on different machines/environments.")
+=======
+#@pytest.mark.skip("needs updating to reflect changes to histogram code")
+>>>>>>> 30d6e8934ef546b8763321301525e846bc0d988a
 def test_images_match(setup):
     """
         Compare an expected plot with the

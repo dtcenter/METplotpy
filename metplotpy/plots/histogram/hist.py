@@ -65,7 +65,7 @@ class Hist(BasePlot):
         #     getattr(sys.modules['hist_config'],
         #             self.config_obj_name)(self.parameters)
         self.config_obj = \
-            getattr(hist_config,
+            getattr(sys.modules['metplotpy.plots.histogram.hist_config'],
                     self.config_obj_name)(self.parameters)
 
         # Check that we have all the necessary settings for each ser
