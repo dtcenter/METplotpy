@@ -17,7 +17,6 @@ def setup():
     # Cleanup the plotfile  output file from any previous run
     cleanup()
 
-
     os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "prob_hist.yaml"
 
@@ -46,7 +45,7 @@ def test_files_exist(setup, test_input, expected):
     assert os.path.isfile(test_input) == expected
     cleanup()
 
-@pytest.mark.skip("needs updating to reflect changes to histogram code")
+@pytest.mark.skip("Image comparisons fail during Github Actions checks.")
 def test_images_match(setup):
     """
         Compare an expected plot with the
