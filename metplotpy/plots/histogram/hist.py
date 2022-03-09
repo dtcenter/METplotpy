@@ -26,11 +26,11 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
-from metplotpy.plots.histogram import hist_config
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from metplotpy.plots.histogram.hist_series import HistSeries
-from metplotpy.plots.base_plot import BasePlot
-from metplotpy.plots import util
+from ..histogram import hist_config
+from ..constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from ..histogram.hist_series import HistSeries
+from ..base_plot import BasePlot
+from .. import util
 
 import metcalcpy.util.utils as utils
 from metcalcpy.event_equalize import event_equalize
@@ -58,12 +58,6 @@ class Hist(BasePlot):
 
         # instantiate a HistogramConfig object, which holds all the necessary settings from the
         # config file that represents the BasePlot object.
-
-        # need to explicitly use hist_config rather than sys.modules['hist_config']. The hist_config module
-        # doesn't appear to be loaded into the package namespace.
-        # self.config_obj = \
-        #     getattr(sys.modules['hist_config'],
-        #             self.config_obj_name)(self.parameters)
         self.config_obj = \
             getattr(sys.modules['metplotpy.plots.histogram.hist_config'],
                     self.config_obj_name)(self.parameters)
