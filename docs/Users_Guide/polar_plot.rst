@@ -110,4 +110,3 @@ Three plots named **20210305_120000_fcst_ice_north.png**  **20210305_120000_ice_
 .. image:: fcst_ice_north.png
 .. image:: ice_diff_north.png
 .. image:: obs_ice_north.png
-
