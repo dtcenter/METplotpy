@@ -16,7 +16,7 @@ from metcalcpy.compare_images import CompareImages
 def setup():
     # Cleanup the plotfile  output file from any previous run
     cleanup()
-    os.environ['METPLOTPY_BASE'] = "../../../"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "rel_hist.yaml"
 
     # Invoke the command to generate a histogram based on
