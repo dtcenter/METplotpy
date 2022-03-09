@@ -46,7 +46,7 @@ def test_files_exist(setup, test_input, expected):
     assert os.path.isfile(test_input) == expected
     cleanup()
 
-@pytest.mark.skip("needs updating to reflect changes to histogram code")
+@pytest.mark.skip(reason="Disabled, image comparison fails in GitHub Actions check.")
 def test_images_match(setup):
     """
         Compare an expected plot with the
