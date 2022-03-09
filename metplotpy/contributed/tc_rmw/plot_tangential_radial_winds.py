@@ -65,7 +65,7 @@ def plot_pressure_lev(arg, ds, track_index=0):
     # plt.savefig(os.path.join(args.datadir, 'test.pdf'))
     output_plot = args.output + ".png"
     plt.savefig(os.path.join(args.outputdir, output_plot), dpi=300)
-    plt.show()
+    #plt.show()
 
 
 if __name__ == '__main__':
