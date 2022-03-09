@@ -99,7 +99,4 @@ jobs:
           pytest test_rank_hist.py
           pytest test_rel_hist.py
           
-    
-          
-         
          

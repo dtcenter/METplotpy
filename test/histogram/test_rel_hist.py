@@ -46,7 +46,7 @@ def test_files_exist(setup, test_input, expected):
     assert os.path.isfile(test_input) == expected
     cleanup()
 
-@pytest.mark.skip(reason="Image comparisons fail during Github Actions checks.")
+@pytest.mark.skip("Image comparisons fail in Github Actions checks.")
 def test_images_match(setup):
     """
         Compare an expected plot with the
