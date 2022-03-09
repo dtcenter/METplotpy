@@ -74,7 +74,6 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    ens_ss
    contour
    histogram
-   histogram_2d
    performance_diagram
    reliability_diagram
    roc_diagram
@@ -88,6 +87,7 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    tcrmw_cross_section
    stratosphere_diagnostics
    polar_plot
+   wind_rose
    release-notes
    references
 
