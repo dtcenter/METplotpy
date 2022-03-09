@@ -69,14 +69,11 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    line
    box
    bar
-   eclv
    ens_ss
    contour
-   difficulty_index
    performance_diagram
    reliability_diagram
    roc_diagram
-   histogram
    histogram_2d
    s2s_blocking
    weather_regime
@@ -86,7 +83,7 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    taylor_diagram
    tcrmw_cross_section
    stratosphere_diagnostics
-   wind_rose
+   polar_plot
    release-notes
    references
 
