@@ -18,7 +18,7 @@ def setup():
     cleanup()
 
 
-    os.environ['METPLOTPY_BASE'] = "../../../metplotpy"
+    os.environ['METPLOTPY_BASE'] = "../../../"
     custom_config_filename = "prob_hist.yaml"
 
     prob_hist.main(custom_config_filename)
