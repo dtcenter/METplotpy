@@ -77,6 +77,7 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    performance_diagram
    reliability_diagram
    roc_diagram
+   histogram
    histogram_2d
    s2s_blocking
    weather_regime
