@@ -1,0 +1,3 @@
+input_filename: 'path/to/swh_North_Pacific_5dy_ensemble.npz'
+stat_fig_basename: 'path/to/output/swh_North_Pacific_5dy_'
+diff_fig_basename: '/path/to/output/difficulty_index/swh_North_Pacific_difficulty_index_'

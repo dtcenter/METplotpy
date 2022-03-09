@@ -11,6 +11,8 @@ Last modified Mon Apr 6 11:30:30 2020
 Taken from original test_difficulty_index.py but replacing with METcalcpy and METplotpy.
 
 """
+import argparse
+import yaml
 import numpy as np
 import matplotlib.pyplot as plt
 from metcalcpy.calc_difficulty_index import forecast_difficulty as di
@@ -18,6 +20,7 @@ from metcalcpy.calc_difficulty_index import EPS
 from metcalcpy.piecewise_linear import PiecewiseLinear as plin
 import metplotpy.plots.difficulty_index.mycolormaps as mcmap
 from metplotpy.plots.difficulty_index.plot_difficulty_index import plot_field
+
 
 def load_data(filename):
     """Load ensemble data from file"""
@@ -79,12 +82,12 @@ def plot_difficulty_index(dij, lats, lons, thresholds):
     return figs
 
 
-def save_difficulty_figures(figs, save_thresh, units='feet'):
+def save_difficulty_figures(config, figs, save_thresh, units='feet'):
     """
     Save subset of difficulty index figures.
     """
     fig_fmt = 'png'
-    fig_basename = './swh_North_Pacific_difficulty_index_'
+    fig_basename = config['diff_fig_basename']
     for thresh in save_thresh:
         thresh_str = '{:.2f}'.format(thresh).replace('.', '_')
         fig_name = (fig_basename + thresh_str +
@@ -112,12 +115,12 @@ def plot_statistics(mu, sigma, lats, lons, units='feet'):
     return mu_fig, sigma_fig
 
 
-def save_stats_figures(mu_fig, sigma_fig):
+def save_stats_figures(config, mu_fig, sigma_fig):
     """
     Save ensemble mean and spread figures.
     """
     fig_fmt = 'png'
-    fig_basename = './swh_North_Pacific_5dy_'
+    fig_basename = config['stat_fig_basename']
     mu_name = fig_basename + 'mean.' + fig_fmt
     print('Saving {}...\n'.format(mu_name))
     mu_fig.savefig(mu_name, format=fig_fmt)
@@ -126,25 +129,40 @@ def save_stats_figures(mu_fig, sigma_fig):
     sigma_fig.savefig(sigma_name, format=fig_fmt)
 
 
-def main():
+def main(config):
     """
     Load fieldijn from npz file created with save_ensemble_data.py
     helper function, compute ensemble mean and spread, compute
     difficulty index for a set of thresholds, plot and save the results.
     """
-    filename = './swh_North_Pacific_5dy_ensemble.npz'
+    filename = config['input_filename']
     lats, lons, fieldijn = load_data(filename)
     muij, sigmaij = compute_stats(fieldijn)
     thresholds = np.arange(4.0, 16.0, 1.0)
     dij = compute_difficulty_index(fieldijn, muij, sigmaij, thresholds)
     figs = plot_difficulty_index(dij, lats, lons, thresholds)
     save_thresh = np.arange(9.0, 13.0, 1.0)
-    save_difficulty_figures(figs, save_thresh)
+    save_difficulty_figures(config, figs, save_thresh)
     units = 'feet'
     mu_fig, sigma_fig =\
         plot_statistics(muij, sigmaij, lats, lons, units=units)
-    save_stats_figures(mu_fig, sigma_fig)
+    save_stats_figures(config, mu_fig, sigma_fig)
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(
+        description='Example Difficulty Index Plotting')
+
+    parser.add_argument(
+        '--config', type=str, dest='config',
+        required=True)
+
+    input_args = parser.parse_args()
+
+    """
+    Read YAML configuration file
+    """
+    config = yaml.load(
+        open(input_args.config), Loader=yaml.FullLoader)
+
+    main(config)
