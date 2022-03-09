@@ -26,15 +26,10 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
-# from ..histogram import hist_config
 from metplotpy.plots.histogram import hist_config
-# from ..constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-# from ..histogram.hist_series import HistSeries
 from metplotpy.plots.histogram.hist_series import HistSeries
-# from ..base_plot import BasePlot
 from metplotpy.plots.base_plot import BasePlot
-# from .. import util
 from metplotpy.plots import util
 
 import metcalcpy.util.utils as utils
