@@ -33,15 +33,15 @@ Sample data used to create an example difficulty index plot is
 available in the METplotpy repository, where the difficulty index plot
 code is located:
 
-*$METPLOTPY_SOURCE/METplotpy/test/difficulty_index/swh_North_Pacific_5dy_ensemble.npz*
+*$METPLOTPY_BASE/test/difficulty_index/swh_North_Pacific_5dy_ensemble.npz*
 
 Copy this sample input file to your working directory, where you have read and write privileges:
 
 .. code-block:: ini
 
-    cp $METPLOTPY_SOURCE/METplotpy/test/difficulty_index/swh_North_Pacific_5dy_ensemble.npz $WORKING_DIR
+    cp $METPLOTPY_BASE/test/difficulty_index/swh_North_Pacific_5dy_ensemble.npz $WORKING_DIR
 
-Where *$METPLOTPY_SOURCE* is the directory where you saved the METplotpy source code and *$WORKING_DIR* is the
+Where *$METPLOTPY_BASE* is the directory where you saved the METplotpy source code and *$WORKING_DIR* is the
 directory you created to store input data.
 
 
@@ -59,9 +59,37 @@ The following Python packages are necessary:
 Configuration Files
 ___________________
 
-No configuration files are used to generate the difficulty index plot. All the settings for the plot are incorporated in
+All the settings for the example difficulty index plot are incorporated in
 the mycolormaps.py and plot_difficulty_index.py code.  The example_difficulty_index.py script imports these modules to
-create six sample plots.
+create six sample plots.  The location of where these plots are saved are determined by settings in the
+example_difficulty_index.yaml configuration file:
+
+.. literalinclude:: ../../test/difficulty_index/example_difficulty_index.yaml
+
+
+Copy this config file from the directory where the source code was
+saved to the working directory:
+
+.. code-block:: ini
+
+  cp $METPLOTPY_BASE/test/difficulty_index/example_difficulty_index.yaml $WORKING_DIR/example_difficulty_index.yaml
+
+
+Modify the *input_filename* setting in the
+*$METPLOTPY_BASE/test/difficulty_index/example_difficulty_index.yaml* file to
+explicitly point to the *$METPLOTPY_BASE/test/difficulty_index*
+directory (where the config file and sample data reside).
+Replace the path */path/to/swh_North_Pacific_5dy_ensemble.npz* with the full path
+*$METPLOTPY_BASE/test/difficulty_index/swh_North_Pacific_5dy_ensemble.npz*
+(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
+installation on the system).  Modify the *stat_fig_basename*
+setting to point to the output path where the two statistics plots will be saved.
+These plots will have a prefix of *swh_North_Pacific_5dy_*
+Modify the *diff_fig_basename*
+setting to point to the output path where the other four difficulty index plots will be saved.
+These plots will have a prefix of *swh_North_Pacific_difficulty_index_*
+
+
 
 METplus Configuration
 =====================
@@ -75,7 +103,7 @@ To generate the sample difficulty index plots, perform the following:
    is running and has has the required Python packages outlined in the **Required Packages** section above.
 
 
-Where $METPLOTPY_SOURCE is the directory where you saved the METplotpy source code and $WORKING_DIR is the directory
+Where $METPLOTPY_BASE is the directory where you saved the METplotpy source code and $WORKING_DIR is the directory
 you created earlier to store the sample input data.
 
 * Change directory to the $WORKING_DIR:
@@ -91,10 +119,13 @@ where *$WORKING_DIR* is the directory where you copied all the necessary files (
 
   .. code-block:: ini
 
-    python example_difficulty_index.py
+    python example_difficulty_index.py example_difficulty_index.yaml
 
 
-You will generate the following six files:
+You will generate the following six files in the directories you specified for the
+difficulty index and statistics plots:
+
+**"Statistics plots"**
 
    **swh_North_Pacific_5dy_mean.png**:
 
@@ -104,6 +135,8 @@ You will generate the following six files:
 
      .. image:: swh_North_Pacific_5dy_std.png
 
+**"Difficulty Index" Plots**
+
    **swh_North_Pacific_difficulty_index_10_00_feet.png**:
 
      .. image:: swh_North_Pacific_difficulty_index_10_00_feet.png
@@ -111,6 +144,7 @@ You will generate the following six files:
    **swh_North_Pacific_difficulty_index_11_00_feet.png**:
 
      .. image:: swh_North_Pacific_difficulty_index_11_00_feet.png
+
 
    **swh_North_Pacific_difficulty_index_12_00_feet.png**:
 
