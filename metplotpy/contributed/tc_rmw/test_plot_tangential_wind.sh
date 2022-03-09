@@ -12,11 +12,6 @@ export outputdir=/path/to/output/plots
 # name of output file and plot (without file extension)
 export output=tangential
 
-export datadir=/Volumes/d1/minnawin/METcalcpy_Data/Vert_Interp
-export outputdir=/Users/minnawin/WindPlots/METplotpy/metplotpy/contributed/tc_rmw/output
-# name of output file and plot (without file extension)
-export output=tangential
-
 
 python plot_tangential_radial_winds.py \
     --input=$input \
