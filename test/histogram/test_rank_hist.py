@@ -18,7 +18,7 @@ def setup():
     cleanup()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../../"
+    os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "rank_hist.yaml"
 
     rank_hist.main(custom_config_filename)
