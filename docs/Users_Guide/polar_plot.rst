@@ -1,5 +1,5 @@
 *************
-PolarIce Plot
+Polar Ice Plot
 *************
 
 Description
