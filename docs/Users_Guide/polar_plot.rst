@@ -122,8 +122,8 @@ To generate the example Polar Ice plot (i.e. using settings in the
 
 .. code-block:: ini
 
-cd $WORKING_DIR
-python $METPLOTPY_BASE/metplotpy/plots/polar_plot/polar_ice_plot.py
+  cd $WORKING_DIR
+  python $METPLOTPY_BASE/metplotpy/plots/polar_plot/polar_ice_plot.py
 
 where $METPLOTPY_BASE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
 directory where you have read and write permissions and where you are storing all your input data and where you
