@@ -48,7 +48,8 @@ the `s2s METplus data tar file
 *model_applications/s2s/UserScript_obsPrecip_obsOnly_Hovmoeller*.
 
 Save this file in a directory where you have read and write permissions, such as
-$WORKING_DIR/data/hovmoeller, where $WORKING_DIR is the path to your data directory.
+$WORKING_DIR/data/hovmoeller, where $WORKING_DIR is the path to the directory where you will save
+input data.
 
 Configuration Files
 ___________________
@@ -56,12 +57,7 @@ ___________________
 There is a YAML config file located in
 *$METPLOTPY_BASE/metplotpy/plots/config/hovmoeller_defaults.yaml*
 
-Copy this configuration file from where you saved the METplotpy source code to your working directory:
-
-.. code-block:: ini
-
-  cp $METPLOTPY_BASE/metplotpy/plots/config/hovmoeller_defaults.yaml $WORKING_DIR/hovmoeller_defaults.yaml
-
+.. literalinclude:: ../../metplotpy/plots/config/hovmoeller_defaults.yaml
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
@@ -73,21 +69,6 @@ or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
 the Github repository.  The *x.y.z* is the release number.
-
-Modify the *hovmoeller_defaults.yaml* file to specify the output directory.
-
-For example:
-
-replace *plot_filename: erai_precip.png*
-with *plot_filename: /path/to/output/dir/erai_precip.png*
-
-Replace the */path/to/output/dir* with the with the full path to the output directory
-where you have read and write permissions.
-
-
-
-$WORKING_DIR is the directory where you saved the *hovmoeller_default.yaml* config file, sample data, and
-have read and write permissions.
 
 
 Run from the Command Line
@@ -120,7 +101,7 @@ To generate the example Hovmoeller plot (i.e. using settings in the
 
 .. code-block:: ini
 
-   python $METPLOTPY_BASE/metplotpy/plots/hovmoeller/hovmoeller.py --config $WORKING_DIR/hovmoeller_defaults.yaml --datadir $WORKING_DIR/data/hovmoeller  --input precip.erai.sfc.1p0.2x.2014-2016.nc
+   python $METPLOTPY_BASE/metplotpy/plots/hovmoeller/hovmoeller.py --datadir $WORKING_DIR/data/hovmoeller  --input precip.erai.sfc.1p0.2x.2014-2016.nc
 
 where $METPLOTPY_BASE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
 directory where you have read and write permissions and where you are storing all your input data and where you
@@ -135,8 +116,7 @@ copied the default config file.  You will see informational output to the screen
     - logging information
 
 
-A plot named **erai_precip.png** will be generated in the directory which you specified in the *plot_filename*
-setting in the *hovmoeller_defaults.yaml* configuration file:
+A plot named **erai_precip.png** will be generated in the directory from which you ran the plotting command:
 
 .. image:: erai_precip.png
 
