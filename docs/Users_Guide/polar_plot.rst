@@ -58,7 +58,7 @@ Configuration Files
 ___________________
 
 There is a YAML config file located in
-*$METPLOTPY_BASE/metplotpy/plots/config/polar_plot_defaults.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/config/polar_plot.yaml*
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
