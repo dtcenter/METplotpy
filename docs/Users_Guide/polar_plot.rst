@@ -1,10 +1,10 @@
-***************
-Polar Plot Plot
-***************
+*************
+PolarIce Plot
+*************
 
 Description
 ===========
-A Polar Plot plot is a 2D plot using a polar stereographic projection.
+A Polar Ice plot is a 2D plot using a polar stereographic projection.
 There is a specific example found in the polar_ice_plot which plots
 sea ice area averages
 
@@ -44,7 +44,7 @@ Example
 Sample Data
 ___________
 
-The sample data used to create an example Polar Plot plot is available in
+The sample data used to create an example Polar Ice plot is available in
 the `marine_coastal METplus data tar file
 <https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/v4.0/sample_data-marine_coastal-4.1.tgz>`_  in the directory
 *model_applications/marine_coastal/GridStat_fcstRTOFS_obsOSTIA_iceCover/grid_stat_north_000000L_20210305_120000V_pairs.nc.*
@@ -52,11 +52,24 @@ the `marine_coastal METplus data tar file
 Save this file in a directory where you have read and write permissions, such as
 $WORKING_DIR/data/polar_plot, where $WORKING_DIR is the path to your data directory.
 
+
+
 Configuration Files
 ___________________
 
 There is a YAML config file located in
 *$METPLOTPY_BASE/metplotpy/plots/config/polar_plot_defaults.yaml*
+
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
+
+e.g.
+
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+
+or
+
+*/usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
+the Github repository.  The *x.y.z* is the release number.
 
 Copy this configuration file from where you saved the METplotpy source code to your working directory:
 
@@ -71,7 +84,7 @@ have read and write permissions.
 Run from the Command Line
 =========================
 
-To generate the example Polar Plot plot (i.e. using settings in the
+To generate the example Polar Ice plot (i.e. using settings in the
 **polar_plot.yaml** configuration file) perform the following:
 
 *  If using the conda environment, verify the conda environment
