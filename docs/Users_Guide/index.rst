@@ -73,7 +73,6 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    eclv
    ens_ss
    contour
-   histogram
    performance_diagram
    reliability_diagram
    roc_diagram
