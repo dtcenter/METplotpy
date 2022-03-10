@@ -150,12 +150,11 @@ if __name__ == "__main__":
     """
     Parse command line arguments
     """
-    parser = argparse.ArgumentParser(description="Hovmoeller diagram", 
+    parser = argparse.ArgumentParser(description="Hovmoeller diagram",
          epilog="METPLOTPY_BASE needs to be set to your METplotpy directory")
-
     parser.add_argument('--config', type=str,
                         default=os.path.join(os.getenv('METPLOTPY_BASE'),
-                        'plots', 'config', 'hovmoeller_defaults.yaml'),
+                        'metplotpy/plots', 'config', 'hovmoeller_defaults.yaml'),
                         help='configuration file')
     parser.add_argument('--datadir', type=str,
                         default=os.getenv('DATA_DIR'),
