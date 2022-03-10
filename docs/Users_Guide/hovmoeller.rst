@@ -83,7 +83,7 @@ To generate the example Hovmoeller plot (i.e. using settings in the
 
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_BASE*. where $METPLOTPY_BASE is the directory where you saved the
-  METplotpy source code (e.g. /home/someuser).
+  METplotpy source code (e.g. /home/someuser/METplotpy).
 
   For the ksh environment:
 
