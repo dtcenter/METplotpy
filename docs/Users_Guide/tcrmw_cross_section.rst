@@ -33,7 +33,7 @@ An example configuration file (YAML, with .yaml extension) is available as a sta
 for customizing the cross-plot of the height level data:
 
 $METPLOTPY_BASE/metplotpy/contributed/tc_rmw/plot_cross_section.yaml
-where $METPLOTPY_SOURCE is the location where you saved the METplotpy source code.
+where $METPLOTPY_BASE is the location where you saved the METplotpy source code.
 
 .. literalinclude:: ../../metplotpy/contributed/tc_rmw/plot_cross_section.yaml
 
@@ -109,11 +109,11 @@ compatible version number for your operating system and existing packages.*
 
 * If you are running in a conda environment, verify that you are running the conda environment that has the above Python packages installed.
 
-* cd to the $METPLOTPY_BASE_DIR/METplotpy/metplotpy/contributed/tc_rmw directory
+* cd to the $METPLOTPY_BASE/metplotpy/contributed/tc_rmw directory
 
-``cd $METPLOTPY_BASE_DIR/METplotpy/metplotpy/contributed/tc_rmw``
+``cd $METPLOTPY_BASE/metplotpy/contributed/tc_rmw``
 
-replacing the $METPLOTPY_BASE_DIR with the directory where you saved the METplotpy
+replacing the $METPLOTPY_BASE with the directory where you saved the METplotpy
 source code.
 
 * run the test_plot_cross_section.sh script:
