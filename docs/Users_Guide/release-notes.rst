@@ -9,7 +9,7 @@ Version |version| release notes (|release_date|)
 ________________________________________________
 
 
-Version 1.1.0 release notes (20220218)
+Version 1.1.0 release notes (20220309)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * New Plots:
