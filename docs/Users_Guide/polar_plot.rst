@@ -80,6 +80,17 @@ Copy this configuration file from where you saved the METplotpy source code to y
 $METPLOTPY_BASE is the directory where you saved the METplotpy code, and $WORKING_DIR is the directory where you
 have read and write permissions.
 
+Modify *input_file* setting in the $WORKING_DIR/polar_ice.yaml config file to point to the directory
+where you saved your sample data from above:
+
+e.g.
+
+replace *input_file: "~/grid_stat_north_000000L_20210305_120000V_pairs.nc"*
+with *input_file: "/path/to/data/grid_stat_north_000000L_20210305_120000V_pairs.nc"*
+
+Where *"/path/to/data"* is the directory where you saved the grid_stat_north_000000L_20210305_120000V_pairs.nc
+sample data.
+
 
 Run from the Command Line
 =========================
@@ -107,11 +118,12 @@ To generate the example Polar Ice plot (i.e. using settings in the
 
     setenv METPLOTPY_BASE $METPLOTPY_BASE
 
-* Run the following on the command line:
+* Run the following on the command line (from your $WORKING_DIR):
 
 .. code-block:: ini
 
-   python $METPLOTPY_BASE/metplotpy/plots/polar_plot/polar_ice_plot.py --config $WORKING_DIR/polar_ice.yaml
+cd $WORKING_DIR
+python $METPLOTPY_BASE/metplotpy/plots/polar_plot/polar_ice_plot.py
 
 where $METPLOTPY_BASE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
 directory where you have read and write permissions and where you are storing all your input data and where you
