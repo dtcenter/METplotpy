@@ -119,7 +119,7 @@ where *$WORKING_DIR* is the directory where you copied all the necessary files (
 
   .. code-block:: ini
 
-    python example_difficulty_index.py example_difficulty_index.yaml
+    python ${METPLOTPY_BASE}/test/difficulty_index/example_difficulty_index.py example_difficulty_index.yaml
 
 
 You will generate the following six files in the directories you specified for the
