@@ -62,7 +62,31 @@ Copy this configuration file from where you saved the METplotpy source code to y
 
   cp $METPLOTPY_BASE/metplotpy/plots/config/hovmoeller_defaults.yaml $WORKING_DIR/hovmoeller_defaults.yaml
 
-$METPLOTPY_BASE is the directory where you saved the METplotpy code, and $WORKING_DIR is the directory where you
+
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
+
+e.g.
+
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+
+or
+
+*/usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
+the Github repository.  The *x.y.z* is the release number.
+
+Modify the *hovmoeller_defaults.yaml* file to specify the output directory.
+
+For example:
+
+replace *plot_filename: erai_precip.png*
+with *plot_filename: /path/to/output/dir/erai_precip.png*
+
+Replace the */path/to/output/dir* with the with the full path to the output directory
+where you have read and write permissions.
+
+
+
+$WORKING_DIR is the directory where you saved the *hovmoeller_default.yaml* config file, sample data, and
 have read and write permissions.
 
 
@@ -100,10 +124,19 @@ To generate the example Hovmoeller plot (i.e. using settings in the
 
 where $METPLOTPY_BASE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
 directory where you have read and write permissions and where you are storing all your input data and where you
-copied the default config file.
+copied the default config file.  You will see informational output to the screen:
+
+    - a usage statement
+
+    - reminder to set the METPLOTPY_BASE:
+
+       **"METPLOTPY_BASE needs to be set to your METplotpy directory"**
+
+    - logging information
 
 
-A plot named **erai_precip.png** will be generated in the directory from where you ran the above command:
+A plot named **erai_precip.png** will be generated in the directory which you specified in the *plot_filename*
+setting in the *hovmoeller_defaults.yaml* configuration file:
 
 .. image:: erai_precip.png
 
