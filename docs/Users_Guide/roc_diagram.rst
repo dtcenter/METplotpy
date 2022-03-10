@@ -25,10 +25,20 @@ Sample data used to create an example ROC diagram is
 available in the METplotpy repository, where the ROC diagram
 code is located:
 
-*$METPLOTPY_SOURCE/METplotpy/test/roc_diagram/plot_20200507_074426.data*
+*$METPLOTPY_BASE/test/roc_diagram/plot_20200507_074426.data*
 
-*$METPLOTPY_SOURCE* is the directory where the METplotpy source code
-is installed. (e.g. */username/myworkspace*).
+*$METPLOTPY_BASE* is the directory where the METplotpy source code
+is installed. (e.g. */username/myworkspace*):
+
+e.g.
+
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+
+or
+
+*/usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
+the Github repository.  The *x.y.z* is the release number.
+
 
 Configuration Files
 ___________________
@@ -42,9 +52,9 @@ language". It is commonly used for configuration files and in applications
 where data is being stored or transmitted.   Two configuration files are
 required. The first is a default configuration file, the first is a
 default configuration file, **roc_diagram_defaults.yaml** that is found in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.  All default
+*$METPLOTPY_BASE/metplotpy/plots/config* directory.  All default
 configuration files are located in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config*
+*$METPLOTPY_BASE/metplotpy/plots/config*
 directory.  **Default configuration files are automatically loaded by
 the plotting code and do not need to be explicitly specified when
 generating a plot**.
@@ -85,16 +95,18 @@ was saved to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/custom_roc_diagram.yaml $WORKING_DIR/custom_roc_diagram.yaml
+  cp $METPLOTPY_BASE/test/roc_diagram/custom_roc_diagram.yaml $WORKING_DIR/custom_roc_diagram.yaml
 
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_SOURCE/METplotpy/test/roc_diagram/custom_roc_diagram.yaml*
+*$METPLOTPY_BASE/test/roc_diagram/custom_roc_diagram.yaml*
 file to explicitly point to the
-*$METPLOTPY_SOURCE/METplotpy/test/roc_diagram* directory (where the
+*$METPLOTPY_BASE/test/roc_diagram* directory (where the
 custom config files and sample data reside).  Replace the relative path
 *./plot_20200507_074426.data* with the full path
-*$METPLOTPY_SOURCE/METplotpy/test/roc_diagram/plot_20200507_074426.data*.
+*$METPLOTPY_BASE/test/roc_diagram/plot_20200507_074426.data*
+(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
+installation on the system).
 Modify the *plot_filename* setting to point to the output path where the
 plot will be saved, including the name of the plot.
 
@@ -104,13 +116,13 @@ For example:
 
 *plot_filename: /username/working_dir/output_plots/roc_diagram_custom.png*
 
-This is where */username/myworkspace/* is *$METPLOTPY_SOURCE* and
+This is where */username/myworkspace/METplotpy* is *$METPLOTPY_BASE* and
 */username/working_dir* is *$WORKING_DIR*.  Make sure that the
 *$WORKING_DIR* directory that is specified exists and has the appropriate
 read and write permissions.The path listed for *plot_filename* may be
 changed to the output directory of one’s choosing.  If this is not set,
 then the *plot_filename* setting specified in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/roc_diagram_defaults.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/config/roc_diagram_defaults.yaml*
 configuration file will be used.
 
 To save the intermediate **.points1** file (used by METviewer and useful
@@ -149,7 +161,7 @@ Copy this file to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/minimal_roc_diagram.yaml $WORKING_DIR/minimal_roc_diagram.yaml
+  cp $METPLOTPY_BASE/test/roc_diagram/minimal_roc_diagram.yaml $WORKING_DIR/minimal_roc_diagram.yaml
 
 Add the *stat_input* (input data) and *plot_filename*
 (output file/plot path) settings to the
@@ -157,11 +169,11 @@ Add the *stat_input* (input data) and *plot_filename*
 comment block). The *stat_input* setting explicitly indicates where the
 sample data and custom configuration files are located.  Set the
 *stat_input* to
-*$METPLOTPY_SOURCE/METplotpy/test/roc_diagram/plot_20200507_074426.data*
+*$METPLOTPY_BASE/test/roc_diagram/plot_20200507_074426.data*
 and set the
 *plot_filename* to *$WORKING_DIR/output_plots/roc_diagram_default.png*:
 
-*stat_input: $METPLOTPY_SOURCE/METplotpy/test/roc_diagram/plot_20200507_074426.data*
+*stat_input: $METPLOTPY_BASE/test/roc_diagram/plot_20200507_074426.data*
 
 *plot_filename: $WORKING_DIR/output_plots/roc_diagram_default.png*
 
@@ -205,21 +217,21 @@ Perform the following:
 
 
 * Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_SOURCE/METplotpy*
+  *$METPLOTPY_BASE*
 
   For the ksh environment:
 
   .. code-block:: ini
 
-    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy
+    export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
 
-    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_BASE
 
-  Replacing the $METPLOTPY_SOURCE with the directory where the
+  Replacing the $METPLOTPY_BASE with the directory where the
   METplotpy source code was saved.
 
 
@@ -231,7 +243,7 @@ Perform the following:
   
   .. code-block:: ini
 
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/minimal_roc_diagram.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/minimal_roc_diagram.yaml
 
 
 * A **roc_diagram_default.png** output file will be created in the
@@ -247,7 +259,7 @@ Perform the following:
 
   .. code-block:: ini
 		
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/custom_roc_diagram.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/custom_roc_diagram.yaml
 
   In this example, this custom config file changes the title and axis
   labels. The caption magnification, caption weight, and title offset
