@@ -58,7 +58,7 @@ Configuration Files
 ___________________
 
 There is a YAML config file located in
-*$METPLOTPY_BASE/metplotpy/plots/config/polar_plot.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/config/polar_ice.yaml*
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
@@ -75,7 +75,7 @@ Copy this configuration file from where you saved the METplotpy source code to y
 
 .. code-block:: ini
 
-  cp $METPLOTPY_BASE/metplotpy/plots/config/polar_plot.yaml $WORKING_DIR/polar_plot.yaml
+  cp $METPLOTPY_BASE/metplotpy/plots/config/polar_ice.yaml $WORKING_DIR/polar_ice.yaml
 
 $METPLOTPY_BASE is the directory where you saved the METplotpy code, and $WORKING_DIR is the directory where you
 have read and write permissions.
@@ -85,7 +85,7 @@ Run from the Command Line
 =========================
 
 To generate the example Polar Ice plot (i.e. using settings in the
-**polar_plot.yaml** configuration file) perform the following:
+**polar_ice.yaml** configuration file) perform the following:
 
 *  If using the conda environment, verify the conda environment
    is running and has has the required Python packages specified in the
@@ -111,7 +111,7 @@ To generate the example Polar Ice plot (i.e. using settings in the
 
 .. code-block:: ini
 
-   python $METPLOTPY_BASE/metplotpy/plots/polar_plot/polar_ice_plot.py --config $WORKING_DIR/polar_plot.yaml
+   python $METPLOTPY_BASE/metplotpy/plots/polar_plot/polar_ice_plot.py --config $WORKING_DIR/polar_ice.yaml
 
 where $METPLOTPY_BASE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
 directory where you have read and write permissions and where you are storing all your input data and where you
