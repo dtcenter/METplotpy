@@ -118,9 +118,9 @@ def main():
     # Assign long_names to a new DataArray coordinate. It will have the same shape as tendency dimension. 
     total_change = total_change.assign_coords({"long_name":(tendency,long_names)})
 
-    print(f"calculate d{variable}")
+    logging.info(f"calculate d{variable}")
     state_variable = fv3ds[variable].metpy.quantify() # Tried metpy.quantify() with open_dataset, but pint.errors.UndefinedUnitError: 'dBz' is not defined in the unit registry
-    state_variable_initial_time = fv3ds[variable+"_i"] 
+    state_variable_initial_time = fv3ds[variable+"_i"].metpy.quantify() 
     dstate_variable = state_variable.sel(time = lasttime) - state_variable_initial_time
     dstate_variable = dstate_variable.assign_coords(time=lasttime)
     dstate_variable.attrs["long_name"] = f"change in {state_variable.attrs['long_name']}"
