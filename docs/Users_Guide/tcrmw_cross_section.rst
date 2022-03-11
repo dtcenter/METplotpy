@@ -7,7 +7,7 @@ Description
 Generate cross-section plots for TC-RMW data based on *height levels* using output
 from the METcalcpy vertical interpolation module, *vertical_interpolation.py*:
 
-https://metcalcpy.readthedocs.io/en/feature_34_vertical_interp/Users_Guide/vertical_interpolation.html
+https://metcalcpy.readthedocs.io/en/develop/Users_Guide/vertical_interpolation.html
 
 
 Example
@@ -18,7 +18,7 @@ Example
 
 Create the sample data by performing the conversion from pressure levels to height levels by following the instructions:
 
-https://metcalcpy.readthedocs.io/en/feature_34_vertical_interp/Users_Guide/vertical_interpolation.html
+https://metcalcpy.readthedocs.io/en/develop/Users_Guide/vertical_interpolation.html
 
 
 
@@ -32,8 +32,8 @@ source code) is where your *tc_rmw_example_vertical_interp.nc* file will be loca
 An example configuration file (YAML, with .yaml extension) is available as a starting point
 for customizing the cross-plot of the height level data:
 
-$METPLOTPY_SOURCE/METplotpy/metplotpy/contributed/tc_rmw/plot_cross_section.yaml
-where $METPLOTPY_SOURCE is the location where you saved the METplotpy source code.
+$METPLOTPY_BASE/metplotpy/contributed/tc_rmw/plot_cross_section.yaml
+where $METPLOTPY_BASE is the location where you saved the METplotpy source code.
 
 .. literalinclude:: ../../metplotpy/contributed/tc_rmw/plot_cross_section.yaml
 
@@ -109,11 +109,11 @@ compatible version number for your operating system and existing packages.*
 
 * If you are running in a conda environment, verify that you are running the conda environment that has the above Python packages installed.
 
-* cd to the $METPLOTPY_SOURCE_DIR/METplotpy/metplotpy/contributed/tc_rmw directory
+* cd to the $METPLOTPY_BASE/metplotpy/contributed/tc_rmw directory
 
-``cd $METPLOTPY_SOURCE_DIR/METplotpy/metplotpy/contributed/tc_rmw``
+``cd $METPLOTPY_BASE/metplotpy/contributed/tc_rmw``
 
-replacing the $METPLOTPY_SOURCE_DIR with the directory where you saved the METplotpy
+replacing the $METPLOTPY_BASE with the directory where you saved the METplotpy
 source code.
 
 * run the test_plot_cross_section.sh script:

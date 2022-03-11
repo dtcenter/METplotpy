@@ -1,29 +1,19 @@
-*******************
-Performance Diagram
-*******************
+******************
+Wind Rose Diagram
+******************
 
 Description
 ===========
 
-Performance diagrams are used to show the relationship between categorical
-statistics, with  axes representing detection and success (1 - false alarm)
-rates (:ref:`Roebber, 2009<Roebber>`).  
-The simplest input to the performance diagram is the MET contingency
-table statistics (CTS)  output.  This output can be produced by many of
-the MET tools (Point-Stat, Grid-Stat, etc.)
-For more information on Performance diagrams, please refer to the
-`METviewer documentation
-<https://metviewer.readthedocs.io/en/latest/Users_Guide/perfdiag.html>`_.
+A wind rose diagram graphically displays the wind speed and wind direction at a particular location over a period of
+time.  The diagram consists of radiating spokes that represent the wind direction in terms of the cardinal wind
+directions of North, East, South, and West.  Each spoke indicates how often the wind blows from each direction and
+the color bands on each spoke represents the wind speed range (bins).  The wind rose diagram is based on
+a polar coordinate system, with data plotted at a distance away from the origin at an angle that is
+relative to North.
 
-There are several reference lines on the performance diagram.  The dashed
-lines that radiate from the origin are lines of equal frequency bias.
-Labels for the frequency bias amount are at the end of each line. The
-diagonal represents a perfect frequency bias score of 1.  Curves of
-equal Critical Success Index (CSI) connect the top of the plot to the
-right side.  CSI amounts are listed to the right side of the plot,
-with better values falling closer to the top.
 
-.. image:: performance_diagram_default.png
+.. image:: wind_rose_custom.png
 
 Example
 =======
@@ -31,11 +21,14 @@ Example
 Sample Data
 ___________
 
-The data is text output from MET in columnar format.
+The data used to create a wind rose plot is columnar text output from MET for the MPR (matched pair)
+line type.
 The sample data used to create these plots is available in the METplotpy
-repository, where the performance diagram scripts are located:
+repository, where the wind rose diagram test scripts are located:
 
-*$METPLOTPY_BASE/test/performance_diagram/plot_20200317_151252.data*
+*$METPLOTPY_BASE/test/wind rose_diagram/point_stat_mpr.txt*
+
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
@@ -50,11 +43,10 @@ the Github repository.  The *x.y.z* is the release number.
 
 
 
-
 Configuration Files
 ___________________
 
-The performance diagram utilizes YAML configuration files to indicate where
+The wind rose diagram utilizes YAML configuration files to indicate where
 input data is located and to set plot attributes. These plot attributes
 correspond to values that can be set via the METviewer tool. YAML is a
 recursive acronym for "YAML Ain't Markup Language" and according to
@@ -62,7 +54,7 @@ recursive acronym for "YAML Ain't Markup Language" and according to
 it is a "human-friendly data serialization language. It is commonly used for
 configuration files and in applications where data is being stored or
 transmitted. Two configuration files are required. The first is a
-default configuration file, **performance_diagram_defaults.yaml**,
+default configuration file, **wind_rose_diagram_defaults.yaml**,
 which is found in the
 *$METPLOTPY_BASE/metplotpy/plots/config* directory.
 *$METPLOTPY_BASE* indicates the directory where the METplotpy
@@ -74,8 +66,8 @@ plotting code and do not need to be explicitly specified when
 generating a plot**.
 
 The second required configuration file is a user-supplied “custom”
-configuration file. This  file is used to customize/override the default
-settings in the **performance_diagram_defaults.yaml** file. The custom
+configuration file. This second configuration file is used to customize/override the default
+settings in the **wind_rose_defaults.yaml** file. The custom
 configuration file can be an empty file if all default settings are to
 be applied.
 
@@ -85,51 +77,62 @@ METplus Configuration
 Default Configuration File
 __________________________
 
-The following is the *mandatory*, **performance_diagram_defaults.yaml**
+The following is the *mandatory*, **wind_rose_defaults.yaml**
 configuration file, which serves as a starting point for creating a
-performance diagram plot,  as it represents the default values set in METviewer.
+wind rose diagram plot.
 
 **NOTE**: This default configuration file is automatically loaded by
-**performance_diagram.py.**
+**wind_rose_diagram.py.**
 
 
-.. literalinclude:: ../../metplotpy/plots/config/performance_diagram_defaults.yaml
+.. literalinclude:: ../../metplotpy/plots/config/wind_rose_defaults.yaml
 
 Custom Configuration File
 _________________________
 
-A second, *mandatory* configuration file is required, which is
-used to customize the settings to the performance diagram plot.
-The **custom_performance_diagram.yaml**  file is included with the
+As previously mentioned, a second *mandatory* configuration file is required, which is
+used to customize the settings to the wind rose diagram plot.
+The **wind_rose_custom.yaml**  file is included with the
 source code and looks like the following:
 
-.. literalinclude:: ../../test/performance_diagram/custom_performance_diagram.yaml
+.. literalinclude:: ../../test/wind_rose/wind_rose_custom.yaml
 
 Copy this custom config file from the directory where the source
 code was saved to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_BASE/test/performance_diagram/custom_performance_diagram.yaml $WORKING_DIR/custom_performance_diagram.yaml
+  cp $METPLOTPY_BASE/test/wind_rose/wind_rose_custom.yaml $WORKING_DIR/wind_rose_custom.yaml
+
+Notice that this has many of the same settings found in the the wind_rose_default.yaml file. We will simply change
+the title of the custom plot to customize the plot.  **NOTE**: You do not need to include all the configuration
+settings in your custom configuration file. You only need to include the settings you wish to override.
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_BASE/test/performance_diagram/custom_performance_diagram.yaml*
+*$METPLOTPY_BASE/test/wind_rose/wind_rose_custom.yaml*
 file to explicitly point to the
-*$METPLOTPY_BASE/test/performance_diagram/performance_diagram*
+*$METPLOTPY_BASE/test/wind_rose/wind_rose*
 directory (where the custom config files and sample data reside).
-Replace the relative path *./plot_20200317_151252.data*
+Replace the relative path *./point_stat_mpr.txt*
 with the full path
-*$METPLOTPY_BASE/test/performance_diagram/plot_20200317_151252.data*
+*$METPLOTPY_BASE/test/wind_rose/point_stat_mpr.txt*
 (including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
 installation on the system).
 Modify the *plot_filename* setting to point to the output path where the
 plot will be saved, including the name of the plot.
+Modify the title from: *title: Wind Rose* to *title: Custom Wind Rose*
+Uncomment the entry (indicated by a '#' symbol in front of it; remove the '#' symbol to uncomment)
+for the **stat_input** setting to indicate where the input data is located and indicate the full path
+and name of the input data file.
+
 
 For example:
 
-*stat_input: /username/myworkspace/METplotpy/test/performance_diagram/plot_20200317_151252.data*
+*stat_input: /username/myworkspace/METplotpy/test/wind_rose/point_stat_mpr.txt*
 
-*plot_filename: /username/working_dir/output_plots/performance_diagram_custom.png*
+*plot_filename: /username/working_dir/output_plots/wind_rose_custom.png*
+
+*title: Custom Wind Rose*
 
 This is where */username/myworkspace/METplotpy* is $METPLOTPY_BASE and
 */username/working_dir* is $WORKING_DIR.  Make sure that the
@@ -138,7 +141,7 @@ appropriate read and write permissions. The path listed for
 *plot_filename* may be changed to the output directory of one’s choosing.
 If this is not set, then the
 *plot_filename* setting specified in the
-*$METPLOTPY_BASE/metplotpy/plots/config/performance_diagram_defaults.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/config/wind_rose_defaults.yaml*
 configuration file will be used.
 
 To save the intermediate **.points1** file (used by METviewer and useful
@@ -163,47 +166,45 @@ Using defaults
 ______________
 
 To use the *default* settings defined in the
-**performance_diagram_defaults.yaml**
+**wind_rose_defaults.yaml**
 file, specify a minimal custom configuration file
-(**minimal_performance_diagram_defaults.yaml**), which consists of only
+(**minimal_wind_rose_defaults.yaml**), which consists of only
 a comment block, but it can be any empty file (write permissions for the
 output filename path corresponding to the *plot_filename* setting in
 the default configuration file will be needed. Otherwise, specify
-a *plot_filename* in the **minimal_performance_diagram.yaml** file):
+a *plot_filename* in the **minimal_wind_rose.yaml** file):
 
-.. literalinclude:: ../../test/performance_diagram/minimal_performance_diagram.yaml
+.. literalinclude:: ../../test/wind_rose/minimal_wind_rose.yaml
 
 Copy this file to the working directory:
 
 .. code-block:: ini
 		
-  cp $METPLOTPY_BASE/test/performance_diagram/minimal_performance_diagram.yaml $WORKING_DIR/minimal_performance_diagram.yaml
+  cp $METPLOTPY_BASE/test/wind_rose/minimal_wind_rose.yaml $WORKING_DIR/minimal_wind_rose.yaml
 
 Add the *stat_input* (input data) and *plot_filename*
 (output file/plot path) settings to the
-*$WORKING_DIR/minimal_performance_diagram.yaml*
+*$WORKING_DIR/minimal_wind_rose.yaml*
 file (anywhere below the comment block). The *stat_input* setting
 explicitly indicates where the sample data and custom configuration
 files are located.  Set the *stat_input* to
-*$METPLOTPY_BASE/test/performance_diagram/plot_20200317_151252.data* and set the
+*$METPLOTPY_BASE/test/wind_rose/point_stat_mpr.txt* and set the
 *plot_filename* to
-*$WORKING_DIR/output_plots/performance_diagram_default.png*:
+*$WORKING_DIR/output_plots/wind_rose_default.png*:
 
-*stat_input: $METPLOTPY_BASE/test/performance_diagram/plot_20200317_151252.data*
+*stat_input: $METPLOTPY_BASE/test/wind_rose/point_stat_mpr.txt*
 
-*plot_filename: $WORKING_DIR/output_plots/performance_diagram_default.png*
+*plot_filename: $WORKING_DIR/output_plots/wind_rose_default.png*
 
 *$WORKING_DIR* is the working directory where all of
 the custom configuration files are being saved.
-Replace *$METPLOTPY_BASE* with the full path to the METplotpy
-installation on the system.
 **NOTE**: The *plot_filename* (output directory) may be specified
 to a directory other than the *$WORKING_DIR/output_plots*, as long as
 it is an existing directory where the author has read and write permissions.
 
 To save the intermediate **.points1** file (used by METviewer and useful
 for debugging), add the following lines to the
-**minimal_performance_diagram.yaml** file (anywhere below the comment block):
+**minimal_wind_rose.yaml** file (anywhere below the comment block):
 
 *dump_points_1: 'True'*
 
@@ -218,7 +219,7 @@ Run from the Command Line
 =========================
 
 To generate a default performance diagram (i.e. using settings in the 
-**performance_diagram_defaults.yaml** configuration file),
+**wind_rose_defaults.yaml** configuration file),
 perform the following:
 
 
@@ -249,23 +250,24 @@ perform the following:
 
   .. code-block:: ini  
 
-    python $METPLOTPY_BASE/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/minimal_performance_diagram.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/wind_rose/wind_rose.py $WORKING_DIR/minimal_wind_rose.yaml
 
-  This will create a PNG file, **performance_diagram_default.png**,
+  This will create a PNG file, **wind_rose_default.png**,
   in the directory that was specified in the *plot_filename*
-  setting of the **minimal_performance_diagram.yaml** config file:
+  setting of the **minimal_wind_rose.yaml** config file:
 
-  .. image:: performance_diagram_default.png
+  .. image:: wind_rose_default.png
 
-  To generate a slightly modified, **customized** plot, re-run the above
-  command using the **custom_performance_diagram.yaml** file:
+  To generate the slightly modified, **customized** plot, re-run the above
+  command using the **wind_rose_custom.yaml** file:
 
   .. code-block:: ini
 		
-    python $METPLOTPY_BASE/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/custom_performance_diagram.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/wind_rose/wind_rose.py $WORKING_DIR/wind_rose_custom.yaml
 
-  .. image:: performance_diagram_custom.png
+  .. image:: wind_rose_custom.png
 
-* A **performance_diagram_custom.png** output file will be created in
-  the directory that was  specified in the *plot_filename* config setting
-  in the **custom_performance_diagram.yaml** config file.
+* A **wind_rose_custom.png** output file will be created in
+  the directory that was specified in the *plot_filename* config setting
+  in the **custom_performance_diagram.yaml** config file.  The title will match what you set in the
+  *title* setting of your custom_performance_diagram.yaml file.

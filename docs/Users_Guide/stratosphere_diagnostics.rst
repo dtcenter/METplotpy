@@ -108,13 +108,13 @@ where data is being stored or transmitted.
 
 .. literalinclude:: ../../metplotpy/contributed/stratosphere_diagnostics/stratosphere_diagnostics.yaml
 
-Copy the **stratosphere_diagnostics.yaml** file from your **$SOURCE_DIR** (where $SOURCE_DIR
+Copy the **stratosphere_diagnostics.yaml** file from your **$METPLOTPY_BASE** (where $METPLOTPY_BASE
 is the directory where the METplotpy source code was saved) to your **$WORKING_DIR** (the
 directory where you have write and execute privileges):
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/METplotpy/metplotpy/contributed/stratosphere_diagnostics/stratosphere_diagnostics.yaml $WORKING_DIR/stratosphere_diagnostics.yaml
+  cp $METPLOTPY_BASE/metplotpy/contributed/stratosphere_diagnostics/stratosphere_diagnostics.yaml $WORKING_DIR/stratosphere_diagnostics.yaml
 
 
 Modify the *input_data_path* setting in the *$WORKING_DIR/stratosphere_diagnostics.yaml* by
@@ -135,28 +135,28 @@ Perform the following:
   Python packages specified in the **Required Packages** section above.
 
 * Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_SOURCE/METplotpy/metplotpy*
+  *$METPLOTPY_BASE*
 
   For the ksh environment:
 
   .. code-block:: ini
 
-    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
+    export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
 
-    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_BASE
 
-  Replacing the $METPLOTPY_SOURCE with the directory where the
+  Replacing the $METPLOTPY_BASE with the directory where the
   METplotpy source code was saved.
 
 * Enter the following command:
 
   .. code-block:: ini
 
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/contributed/stratosphere_diagnostics/stratosphere_diagnostics.py $WORKING_DIR/stratosphere_diagnostics.yaml
+    python $METPLOTPY_BASE/metplotpy/contributed/stratosphere_diagnostics/stratosphere_diagnostics.py $WORKING_DIR/stratosphere_diagnostics.yaml
 
 * Four .png files will be created in the output directory you specified in
   the **stratosphere_diagnostics.yaml** config file:

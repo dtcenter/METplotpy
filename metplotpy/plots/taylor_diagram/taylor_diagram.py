@@ -34,8 +34,8 @@ import pandas as pd
 from metplotpy.plots import constants
 from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots import util
-from .taylor_diagram_config import TaylorDiagramConfig
-from .taylor_diagram_series import TaylorDiagramSeries
+from metplotpy.plots.taylor_diagram.taylor_diagram_config import TaylorDiagramConfig
+from metplotpy.plots.taylor_diagram.taylor_diagram_series import TaylorDiagramSeries
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 

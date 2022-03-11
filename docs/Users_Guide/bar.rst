@@ -33,11 +33,19 @@ ___________
 The sample data used to create an example bar plot is available in the
 METplotpy repository, where the bar plot tests are located:
 
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/test/bar/bar.data*
+*$METPLOTPY_BASE/metplotpy/test/bar/bar.data*
 
-*$METPLOTPY_SOURCE* is the directory where the METplotpy code is saved.
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved.
 The data is text output from MET in columnar format.
 
+e.g.
+
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+
+or
+
+*/usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
+the Github repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
@@ -52,15 +60,12 @@ language". It is commonly used for configuration files and in applications
 where data is being stored or transmitted.  Two configuration files are
 required. The first is a default configuration file, **bar_defaults.yaml**,
 which is found in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory. All default
+*$METPLOTPY_BASE/metplotpy/plots/config* directory. All default
 configuration files are located in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config* directory.
-Default configuration files are automatically loaded by the plotting code
-and do not need to be explicitly specified when generating a plot.
-$METPLOTPY_SOURCE is the user-specified directory
-where the METplotpy source code has been saved.  **Default configuration
-files are automatically loaded by the plotting code and do not
-need to be explicitly specified when generating a plot**. 
+*$METPLOTPY_BASE/metplotpy/plots/config* directory.  *$METPLOTPY_BASE* is base directory where the
+METplotpy source code has been saved.  **Default configuration files are
+automatically loaded by the plotting code and do not need to be explicitly
+specified when generating a plot**.
 
 The second required configuration file is a user-supplied “custom”
 configuration file. This  file is used to customize/override the default
@@ -98,16 +103,16 @@ saved to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_SOURCE/test/bar/custom_bar.yaml $WORKING_DIR/custom_bar.yaml
+  cp $METPLOTPY_BASE/test/bar/custom_bar.yaml $WORKING_DIR/custom_bar.yaml
 
 Modify the *stat_input* setting in the
-**$METPLOTPY_SOURCE/METplotpy/test/bar/custom_bar.yaml**
-file to explicitly point to the $METPLOTPY_SOURCE/METPlotpy/test/bar
-directory by replacing
-the relative paths (e.g. *./bar.data*) with the full path (e.g.
-*/yourdir/METplotpy/test/bar.data*).  Modify the *plot_filename* setting
-to explicitly point to the directory of the plot, using the full path,
-including the name of the plot.
+**$METPLOTPY_BASE/test/bar/custom_bar.yaml**
+file to explicitly point to the $METPLOTPY_BASE/test/bar
+directory by replacing the relative paths (e.g. *./bar.data*) with the full path
+*$METPLOTPY_BASE/test/bar/bar.data* (including replacing *$METPLOTPY_BASE*
+with the full path to the METplotpy installation on the system).  Modify the
+*plot_filename* setting to explicitly point to the directory of the plot,
+using the full path, including the name of the plot.
 
 For example:
 
@@ -115,14 +120,14 @@ For example:
 
 *plot_filename: /username/working_dir/output_plots/bar.png*
 
-This is where */username/myworkspace/* is $METPLOTPY_SOURCE and
-*/username/working_dir* is $WORKING_DIR.  Make sure that the
+This is where */username/myworkspace/METplotpy* corresponds to $METPLOTPY_BASE and
+*/username/working_dir* corresponds to $WORKING_DIR.  Make sure that the
 $WORKING_DIR directory that is specifed exists and has the appropriate
 read and write permissions.
 The path listed for *plot_filename* may be changed to the output directory
 of one’s choosing. If this is not set, then the *plot_filename* setting
 specified in the
-*$METPLOTPY_SOURCE/METplotpy/metplotpy/plots/config/bar_defaults.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/config/bar_defaults.yaml*
 configuration file will be used.
 
 To save the intermediate **.points1** file (used by METviewer and useful
@@ -139,10 +144,10 @@ the **.points1** file is saved.
 If points_path is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment
 the points_path so that it will be used by the code.  Make sure that this
-directory exists and has the
-appropriate read and write permissions.  **NOTE**: the *points_path* setting
-is **optional** and does not need to be defined in the configuration file
-unless saving the intermediate **.points1** file is desired.
+directory exists and has the appropriate read and write permissions.
+**NOTE**: the *points_path* setting is **optional** and does not need to be
+defined in the configuration file unless saving the intermediate **.points1**
+file is desired.
 
 
 Run from the Command Line
@@ -153,7 +158,7 @@ The **custom_bar.yaml** configuration file, in combination with the
 
 .. image:: bar.png
 
-Perform the following:
+To generate the above bar plot, perform the following:
 
 * If using the conda environment,
   verify the conda environment is running and has has the required
@@ -161,21 +166,21 @@ Perform the following:
   <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_.
 
 * Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_SOURCE/METplotpy/metplotpy*
+  *$METPLOTPY_BASE*
 
   For the ksh environment:
 
   .. code-block:: ini
 
-    export METPLOTPY_BASE=$METPLOTPY_SOURCE/METplotpy/metplotpy
+    export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
 
-    setenv METPLOTPY_BASE $METPLOTPY_SOURCE/METplotpy/metplotpy
+    setenv METPLOTPY_BASE $METPLOTPY_BASE
 
-  Replacing the $METPLOTPY_SOURCE with the directory where the METplotpy
+  Recall that $METPLOTPY_BASE is the directory path indicating where the METplotpy
   source code was saved.
 
 
@@ -183,7 +188,7 @@ Perform the following:
 
   .. code-block:: ini
 		
-    python $METPLOTPY_SOURCE/METplotpy/metplotpy/plots/bar/bar.py $WORKING_DIR/custom_bar.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/bar/bar.py $WORKING_DIR/custom_bar.yaml
 
 *  A **bar.png** output file will be created in the directory that was
    specified in the *plot_filename* configuration setting in the

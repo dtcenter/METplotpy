@@ -95,11 +95,8 @@ jobs:
           cd ../wind_rose
           pytest test_wind_rose.py
           cd ../histogram
-          pytest test_prob_hist.py  
-          pytest test_rank_hist.py  
-          pytest test_rel_hist.py  
-
-    
+          pytest test_prob_hist.py
+          pytest test_rank_hist.py
+          pytest test_rel_hist.py
           
-         
          
