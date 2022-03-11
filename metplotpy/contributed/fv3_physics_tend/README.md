@@ -9,6 +9,7 @@ Read tendencies of temperature, moisture, and momentum due to physics parameteri
 - argparse
 - cartopy
 - datetime
+- logging
 - matplotlib.path
 - matplotlib.pyplot
 - matplotlib.ticker
@@ -75,3 +76,12 @@ State variables used to derive cumulative change (final minus initial time) and 
 |              | temperature | specific humidity | u-wind | v-wind |
 | ------------ | ----------- | ----------------- | ------ | ------ |
 |state variable|    tmp      |    spfh           | ugrd   | vgrd   |
+
+
+## Delta Plot
+
+Put file you want to subtract after the --subtract argument.
+
+```python
+python fv3_vert_profile.py fv3_history.nc grid_spec.nc tmp --subtract fv3_history2.nc
+```
