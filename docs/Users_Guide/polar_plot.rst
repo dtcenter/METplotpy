@@ -88,7 +88,7 @@ e.g.
 replace *input_file: "~/grid_stat_north_000000L_20210305_120000V_pairs.nc"*
 with *input_file: "/path/to/data/grid_stat_north_000000L_20210305_120000V_pairs.nc"*
 
-Where *"/path/to/data"* is the directory where you saved the grid_stat_north_000000L_20210305_120000V_pairs.nc
+Where *"/path/to/data"* is the full path to the directory where you saved the grid_stat_north_000000L_20210305_120000V_pairs.nc
 sample data.
 
 
@@ -127,7 +127,8 @@ To generate the example Polar Ice plot (i.e. using settings in the
 
 where $METPLOTPY_BASE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
 directory where you have read and write permissions and where you are storing all your input data and where you
-copied the default config file.
+copied the config file.  The polar_ice_plot.py script looks for the polar_ice.yaml file in the current working
+directory.
 
 
 Three plots named **20210305_120000_fcst_ice_north.png**  **20210305_120000_ice_diff_north.png**  **20210305_120000_observation_ice_north.png** will be generated in the sub directory ice_plots from where you ran the above command:
