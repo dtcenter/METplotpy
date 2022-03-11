@@ -3,6 +3,7 @@ import cartopy
 import cartopy.feature as cfeature
 import datetime
 import fv3 # get dictionary of variable names for each type of tendency, string name of lat and lon variables
+import logging
 import matplotlib.pyplot as plt
 from metpy.units import units
 import numpy as np
@@ -46,10 +47,12 @@ def parse_args():
     parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
     parser.add_argument("-p", "--pfull", nargs='+', type=float, default=[1000,925,850,700,500,300,200,100,0], help="pressure level(s) in hPa to plot")
     parser.add_argument("-s", "--shp", type=str, default=None, help="shape file directory for mask")
+    parser.add_argument("--subtract", type=argparse.FileType("r"), help="FV3 history file to subtract")
 
     args = parser.parse_args()
     return args
 
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 def main():
     args = parse_args()
     gfile      = args.gridfile
@@ -60,11 +63,11 @@ def main():
     dt         = args.dtsec * units.seconds
     ncols      = args.ncols
     ofile      = args.ofile
-    pfull      = args.pfull * units["hPa"]
+    pfull      = args.pfull * units.hPa
     shp        = args.shp
+    subtract   = args.subtract
 
-    if debug:
-        print(args)
+    logging.debug(args)
     gds  = xarray.open_dataset(gfile.name)
     lont = gds[fv3.lon_name]
     latt = gds[fv3.lat_name]
@@ -80,6 +83,10 @@ def main():
     if debug:
         print(f"About to open {ifile}")
     fv3ds = xarray.open_dataset(ifile.name)
+    if subtract:
+        logging.debug(f"subtracting {subtract.name}")
+        with xarray.set_options(keep_attrs=True):
+            fv3ds -= xarray.open_dataset(subtract.name)
 
     fv3ds = fv3ds.assign_coords(lont=lont, latt=latt) # lont and latt used by pcolorfill()
 
@@ -113,7 +120,8 @@ def main():
 
     print(f"calculate d{variable}")
     state_variable = fv3ds[variable].metpy.quantify() # Tried metpy.quantify() with open_dataset, but pint.errors.UndefinedUnitError: 'dBz' is not defined in the unit registry
-    dstate_variable = state_variable.sel(time = lasttime) - state_variable.isel(time=0)
+    state_variable_initial_time = fv3ds[variable+"_i"] 
+    dstate_variable = state_variable.sel(time = lasttime) - state_variable_initial_time
     dstate_variable = dstate_variable.assign_coords(time=lasttime)
     dstate_variable.attrs["long_name"] = f"change in {state_variable.attrs['long_name']}"
 
@@ -136,7 +144,7 @@ def main():
     # Select vertical levels.
     if da2plot.metpy.vertical.attrs["units"] == "mb":
         da2plot.metpy.vertical.attrs["units"] = "hPa" # For MetPy. Otherwise, mb is interpreted as millibarn.
-    da2plot = da2plot.metpy.sel(vertical=pfull, method="nearest", tolerance=50.*units["hPa"])
+    da2plot = da2plot.metpy.sel(vertical=pfull, method="nearest", tolerance=50.*units.hPa)
    
 
     # Mask points outside shape.
@@ -187,6 +195,8 @@ def main():
 
     # Annotate figure with details about figure creation. 
     fineprint  = f"history: {os.path.realpath(ifile.name)}"
+    if subtract:
+        fineprint  += f"\nsubtract: {os.path.realpath(subtract.name)}"
     fineprint += f"\ngrid_spec: {os.path.realpath(gfile.name)}"
     if shp: fineprint += f"\nmask: {shp}"
     fineprint += f"\ntotal area: {totalarea.data:~.0f}"

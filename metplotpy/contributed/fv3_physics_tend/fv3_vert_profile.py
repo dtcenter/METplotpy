@@ -2,6 +2,7 @@ import argparse
 import cartopy
 import datetime
 import fv3 # get dictionary of variable names for each type of tendency, string name of lat and lon variables
+import logging
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from metpy.units import units
@@ -22,7 +23,7 @@ state_variables = fv3.tendencies.keys()
 def parse_args():
     # =============Arguments===================
     parser = argparse.ArgumentParser(description = "Vertical profile of FV3 diagnostic tendencies", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    # ==========Mandatory Arguments===================
+    # ==========Mandatory Arguments==================
     parser.add_argument("historyfile", type=argparse.FileType("r"), help="FV3 history file")
     parser.add_argument("gridfile", type=argparse.FileType("r"), help="FV3 grid spec file")
     parser.add_argument("statevariable", type=str, choices=state_variables, default="tmp", help="state variable")
@@ -33,10 +34,12 @@ def parse_args():
     parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
 
     parser.add_argument("-s", "--shp", type=str, default=None, help="shape file directory for mask")
+    parser.add_argument("--subtract", type=argparse.FileType("r"), help="FV3 history file to subtract")
 
     args = parser.parse_args()
     return args
 
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 def main():
     args = parse_args()
     gfile      = args.gridfile
@@ -47,9 +50,9 @@ def main():
     dt         = args.dtsec * units.seconds
     ofile      = args.ofile
     shp        = args.shp
+    subtract   = args.subtract
 
-    if debug:
-        print(args)
+    logging.debug(args)
     gds  = xarray.open_dataset(gfile.name)
     lont = gds[fv3.lon_name]
     latt = gds[fv3.lat_name]
@@ -74,6 +77,10 @@ def main():
     if debug:
         print(f"About to open {ifile}")
     fv3ds = xarray.open_dataset(ifile.name)
+    if subtract:
+        logging.debug(f"subtracting {subtract.name}")
+        with xarray.set_options(keep_attrs=True):
+            fv3ds -= xarray.open_dataset(subtract.name)
 
     lasttime = fv3ds.time[-1] 
     # Extract tendencies DataArrays at last time, and multiply by dt * numdt.
@@ -103,7 +110,8 @@ def main():
 
     print(f"calculate d{variable}")
     state_variable = fv3ds[variable].metpy.quantify() # Tried metpy.quantify() with open_dataset, but pint.errors.UndefinedUnitError: 'dBz' is not defined in the unit registry
-    dstate_variable = state_variable.sel(time = lasttime) - state_variable.isel(time=0)
+    state_variable_initial_time = fv3ds[variable+"_i"] 
+    dstate_variable = state_variable.sel(time = lasttime) - state_variable_initial_time
     dstate_variable = dstate_variable.assign_coords(time=lasttime)
     dstate_variable.attrs["long_name"] = f"change in {state_variable.attrs['long_name']}"
 
@@ -144,8 +152,11 @@ def main():
     # area-weighted spatial average
     da2plot = da2plot.weighted(area).mean(area.dims)
 
+    # Put units in attributes so they show up in xlabel.
+    da2plot = da2plot.metpy.dequantify()
+
     print("plot area-weighted spatial average...")
-    lines = da2plot.plot.line(y="pfull", ax=ax, hue=tendency)
+    lines = da2plot.metpy.dequantify().plot.line(y="pfull", ax=ax, hue=tendency)
 
     if resid is not None: # resid might have been turned from a Boolean to a DataArray.
         # Add special marker to dstate_variable and residual lines.
@@ -164,6 +175,8 @@ def main():
 
     # Annotate figure with details about figure creation. 
     fineprint  = f"history: {os.path.realpath(ifile.name)}"
+    if subtract:
+        fineprint  += f"\nsubtract: {os.path.realpath(subtract.name)}"
     fineprint += f"\ngrid_spec: {os.path.realpath(gfile.name)}"
     if shp: fineprint += f"\nmask: {shp}"
     fineprint += f"\ntotal area: {totalarea.data:~.0f}"
