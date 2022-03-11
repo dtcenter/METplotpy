@@ -156,7 +156,7 @@ def main():
     da2plot = da2plot.metpy.dequantify()
 
     print("plot area-weighted spatial average...")
-    lines = da2plot.metpy.dequantify().plot.line(y="pfull", ax=ax, hue=tendency)
+    lines = da2plot.plot.line(y="pfull", ax=ax, hue=tendency)
 
     if resid is not None: # resid might have been turned from a Boolean to a DataArray.
         # Add special marker to dstate_variable and residual lines.
