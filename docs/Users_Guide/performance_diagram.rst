@@ -195,6 +195,8 @@ files are located.  Set the *stat_input* to
 
 *$WORKING_DIR* is the working directory where all of
 the custom configuration files are being saved.
+Replace *$METPLOTPY_BASE* with the full path to the METplotpy
+installation on the system.
 **NOTE**: The *plot_filename* (output directory) may be specified
 to a directory other than the *$WORKING_DIR/output_plots*, as long as
 it is an existing directory where the author has read and write permissions.

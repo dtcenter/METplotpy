@@ -178,7 +178,9 @@ and set the
 *plot_filename: $WORKING_DIR/output_plots/roc_diagram_default.png*
 
 *$WORKING_DIR* is the working directory where  all the custom
-configuration files are being saved. **NOTE**: To specify the
+configuration files are being saved
+(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
+installation on the system). **NOTE**: To specify the
 *plot_filename* (output directory) to a directory other than the
 *$WORKING_DIR/output_plots*, this can be done as long as it is an
 existing directory where the user has read and write permissions.
