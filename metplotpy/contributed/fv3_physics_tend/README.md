@@ -68,7 +68,7 @@ Potential tendency variables to read from fv3_history.nc:
 |      Rayleigh damping      | dt3dt_rdamp |                   |du3dt_rdamp  | dv3dt_rdamp |
 |     shallow convection     |dt3dt_shalcnv|dq3dt_shalcnv      |du3dt_shalcnv|dv3dt_shalcnv|
 |     short wave radiation   |   dt3dt_sw  |                   |             |             |
-|     total physics          | dt3dt_phys  | dqdt_phys         |du3dt_phys   | dv3dt_phys  |
+|     total physics          | dt3dt_phys  | dq3dt_phys        |du3dt_phys   | dv3dt_phys  |
 |  *non-physics tendency*    |*dt3dt_nophys*|*dq3dt_nophys*    |*du3dt_nophys*|*dv3dt_nophys* |
 
 
