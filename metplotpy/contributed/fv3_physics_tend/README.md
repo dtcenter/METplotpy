@@ -62,13 +62,13 @@ Potential tendency variables to read from fv3_history.nc:
 |convective gravity wave drag| dt3dt_congwd|                   |du3dt_congwd |dv3dt_congwd |
 |      deep convection       |dt3dt_deepcnv| dq3dt_deepcnv     |du3dt_deepcnv|dv3dt_deepcnv|
 |    long wave radiation     | dt3dt_lw    |                   |             |             |
-|      microphysics          | dt3dt_mp    |    dq3dt_mp       |             |             |
+|      microphysics          | dt3dt_mp    |    dq3dt_mp       |  du3dt_mp   |   dv3dt_mp  |
 |orographic gravity wave drag| dt3dt_orogwd|                   |du3dt_orogwd |dv3dt_orogwd |
 |   planetary boundary layer | dt3dt_pbl   |  dq3dt_pbl        |du3dt_pbl    |dv3dt_pbl    |
 |      Rayleigh damping      | dt3dt_rdamp |                   |du3dt_rdamp  | dv3dt_rdamp |
 |     shallow convection     |dt3dt_shalcnv|dq3dt_shalcnv      |du3dt_shalcnv|dv3dt_shalcnv|
 |     short wave radiation   |   dt3dt_sw  |                   |             |             |
-|     total physics          | dt3dt_phys  | dqdt_phys         |du3dt_phys   | dv3dt_phys  |
+|     total physics          | dt3dt_phys  | dq3dt_phys        |du3dt_phys   | dv3dt_phys  |
 |  *non-physics tendency*    |*dt3dt_nophys*|*dq3dt_nophys*    |*du3dt_nophys*|*dv3dt_nophys* |
 
 
