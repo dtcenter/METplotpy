@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: reliability_config.py
 
@@ -7,9 +17,9 @@ __author__ = 'Tatiana Burek'
 
 import itertools
 
-from plots.config import Config
-import plots.constants as constants
-import plots.util as util
+from ..config import Config
+from .. import constants
+from .. import util
 
 
 class ReliabilityConfig(Config):
@@ -42,6 +52,9 @@ class ReliabilityConfig(Config):
         self.blended_grid_col = util.alpha_blending(self.parameters['grid_col'], 0.5)
         self.variance_inflation_factor = self._get_bool('variance_inflation_factor')
         self.dump_points_1 = self._get_bool('dump_points_1')
+        # Optional setting, indicates *where* to save the dump_points_1 file
+        # used by METviewer
+        self.points_path = self.get_config_value('points_path')
         self.create_html = self._get_bool('create_html')
         self.add_noskill_line = self._get_bool('add_noskill_line')
         self.add_skill_line = self._get_bool('add_skill_line')

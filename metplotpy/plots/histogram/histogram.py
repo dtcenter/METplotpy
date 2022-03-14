@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: histogram.py
  """
@@ -9,7 +19,7 @@ import yaml
 import pandas as pd
 import numpy as np
 
-from plots.base_plot import BasePlot
+from metplotpy.plots.base_plot import BasePlot
 
 
 class Histogram(BasePlot):
@@ -201,7 +211,7 @@ if __name__ == "__main__":
     data = [np.random.randn(500), np.random.randn(500) + 1]
     try:
         histogram = Histogram(None, data)
-        histogram.show_in_browser()
+        # histogram.show_in_browser()
         histogram.save_to_file()
     except ValueError as ve:
         print(ve)

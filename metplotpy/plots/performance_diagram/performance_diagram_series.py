@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: PerformanceDiagramSeries
  """
@@ -6,7 +16,7 @@ __author__ = 'Minna Win'
 import warnings
 import re
 import metcalcpy.util.utils as utils
-from plots.series import Series
+from ..series import Series
 
 
 # To suppress FutureWarning raised by pandas due to
@@ -62,7 +72,7 @@ class PerformanceDiagramSeries(Series):
         # defined in the config file.  These will be used to subset the pandas
         # dataframe input data.  Each permutation corresponds to a series.
         # This permutation corresponds to this series instance.
-        perm = utils.create_permutations_mv(self.all_series_vals, 0)
+        perm = utils.create_permutations(self.all_series_vals)
 
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config._config_consistency_check()
@@ -100,7 +110,7 @@ class PerformanceDiagramSeries(Series):
             if len(self.series_val_names) > 1:
                 series_var_val_str = cur_perm[i]
             else:
-                series_var_val_str = cur_perm
+                series_var_val_str = cur_perm[0]
             if i == 0:
                 query_str = col_str + " == " + '"' + series_var_val_str + '"'
             else:

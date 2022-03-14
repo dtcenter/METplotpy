@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 
 #!/usr/bin/env conda run -n blenny_363 python
 """
@@ -8,8 +18,8 @@ Holds values set in the Performance Diagram config file(s)
 __author__ = 'Minna Win'
 
 import re
-from plots.config import Config
-import plots.constants as constants
+from ..config import Config
+from .. import constants
 
 class PerformanceDiagramConfig(Config):
 
@@ -27,6 +37,13 @@ class PerformanceDiagramConfig(Config):
 
         # init common layout
         super().__init__(parameters)
+
+        # Write (or not write) output points file provided by METviewer
+        self.dump_points_1 = self._get_bool('dump_points_1')
+
+        # Optional setting, indicates *where* to save the dump_points_1 file
+        # used by METviewer
+        self.points_path = self.get_config_value('points_path')
 
         # use this setting to determine the ordering of colors, lines, and markers
         self.series_ordering = self._get_series_order()

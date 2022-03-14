@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2022
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: ens_ss.py
  """
@@ -16,11 +26,11 @@ from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
 from metcalcpy.event_equalize import event_equalize
-from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from plots.ens_ss.ens_ss_config import EnsSsConfig
-from plots.ens_ss.ens_ss_series import EnsSsSeries
-from plots.base_plot import BasePlot
-import plots.util as util
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.ens_ss.ens_ss_config import EnsSsConfig
+from metplotpy.plots.ens_ss.ens_ss_series import EnsSsSeries
+from metplotpy.plots.base_plot import BasePlot
+import metplotpy.plots.util as util
 import metcalcpy.util.utils as utils
 
 
@@ -209,6 +219,10 @@ class EnsSs(BasePlot):
             if self.series_list[i].plot_disp:
                 self._draw_series(self.series_list[i])
             i = i + counter
+
+        # add custom lines
+        if len(self.series_list) > 0:
+            self._add_lines(self.config_obj)
 
         # apply y axis limits
         self._yaxis_limits()
@@ -454,41 +468,52 @@ class EnsSs(BasePlot):
         Formats y1 and y2 series point data to the 2-dim arrays and saves them to the files
         """
 
-        # Open file, name it based on the stat_input config setting,
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
+        # otherwise use points_path path
 
-        if self.config_obj.dump_points_1 is True:
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True and match:
             i = 0
             counter = 1
             if self.config_obj.ensss_pts_disp is True:
                 counter = 2
-            match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-            if match:
-                filename = match.group(1)
-            else:
-                filename = 'points'
-            filename = filename + '.points1'
 
-            with open(filename, 'w') as file:
+            filename = match.group(1)
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
+            # else:
+            #     filename = 'points'
+
+        filename = filename + '.points1'
+
+        with open(filename, 'w') as file:
+            while i < len(self.series_list):
+                file.writelines(
+                    map("{}\t{}\n".format,
+                         [round(num, 6) for num in self.series_list[i].series_points['spread_skill']],
+                         [round(num, 6) for num in self.series_list[i].series_points['mse']]))
+                i = i + counter
+            # print PTS values
+            if self.config_obj.ensss_pts_disp is True:
+                i = 0
+                file.write('#PTS\n')
                 while i < len(self.series_list):
                     file.writelines(
                         map("{}\t{}\n".format,
                             [round(num, 6) for num in self.series_list[i].series_points['spread_skill']],
-                            [round(num, 6) for num in self.series_list[i].series_points['mse']]))
+                            [round(num, 6) for num in self.series_list[i].series_points['pts']])
+                    )
                     i = i + counter
-                # print PTS values
-                if self.config_obj.ensss_pts_disp is True:
-                    i = 0
-                    file.write('#PTS\n')
-                    while i < len(self.series_list):
-                        file.writelines(
-                            map("{}\t{}\n".format,
-                                [round(num, 6) for num in self.series_list[i].series_points['spread_skill']],
-                                [round(num, 6) for num in self.series_list[i].series_points['pts']])
-                        )
-                        i = i + counter
-                file.close()
+            file.close()
 
 
 def main(config_filename=None):

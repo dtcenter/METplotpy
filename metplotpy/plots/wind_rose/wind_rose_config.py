@@ -1,9 +1,19 @@
+# ============================*
+ # ** Copyright UCAR (c) 2021
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: wind_rose_config.py
 
 Holds values set in the Wind Rose config file(s)
 """
-from plots.config import Config
+from ..config import Config
 
 
 class WindRoseConfig(Config):
@@ -37,5 +47,8 @@ class WindRoseConfig(Config):
         self.plot_width = self.get_config_value('plot_width')
         self.plot_height = self.get_config_value('plot_height')
         self.dump_points = self.get_config_value('dump_points')
+        # Optional setting, indicates *where* to save the dump_points_1 file
+        # used by METviewer
+        self.points_path = self.get_config_value('points_path')
         self.show_in_browser = self.get_config_value('show_in_browser')
 

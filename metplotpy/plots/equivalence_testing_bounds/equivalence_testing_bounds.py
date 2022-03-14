@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2022
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: equivalence_testing_bounds.py
  """
@@ -14,13 +24,13 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
-from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from plots.equivalence_testing_bounds.equivalence_testing_bounds_series \
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.equivalence_testing_bounds.equivalence_testing_bounds_series \
     import EquivalenceTestingBoundsSeries
-from plots.line.line_config import LineConfig
-from plots.line.line_series import LineSeries
-from plots.base_plot import BasePlot
-import plots.util as util
+from metplotpy.plots.line.line_config import LineConfig
+from metplotpy.plots.line.line_series import LineSeries
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots import util
 
 import metcalcpy.util.utils as calc_util
 
@@ -454,9 +464,11 @@ class EquivalenceTestingBounds(BasePlot):
         Formats y1 and y2 series point data to the 2-dim arrays and saves them to the files
         """
 
-        # Open file, name it based on the stat_input config setting,
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
+        # otherwise use points_path path
 
         ci_tost_df = pd.DataFrame(columns=['ci_tost_lo', 'diff', 'ci_tost_hi'],
                                   index=range(0, len(self.config_obj.get_config_value('derived_series_1')) +
@@ -472,16 +484,24 @@ class EquivalenceTestingBounds(BasePlot):
                 ci_tost_df.loc[ind] = pd.Series(row)
                 ind = ind + 1
 
-        # create a file name from stat_input parameter
         match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-        if match:
-            filename_only = match.group(1)
-        else:
-            filename_only = 'points'
+        if self.config_obj.dump_points_1 is True and match:
+            filename = match.group(1)
+            # replace the default path with the custom
+        if self.config_obj.points_path is not None:
+            # get the file name
+            path = filename.split(os.path.sep)
+            if len(path) > 0:
+                filename = path[-1]
+            else:
+                filename = '.' + os.path.sep
+            filename = self.config_obj.points_path + os.path.sep + filename
+
+        filename = filename + '.points1'
 
         # save points
-        if self.config_obj.dump_points_1 is True:
-            self._save_points(ci_tost_df.values.tolist(), filename_only + ".points1")
+        self._save_points(ci_tost_df.values.tolist(), filename)
+
 
     @staticmethod
     def _save_points(points: list, output_file: str) -> None:

@@ -1,18 +1,31 @@
+*******************
 Weather Regime plot
-====================
+*******************
 
 Description
-~~~~~~~~~~~
+===========
 
-The plot_weather_regime.py script contains the plotting portion for 3 scripts (elbow.py, Calc_EOF.py, and K_means.py)
-that were originally created Doug Miller at the script created by Univerity of Illinois. A METplus
-use case illustrates how to use this plot:
+The **plot_weather_regime.py** script contains the plotting portion for
+three scripts (**elbow.py, Calc_EOF.py**, and **K_means.py**)
+These were originally created by Doug Miller at the University of Illinois.
+A `METplus use case
+<https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_WeatherRegime.html#sphx-glr-generated-model-applications-s2s-userscript-obsera-obsonly-weatherregime-py>`_
+illustrates how to use this plot.
 
-https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_WeatherRegime.html#sphx-glr-generated-model-applications-s2s-userscript-obsera-obsonly-weatherregime-py
+These files are used by the image comparison test:
+
+* **obs_elbow.png**:  Run "plot_elbow" in **plot_weather_regime.py**
+  to create this plot.
+
+* **obs_eof.png**:  Run "plot_eof" in **plot_weather_regime.py**
+  to create this plot.
+
+* **obs_kmeans.png**:  Run "plot_K_means" in **plot_weather_regime.py**
+  to create this plot.
 
 
 Required Packages
-~~~~~~~~~~~~~~~~~
+=================
 
 * Python 3.6.3
 
@@ -20,8 +33,8 @@ Required Packages
 
 * Cartopy 0.17.1
 
-* metcalcpy (see section 1.2 for instructions to install locally into your conda env: https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html)
-
+* metcalcpy (see :numref:`METcalcpy_conda`)
+  
 * numpy
 
 * cmocean
@@ -38,138 +51,100 @@ Required Packages
 
 * eofs
 
-Description
-~~~~~~~~~~~
-
-The plot_weather_regime.py script contains the plotting portion for 3 scripts (elbow.py, Calc_EOF.py, and K_means.py) that were originally created Doug Miller at the script created by Univerity of Illinois.
-
-These files are used by the image comparison test:
-
-* obs_elbow.png
-
-is the plot that should be generated when you run plot_elbow in plot_weather_regime.py
-
-* obs_eof.png
-
-is the plot that should be generated when you run plot_eof in plot_weather_regime.py
-
-* obs_kmeans.png
-
-is the plot that should be generated when you run plot_K_means in plot_weather_regime.py
-
 
 How to Use
-~~~~~~~~~~~
+===========
 
-**Import plot_weather_regime in your script like so**:
+Import plot_weather_regime into the script:
 
-``import plot_weather_regime as pwr``
+.. code-block:: ini
 
-**For plot_elbow**
+   import plot_weather_regime as pwr
 
-In your code, generate the following as numpy arrays (except K, pot_title, and output_plotname):
+For plot_elbow
+______________
 
-**K**:
+In the code, generate the following as numpy
+arrays (except K, pot_title, and output_plotname).
 
-a range beginning at 1 and ending with the number of clusters used in the weather regime analysis
+**K:**  A range beginning at 1 and ending with the number of clusters used
+in the weather regime analysis.
 
-**d**:
+**d:**  A numpy array containing the differences between the curve and the
+line.
 
-a numpy array containing the differences between the curve and the line
+**mi:**  A numpy array containing the location of the maximum distance.
 
-**mi**:
+**line:**  A numpy array representing the straight line from the sum of
+squared differences for all clusters.
 
-a numpy array containing the location of the maximum distance
+**curve:**  A numpy array containing the actual values of the sum of
+squared distances.
 
-**line**:
+**plot_title:**  A string that gives the name of the title of the plot.
 
-a numpy array representing the straight line from the sum of squared difference for all clusters
+**output_plotname:**  The full path and filename of the output plot file,
+a **.png** version will be written.
 
-**curve**:
+For plot_eof
+____________
 
-a numpy array containing the actual values of sum of squared distances
+In the code, generate the following as numpy arrays
+(except wrnum, output_plotname, and plevels).
 
-**plot_title**:
+**eof:**  A numpy array containing the first 10 eof values.
 
-A string that gives the name of the title of the plot
+**wrnum:**  An integer giving the number of weather regimes.
 
-**output_plotname**:
+**variance_fractions:**  A numpy array containing the fractions of the
+total variance accounted for by each EOF mode.
 
-The full path and filename of the output plot file, a .png version is written
+**lons:**  A numpy array of the longitude values under consideration.
 
-**For plot_eof**
+**lats:**  A numpy array of the latitude values under consideration.
 
-In your code, generate the following as numpy arrays (except wrnum, output_plotname, and plevels):
+**output_plotname:**  The full path and filename of the output plot
+file, a **.png** version will be written.
 
-**eof**:
+**plevels:**  A list containing integers of the contour levels used
+in the plots.
 
-a numpy array containing the first 10 eof values
+For plot_K_means
+________________
 
-**wrnum**:
+In the code, generate the following as numpy arrays
+(except wrnum, output_plotname, and plevels).
 
-an integer giving the number of weather regimes
+**inputi:**  A numpy array containing the K means for the weather
+regime classification.
 
-**variance_fractions**:
+**wrnum:**  An integer giving the number of weather regimes.
 
-a numpy array containing the fractions of the total variance accounted for by each EOF mode
+**lons:** A numpy array of the longitude values under consideration.
 
-**lons**:
+**lats:**  A numpy array of the latitude values under consideration.
 
-a numpy array of the longitude values under consideration
+**perc:**  A numpy array of the size wrnum containing the frequency of
+occurrence of each cluster.
 
-**lats**:
+**output_plotname:**  The full path and filename of the output plot
+file, a **.png** version will be written.
 
-a numpy array of the latitude values under consideration
+**plevels:** A list containing integers of the contour levels used in
+the plots.
 
-**output_plotname**:
+Invoke the plotting functions:
 
-The full path and filename of the output plot file, a .png version is written
+.. code-block:: ini
 
-**plevels**:
+   pwr.plot_elbow(K,d,mi,line,curve,plot_title,plot_outname)
 
-a list containing integers of the contour levels used in the plots
+   pwr.plot_eof(eof,wrnum,variance_fractions,lons,lats,plot_outname,plevels)
 
-**For plot_K_means**
+   pwr.plot_K_means(kmeans,wrnum,lons,lats,perc,plot_outname,plevels)
 
-In your code, generate the following as numpy arrays (except wrnum, output_plotname, and plevels):
-
-**inputi**:
-
-a numpy array containing the K means for the weather regime classification
-
-**wrnum**:
-
-an integer giving the number of weather regimes
-
-**lons**:
-
-a numpy array of the longitude values under consideration
-
-**lats**:
-
-a numpy array of the latitude values under consideration
-
-**perc**:
-
-a numpy array of the size wrnum containing the frequency of occurrence of each cluster
-
-**output_plotname**:
-
-The full path and filename of the output plot file, a .png version is written
-
-**plevels**:
-
-a list containing integers of the contour levels used in the plots
-
-**Invoke the plotting functions**
-
-``pwr.plot_elbow(K,d,mi,line,curve,plot_title,plot_outname)``
-
-``pwr.plot_eof(eof,wrnum,variance_fractions,lons,lats,plot_outname,plevels)``
-
-``pwr.plot_K_means(kmeans,wrnum,lons,lats,perc,plot_outname,plevels)``
-
-**Output**
-
-A .png version of the elbow line plot, eof contour map plots, and weather regime map plots if all three are requeste. The output will be located based on what you specified (path and name) in the output_plotname.
+The output will be **.png** version of the elbow line plot, eof contour map
+plots, and weather regime map plots, if all three are requested. The output
+will be located based on what was specified (path and name) in the
+**output_plotname**.
 

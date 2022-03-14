@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: box_config.py
 
@@ -7,9 +17,9 @@ __author__ = 'Tatiana Burek'
 
 import itertools
 
-from plots.config import Config
-import plots.constants as constants
-import plots.util as util
+from ..config import Config
+from .. import constants
+from .. import util
 
 import metcalcpy.util.utils as utils
 
@@ -27,6 +37,11 @@ class BoxConfig(Config):
 
         """
         super().__init__(parameters)
+
+        ##############################################
+        # Optional setting, indicates *where* to save the dump_points_1 file
+        # used by METviewer
+        self.points_path = self.get_config_value('points_path')
 
         # plot parameters
         self.grid_on = self._get_bool('grid_on')

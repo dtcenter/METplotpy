@@ -4,14 +4,16 @@
    directory.
 """
 
-import os, sys
+import os
 import pytest
 import yaml
 # Import used to perform image_comparison with an identified baseline of plots.
 # from matplotlib.testing.decorators import image_comparison
-sys.path.append("../..")
-from metplotpy.contributed.grid_to_grid.plot_grid_to_grid import PlotGridToGrid
+#sys.path.append("../..")
+#from metplotpy.contributed.grid_to_grid.plot_grid_to_grid import PlotGridToGrid
 
+
+@pytest.mark.skip("only to be run on host with large dataset. Requires special packages, uncomment import to run")
 def test_expected_files_created():
     """
         Testing that the expected png

@@ -1,4 +1,4 @@
-
+colors: []
 create_html: 'False'
 derived_series_1: []
 derived_series_2: []
@@ -12,7 +12,7 @@ grid_lwd: 1
 grid_on: 'True'
 grid_x: listX
 
-
+indy_vals: []
 indy_var: fcst_lead
 legend_box: o
 legend_inset:
@@ -22,8 +22,9 @@ legend_ncol: 3
 legend_size: 0.8
 line_type: None
 
-list_static_val:
-  fcst_var: MAE
+list_stat_1: []
+list_stat_2: []
+
 mar:
 - 8
 - 4
@@ -36,8 +37,7 @@ mgp:
 num_iterations: 1
 num_threads: -1
 plot_caption: Caption
-
-
+plot_disp: []
 plot_filename: ./box_expected.png
 plot_height: 8.5
 plot_res: 72
@@ -46,7 +46,9 @@ plot_type: png16m
 plot_units: in
 plot_width: 11.0
 random_seed: null
+series_order: []
 
+series_val_1: {}
 series_val_2: {}
 
 show_nstats: 'False'
@@ -58,7 +60,7 @@ title_align: 0.5
 title_offset: -2
 title_size: 1.4
 title_weight: 2.0
-user_legend: []
+user_legend: ['None']
 x2lab_align: 0.5
 x2lab_offset: -0.5
 x2lab_size: 0.8

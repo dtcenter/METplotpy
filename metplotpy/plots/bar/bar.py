@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: bar.py
  """
@@ -18,11 +28,11 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
-from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from plots.bar.bar_config import BarConfig
-from plots.bar.bar_series import BarSeries
-from plots.base_plot import BasePlot
-import plots.util as util
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.bar.bar_config import BarConfig
+from metplotpy.plots.bar.bar_series import BarSeries
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots import util
 
 import metcalcpy.util.utils as calc_util
 
@@ -161,6 +171,13 @@ class Bar(BasePlot):
 
                 # aggregate number of stats
                 n_stats = list(map(add, n_stats, series.series_points['nstat']))
+
+        # add custom lines
+        if len(self.series_list) > 0:
+            self._add_lines(
+                self.config_obj,
+                sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique())
+                )
 
         # apply y axis limits
         self._yaxis_limits()
@@ -403,17 +420,25 @@ class Bar(BasePlot):
         Formats series point data to the 2-dim arrays and saves them to the files
         """
 
-        # Open file, name it based on the stat_input config setting,
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
+        # otherwise use points_path path
 
-        if self.config_obj.dump_points_1 is True:
-            # create a file name from stat_input parameter
-            match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-            if match:
-                filename = match.group(1)
-            else:
-                filename = 'points'
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True and match:
+            filename = match.group(1)
+            # replace the default path with the custom
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
+
             filename = filename + '.points1'
 
             with open(filename, 'w') as f:

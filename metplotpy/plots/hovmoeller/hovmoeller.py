@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: Hovmoeller.py
 
@@ -24,8 +34,7 @@ from netCDF4 import num2date
 """
 Import BasePlot class
 """
-#from plots.base_plot import BasePlot
-from ..base_plot import BasePlot
+from metplotpy.plots.base_plot import BasePlot
 
 
 class Hovmoeller(BasePlot):
@@ -141,10 +150,11 @@ if __name__ == "__main__":
     """
     Parse command line arguments
     """
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Hovmoeller diagram",
+         epilog="METPLOTPY_BASE needs to be set to your METplotpy directory")
     parser.add_argument('--config', type=str,
                         default=os.path.join(os.getenv('METPLOTPY_BASE'),
-                        'plots', 'config', 'hovmoeller_defaults.yaml'),
+                        'metplotpy/plots', 'config', 'hovmoeller_defaults.yaml'),
                         help='configuration file')
     parser.add_argument('--datadir', type=str,
                         default=os.getenv('DATA_DIR'),
@@ -158,6 +168,7 @@ if __name__ == "__main__":
     parser.add_argument('--debug', action='store_true',
                         help='set logging level to debug')
     args = parser.parse_args()
+    parser.print_help()
 
     """
     Setup logging
@@ -211,6 +222,12 @@ if __name__ == "__main__":
 
     plot = Hovmoeller(None, time, lon, data)
 
-    plot.show_in_browser()
-    plot.save_to_file()
+    #plot.show_in_browser()
+    try:
+        plot.save_to_file()
+    except FileNotFoundError:
+        print("ERROR Can't save to file ")
+    except ValueError as ex:
+        print(ex)
+
 

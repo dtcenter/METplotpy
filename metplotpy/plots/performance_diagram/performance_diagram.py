@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: performance_diagram.py
  """
@@ -12,12 +22,12 @@ from matplotlib.font_manager import FontProperties
 import numpy as np
 import yaml
 import pandas as pd
-from plots.base_plot import BasePlot
+from metplotpy.plots.base_plot import BasePlot
 import metcalcpy.util.utils as calc_util
-from performance_diagram_config import PerformanceDiagramConfig
-from performance_diagram_series import PerformanceDiagramSeries
-import plots.util as util
-import plots.constants as constants
+from metplotpy.plots.performance_diagram.performance_diagram_config import PerformanceDiagramConfig
+from metplotpy.plots.performance_diagram.performance_diagram_series import PerformanceDiagramSeries
+from metplotpy.plots import util
+from metplotpy.plots import constants
 import warnings
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -89,9 +99,8 @@ class PerformanceDiagram(BasePlot):
         df_full = pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
 
         # Remove any columns that are entirely 'NaN' this will be helpful
-        # in determining whether we have aggregated statistics (stat_bcl and
-        # stat_bcu columns with valid values), or not (stat_ncl and
-        # stat_ncu with valid values).
+        # in determining whether we have aggregated statistics (stat_btcl and
+        # stat_btu columns with valid values)
         df = df_full.dropna(axis=1, how="all")
         return df
 
@@ -263,7 +272,9 @@ class PerformanceDiagram(BasePlot):
 
         # "Dump" success ratio and PODY points to an output
         # file based on the output image filename (useful in debugging)
-        self.write_output_file()
+        if self.config_obj.dump_points_1 is True:
+            # needed by METviewer
+            self.write_output_file()
 
         for i, series in enumerate(self.series_list):
             # Don't generate the plot for this series if
@@ -286,13 +297,13 @@ class PerformanceDiagram(BasePlot):
                 if series.marker == '.' or series.marker == 'o':
                     plt.plot(sr_points, pody_points, linestyle=series.linestyle,
                              linewidth=linewidth,
-                             color=series.color, marker=series.marker,
+                             color=self.config_obj.colors_list[i], marker=series.marker,
                              label=series.user_legends,
                              alpha=0.5, ms=9)
                 else:
                     plt.plot(sr_points, pody_points, linestyle=series.linestyle,
                              linewidth=linewidth,
-                             color=series.color, marker=series.marker,
+                             color=self.config_obj.colors_list[i], marker=series.marker,
                              label=series.user_legends,
                              alpha=0.5, ms=6)
 
@@ -316,7 +327,7 @@ class PerformanceDiagram(BasePlot):
                     # elinewidth explicitly set it to the current linewidth of this
                     # series line
                     plt.errorbar(sr_points, pody_points, yerr=pody_errs,
-                                 color=series.color, ecolor=None, ms=1, capsize=2,
+                                 color=self.config_obj.colors_list[i], ecolor=None, ms=1, capsize=2,
                                  elinewidth=self.config_obj.linewidth_list[i])
 
         # example settings, legend is outside of plot along the bottom
@@ -366,21 +377,35 @@ class PerformanceDiagram(BasePlot):
     def write_output_file(self):
         """
             Writes the 1-FAR and PODY data points that are
-            being plotted
+            being plotted. Saves the points1 file to either a default location
+            (ie where the input data is stored) or to a location specified in
+            the custom config file under the optional points_path config setting.
 
         """
 
-        # Open file, name it based on the stat_input config setting,
+
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
-        input_filename = self.config_obj.stat_input
-        match = re.match(r'(.*)(.data)', input_filename)
-        if match:
-            filename_only = match.group(1)
-            output_file = filename_only + ".points1"
+        # otherwise use points_path path
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True and match:
+            filename = match.group(1)
+            # replace the default path with the custom
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
+
+            output_file = filename + '.points1'
 
             # make sure this file doesn't already
-            # exit, delete it if it does
+            # exist, delete it if it does
             try:
                 if os.stat(output_file).st_size == 0:
                     fileobj = open(output_file, 'a')

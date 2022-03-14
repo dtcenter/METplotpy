@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: BarSeries
  """
@@ -10,8 +20,9 @@ import numpy as np
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
+from .. import GROUP_SEPARATOR
 
-from plots.series import Series
+from ..series import Series
 
 
 class BarSeries(Series):
@@ -70,8 +81,8 @@ class BarSeries(Series):
             # create a set of filters for this series
             for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
                 filter_value = self.series_name[field_ind]
-                if "," in filter_value:
-                    filter_list = filter_value.split(',')
+                if utils.GROUP_SEPARATOR in filter_value:
+                    filter_list = filter_value.split(GROUP_SEPARATOR)
                     # add the original value
                     filter_list.append(filter_value)
                 elif ";" in filter_value:

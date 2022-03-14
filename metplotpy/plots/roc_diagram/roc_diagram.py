@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: roc_diagram.py
  """
@@ -10,12 +20,11 @@ import sys
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-sys.path.append("../../../")
-import plots.util as util
-import plots.constants as constants
-from plots.base_plot import BasePlot
-from plots.roc_diagram.roc_diagram_config import ROCDiagramConfig
-from plots.roc_diagram.roc_diagram_series import ROCDiagramSeries
+from metplotpy.plots import util
+from metplotpy.plots import constants
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots.roc_diagram.roc_diagram_config import ROCDiagramConfig
+from metplotpy.plots.roc_diagram.roc_diagram_series import ROCDiagramSeries
 import metcalcpy.util.utils as calc_util
 
 
@@ -84,6 +93,10 @@ class ROCDiagram(BasePlot):
         # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
         self.figure = self._create_figure()
+
+        # add custom lines
+        if len(self.series_list) > 0:
+            self._add_lines(self.config_obj)
 
     def _read_input_data(self):
         """
@@ -290,7 +303,9 @@ class ROCDiagram(BasePlot):
 
         # "Dump" False Detection Rate (POFD) and PODY points to an output
         # file based on the output image filename (useful in debugging)
-        self.write_output_file()
+        # This output file is used by METviewer and not necessary for other uses.
+        if self.config_obj.dump_points_1 == True :
+            self.write_output_file()
 
         for idx, series in enumerate(self.series_list):
             for i, thresh_val in enumerate(series.series_points[2]):
@@ -313,6 +328,7 @@ class ROCDiagram(BasePlot):
                     secondary_y=False
                 )
 
+
             def add_trace_copy(trace):
                 """Adds separate traces for markers and a legend.
                    This is a fix for not printing 'Aa' in the legend
@@ -330,6 +346,8 @@ class ROCDiagram(BasePlot):
 
             if self.config_obj.add_point_thresholds:
                 fig.for_each_trace(add_trace_copy)
+
+
         return fig
 
     def save_to_file(self):
@@ -360,14 +378,25 @@ class ROCDiagram(BasePlot):
 
         """
 
-        # Open file, name it based on the stat_input config setting,
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
-        input_filename = self.config_obj.stat_input
-        match = re.match(r'(.*)(.data)', input_filename)
-        if match:
-            filename_only = match.group(1)
-            output_file = filename_only + ".points1"
+        # otherwise use points_path path
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True and match:
+            filename = match.group(1)
+            # replace the default path with the custom
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
+
+            output_file = filename + '.points1'
 
             # make sure this file doesn't already
             # exit, delete it if it does
@@ -439,8 +468,9 @@ def main(config_filename=None):
     try:
         r = ROCDiagram(docs)
         r.save_to_file()
+
         r.write_html()
-        r.write_output_file()
+
         #r.show_in_browser()
     except ValueError as ve:
         print(ve)

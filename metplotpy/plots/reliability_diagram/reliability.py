@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: reliability.py
  """
@@ -16,22 +26,11 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
-from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from plots.base_plot import BasePlot
-import plots.util as util
-from plots.reliability_diagram.reliability_config import ReliabilityConfig
-from plots.reliability_diagram.reliability_series import ReliabilitySeries
-
-
-def abline(x_value: float, intercept: float, slope: float) -> float:
-    """
-    Calculates y coordinate based on x-value, intercept and slope
-    :param x_value: x coordinate
-    :param intercept:  intercept
-    :param slope: slope
-    :return: y value
-    """
-    return slope * x_value + intercept
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots import util
+from metplotpy.plots.reliability_diagram.reliability_config import ReliabilityConfig
+from metplotpy.plots.reliability_diagram.reliability_series import ReliabilitySeries
 
 
 class Reliability(BasePlot):
@@ -167,6 +166,9 @@ class Reliability(BasePlot):
             # it isn't requested (as set in the config file)
             if series.plot_disp:
                 self._draw_series(series, x_points_index_adj)
+        # add custom lines
+        if len(self.series_list) > 0:
+            self._add_lines(self.config_obj)
 
     def _draw_series(self, series: ReliabilitySeries, x_points_index_adj: list) -> None:
         """
@@ -292,7 +294,7 @@ class Reliability(BasePlot):
                 intercept = 0.5 * o_bar
                 self.figure.add_trace(
                     go.Scatter(x=[0, 1],
-                               y=[abline(0, intercept, 0.5), abline(1, intercept, 0.5)],
+                               y=[util.abline(0, intercept, 0.5), util.abline(1, intercept, 0.5)],
                                line={'color': 'red',
                                      'dash': 'dash',
                                      'width': 1},
@@ -304,7 +306,7 @@ class Reliability(BasePlot):
                 # create annotation
                 self.figure.add_annotation(
                     x=1,
-                    y=abline(1, intercept, 0.5),
+                    y=util.abline(1, intercept, 0.5),
                     xref="x",
                     yref="y",
                     text="No-Skill",
@@ -329,7 +331,7 @@ class Reliability(BasePlot):
         if self.config_obj.add_skill_line is True:
             self.figure.add_trace(
                 go.Scatter(x=[0, 1],
-                           y=[abline(0, 0, 1), abline(1, 0, 1)],
+                           y=[util.abline(0, 0, 1), util.abline(1, 0, 1)],
                            line={'color': 'grey',
                                  'width': 1},
                            showlegend=False,
@@ -339,7 +341,7 @@ class Reliability(BasePlot):
             )
             self.figure.add_annotation(
                 x=1,
-                y=abline(1, 0, 1),
+                y=util.abline(1, 0, 1),
                 xref="x",
                 yref="y",
                 text="Perfect reliability",
@@ -363,7 +365,7 @@ class Reliability(BasePlot):
             if o_bar and o_bar is not None:
                 self.figure.add_trace(
                     go.Scatter(x=[0, 1],
-                               y=[abline(0, o_bar, 0), abline(1, o_bar, 0)],
+                               y=[util.abline(0, o_bar, 0), util.abline(1, o_bar, 0)],
                                line={'color': 'red',
                                      'dash': 'dash',
                                      'width': 1},
@@ -373,7 +375,7 @@ class Reliability(BasePlot):
                                )
                 )
                 self.figure.add_trace(
-                    go.Scatter(x=[abline(0, o_bar, 0), abline(1, o_bar, 0)],
+                    go.Scatter(x=[util.abline(0, o_bar, 0), util.abline(1, o_bar, 0)],
                                y=[0, 1],
                                line={'color': 'red',
                                      'dash': 'dash',
@@ -385,7 +387,7 @@ class Reliability(BasePlot):
                 )
                 self.figure.add_annotation(
                     x=1,
-                    y=abline(1, o_bar, 0),
+                    y=util.abline(1, o_bar, 0),
                     xref="x",
                     yref="y",
                     text="No-resolution",
@@ -595,11 +597,15 @@ class Reliability(BasePlot):
         Formats series point data to the 2-dim array and saves it to the files
         """
 
-        # Open file, name it based on the stat_input config setting,
+
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
+        # otherwise use points_path path
 
-        if self.config_obj.dump_points_1 is True:
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True and match:
 
             # create an array for y1 points
             all_points_1 = []
@@ -616,16 +622,21 @@ class Reliability(BasePlot):
 
             all_points_1 = [item for sublist in all_points_1 for item in sublist]
 
-            # create a file name from stat_input parameter
-            match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-            if match:
-                filename_only = match.group(1)
-            else:
-                filename_only = 'points'
+            filename = match.group(1)
+            # replace the default path with the custom
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
+
+            filename = filename + '.points1'
 
             # save points
-            if self.config_obj.dump_points_1 is True:
-                self._save_points(all_points_1, filename_only + ".points1")
+            self._save_points(all_points_1, filename)
 
     def _calc_stag_adjustments(self) -> list:
         """
@@ -706,7 +717,7 @@ def main(config_filename=None):
     try:
         plot = Reliability(docs)
         plot.save_to_file()
-        #plot.show_in_browser()
+        # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
     except ValueError as val_er:

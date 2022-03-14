@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: LineSeries
  """
@@ -7,7 +17,8 @@ from typing import Union
 import numpy as np
 
 import metcalcpy.util.utils as utils
-from plots.series import Series
+from .. import GROUP_SEPARATOR
+from ..series import Series
 
 
 class ReliabilitySeries(Series):
@@ -83,8 +94,8 @@ class ReliabilitySeries(Series):
             # create a set of filters for this series
             for field_ind, field in enumerate(self.config.get_config_value('series_val_1').keys()):
                 filter_value = self.series_name[field_ind]
-                if "," in filter_value:
-                    filter_list = filter_value.split(',')
+                if utils.GROUP_SEPARATOR in filter_value:
+                    filter_list = filter_value.split(GROUP_SEPARATOR)
                 elif ";" in filter_value:
                     filter_list = filter_value.split(';')
                 else:

@@ -1,9 +1,22 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: box.py
  """
-__author__ = 'Hank Fisher'
+
+__author__ = 'Hank Fisher, Tatiana Burek'
+
 
 import re
+import os
 from typing import Union
 from operator import add
 from itertools import chain
@@ -16,11 +29,11 @@ from plotly.graph_objects import Figure
 
 import metcalcpy.util.utils as calc_util
 
-from plots.base_plot import BasePlot
-from plots.box.box_config import BoxConfig
-from plots.box.box_series import BoxSeries
-import plots.util as util
-from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots.box.box_config import BoxConfig
+from metplotpy.plots.box.box_series import BoxSeries
+from metplotpy.plots import util
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 
 
 class Box(BasePlot):
@@ -163,13 +176,20 @@ class Box(BasePlot):
             # it isn't requested (as set in the config file)
             if series.plot_disp:
                 # collect min-max if we need to sync axis
-                if self.config_obj.sync_yaxes is True and series.y_axis == 1:
+                if self.config_obj.sync_yaxes is True:
                     yaxis_min, yaxis_max = self._find_min_max(series, yaxis_min, yaxis_max)
 
                 self._draw_series(series)
 
                 # aggregate number of stats
                 n_stats = list(map(add, n_stats, series.series_points['nstat']))
+
+        # add custom lines
+        if len(self.series_list) > 0:
+            self._add_lines(
+                self.config_obj,
+                sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique())
+                )
 
         # apply y axis limits
         self._yaxis_limits()
@@ -213,6 +233,7 @@ class Box(BasePlot):
                    line=line_color,
                    fillcolor=fillcolor,
                    name=series.user_legends,
+                   showlegend=True,
                    # quartilemethod='linear', #"exclusive", "inclusive", or "linear"
                    boxmean=self.config_obj.box_avg,
                    boxpoints=self.config_obj.boxpoints,  # outliers, all, False
@@ -517,17 +538,24 @@ class Box(BasePlot):
         Formats y1 and y2 series point data to the 2-dim arrays and saves them to the files
         """
 
-        # Open file, name it based on the stat_input config setting,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
+        # otherwise use points_path path
 
-        if self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is True:
-            # create a file name from stat_input parameter
-            match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-            if match:
-                filename = match.group(1)
-            else:
-                filename = 'points'
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is True and match:
+            filename = match.group(1)
+            # replace the default path with the custom
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
+
             filename = filename + '.points1'
 
             for series in self.series_list:

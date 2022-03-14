@@ -72,8 +72,6 @@ list_stat_1:
 - FBAR
 list_stat_2:
 - MAE
-list_static_val:
-  fcst_var: SPFH
 mar:
 - 8
 - 4
@@ -103,6 +101,14 @@ plot_stat: median
 plot_type: png16m
 plot_units: in
 plot_width: 11.0
+
+
+# Optional, uncomment and set to directory to store the .points1 file
+# that is used by METviewer (created when dump_points_1 is set to True)
+# if dump_points_1 is True and this is uncommented, the points1 file
+# will be saved in the default location (i.e. where the input data file is stored).
+#points_path: /dir_to_save_points1_file
+
 random_seed: null
 
 

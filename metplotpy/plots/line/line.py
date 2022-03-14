@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: line.py
  """
@@ -18,11 +28,12 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
-from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from plots.line.line_config import LineConfig
-from plots.line.line_series import LineSeries
-from plots.base_plot import BasePlot
-import plots.util as util
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.line.line_config import LineConfig
+from metplotpy.plots.line.line_series import LineSeries
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots import util
+from metplotpy.plots.series import Series
 
 import metcalcpy.util.utils as calc_util
 
@@ -32,7 +43,9 @@ class Line(BasePlot):
          where each line is represented by a text point data file.
     """
 
-    def __init__(self, parameters:dict) -> None:
+    defaults_name = 'line_defaults.yaml'
+
+    def __init__(self, parameters: dict) -> None:
         """ Creates a line plot consisting of one or more lines (traces), based on
             settings indicated by parameters.
 
@@ -42,7 +55,9 @@ class Line(BasePlot):
         """
 
         # init common layout
-        super().__init__(parameters, "line_defaults.yaml")
+        super().__init__(parameters, self.defaults_name)
+
+        self.allow_secondary_y = True
 
         # instantiate a LineConfig object, which holds all the necessary settings from the
         # config file that represents the BasePlot object (Line).
@@ -170,6 +185,13 @@ class Line(BasePlot):
         # create a vertical plot if needed
         self._adjust_for_vertical(x_points_index)
 
+        # reverse xaxis if needed
+        if self.config_obj.xaxis_reverse is True:
+            if self.config_obj.vert_plot is True:
+                self.figure.update_yaxes(autorange="reversed")
+            else:
+                self.figure.update_xaxes(autorange="reversed")
+
         # placeholder for the number of stats
         n_stats = [0] * len(self.config_obj.indy_vals)
 
@@ -185,7 +207,7 @@ class Line(BasePlot):
             if series.plot_disp:
 
                 # collect min-max if we need to sync axis
-                if self.config_obj.sync_yaxes is True and series.y_axis == 1:
+                if self.config_obj.sync_yaxes is True:
                     yaxis_min, yaxis_max = self._find_min_max(series, yaxis_min, yaxis_max)
 
                 # apply staggering offset if applicable
@@ -199,6 +221,9 @@ class Line(BasePlot):
                 # aggregate number of stats
                 n_stats = list(map(add, n_stats, series.series_points['nstat']))
 
+        # add custom lines
+        self._add_lines(self.config_obj, x_points_index)
+
         # apply y axis limits
         self._yaxis_limits()
         self._y2axis_limits()
@@ -209,7 +234,7 @@ class Line(BasePlot):
         # add x2 axis
         self._add_x2axis(n_stats)
 
-    def _draw_series(self, series: LineSeries, x_points_index_adj: list) -> None:
+    def _draw_series(self, series: Series, x_points_index_adj: Union[list, None] = None) -> None:
         """
         Draws the formatted line with CIs if needed on the plot
 
@@ -292,7 +317,7 @@ class Line(BasePlot):
                  }
 
         # create a layout and allow y2 axis
-        fig = make_subplots(specs=[[{"secondary_y": True}]])
+        fig = make_subplots(specs=[[{"secondary_y": self.allow_secondary_y}]])
 
         # add size, annotation, title
         fig.update_layout(
@@ -336,12 +361,14 @@ class Line(BasePlot):
 
         :param x_points_index: list of indexws for the original x -axis
         """
+
+        odered_indy_label = self.config_obj.create_list_by_plot_val_ordering(self.config_obj.indy_label)
         if self.config_obj.vert_plot is True:
             self.figure.update_layout(
                 yaxis={
                     'tickmode': 'array',
                     'tickvals': x_points_index,
-                    'ticktext': self.config_obj.indy_label
+                    'ticktext': odered_indy_label
                 }
             )
         else:
@@ -349,7 +376,7 @@ class Line(BasePlot):
                 xaxis={
                     'tickmode': 'array',
                     'tickvals': x_points_index,
-                    'ticktext': self.config_obj.indy_label
+                    'ticktext': odered_indy_label
                 }
             )
 
@@ -373,9 +400,6 @@ class Line(BasePlot):
                                  tickangle=self.config_obj.x_tickangle,
                                  tickfont={'size': self.config_obj.x_tickfont_size}
                                  )
-        # reverse xaxis if needed
-        if self.config_obj.xaxis_reverse is True:
-            self.figure.update_xaxes(autorange="reversed")
 
     def _add_yaxis(self) -> None:
         """
@@ -573,13 +597,15 @@ class Line(BasePlot):
         Formats y1 and y2 series point data to the 2-dim arrays and saves them to the files
         """
 
-        # Open file, name it based on the stat_input config setting,
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
+        # otherwise use points_path path
+        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is True and match:
 
-        if self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is True:
-
-            # create 2-dim array for y1 points and feel it with 0
+            # create 2-dim array for y1 points and fill it with 0
             all_points_1 = [[0 for x in range(len(self.config_obj.all_series_y1) * 3)] for y in
                             range(len(self.config_obj.indy_vals))]
             if self.config_obj.series_vals_2:
@@ -602,19 +628,20 @@ class Line(BasePlot):
                     self._record_points(all_points_2, series_idx_y2, series)
                     series_idx_y2 = series_idx_y2 + 1
 
-            # create a file name from stat_input parameter
-            match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-            if match:
-                filename_only = match.group(1)
-            else:
-                filename_only = 'points'
+            # replace the default path with the custom
+            filename = match.group(1)
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
 
             # save points
-            if self.config_obj.dump_points_1 is True:
-                self._save_points(all_points_1, filename_only + ".points1")
-
-            if self.config_obj.series_vals_2 and self.config_obj.dump_points_2 is True:
-                self._save_points(all_points_2, filename_only + ".points2")
+            self._save_points(all_points_1, filename + ".points1")
+            self._save_points(all_points_2, filename + ".points2")
 
     @staticmethod
     def _find_min_max(series: LineSeries, yaxis_min: Union[float, None],
@@ -701,6 +728,8 @@ class Line(BasePlot):
             print('Can\'t save points to a file')
 
 
+
+
 def main(config_filename=None):
     """
             Generates a sample, default, line plot using the
@@ -727,7 +756,7 @@ def main(config_filename=None):
     try:
         plot = Line(docs)
         plot.save_to_file()
-        plot.show_in_browser()
+        # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
     except ValueError as val_er:

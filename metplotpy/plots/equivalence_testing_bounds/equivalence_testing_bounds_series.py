@@ -1,5 +1,15 @@
+# ============================*
+ # ** Copyright UCAR (c) 2022
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
-Class Name: LineSeries
+Class Name: EquivalenceTestingBoundSeries
  """
 __author__ = 'Tatiana Burek'
 
@@ -14,7 +24,8 @@ import metcalcpy.util.correlation as pg
 
 import metcalcpy.util.utils as utils
 from metcalcpy.sum_stat import calculate_statistic
-from plots.line.line_series import LineSeries
+from .. import GROUP_SEPARATOR
+from ..line.line_series import LineSeries
 
 
 class EquivalenceTestingBoundsSeries(LineSeries):
@@ -49,8 +60,8 @@ class EquivalenceTestingBoundsSeries(LineSeries):
             # create a set of filters for this series
             for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
                 filter_value = self.series_name[field_ind]
-                if "," in filter_value:
-                    filter_list = filter_value.split(',')
+                if utils.GROUP_SEPARATOR in filter_value:
+                    filter_list = filter_value.split(GROUP_SEPARATOR)
                 elif ";" in filter_value:
                     filter_list = filter_value.split(';')
                 else:

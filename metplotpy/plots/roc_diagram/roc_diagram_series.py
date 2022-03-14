@@ -1,3 +1,13 @@
+# ============================*
+ # ** Copyright UCAR (c) 2020
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 """
 Class Name: ROCDiagramSeries
  """
@@ -5,13 +15,12 @@ __author__ = 'Minna Win'
 
 import sys
 
-sys.path.append("../../")
 import pandas as pd
 import re
 import metcalcpy.util.ctc_statistics as cstats
 import metcalcpy.util.pstd_statistics as pstats
 import metcalcpy.util.utils as utils
-from plots.series import Series
+from ..series import Series
 
 
 class ROCDiagramSeries(Series):

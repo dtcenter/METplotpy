@@ -1,9 +1,20 @@
+# ============================*
+ # ** Copyright UCAR (c) 2021
+ # ** University Corporation for Atmospheric Research (UCAR)
+ # ** National Center for Atmospheric Research (NCAR)
+ # ** Research Applications Lab (RAL)
+ # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+ # ============================*
+ 
+ 
+ 
 
 """
 Class Name: wind_rose.py
  """
 __author__ = 'Tatiana Burek'
 
+import os
 import math
 from typing import Union
 import pandas as pd
@@ -15,10 +26,10 @@ from pathlib import Path
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from plots.base_plot import BasePlot
-from plots.wind_rose.wind_rose_config import WindRoseConfig
-from plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-import plots.util as util
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots.wind_rose.wind_rose_config import WindRoseConfig
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots import util
 
 
 class WindRosePlot(BasePlot):
@@ -326,25 +337,33 @@ class WindRosePlot(BasePlot):
         Formats series point data to the 2-dim array and saves it to the files
         """
 
-        # Open file, name it based on the stat_input config setting,
+
+        # if points_path parameter doesn't exist,
+        # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
+        # otherwise use points_path path
+        points = dict()
+        for trace in self.traces:
+            points[trace.name] = trace.r
 
-        if self.config_obj.dump_points is True:
-
-            points = dict()
-            for trace in self.traces:
-                points[trace.name] = trace.r
-
-            # create a file name from stat_input parameter
-            match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-            if match:
-                filename_only = match.group(1)
-            else:
-                filename_only = 'wind_rose'
+        match = re.match(r'(.*)(.txt)', self.config_obj.parameters['stat_input'])
+        if self.config_obj.dump_points is True and match:
+            filename = match.group(1)
+            # replace the default path with the custom
+            if self.config_obj.points_path is not None:
+                # get the file name
+                path = filename.split(os.path.sep)
+                if len(path) > 0:
+                    filename = path[-1]
+                else:
+                    filename = '.' + os.path.sep
+                filename = self.config_obj.points_path + os.path.sep + filename
 
             # save points
-            self._save_points(points, filename_only + ".points")
+            filename = filename + '.points1'
+            self._save_points(points, filename)
+
 
     @staticmethod
     def _save_points(points: dict, output_file: str) -> None:
