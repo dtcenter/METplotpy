@@ -185,7 +185,7 @@ def main():
 
 
     plt.savefig(ofile, dpi=150)
-    print('created ' + os.path.realpath(ofile))
+    logging.info(f'created {os.path.realpath(ofile)}')
 
 if __name__ == "__main__":
     main()
