@@ -1,13 +1,14 @@
 import argparse
 import cartopy
 import datetime
-import fv3 # get dictionary of variable names for each type of tendency, string name of lat and lon variables
+import fv3 # dictionary of tendencies for each state variable, varnames of lat and lon variables in grid file.
 import logging
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from metpy.units import units
 import numpy as np
 import os
+import pandas as pd
 import pdb
 import sys
 import xarray
@@ -23,23 +24,23 @@ state_variables = fv3.tendencies.keys()
 def parse_args():
     # =============Arguments===================
     parser = argparse.ArgumentParser(description = "Vertical profile of FV3 diagnostic tendencies", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    # ==========Mandatory Arguments==================
+    # ==========Mandatory Arguments===================
     parser.add_argument("historyfile", type=argparse.FileType("r"), help="FV3 history file")
     parser.add_argument("gridfile", type=argparse.FileType("r"), help="FV3 grid spec file")
     parser.add_argument("statevariable", type=str, choices=state_variables, default="tmp", help="state variable")
     # ==========Optional Arguments===================
     parser.add_argument("-d", "--debug", action='store_true')
     parser.add_argument("--resid", action="store_true", help="calculate residual")
-    parser.add_argument("--dtsec", type=float, default=300, help="model time step in seconds")
     parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
 
     parser.add_argument("-s", "--shp", type=str, default=None, help="shape file directory for mask")
     parser.add_argument("--subtract", type=argparse.FileType("r"), help="FV3 history file to subtract")
+    parser.add_argument("-t", "--twindow", type=int, default=3, help="time window in hours")
+    parser.add_argument("-v", "--validtime", type=lambda x:pd.to_datetime(x), help="valid time")
 
     args = parser.parse_args()
     return args
 
-logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 def main():
     args = parse_args()
     gfile      = args.gridfile
@@ -47,89 +48,108 @@ def main():
     variable   = args.statevariable
     debug      = args.debug
     resid      = args.resid
-    dt         = args.dtsec * units.seconds
     ofile      = args.ofile
     shp        = args.shp
     subtract   = args.subtract
+    twindow    = datetime.timedelta(hours = args.twindow)
+    validtime  = args.validtime
 
+    level = logging.INFO
+    if debug: level = logging.DEBUG
+    logging.basicConfig(format='%(asctime)s - %(message)s', level=level) # prepend log message with time
     logging.debug(args)
-    gds  = xarray.open_dataset(gfile.name)
-    lont = gds[fv3.lon_name]
-    latt = gds[fv3.lat_name]
-    area = gds["area"]
 
+    # Output filename.
     if ofile is None:
         ofile = f"{variable}.vert_profile.png"
     else:
         ofile = args.ofile
 
 
-    print("creating figure")
-    fig, ax = plt.subplots()
-    plt.subplots_adjust(bottom=0.18) # add space at bottom for fine print
-    ax.invert_yaxis() # pressure increases from top to bottom
-    ax.grid(visible=True, color="grey", alpha=0.5, lw=0.5)
-    ax.yaxis.set_major_locator(MultipleLocator(100))
-    ax.yaxis.set_minor_locator(MultipleLocator(25))
-    ax.grid(which='minor', alpha=0.3, lw=0.4)
+
+    # Read lat/lon/area from gfile
+    logging.debug(f"read lat/lon/area from {gfile}")
+    gds  = xarray.open_dataset(gfile.name)
+    lont = gds[fv3.lon_name]
+    latt = gds[fv3.lat_name]
+    area = gds["area"]
 
     # Open input file
-    if debug:
-        print(f"About to open {ifile}")
+    logging.debug(f"About to open {ifile}")
     fv3ds = xarray.open_dataset(ifile.name)
+    # Convert from CFTime to pandas datetime. I get a warning CFTimeIndex from non-standard calendar 'julian'.
+    datetimeindex = fv3ds.indexes['time'].to_datetimeindex()
+    fv3ds['time'] = datetimeindex
     if subtract:
         logging.debug(f"subtracting {subtract.name}")
         with xarray.set_options(keep_attrs=True):
             fv3ds -= xarray.open_dataset(subtract.name)
 
-    lasttime = fv3ds.time[-1] 
-    # Extract tendencies DataArrays at last time, and multiply by dt * numdt.
-    all_tend = fv3ds[fv3.tendencies[variable]].sel(time = lasttime).metpy.quantify()
-    numdt = fv3ds.time.size
-    # Units of tendencies are K/s averaged over number of time steps within first forecast hour.
-    # Multiply by time step and number of time steps
-    total_change = all_tend * dt * numdt
-    # Reassign original long_name attributes but replace "tendency" with "change".
-    # long_name was correctly removed after multiplying by dt * numdt.
-    for varname, da in total_change.data_vars.items():
-        da.attrs["long_name"] = fv3ds[varname].attrs["long_name"].replace("tendency", "change")
+    fv3ds = fv3ds.assign_coords(lont=lont, latt=latt) # lont and latt used by pcolorfill()
+    tendency_vars = fv3.tendencies[variable] # list of tendency variable names for requested state variable
+    fv3ds = fv3.add_time0(fv3ds, variable)
+    tendencies = fv3ds[tendency_vars] # subset of original Dataset
 
+    # If validtime was not provided on command line, use latest time in history file.
+    if validtime is None:
+        validtime = fv3ds.time.values[-1]
+        validtime = pd.to_datetime(validtime)
+    time0 = validtime - twindow
+    time1 = time0 + datetime.timedelta(hours=1)
+    logging.info(f"Sum tendencies {time1}-{validtime}")
+    tindex = dict(time=slice(time1, validtime)) # slice of time from hour after time0 through validtime
+    tendencies_avg = tendencies.sel(tindex).mean(dim="time") # average tendencies in time 
+
+    # Dynamics (nophys) tendency is not reset every hour. Just calculate change from time0 to validtime.
+    nophys_var = [x for x in tendency_vars if x.endswith("_nophys")]
+    assert len(nophys_var) == 1
+    nophys_var = nophys_var[0] # we don't want a 1-element list; we want a string. So that tendencies[nophys_var] is a DataArray, not a Dataset.
+    logging.info(f"Subtract nophys tendency at {time0} from {validtime}")
+    nophys_delta = tendencies[nophys_var].sel(time=validtime) - tendencies[nophys_var].sel(time=time0)
+    tendencies_avg[nophys_var] = nophys_delta / args.twindow 
+
+
+    # Restore units after .mean() removed them. Copy units from 1st tendency variable.
+    tendency_units = units.parse_expression(fv3ds[tendency_vars[0]].units)
+    logging.debug(f"restoring {tendency_units} units after .mean() method removed them.")
+    tendencies_avg *= tendency_units
+    for da in tendencies_avg:
+        tendencies_avg[da] = tendencies_avg[da].metpy.convert_units("K/hour")
+    long_names = [fv3ds[da].attrs["long_name"] for da in tendencies_avg] # Make list of long_names before .to_array() loses them.
 
     # Remove characters up to and including 1st underscore (e.g. du3dt_) in DataArray name.
     # for example dt3dt_pbl -> pbl
-    name_dict = {da : "_".join(da.split("_")[1:]) for da in total_change.data_vars} 
-    total_change = total_change.rename(name_dict)
+    name_dict = {da : "_".join(da.split("_")[1:]) for da in tendencies_avg.data_vars} 
+    tendencies_avg = tendencies_avg.rename(name_dict)
 
+    # Stack variables along new tendency dimension of new DataArray.
+    tendency_dim = f"{variable} tendency"
+    tendencies_avg = tendencies_avg.to_array(dim=tendency_dim)
+    # Assign long_names to a new DataArray coordinate. It will have the same shape as tendency dimension. 
+    tendencies_avg = tendencies_avg.assign_coords({"long_name":(tendency_dim,long_names)})
 
-    # Stack variables along new tendency axis of new DataArray.
-    tendency = f"{variable} tendency"
-    # In fv3_planview.py we keep track of long_names, but this causes trouble in 
-    # fv3_vert_profile if resid=True and we add dstate_variable and resid.
-    # Those DataArrays won't have a long_name coordinate.
-    total_change = total_change.to_array(dim=tendency)
-
-    logging.info(f"calculate d{variable}")
+    logging.info(f"calculate actual change in {variable}")
     state_variable = fv3ds[variable].metpy.quantify() # Tried metpy.quantify() with open_dataset, but pint.errors.UndefinedUnitError: 'dBz' is not defined in the unit registry
-    state_variable_initial_time = fv3ds[variable+"_i"].metpy.quantify() 
-    dstate_variable = state_variable.sel(time = lasttime) - state_variable_initial_time
-    dstate_variable = dstate_variable.assign_coords(time=lasttime)
-    dstate_variable.attrs["long_name"] = f"change in {state_variable.attrs['long_name']}"
+    dstate_variable = state_variable.sel(time = validtime) - state_variable.sel(time = time0)
+    dstate_variable = dstate_variable.assign_coords(time=validtime)
+    dstate_variable.attrs["long_name"] = f"actual change in {state_variable.attrs['long_name']}"
 
-    # Sum along tendency axis and subtract change in state variable.
+    # Add all tendencies together and subtract actual rate of change in state variable.
     # This is residual.
-    resid = total_change.sum(dim=tendency) - dstate_variable
-    resid.attrs["long_name"] = f"total_change - d{variable}"
+    total = tendencies_avg.sum(dim=tendency_dim)
+    twindow_quantity = twindow.total_seconds() * units.seconds 
+    resid = total - dstate_variable/twindow_quantity
 
+    da2plot = tendencies_avg
     if resid is not None:
-        # Expand tendency axis with dstate_variable and resid.
-        dstate_variable = dstate_variable.expand_dims(dim={tendency:[f"d{variable}"]})
-        resid = resid.expand_dims(dim={tendency:["resid"]})
-
-        # Add dstate_variable and resid DataArrays to tendency axis.
-        total_change = xarray.concat([total_change,dstate_variable,resid], tendency)
+        # Add total and resid DataArrays to tendency_dim.
+        total = total.expand_dims({tendency_dim:["total"]}).assign_coords(long_name="sum of tendencies")
+        resid = resid.expand_dims({tendency_dim:["resid"]}).assign_coords(long_name=f"sum of tendencies - actual rate of change of {variable} (residual)")
+        da2plot = xarray.concat([da2plot, total, resid], dim=tendency_dim)
 
 
-    da2plot = total_change
+
+    # Mask points outside shape.
     if shp:
         shp = shp.rstrip("/")
         # Add shapefile name to output filename
@@ -145,18 +165,25 @@ def main():
 
     totalarea = area.metpy.convert_units("km**2").sum()
 
-    # Append time to output filename
-    root, ext = os.path.splitext(ofile)
-    ofile = root + f".{lasttime.dt.strftime('%Y%m%d_%H%M%S').item()}" + ext
 
-    # area-weighted spatial average
+    logging.info(f"area-weighted spatial average")
     da2plot = da2plot.weighted(area).mean(area.dims)
+
+
+    logging.info("creating figure")
+    fig, ax = plt.subplots()
+    plt.subplots_adjust(bottom=0.18) # add space at bottom for fine print
+    ax.invert_yaxis() # pressure increases from top to bottom
+    ax.grid(visible=True, color="grey", alpha=0.5, lw=0.5)
+    ax.yaxis.set_major_locator(MultipleLocator(100))
+    ax.yaxis.set_minor_locator(MultipleLocator(25))
+    ax.grid(which='minor', alpha=0.3, lw=0.4)
 
     # Put units in attributes so they show up in xlabel.
     da2plot = da2plot.metpy.dequantify()
 
-    print("plot area-weighted spatial average...")
-    lines = da2plot.plot.line(y="pfull", ax=ax, hue=tendency)
+    logging.info("plot area-weighted spatial average...")
+    lines = da2plot.plot.line(y="pfull", ax=ax, hue=tendency_dim)
 
     if resid is not None: # resid might have been turned from a Boolean to a DataArray.
         # Add special marker to dstate_variable and residual lines.
@@ -172,6 +199,12 @@ def main():
             line.set_markersize(special_marker_size)
             leghandle.set_marker(special_marker)
             leghandle.set_markersize(special_marker_size)
+
+    # Add time to title and output filename
+    root, ext = os.path.splitext(ofile)
+    ofile = root + f".{time0.strftime('%Y%m%d_%H%M%S')}-{validtime.strftime('%Y%m%d_%H%M%S')}" + ext
+    title = f'{time0}-{validtime}'
+    ax.set_title(title, wrap=True)
 
     # Annotate figure with details about figure creation. 
     fineprint  = f"history: {os.path.realpath(ifile.name)}"
