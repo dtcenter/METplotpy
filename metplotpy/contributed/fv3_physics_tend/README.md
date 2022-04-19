@@ -37,7 +37,44 @@ Then install METplotpy into your conda environment as described in [METplotpy in
 ## Plot plan view
 
 ```python
-python fv3_planview.py fv3_history.nc grid_spec.nc tmp nophys
+usage: fv3_planview.py [-h] [-d] [--ncols NCOLS] [-o OFILE]
+                       [-p PFULL [PFULL ...]] [-s SHP] [--subtract SUBTRACT]
+                       [-t TWINDOW] [-v VALIDTIME]
+                       historyfile gridfile {tmp,spfh,ugrd,vgrd}
+                       {dtmp,dspfh,dvgrd,congwd,dugrd,mp,lw,pbl,rdamp,shalcnv,resid,deepcnv,nophys,orogwd,sw}
+fv3_planview.py: error: the following arguments are required: historyfile, gridfile, statevariable, fill
+(NPL) casper-login2:scratch/ahijevyc/METplotpy/metplotpy/contributed/fv3_physics_tend$ python fv3_planview.py -h
+usage: fv3_planview.py [-h] [-d] [--ncols NCOLS] [-o OFILE]
+                       [-p PFULL [PFULL ...]] [-s SHP] [--subtract SUBTRACT]
+                       [-t TWINDOW] [-v VALIDTIME]
+                       historyfile gridfile {tmp,spfh,ugrd,vgrd}
+                       {nophys,congwd,dugrd,lw,resid,shalcnv,sw,dvgrd,rdamp,dspfh,pbl,orogwd,deepcnv,dtmp,mp}
+
+Plan view plot of FV3 diagnostic tendency
+
+positional arguments:
+  historyfile           FV3 history file
+  gridfile              FV3 grid spec file
+  {tmp,spfh,ugrd,vgrd}  state variable
+  {nophys,congwd,dugrd,lw,resid,shalcnv,sw,dvgrd,rdamp,dspfh,pbl,orogwd,deepcnv,dtmp,mp}
+                        filled contour variable with 2 spatial dims and
+                        optional time and vertical dims.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --debug
+  --ncols NCOLS         number of columns (default: None)
+  -o OFILE, --ofile OFILE
+                        name of output image file (default: None)
+  -p PFULL [PFULL ...], --pfull PFULL [PFULL ...]
+                        pressure level(s) in hPa to plot (default: [1000, 925,
+                        850, 700, 500, 300, 200, 100, 0])
+  -s SHP, --shp SHP     shape file directory for mask (default: None)
+  --subtract SUBTRACT   FV3 history file to subtract (default: None)
+  -t TWINDOW, --twindow TWINDOW
+                        time window in hours (default: 3)
+  -v VALIDTIME, --validtime VALIDTIME
+                        valid time (default: None)
 ```
 
 ## Plot vertical profile
