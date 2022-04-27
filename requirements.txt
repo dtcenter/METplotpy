@@ -35,7 +35,7 @@ pooch==1.6.0
 py==1.11.0
 pycparser==2.21
 pyOpenSSL==22.0.0
-opencv-python==4.5.3
+opencv-python>=4.5
 pyparsing==3.0.7
 PyQt5==5.12.3
 PyQt5_sip==4.19.18
