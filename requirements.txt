@@ -16,6 +16,7 @@ imageio==2.6.1
 importlib-metadata==4.11.3
 imutils==0.5.4
 iniconfig==1.1.1
+kaleido==0.0.3
 kiwisolver==1.4.2
 locket==0.2.0
 matplotlib==3.5.1
@@ -41,7 +42,6 @@ PyQtChart==5.12
 PyQtWebEngine==5.12.1
 pytest==7.1.1
 python-dateutil==2.8.2
-python-kaleido==0.0.3
 pytz==2022.1
 PyWavelets==1.1.1
 PyYAML==5.4.1
