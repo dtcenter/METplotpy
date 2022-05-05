@@ -50,6 +50,34 @@ def test_files_exist( setup, test_input, expected):
     assert os.path.isfile(test_input) == expected
     cleanup()
 
+def test_no_nans_in_points_file(setup):
+    """
+        Checking that the points1 intermediate file does not
+        have any NaN's.  This is indicative of a problem with the _create_series_points() method.
+    """
+
+    # Check for NaN's in the intermediate files, line.points1 and line.points2
+    # Fail if there are any NaN's-this indicates something went wrong with the
+    # line_series.py module's  _create_series_points() method.
+    nans_found = False
+    with open("./bar.points1", "r") as f:
+        data = f.read()
+        if "NaN" in data:
+            nans_found = True
+
+    assert nans_found == False
+    cleanup()
+
+    # Verify that the nan.points1 file does indeed trigger a "nans_found"
+    with open("./intermed_files/nan.points1", "r") as f:
+        data = f.read()
+        if "NaN" in data:
+            nans_found = True
+
+    # assert
+    assert nans_found == True
+
+
 @pytest.mark.skip("fails on linux host machines")
 def test_images_match(setup):
     """
