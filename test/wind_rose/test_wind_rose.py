@@ -31,7 +31,7 @@ def cleanup():
     # from any previous runs
     try:
         path = os.getcwd()
-        plot_file = 'wind_rose_default.png'
+        plot_file = 'wind_rose_custom.png'
         points_file_1 = 'point_stat_mpr.points1'
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(path, points_file_1))
@@ -132,6 +132,6 @@ def test_images_match(setup):
         newly created plot to verify that the plot hasn't
         changed in appearance.
     '''
-    comparison = CompareImages('./wind_rose_expected.png', './wind_rose_default.png')
+    comparison = CompareImages('./wind_rose_expected.png', './wind_rose_custom.png')
     assert comparison.mssim == 1
     cleanup()
