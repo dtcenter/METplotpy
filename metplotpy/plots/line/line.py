@@ -150,16 +150,26 @@ class Line(BasePlot):
         # add derived for y1 axis
         num_series_y1_d = len(self.config_obj.get_config_value('derived_series_1'))
         for i, name in enumerate(self.config_obj.get_config_value('derived_series_1')):
-            series_obj = LineSeries(self.config_obj, num_series_y1 + num_series_y2 + i,
+            # add default operation value if it is not provided
+            if len(name) == 2:
+                name.append("DIFF")
+            # include the series only if the name is valid
+            if len(name) == 3:
+                series_obj = LineSeries(self.config_obj, num_series_y1 + num_series_y2 + i,
                                     input_data, series_list, name)
-            series_list.append(series_obj)
+                series_list.append(series_obj)
 
         # add derived for y2 axis
         for i, name in enumerate(self.config_obj.get_config_value('derived_series_2')):
-            series_obj = LineSeries(self.config_obj,
+            # add default operation value if it is not provided
+            if len(name) == 2:
+                name.append("DIFF")
+            # include the series only if the name is valid
+            if len(name) == 3:
+                series_obj = LineSeries(self.config_obj,
                                     num_series_y1 + num_series_y2 + num_series_y1_d + i,
                                     input_data, series_list, name, 2)
-            series_list.append(series_obj)
+                series_list.append(series_obj)
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)

@@ -136,9 +136,14 @@ class Bar(BasePlot):
 
         # add derived for y1 axis
         for i, name in enumerate(self.config_obj.get_config_value('derived_series_1')):
-            series_obj = BarSeries(self.config_obj, num_series_y1 + i,
+            # add default operation value if it is not provided
+            if len(name) == 2:
+                name.append("DIFF")
+            # include the series only if the name is valid
+            if len(name) == 3:
+                series_obj = BarSeries(self.config_obj, num_series_y1 + i,
                                    input_data, series_list, name)
-            series_list.append(series_obj)
+                series_list.append(series_obj)
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
