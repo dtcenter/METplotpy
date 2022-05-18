@@ -195,7 +195,7 @@ class LineSeries(Series):
                         if utils.GROUP_SEPARATOR in val:
                             new_name = 'Group_y1_' + str(group_to_value_index)
                             group_to_value[new_name] = val
-                            group_to_value_index = group_to_value_index + 1
+                    group_to_value_index = group_to_value_index + 1
 
             series_val_2 = self.config.parameters['series_val_2']
             if series_val_2:
@@ -206,7 +206,7 @@ class LineSeries(Series):
                             if GROUP_SEPARATOR in val:
                                 new_name = 'Group_y2_' + str(group_to_value_index)
                                 group_to_value[new_name] = val
-                                group_to_value_index = group_to_value_index + 1
+                        group_to_value_index = group_to_value_index + 1
 
             is_group_exists = False
             for series in self.series_list:
