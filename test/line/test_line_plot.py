@@ -66,13 +66,11 @@ def test_points_files_exist(test_input, expected):
     except FileExistsError as e:
         pass
 
-
-
     os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom_line2.yaml"
     l.main(custom_config_filename)
 
-    # test for expected values
+    # Test for expected values
     assert os.path.isfile(test_input) == expected
 
     # cleanup intermediate files and plot
@@ -89,6 +87,66 @@ def test_points_files_exist(test_input, expected):
         # Typically when files have already been removed or
         # don't exist.  Ignore.
         pass
+
+def test_no_nans_in_points_files():
+    '''
+        Checking that the point data files do not have any NaN's
+    '''
+
+    # create the intermediate directory to store the .points1 and .points2 files
+    try:
+       os.mkdir(os.path.join(os.getcwd(), 'intermed_files'))
+    except FileExistsError as e:
+        pass
+
+    os.environ['METPLOTPY_BASE'] = "../../"
+    custom_config_filename = "custom_line2.yaml"
+    l.main(custom_config_filename)
+
+
+    # Check for NaN's in the intermediate files, line.points1 and line.points2
+    # Fail if there are any NaN's-this indicates something went wrong with the
+    # line_series.py module's  _create_series_points() method.
+    nans_found = False
+    with open("./intermed_files/line.points1", "r" ) as f:
+        data = f.read()
+        if "NaN" in data:
+            nans_found = True
+
+    assert nans_found == False
+
+    # Now check line.points2
+    with open("./intermed_files/line.points2", "r") as f:
+        data = f.read()
+        if "NaN" in data:
+            nans_found = True
+
+    assert nans_found == False
+
+    # Verify that the nan.points1 file does indeed trigger a "nans_found"
+    with open("./intermed_files/nan.points1", "r") as f:
+        data = f.read()
+        if "NaN" in data:
+            nans_found = True
+
+    # assert
+    assert nans_found == True
+
+    # cleanup intermediate files and plot
+    try:
+        path = os.getcwd()
+        plot_file = 'line.png'
+        points_file_1 = 'line.points1'
+        points_file_2 = 'line.points2'
+        intermed_path = os.path.join(path, 'intermed_files')
+        os.remove(os.path.join(path, plot_file))
+        os.remove(os.path.join(intermed_path, points_file_1))
+        os.remove(os.path.join(intermed_path, points_file_2))
+    except OSError as e:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass
+
 
 @pytest.mark.skip()
 def test_images_match(setup):
