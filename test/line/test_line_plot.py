@@ -158,6 +158,7 @@ def test_images_match(setup):
     assert comparison.mssim == 1
     cleanup()
 
+@pytest.mark.skip()
 def test_new_images_match():
     '''
         Compare an expected plot with the start_at_zero option, with the
