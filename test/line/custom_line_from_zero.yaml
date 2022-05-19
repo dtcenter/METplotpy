@@ -154,7 +154,7 @@ show_signif:
 - 'False'
 - 'False'
 - 'False'
-- start_from_zero: 'True'
+start_from_zero: 'True'
 stat_input: ./line.data
 sync_yaxes: 'False'
 title: test title
