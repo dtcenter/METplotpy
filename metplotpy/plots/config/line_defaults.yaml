@@ -65,6 +65,7 @@ series_val_1: {}
 series_val_2: {}
 show_nstats: 'False'
 show_signif: []
+start_from_zero: 'False'
 stat_input: ../../../test/line/line.data
 sync_yaxes: 'False'
 title: test title
