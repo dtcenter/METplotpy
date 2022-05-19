@@ -1,10 +1,3 @@
-# !!!IMPORTANT!!!
-# activate conda environment in the testing subshell
-# Replace blenny_363 with your METplus Python 3.6.3
-# conda environment name
-# !!!!!!!!
-
-# !/usr/bin/env conda run -n blenny_363 python
 
 import pytest
 import os
@@ -165,4 +158,37 @@ def test_images_match(setup):
     assert comparison.mssim == 1
     cleanup()
 
+def test_new_images_match():
+    '''
+        Compare an expected plot with the start_at_zero option, with the
+        newly created plot to verify that the plot hasn't
+        changed in appearance.
+     '''
+
+    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
+    # the config directory containing all the default config files.
+    os.environ['METPLOTPY_BASE'] = "../../"
+    custom_config_filename = "custom_line_from_zero.yaml"
+
+    # Invoke the command to generate a Performance Diagram based on
+    # the test_custom_performance_diagram.yaml custom config file.
+    l.main(custom_config_filename)
+    path = os.getcwd()
+    plot_file = 'line_from_zero.png'
+    actual_file = os.path.join(path, plot_file)
+    comparison = CompareImages('./line_expected_from_zero.png', actual_file)
+
+    # !!!WARNING!!! SOMETIMES FILE SIZES DIFFER IN SPITE OF THE PLOTS LOOKING THE SAME
+    # THIS TEST IS NOT 100% RELIABLE because of differences in machines, OS, etc.
+    assert comparison.mssim == 1
+
+    # cleanup plot
+    try:
+        path = os.getcwd()
+        plot_file = 'line_from_zero.png'
+        os.remove(os.path.join(path, plot_file))
+    except OSError as e:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass
 
