@@ -17,8 +17,8 @@ from typing import Union
 import math
 import statistics
 import re
-
 import numpy as np
+import pandas as pd
 from pandas import DataFrame
 import metcalcpy.util.correlation as pg
 from scipy.stats import norm
@@ -443,7 +443,7 @@ class LineSeries(Series):
             if self.series_data is None:
                 self.series_data = stats_indy_1
             else:
-                self.series_data = self.series_data.append(stats_indy_1, sort=False)
+                self.series_data = pd.concat([self.series_data, stats_indy_1], sort=False)
 
     def _calculate_tost_paired(self, series_data_1: DataFrame, series_data_2: DataFrame) -> dict:
         """
