@@ -164,11 +164,11 @@ class ReliabilitySeries(Series):
             calibration_data = \
                 self.input_data.loc[lambda df: df['stat_name'] == 'PSTD_CALIBRATION', :]
             if self.series_name == 'median':
-                series_points_results = calibration_data.groupby('thresh_i')[
-                    'stat_value', 'stat_btcl', 'stat_btcu'].median().reset_index()
+                series_points_results = calibration_data.groupby('thresh_i')[[
+                    'stat_value', 'stat_btcl', 'stat_btcu']].median().reset_index()
             elif self.series_name == 'mean':
-                series_points_results = calibration_data.groupby('thresh_i')[
-                    'stat_value', 'stat_btcl', 'stat_btcu'].mean().reset_index()
+                series_points_results = calibration_data.groupby('thresh_i')[[
+                    'stat_value', 'stat_btcl', 'stat_btcu']].mean().reset_index()
             else:
                 series_points_results = calibration_data.copy()
                 series_points_results['stat_name'] = None
