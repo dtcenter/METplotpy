@@ -20,9 +20,6 @@ from operator import add
 from typing import Union
 import yaml
 import itertools
-import warnings
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore", category=RuntimeWarning)
 
 import plotly.graph_objects as go
 
