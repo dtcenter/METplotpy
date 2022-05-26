@@ -1,3 +1,4 @@
+import pytest
 import os
 from metplotpy.plots.histogram import rank_hist
 from metcalcpy.compare_images import CompareImages
