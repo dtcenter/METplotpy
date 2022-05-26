@@ -1,11 +1,3 @@
-# !!!IMPORTANT!!!
-# activate conda environment in the testing subshell
-# Replace blenny_363 with your METplus Python 3.6.3
-# conda environment name
-# !!!!!!!!
-
-# !/usr/bin/env conda run -n blenny_363 python
-
 import pytest
 import os
 from metplotpy.plots.equivalence_testing_bounds import equivalence_testing_bounds as etb
