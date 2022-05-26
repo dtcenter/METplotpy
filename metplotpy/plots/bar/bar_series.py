@@ -15,6 +15,7 @@ __author__ = 'Tatiana Burek'
 __email__ = 'met_help@ucar.edu'
 
 from typing import Union
+import warnings
 
 import numpy as np
 from pandas import DataFrame
@@ -201,11 +202,17 @@ class BarSeries(Series):
         """
         # calculate point stat
         if self.config.plot_stat == 'MEAN':
-            point_stat = np.nanmean(data)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                point_stat = np.nanmean(data)
         elif self.config.plot_stat == 'MEDIAN':
-            point_stat = np.nanmedian(data)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                point_stat = np.nanmedian(data)
         elif self.config.plot_stat == 'SUM':
-            point_stat = np.nansum(data)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                point_stat = np.nansum(data)
         else:
             point_stat = None
         return point_stat
