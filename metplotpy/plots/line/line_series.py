@@ -13,12 +13,13 @@ Class Name: LineSeries
  """
 __author__ = 'Tatiana Burek'
 
+import warnings
 from typing import Union
 import math
 import statistics
 import re
-
 import numpy as np
+import pandas as pd
 from pandas import DataFrame
 import metcalcpy.util.correlation as pg
 from scipy.stats import norm
@@ -26,6 +27,8 @@ from scipy.stats import norm
 import metcalcpy.util.utils as utils
 from ..series import Series
 from .. import GROUP_SEPARATOR
+
+
 
 
 class LineSeries(Series):
@@ -82,11 +85,17 @@ class LineSeries(Series):
         """
         # calculate point stat
         if self.config.plot_stat == 'MEAN':
-            point_stat = np.nanmean(data)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                point_stat = np.nanmean(data)
         elif self.config.plot_stat == 'MEDIAN':
-            point_stat = np.nanmedian(data)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                point_stat = np.nanmedian(data)
         elif self.config.plot_stat == 'SUM':
-            point_stat = np.nansum(data)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                point_stat = np.nansum(data)
         else:
             point_stat = None
         return point_stat
@@ -443,7 +452,7 @@ class LineSeries(Series):
             if self.series_data is None:
                 self.series_data = stats_indy_1
             else:
-                self.series_data = self.series_data.append(stats_indy_1, sort=False)
+                self.series_data = pd.concat([self.series_data, stats_indy_1], sort=False)
 
     def _calculate_tost_paired(self, series_data_1: DataFrame, series_data_2: DataFrame) -> dict:
         """

@@ -15,6 +15,7 @@ __author__ = 'Tatiana Burek'
 
 from typing import Union
 import numpy as np
+import warnings
 
 import metcalcpy.util.utils as utils
 from .. import GROUP_SEPARATOR
@@ -66,11 +67,17 @@ class ReliabilitySeries(Series):
         """
         # calculate point stat
         if self.config.plot_stat == 'MEAN':
-            point_stat = np.nanmean(data)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                point_stat = np.nanmean(data)
         elif self.config.plot_stat == 'MEDIAN':
-            point_stat = np.nanmedian(data)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                point_stat = np.nanmedian(data)
         elif self.config.plot_stat == 'SUM':
-            point_stat = np.nansum(data)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                point_stat = np.nansum(data)
         else:
             point_stat = None
         return point_stat
@@ -164,11 +171,11 @@ class ReliabilitySeries(Series):
             calibration_data = \
                 self.input_data.loc[lambda df: df['stat_name'] == 'PSTD_CALIBRATION', :]
             if self.series_name == 'median':
-                series_points_results = calibration_data.groupby('thresh_i')[
-                    'stat_value', 'stat_btcl', 'stat_btcu'].median().reset_index()
+                series_points_results = calibration_data.groupby('thresh_i')[[
+                    'stat_value', 'stat_btcl', 'stat_btcu']].median().reset_index()
             elif self.series_name == 'mean':
-                series_points_results = calibration_data.groupby('thresh_i')[
-                    'stat_value', 'stat_btcl', 'stat_btcu'].mean().reset_index()
+                series_points_results = calibration_data.groupby('thresh_i')[[
+                    'stat_value', 'stat_btcl', 'stat_btcu']].mean().reset_index()
             else:
                 series_points_results = calibration_data.copy()
                 series_points_results['stat_name'] = None
