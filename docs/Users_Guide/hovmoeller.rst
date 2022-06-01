@@ -21,7 +21,7 @@ for instructions on how to generate a Hovmoeller diagram.
 Required Packages:
 ==================
 
-* metplotpy
+* metcalcpy
 
 * netcdf4 1.5.6
 
