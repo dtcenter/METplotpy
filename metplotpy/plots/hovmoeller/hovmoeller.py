@@ -94,7 +94,7 @@ class Hovmoeller(BasePlot):
         :return: time_str
         :rtype: str
         """
-        ts = (time - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 'h')
+        ts = (time - np.datetime64('1970-01-01T00:00:00')) / np.timedelta64(1, 'h')
         date = num2date(ts, 'hours since 1970-01-01T00:00:00Z')
         time_str = [i.strftime("%Y-%m-%d %H:%M") for i in date]
 
