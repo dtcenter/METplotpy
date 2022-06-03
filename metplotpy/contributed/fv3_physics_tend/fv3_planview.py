@@ -101,8 +101,10 @@ def main():
     # Open input file
     logging.debug(f"About to open {ifile}")
     fv3ds = xarray.open_dataset(ifile.name)
-    # Convert from CFTime to pandas datetime. I get a warning CFTimeIndex from non-standard calendar 'julian'.
-    datetimeindex = fv3ds.indexes['time'].to_datetimeindex()
+    datetimeindex = fv3ds.indexes['time']
+    if hasattr(datetimeindex, "to_datetimeindex"):
+        # Convert from CFTime to pandas datetime. I get a warning CFTimeIndex from non-standard calendar 'julian'. Maybe history file should be saved with standard calendar.
+        datetimeindex = datetimeindex.to_datetimeindex()
     fv3ds['time'] = datetimeindex
     if subtract:
         logging.debug(f"subtracting {subtract.name}")
@@ -114,8 +116,8 @@ def main():
     fv3ds = fv3.add_time0(fv3ds, variable)
     tendencies = fv3ds[tendency_vars] # subset of original Dataset
 
-    # If validtime was not provided on command line, use latest time in history file.
     if validtime is None:
+        logging.debug("validtime not provided on command line, so use latest time in history file.")
         validtime = fv3ds.time.values[-1]
         validtime = pd.to_datetime(validtime)
     time0 = validtime - twindow
@@ -241,7 +243,7 @@ def main():
     # Add time to title and output filename
     root, ext = os.path.splitext(ofile)
     ofile = root + f".{time0.strftime('%Y%m%d_%H%M%S')}-{validtime.strftime('%Y%m%d_%H%M%S')}" + ext
-    title = f'{time0}-{validtime}'
+    title = f'{time0}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
     if col == tendency_dim:
         title = f'pfull={pfull[0]:~.0f} {title}'
     elif 'long_name' in da2plot.coords:
@@ -259,7 +261,7 @@ def main():
     fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
 
 
-    plt.savefig(ofile, dpi=150)
+    plt.savefig(ofile, dpi=175)
     logging.info(f'created {os.path.realpath(ofile)}')
 
 if __name__ == "__main__":
