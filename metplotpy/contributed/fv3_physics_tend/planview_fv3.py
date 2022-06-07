@@ -34,7 +34,7 @@ def parse_args():
     fill_choices = set(fill_choices) # no repeats (same physics/parameterization used for multiple state variables). 
 
     # =============Arguments===================
-    parser = argparse.ArgumentParser(description = "Plot plan view of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description = "Plan view of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # ==========Mandatory Arguments===================
     parser.add_argument("historyfile", type=argparse.FileType("r"), help="FV3 history file")
     parser.add_argument("gridfile", type=argparse.FileType("r"), help="FV3 grid spec file")
@@ -44,7 +44,7 @@ def parse_args():
     parser.add_argument("-d", "--debug", action='store_true')
     parser.add_argument("--ncols", type=int, default=None, help="number of columns")
     parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
-    parser.add_argument("-p", "--pfull", nargs='+', type=float, default=[1000,925,850,700,500,300,200,100,0], help="pressure level(s) in hPa to plot")
+    parser.add_argument("-p", "--pfull", nargs='+', type=float, default=[1000,925,850,700,500,300,200,100,0], help="pressure level(s) in hPa to plot. If only one pressure level is provided, the type-of-tendency argument will be ignored and all tendencies will be plotted.")
     parser.add_argument("-s", "--shp", type=str, default=None, help="shape file directory for mask")
     parser.add_argument("--subtract", type=argparse.FileType("r"), help="FV3 history file to subtract")
     parser.add_argument("-t", "--twindow", type=int, default=3, help="time window in hours")

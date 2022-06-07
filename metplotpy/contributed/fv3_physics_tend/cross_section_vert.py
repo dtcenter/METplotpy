@@ -25,7 +25,7 @@ state_variables = fv3.tendencies.keys()
 def parse_args():
 
     # =============Arguments===================
-    parser = argparse.ArgumentParser(description = "Plot plan view of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description = "Vertical cross section of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # ==========Mandatory Arguments===================
     parser.add_argument("historyfile", type=argparse.FileType("r"), help="FV3 history file")
     parser.add_argument("gridfile", type=argparse.FileType("r"), help="FV3 grid spec file")
