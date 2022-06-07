@@ -162,7 +162,7 @@ Potential tendency variables to read from fv3_history.nc:
 | actual change in state var |    dtmp     |       dspfh       |   dugrd     |   dvgrd     |
 
 
-## Delta Plot
+## Difference plot
 
 Put file you want to subtract after the --subtract argument.
 
