@@ -1,7 +1,7 @@
 import argparse
 import cartopy
 import datetime
-import fv3 # dictionary of tendencies for each state variable, varnames of lat and lon variables in grid file.
+import fv3 # dictionary of tendencies for each state variable, varnames of lat and lon variables in grid file, graphics parameters
 import logging
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
@@ -63,7 +63,7 @@ def main():
         ofile = f"{variable}.vert_profile.png"
     else:
         ofile = args.ofile
-
+    logging.info(f"output filename={ofile}")
 
 
     # Read lat/lon/area from gfile
@@ -186,7 +186,7 @@ def main():
     logging.info("plot area-weighted spatial average...")
     lines = da2plot.plot.line(y="pfull", ax=ax, hue=tendency_dim)
 
-    if resid is not None: # resid might have been turned from a Boolean to a DataArray.
+    if resid is not None: # resid might have been turned from a Boolean scalar variable to a DataArray.
         # Add special marker to dstate_variable and residual lines.
         # DataArray plot legend handles differ from the plot lines, for some reason. So if you 
         # change the style of a line later, it is not automatically changed in the legend.
@@ -207,6 +207,19 @@ def main():
     title = f'{time0}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
     ax.set_title(title, wrap=True)
 
+    # Locate region of interest on conus map background. Put in inset.
+    projection = cartopy.crs.LambertConformal(central_longitude=-97.5, central_latitude=fv3.standard_parallel)
+    ax_inset = plt.gcf().add_axes([.7, .001, .19, .13], projection=projection)
+    # astype(int) to avoid TypeError: numpy boolean subtract
+    cbar_kwargs = dict(ticks=[0.25,0.75],shrink=0.6)
+    pc = mask.assign_coords(lont=lont, latt=latt).astype(int).plot.pcolormesh(ax=ax_inset, x="lont", y="latt", infer_intervals=True, 
+            transform=cartopy.crs.PlateCarree(), cmap=plt.cm.get_cmap('cool',2), add_labels=False, cbar_kwargs=cbar_kwargs)
+    pc.colorbar.ax.set_yticklabels(["masked","valid"], fontsize='xx-small')
+    pc.colorbar.outline.set_visible(False)
+    fv3.add_conus_features(ax_inset)
+    extent = fv3.extent
+    ax_inset.set_extent(extent)
+
     # Annotate figure with details about figure creation. 
     fineprint  = f"history: {os.path.realpath(ifile.name)}"
     if subtract:
@@ -218,7 +231,7 @@ def main():
     fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
 
 
-    plt.savefig(ofile, dpi=175)
+    plt.savefig(ofile, dpi=fv3.dpi)
     logging.info(f'created {os.path.realpath(ofile)}')
 
 if __name__ == "__main__":

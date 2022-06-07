@@ -18,11 +18,6 @@ Total change is the actual change in state variable from first time to last time
 attributed to physics and non-physics tendencies when residual is not zero.
 """
 
-def desc(da):
-    a = da.data
-    return(f"min={a.min():.3f} mean={a.mean():.3f} max={a.max():.3f}")
-
-
 state_variables = fv3.tendencies.keys()
 
 def parse_args():
@@ -39,12 +34,12 @@ def parse_args():
     fill_choices = set(fill_choices) # no repeats (same physics/parameterization used for multiple state variables). 
 
     # =============Arguments===================
-    parser = argparse.ArgumentParser(description = "Plan view plot of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description = "Plot plan view of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # ==========Mandatory Arguments===================
     parser.add_argument("historyfile", type=argparse.FileType("r"), help="FV3 history file")
     parser.add_argument("gridfile", type=argparse.FileType("r"), help="FV3 grid spec file")
     parser.add_argument("statevariable", type=str, choices=state_variables, default="tmp", help="state variable")
-    parser.add_argument("fill", type=str, choices = fill_choices, help='filled contour variable with 2 spatial dims and optional time and vertical dims.')
+    parser.add_argument("fill", type=str, choices = fill_choices, help='type of tendency. ignored if pfull is a single level')
     # ==========Optional Arguments===================
     parser.add_argument("-d", "--debug", action='store_true')
     parser.add_argument("--ncols", type=int, default=None, help="number of columns")
@@ -88,7 +83,6 @@ def main():
     else:
         ofile = args.ofile
     logging.info(f"output filename={ofile}")
-
 
 
     # Read lat/lon/area from gfile
@@ -232,7 +226,7 @@ def main():
     logging.info("plot pcolormesh")
     pc = da2plot.plot.pcolormesh(x="lont", y="latt", col=col, col_wrap=ncols, robust=True, infer_intervals=True,
             transform=cartopy.crs.PlateCarree(),
-            cmap=fv3.cmap, subplot_kws=subplot_kws) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
+            cmap=fv3.cmap, cbar_kwargs={'shrink':0.8}, subplot_kws=subplot_kws) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
     for ax in pc.axes.flat:
         ax.set_extent(fv3.extent) # Why needed only when col=tendency_dim? With col="pfull" it shrinks to unmasked size.
         fv3.add_conus_features(ax)

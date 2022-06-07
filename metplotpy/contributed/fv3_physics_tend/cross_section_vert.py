@@ -25,7 +25,7 @@ state_variables = fv3.tendencies.keys()
 def parse_args():
 
     # =============Arguments===================
-    parser = argparse.ArgumentParser(description = "Plan view plot of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description = "Plot plan view of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # ==========Mandatory Arguments===================
     parser.add_argument("historyfile", type=argparse.FileType("r"), help="FV3 history file")
     parser.add_argument("gridfile", type=argparse.FileType("r"), help="FV3 grid spec file")
@@ -183,10 +183,11 @@ def main():
     # Define cross section. Use different variable than da2plot because da2plot is used later for inset.
     cross = cross_section(da2plot, startpt, endpt)
 
+
     logging.info("plot pcolormesh")
     w,h = 0.18, 0.18 # normalized width and height of inset. Shrink colorbar to provide space.
-    pc = cross.plot.pcolormesh(x="index", y="pfull", col=col, col_wrap=ncols, robust=True, infer_intervals=True,
-            cmap=fv3.cmap, cbar_kwargs={ 'shrink':1-h, 'anchor':(0,0.3-h)}) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
+    pc = cross.plot.pcolormesh(x="index", y="pfull", yincrease=False, col=col, col_wrap=ncols, robust=True, infer_intervals=True,
+            cmap=fv3.cmap, cbar_kwargs={'shrink':1-h, 'anchor':(0,0.25-h)}) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
     for ax in pc.axes.flat:
         ax.grid(visible=True, color="grey", alpha=0.5, lw=0.5)
         ax.xaxis.set_major_locator(MultipleLocator(dindex))
@@ -194,13 +195,13 @@ def main():
         ax.yaxis.set_minor_locator(MultipleLocator(25))
         ax.grid(which="minor", alpha=0.3, lw=0.4)
 
-    pc.axes[0,0].invert_yaxis() # tried in pc.axes loop but it didn't stick (maybe it flipped all axes back and forth with each iteration)
-
     # Add time to title and output filename
     root, ext = os.path.splitext(ofile)
     ofile = root + f".{time0.strftime('%Y%m%d_%H%M%S')}-{validtime.strftime('%Y%m%d_%H%M%S')}" + ext
     title = f'{time0}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
     plt.suptitle(title, wrap=True)
+    # pad top and bottom for title and fineprint. Unfortunately, you must redefine right pad, as xarray no longer controls it. 
+    plt.subplots_adjust(top=0.9,right=0.8,bottom=0.1)
 
     # Locate cross section on conus map background. Put in inset.
     data_crs = da2plot.metpy.cartopy_crs
