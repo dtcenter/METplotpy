@@ -1,8 +1,7 @@
 import argparse
 import cartopy
-import cartopy.feature as cfeature
 import datetime
-import fv3 # dictionary of tendencies for each state variable, varnames of lat and lon variables in grid file.
+import fv3 # dictionary of tendencies for each state variable, varnames of lat and lon variables in grid file, graphics parameters
 import logging
 import matplotlib.pyplot as plt
 from metpy.units import units
@@ -88,6 +87,7 @@ def main():
             ofile = f"{variable}_{fill}.png"
     else:
         ofile = args.ofile
+    logging.info(f"output filename={ofile}")
 
 
 
@@ -220,7 +220,6 @@ def main():
     # central lon/lat from https://github.com/NOAA-EMC/regional_workflow/blob/release/public-v1/ush/Python/plot_allvars.py
     subplot_kws = dict(projection=cartopy.crs.LambertConformal(central_longitude=-97.6, central_latitude=35.4, standard_parallels=None))
 
-    logging.info("creating figure")
     # dequantify moves units from DataArray to Attributes. Now they show up in colorbar.
     da2plot = da2plot.metpy.dequantify()
 
@@ -230,15 +229,13 @@ def main():
         da2plot=da2plot.squeeze()
 
 
-    p = da2plot.plot.pcolormesh(x="lont", y="latt", col=col, col_wrap=ncols, robust=True, infer_intervals=True, transform=cartopy.crs.PlateCarree(),
-            cmap='Spectral',
+    logging.info("plot pcolormesh")
+    pc = da2plot.plot.pcolormesh(x="lont", y="latt", col=col, col_wrap=ncols, robust=True, infer_intervals=True, transform=cartopy.crs.PlateCarree(),
+            cmap=fv3.cmap,
             subplot_kws=subplot_kws) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
-    for ax in p.axes.flat:
-        ax.set_extent([-122,-72.7,22.1,49.5]) # Why needed only when col=tendency_dim? With col="pfull" it shrinks to unmasked size.
-        ax.add_feature(cfeature.COASTLINE.with_scale('50m'), linewidth=0.3)
-        ax.add_feature(cfeature.BORDERS.with_scale('50m'), linewidth=0.3)
-        ax.add_feature(cfeature.STATES.with_scale('50m'), linewidth=0.1)
-        ax.add_feature(cfeature.LAKES.with_scale('50m'), edgecolor='k', linewidth=0.25, facecolor='k', alpha=0.1)
+    for ax in pc.axes.flat:
+        ax.set_extent(fv3.extent) # Why needed only when col=tendency_dim? With col="pfull" it shrinks to unmasked size.
+        fv3.add_conus_features(ax)
 
     # Add time to title and output filename
     root, ext = os.path.splitext(ofile)
@@ -261,7 +258,7 @@ def main():
     fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
 
 
-    plt.savefig(ofile, dpi=175)
+    plt.savefig(ofile, dpi=fv3.dpi)
     logging.info(f'created {os.path.realpath(ofile)}')
 
 if __name__ == "__main__":
