@@ -4,6 +4,8 @@ import datetime
 import fv3 # dictionary of tendencies for each state variable, varnames of lat and lon variables in grid file, graphics parameters
 import logging
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator
+from metpy.interpolate import cross_section
 from metpy.units import units
 import numpy as np
 import os
@@ -18,25 +20,9 @@ Total change is the actual change in state variable from first time to last time
 attributed to physics and non-physics tendencies when residual is not zero.
 """
 
-def desc(da):
-    a = da.data
-    return(f"min={a.min():.3f} mean={a.mean():.3f} max={a.max():.3f}")
-
-
 state_variables = fv3.tendencies.keys()
 
 def parse_args():
-    # Populate list of choices for contour fill variable argument.
-    fill_choices = []
-    for state_variable in state_variables: # tendencies for each state variable
-        fill_choices.extend(fv3.tendencies[state_variable])
-    # Remove characters up to and including 1st underscore (e.g. du3dt_). 
-    # for example dt3dt_pbl -> pbl
-    fill_choices = ["_".join(x.split("_")[1:]) for x in fill_choices] # Just the physics/parameterization string after the "_"
-    for state_variable in state_variables:
-        fill_choices.append(f"d{state_variable}") # total change in state variable
-    fill_choices.append("resid") # residual tendency
-    fill_choices = set(fill_choices) # no repeats (same physics/parameterization used for multiple state variables). 
 
     # =============Arguments===================
     parser = argparse.ArgumentParser(description = "Plan view plot of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -44,13 +30,13 @@ def parse_args():
     parser.add_argument("historyfile", type=argparse.FileType("r"), help="FV3 history file")
     parser.add_argument("gridfile", type=argparse.FileType("r"), help="FV3 grid spec file")
     parser.add_argument("statevariable", type=str, choices=state_variables, default="tmp", help="state variable")
-    parser.add_argument("fill", type=str, choices = fill_choices, help='filled contour variable with 2 spatial dims and optional time and vertical dims.')
     # ==========Optional Arguments===================
     parser.add_argument("-d", "--debug", action='store_true')
+    parser.add_argument("--dindex", type=int, default=20, help="tick and gridline interval along cross section")
     parser.add_argument("--ncols", type=int, default=None, help="number of columns")
     parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
-    parser.add_argument("-p", "--pfull", nargs='+', type=float, default=[1000,925,850,700,500,300,200,100,0], help="pressure level(s) in hPa to plot")
-    parser.add_argument("-s", "--shp", type=str, default=None, help="shape file directory for mask")
+    parser.add_argument("-s", "--start", nargs=2, type=float, default=(28, -115), help="start point")
+    parser.add_argument("-e", "--end", nargs=2, type=float, default=(30, -82), help="end point")
     parser.add_argument("--subtract", type=argparse.FileType("r"), help="FV3 history file to subtract")
     parser.add_argument("-t", "--twindow", type=int, default=3, help="time window in hours")
     parser.add_argument("-v", "--validtime", type=lambda x:pd.to_datetime(x), help="valid time")
@@ -63,12 +49,12 @@ def main():
     gfile      = args.gridfile
     ifile      = args.historyfile
     variable   = args.statevariable
-    fill       = args.fill
     debug      = args.debug
+    dindex     = args.dindex
     ncols      = args.ncols
     ofile      = args.ofile
-    pfull      = args.pfull * units.hPa
-    shp        = args.shp
+    startpt    = args.start
+    endpt      = args.end
     subtract   = args.subtract
     twindow    = datetime.timedelta(hours = args.twindow)
     validtime  = args.validtime
@@ -80,23 +66,17 @@ def main():
 
     # Output filename.
     if ofile is None:
-        if len(pfull) == 1:
-            pfull_str = f"{pfull[0]:~.0f}".replace(" ","")
-            ofile = f"{variable}_{pfull_str}.png"
-        else:
-            ofile = f"{variable}_{fill}.png"
+        ofile = f"{variable}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
     else:
         ofile = args.ofile
     logging.info(f"output filename={ofile}")
 
 
-
-    # Read lat/lon/area from gfile
-    logging.debug(f"read lat/lon/area from {gfile}")
+    # Read lat/lon from gfile
+    logging.debug(f"read lat/lon from {gfile}")
     gds  = xarray.open_dataset(gfile.name)
     lont = gds[fv3.lon_name]
     latt = gds[fv3.lat_name]
-    area = gds["area"]
 
     # Open input file
     logging.debug(f"About to open {ifile}")
@@ -168,46 +148,17 @@ def main():
 
 
     logging.info("Define DataArray to plot (da2plot).")
-    if len(pfull) == 1:
-        # If only 1 pressure level was requested, plot all tendencies.
-        da2plot = tendencies_avg
-        # Add total and resid DataArrays to tendency_dim.
-        total = total.expand_dims({tendency_dim:["total"]}).assign_coords(long_name="sum of tendencies")
-        resid = resid.expand_dims({tendency_dim:["resid"]}).assign_coords(long_name=f"sum of tendencies - actual rate of change of {variable} (residual)")
-        da2plot = xarray.concat([da2plot, total, resid], dim=tendency_dim)
-        col = tendency_dim
-    else:
-        # otherwise pick a DataArray (resid, state_variable, dstate_variable, tendency) 
-        col = "pfull"
-        if fill == 'resid': # residual
-            da2plot = resid
-        elif fill == "": # plain-old state variable
-            da2plot = state_variable.sel(time=validtime)
-        elif fill == "d"+variable: # actual change in state variable
-            da2plot = dstate_variable
-        else: # expected change in state variable from tendencies
-            da2plot = tendencies_avg.sel({tendency_dim:fill}) 
+    # Plot all tendencies.
+    da2plot = tendencies_avg
+    # Add total and resid DataArrays to tendency_dim.
+    total = total.expand_dims({tendency_dim:["total"]}).assign_coords(long_name="sum of tendencies")
+    resid = resid.expand_dims({tendency_dim:["resid"]}).assign_coords(long_name=f"sum of tendencies - actual rate of change of {variable} (residual)")
+    da2plot = xarray.concat([da2plot, total, resid], dim=tendency_dim)
+    col = tendency_dim
 
     if da2plot.metpy.vertical.attrs["units"] == "mb":
         da2plot.metpy.vertical.attrs["units"] = "hPa" # For MetPy. Otherwise, mb is interpreted as millibarn.
-    # Select vertical levels.
-    da2plot = da2plot.metpy.sel(vertical=pfull, method="nearest", tolerance=50.*units.hPa)
 
-    # Mask points outside shape.
-    if shp:
-        shp = shp.rstrip("/")
-        # Add shapefile name to output filename
-        shapename = os.path.basename(shp)
-        root, ext = os.path.splitext(ofile)
-        ofile = root + f".{shapename}" + ext
-
-        # mask points outside shape
-        mask = fv3.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
-        mask = xarray.DataArray(mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
-        da2plot = da2plot.where(mask, drop=True)
-        area     = area.where(mask).fillna(0)
-
-    totalarea = area.metpy.convert_units("km**2").sum()
 
     # Make default dimensions of facetgrid kind of square.
     if not ncols:
@@ -224,36 +175,51 @@ def main():
         # Error occurs in pcolormesh().
         da2plot=da2plot.squeeze()
 
-
-    # central lon/lat from https://github.com/NOAA-EMC/regional_workflow/blob/release/public-v1/ush/Python/plot_allvars.py
-    subplot_kws = dict(projection=cartopy.crs.LambertConformal(central_longitude=-97.6, central_latitude=35.4, standard_parallels=None))
-
+    # Kludgy steps to prepare metadata for metpy cross section
+    da2plot = da2plot.drop_vars(['grid_yt','grid_xt','long_name']).rename(dict(grid_yt="y",grid_xt="x")) # these confuse metpy 
+    # fv3 uses Extended Schmidt Gnomomic grid for regional applications. This is not in cartopy.
+    # Found similar Lambert Conformal projection by trial and error.
+    da2plot = da2plot.metpy.assign_crs( grid_mapping_name="lambert_conformal_conic", standard_parallel=fv3.standard_parallel, longitude_of_central_meridian=-97.5, latitude_of_projection_origin=fv3.standard_parallel).metpy.assign_y_x(force=True, tolerance=44069*units.m)
+    # Define cross section. Use different variable than da2plot because da2plot is used later for inset.
+    cross = cross_section(da2plot, startpt, endpt)
 
     logging.info("plot pcolormesh")
-    pc = da2plot.plot.pcolormesh(x="lont", y="latt", col=col, col_wrap=ncols, robust=True, infer_intervals=True,
-            transform=cartopy.crs.PlateCarree(),
-            cmap=fv3.cmap, subplot_kws=subplot_kws) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
+    w,h = 0.18, 0.18 # normalized width and height of inset. Shrink colorbar to provide space.
+    pc = cross.plot.pcolormesh(x="index", y="pfull", col=col, col_wrap=ncols, robust=True, infer_intervals=True,
+            cmap=fv3.cmap, cbar_kwargs={ 'shrink':1-h, 'anchor':(0,0.3-h)}) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
     for ax in pc.axes.flat:
-        ax.set_extent(fv3.extent) # Why needed only when col=tendency_dim? With col="pfull" it shrinks to unmasked size.
-        fv3.add_conus_features(ax)
+        ax.grid(visible=True, color="grey", alpha=0.5, lw=0.5)
+        ax.xaxis.set_major_locator(MultipleLocator(dindex))
+        ax.yaxis.set_major_locator(MultipleLocator(100))
+        ax.yaxis.set_minor_locator(MultipleLocator(25))
+        ax.grid(which="minor", alpha=0.3, lw=0.4)
+
+    pc.axes[0,0].invert_yaxis() # tried in pc.axes loop but it didn't stick (maybe it flipped all axes back and forth with each iteration)
 
     # Add time to title and output filename
     root, ext = os.path.splitext(ofile)
     ofile = root + f".{time0.strftime('%Y%m%d_%H%M%S')}-{validtime.strftime('%Y%m%d_%H%M%S')}" + ext
     title = f'{time0}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
-    if col == tendency_dim:
-        title = f'pfull={pfull[0]:~.0f} {title}'
-    elif 'long_name' in da2plot.coords:
-        title = f'{da2plot.coords["long_name"].data} {title}'
     plt.suptitle(title, wrap=True)
+
+    # Locate cross section on conus map background. Put in inset.
+    data_crs = da2plot.metpy.cartopy_crs
+    ax_inset = plt.gcf().add_axes([.999-w,.999-h, w, h], projection=data_crs)
+    # Plot the endpoints of the cross section (make sure they match path)
+    endpoints = data_crs.transform_points(cartopy.crs.Geodetic(), *np.vstack([startpt, endpt]).transpose()[::-1])
+    bb = ax_inset.scatter(endpoints[:, 0], endpoints[:, 1], s=1.3, c='k', zorder=2)
+    ax_inset.scatter(cross['x'][dindex::dindex], cross['y'][dindex::dindex], s=3.4, c='white', linewidths=0.2, edgecolors='k', zorder=bb.get_zorder()+1)
+    # Plot the path of the cross section
+    ax_inset.plot(cross['x'], cross['y'], c='k', zorder=2)
+    fv3.add_conus_features(ax_inset)
+    extent = fv3.extent
+    ax_inset.set_extent(extent)
 
     # Annotate figure with details about figure creation. 
     fineprint  = f"history: {os.path.realpath(ifile.name)}"
     if subtract:
         fineprint  += f"\nsubtract: {os.path.realpath(subtract.name)}"
     fineprint += f"\ngrid_spec: {os.path.realpath(gfile.name)}"
-    if shp: fineprint += f"\nmask: {shp}"
-    fineprint += f"\ntotal area: {totalarea.data:~.0f}"
     fineprint += f"\ncreated {datetime.datetime.now(tz=None)}"
     fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
 

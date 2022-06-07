@@ -1,3 +1,17 @@
+import cartopy.io.shapereader as shpreader
+import cartopy.feature as cfeature
+import datetime
+import logging
+import matplotlib.path
+import numpy as np
+import os
+import pandas as pd
+import pdb
+from shapely.geometry import Point, multipolygon
+from tqdm import tqdm
+import xarray
+
+
 tendencies = dict(
 tmp = ['dt3dt_congwd','dt3dt_deepcnv','dt3dt_lw','dt3dt_mp','dt3dt_orogwd','dt3dt_pbl','dt3dt_rdamp','dt3dt_shalcnv','dt3dt_sw','dt3dt_nophys'],
 spfh= ['dq3dt_deepcnv','dq3dt_mp','dq3dt_pbl','dq3dt_shalcnv','dq3dt_nophys'],
@@ -11,20 +25,22 @@ nametime0 = dict(
         vgrd="vgrd_i"
         )
 
-import cartopy.io.shapereader as shpreader
-import datetime
-import logging
-import matplotlib.path
-import numpy as np
-import os
-import pandas as pd
-import pdb
-from shapely.geometry import Point, multipolygon
-from tqdm import tqdm
-import xarray
 
+cmap = "Spectral_r"
+dpi = 150
+extent = [-122, -72.7, 22.1, 49.5]
 lon_name = "grid_lont"
 lat_name = "grid_latt"
+# Found standard_parallel by trial and error with smaller and smaller tolerances given to mepy.assign_y_x(). longitude is mean.
+standard_parallel = 38.139
+
+def add_conus_features(ax):
+    cl = ax.add_feature(cfeature.COASTLINE.with_scale('50m'), linewidth=0.3)
+    bd = ax.add_feature(cfeature.BORDERS.with_scale('50m'), linewidth=0.3)
+    st = ax.add_feature(cfeature.STATES.with_scale('50m'), linewidth=0.1)
+    lk = ax.add_feature(cfeature.LAKES.with_scale('50m'), edgecolor='k', linewidth=0.25, facecolor='k', alpha=0.1)
+    return (cl, bd, st, lk)
+
 
 def add_time0(ds, variable, interval=np.timedelta64(1,'h')):
     # This takes a while so only keep requested state variable and
