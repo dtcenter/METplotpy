@@ -34,24 +34,23 @@ conda activate npl-2202
 
 Then install METplotpy into your conda environment as described in [METplotpy installation instructions](https://github.com/dtcenter/METplotpy/blob/main_v1.0/docs/Users_Guide/installation.rst#install-metcalcpy-in-your-conda-environment)
 
-## Plot plan view
+## Plan view
 
 ```
-usage: fv3_planview.py [-h] [-d] [--ncols NCOLS] [-o OFILE]
+usage: planview_fv3.py [-h] [-d] [--ncols NCOLS] [-o OFILE]
                        [-p PFULL [PFULL ...]] [-s SHP] [--subtract SUBTRACT]
                        [-t TWINDOW] [-v VALIDTIME]
                        historyfile gridfile {tmp,spfh,ugrd,vgrd}
-                       {nophys,congwd,dugrd,lw,resid,shalcnv,sw,dvgrd,rdamp,dspfh,pbl,orogwd,deepcnv,dtmp,mp}
+                       {orogwd,dspfh,shalcnv,resid,pbl,rdamp,lw,nophys,dvgrd,dtmp,sw,dugrd,deepcnv,mp,congwd}
 
-Plan view plot of FV3 diagnostic tendency
+Plan view of FV3 diagnostic tendency
 
 positional arguments:
   historyfile           FV3 history file
   gridfile              FV3 grid spec file
   {tmp,spfh,ugrd,vgrd}  state variable
-  {nophys,congwd,dugrd,lw,resid,shalcnv,sw,dvgrd,rdamp,dspfh,pbl,orogwd,deepcnv,dtmp,mp}
-                        filled contour variable with 2 spatial dims and
-                        optional time and vertical dims.
+  {orogwd,dspfh,shalcnv,resid,pbl,rdamp,lw,nophys,dvgrd,dtmp,sw,dugrd,deepcnv,mp,congwd}
+                        type of tendency. ignored if pfull is a single level
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -60,8 +59,11 @@ optional arguments:
   -o OFILE, --ofile OFILE
                         name of output image file (default: None)
   -p PFULL [PFULL ...], --pfull PFULL [PFULL ...]
-                        pressure level(s) in hPa to plot (default: [1000, 925,
-                        850, 700, 500, 300, 200, 100, 0])
+                        pressure level(s) in hPa to plot. If only one pressure
+                        level is provided, the type-of-tendency argument will
+                        be ignored and all tendencies will be plotted.
+                        (default: [1000, 925, 850, 700, 500, 300, 200, 100,
+                        0])
   -s SHP, --shp SHP     shape file directory for mask (default: None)
   --subtract SUBTRACT   FV3 history file to subtract (default: None)
   -t TWINDOW, --twindow TWINDOW
@@ -70,10 +72,10 @@ optional arguments:
                         valid time (default: None)
 ```
 
-## Plot vertical profile
+## Vertical profile of areal mean
 
 ```
-usage: fv3_vert_profile.py [-h] [-d] [--resid] [-o OFILE] [-s SHP]
+usage: vert_profile_fv3.py [-h] [-d] [-o OFILE] [--resid] [-s SHP]
                            [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
                            historyfile gridfile {tmp,spfh,ugrd,vgrd}
 
@@ -87,10 +89,43 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -d, --debug
-  --resid               calculate residual (default: False)
   -o OFILE, --ofile OFILE
                         name of output image file (default: None)
+  --resid               calculate residual (default: False)
   -s SHP, --shp SHP     shape file directory for mask (default: None)
+  --subtract SUBTRACT   FV3 history file to subtract (default: None)
+  -t TWINDOW, --twindow TWINDOW
+                        time window in hours (default: 3)
+  -v VALIDTIME, --validtime VALIDTIME
+                        valid time (default: None)
+```
+
+## Vertical cross section 
+```
+usage: cross_section_vert.py [-h] [-d] [--dindex DINDEX] [--ncols NCOLS]
+                             [-o OFILE] [-s START START] [-e END END]
+                             [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+                             historyfile gridfile {tmp,spfh,ugrd,vgrd}
+
+Vertical cross section of FV3 diagnostic tendency
+
+positional arguments:
+  historyfile           FV3 history file
+  gridfile              FV3 grid spec file
+  {tmp,spfh,ugrd,vgrd}  state variable
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --debug
+  --dindex DINDEX       tick and gridline interval along cross section
+                        (default: 20)
+  --ncols NCOLS         number of columns (default: None)
+  -o OFILE, --ofile OFILE
+                        name of output image file (default: None)
+  -s START START, --start START START
+                        start point (default: (28, -115))
+  -e END END, --end END END
+                        end point (default: (30, -82))
   --subtract SUBTRACT   FV3 history file to subtract (default: None)
   -t TWINDOW, --twindow TWINDOW
                         time window in hours (default: 3)
