@@ -27,9 +27,11 @@ import argparse
 import logging
 import yaml
 import numpy as np
-import xarray as xr  # http://xarray.pydata.org/
+import xarray as xr
 import plotly.graph_objects as go
 from netCDF4 import num2date
+from metplotpy.plots import util
+from metplotpy.plots.hovmoeller.hovmoeller_config import HovmoellerConfig
 
 """
 Import BasePlot class
@@ -41,19 +43,25 @@ class Hovmoeller(BasePlot):
     """
     Class to create a Plotly Hovmoeller plot from a 2D data array
     """
-    def __init__(self, parameters, time, lon, data):
+    def __init__(self, parameters):
         default_conf_filename = 'hovmoeller_defaults.yaml'
 
         super().__init__(parameters, default_conf_filename)
         logging.debug(self.parameters)
 
-        self.time = time
-        self.time_str = self.get_time_str(time)
-        self.lon = lon
-        self.data = self.lat_avg(data,
-            self.get_config_value('lat_min'), self.get_config_value('lat_max'))
+        # instantiate a HovmoellerConfig object, which holds all the necessary settings from the
+        # config file that represents the BasePlot object (Hovmoeller diagram).
+        self.config_obj = HovmoellerConfig(self.parameters)
+
+        # Read in input data
+        dataset = self.read_data_set()
+        self.time = self.ds.time.sel(time=slice(self.config_obj.date_start, self.config_obj.date_end))
+        self.time_str = self.get_time_str(self.time)
+        self.lon = self.ds.lon
+        self.data = self.lat_avg(dataset,
+            self.config_obj.lat_min, self.config_obj.lat_max)
         self.lat_str = self.get_lat_str(
-            self.get_config_value('lat_min'), self.get_config_value('lat_max'))
+            self.config_obj.lat_min, self.config_obj.lat_max)
 
         self.figure = go.Figure()
 
@@ -78,12 +86,13 @@ class Hovmoeller(BasePlot):
         self.figure.add_trace(contour_plot)
 
         self.figure.update_layout(
-            height=self.get_config_value('height'),
-            width=self.get_config_value('width'),
-            title=self.get_config_value('title') + '    ' + self.lat_str,
-            font=dict(size=self.get_config_value('font_size')),
-            xaxis_title=self.get_config_value('xaxis_title'),
-            yaxis_title=self.get_config_value('yaxis_title'),
+            height=self.config_obj.plot_height,
+            width=self.config_obj.plot_width,
+            title=self.config_obj.title + '    ' + self.lat_str,
+            font=dict(size=self.config_obj.xy_label_fontsize),
+            title_font_size=self.config_obj.title_size,
+            xaxis_title=self.config_obj.xaxis,
+            yaxis_title=self.config_obj.yaxis,
         )
 
     def get_time_str(self, time):
@@ -145,89 +154,78 @@ class Hovmoeller(BasePlot):
 
         return data
 
+    def read_data_set(self):
+        """
+        Read the input netCDF data and return an xarray dataset
 
-if __name__ == "__main__":
+        Args:
+
+            Returns:
+                dataset: xarray dataset
+       """
+        filename_in = os.path.join(self.config_obj.data_dir, self.config_obj.input_data_file)
+        try:
+            logging.info('Opening ' + filename_in)
+            self.ds = xr.open_dataset(filename_in)
+        except IOError as exc:
+            logging.error('Unable to open ' + filename_in)
+            logging.error(exc)
+            sys.exit(1)
+        logging.debug(self.ds)
+
+        dataset = self.ds[self.config_obj.var_name]
+        logging.debug(dataset)
+        dataset = dataset.sel(time=slice(self.config_obj.date_start, self.config_obj.date_end))
+
+        dataset = dataset * self.config_obj.unit_conversion
+        dataset.attrs['units'] = self.config_obj.var_units
+
+        return dataset
+
+    def write_html(self) -> None:
+        """
+        Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
+        """
+        if self.config_obj.create_html is True:
+            # construct the fle name from plot_filename
+            name_arr = self.get_config_value('plot_filename').split('.')
+            html_name = name_arr[0] + ".html"
+
+            # save html
+            self.figure.write_html(html_name, include_plotlyjs=False)
+
+def main(config_filename=None):
     """
-    Parse command line arguments
-    """
-    parser = argparse.ArgumentParser(description="Hovmoeller diagram",
-         epilog="METPLOTPY_BASE needs to be set to your METplotpy directory")
-    parser.add_argument('--config', type=str,
-                        default=os.path.join(os.getenv('METPLOTPY_BASE'),
-                        'metplotpy/plots', 'config', 'hovmoeller_defaults.yaml'),
-                        help='configuration file')
-    parser.add_argument('--datadir', type=str,
-                        default=os.getenv('DATA_DIR'),
-                        help='top-level data directory (default $DATA_DIR)')
-    parser.add_argument('--input', type=str,
-                        required=True,
-                        help='input file name')
-    parser.add_argument('--logfile', type=str,
-                        default=sys.stdout,
-                        help='log file (default stdout)')
-    parser.add_argument('--debug', action='store_true',
-                        help='set logging level to debug')
-    args = parser.parse_args()
-    parser.print_help()
+                Generates a sample hovmoeller diagram using the
+                default and custom config files on sample data.
+                The location of the input data is defined in the default
+                config file and can be overridden in the custom config file.
+
+                 Args:
+                    @param config_filename: default is None, the name of the custom config file to apply
+                Returns:
+
 
     """
-    Setup logging
-    """
-    logging_level = logging.DEBUG if args.debug else logging.INFO
-    logging.basicConfig(stream=args.logfile, level=logging_level)
-
-    if os.path.isdir(args.datadir):
-        logging.info(args.datadir)
+    # Retrieve the contents of the custom config file to over-ride
+    # or augment settings defined by the default config file.
+    if not config_filename:
+        config_file = util.read_config_from_command_line()
     else:
-        logging.error(args.datadir + ' not found')
-        sys.exit(1)
-    logging.info(args.input)
+        config_file = config_filename
+    with open(config_file, 'r') as stream:
+        try:
+            config = yaml.load(stream, Loader=yaml.FullLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
 
-    """
-    Construct input filename
-    """
-    filename_in = os.path.join(args.datadir, args.input)
-
-    """
-    Read YAML configuration file
-    """
     try:
-        config = yaml.load(
-            open(args.config), Loader=yaml.FullLoader)
-        logging.info(config)
-    except yaml.YAMLError as exc:
-        logging.error(exc)
-
-    """
-    Read dataset
-    """
-    try:
-        logging.info('Opening ' + filename_in)
-        ds = xr.open_dataset(filename_in)
-    except IOError as exc:
-        logging.error('Unable to open ' + filename_in)
-        logging.error(exc)
-        sys.exit(1)
-    logging.debug(ds)
-
-    data = ds[config['var_name']]
-    logging.debug(data)
-
-    data = data.sel(time=slice(config['date_start'], config['date_end']))
-    time = ds.time.sel(time=slice(config['date_start'], config['date_end']))
-    lon = ds.lon
-
-    data = data * config['unit_conversion']
-    data.attrs['units'] = config['var_units']
-
-    plot = Hovmoeller(None, time, lon, data)
-
-    #plot.show_in_browser()
-    try:
+        plot = Hovmoeller(config)
         plot.save_to_file()
     except FileNotFoundError:
         print("ERROR Can't save to file ")
-    except ValueError as ex:
-        print(ex)
+    except ValueError as ve:
+        print(ve)
 
-
+if __name__ == "__main__":
+    main()
