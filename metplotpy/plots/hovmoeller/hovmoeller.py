@@ -18,6 +18,8 @@ Version  Date
 __author__ = 'David Fillmore'
 __version__ = '0.1.0'
 
+import metcalcpy.util.read_env_vars_in_config
+
 """
 Import standard modules
 """
@@ -32,6 +34,7 @@ import plotly.graph_objects as go
 from netCDF4 import num2date
 from metplotpy.plots import util
 from metplotpy.plots.hovmoeller.hovmoeller_config import HovmoellerConfig
+import metcalcpy
 
 """
 Import BasePlot class
@@ -215,7 +218,9 @@ def main(config_filename=None):
         config_file = config_filename
     with open(config_file, 'r') as stream:
         try:
-            config = yaml.load(stream, Loader=yaml.FullLoader)
+            # Use the METcalcpy parser to parse config files with environment variables.
+            # This supports METplus hovmoeller use case.
+            config = metcalcpy.util.read_env_vars_in_config.parse_config(config_file)
         except yaml.YAMLError as exc:
             print(exc)
 
