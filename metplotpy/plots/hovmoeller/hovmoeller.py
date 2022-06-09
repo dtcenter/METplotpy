@@ -25,7 +25,6 @@ Import standard modules
 """
 import os
 import sys
-import argparse
 import logging
 import yaml
 import numpy as np
@@ -50,7 +49,6 @@ class Hovmoeller(BasePlot):
         default_conf_filename = 'hovmoeller_defaults.yaml'
 
         super().__init__(parameters, default_conf_filename)
-        logging.debug(self.parameters)
 
         # instantiate a HovmoellerConfig object, which holds all the necessary settings from the
         # config file that represents the BasePlot object (Hovmoeller diagram).
