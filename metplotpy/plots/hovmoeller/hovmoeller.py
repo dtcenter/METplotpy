@@ -222,8 +222,6 @@ def main(config_filename=None):
     try:
         plot = Hovmoeller(config)
         plot.save_to_file()
-    except FileNotFoundError:
-        print("ERROR Can't save to file ")
     except ValueError as ve:
         print(ve)
 
