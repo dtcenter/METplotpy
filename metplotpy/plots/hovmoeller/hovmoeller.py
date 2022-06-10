@@ -164,7 +164,7 @@ class Hovmoeller(BasePlot):
             Returns:
                 dataset: xarray dataset
        """
-        filename_in = os.path.join(self.config_obj.data_dir, self.config_obj.input_data_file)
+        filename_in = self.config_obj.input_data_file
         try:
             logging.info('Opening ' + filename_in)
             self.ds = xr.open_dataset(filename_in)
@@ -216,7 +216,9 @@ def main(config_filename=None):
         config_file = config_filename
     with open(config_file, 'r') as stream:
         try:
-            # Use the METcalcpy parser to parse config files with environment variables.
+            # Use the METcalcpy parser to parse config files with environment variables that
+            # look like:
+            #   input_file: !ENV '${ENV_NAME}/some_input_file.nc'
             # This supports METplus hovmoeller use case.
             config = metcalcpy.util.read_env_vars_in_config.parse_config(config_file)
         except yaml.YAMLError as exc:
