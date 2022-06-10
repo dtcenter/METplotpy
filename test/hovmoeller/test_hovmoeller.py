@@ -13,7 +13,7 @@ def cleanup(file_to_remove):
         pass
 
 
-# @pytest.mark.skip("needs large netCDF file to run")
+@pytest.mark.skip("needs large netCDF file to run")
 def test_default_plot_created():
     config_file = os.path.join(os.path.dirname(__file__), "minimal_hovmoeller.yaml")
     hov.main(config_file)
@@ -46,7 +46,7 @@ def test_default_plot_images_match():
     # Clean up
     cleanup(default_plot)
 
-# @pytest.mark.skip("needs large netCDF file to run")
+@pytest.mark.skip("needs large netCDF file to run")
 def test_custom_plot_created():
     config_file = os.path.join(os.path.dirname(__file__), "custom_hovmoeller.yaml")
     hov.main(config_file)
@@ -57,7 +57,7 @@ def test_custom_plot_created():
     # so the comparison should raise a ValueError
     default_plot = './hovmoeller_expected_default.png'
     with pytest.raises(ValueError):
-        comparison = CompareImages(default_plot, custom_plot)
+        CompareImages(default_plot, custom_plot)
 
     # Clean up
-    cleanup(default_plot)
+    cleanup(custom_plot)
