@@ -79,7 +79,8 @@ def main():
     datetimeindex = fv3ds.indexes['time']
     if hasattr(datetimeindex, "to_datetimeindex"):
         # Convert from CFTime to pandas datetime. I get a warning CFTimeIndex from non-standard calendar 'julian'. Maybe history file should be saved with standard calendar.
-        datetimeindex = datetimeindex.to_datetimeindex()
+        # To turn off warning, set unsafe=True.
+        datetimeindex = datetimeindex.to_datetimeindex(unsafe=True)
     fv3ds['time'] = datetimeindex
     if subtract:
         logging.debug(f"subtracting {subtract.name}")
