@@ -167,5 +167,5 @@ Potential tendency variables to read from fv3_history.nc:
 Put file you want to subtract after the --subtract argument.
 
 ```python
-python fv3_vert_profile.py fv3_history.nc grid_spec.nc tmp --subtract fv3_history2.nc
+python vert_profile_fv3.py fv3_history.nc grid_spec.nc tmp --subtract fv3_history2.nc
 ```
