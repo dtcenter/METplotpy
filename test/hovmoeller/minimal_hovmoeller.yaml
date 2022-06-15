@@ -1,3 +1,3 @@
 # minimal, use all the settings in the default
-input_data_file: /Volumes/d1/minnawin/feature_213_hovmoeller/METplotpy/WorkingDir/precip.erai.sfc.1p0.2x.2014-2016.nc
+input_data_file: /path/to/WorkingDir/precip.erai.sfc.1p0.2x.2014-2016.nc
 plot_filename: ./hovmoeller_default_plot.png

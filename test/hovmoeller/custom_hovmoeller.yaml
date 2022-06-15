@@ -1,5 +1,5 @@
 plot_filename: ./hovmoeller_custom_plot.png
-input_data_file: /Volumes/d1/minnawin/feature_213_hovmoeller/METplotpy/WorkingDir/precip.erai.sfc.1p0.2x.2014-2016.nc
+input_data_file: /path/to/WorkingDir/precip.erai.sfc.1p0.2x.2014-2016.nc
 plot_height: 400
 plot_width: 600
 title: Custom ERAI Precip
