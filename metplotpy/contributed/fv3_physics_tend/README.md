@@ -37,11 +37,8 @@ Then install METplotpy into your conda environment as described in [METplotpy in
 ## Plan view
 
 ```
-usage: planview_fv3.py [-h] [-d] [--ncols NCOLS] [-o OFILE]
-                       [-p PFULL [PFULL ...]] [-s SHP] [--subtract SUBTRACT]
-                       [-t TWINDOW] [-v VALIDTIME]
-                       historyfile gridfile {tmp,spfh,ugrd,vgrd}
-                       {orogwd,dspfh,shalcnv,resid,pbl,rdamp,lw,nophys,dvgrd,dtmp,sw,dugrd,deepcnv,mp,congwd}
+usage: planview_fv3.py [-h] [-d] [--method {nearest,linear,loglinear}] [--ncols NCOLS] [-o OFILE] [-p PFULL [PFULL ...]] [-s SHP] [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+                       historyfile gridfile {tmp,spfh,ugrd,vgrd} {nophys,dvgrd,deepcnv,sw,dtmp,rdamp,orogwd,pbl,dspfh,congwd,shalcnv,mp,resid,lw,dugrd}
 
 Plan view of FV3 diagnostic tendency
 
@@ -49,21 +46,20 @@ positional arguments:
   historyfile           FV3 history file
   gridfile              FV3 grid spec file
   {tmp,spfh,ugrd,vgrd}  state variable
-  {orogwd,dspfh,shalcnv,resid,pbl,rdamp,lw,nophys,dvgrd,dtmp,sw,dugrd,deepcnv,mp,congwd}
+  {nophys,dvgrd,deepcnv,sw,dtmp,rdamp,orogwd,pbl,dspfh,congwd,shalcnv,mp,resid,lw,dugrd}
                         type of tendency. ignored if pfull is a single level
 
 optional arguments:
   -h, --help            show this help message and exit
   -d, --debug
+  --method {nearest,linear,loglinear}
+                        vertical interpolation method (default: nearest)
   --ncols NCOLS         number of columns (default: None)
   -o OFILE, --ofile OFILE
                         name of output image file (default: None)
   -p PFULL [PFULL ...], --pfull PFULL [PFULL ...]
-                        pressure level(s) in hPa to plot. If only one pressure
-                        level is provided, the type-of-tendency argument will
-                        be ignored and all tendencies will be plotted.
-                        (default: [1000, 925, 850, 700, 500, 300, 200, 100,
-                        0])
+                        pressure level(s) in hPa to plot. If only one pressure level is provided, the type-of-tendency argument will be ignored and all tendencies will be plotted.
+                        (default: [1000, 925, 850, 700, 500, 300, 200, 100, 0])
   -s SHP, --shp SHP     shape file directory for mask (default: None)
   --subtract SUBTRACT   FV3 history file to subtract (default: None)
   -t TWINDOW, --twindow TWINDOW
