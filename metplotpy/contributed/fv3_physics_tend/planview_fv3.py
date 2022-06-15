@@ -195,7 +195,6 @@ def main():
     if method == "nearest":
         da2plot = da2plot.metpy.sel(vertical=pfull, method=method, tolerance=10.*units.hPa)
     elif method == "linear":
-        remember_units = da2plot.units
         da2plot = da2plot.interp(coords={"pfull":pfull}, method=method)
     elif method == "loglinear": # interpolate in log10(pressure)
         da2plot["pfull"] = np.log10(da2plot.pfull) 
@@ -262,7 +261,7 @@ def main():
     fineprint += f"\ngrid_spec: {os.path.realpath(gfile.name)}"
     if shp: fineprint += f"\nmask: {shp}"
     fineprint += f"\ntotal area: {totalarea.data:~.0f}"
-    fineprint += f"\nvertical interpolation method: {method}"
+    fineprint += f"\nvertical interpolation method: {method}  requested levels: {pfull}"
     fineprint += f"\ncreated {datetime.datetime.now(tz=None)}"
     fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
 
