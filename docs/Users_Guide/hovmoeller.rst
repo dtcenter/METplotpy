@@ -25,13 +25,13 @@ Python 3.8.6 is the minimum version that is required
 
 * metplotpy
 
-* netcdf4 1.5.7
+* netcdf4 1.5.7 or above
 
 * numpy 1.22.3
 
 * pandas 1.4.2
 
-* plotly 5.8.0
+* plotly 5.7.0 or above
 
 * scipy 1.8.0
 
