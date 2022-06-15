@@ -246,10 +246,8 @@ Perform the following:
 
     python $METPLOTPY_BASE/metplotpy/plots/hovmoeller/hovmoeller.py $WORKING_DIR/custom_hovmoeller.yaml
 
-  In this example, this custom config file changes the title and axis
-  labels. The caption magnification, caption weight, and title offset
-  values were modified, resulting in the drastically different plot
-  shown below.  The user will need to experiment with these values
+  In this example, this custom config file changes the title and date_start and date_end values. These changes are evident in the drastically different plot
+  shown below.  The user can experiment with the values in the custom_hovmoeller.yaml configuration file
   to achieve the desired appearance.
 
   .. image:: hovmoeller_custom_plot.png
@@ -258,52 +256,4 @@ Perform the following:
   directory that was specified in the *plot_filename* configuration
   setting in the **custom_hovmoeller.yaml** config file.
 
-
-Run from the Command Line
-=========================
-
-To generate the example Hovmoeller plot (i.e. using settings in the
-**hovmoeller_defaults.yaml** configuration file) perform the following:
-
-*  If using the conda environment, verify the conda environment
-   is running and has has the required Python packages specified in the
-   **Required Packages** section above.
-
-* Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_BASE*. where $METPLOTPY_BASE is the directory where you saved the
-  METplotpy source code (e.g. /home/someuser/METplotpy).
-
-  For the ksh environment:
-
-  .. code-block:: ini
-
-    export METPLOTPY_BASE=$METPLOTPY_BASE
-
-  For the csh environment:
-
-  .. code-block:: ini
-
-    setenv METPLOTPY_BASE $METPLOTPY_BASE
-
-* Run the following on the command line:
-
-.. code-block:: ini
-
-   python $METPLOTPY_BASE/metplotpy/plots/hovmoeller/hovmoeller.py
-   where $METPLOTPY_BASE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
-   directory where you have read and write permissions and where you are storing all your input data and where you
-   copied the default config file.  You will see informational output to the screen:
-
-    - a usage statement
-
-    - reminder to set the METPLOTPY_BASE:
-
-       **"METPLOTPY_BASE needs to be set to your METplotpy directory"**
-
-    - logging information
-
-
-A plot named **erai_precip.png** will be generated in the directory from which you ran the plotting command:
-
-.. image:: erai_precip.png
 
