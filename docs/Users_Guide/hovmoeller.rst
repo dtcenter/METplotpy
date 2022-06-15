@@ -73,7 +73,9 @@ or
 the Github repository.  The *x.y.z* is the release number.
 
 The Hovmoeller plot utilizes YAML configuration files to indicate where input data is located and to set plot attributes.
-YAML is a recursive acronym for “YAML Ain’t Markup Language” and according to yaml.org, it is a “human-friendly data serialization language”.
+YAML is a recursive acronym for “YAML Ain’t Markup Language” and according to yaml.org, it is a “human-friendly data
+serialization language”.
+
 It is commonly used for configuration files and in applications where data is being stored or transmitted.
 Two configuration files are required. The first is a default configuration file, the first is a default configuration file,
 hovmoeller_defaults.yaml that is found in the $METPLOTPY_BASE/metplotpy/plots/config directory. All default configuration
@@ -221,8 +223,8 @@ Perform the following:
   METplotpy source code was saved.
 
 
-  To generate the above **"defaults"** plot (i.e using default configuration settings), use the "minimal" custom configuration file,
-  **minimal_hovmoeller.yaml**.
+  To generate the above **"defaults"** plot (i.e using default configuration settings), use the "minimal" custom
+  configuration file, **minimal_hovmoeller.yaml**.
 
 * Enter the following command:
 
@@ -246,7 +248,8 @@ Perform the following:
 
     python $METPLOTPY_BASE/metplotpy/plots/hovmoeller/hovmoeller.py $WORKING_DIR/custom_hovmoeller.yaml
 
-  In this example, this custom config file changes the title and date_start and date_end values. These changes are evident in the drastically different plot
+  In this example, this custom config file changes the title (title name, font size), the axis label font size, and the
+  date_start and date_end values. These changes are evident in the drastically different plot
   shown below.  The user can experiment with the values in the custom_hovmoeller.yaml configuration file
   to achieve the desired appearance.
 
