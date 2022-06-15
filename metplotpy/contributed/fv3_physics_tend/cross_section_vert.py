@@ -182,6 +182,7 @@ def main():
     # Found similar Lambert Conformal projection by trial and error.
     da2plot = da2plot.metpy.assign_crs( grid_mapping_name="lambert_conformal_conic", standard_parallel=fv3.standard_parallel, longitude_of_central_meridian=-97.5, latitude_of_projection_origin=fv3.standard_parallel).metpy.assign_y_x(force=True, tolerance=44069*units.m)
     # Define cross section. Use different variable than da2plot because da2plot is used later for inset.
+    # upgraded xarray to 0.21.1 to avoid FutureWarning: Passing method to Float64Index.get_loc is deprecated
     cross = cross_section(da2plot, startpt, endpt)
 
 

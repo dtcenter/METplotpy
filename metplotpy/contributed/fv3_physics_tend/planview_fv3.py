@@ -42,6 +42,7 @@ def parse_args():
     parser.add_argument("fill", type=str, choices = fill_choices, help='type of tendency. ignored if pfull is a single level')
     # ==========Optional Arguments===================
     parser.add_argument("-d", "--debug", action='store_true')
+    parser.add_argument("--method", type=str, choices=["nearest", "linear","loglinear"], default="nearest", help="vertical interpolation method")
     parser.add_argument("--ncols", type=int, default=None, help="number of columns")
     parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
     parser.add_argument("-p", "--pfull", nargs='+', type=float, default=[1000,925,850,700,500,300,200,100,0], help="pressure level(s) in hPa to plot. If only one pressure level is provided, the type-of-tendency argument will be ignored and all tendencies will be plotted.")
@@ -60,6 +61,7 @@ def main():
     variable   = args.statevariable
     fill       = args.fill
     debug      = args.debug
+    method     = args.method
     ncols      = args.ncols
     ofile      = args.ofile
     pfull      = args.pfull * units.hPa
@@ -185,8 +187,21 @@ def main():
 
     if da2plot.metpy.vertical.attrs["units"] == "mb":
         da2plot.metpy.vertical.attrs["units"] = "hPa" # For MetPy. Otherwise, mb is interpreted as millibarn.
+
+    # dequantify moves units from DataArray to Attributes. Now they show up in colorbar. And they aren't lost in xarray.DataArray.interp.
+    da2plot = da2plot.metpy.dequantify()
+
     # Select vertical levels.
-    da2plot = da2plot.metpy.sel(vertical=pfull, method="nearest", tolerance=50.*units.hPa)
+    if method == "nearest":
+        da2plot = da2plot.metpy.sel(vertical=pfull, method=method, tolerance=10.*units.hPa)
+    elif method == "linear":
+        remember_units = da2plot.units
+        da2plot = da2plot.interp(coords={"pfull":pfull}, method=method)
+    elif method == "loglinear": # interpolate in log10(pressure)
+        da2plot["pfull"] = np.log10(da2plot.pfull) 
+        da2plot = da2plot.interp(coords={"pfull":np.log10(pfull.m)}, method="linear")
+        da2plot["pfull"] = 10**da2plot.pfull
+
 
     # Mask points outside shape.
     if shp:
@@ -211,8 +226,6 @@ def main():
 
     nrows = int(np.ceil(len(da2plot)/ncols))
 
-    # dequantify moves units from DataArray to Attributes. Now they show up in colorbar.
-    da2plot = da2plot.metpy.dequantify()
 
     if da2plot["pfull"].size == 1:
         # Avoid ValueError: ('grid_yt', 'grid_xt') must be a permuted list of ('pfull', 'grid_yt', 'grid_xt'), unless `...` is included
@@ -249,6 +262,7 @@ def main():
     fineprint += f"\ngrid_spec: {os.path.realpath(gfile.name)}"
     if shp: fineprint += f"\nmask: {shp}"
     fineprint += f"\ntotal area: {totalarea.data:~.0f}"
+    fineprint += f"\nvertical interpolation method: {method}"
     fineprint += f"\ncreated {datetime.datetime.now(tz=None)}"
     fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
 
