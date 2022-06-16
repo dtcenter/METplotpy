@@ -77,8 +77,8 @@ YAML is a recursive acronym for “YAML Ain’t Markup Language” and according
 serialization language”.
 
 It is commonly used for configuration files and in applications where data is being stored or transmitted.
-Two configuration files are required. The first is a default configuration file, the first is a default configuration file,
-hovmoeller_defaults.yaml that is found in the $METPLOTPY_BASE/metplotpy/plots/config directory. All default configuration
+Two configuration files are required. The first is a default configuration file,
+hovmoeller_defaults.yaml.  This is found in the $METPLOTPY_BASE/metplotpy/plots/config directory. All default configuration
 files are located in the $METPLOTPY_BASE/metplotpy/plots/config directory. Default configuration files are automatically
 loaded by the plotting code and do not need to be explicitly specified when generating a plot.
 
@@ -117,25 +117,23 @@ was saved to the working directory:
 
 
 Modify the *input_data_file* setting in the
-*$METPLOTPY_BASE/test/hovmoeller/custom_hovmoeller.yaml*
+*$WORKING_DIR/custom_hovmoeller.yaml*
 file to explicitly point to the
-*$METPLOTPY_BASE/test/hovmoeller* directory (where the
+*$WORKING_DIR* directory (where the
 custom config files and sample data reside).  Replace the relative path
 *./precip.erai.sfc.1p0.2x.2014-2016.nc* with the full path
-*$METPLOTPY_BASE/test/hovmoeller/precip.erai.sfc.1p0.2x.2014-2016.nc*
-(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
-installation on the system).
+*$WORKING_DIR/data/hovmoeller/precip.erai.sfc.1p0.2x.2014-2016.nc*
+(including replacing *$WORKING_DIR* with the full path to the working directory).
 Modify the *plot_filename* setting to point to the output path where the
 plot will be saved, including the name of the plot.
 
 For example:
 
-*input_data_file: /username/myworkspace/METplotpy/test/hovmoeller/precip.erai.sfc.1p0.2x.2014-2016.nc*
+*input_data_file: /username/working_dir/data/hovmoeller/precip.erai.sfc.1p0.2x.2014-2016.nc*
 
 *plot_filename: /username/working_dir/output_plots/hovmoeller_custom_plot.png*
 
-This is where */username/myworkspace/METplotpy* is *$METPLOTPY_BASE* and
-*/username/working_dir* is *$WORKING_DIR*.  Make sure that the
+This is where */username/working_dir* is *$WORKING_DIR*.  Make sure that the
 *$WORKING_DIR* directory that is specified exists and has the appropriate
 read and write permissions.The path listed for *plot_filename* may be
 changed to the output directory of one’s choosing.  If this is not set,
@@ -149,11 +147,11 @@ ______________
 
 If the user wishes to use all the **default** settings defined in the
 **hovmoeller_defaults.yaml** file, specify a minimal custom configuration
-file (**minimal_hovmoeller.yaml**), which consists of only a comment
-block. This can be any empty file (as long as the user has write permissions
+file (**minimal_hovmoeller.yaml**), which can consist of only a comment
+block or it can be any empty file (as long as the user has write permissions
 for the output filename path corresponding to the
 *plot_filename* setting in the default configuration file). Otherwise,
-this will need to be specified in *plot_filename* in the
+specify the output plot path and name in the *plot_filename* setting in the
 **minimal_hovmoeller.yaml** file:
 
 
@@ -171,19 +169,17 @@ Edit the *input_data_file* (input data) and *plot_filename*
 comment block). The *input_data_file* setting explicitly indicates where the
 sample data and custom configuration files are located.  Set the
 *input_data_file* to
-*$METPLOTPY_BASE/test/hovmoeller/precip.erai.sfc.1p0.2x.2014-2016.nc*
+*$WORKING_DIR/data/hovmoeller/precip.erai.sfc.1p0.2x.2014-2016.nc*
 and set the *input_data_file* and *plot_filename* settings:
 
-*input_data_file: $METPLOTPY_BASE/test/hovmoeller/precip.erai.sfc.1p0.2x.2014-2016.nc*
+*input_data_file: $WORKING_DIR/data/hovmoeller/precip.erai.sfc.1p0.2x.2014-2016.nc*
 
 *plot_filename: $WORKING_DIR/output_plots/hovmoeller_default.png*
 
 *$WORKING_DIR* is the working directory where all the custom
-configuration files are being saved
-(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
-installation on the system). **NOTE**: To specify the
+configuration files are being saved.  **NOTE**: Specifying the
 *plot_filename* (output directory) to a directory other than the
-*$WORKING_DIR/output_plots*, this can be done as long as it is an
+*$WORKING_DIR/output_plots* can be done as long as it is an
 existing directory where the user has read and write permissions.
 
 
@@ -201,7 +197,8 @@ Perform the following:
 * To use the conda environment, verify the conda environment
   is running and has has the required
   Python packages outlined in the `Python Requirements section
-  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_.>`_:
+  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_ (and
+  from the Requirements Packages section above):
 
 
 * Set the METPLOTPY_BASE environment variable to point to
