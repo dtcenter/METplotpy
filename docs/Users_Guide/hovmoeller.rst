@@ -200,6 +200,24 @@ Perform the following:
   <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_ (and
   from the Requirements Packages section above):
 
+* Set the PYTHONPATH environment variable:
+
+*$METCALCPY_SOURCE* is the path downloaded/cloned METcalcpy code. *$METPLOTPY_SOURCE* is the path of the
+downloaded/cloned METplotpy code.
+
+**Command for csh:**
+
+.. code-block:: ini
+
+  setenv PYTHONPATH $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:$METPLOTPY_SOURCE/METplotpy${PYTHONPATH}
+
+**Command for bash:**
+
+.. code-block:: ini
+
+  export PYTHONPATH=\
+  $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:$METPLOTPY_SOURCE/METplotpy${PYTHONPATH}
+
 
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_BASE*
