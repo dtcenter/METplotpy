@@ -86,20 +86,21 @@ _________________________
 This is a workaround for users who can not or do not have permission to
 create conda environments.
 
-*$METCALCPY_SOURCE* is the path downloaded/cloned METcalcpy code.
+*$METCALCPY_SOURCE* is the path downloaded/cloned METcalcpy code. *$METPLOTPY_SOURCE* is the path of the
+downloaded/cloned METplotpy code.
 
 **Command for csh:** 
 
 .. code-block:: ini
 
-  setenv PYTHONPATH $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:${PYTHONPATH}
+  setenv PYTHONPATH $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:$METPLOTPY_SOURCE/METplotpy${PYTHONPATH}
 
 **Command for bash:**
 
 .. code-block:: ini
 
   export PYTHONPATH=\
-  $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:${PYTHONPATH}
+  $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:$METPLOTPY_SOURCE/METplotpy${PYTHONPATH}
 
 Overview of Plots
 _________________
