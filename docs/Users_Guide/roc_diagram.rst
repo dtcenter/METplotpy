@@ -105,8 +105,7 @@ file to explicitly point to the
 custom config files and sample data reside).  Replace the relative path
 *./plot_20200507_074426.data* with the full path
 *$WORKING_DIR/plot_20200507_074426.data*
-(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
-installation on the system).
+(including replacing *$WORKING_DIR* with the full path to the working directory).
 Modify the *plot_filename* setting to point to the output path where the
 plot will be saved, including the name of the plot.
 
