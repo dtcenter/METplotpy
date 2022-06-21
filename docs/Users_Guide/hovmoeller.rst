@@ -21,9 +21,10 @@ for instructions on how to generate a Hovmoeller diagram.
 Required Packages:
 ==================
 
+
 Python 3.8.6 is the minimum version that is required
 
-* metplotpy
+* metcalcpy
 
 * netcdf4 1.5.7 or above
 
