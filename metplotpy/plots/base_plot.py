@@ -51,7 +51,7 @@ class BasePlot:
         if 'METPLOTPY_BASE' in os.environ:
             location = os.path.join(os.environ['METPLOTPY_BASE'], 'metplotpy/plots/config')
         else:
-            location = os.path.realpath(os.path.join(os.getcwd(), '../config'))
+            location = os.path.realpath(os.path.join(os.path.dirname(__file__), 'config'))
 
         with open(os.path.join(location, default_conf_filename), 'r') as stream:
             try:
