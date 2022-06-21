@@ -334,6 +334,11 @@ class BasePlot:
 
         """
         image_name = self.get_config_value('plot_filename')
+
+        # Create the directory for the output plot if it doesn't already exist
+        dirname = os.path.dirname(os.path.abspath(image_name))
+        if not os.path.exists(dirname):
+            os.mkdir(dirname)
         if self.figure:
             try:
                 self.figure.write_image(image_name)

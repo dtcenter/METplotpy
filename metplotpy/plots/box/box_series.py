@@ -17,6 +17,7 @@ from typing import Union
 import re
 
 import numpy as np
+import pandas as pd
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
@@ -231,4 +232,4 @@ class BoxSeries(Series):
             if self.series_data is None:
                 self.series_data = stats_indy_1
             else:
-                self.series_data = self.series_data.append(stats_indy_1, sort=False)
+                self.series_data = pd.concat([self.series_data, (stats_indy_1)], sort=False)
