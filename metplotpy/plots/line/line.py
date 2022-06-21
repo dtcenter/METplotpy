@@ -187,6 +187,7 @@ class Line(BasePlot):
         self._add_y2axis()
         self._add_legend()
 
+
         # calculate stag adjustments
         stag_adjustments = self._calc_stag_adjustments()
 
@@ -243,6 +244,10 @@ class Line(BasePlot):
 
         # add x2 axis
         self._add_x2axis(n_stats)
+
+        # Allow plots to start from the y=0 line if set in the config file
+        if self.config_obj.start_from_zero is True:
+            self.figure.update_xaxes(range=[0, len(x_points_index) - 1])
 
     def _draw_series(self, series: Series, x_points_index_adj: Union[list, None] = None) -> None:
         """
