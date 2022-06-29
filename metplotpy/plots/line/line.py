@@ -463,7 +463,7 @@ class Line(BasePlot):
         and attaches it to the initial Figure
         """
         self.figure.update_layout(legend={'x': self.config_obj.bbox_x,
-                                          'y': self.config_obj.bbox_y,
+                                          'y': self.config_obj.bbox_y - 0.1,
                                           'xanchor': 'center',
                                           'yanchor': 'top',
                                           'bordercolor': self.config_obj.legend_border_color,
