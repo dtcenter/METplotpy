@@ -10,15 +10,15 @@ Calculate mean tendencies of temperature, moisture, and momentum over a time win
 - cartopy
 - datetime
 - logging
-- matplotlib.path
-- matplotlib.pyplot
-- matplotlib.ticker
-- metpy.units
+- matplotlib
+- metpy
 - numpy
 - os
 - pandas
-- shapely.geometry
+- pdb
+- shapely
 - sys
+- tqdm
 - xarray
 
 ## Installation
@@ -28,7 +28,7 @@ On NCAR's casper:
 module reset
 module load conda
 conda deactivate
-conda activate npl-2202
+conda activate npl
 
 ```
 
