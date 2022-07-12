@@ -34,6 +34,21 @@ conda activate npl
 
 Then install METplotpy into your conda environment as described in [METplotpy installation instructions](https://github.com/dtcenter/METplotpy/blob/main_v1.0/docs/Users_Guide/installation.rst#install-metcalcpy-in-your-conda-environment)
 
+## Testing
+
+```
+git checkout feature_117_fv3_physics
+cd metplotpy/contributed/fv3_physics_tend
+./test/basic.csh
+```
+
+This should produce four images:
+
+[tmp_32.0N-115.0E-34.0N-82.0E.20190504_150000-20190504_210000.png](tmp_32.0N-115.0E-34.0N-82.0E.20190504_150000-20190504_210000.png)
+[tmp_pbl.20190504_150000-20190504_210000.png](tmp_pbl.20190504_150000-20190504_210000.png)
+[tmp_500hPa.20190504_150000-20190504_210000.png](tmp_500hPa.20190504_150000-20190504_210000.png)
+[tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png](tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png)
+
 ## Plan view
 
 ```
