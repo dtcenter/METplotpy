@@ -13,8 +13,8 @@ def setup():
     os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom_revision_series.yaml"
 
-    # Invoke the command to generate a Bar plot based on
-    # the custom_ens_ss.yaml custom config file.
+    # Invoke the command to generate a Revision Series plot based on
+    # the custom_revision_series.yaml custom config file.
     revision_series.main(custom_config_filename)
 
 
@@ -34,7 +34,7 @@ def cleanup():
 
 
 @pytest.mark.parametrize("test_input, expected",
-                         (["./ens_ss.png", True],["./revision_series.points1", True]))
+                         (["./revision_series.png", True],["./revision_series.points1", True]))
 def test_files_exist( setup, test_input, expected):
     """
         Checking that the plot and data files are getting created
