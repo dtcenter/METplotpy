@@ -161,9 +161,9 @@ class RevisionSeriesSeries(LineSeries):
             self.user_legends = self.user_legends + '(WW Runs Test:' + p_value + ')'
 
         if self.config.revision_ac:
-            acf_value = acf(result['stat_value'].tolist(), 'correlation', 1)
+            acf_value = acf(result['stat_value'].tolist(), 'correlation')
 
-            r_value = acf_value[-1]
+            r_value = acf_value[1]
             p_value = 0.06270678 / math.sqrt(np.size(result['stat_value']))
             series_points_results['auto_cor_r'] = r_value
             series_points_results['auto_cor_p'] = p_value
