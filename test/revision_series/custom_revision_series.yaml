@@ -13,7 +13,7 @@ colors:
 con_series:
 - 1
 - 1
-create_html: 'True'
+create_html: 'False'
 dump_points_1: 'True'
 equalize_by_indep: 'False'
 event_equal: 'False'
