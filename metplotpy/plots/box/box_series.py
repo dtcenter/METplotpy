@@ -62,15 +62,16 @@ class BoxSeries(Series):
         all_fields_values['stat_name'] = self.config.get_config_value('list_stat_1')
         all_fields_values_no_indy[1] = all_fields_values
 
-        all_fields_values_orig = self.config.get_config_value('series_val_2').copy()
-        all_fields_values = {}
-        for x in reversed(list(all_fields_values_orig.keys())):
-            all_fields_values[x] = all_fields_values_orig.get(x)
+        if 'series_val_2' in self.config.parameters.keys():
+            all_fields_values_orig = self.config.get_config_value('series_val_2').copy()
+            all_fields_values = {}
+            for x in reversed(list(all_fields_values_orig.keys())):
+                all_fields_values[x] = all_fields_values_orig.get(x)
 
-        if self.config._get_fcst_vars(2):
-            all_fields_values['fcst_var'] = list(self.config._get_fcst_vars(2).keys())
-        all_fields_values['stat_name'] = self.config.get_config_value('list_stat_2')
-        all_fields_values_no_indy[2] = all_fields_values
+            if self.config._get_fcst_vars(2):
+                all_fields_values['fcst_var'] = list(self.config._get_fcst_vars(2).keys())
+            all_fields_values['stat_name'] = self.config.get_config_value('list_stat_2')
+            all_fields_values_no_indy[2] = all_fields_values
 
         return all_fields_values_no_indy
 
