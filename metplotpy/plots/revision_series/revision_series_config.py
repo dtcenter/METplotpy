@@ -108,8 +108,8 @@ class RevisionSeriesConfig(Config):
         self.legend_border_color = "black"
         self.points_path = self.get_config_value('points_path')
 
-        self.revision_ac = self.get_config_value('revision_ac')
-        self.revision_run = self.get_config_value('revision_run')
+        self.revision_ac = self._get_bool('revision_ac')
+        self.revision_run = self._get_bool('revision_run')
         self.indy_stagger = self._get_bool('indy_stagger_1')
 
     def _get_plot_disp(self) -> list:
