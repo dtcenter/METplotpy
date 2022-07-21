@@ -382,7 +382,7 @@ class Box(BasePlot):
                                  tickfont={'size': self.config_obj.x_tickfont_size}
                                  )
         # reverse xaxis if needed
-        if self.config_obj.xaxis_reverse is True:
+        if hasattr( self.config_obj, 'xaxis_reverse' ) and self.config_obj.xaxis_reverse is True:
             self.figure.update_xaxes(autorange="reversed")
 
     def _add_yaxis(self) -> None:
@@ -526,7 +526,7 @@ class Box(BasePlot):
                                           },
                                           'traceorder': 'normal'
                                           })
-        if self.config_obj.xaxis_reverse is True:
+        if hasattr( self.config_obj, 'xaxis_reverse' ) and self.config_obj.xaxis_reverse is True:
             self.figure.update_layout(legend={'traceorder':'reversed'})
 
     def write_html(self) -> None:
@@ -567,7 +567,8 @@ class Box(BasePlot):
                 filename = self.config_obj.points_path + os.path.sep + filename
 
             filename = filename + '.points1'
-
+            if os.path.exists(filename):
+                os.remove(filename)
             for series in self.series_list:
                 for indy_val in self.config_obj.indy_vals:
                     if calc_util.is_string_integer(indy_val):
