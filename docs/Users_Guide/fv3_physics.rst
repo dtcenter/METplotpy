@@ -14,7 +14,7 @@ are available.
 
 Please refer to the `METplus use case documentation
 <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsPrecip_obsOnly_Hovmoeller.html#sphx-glr-generated-model-applications-s2s-userscript-obsprecip-obsonly-hovmoeller-py>`_
-for instructions on how to generate a Hovmoeller diagram.
+for instructions on how to plot FV3 physics tendencies.
 
 Required Packages:
 ==================
@@ -73,7 +73,7 @@ the Github repository.  The *x.y.z* is the release number.
 Run from the Command Line
 =========================
 
-To generate the example tendency plot (i.e. using settings in the
+To generate the example tendency plots (i.e. using settings in the
 **fv3_physics_defaults.yaml** configuration file) perform the following:
 
 *  If using the conda environment, verify the conda environment
@@ -84,168 +84,170 @@ To generate the example tendency plot (i.e. using settings in the
   *$METPLOTPY_BASE*. where $METPLOTPY_BASE is the directory where you saved the
   METplotpy source code (e.g. /home/someuser/METplotpy).
 
-  For the ksh environment:
-
-  .. code-block:: ini
-
-    export METPLOTPY_BASE=$METPLOTPY_BASE
-
-  For the csh environment:
-
-  .. code-block:: ini
-
-    setenv METPLOTPY_BASE $METPLOTPY_BASE
-
 * Run the following on the command line:
 
-## Plan view
+Plan view::
+
+   usage: planview_fv3.py [-h] [-d] [--method {nearest,linear,loglinear}] [--ncols NCOLS] [-o OFILE] [-p PFULL [PFULL ...]] [-s SHP] [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+                          historyfile gridfile {tmp,spfh,ugrd,vgrd} {nophys,dvgrd,deepcnv,sw,dtmp,rdamp,orogwd,pbl,dspfh,congwd,shalcnv,mp,resid,lw,dugrd}
+
+   Plan view of FV3 diagnostic tendency
+
+   positional arguments:
+     historyfile           FV3 history file
+     gridfile              FV3 grid spec file
+     {tmp,spfh,ugrd,vgrd}  state variable
+     {nophys,dvgrd,deepcnv,sw,dtmp,rdamp,orogwd,pbl,dspfh,congwd,shalcnv,mp,resid,lw,dugrd}
+                           type of tendency. ignored if pfull is a single level
+
+   optional arguments:
+     -h, --help            show this help message and exit
+     -d, --debug
+     --method {nearest,linear,loglinear}
+                           vertical interpolation method (default: nearest)
+     --ncols NCOLS         number of columns (default: None)
+     -o OFILE, --ofile OFILE
+                           name of output image file (default: None)
+     -p PFULL [PFULL ...], --pfull PFULL [PFULL ...]
+                           pressure level(s) in hPa to plot. If only one pressure level is provided, the type-of-tendency argument will be ignored and all tendencies will be plotted.
+                           (default: [1000, 925, 850, 700, 500, 300, 200, 100, 0])
+     -s SHP, --shp SHP     shape file directory for mask (default: None)
+     --subtract SUBTRACT   FV3 history file to subtract (default: None)
+     -t TWINDOW, --twindow TWINDOW
+                           time window in hours (default: 3)
+     -v VALIDTIME, --validtime VALIDTIME
+                           valid time (default: None)
+
+
+
+Vertical profile of areal mean::
+
+   usage: vert_profile_fv3.py [-h] [-d] [-o OFILE] [--resid] [-s SHP]
+                              [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+                              historyfile gridfile {tmp,spfh,ugrd,vgrd}
+
+   Vertical profile of FV3 diagnostic tendencies
+
+   positional arguments:
+     historyfile           FV3 history file
+     gridfile              FV3 grid spec file
+     {tmp,spfh,ugrd,vgrd}  state variable
+
+   optional arguments:
+     -h, --help            show this help message and exit
+     -d, --debug
+     -o OFILE, --ofile OFILE
+                           name of output image file (default: None)
+     --resid               calculate residual (default: False)
+     -s SHP, --shp SHP     shape file directory for mask (default: None)
+     --subtract SUBTRACT   FV3 history file to subtract (default: None)
+     -t TWINDOW, --twindow TWINDOW
+                           time window in hours (default: 3)
+     -v VALIDTIME, --validtime VALIDTIME
+                           valid time (default: None)
 
 .. code-block:: ini
 
-usage: planview_fv3.py [-h] [-d] [--method {nearest,linear,loglinear}] [--ncols NCOLS] [-o OFILE] [-p PFULL [PFULL ...]] [-s SHP] [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
-                       historyfile gridfile {tmp,spfh,ugrd,vgrd} {nophys,dvgrd,deepcnv,sw,dtmp,rdamp,orogwd,pbl,dspfh,congwd,shalcnv,mp,resid,lw,dugrd}
-
-Plan view of FV3 diagnostic tendency
-
-positional arguments:
-  historyfile           FV3 history file
-  gridfile              FV3 grid spec file
-  {tmp,spfh,ugrd,vgrd}  state variable
-  {nophys,dvgrd,deepcnv,sw,dtmp,rdamp,orogwd,pbl,dspfh,congwd,shalcnv,mp,resid,lw,dugrd}
-                        type of tendency. ignored if pfull is a single level
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -d, --debug
-  --method {nearest,linear,loglinear}
-                        vertical interpolation method (default: nearest)
-  --ncols NCOLS         number of columns (default: None)
-  -o OFILE, --ofile OFILE
-                        name of output image file (default: None)
-  -p PFULL [PFULL ...], --pfull PFULL [PFULL ...]
-                        pressure level(s) in hPa to plot. If only one pressure level is provided, the type-of-tendency argument will be ignored and all tendencies will be plotted.
-                        (default: [1000, 925, 850, 700, 500, 300, 200, 100, 0])
-  -s SHP, --shp SHP     shape file directory for mask (default: None)
-  --subtract SUBTRACT   FV3 history file to subtract (default: None)
-  -t TWINDOW, --twindow TWINDOW
-                        time window in hours (default: 3)
-  -v VALIDTIME, --validtime VALIDTIME
-                        valid time (default: None)
-```
-
-## Vertical profile of areal mean
-
-```
-usage: vert_profile_fv3.py [-h] [-d] [-o OFILE] [--resid] [-s SHP]
-                           [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
-                           historyfile gridfile {tmp,spfh,ugrd,vgrd}
-
-Vertical profile of FV3 diagnostic tendencies
-
-positional arguments:
-  historyfile           FV3 history file
-  gridfile              FV3 grid spec file
-  {tmp,spfh,ugrd,vgrd}  state variable
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -d, --debug
-  -o OFILE, --ofile OFILE
-                        name of output image file (default: None)
-  --resid               calculate residual (default: False)
-  -s SHP, --shp SHP     shape file directory for mask (default: None)
-  --subtract SUBTRACT   FV3 history file to subtract (default: None)
-  -t TWINDOW, --twindow TWINDOW
-                        time window in hours (default: 3)
-  -v VALIDTIME, --validtime VALIDTIME
-                        valid time (default: None)
-```
-
-## Vertical cross section 
-```
-usage: cross_section_vert.py [-h] [-d] [--dindex DINDEX] [--ncols NCOLS]
-                             [-o OFILE] [-s START START] [-e END END]
-                             [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
-                             historyfile gridfile {tmp,spfh,ugrd,vgrd}
-
-Vertical cross section of FV3 diagnostic tendency
-
-positional arguments:
-  historyfile           FV3 history file
-  gridfile              FV3 grid spec file
-  {tmp,spfh,ugrd,vgrd}  state variable
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -d, --debug
-  --dindex DINDEX       tick and gridline interval along cross section
-                        (default: 20)
-  --ncols NCOLS         number of columns (default: None)
-  -o OFILE, --ofile OFILE
-                        name of output image file (default: None)
-  -s START START, --start START START
-                        start point (default: (28, -115))
-  -e END END, --end END END
-                        end point (default: (30, -82))
-  --subtract SUBTRACT   FV3 history file to subtract (default: None)
-  -t TWINDOW, --twindow TWINDOW
-                        time window in hours (default: 3)
-  -v VALIDTIME, --validtime VALIDTIME
-                        valid time (default: None)
-```
+python cross_section_vert.py $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/fv3_history.nc $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/grid_spec.nc tmp -t 6 -v 20190504T21 -s 32 -115 -e 34 -82
 
 
-## Required input
+Vertical cross section::
+
+   usage: cross_section_vert.py [-h] [-d] [--dindex DINDEX] [--ncols NCOLS]
+                                [-o OFILE] [-s START START] [-e END END]
+                                [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+                                historyfile gridfile {tmp,spfh,ugrd,vgrd}
+
+   Vertical cross section of FV3 diagnostic tendency
+
+   positional arguments:
+     historyfile           FV3 history file
+     gridfile              FV3 grid spec file
+     {tmp,spfh,ugrd,vgrd}  state variable
+
+   optional arguments:
+     -h, --help            show this help message and exit
+     -d, --debug
+     --dindex DINDEX       tick and gridline interval along cross section
+                           (default: 20)
+     --ncols NCOLS         number of columns (default: None)
+     -o OFILE, --ofile OFILE
+                           name of output image file (default: None)
+     -s START START, --start START START
+                           start point (default: (28, -115))
+     -e END END, --end END END
+                           end point (default: (30, -82))
+     --subtract SUBTRACT   FV3 history file to subtract (default: None)
+     -t TWINDOW, --twindow TWINDOW
+                           time window in hours (default: 3)
+     -v VALIDTIME, --validtime VALIDTIME
+                           valid time (default: None)
+
+
+A plot named **tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the plotting command:
+
+.. code-block:: ini
+
+python vert_profile_fv3.py $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/fv3_history.nc $WORKING_DIR/CONUS_25km_GFSv15p2
+
+.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png
+
+Required input
+______________
+
 
 FV3 output and grid specifications. [Grid description in UFS Short Range Weather App user manual](https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options)
 
 - fv3_history.nc
 - grid_spec.nc
 
-Potential tendency variables to read from fv3_history.nc:
+Potential tendency variables to read from fv3_history.nc
 
-### variables to plot
+variables to plot
+~~~~~~~~~~~~~~~~~
+
++----------------------------+-------------+-------------------+-------------+-------------+
 |           tendency         | temperature | specific humidity |   u-wind    |   v-wind    |
-| -------------------------- | ----------- | ----------------- | ----------- | ----------- |
++============================+=============+===================+=============+=============+
 |convective gravity wave drag| dt3dt_congwd|                   |du3dt_congwd |dv3dt_congwd |
++----------------------------+-------------+-------------------+-------------+-------------+
 |       deep convection      |dt3dt_deepcnv|   dq3dt_deepcnv   |du3dt_deepcnv|dv3dt_deepcnv|
++----------------------------+-------------+-------------------+-------------+-------------+
 |     long wave radiation    |  dt3dt_lw   |                   |             |             |
++----------------------------+-------------+-------------------+-------------+-------------+
 |        microphysics        |  dt3dt_mp   |     dq3dt_mp      |  du3dt_mp   |   dv3dt_mp  |
++----------------------------+-------------+-------------------+-------------+-------------+
 |orographic gravity wave drag| dt3dt_orogwd|                   |du3dt_orogwd |dv3dt_orogwd |
++----------------------------+-------------+-------------------+-------------+-------------+
 |  planetary boundary layer  |  dt3dt_pbl  |     dq3dt_pbl     |  du3dt_pbl  |  dv3dt_pbl  |
++----------------------------+-------------+-------------------+-------------+-------------+
 |      Rayleigh damping      | dt3dt_rdamp |                   | du3dt_rdamp | dv3dt_rdamp |
++----------------------------+-------------+-------------------+-------------+-------------+
 |     shallow convection     |dt3dt_shalcnv|   dq3dt_shalcnv   |du3dt_shalcnv|dv3dt_shalcnv|
++----------------------------+-------------+-------------------+-------------+-------------+
 |    short wave radiation    |  dt3dt_sw   |                   |             |             |
-|    total physics (above)   | dt3dt_phys  |     dq3dt_phys    |du3dt_phys   |  dv3dt_phys |
++----------------------------+-------------+-------------------+-------------+-------------+
+|  total physics (all above) | dt3dt_phys  |     dq3dt_phys    |du3dt_phys   |  dv3dt_phys |
++----------------------------+-------------+-------------------+-------------+-------------+
 |           dynamics         | dt3dt_nophys|    dq3dt_nophys   | du3dt_nophys| dv3dt_nophys|
-| -------------------------- | ----------- | ----------------- | ----------- | ----------- |
++----------------------------+-------------+-------------------+-------------+-------------+
 | state variable at validtime|     tmp     |        spfh       |    ugrd     |    vgrd     |
++----------------------------+-------------+-------------------+-------------+-------------+
 | actual change in state var |    dtmp     |       dspfh       |   dugrd     |   dvgrd     |
++----------------------------+-------------+-------------------+-------------+-------------+
 
 
-## Difference plot
 
-Put file you want to subtract after the --subtract argument.
+Difference plot
+~~~~~~~~~~~~~~~
 
-```python
-python vert_profile_fv3.py fv3_history.nc grid_spec.nc tmp --subtract fv3_history2.nc
-```
-   python $METPLOTPY_BASE/metplotpy/plots/hovmoeller/hovmoeller.py --datadir $WORKING_DIR/data/hovmoeller  --input precip.erai.sfc.1p0.2x.2014-2016.nc
+
+Put file you want to subtract after the --subtract argument::
+
+   python $METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/vert_profile_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp --subtract $WORKING_DIR/fv3_history2.nc
 
 where $METPLOTPY_BASE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
 directory where you have read and write permissions and where you are storing all your input data and where you
-copied the default config file.  You will see informational output to the screen:
+copied the default config file.
 
-    - a usage statement
-
-    - reminder to set the METPLOTPY_BASE:
-
-       **"METPLOTPY_BASE needs to be set to your METplotpy directory"**
-
-    - logging information
-
-
-A plot named **erai_precip.png** will be generated in the directory from which you ran the plotting command:
-
-.. image:: erai_precip.png
 
