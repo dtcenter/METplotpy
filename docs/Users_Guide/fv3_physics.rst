@@ -35,6 +35,55 @@ Required Packages:
 
 * xarray
 
+Required input:
+===============
+
+#. FV3 history file with tendencies (fv3_history.nc)
+
+#. FV3 grid specification file with latititude and longitude (grid_spec.nc)
+
+
+
+FV3 output and grid specifications. [Grid description in UFS Short Range Weather App user manual](https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options)
+
+
+Potential tendency variables to read from fv3_history.nc
+
+variables to plot
+_________________
+
++----------------------------+-------------+-------------------+-------------+-------------+
+|           tendency         | temperature | specific humidity |   u-wind    |   v-wind    |
++============================+=============+===================+=============+=============+
+|convective gravity wave drag| dt3dt_congwd|                   |du3dt_congwd |dv3dt_congwd |
++----------------------------+-------------+-------------------+-------------+-------------+
+|       deep convection      |dt3dt_deepcnv|   dq3dt_deepcnv   |du3dt_deepcnv|dv3dt_deepcnv|
++----------------------------+-------------+-------------------+-------------+-------------+
+|     long wave radiation    |  dt3dt_lw   |                   |             |             |
++----------------------------+-------------+-------------------+-------------+-------------+
+|        microphysics        |  dt3dt_mp   |     dq3dt_mp      |  du3dt_mp   |   dv3dt_mp  |
++----------------------------+-------------+-------------------+-------------+-------------+
+|orographic gravity wave drag| dt3dt_orogwd|                   |du3dt_orogwd |dv3dt_orogwd |
++----------------------------+-------------+-------------------+-------------+-------------+
+|  planetary boundary layer  |  dt3dt_pbl  |     dq3dt_pbl     |  du3dt_pbl  |  dv3dt_pbl  |
++----------------------------+-------------+-------------------+-------------+-------------+
+|      Rayleigh damping      | dt3dt_rdamp |                   | du3dt_rdamp | dv3dt_rdamp |
++----------------------------+-------------+-------------------+-------------+-------------+
+|     shallow convection     |dt3dt_shalcnv|   dq3dt_shalcnv   |du3dt_shalcnv|dv3dt_shalcnv|
++----------------------------+-------------+-------------------+-------------+-------------+
+|    short wave radiation    |  dt3dt_sw   |                   |             |             |
++----------------------------+-------------+-------------------+-------------+-------------+
+|  total physics (all above) | dt3dt_phys  |     dq3dt_phys    |du3dt_phys   |  dv3dt_phys |
++----------------------------+-------------+-------------------+-------------+-------------+
+|           dynamics         | dt3dt_nophys|    dq3dt_nophys   | du3dt_nophys| dv3dt_nophys|
++----------------------------+-------------+-------------------+-------------+-------------+
+| state variable at validtime|     tmp     |        spfh       |    ugrd     |    vgrd     |
++----------------------------+-------------+-------------------+-------------+-------------+
+| actual change in state var |    dtmp     |       dspfh       |   dugrd     |   dvgrd     |
++----------------------------+-------------+-------------------+-------------+-------------+
+
+
+
 Example
 =======
 
@@ -42,7 +91,7 @@ Sample Data
 ___________
 
 The sample data used to create an plot physics tendencies are available in
-the `s2s METplus data tar file
+the `METplus data tar file
 <https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/v4.0/sample_data-s2s-4.0.tgz>`_  in the directory
 *model_applications/s2s/UserScript_obsPrecip_obsOnly_Hovmoeller*.
 
@@ -73,7 +122,7 @@ the Github repository.  The *x.y.z* is the release number.
 Run from the Command Line
 =========================
 
-To generate the example tendency plots (i.e. using settings in the
+To generate example tendency plots (i.e. using settings in the
 **fv3_physics_defaults.yaml** configuration file) perform the following:
 
 *  If using the conda environment, verify the conda environment
@@ -118,6 +167,14 @@ Plan view::
      -v VALIDTIME, --validtime VALIDTIME
                            valid time (default: None)
 
+A plot named **tmp_500hPa.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the plotting command:
+
+.. code-block:: bash
+
+   python planview_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -p 500 -t 6 -v 20190504T21
+
+
+.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp_500hPa.20190504_150000-20190504_210000.png
 
 
 Vertical profile of areal mean::
@@ -146,9 +203,13 @@ Vertical profile of areal mean::
      -v VALIDTIME, --validtime VALIDTIME
                            valid time (default: None)
 
-.. code-block:: ini
+A plot named **tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the plotting command:
 
-python cross_section_vert.py $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/fv3_history.nc $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/grid_spec.nc tmp -t 6 -v 20190504T21 -s 32 -115 -e 34 -82
+.. code-block:: bash
+
+   python vert_profile_fv3.py $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/fv3_history.nc $WORKING_DIR/CONUS_25km_GFSv15p2
+
+.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png
 
 
 Vertical cross section::
@@ -183,66 +244,24 @@ Vertical cross section::
      -v VALIDTIME, --validtime VALIDTIME
                            valid time (default: None)
 
+A plot named **tmp_32.0N-115.0E-34.0N-82.0E.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the plotting command:
 
-A plot named **tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the plotting command:
+.. code-block:: bash
 
-.. code-block:: ini
+   python cross_section_vert.py $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/fv3_history.nc $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/grid_spec.nc tmp -t 6 -v 20190504T21 -s 32 -115 -e 34 -82
 
-python vert_profile_fv3.py $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/fv3_history.nc $WORKING_DIR/CONUS_25km_GFSv15p2
+.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp_32.0N-115.0E-34.0N-82.0E.20190504_150000-20190504_210000.png
 
-.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png
-
-Required input
-______________
-
-
-FV3 output and grid specifications. [Grid description in UFS Short Range Weather App user manual](https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options)
-
-- fv3_history.nc
-- grid_spec.nc
-
-Potential tendency variables to read from fv3_history.nc
-
-variables to plot
-~~~~~~~~~~~~~~~~~
-
-+----------------------------+-------------+-------------------+-------------+-------------+
-|           tendency         | temperature | specific humidity |   u-wind    |   v-wind    |
-+============================+=============+===================+=============+=============+
-|convective gravity wave drag| dt3dt_congwd|                   |du3dt_congwd |dv3dt_congwd |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|       deep convection      |dt3dt_deepcnv|   dq3dt_deepcnv   |du3dt_deepcnv|dv3dt_deepcnv|
-+----------------------------+-------------+-------------------+-------------+-------------+
-|     long wave radiation    |  dt3dt_lw   |                   |             |             |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|        microphysics        |  dt3dt_mp   |     dq3dt_mp      |  du3dt_mp   |   dv3dt_mp  |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|orographic gravity wave drag| dt3dt_orogwd|                   |du3dt_orogwd |dv3dt_orogwd |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|  planetary boundary layer  |  dt3dt_pbl  |     dq3dt_pbl     |  du3dt_pbl  |  dv3dt_pbl  |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|      Rayleigh damping      | dt3dt_rdamp |                   | du3dt_rdamp | dv3dt_rdamp |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|     shallow convection     |dt3dt_shalcnv|   dq3dt_shalcnv   |du3dt_shalcnv|dv3dt_shalcnv|
-+----------------------------+-------------+-------------------+-------------+-------------+
-|    short wave radiation    |  dt3dt_sw   |                   |             |             |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|  total physics (all above) | dt3dt_phys  |     dq3dt_phys    |du3dt_phys   |  dv3dt_phys |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|           dynamics         | dt3dt_nophys|    dq3dt_nophys   | du3dt_nophys| dv3dt_nophys|
-+----------------------------+-------------+-------------------+-------------+-------------+
-| state variable at validtime|     tmp     |        spfh       |    ugrd     |    vgrd     |
-+----------------------------+-------------+-------------------+-------------+-------------+
-| actual change in state var |    dtmp     |       dspfh       |   dugrd     |   dvgrd     |
-+----------------------------+-------------+-------------------+-------------+-------------+
 
 
 
 Difference plot
-~~~~~~~~~~~~~~~
+_______________
 
 
-Put file you want to subtract after the --subtract argument::
+Put file you want to subtract after the --subtract argument:
+
+.. code-block:: bash
 
    python $METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/vert_profile_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp --subtract $WORKING_DIR/fv3_history2.nc
 
