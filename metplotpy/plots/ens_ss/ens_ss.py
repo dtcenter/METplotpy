@@ -493,27 +493,27 @@ class EnsSs(BasePlot):
             # else:
             #     filename = 'points'
 
-        filename = filename + '.points1'
+            filename = filename + '.points1'
 
-        with open(filename, 'w') as file:
-            while i < len(self.series_list):
-                file.writelines(
-                    map("{}\t{}\n".format,
-                         [round(num, 6) for num in self.series_list[i].series_points['spread_skill']],
-                         [round(num, 6) for num in self.series_list[i].series_points['mse']]))
-                i = i + counter
-            # print PTS values
-            if self.config_obj.ensss_pts_disp is True:
-                i = 0
-                file.write('#PTS\n')
+            with open(filename, 'w') as file:
                 while i < len(self.series_list):
                     file.writelines(
                         map("{}\t{}\n".format,
                             [round(num, 6) for num in self.series_list[i].series_points['spread_skill']],
-                            [round(num, 6) for num in self.series_list[i].series_points['pts']])
-                    )
+                            [round(num, 6) for num in self.series_list[i].series_points['mse']]))
                     i = i + counter
-            file.close()
+                # print PTS values
+                if self.config_obj.ensss_pts_disp is True:
+                    i = 0
+                    file.write('#PTS\n')
+                    while i < len(self.series_list):
+                        file.writelines(
+                            map("{}\t{}\n".format,
+                                [round(num, 6) for num in self.series_list[i].series_points['spread_skill']],
+                                [round(num, 6) for num in self.series_list[i].series_points['pts']])
+                        )
+                        i = i + counter
+                file.close()
 
 
 def main(config_filename=None):

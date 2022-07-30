@@ -99,14 +99,13 @@ was saved to the working directory:
 
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_BASE/test/roc_diagram/custom_roc_diagram.yaml*
+*$WORKING_DIR/custom_roc_diagram.yaml*
 file to explicitly point to the
-*$METPLOTPY_BASE/test/roc_diagram* directory (where the
+*$WORKING_DIR* directory (where the
 custom config files and sample data reside).  Replace the relative path
 *./plot_20200507_074426.data* with the full path
-*$METPLOTPY_BASE/test/roc_diagram/plot_20200507_074426.data*
-(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
-installation on the system).
+*$WORKING_DIR/plot_20200507_074426.data*
+(including replacing *$WORKING_DIR* with the full path to the working directory).
 Modify the *plot_filename* setting to point to the output path where the
 plot will be saved, including the name of the plot.
 
@@ -169,7 +168,7 @@ Add the *stat_input* (input data) and *plot_filename*
 comment block). The *stat_input* setting explicitly indicates where the
 sample data and custom configuration files are located.  Set the
 *stat_input* to
-*$METPLOTPY_BASE/test/roc_diagram/plot_20200507_074426.data*
+*$WORKING_DIR/plot_20200507_074426.data*
 and set the
 *plot_filename* to *$WORKING_DIR/output_plots/roc_diagram_default.png*:
 

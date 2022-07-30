@@ -16,6 +16,7 @@ Created by: Maria Gehne
 maria.gehne@noaa.gov
 2019
 """
+import os
 import numpy as np
 from scipy.optimize import fsolve
 from functools import reduce
@@ -263,7 +264,7 @@ def plot_coherence(cohsq, phase1, phase2, symmetry=("symm"), source="", vars1=""
 
     # plot resources
     wkstype = "png"
-    wks = ngl.open_wks(wkstype, plotpath + "SpaceTimeCoherence_")
+    wks = ngl.open_wks(wkstype, os.path.join(plotpath, "SpaceTimeCoherence_"))
     plots = []
 
     # coherence2 plot resources
