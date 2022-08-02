@@ -65,7 +65,7 @@ def add_time0(ds, variable, interval=np.timedelta64(1,'h')):
     data = np.insert(ds[variable].data, 0, vari.data, axis=0)
     data_vars[variable] = (dims, data)
     # tendency=0 at time0
-    logging.info(f"Adding time0 to {variable}")
+    logging.info(f"Adding time0 to {variable}. This could take a while...")
     for tendency in tqdm(tendencies[variable]):
         logging.debug(tendency)
         dims = ds[tendency].dims
@@ -101,19 +101,17 @@ def pts_in_shp(lats, lons, shp, debug=False):
     # This seems kind of hacky. Can you recurse through a mixture of Polygons and Multipolygons more elegantly?
     # Tried geopandas read_shape . geometry but it was no more elegant.
     for g in shape.geometries():
-        if debug:
-            print(__name__, "pts_in_shp area", g.area)
+        logging.debug(f"{__name__} pts_in_shp area {g.area}")
         # How to deal with 3-D polygons (i.e. POLYGON Z)? some shape files are 3D.
         if g.has_z:
-            print("Uh oh. shape geometry has z-coordinate in",shp)
-            print("I don't know how to process 3-D polygons (i.e. POLYGON Z).")
+            logging.error(f"Uh oh. shape geometry has z-coordinate in {shp}")
+            logging.error("I don't know how to process 3-D polygons (i.e. POLYGON Z).")
             sys.exit(1)
         if isinstance(g, multipolygon.MultiPolygon):
             for mp in g.geoms:
                 mask = mask | matplotlib.path.Path(mp.exterior.coords).contains_points(ll_array)
         else:
             mask = mask | matplotlib.path.Path(g.exterior.coords).contains_points(ll_array)
-        if debug:
-            print("pts_in_shp:", mask.sum(), "points")
+        logging.debug(f"pts_in_shp: {mask.sum()} points")
     shape.close()
     return np.reshape(mask, lats.shape)
