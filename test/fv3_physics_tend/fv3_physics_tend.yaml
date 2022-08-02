@@ -1,3 +1,5 @@
+# Names of tendency variables in model output (i.e. FV3 history file)
+# Each type of tendency (moisture, temperature, wind component) has its own set of variables.
 tendency_varnames:
     spfh:
     - dq3dt_deepcnv
@@ -35,6 +37,7 @@ tendency_varnames:
     - dv3dt_shalcnv
     - dv3dt_nophys
 
+# Name of variables in history file that contain the temperature, moisture, wind at time zero.
 time0_varname:
     tmp :  tmp_i
     spfh:   qv_i
@@ -42,20 +45,26 @@ time0_varname:
     vgrd: vgrd_i
 
 
-cmap : "Spectral_r"
+# Name of the longitude and latitude variables in the grid specification file.
+lon_name : "grid_lont"
+lat_name : "grid_latt"
 
-dpi : 150
 
+# Geographic extent (in degrees) of 2-D plots.
+# (lonmin, lonmax, latmin, latmax)  
 extent:
     - -122
     - -72.7
     - 22.1
     - 49.5
 
-lon_name : "grid_lont"
-lat_name : "grid_latt"
-
 # Found standard_parallel by trial and error with smaller and smaller tolerances given to mepy.assign_y_x(). longitude is mean.
 standard_parallel : 38.139
+
+# color map
+cmap : "Spectral_r"
+
+# resolution (dots per inch) of output
+dpi : 150
 
 

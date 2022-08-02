@@ -6,33 +6,9 @@ import matplotlib.path
 import numpy as np
 import os
 import pandas as pd
-import pdb
 from shapely.geometry import Point, multipolygon
 from tqdm import tqdm
 import xarray
-
-
-tendencies = dict(
-tmp = ['dt3dt_congwd','dt3dt_deepcnv','dt3dt_lw','dt3dt_mp','dt3dt_orogwd','dt3dt_pbl','dt3dt_rdamp','dt3dt_shalcnv','dt3dt_sw','dt3dt_nophys'],
-spfh= ['dq3dt_deepcnv','dq3dt_mp','dq3dt_pbl','dq3dt_shalcnv','dq3dt_nophys'],
-ugrd= ['du3dt_congwd','du3dt_deepcnv','du3dt_mp','du3dt_orogwd','du3dt_pbl','du3dt_rdamp','du3dt_shalcnv','du3dt_nophys'],
-vgrd= ['dv3dt_congwd','dv3dt_deepcnv','dv3dt_mp','dv3dt_orogwd','dv3dt_pbl','dv3dt_rdamp','dv3dt_shalcnv','dv3dt_nophys']
-)
-nametime0 = dict(
-        tmp="tmp_i",
-        spfh="qv_i",
-        ugrd="ugrd_i",
-        vgrd="vgrd_i"
-        )
-
-
-cmap = "Spectral_r"
-dpi = 150
-extent = [-122, -72.7, 22.1, 49.5]
-lon_name = "grid_lont"
-lat_name = "grid_latt"
-# Found standard_parallel by trial and error with smaller and smaller tolerances given to mepy.assign_y_x(). longitude is mean.
-standard_parallel = 38.139
 
 def add_conus_features(ax):
     cl = ax.add_feature(cfeature.COASTLINE.with_scale('50m'), linewidth=0.3)
