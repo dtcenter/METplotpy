@@ -52,6 +52,9 @@ Potential tendency variables to read from fv3_history.nc
 variables to plot
 _________________
 
+The default variable names are shown in the table below and are set in YAML 
+config file *$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend//fv3_physics_tend_defaults.yaml* 
+
 +----------------------------+-------------+-------------------+-------------+-------------+
 |           tendency         | temperature | specific humidity |   u-wind    |   v-wind    |
 +============================+=============+===================+=============+=============+
@@ -99,13 +102,13 @@ Save this file in a directory where you have read and write permissions, such as
 $WORKING_DIR/data/fv3_physics_tend, where $WORKING_DIR is the path to the directory where you will save
 input data.
 
-Configuration Files
+Configuration File
 ___________________
 
 There is a YAML config file located in
-*$METPLOTPY_BASE/metplotpy/plots/config/fv3_physics_defaults.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend//fv3_physics_tend_defaults.yaml* 
 
-.. literalinclude:: ../../metplotpy/plots/config/fv3_physics_defaults.yaml
+.. literalinclude:: ../../metplotpy/plots/fv3_physics_tend//fv3_physics_tend_defaults.yaml
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
