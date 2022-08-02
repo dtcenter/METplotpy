@@ -54,40 +54,72 @@ For additional details see `grid description in UFS Short Range Weather App user
 Available tendency variables
 ____________________________
 
-A small description of each tendency variable and its expected variable name is shown below. 
-If your history file is different, one can change these expected variable names in YAML config file 
+A small description of each tendency variable and their nicknames are shown below. Some  
+tendencies do not apply to all four state variables, so these cells are blank. 
+
++----------------------------+-------------+-------------------+-------------+-------------+
+|           tendency         | temperature | specific humidity |   u-wind    |   v-wind    |
++============================+=============+===================+=============+=============+
+|convective gravity wave drag|       congwd|                   |      congwd |      congwd |
++----------------------------+-------------+-------------------+-------------+-------------+
+|       deep convection      |      deepcnv|         deepcnv   |      deepcnv|      deepcnv|
++----------------------------+-------------+-------------------+-------------+-------------+
+|     long wave radiation    |        lw   |                   |             |             |
++----------------------------+-------------+-------------------+-------------+-------------+
+|        microphysics        |        mp   |           mp      |        mp   |         mp  |
++----------------------------+-------------+-------------------+-------------+-------------+
+|orographic gravity wave drag|       orogwd|                   |      orogwd |      orogwd |
++----------------------------+-------------+-------------------+-------------+-------------+
+|  planetary boundary layer  |        pbl  |           pbl     |        pbl  |        pbl  |
++----------------------------+-------------+-------------------+-------------+-------------+
+|      Rayleigh damping      |       rdamp |                   |       rdamp |       rdamp |
++----------------------------+-------------+-------------------+-------------+-------------+
+|     shallow convection     |      shalcnv|         shalcnv   |      shalcnv|      shalcnv|
++----------------------------+-------------+-------------------+-------------+-------------+
+|    short wave radiation    |        sw   |                   |             |             |
++----------------------------+-------------+-------------------+-------------+-------------+
+|  total physics (all above) |       phys  |           phys    |      phys   |        phys |
++----------------------------+-------------+-------------------+-------------+-------------+
+|           dynamics         |       nophys|          nophys   |       nophys|       nophys|
++----------------------------+-------------+-------------------+-------------+-------------+
+| state variable at validtime|     tmp     |        spfh       |    ugrd     |    vgrd     |
++----------------------------+-------------+-------------------+-------------+-------------+
+| actual change in state var |    dtmp     |       dspfh       |   dugrd     |   dvgrd     |
++----------------------------+-------------+-------------------+-------------+-------------+
+
+
+
+
+The expected names of the netCDF variables in the history file are shown below. If your history 
+file is different, one can change them in YAML config file 
 *$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
 
-+-------------------------------+-------------+-------------------+-------------+-------------+
-|            tendency           | temperature | specific humidity |   u-wind    |   v-wind    |
-+===============================+=============+===================+=============+=============+
-| convective gravity wave drag  | dt3dt_congwd|                   |du3dt_congwd |dv3dt_congwd |
-+-------------------------------+-------------+-------------------+-------------+-------------+
-|         deep convection       |dt3dt_deepcnv|   dq3dt_deepcnv   |du3dt_deepcnv|dv3dt_deepcnv|
-+-------------------------------+-------------+-------------------+-------------+-------------+
-|      long wave radiation      |  dt3dt_lw   |                   |             |             |
-+-------------------------------+-------------+-------------------+-------------+-------------+
-|          microphysics         |  dt3dt_mp   |     dq3dt_mp      |  du3dt_mp   |   dv3dt_mp  |
-+-------------------------------+-------------+-------------------+-------------+-------------+
-| orographic gravity wave drag  | dt3dt_orogwd|                   |du3dt_orogwd |dv3dt_orogwd |
-+-------------------------------+-------------+-------------------+-------------+-------------+
-|   planetary boundary layer    |  dt3dt_pbl  |     dq3dt_pbl     |  du3dt_pbl  |  dv3dt_pbl  |
-+-------------------------------+-------------+-------------------+-------------+-------------+
-|        Rayleigh damping       | dt3dt_rdamp |                   | du3dt_rdamp | dv3dt_rdamp |
-+-------------------------------+-------------+-------------------+-------------+-------------+
-|       shallow convection      |dt3dt_shalcnv|   dq3dt_shalcnv   |du3dt_shalcnv|dv3dt_shalcnv|
-+-------------------------------+-------------+-------------------+-------------+-------------+
-|      short wave radiation     |  dt3dt_sw   |                   |             |             |
-+-------------------------------+-------------+-------------------+-------------+-------------+
-|    total physics (all above)  | dt3dt_phys  |     dq3dt_phys    |du3dt_phys   |  dv3dt_phys |
-+-------------------------------+-------------+-------------------+-------------+-------------+
-|             dynamics          | dt3dt_nophys|    dq3dt_nophys   | du3dt_nophys| dv3dt_nophys|
-+-------------------------------+-------------+-------------------+-------------+-------------+
-|state var at end of time window|     tmp     |        spfh       |    ugrd     |    vgrd     |
-+-------------------------------+-------------+-------------------+-------------+-------------+
-|   actual change in state var  |    dtmp     |       dspfh       |   dugrd     |   dvgrd     |
-+-------------------------------+-------------+-------------------+-------------+-------------+
 
++----------------------------+-------------+-------------------+-------------+-------------+
+|           tendency         | temperature | specific humidity |   u-wind    |   v-wind    |
++============================+=============+===================+=============+=============+
+|convective gravity wave drag| dt3dt_congwd|                   |du3dt_congwd |dv3dt_congwd |
++----------------------------+-------------+-------------------+-------------+-------------+
+|       deep convection      |dt3dt_deepcnv|   dq3dt_deepcnv   |du3dt_deepcnv|dv3dt_deepcnv|
++----------------------------+-------------+-------------------+-------------+-------------+
+|     long wave radiation    |  dt3dt_lw   |                   |             |             |
++----------------------------+-------------+-------------------+-------------+-------------+
+|        microphysics        |  dt3dt_mp   |     dq3dt_mp      |  du3dt_mp   |   dv3dt_mp  |
++----------------------------+-------------+-------------------+-------------+-------------+
+|orographic gravity wave drag| dt3dt_orogwd|                   |du3dt_orogwd |dv3dt_orogwd |
++----------------------------+-------------+-------------------+-------------+-------------+
+|  planetary boundary layer  |  dt3dt_pbl  |     dq3dt_pbl     |  du3dt_pbl  |  dv3dt_pbl  |
++----------------------------+-------------+-------------------+-------------+-------------+
+|      Rayleigh damping      | dt3dt_rdamp |                   | du3dt_rdamp | dv3dt_rdamp |
++----------------------------+-------------+-------------------+-------------+-------------+
+|     shallow convection     |dt3dt_shalcnv|   dq3dt_shalcnv   |du3dt_shalcnv|dv3dt_shalcnv|
++----------------------------+-------------+-------------------+-------------+-------------+
+|    short wave radiation    |  dt3dt_sw   |                   |             |             |
++----------------------------+-------------+-------------------+-------------+-------------+
+|  total physics (all above) | dt3dt_phys  |     dq3dt_phys    |du3dt_phys   |  dv3dt_phys |
++----------------------------+-------------+-------------------+-------------+-------------+
+|           dynamics         | dt3dt_nophys|    dq3dt_nophys   | du3dt_nophys| dv3dt_nophys|
++----------------------------+-------------+-------------------+-------------+-------------+
 
 
 Example
@@ -124,11 +156,9 @@ To generate example tendency plots (i.e. using settings in the
 .. code-block:: bash
 
    cd $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
+   python planview_fv3.py -h
    
-   
-* Run the following on the command line:
-
-Plan view::
+Plan view usage::
 
    usage: planview_fv3.py [-h] [-d] [--method {nearest,linear,loglinear}] [--ncols NCOLS] [-o OFILE] [-p PFULL [PFULL ...]] [-s SHP] [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
                           historyfile gridfile {tmp,spfh,ugrd,vgrd} {nophys,dvgrd,deepcnv,sw,dtmp,rdamp,orogwd,pbl,dspfh,congwd,shalcnv,mp,resid,lw,dugrd}
@@ -170,7 +200,12 @@ A plot named **tmp_500hPa.20190504_150000-20190504_210000.png** will be generate
 .. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp_500hPa.20190504_150000-20190504_210000.png
 
 
-Vertical profile of areal mean::
+.. code-block:: bash
+
+   python vert_profile.py -h 
+   
+
+Vertical profile of areal mean usage::
 
    usage: vert_profile_fv3.py [-h] [-d] [-o OFILE] [--resid] [-s SHP]
                               [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
@@ -196,16 +231,19 @@ Vertical profile of areal mean::
      -v VALIDTIME, --validtime VALIDTIME
                            valid time (default: None)
 
-A plot named **tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the plotting command:
-
 .. code-block:: bash
 
    python vert_profile_fv3.py $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/fv3_history.nc $WORKING_DIR/CONUS_25km_GFSv15p2
 
+This plot named **tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the command:
+
 .. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png
 
+.. code-block:: bash
 
-Vertical cross section::
+   python cross_section_vert.py -h 
+   
+Vertical cross section usage::
 
    usage: cross_section_vert.py [-h] [-d] [--dindex DINDEX] [--ncols NCOLS]
                                 [-o OFILE] [-s START START] [-e END END]
