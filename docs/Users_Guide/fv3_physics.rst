@@ -4,13 +4,17 @@ FV3 physics tendencies
 
 Description
 ===========
-Plot mean tendencies of temperature, moisture, and momentum over a time window 
+Plot tendencies of temperature, moisture, and wind components averaged over a time window 
 and spatial domain. Tendencies are partitioned into physics parameterizations and 
-model dynamics. The residual is defined as the difference between the actual change 
-in the state variable and the sum of the physics and dynamics tendencies. One can 
-plot a single tendency at multiple pressure levels or plot all tendencies at a 
-single pressure level. Plan views (horizontal cross sections) and vertical profiles 
-are available. 
+dynamics. Physics parameterizations include schemes like deep convection, convective 
+gravity wave drag, short wave radiation, planetary boundary layer, microphysics, 
+and others listed below. Non-physics tendencies (or dynamics) are due to horizontal
+and vertical motion. The residual (which should be zero) is the difference between
+the actual change in the state variable over the requested time window and the
+expected change due to physics parameterizations and dynamics tendencies. One can plot
+a single tendency component at multiple pressure levels or plot all tendency components
+at a single pressure level. Plan views (horizontal cross sections), vertical profiles,
+and difference plots are also available. 
 
 Please refer to the `METplus use case documentation
 <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsPrecip_obsOnly_Hovmoeller.html#sphx-glr-generated-model-applications-s2s-userscript-obsprecip-obsonly-hovmoeller-py>`_
@@ -38,52 +42,51 @@ Required Packages:
 Required input:
 ===============
 
-#. FV3 history file with tendencies (fv3_history.nc)
+#. FV3 3-D history file with physics and dynamics tendencies (fv3_history.nc)
 
-#. FV3 grid specification file with latititude and longitude (grid_spec.nc)
-
-
-
-FV3 output and grid specifications. [Grid description in UFS Short Range Weather App user manual](https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options)
+#. FV3 2-D grid specification file with latititude and longitude of each grid point (grid_spec.nc)
 
 
-Potential tendency variables to read from fv3_history.nc
 
-variables to plot
-_________________
+For additional details see `grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
 
-The default variable names are shown in the table below and are set in YAML 
-config file *$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend//fv3_physics_tend_defaults.yaml* 
 
-+----------------------------+-------------+-------------------+-------------+-------------+
-|           tendency         | temperature | specific humidity |   u-wind    |   v-wind    |
-+============================+=============+===================+=============+=============+
-|convective gravity wave drag| dt3dt_congwd|                   |du3dt_congwd |dv3dt_congwd |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|       deep convection      |dt3dt_deepcnv|   dq3dt_deepcnv   |du3dt_deepcnv|dv3dt_deepcnv|
-+----------------------------+-------------+-------------------+-------------+-------------+
-|     long wave radiation    |  dt3dt_lw   |                   |             |             |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|        microphysics        |  dt3dt_mp   |     dq3dt_mp      |  du3dt_mp   |   dv3dt_mp  |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|orographic gravity wave drag| dt3dt_orogwd|                   |du3dt_orogwd |dv3dt_orogwd |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|  planetary boundary layer  |  dt3dt_pbl  |     dq3dt_pbl     |  du3dt_pbl  |  dv3dt_pbl  |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|      Rayleigh damping      | dt3dt_rdamp |                   | du3dt_rdamp | dv3dt_rdamp |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|     shallow convection     |dt3dt_shalcnv|   dq3dt_shalcnv   |du3dt_shalcnv|dv3dt_shalcnv|
-+----------------------------+-------------+-------------------+-------------+-------------+
-|    short wave radiation    |  dt3dt_sw   |                   |             |             |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|  total physics (all above) | dt3dt_phys  |     dq3dt_phys    |du3dt_phys   |  dv3dt_phys |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|           dynamics         | dt3dt_nophys|    dq3dt_nophys   | du3dt_nophys| dv3dt_nophys|
-+----------------------------+-------------+-------------------+-------------+-------------+
-| state variable at validtime|     tmp     |        spfh       |    ugrd     |    vgrd     |
-+----------------------------+-------------+-------------------+-------------+-------------+
-| actual change in state var |    dtmp     |       dspfh       |   dugrd     |   dvgrd     |
-+----------------------------+-------------+-------------------+-------------+-------------+
+Available tendency variables
+____________________________
+
+A small description of each tendency variable and its expected variable name is shown below. 
+If your history file is different, one can change these expected variable names in YAML config file 
+*$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
+
++-------------------------------+-------------+-------------------+-------------+-------------+
+|            tendency           | temperature | specific humidity |   u-wind    |   v-wind    |
++===============================+=============+===================+=============+=============+
+| convective gravity wave drag  | dt3dt_congwd|                   |du3dt_congwd |dv3dt_congwd |
++-------------------------------+-------------+-------------------+-------------+-------------+
+|         deep convection       |dt3dt_deepcnv|   dq3dt_deepcnv   |du3dt_deepcnv|dv3dt_deepcnv|
++-------------------------------+-------------+-------------------+-------------+-------------+
+|      long wave radiation      |  dt3dt_lw   |                   |             |             |
++-------------------------------+-------------+-------------------+-------------+-------------+
+|          microphysics         |  dt3dt_mp   |     dq3dt_mp      |  du3dt_mp   |   dv3dt_mp  |
++-------------------------------+-------------+-------------------+-------------+-------------+
+| orographic gravity wave drag  | dt3dt_orogwd|                   |du3dt_orogwd |dv3dt_orogwd |
++-------------------------------+-------------+-------------------+-------------+-------------+
+|   planetary boundary layer    |  dt3dt_pbl  |     dq3dt_pbl     |  du3dt_pbl  |  dv3dt_pbl  |
++-------------------------------+-------------+-------------------+-------------+-------------+
+|        Rayleigh damping       | dt3dt_rdamp |                   | du3dt_rdamp | dv3dt_rdamp |
++-------------------------------+-------------+-------------------+-------------+-------------+
+|       shallow convection      |dt3dt_shalcnv|   dq3dt_shalcnv   |du3dt_shalcnv|dv3dt_shalcnv|
++-------------------------------+-------------+-------------------+-------------+-------------+
+|      short wave radiation     |  dt3dt_sw   |                   |             |             |
++-------------------------------+-------------+-------------------+-------------+-------------+
+|    total physics (all above)  | dt3dt_phys  |     dq3dt_phys    |du3dt_phys   |  dv3dt_phys |
++-------------------------------+-------------+-------------------+-------------+-------------+
+|             dynamics          | dt3dt_nophys|    dq3dt_nophys   | du3dt_nophys| dv3dt_nophys|
++-------------------------------+-------------+-------------------+-------------+-------------+
+|state var at end of time window|     tmp     |        spfh       |    ugrd     |    vgrd     |
++-------------------------------+-------------+-------------------+-------------+-------------+
+|   actual change in state var  |    dtmp     |       dspfh       |   dugrd     |   dvgrd     |
++-------------------------------+-------------+-------------------+-------------+-------------+
 
 
 
@@ -106,21 +109,11 @@ Configuration File
 ___________________
 
 There is a YAML config file located in
-*$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend//fv3_physics_tend_defaults.yaml* 
+*$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
 
 .. literalinclude:: ../../metplotpy/plots/fv3_physics_tend//fv3_physics_tend_defaults.yaml
 
-*$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
-
-e.g.
-
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
-
-or
-
-*/usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
-
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved.
 
 Run from the Command Line
 =========================
@@ -128,14 +121,11 @@ Run from the Command Line
 To generate example tendency plots (i.e. using settings in the
 **fv3_physics_defaults.yaml** configuration file) perform the following:
 
-*  If using the conda environment, verify the conda environment
-   is running and has has the required Python packages specified in the
-   **Required Packages** section above.
+.. code-block:: bash
 
-* Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_BASE*. where $METPLOTPY_BASE is the directory where you saved the
-  METplotpy source code (e.g. /home/someuser/METplotpy).
-
+   cd $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
+   
+   
 * Run the following on the command line:
 
 Plan view::
