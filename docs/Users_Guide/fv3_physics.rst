@@ -143,7 +143,7 @@ ___________________
 There is a YAML config file located in
 *$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
 
-.. literalinclude:: ../../metplotpy/plots/fv3_physics_tend//fv3_physics_tend_defaults.yaml
+.. literalinclude:: ../../metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved.
 
