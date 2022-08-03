@@ -33,6 +33,7 @@ def parse_args():
     parser.add_argument("statevariable", type=str, choices=state_variables, default="tmp", help="state variable")
     # ==========Optional Arguments===================
     parser.add_argument("-d", "--debug", action='store_true')
+    parser.add_argument("--nofineprint", action='store_true', help="Don't add metadata and created by date (for comparing images)")
     parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
     parser.add_argument("--resid", action="store_true", help="calculate residual")
     parser.add_argument("-s", "--shp", type=str, default=None, help="shape file directory for mask")
@@ -50,6 +51,7 @@ def main():
     variable   = args.statevariable
     debug      = args.debug
     resid      = args.resid
+    nofineprint= args.nofineprint
     ofile      = args.ofile
     shp        = args.shp
     subtract   = args.subtract
@@ -211,18 +213,19 @@ def main():
     title = f'{time0}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
     ax.set_title(title, wrap=True)
 
-    # Locate region of interest on conus map background. Put in inset.
-    projection = cartopy.crs.LambertConformal(central_longitude=-97.5, central_latitude=fv3["standard_parallel"])
-    ax_inset = plt.gcf().add_axes([.7, .001, .19, .13], projection=projection)
-    # astype(int) to avoid TypeError: numpy boolean subtract
-    cbar_kwargs = dict(ticks=[0.25,0.75],shrink=0.6)
-    pc = mask.assign_coords(lont=lont, latt=latt).astype(int).plot.pcolormesh(ax=ax_inset, x="lont", y="latt", infer_intervals=True, 
+    if shp:
+        # Locate region of interest on conus map background. Put in inset.
+        projection = cartopy.crs.LambertConformal(central_longitude=-97.5, central_latitude=fv3["standard_parallel"])
+        ax_inset = plt.gcf().add_axes([.7, .001, .19, .13], projection=projection)
+        # astype(int) to avoid TypeError: numpy boolean subtract
+        cbar_kwargs = dict(ticks=[0.25,0.75],shrink=0.6)
+        pc = mask.assign_coords(lont=lont, latt=latt).astype(int).plot.pcolormesh(ax=ax_inset, x="lont", y="latt", infer_intervals=True, 
             transform=cartopy.crs.PlateCarree(), cmap=plt.cm.get_cmap('cool',2), add_labels=False, cbar_kwargs=cbar_kwargs)
-    pc.colorbar.ax.set_yticklabels(["masked","valid"], fontsize='xx-small')
-    pc.colorbar.outline.set_visible(False)
-    physics_tend.add_conus_features(ax_inset)
-    extent = fv3["extent"]
-    ax_inset.set_extent(extent)
+        pc.colorbar.ax.set_yticklabels(["masked","valid"], fontsize='xx-small')
+        pc.colorbar.outline.set_visible(False)
+        physics_tend.add_conus_features(ax_inset)
+        extent = fv3["extent"]
+        ax_inset.set_extent(extent)
 
     # Annotate figure with details about figure creation. 
     fineprint  = f"history: {os.path.realpath(ifile.name)}"
@@ -232,7 +235,10 @@ def main():
     if shp: fineprint += f"\nmask: {shp}"
     fineprint += f"\ntotal area: {totalarea.data:~.0f}"
     fineprint += f"\ncreated {datetime.datetime.now(tz=None)}"
-    fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
+    if nofineprint:
+        logging.info(fineprint)
+    else:
+        fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
 
 
     plt.savefig(ofile, dpi=fv3["dpi"])

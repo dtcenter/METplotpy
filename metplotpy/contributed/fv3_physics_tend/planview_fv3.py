@@ -47,6 +47,7 @@ def parse_args():
     parser.add_argument("-d", "--debug", action='store_true')
     parser.add_argument("--method", type=str, choices=["nearest", "linear","loglinear"], default="nearest", help="vertical interpolation method")
     parser.add_argument("--ncols", type=int, default=None, help="number of columns")
+    parser.add_argument("--nofineprint", action='store_true', help="Don't add metadata and created by date (for comparing images)")
     parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
     parser.add_argument("-p", "--pfull", nargs='+', type=float, default=[1000,925,850,700,500,300,200,100,0], help="pressure level(s) in hPa to plot. If only one pressure level is provided, the type-of-tendency argument will be ignored and all tendencies will be plotted.")
     parser.add_argument("-s", "--shp", type=str, default=None, help="shape file directory for mask")
@@ -66,6 +67,7 @@ def main():
     debug      = args.debug
     method     = args.method
     ncols      = args.ncols
+    nofineprint= args.nofineprint
     ofile      = args.ofile
     pfull      = args.pfull * units.hPa
     shp        = args.shp
@@ -266,7 +268,10 @@ def main():
     fineprint += f"\ntotal area: {totalarea.data:~.0f}"
     fineprint += f"\nvertical interpolation method: {method}  requested levels: {pfull}"
     fineprint += f"\ncreated {datetime.datetime.now(tz=None)}"
-    fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
+    if nofineprint:
+        logging.info(fineprint)
+    else:
+        fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
 
 
     plt.savefig(ofile, dpi=fv3["dpi"])

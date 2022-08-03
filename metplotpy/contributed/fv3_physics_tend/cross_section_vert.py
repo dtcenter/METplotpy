@@ -37,6 +37,7 @@ def parse_args():
     parser.add_argument("-d", "--debug", action='store_true')
     parser.add_argument("--dindex", type=int, default=20, help="tick and gridline interval along cross section")
     parser.add_argument("--ncols", type=int, default=None, help="number of columns")
+    parser.add_argument("--nofineprint", action='store_true', help="Don't add metadata and created by date (for comparing images)")
     parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
     parser.add_argument("-s", "--start", nargs=2, type=float, default=(28, -115), help="start point")
     parser.add_argument("-e", "--end", nargs=2, type=float, default=(30, -82), help="end point")
@@ -55,6 +56,7 @@ def main():
     debug      = args.debug
     dindex     = args.dindex
     ncols      = args.ncols
+    nofineprint= args.nofineprint
     ofile      = args.ofile
     startpt    = args.start
     endpt      = args.end
@@ -227,7 +229,10 @@ def main():
         fineprint  += f"\nsubtract: {os.path.realpath(subtract.name)}"
     fineprint += f"\ngrid_spec: {os.path.realpath(gfile.name)}"
     fineprint += f"\ncreated {datetime.datetime.now(tz=None)}"
-    fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
+    if nofineprint:
+        logging.info(fineprint)
+    else:
+        fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
 
 
     plt.savefig(ofile, dpi=fv3["dpi"])
