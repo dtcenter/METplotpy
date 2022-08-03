@@ -16,10 +16,6 @@ a single tendency component at multiple pressure levels or plot all tendency com
 at a single pressure level. Plan views (horizontal cross sections), vertical profiles,
 and difference plots are also available. 
 
-Please refer to the `METplus use case documentation
-<https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsPrecip_obsOnly_Hovmoeller.html#sphx-glr-generated-model-applications-s2s-userscript-obsprecip-obsonly-hovmoeller-py>`_
-for instructions on how to plot FV3 physics tendencies.
-
 Required Packages:
 ==================
 
@@ -127,8 +123,8 @@ Sample Data
 ___________
 
 Sample data to plot physics tendencies are available in the `METplus data tar file
-<https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/v4.0/sample_data-s2s-4.0.tgz>`_  in the directory
-*model_applications/s2s/UserScript_obsPrecip_obsOnly_Hovmoeller*.
+<https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/vX.y/sample_data-xxx-x.y.tgz>`_  in the directory
+*xxx/fv3_physics_tend*.
 
 Save this file in a directory where you have read and write permissions, such as
 $WORKING_DIR/data/fv3_physics_tend, where $WORKING_DIR is the path to the directory where you will save
@@ -154,7 +150,10 @@ To generate example tendency plots using settings in the **fv3_physics_defaults.
    cd $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
    python planview_fv3.py -h
    
-Plan view usage::
+Plan view
+_________
+
+::
 
    usage: planview_fv3.py [-h] [-d] [--method {nearest,linear,loglinear}] 
                           [--ncols NCOLS] [--nofineprint] [-o OFILE] 
@@ -214,7 +213,10 @@ Generate a plan view of PBL tendency at default pressure levels:
 
    python vert_profile_fv3.py -h 
    
-Vertical profile usage::
+Vertical profile
+________________
+
+::
 
    usage: vert_profile_fv3.py [-h] [-d] [--nofineprint] [-o OFILE] [--resid] 
                               [-s SHP] [--subtract SUBTRACT] [-t TWINDOW] 
@@ -251,11 +253,14 @@ Generate vertical profile of temperature tendencies averaged over the mid-CONUS 
 
 .. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png
 
+Vertical cross section
+______________________
+
 .. code-block:: bash
 
    python cross_section_vert.py -h 
    
-Vertical cross section usage::
+Usage::
 
    usage: cross_section_vert.py [-h] [-d] [--dindex DINDEX] [--ncols NCOLS]
                                 [--nofineprint] [-o OFILE] [-s START START] 
