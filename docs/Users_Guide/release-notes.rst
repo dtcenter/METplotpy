@@ -9,9 +9,31 @@ Version |version| release notes (|release_date|)
 ________________________________________________
 
 
-Version 2.0.0 release notes (20220622)
+Version 2.0.0 release notes (20220802)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+beta2 release
+^^^^^^^^^^^^^
+
+* New Plots:
+
+* Enhancements: 
+
+   * **Add Revision Series Capability to line and box plots** (`#232 <https://github.com/dtcenter/METplotpy/issues/232>`_).
+
+
+* Internal:
+
+
+* Bugfixes:
+
+   * **Fix logic to guess path to default config when METPLOTPY_BASE is not set** (`#238 <https://github.com/dtcenter/METplotpy/issues/238>`_).
+
+
+
+
+beta1 release
+^^^^^^^^^^^^^
 
 * New Plots:
 
