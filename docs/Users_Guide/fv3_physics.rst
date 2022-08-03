@@ -154,7 +154,10 @@ To generate example tendency plots using settings in the **fv3_physics_defaults.
    cd $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
    python planview_fv3.py -h
    
-Plan view usage::
+Plan view
+_________
+
+::
 
    usage: planview_fv3.py [-h] [-d] [--method {nearest,linear,loglinear}] 
                           [--ncols NCOLS] [--nofineprint] [-o OFILE] 
@@ -214,7 +217,10 @@ Generate a plan view of PBL tendency at default pressure levels:
 
    python vert_profile_fv3.py -h 
    
-Vertical profile usage::
+Vertical profile
+________________
+
+::
 
    usage: vert_profile_fv3.py [-h] [-d] [--nofineprint] [-o OFILE] [--resid] 
                               [-s SHP] [--subtract SUBTRACT] [-t TWINDOW] 
@@ -251,11 +257,14 @@ Generate vertical profile of temperature tendencies averaged over the mid-CONUS 
 
 .. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png
 
+Vertical cross section
+______________________
+
 .. code-block:: bash
 
    python cross_section_vert.py -h 
    
-Vertical cross section usage::
+Usage::
 
    usage: cross_section_vert.py [-h] [-d] [--dindex DINDEX] [--ncols NCOLS]
                                 [--nofineprint] [-o OFILE] [-s START START] 
