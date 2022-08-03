@@ -90,7 +90,7 @@ tendencies do not apply to all four state variables, so these cells are blank.
 
 The expected names of the netCDF variables in the history file are shown below. If your history 
 file is different, one can change them in YAML config file 
-*$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
+*$METPLOTPY_BASE/metplotpy/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
 
 
 +----------------------------+-------------+-------------------+-------------+-------------+
@@ -140,7 +140,7 @@ ___________________
 There is a YAML config file located in
 *$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
 
-.. literalinclude:: ../../metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml
+.. literalinclude:: ../../metplotpy/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved.
 

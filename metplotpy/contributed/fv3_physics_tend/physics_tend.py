@@ -11,7 +11,8 @@ from shapely.geometry import Point, multipolygon
 import xarray
 import yaml
 
-fv3 = yaml.load(open("fv3_physics_tend_defaults.yaml"), Loader=yaml.FullLoader)
+# List of tendency variable names for each state variable, names of lat and lon variables in grid file, graphics parameters
+fv3 = yaml.load(open("../../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml"), Loader=yaml.FullLoader)
 tendency_varnames = fv3["tendency_varnames"]
 time0_varname = fv3["time0_varname"]
 

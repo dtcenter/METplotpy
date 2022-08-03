@@ -22,7 +22,7 @@ attributed to physics and non-physics tendencies when residual is not zero.
 """
 
 # List of tendency variable names for each state variable, names of lat and lon variables in grid file, graphics parameters
-fv3 = yaml.load(open("fv3_physics_tend_defaults.yaml"), Loader=yaml.FullLoader)
+fv3 = yaml.load(open("../../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml"), Loader=yaml.FullLoader)
 state_variables = fv3["tendency_varnames"].keys()
 
 def parse_args():
