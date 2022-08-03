@@ -35,8 +35,6 @@ Required Packages:
 
 * shapely
 
-* tqdm
-
 * xarray
 
 Required input:
@@ -150,8 +148,7 @@ There is a YAML config file located in
 Run from the Command Line
 =========================
 
-To generate example tendency plots (i.e. using settings in the
-**fv3_physics_defaults.yaml** configuration file) perform the following:
+To generate example tendency plots using settings in the **fv3_physics_defaults.yaml** configuration file, perform the following:
 
 .. code-block:: bash
 
@@ -190,22 +187,27 @@ Plan view usage::
      -v VALIDTIME, --validtime VALIDTIME
                            valid time (default: None)
 
-A plot named **tmp_500hPa.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the plotting command:
+Generate a plan view of all tendencies at 500 hPa:
 
 .. code-block:: bash
 
    python planview_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -p 500 -t 6 -v 20190504T21
 
-
 .. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp_500hPa.20190504_150000-20190504_210000.png
 
+Generate a plan view of PBL tendency at default pressure levels:
+
+.. code-block:: bash
+
+   python planview_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -t 6 -v 20190504T21
+
+.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp_pbl.20190504_150000-20190504_210000.png
 
 .. code-block:: bash
 
    python vert_profile.py -h 
    
-
-Vertical profile of areal mean usage::
+Vertical profile usage::
 
    usage: vert_profile_fv3.py [-h] [-d] [-o OFILE] [--resid] [-s SHP]
                               [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
@@ -231,11 +233,11 @@ Vertical profile of areal mean usage::
      -v VALIDTIME, --validtime VALIDTIME
                            valid time (default: None)
 
+Generate vertical profile of temperature tendencies averaged over the mid-CONUS region:
+
 .. code-block:: bash
 
-   python vert_profile_fv3.py $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/fv3_history.nc $WORKING_DIR/CONUS_25km_GFSv15p2
-
-This plot named **tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the command:
+   python vert_profile_fv3.py $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/fv3_history.nc $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/grid_spec.nc tmp -t 6 -v 20190504T21 -s test/MID_CONUS
 
 .. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png
 
@@ -275,7 +277,7 @@ Vertical cross section usage::
      -v VALIDTIME, --validtime VALIDTIME
                            valid time (default: None)
 
-A plot named **tmp_32.0N-115.0E-34.0N-82.0E.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the plotting command:
+Generate vertical cross section from 32°N 115°W to 34°N 82°W:
 
 .. code-block:: bash
 
