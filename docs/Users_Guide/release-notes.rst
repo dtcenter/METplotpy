@@ -20,6 +20,8 @@ beta2 release
 * Enhancements: 
 
    * **Add Revision Series Capability to line and box plots** (`#232 <https://github.com/dtcenter/METplotpy/issues/232>`_).
+   
+   * **Set up SonarQube to run nightly** (`#38 <https://github.com/dtcenter/METplus-Internal/issues/38>`_).
 
 
 * Internal:
