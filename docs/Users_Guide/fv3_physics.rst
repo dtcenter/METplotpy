@@ -4,13 +4,17 @@ FV3 physics tendencies
 
 Description
 ===========
-Plot mean tendencies of temperature, moisture, and momentum over a time window 
+Plot tendencies of temperature, moisture, and wind components averaged over a time window 
 and spatial domain. Tendencies are partitioned into physics parameterizations and 
-model dynamics. The residual is defined as the difference between the actual change 
-in the state variable and the sum of the physics and dynamics tendencies. One can 
-plot a single tendency at multiple pressure levels or plot all tendencies at a 
-single pressure level. Plan views (horizontal cross sections) and vertical profiles 
-are available. 
+dynamics. Physics parameterizations include schemes like deep convection, convective 
+gravity wave drag, short wave radiation, planetary boundary layer, microphysics, 
+and others listed below. Non-physics tendencies (or dynamics) are due to horizontal
+and vertical motion. The residual (which should be zero) is the difference between
+the actual change in the state variable over the requested time window and the
+expected change due to physics parameterizations and dynamics tendencies. One can plot
+a single tendency component at multiple pressure levels or plot all tendency components
+at a single pressure level. Plan views (horizontal cross sections), vertical profiles,
+and difference plots are also available. 
 
 Please refer to the `METplus use case documentation
 <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsPrecip_obsOnly_Hovmoeller.html#sphx-glr-generated-model-applications-s2s-userscript-obsprecip-obsonly-hovmoeller-py>`_
@@ -31,29 +35,63 @@ Required Packages:
 
 * shapely
 
-* tqdm
-
 * xarray
 
 Required input:
 ===============
 
-#. FV3 history file with tendencies (fv3_history.nc)
+#. FV3 3-D history file with physics and dynamics tendencies (fv3_history.nc)
 
-#. FV3 grid specification file with latititude and longitude (grid_spec.nc)
-
-
-
-FV3 output and grid specifications. [Grid description in UFS Short Range Weather App user manual](https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options)
+#. FV3 2-D grid specification file with latititude and longitude of each grid point (grid_spec.nc)
 
 
-Potential tendency variables to read from fv3_history.nc
 
-variables to plot
-_________________
+For additional details see `grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
 
-The default variable names are shown in the table below and are set in YAML 
-config file *$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend//fv3_physics_tend_defaults.yaml* 
+
+Available tendency variables
+____________________________
+
+A small description of each tendency variable and their nicknames are shown below. Some  
+tendencies do not apply to all four state variables, so these cells are blank. 
+
++----------------------------+-------------+-------------------+-------------+-------------+
+|           tendency         | temperature | specific humidity |   u-wind    |   v-wind    |
++============================+=============+===================+=============+=============+
+|convective gravity wave drag|       congwd|                   |      congwd |      congwd |
++----------------------------+-------------+-------------------+-------------+-------------+
+|       deep convection      |      deepcnv|         deepcnv   |      deepcnv|      deepcnv|
++----------------------------+-------------+-------------------+-------------+-------------+
+|     long wave radiation    |        lw   |                   |             |             |
++----------------------------+-------------+-------------------+-------------+-------------+
+|        microphysics        |        mp   |           mp      |        mp   |         mp  |
++----------------------------+-------------+-------------------+-------------+-------------+
+|orographic gravity wave drag|       orogwd|                   |      orogwd |      orogwd |
++----------------------------+-------------+-------------------+-------------+-------------+
+|  planetary boundary layer  |        pbl  |           pbl     |        pbl  |        pbl  |
++----------------------------+-------------+-------------------+-------------+-------------+
+|      Rayleigh damping      |       rdamp |                   |       rdamp |       rdamp |
++----------------------------+-------------+-------------------+-------------+-------------+
+|     shallow convection     |      shalcnv|         shalcnv   |      shalcnv|      shalcnv|
++----------------------------+-------------+-------------------+-------------+-------------+
+|    short wave radiation    |        sw   |                   |             |             |
++----------------------------+-------------+-------------------+-------------+-------------+
+|  total physics (all above) |       phys  |           phys    |      phys   |        phys |
++----------------------------+-------------+-------------------+-------------+-------------+
+|           dynamics         |       nophys|          nophys   |       nophys|       nophys|
++----------------------------+-------------+-------------------+-------------+-------------+
+| state variable at validtime|     tmp     |        spfh       |    ugrd     |    vgrd     |
++----------------------------+-------------+-------------------+-------------+-------------+
+| actual change in state var |    dtmp     |       dspfh       |   dugrd     |   dvgrd     |
++----------------------------+-------------+-------------------+-------------+-------------+
+
+
+
+
+The expected names of the netCDF variables in the history file are shown below. If your history 
+file is different, one can change them in YAML config file 
+*$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
+
 
 +----------------------------+-------------+-------------------+-------------+-------------+
 |           tendency         | temperature | specific humidity |   u-wind    |   v-wind    |
@@ -80,11 +118,6 @@ config file *$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend//fv3_physics_tend_
 +----------------------------+-------------+-------------------+-------------+-------------+
 |           dynamics         | dt3dt_nophys|    dq3dt_nophys   | du3dt_nophys| dv3dt_nophys|
 +----------------------------+-------------+-------------------+-------------+-------------+
-| state variable at validtime|     tmp     |        spfh       |    ugrd     |    vgrd     |
-+----------------------------+-------------+-------------------+-------------+-------------+
-| actual change in state var |    dtmp     |       dspfh       |   dugrd     |   dvgrd     |
-+----------------------------+-------------+-------------------+-------------+-------------+
-
 
 
 Example
@@ -93,8 +126,7 @@ Example
 Sample Data
 ___________
 
-The sample data used to create an plot physics tendencies are available in
-the `METplus data tar file
+Sample data to plot physics tendencies are available in the `METplus data tar file
 <https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/v4.0/sample_data-s2s-4.0.tgz>`_  in the directory
 *model_applications/s2s/UserScript_obsPrecip_obsOnly_Hovmoeller*.
 
@@ -106,42 +138,30 @@ Configuration File
 ___________________
 
 There is a YAML config file located in
-*$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend//fv3_physics_tend_defaults.yaml* 
+*$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
 
-.. literalinclude:: ../../metplotpy/plots/fv3_physics_tend//fv3_physics_tend_defaults.yaml
+.. literalinclude:: ../../metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml
 
-*$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
-
-e.g.
-
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
-
-or
-
-*/usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
-
+*$METPLOTPY_BASE* is the directory where the METplotpy code is saved.
 
 Run from the Command Line
 =========================
 
-To generate example tendency plots (i.e. using settings in the
-**fv3_physics_defaults.yaml** configuration file) perform the following:
+To generate example tendency plots using settings in the **fv3_physics_defaults.yaml** configuration file, perform the following:
 
-*  If using the conda environment, verify the conda environment
-   is running and has has the required Python packages specified in the
-   **Required Packages** section above.
+.. code-block:: bash
 
-* Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_BASE*. where $METPLOTPY_BASE is the directory where you saved the
-  METplotpy source code (e.g. /home/someuser/METplotpy).
+   cd $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
+   python planview_fv3.py -h
+   
+Plan view usage::
 
-* Run the following on the command line:
-
-Plan view::
-
-   usage: planview_fv3.py [-h] [-d] [--method {nearest,linear,loglinear}] [--ncols NCOLS] [-o OFILE] [-p PFULL [PFULL ...]] [-s SHP] [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
-                          historyfile gridfile {tmp,spfh,ugrd,vgrd} {nophys,dvgrd,deepcnv,sw,dtmp,rdamp,orogwd,pbl,dspfh,congwd,shalcnv,mp,resid,lw,dugrd}
+   usage: planview_fv3.py [-h] [-d] [--method {nearest,linear,loglinear}] 
+                          [--ncols NCOLS] [--nofineprint] [-o OFILE] 
+                          [-p PFULL [PFULL ...]] [-s SHP] [--subtract SUBTRACT] 
+                          [-t TWINDOW] [-v VALIDTIME]
+                          historyfile gridfile {tmp,spfh,ugrd,vgrd} 
+                          {nophys,dvgrd,deepcnv,sw,dtmp,rdamp,orogwd,pbl,dspfh,congwd,shalcnv,mp,resid,lw,dugrd}
 
    Plan view of FV3 diagnostic tendency
 
@@ -158,10 +178,14 @@ Plan view::
      --method {nearest,linear,loglinear}
                            vertical interpolation method (default: nearest)
      --ncols NCOLS         number of columns (default: None)
+     --nofineprint         Don't add metadata and created by date (for comparing
+                           images) (default: False)
      -o OFILE, --ofile OFILE
                            name of output image file (default: None)
      -p PFULL [PFULL ...], --pfull PFULL [PFULL ...]
-                           pressure level(s) in hPa to plot. If only one pressure level is provided, the type-of-tendency argument will be ignored and all tendencies will be plotted.
+                           pressure level(s) in hPa to plot. If only one pressure 
+                           level is provided, the type-of-tendency argument will 
+                           be ignored and all tendencies will be plotted.
                            (default: [1000, 925, 850, 700, 500, 300, 200, 100, 0])
      -s SHP, --shp SHP     shape file directory for mask (default: None)
      --subtract SUBTRACT   FV3 history file to subtract (default: None)
@@ -170,20 +194,31 @@ Plan view::
      -v VALIDTIME, --validtime VALIDTIME
                            valid time (default: None)
 
-A plot named **tmp_500hPa.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the plotting command:
+Generate a plan view of all tendencies at 500 hPa:
 
 .. code-block:: bash
 
-   python planview_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -p 500 -t 6 -v 20190504T21
-
+   python planview_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -p 500 -t 6 -v 20190504T21 --nofineprint
 
 .. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp_500hPa.20190504_150000-20190504_210000.png
 
+Generate a plan view of PBL tendency at default pressure levels:
 
-Vertical profile of areal mean::
+.. code-block:: bash
 
-   usage: vert_profile_fv3.py [-h] [-d] [-o OFILE] [--resid] [-s SHP]
-                              [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+   python planview_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -t 6 -v 20190504T21 --nofineprint
+
+.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp_pbl.20190504_150000-20190504_210000.png
+
+.. code-block:: bash
+
+   python vert_profile_fv3.py -h 
+   
+Vertical profile usage::
+
+   usage: vert_profile_fv3.py [-h] [-d] [--nofineprint] [-o OFILE] [--resid] 
+                              [-s SHP] [--subtract SUBTRACT] [-t TWINDOW] 
+                              [-v VALIDTIME]
                               historyfile gridfile {tmp,spfh,ugrd,vgrd}
 
    Vertical profile of FV3 diagnostic tendencies
@@ -196,6 +231,8 @@ Vertical profile of areal mean::
    optional arguments:
      -h, --help            show this help message and exit
      -d, --debug
+     --nofineprint         Don't add metadata and created by date (for comparing
+                           images) (default: False)
      -o OFILE, --ofile OFILE
                            name of output image file (default: None)
      --resid               calculate residual (default: False)
@@ -206,20 +243,24 @@ Vertical profile of areal mean::
      -v VALIDTIME, --validtime VALIDTIME
                            valid time (default: None)
 
-A plot named **tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the plotting command:
+Generate vertical profile of temperature tendencies averaged over the mid-CONUS region:
 
 .. code-block:: bash
 
-   python vert_profile_fv3.py $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/fv3_history.nc $WORKING_DIR/CONUS_25km_GFSv15p2
+   python vert_profile_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 6 -v 20190504T21 -s test/MID_CONUS --nofineprint
 
 .. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png
 
+.. code-block:: bash
 
-Vertical cross section::
+   python cross_section_vert.py -h 
+   
+Vertical cross section usage::
 
    usage: cross_section_vert.py [-h] [-d] [--dindex DINDEX] [--ncols NCOLS]
-                                [-o OFILE] [-s START START] [-e END END]
-                                [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+                                [--nofineprint] [-o OFILE] [-s START START] 
+                                [-e END END] [--subtract SUBTRACT] [-t TWINDOW] 
+                                [-v VALIDTIME]
                                 historyfile gridfile {tmp,spfh,ugrd,vgrd}
 
    Vertical cross section of FV3 diagnostic tendency
@@ -235,6 +276,8 @@ Vertical cross section::
      --dindex DINDEX       tick and gridline interval along cross section
                            (default: 20)
      --ncols NCOLS         number of columns (default: None)
+     --nofineprint         Don't add metadata and created by date (for comparing
+                           images) (default: False)
      -o OFILE, --ofile OFILE
                            name of output image file (default: None)
      -s START START, --start START START
@@ -247,16 +290,13 @@ Vertical cross section::
      -v VALIDTIME, --validtime VALIDTIME
                            valid time (default: None)
 
-A plot named **tmp_32.0N-115.0E-34.0N-82.0E.20190504_150000-20190504_210000.png** will be generated in the directory from which you ran the plotting command:
+Generate vertical cross section from 32°N 115°W to 34°N 82°W:
 
 .. code-block:: bash
 
-   python cross_section_vert.py $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/fv3_history.nc $WORKING_DIR/CONUS_25km_GFSv15p2/2019050412/grid_spec.nc tmp -t 6 -v 20190504T21 -s 32 -115 -e 34 -82
+   python cross_section_vert.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 6 -v 20190504T21 -s 32 -115 -e 34 -82 --nofineprint
 
 .. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp_32.0N-115.0E-34.0N-82.0E.20190504_150000-20190504_210000.png
-
-
-
 
 Difference plot
 _______________
@@ -266,10 +306,7 @@ Put file you want to subtract after the --subtract argument:
 
 .. code-block:: bash
 
-   python $METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/vert_profile_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp --subtract $WORKING_DIR/fv3_history2.nc
+   python vert_profile_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp --subtract $WORKING_DIR/fv3_history.nc --nofineprint
 
-where $METPLOTPY_BASE is the directory where you are storing the METplotpy source code and $WORKING_DIR is the
-directory where you have read and write permissions and where you are storing all your input data and where you
-copied the default config file.
-
+.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp.vert_profile.20190505_090000-20190505_120000.png
 
