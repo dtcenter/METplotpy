@@ -1,7 +1,6 @@
 import argparse
 import cartopy
 import datetime
-import fv3 # dictionary of tendencies for each state variable, varnames of lat and lon variables in grid file, graphics parameters
 import logging
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
@@ -11,8 +10,10 @@ import numpy as np
 import os
 import pandas as pd
 import pdb
+import physics_tend
 import sys
 import xarray
+import yaml
 
 """
 Plan view of tendencies of t, q, u, or v from physics parameterizations, dynamics (non-physics), their total, and residual.
@@ -20,7 +21,9 @@ Total change is the actual change in state variable from first time to last time
 attributed to physics and non-physics tendencies when residual is not zero.
 """
 
-state_variables = fv3.tendencies.keys()
+# List of tendency variable names for each state variable, names of lat and lon variables in grid file, graphics parameters
+fv3 = yaml.load(open("fv3_physics_tend_defaults.yaml"), Loader=yaml.FullLoader)
+state_variables = fv3["tendency_varnames"].keys()
 
 def parse_args():
 
@@ -75,8 +78,8 @@ def main():
     # Read lat/lon from gfile
     logging.debug(f"read lat/lon from {gfile}")
     gds  = xarray.open_dataset(gfile.name)
-    lont = gds[fv3.lon_name]
-    latt = gds[fv3.lat_name]
+    lont = gds[fv3["lon_name"]]
+    latt = gds[fv3["lat_name"]]
 
     # Open input file
     logging.debug(f"About to open {ifile}")
@@ -93,8 +96,8 @@ def main():
             fv3ds -= xarray.open_dataset(subtract.name)
 
     fv3ds = fv3ds.assign_coords(lont=lont, latt=latt) # lont and latt used by pcolorfill()
-    tendency_vars = fv3.tendencies[variable] # list of tendency variable names for requested state variable
-    fv3ds = fv3.add_time0(fv3ds, variable)
+    tendency_vars = fv3["tendency_varnames"][variable] # list of tendency variable names for requested state variable
+    fv3ds = physics_tend.add_time0(fv3ds, variable)
     tendencies = fv3ds[tendency_vars] # subset of original Dataset
 
     if validtime is None:
@@ -180,7 +183,7 @@ def main():
     da2plot = da2plot.drop_vars(['grid_yt','grid_xt','long_name']).rename(dict(grid_yt="y",grid_xt="x")) # these confuse metpy 
     # fv3 uses Extended Schmidt Gnomomic grid for regional applications. This is not in cartopy.
     # Found similar Lambert Conformal projection by trial and error.
-    da2plot = da2plot.metpy.assign_crs( grid_mapping_name="lambert_conformal_conic", standard_parallel=fv3.standard_parallel, longitude_of_central_meridian=-97.5, latitude_of_projection_origin=fv3.standard_parallel).metpy.assign_y_x(force=True, tolerance=44069*units.m)
+    da2plot = da2plot.metpy.assign_crs( grid_mapping_name="lambert_conformal_conic", standard_parallel=fv3["standard_parallel"], longitude_of_central_meridian=-97.5, latitude_of_projection_origin=fv3["standard_parallel"]).metpy.assign_y_x(force=True, tolerance=44069*units.m)
     # Define cross section. Use different variable than da2plot because da2plot is used later for inset.
     # upgraded xarray to 0.21.1 to avoid FutureWarning: Passing method to Float64Index.get_loc is deprecated
     cross = cross_section(da2plot, startpt, endpt)
@@ -189,7 +192,7 @@ def main():
     logging.info("plot pcolormesh")
     w,h = 0.18, 0.18 # normalized width and height of inset. Shrink colorbar to provide space.
     pc = cross.plot.pcolormesh(x="index", y="pfull", yincrease=False, col=col, col_wrap=ncols, robust=True, infer_intervals=True,
-            cmap=fv3.cmap, cbar_kwargs={'shrink':1-h, 'anchor':(0,0.25-h)}) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
+            cmap=fv3["cmap"], cbar_kwargs={'shrink':1-h, 'anchor':(0,0.25-h)}) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
     for ax in pc.axes.flat:
         ax.grid(visible=True, color="grey", alpha=0.5, lw=0.5)
         ax.xaxis.set_major_locator(MultipleLocator(dindex))
@@ -214,8 +217,8 @@ def main():
     ax_inset.scatter(cross['x'][dindex::dindex], cross['y'][dindex::dindex], s=3.4, c='white', linewidths=0.2, edgecolors='k', zorder=bb.get_zorder()+1)
     # Plot the path of the cross section
     ax_inset.plot(cross['x'], cross['y'], c='k', zorder=2)
-    fv3.add_conus_features(ax_inset)
-    extent = fv3.extent
+    physics_tend.add_conus_features(ax_inset)
+    extent = fv3["extent"]
     ax_inset.set_extent(extent)
 
     # Annotate figure with details about figure creation. 
@@ -227,7 +230,7 @@ def main():
     fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
 
 
-    plt.savefig(ofile, dpi=fv3.dpi)
+    plt.savefig(ofile, dpi=fv3["dpi"])
     logging.info(f'created {os.path.realpath(ofile)}')
 
 if __name__ == "__main__":

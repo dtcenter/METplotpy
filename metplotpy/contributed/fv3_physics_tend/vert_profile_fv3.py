@@ -1,7 +1,6 @@
 import argparse
 import cartopy
 import datetime
-import fv3 # dictionary of tendencies for each state variable, varnames of lat and lon variables in grid file, graphics parameters
 import logging
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
@@ -10,8 +9,10 @@ import numpy as np
 import os
 import pandas as pd
 import pdb
+import physics_tend
 import sys
 import xarray
+import yaml
 
 """
 Vertical profile of tendencies of t, q, u, or v from physics parameterizations, dynamics (non-physics), their total, and residual.
@@ -19,7 +20,9 @@ Total change is the actual change in state variable from first time to last time
 attributed to physics and non-physics tendencies when residual is not zero.
 """
 
-state_variables = fv3.tendencies.keys()
+# List of tendency variable names for each state variable, names of lat and lon variables in grid file, graphics parameters
+fv3 = yaml.load(open("fv3_physics_tend_defaults.yaml"), Loader=yaml.FullLoader)
+state_variables = fv3["tendency_varnames"].keys()
 
 def parse_args():
     # =============Arguments===================
@@ -69,8 +72,8 @@ def main():
     # Read lat/lon/area from gfile
     logging.debug(f"read lat/lon/area from {gfile}")
     gds  = xarray.open_dataset(gfile.name)
-    lont = gds[fv3.lon_name]
-    latt = gds[fv3.lat_name]
+    lont = gds[fv3["lon_name"]]
+    latt = gds[fv3["lat_name"]]
     area = gds["area"]
 
     # Open input file
@@ -88,8 +91,8 @@ def main():
             fv3ds -= xarray.open_dataset(subtract.name)
 
     fv3ds = fv3ds.assign_coords(lont=lont, latt=latt) # lont and latt used by pcolorfill()
-    tendency_vars = fv3.tendencies[variable] # list of tendency variable names for requested state variable
-    fv3ds = fv3.add_time0(fv3ds, variable)
+    tendency_vars = fv3["tendency_varnames"][variable] # list of tendency variable names for requested state variable
+    fv3ds = physics_tend.add_time0(fv3ds, variable)
     tendencies = fv3ds[tendency_vars] # subset of original Dataset
 
     if validtime is None:
@@ -160,7 +163,7 @@ def main():
         ofile = root + f".{shapename}" + ext
 
         # mask points outside shape
-        mask = fv3.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
+        mask = physics_tend.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
         mask = xarray.DataArray(mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
         da2plot = da2plot.where(mask, drop=True)
         area     = area.where(mask).fillna(0)
@@ -209,7 +212,7 @@ def main():
     ax.set_title(title, wrap=True)
 
     # Locate region of interest on conus map background. Put in inset.
-    projection = cartopy.crs.LambertConformal(central_longitude=-97.5, central_latitude=fv3.standard_parallel)
+    projection = cartopy.crs.LambertConformal(central_longitude=-97.5, central_latitude=fv3["standard_parallel"])
     ax_inset = plt.gcf().add_axes([.7, .001, .19, .13], projection=projection)
     # astype(int) to avoid TypeError: numpy boolean subtract
     cbar_kwargs = dict(ticks=[0.25,0.75],shrink=0.6)
@@ -217,8 +220,8 @@ def main():
             transform=cartopy.crs.PlateCarree(), cmap=plt.cm.get_cmap('cool',2), add_labels=False, cbar_kwargs=cbar_kwargs)
     pc.colorbar.ax.set_yticklabels(["masked","valid"], fontsize='xx-small')
     pc.colorbar.outline.set_visible(False)
-    fv3.add_conus_features(ax_inset)
-    extent = fv3.extent
+    physics_tend.add_conus_features(ax_inset)
+    extent = fv3["extent"]
     ax_inset.set_extent(extent)
 
     # Annotate figure with details about figure creation. 
@@ -232,7 +235,7 @@ def main():
     fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
 
 
-    plt.savefig(ofile, dpi=fv3.dpi)
+    plt.savefig(ofile, dpi=fv3["dpi"])
     logging.info(f'created {os.path.realpath(ofile)}')
 
 if __name__ == "__main__":

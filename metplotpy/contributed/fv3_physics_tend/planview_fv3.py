@@ -1,7 +1,6 @@
 import argparse
 import cartopy
 import datetime
-import fv3 # dictionary of tendencies for each state variable, varnames of lat and lon variables in grid file, graphics parameters
 import logging
 import matplotlib.pyplot as plt
 from metpy.units import units
@@ -9,8 +8,10 @@ import numpy as np
 import os
 import pandas as pd
 import pdb
+import physics_tend
 import sys
 import xarray
+import yaml
 
 """
 Plan view of tendencies of t, q, u, or v from physics parameterizations, dynamics (non-physics), their total, and residual.
@@ -18,13 +19,15 @@ Total change is the actual change in state variable from first time to last time
 attributed to physics and non-physics tendencies when residual is not zero.
 """
 
-state_variables = fv3.tendencies.keys()
+# List of tendency variable names for each state variable, names of lat and lon variables in grid file, graphics parameters
+fv3 = yaml.load(open("fv3_physics_tend_defaults.yaml"), Loader=yaml.FullLoader)
+state_variables = fv3["tendency_varnames"].keys()
 
 def parse_args():
     # Populate list of choices for contour fill variable argument.
     fill_choices = []
     for state_variable in state_variables: # tendencies for each state variable
-        fill_choices.extend(fv3.tendencies[state_variable])
+        fill_choices.extend(fv3["tendency_varnames"][state_variable])
     # Remove characters up to and including 1st underscore (e.g. du3dt_). 
     # for example dt3dt_pbl -> pbl
     fill_choices = ["_".join(x.split("_")[1:]) for x in fill_choices] # Just the physics/parameterization string after the "_"
@@ -90,8 +93,8 @@ def main():
     # Read lat/lon/area from gfile
     logging.debug(f"read lat/lon/area from {gfile}")
     gds  = xarray.open_dataset(gfile.name)
-    lont = gds[fv3.lon_name]
-    latt = gds[fv3.lat_name]
+    lont = gds[fv3["lon_name"]]
+    latt = gds[fv3["lat_name"]]
     area = gds["area"]
 
     # Open input file
@@ -109,8 +112,8 @@ def main():
             fv3ds -= xarray.open_dataset(subtract.name)
 
     fv3ds = fv3ds.assign_coords(lont=lont, latt=latt) # lont and latt used by pcolorfill()
-    tendency_vars = fv3.tendencies[variable] # list of tendency variable names for requested state variable
-    fv3ds = fv3.add_time0(fv3ds, variable)
+    tendency_vars = fv3["tendency_varnames"][variable] # list of tendency variable names for requested state variable
+    fv3ds = physics_tend.add_time0(fv3ds, variable)
     tendencies = fv3ds[tendency_vars] # subset of original Dataset
 
     if validtime is None:
@@ -211,7 +214,7 @@ def main():
         ofile = root + f".{shapename}" + ext
 
         # mask points outside shape
-        mask = fv3.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
+        mask = physics_tend.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
         mask = xarray.DataArray(mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
         da2plot = da2plot.where(mask, drop=True)
         area     = area.where(mask).fillna(0)
@@ -239,10 +242,10 @@ def main():
     logging.info("plot pcolormesh")
     pc = da2plot.plot.pcolormesh(x="lont", y="latt", col=col, col_wrap=ncols, robust=True, infer_intervals=True,
             transform=cartopy.crs.PlateCarree(),
-            cmap=fv3.cmap, cbar_kwargs={'shrink':0.8}, subplot_kws=subplot_kws) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
+            cmap=fv3["cmap"], cbar_kwargs={'shrink':0.8}, subplot_kws=subplot_kws) # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
     for ax in pc.axes.flat:
-        ax.set_extent(fv3.extent) # Why needed only when col=tendency_dim? With col="pfull" it shrinks to unmasked size.
-        fv3.add_conus_features(ax)
+        ax.set_extent(fv3["extent"]) # Why needed only when col=tendency_dim? With col="pfull" it shrinks to unmasked size.
+        physics_tend.add_conus_features(ax)
 
     # Add time to title and output filename
     root, ext = os.path.splitext(ofile)
@@ -266,7 +269,7 @@ def main():
     fineprint_obj = plt.annotate(text=fineprint, xy=(1,1), xycoords='figure pixels', fontsize=5)
 
 
-    plt.savefig(ofile, dpi=fv3.dpi)
+    plt.savefig(ofile, dpi=fv3["dpi"])
     logging.info(f'created {os.path.realpath(ofile)}')
 
 if __name__ == "__main__":
