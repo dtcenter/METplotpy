@@ -136,16 +136,26 @@ class Box(BasePlot):
         # add derived for y1 axis
         num_series_y1_d = len(self.config_obj.get_config_value('derived_series_1'))
         for i, name in enumerate(self.config_obj.get_config_value('derived_series_1')):
-            series_obj = BoxSeries(self.config_obj, num_series_y1 + num_series_y2 + i,
+            # add default operation value if it is not provided
+            if len(name) == 2:
+                name.append("DIFF")
+            # include the series only if the name is valid
+            if len(name) == 3:
+                series_obj = BoxSeries(self.config_obj, num_series_y1 + num_series_y2 + i,
                                    input_data, series_list, name)
-            series_list.append(series_obj)
+                series_list.append(series_obj)
 
         # add derived for y2 axis
         for i, name in enumerate(self.config_obj.get_config_value('derived_series_2')):
-            series_obj = BoxSeries(self.config_obj,
+            # add default operation value if it is not provided
+            if len(name) == 2:
+                name.append("DIFF")
+            # include the series only if the name is valid
+            if len(name) == 3:
+                series_obj = BoxSeries(self.config_obj,
                                    num_series_y1 + num_series_y2 + num_series_y1_d + i,
                                    input_data, series_list, name, 2)
-            series_list.append(series_obj)
+                series_list.append(series_obj)
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
@@ -372,7 +382,7 @@ class Box(BasePlot):
                                  tickfont={'size': self.config_obj.x_tickfont_size}
                                  )
         # reverse xaxis if needed
-        if self.config_obj.xaxis_reverse is True:
+        if hasattr( self.config_obj, 'xaxis_reverse' ) and self.config_obj.xaxis_reverse is True:
             self.figure.update_xaxes(autorange="reversed")
 
     def _add_yaxis(self) -> None:
@@ -516,7 +526,7 @@ class Box(BasePlot):
                                           },
                                           'traceorder': 'normal'
                                           })
-        if self.config_obj.xaxis_reverse is True:
+        if hasattr( self.config_obj, 'xaxis_reverse' ) and self.config_obj.xaxis_reverse is True:
             self.figure.update_layout(legend={'traceorder':'reversed'})
 
     def write_html(self) -> None:
@@ -557,7 +567,8 @@ class Box(BasePlot):
                 filename = self.config_obj.points_path + os.path.sep + filename
 
             filename = filename + '.points1'
-
+            if os.path.exists(filename):
+                os.remove(filename)
             for series in self.series_list:
                 for indy_val in self.config_obj.indy_vals:
                     if calc_util.is_string_integer(indy_val):

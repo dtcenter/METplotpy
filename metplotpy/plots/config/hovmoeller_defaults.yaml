@@ -1,12 +1,19 @@
 plot_filename: erai_precip.png
-height: 800
-width: 1200
+input_data_file: ./precip.erai.sfc.1p0.2x.2014-2016.nc
+
+plot_height: 800
+plot_width: 1200
+# plot title
 title: ERAI Precipitation
 
-font_size: 20
+# Font size for the x-axis and y-axis labels and the title font size
+xy_label_font_size: 20
+title_size: 20
 
-xaxis_title: Longitude
-yaxis_title: Time
+# xaxis title
+xaxis: Longitude
+# yaxis title
+yaxis: Time
 
 date_start: 2016-01-01
 date_end: 2016-03-31
@@ -22,3 +29,4 @@ contour_min: 0.2
 contour_max: 1.6
 contour_del: 0.2
 colorscale: 'BuPu'
+

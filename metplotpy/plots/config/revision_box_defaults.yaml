@@ -1,0 +1,94 @@
+alpha: 0.05
+box_avg: 'False'
+box_boxwex: 0.2
+box_notch: 'False'
+box_outline: 'True'
+box_pts: 'False'
+caption_align: 0.0
+caption_col: '#333333'
+caption_offset: 3.0
+caption_size: 0.8
+caption_weight: 1
+cex: 1
+circular_block_bootstrap: 'True'
+cl_step: 0.05
+colors: []
+con_series: []
+create_html: 'False'
+dump_points_1: 'False'
+equalize_by_indep: 'False'
+event_equal: 'False'
+fcst_var_val_1: {}
+fixed_vars_vals_input: {}
+grid_col: '#cccccc'
+grid_lty: 3
+grid_lwd: 1
+grid_on: 'True'
+grid_x: listX
+indy_label: []
+indy_plot_val: []
+indy_vals: []
+indy_var: ''
+legend_box: o
+legend_inset:
+  x: 0.0
+  y: -0.25
+legend_ncol: 3
+legend_size: 0.8
+list_stat_1: []
+mar:
+- 8.0
+- 4.0
+- 5.0
+- 4.0
+method: bca
+mgp:
+- 1.0
+- 1.0
+- 0.0
+num_iterations: 1
+num_threads: -1
+plot_caption: ''
+plot_disp: []
+plot_filename: ./test.png
+plot_height: 8.5
+plot_res: 72
+plot_stat: median
+plot_type: png16m
+plot_units: in
+plot_width: 11.0
+random_seed: null
+revision_ac: 'True'
+revision_run: 'True'
+series_order: []
+series_val_1: {}
+stat_input: ./data.data
+title: test title
+title_align: 0.5
+title_offset: -2
+title_size: 1.4
+title_weight: 2.0
+user_legend: []
+variance_inflation_factor: 'True'
+xaxis: test x_label
+xaxis_reverse: 'False'
+xlab_align: 0.5
+xlab_offset: 2
+xlab_size: 1
+xlab_weight: 1
+xlim: []
+xtlab_decim: 0
+xtlab_horiz: 0.5
+xtlab_orient: 1
+xtlab_perp: -0.75
+xtlab_size: 1
+yaxis_1: test y_label
+ylab_align: 0.5
+ylab_offset: -2
+ylab_size: 1
+ylab_weight: 1
+ylim: []
+ytlab_horiz: 0.5
+ytlab_orient: 1
+ytlab_perp: 0.5
+ytlab_size: 1
