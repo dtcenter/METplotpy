@@ -86,7 +86,7 @@ tendencies do not apply to all four state variables, so these cells are blank.
 
 The expected names of the netCDF variables in the history file are shown below. If your history 
 file is different, one can change them in YAML config file 
-*$METPLOTPY_BASE/metplotpy/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
+*$METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
 
 
 +----------------------------+-------------+-------------------+-------------+-------------+
@@ -136,7 +136,7 @@ ___________________
 There is a YAML config file located in
 *$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
 
-.. literalinclude:: ../../metplotpy/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml
+.. literalinclude:: ../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved.
 
@@ -199,7 +199,7 @@ Generate a plan view of all tendencies at 500 hPa:
 
    python planview_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -p 500 -t 6 -v 20190504T21 --nofineprint
 
-.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp_500hPa.20190504_150000-20190504_210000.png
+.. image:: tmp_500hPa.20190504_150000-20190504_210000.png
 
 Generate a plan view of PBL tendency at default pressure levels:
 
@@ -207,7 +207,7 @@ Generate a plan view of PBL tendency at default pressure levels:
 
    python planview_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -t 6 -v 20190504T21 --nofineprint
 
-.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp_pbl.20190504_150000-20190504_210000.png
+.. image:: tmp_pbl.20190504_150000-20190504_210000.png
 
 .. code-block:: bash
 
@@ -251,7 +251,7 @@ Generate vertical profile of temperature tendencies averaged over the mid-CONUS 
 
    python vert_profile_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 6 -v 20190504T21 -s test/MID_CONUS --nofineprint
 
-.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png
+.. image:: tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png
 
 Vertical cross section
 ______________________
@@ -301,7 +301,7 @@ Generate vertical cross section from 32°N 115°W to 34°N 82°W:
 
    python cross_section_vert.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 6 -v 20190504T21 -s 32 -115 -e 34 -82 --nofineprint
 
-.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp_32.0N-115.0E-34.0N-82.0E.20190504_150000-20190504_210000.png
+.. image:: tmp_32.0N-115.0E-34.0N-82.0E.20190504_150000-20190504_210000.png
 
 Difference plot
 _______________
@@ -313,5 +313,5 @@ Put file you want to subtract after the --subtract argument:
 
    python vert_profile_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp --subtract $WORKING_DIR/fv3_history.nc --nofineprint
 
-.. image:: https://github.com/dtcenter/METplotpy/blob/feature_117_fv3_physics/metplotpy/contributed/fv3_physics_tend/tmp.vert_profile.20190505_090000-20190505_120000.png
+.. image:: tmp.vert_profile.20190505_090000-20190505_120000.png
 
