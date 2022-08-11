@@ -15,13 +15,8 @@ __author__ = 'Tatiana Burek'
 
 from typing import Union
 import pandas as pd
-import math
-import statistics
 
 import numpy as np
-from pandas import DataFrame
-import metcalcpy.util.correlation as pg
-from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
 from .. import GROUP_SEPARATOR
@@ -156,7 +151,8 @@ class EnsSsSeries(Series):
             if current_bins is None:
                 current_bins = pd.DataFrame([row])
             else:
-                current_bins = current_bins.append(pd.DataFrame([row]))
+                # current_bins = current_bins.append(pd.DataFrame([row]))
+                current_bins = pd.concat([current_bins, pd.DataFrame([row])])
 
         series_points_results = {'spread_skill': spread_skill_values, 'mse': mse_values, 'pts': pts_values}
 

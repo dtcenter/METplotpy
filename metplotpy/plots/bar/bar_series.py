@@ -15,6 +15,7 @@ __author__ = 'Tatiana Burek'
 __email__ = 'met_help@ucar.edu'
 
 from typing import Union
+import warnings
 
 import numpy as np
 from pandas import DataFrame
@@ -98,7 +99,17 @@ class BarSeries(Series):
                 all_filters.append((self.input_data[field].isin(filter_list)))
 
             # filter by provided indy
-            all_filters.append((self.input_data[self.config.indy_var].isin(self.config.indy_vals)))
+            # Duck typing is different in Python 3.6 and Python 3.8, for
+            # Python 3.8 and above, explicitly type cast the self.input_data[self.config.indy_var]
+            # Panda Series object to 'str' if the list of indy_vals are of str type.
+            # This will ensure we are doing str to str comparisons.
+            if isinstance(self.config.indy_vals[0], str):
+                indy_var_series = self.input_data[self.config.indy_var].astype(str)
+            else:
+                indy_var_series = self.input_data[self.config.indy_var]
+
+            all_filters.append(indy_var_series.isin(self.config.indy_vals))
+
             # use numpy to select the rows where any record evaluates to True
             mask = np.array(all_filters).all(axis=0)
             self.series_data = self.input_data.loc[mask]
@@ -191,11 +202,17 @@ class BarSeries(Series):
         """
         # calculate point stat
         if self.config.plot_stat == 'MEAN':
-            point_stat = np.nanmean(data)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                point_stat = np.nanmean(data)
         elif self.config.plot_stat == 'MEDIAN':
-            point_stat = np.nanmedian(data)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                point_stat = np.nanmedian(data)
         elif self.config.plot_stat == 'SUM':
-            point_stat = np.nansum(data)
+            with warnings.catch_warnings():
+                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                point_stat = np.nansum(data)
         else:
             point_stat = None
         return point_stat

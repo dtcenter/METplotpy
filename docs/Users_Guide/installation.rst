@@ -7,60 +7,49 @@ Installation guide for METplotpy
 
 METplotpy is written entirely in Python and uses YAML configuration files
 and relies on the METcalcpy package. The version numbers (when provided)
-indicate the *minimum* version number for that package.
+indicate the *minimum* version number for that package.  Some plots may require
+additional packages that are not listed below.
 
 .. _python_req:
 
 Python Requirements
 ___________________
 
-* Python 3.6.3
+* Python 3.8.6
 
-* cartopy 0.18.0
+* imutils 0.5.4
 
-* cmocean
+* imageio 2.19.2
 
-* eofs
-
-* imutils 0.5.3
-
-* imageio 
-
-* lxml
-
-* matplotlib 3.3.0
+* matplotlib 3.5.1
 
 * metcalcpy (same version as this version of METplotpy)
 
-* netcdf4 1.5.1.2
+* netcdf4 1.5.8
 
-* numpy 1.17.0
+* numpy 1.22.3
 
-* pandas 1.0.1
+* pandas 1.4.2
 
-* plotly 4.9.0
+* plotly 5.8.0
 
-* python-kaleido 0.2.1
+* python-kaleido 0.0.3
 
-* psutil 5.7.2
+* pytest 7.1.2
 
-* pymysql
+* pyyaml 6.0
 
-* pytest 5.2.1
+* scikit-image 0.19.2
 
-* pyyaml 5.3.1
-
-* scikit-image 0.16.2
-
-* scikit-learn 0.23.2
+* scipy 1.8.0
 
 * scipy 1.5.1
 
-* statsmodels 0.11.1
+* statsmodels 0.13.2
 
-* xarray 0.16.2
+* xarray 2022.3.0
 
-* yaml  
+* yaml  0.2.5
 
 .. _METcalcpy_conda:
 
@@ -97,20 +86,21 @@ _________________________
 This is a workaround for users who can not or do not have permission to
 create conda environments.
 
-*$METCALCPY_SOURCE* is the path downloaded/cloned METcalcpy code.
+*$METCALCPY_SOURCE* is the path downloaded/cloned METcalcpy code. *$METPLOTPY_SOURCE* is the path of the
+downloaded/cloned METplotpy code.
 
 **Command for csh:** 
 
 .. code-block:: ini
 
-  setenv PYTHONPATH $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:${PYTHONPATH}
+  setenv PYTHONPATH $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:$METPLOTPY_SOURCE/METplotpy${PYTHONPATH}
 
 **Command for bash:**
 
 .. code-block:: ini
 
   export PYTHONPATH=\
-  $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:${PYTHONPATH}
+  $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:$METPLOTPY_SOURCE/METplotpy${PYTHONPATH}
 
 Overview of Plots
 _________________

@@ -1,11 +1,3 @@
-# !!!IMPORTANT!!!
-# activate conda environment in the testing subshell
-# Replace blenny_363 with your METplus Python 3.6.3
-# conda environment name
-# !!!!!!!!
-
-# !/usr/bin/env conda run -n blenny_363 python
-
 import pytest
 import os
 from metplotpy.plots.box import box
@@ -123,3 +115,50 @@ def test_defaultpoints1_file_exist(test_input, expected):
         # Typically when files have already been removed or
         # don't exist.  Ignore.
         pass
+
+
+def test_no_nans_in_points_file(setup):
+    """
+        Checking that the points1 file does not contain NaN's
+    """
+    os.environ['METPLOTPY_BASE'] = "../../"
+    custom_config_filename = "custom_box_defaultpoints1.yaml"
+
+    # Invoke the command to generate a box plot based on
+    # the custom_box_defaultpoints1.yaml custom config file.
+    box.main(custom_config_filename)
+
+    # Check for NaN's in the intermediate files, line.points1 and line.points2
+    # Fail if there are any NaN's-this indicates something went wrong with the
+    # line_series.py module's  _create_series_points() method.
+    nans_found = False
+    with open("./box.points1", "r") as f:
+        data = f.read()
+        if "NaN" in data:
+            nans_found = True
+
+    assert nans_found == False
+    cleanup()
+
+    # Verify that the nan.points1 file does indeed trigger a "nans_found"
+    with open("./nan.points1", "r") as f:
+        data = f.read()
+        if "NaN" in data:
+            nans_found = True
+
+    # assert
+    assert nans_found == True
+
+    # remove the created plot and intermediate .points1 file
+    try:
+        path = os.getcwd()
+        plot_file = 'box_defaultpoints1.png'
+        points_file_1 = 'box.points1'
+        os.remove(os.path.join(path, points_file_1))
+        os.remove(os.path.join(path, plot_file))
+
+    except OSError as e:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass
+
