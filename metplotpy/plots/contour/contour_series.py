@@ -15,7 +15,7 @@ __author__ = 'Tatiana Burek'
 
 from typing import Union
 import numpy as np
-import warnings
+
 from ..series import Series
 
 
@@ -63,17 +63,11 @@ class ContourSeries(Series):
         """
         # calculate point stat
         if self.config.plot_stat == 'MEAN':
-            with warnings.catch_warnings():
-                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
-                point_stat = np.nanmean(data)
+            point_stat = np.nanmean(data)
         elif self.config.plot_stat == 'MEDIAN':
-            with warnings.catch_warnings():
-                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
-                point_stat = np.nanmedian(data)
+            point_stat = np.nanmedian(data)
         elif self.config.plot_stat == 'SUM':
-            with warnings.catch_warnings():
-                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
-                point_stat = np.nansum(data)
+            point_stat = np.nansum(data)
         else:
             point_stat = None
         return point_stat

@@ -1,3 +1,7 @@
+# !!!IMPORTANT!!!
+# activate conda environment in the testing subshell
+
+
 import pytest
 import os
 import pandas as pd

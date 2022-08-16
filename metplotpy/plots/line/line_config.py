@@ -63,8 +63,6 @@ class LineConfig(Config):
         self.xaxis_reverse = self._get_bool('xaxis_reverse')
         self.sync_yaxes = self._get_bool('sync_yaxes')
         self.create_html = self._get_bool('create_html')
-        self.start_from_zero = self._get_bool('start_from_zero')
-
 
         ##############################################
         # caption parameters

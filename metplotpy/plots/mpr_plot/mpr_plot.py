@@ -13,12 +13,12 @@ Class Name: mpr_plot.py
  """
 __author__ = 'Tatiana Burek'
 
-import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning, module='statsmodels')
+from typing import Union
 import pandas as pd
 import numpy as np
 import statsmodels.formula.api as sm
 import yaml
+from pathlib import Path
 
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -266,7 +266,7 @@ class MprPlot(BasePlot):
             case_title = f"{case_name_1}<br>{case_name_2}"
             wind_case_title = f"{case_name_1}, {case_name_2}"
 
-            fcst_obs_data = pd.concat([case_subset['FCST'], case_subset['OBS']])
+            fcst_obs_data = case_subset['FCST'].append(case_subset['OBS'])
             number_of_intervals = len(np.histogram_bin_edges(fcst_obs_data, bins='sturges')) - 1
             n_bins = util.pretty(min(fcst_obs_data), max(fcst_obs_data), number_of_intervals)
 

@@ -488,19 +488,19 @@ class EquivalenceTestingBounds(BasePlot):
         if self.config_obj.dump_points_1 is True and match:
             filename = match.group(1)
             # replace the default path with the custom
-            if self.config_obj.points_path is not None:
-                # get the file name
-                path = filename.split(os.path.sep)
-                if len(path) > 0:
-                    filename = path[-1]
-                else:
-                    filename = '.' + os.path.sep
-                filename = self.config_obj.points_path + os.path.sep + filename
+        if self.config_obj.points_path is not None:
+            # get the file name
+            path = filename.split(os.path.sep)
+            if len(path) > 0:
+                filename = path[-1]
+            else:
+                filename = '.' + os.path.sep
+            filename = self.config_obj.points_path + os.path.sep + filename
 
-            filename = filename + '.points1'
+        filename = filename + '.points1'
 
-            # save points
-            self._save_points(ci_tost_df.values.tolist(), filename)
+        # save points
+        self._save_points(ci_tost_df.values.tolist(), filename)
 
 
     @staticmethod
