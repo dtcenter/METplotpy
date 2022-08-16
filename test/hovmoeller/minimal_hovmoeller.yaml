@@ -1,4 +1,0 @@
-# minimal, use all the settings in the default except specify
-# input data file path and location of the output plot.
-input_data_file: /path/to/WorkingDir/precip.erai.sfc.1p0.2x.2014-2016.nc
-plot_filename: ./hovmoeller_default_plot.png

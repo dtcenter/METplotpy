@@ -51,7 +51,7 @@ class BasePlot:
         if 'METPLOTPY_BASE' in os.environ:
             location = os.path.join(os.environ['METPLOTPY_BASE'], 'metplotpy/plots/config')
         else:
-            location = os.path.realpath(os.path.join(os.path.dirname(__file__), 'config'))
+            location = os.path.realpath(os.path.join(os.getcwd(), '../config'))
 
         with open(os.path.join(location, default_conf_filename), 'r') as stream:
             try:
@@ -334,11 +334,6 @@ class BasePlot:
 
         """
         image_name = self.get_config_value('plot_filename')
-
-        # Create the directory for the output plot if it doesn't already exist
-        dirname = os.path.dirname(os.path.abspath(image_name))
-        if not os.path.exists(dirname):
-            os.mkdir(dirname)
         if self.figure:
             try:
                 self.figure.write_image(image_name)

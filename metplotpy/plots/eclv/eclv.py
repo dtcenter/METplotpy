@@ -32,6 +32,7 @@ from metplotpy.plots.line.line import Line
 from metplotpy.plots import util
 from metplotpy.plots.series import Series
 
+import metcalcpy.util.utils as calc_util
 
 
 class Eclv(Line):

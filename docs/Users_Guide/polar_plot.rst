@@ -75,7 +75,7 @@ Copy this configuration file from where you saved the METplotpy source code to y
 
 .. code-block:: ini
 
-  cp $METPLOTPY_BASE/metplotpy/plots/polar_plot/polar_ice.yaml $WORKING_DIR/polar_ice.yaml
+  cp $METPLOTPY_BASE/metplotpy/plots/config/polar_ice.yaml $WORKING_DIR/polar_ice.yaml
 
 $METPLOTPY_BASE is the directory where you saved the METplotpy code, and $WORKING_DIR is the directory where you
 have read and write permissions.

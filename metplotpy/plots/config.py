@@ -357,7 +357,7 @@ class Config:
         markers_list_ordered = self.create_list_by_series_ordering(list(markers_list))
         return markers_list_ordered
 
-    def _get_linewidths(self) -> Union[list, None]:
+    def _get_linewidths(self) -> list:
         """ Retrieve all the linewidths from the configuration file, if not
             specified in any config file, use the default values of 2
 
@@ -367,10 +367,7 @@ class Config:
                 linewidth_list: a list of linewidths corresponding to each line (model)
         """
         linewidths = self.get_config_value('series_line_width')
-        if linewidths is not None:
-            return self.create_list_by_series_ordering(list(linewidths))
-        else:
-            return None
+        return self.create_list_by_series_ordering(list(linewidths))
 
     def _get_linestyles(self) -> list:
         """
@@ -501,7 +498,7 @@ class Config:
         # dpi used by matplotlib
         return dpi
 
-    def create_list_by_series_ordering(self, setting_to_order) -> list:
+    def create_list_by_series_ordering(self, setting_to_order: str) -> list:
         """
             Generate a list of series plotting settings based on what is set
             in series_order in the config file.
@@ -545,13 +542,9 @@ class Config:
         # Make the series ordering list zero-based to sync with Python's zero-based counting
         series_ordered_zb = [sorder - 1 for sorder in self.series_ordering]
 
-        if len(setting_to_order) == len(series_ordered_zb):
-            # Reorder the settings according to the zero based series order.
-            settings_reordered = [setting_to_order[i] for i in series_ordered_zb]
-            return settings_reordered
-
-        return setting_to_order
-
+        # Reorder the settings according to the zero based series order.
+        settings_reordered = [setting_to_order[i] for i in series_ordered_zb]
+        return settings_reordered
 
     def create_list_by_plot_val_ordering(self, setting_to_order: str) -> list:
         """
