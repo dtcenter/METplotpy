@@ -20,7 +20,8 @@ attributed to physics and non-physics tendencies when residual is not zero.
 """
 
 # List of tendency variable names for each state variable, names of lat and lon variables in grid file, graphics parameters
-fv3 = yaml.load(open("../../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml"), Loader=yaml.FullLoader)
+config_default = "../../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml"
+fv3 = yaml.load(open(config_default), Loader=yaml.FullLoader)
 state_variables = fv3["tendency_varnames"].keys()
 
 def parse_args():
@@ -44,6 +45,7 @@ def parse_args():
     parser.add_argument("statevariable", type=str, choices=state_variables, default="tmp", help="state variable")
     parser.add_argument("fill", type=str, choices = fill_choices, help='type of tendency. ignored if pfull is a single level')
     # ==========Optional Arguments===================
+    parser.add_argument("-c", "--config", type=argparse.FileType('r'), default=config_default, help="yaml configuration file")
     parser.add_argument("-d", "--debug", action='store_true')
     parser.add_argument("--method", type=str, choices=["nearest", "linear","loglinear"], default="nearest", help="vertical interpolation method")
     parser.add_argument("--ncols", type=int, default=None, help="number of columns")
@@ -64,6 +66,7 @@ def main():
     ifile      = args.historyfile
     variable   = args.statevariable
     fill       = args.fill
+    config     = args.config
     debug      = args.debug
     method     = args.method
     ncols      = args.ncols
@@ -88,9 +91,16 @@ def main():
         else:
             ofile = f"{variable}_{fill}.png"
     else:
-        ofile = args.ofile
+        ofile = os.path.realpath(args.ofile)
+        odir = os.path.dirname(ofile)
+        if not os.path.exists(odir):
+            logging.info(f"output directory {odir} does not exist. Creating it")
+            os.mkdir(odir)
     logging.info(f"output filename={ofile}")
 
+
+    # Reload fv3 in case user specifies a custom --config file
+    fv3 = yaml.load(open(config.name), Loader=yaml.FullLoader)
 
     # Read lat/lon/area from gfile
     logging.debug(f"read lat/lon/area from {gfile}")

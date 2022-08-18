@@ -21,8 +21,8 @@ attributed to physics and non-physics tendencies when residual is not zero.
 """
 
 # List of tendency variable names for each state variable, names of lat and lon variables in grid file, graphics parameters
-fv3 = yaml.load(open("../../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml"), Loader=yaml.FullLoader)
-state_variables = fv3["tendency_varnames"].keys()
+config_default = "../../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml"
+fv3 = yaml.load(open(config_default), Loader=yaml.FullLoader)
 
 def parse_args():
     # =============Arguments===================
@@ -30,8 +30,9 @@ def parse_args():
     # ==========Mandatory Arguments===================
     parser.add_argument("historyfile", type=argparse.FileType("r"), help="FV3 history file")
     parser.add_argument("gridfile", type=argparse.FileType("r"), help="FV3 grid spec file")
-    parser.add_argument("statevariable", type=str, choices=state_variables, default="tmp", help="state variable")
+    parser.add_argument("statevariable", type=str, choices=fv3["tendency_varnames"].keys(), default="tmp", help="state variable")
     # ==========Optional Arguments===================
+    parser.add_argument("-c", "--config", type=argparse.FileType('r'), default=config_default, help="yaml configuration file")
     parser.add_argument("-d", "--debug", action='store_true')
     parser.add_argument("--nofineprint", action='store_true', help="Don't add metadata and created by date (for comparing images)")
     parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
@@ -49,6 +50,7 @@ def main():
     gfile      = args.gridfile
     ifile      = args.historyfile
     variable   = args.statevariable
+    config     = args.config
     debug      = args.debug
     resid      = args.resid
     nofineprint= args.nofineprint
@@ -67,9 +69,16 @@ def main():
     if ofile is None:
         ofile = f"{variable}.vert_profile.png"
     else:
-        ofile = args.ofile
+        ofile = os.path.realpath(args.ofile)
+        odir = os.path.dirname(ofile)
+        if not os.path.exists(odir):
+            logging.info(f"output directory {odir} does not exist. Creating it")
+            os.mkdir(odir)
     logging.info(f"output filename={ofile}")
 
+
+    # Reload fv3 in case user specifies a custom --config file
+    fv3 = yaml.load(open(config.name), Loader=yaml.FullLoader)
 
     # Read lat/lon/area from gfile
     logging.debug(f"read lat/lon/area from {gfile}")
