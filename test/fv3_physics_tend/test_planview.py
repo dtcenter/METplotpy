@@ -23,3 +23,18 @@ def test_no_args():
         assert True
     except FileNotFoundError as fnfe:
         assert False
+
+def test_output_file():
+    '''
+    Test if the plot file is created in the output directory specified. Test that
+    the output directory is created if it doesn't exist.
+    '''
+
+    runner_config_filename = setup()
+    try:
+        runner_planview.run_help(runner_config_filename)
+        expected_file = "./output/test_planview.png"
+        assert os.path.isfile(expected_file) == True
+    except FileNotFoundError as fnfe:
+        assert False
+
