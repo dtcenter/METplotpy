@@ -104,7 +104,7 @@ def main():
 
     fv3ds = fv3ds.assign_coords(lont=lont, latt=latt) # lont and latt used by pcolorfill()
     tendency_vars = fv3["tendency_varnames"][variable] # list of tendency variable names for requested state variable
-    fv3ds = physics_tend.add_time0(fv3ds, variable)
+    fv3ds = physics_tend.add_time0(fv3ds, variable, fv3)
     tendencies = fv3ds[tendency_vars] # subset of original Dataset
 
     if validtime is None:

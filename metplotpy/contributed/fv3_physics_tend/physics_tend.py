@@ -11,10 +11,6 @@ from shapely.geometry import Point, multipolygon
 import xarray
 import yaml
 
-# List of tendency variable names for each state variable, names of lat and lon variables in grid file, graphics parameters
-fv3 = yaml.load(open("../../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml"), Loader=yaml.FullLoader)
-tendency_varnames = fv3["tendency_varnames"]
-time0_varname = fv3["time0_varname"]
 
 def add_conus_features(ax):
     cl = ax.add_feature(cfeature.COASTLINE.with_scale('50m'), linewidth=0.3)
@@ -24,7 +20,9 @@ def add_conus_features(ax):
     return (cl, bd, st, lk)
 
 
-def add_time0(ds, variable, interval=np.timedelta64(1,'h')):
+def add_time0(ds, variable, fv3, interval=np.timedelta64(1,'h')):
+    tendency_varnames = fv3["tendency_varnames"]
+    time0_varname = fv3["time0_varname"]
     # This takes a while so only keep requested state variable and
     # its tendency_varnames.
     tokeep = tendency_varnames[variable].copy()
