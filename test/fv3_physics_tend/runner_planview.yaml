@@ -1,0 +1,3 @@
+history_file: "/Users/minnawin/Working/FV3_Data/fv3_history.nc"
+grid_file: "/Users/minnawin/Working/FV3_Data/grid_spec.nc"
+source_dir: "/Users/minnawin/Working/METplotpy/metplotpy/contributes/fv3_physics_tend"
