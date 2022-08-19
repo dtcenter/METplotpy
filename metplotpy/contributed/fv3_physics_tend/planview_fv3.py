@@ -19,33 +19,17 @@ Total change is the actual change in state variable from first time to last time
 attributed to physics and non-physics tendencies when residual is not zero.
 """
 
-# List of tendency variable names for each state variable, names of lat and lon variables in grid file, graphics parameters
-config_default = "../../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml"
-fv3 = yaml.load(open(config_default), Loader=yaml.FullLoader)
-state_variables = fv3["tendency_varnames"].keys()
-
 def parse_args():
-    # Populate list of choices for contour fill variable argument.
-    fill_choices = []
-    for state_variable in state_variables: # tendencies for each state variable
-        fill_choices.extend(fv3["tendency_varnames"][state_variable])
-    # Remove characters up to and including 1st underscore (e.g. du3dt_). 
-    # for example dt3dt_pbl -> pbl
-    fill_choices = ["_".join(x.split("_")[1:]) for x in fill_choices] # Just the physics/parameterization string after the "_"
-    for state_variable in state_variables:
-        fill_choices.append(f"d{state_variable}") # total change in state variable
-    fill_choices.append("resid") # residual tendency
-    fill_choices = set(fill_choices) # no repeats (same physics/parameterization used for multiple state variables). 
 
     # =============Arguments===================
     parser = argparse.ArgumentParser(description = "Plan view of FV3 diagnostic tendency", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # ==========Mandatory Arguments===================
+    parser.add_argument("config", type=argparse.FileType('r'), help="yaml configuration file")
     parser.add_argument("historyfile", type=argparse.FileType("r"), help="FV3 history file")
     parser.add_argument("gridfile", type=argparse.FileType("r"), help="FV3 grid spec file")
-    parser.add_argument("statevariable", type=str, choices=state_variables, default="tmp", help="state variable")
-    parser.add_argument("fill", type=str, choices = fill_choices, help='type of tendency. ignored if pfull is a single level')
+    parser.add_argument("statevariable", type=str, help="moisture, temperature, or wind component variable name")
+    parser.add_argument("fill", type=str, help='type of tendency. ignored if pfull is a single level')
     # ==========Optional Arguments===================
-    parser.add_argument("-c", "--config", type=argparse.FileType('r'), default=config_default, help="yaml configuration file")
     parser.add_argument("-d", "--debug", action='store_true')
     parser.add_argument("--method", type=str, choices=["nearest", "linear","loglinear"], default="nearest", help="vertical interpolation method")
     parser.add_argument("--ncols", type=int, default=None, help="number of columns")

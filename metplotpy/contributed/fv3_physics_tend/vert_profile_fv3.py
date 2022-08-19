@@ -20,19 +20,16 @@ Total change is the actual change in state variable from first time to last time
 attributed to physics and non-physics tendencies when residual is not zero.
 """
 
-# List of tendency variable names for each state variable, names of lat and lon variables in grid file, graphics parameters
-config_default = "../../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml"
-fv3 = yaml.load(open(config_default), Loader=yaml.FullLoader)
-
 def parse_args():
+
     # =============Arguments===================
     parser = argparse.ArgumentParser(description = "Vertical profile of FV3 diagnostic tendencies", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # ==========Mandatory Arguments===================
+    parser.add_argument("config", type=argparse.FileType('r'), help="yaml configuration file")
     parser.add_argument("historyfile", type=argparse.FileType("r"), help="FV3 history file")
     parser.add_argument("gridfile", type=argparse.FileType("r"), help="FV3 grid spec file")
-    parser.add_argument("statevariable", type=str, choices=fv3["tendency_varnames"].keys(), default="tmp", help="state variable")
+    parser.add_argument("statevariable", type=str, help="moisture, temperature, or wind component variable name")
     # ==========Optional Arguments===================
-    parser.add_argument("-c", "--config", type=argparse.FileType('r'), default=config_default, help="yaml configuration file")
     parser.add_argument("-d", "--debug", action='store_true')
     parser.add_argument("--nofineprint", action='store_true', help="Don't add metadata and created by date (for comparing images)")
     parser.add_argument("-o", "--ofile", type=str, help="name of output image file")
