@@ -12,25 +12,35 @@ Requires a configuration file that has the history and grid input files in addit
 the planview_fv3.py file
 '''
 
+
 def run_help(config_file):
     ''' Run the planview_fv3.py with only the -h (help) '''
     config = open_config(config_file)
-    command_str = "python " + config['source_dir'] + "/planview_fv3.py " +  config['history_file'] + " " + config['grid_file'] + " -h"
+    command_str = "python " + config['source_dir'] + "/planview_fv3.py " + " ./fv3_physics_tend_defaults.yaml " + \
+                  config['history_file'] + " " + config['grid_file'] + " -h"
     os.system(command_str)
+
 
 def run_example(config_file):
     '''Run the example in the user's guide'''
     config = open_config(config_file)
-    command_str = "python " +  config['source_dir'] + "/planview_fv3.py " + " ./fv3_physics_tend_defaults.yaml " +  config['history_file'] + " " + config['grid_file'] + " tmp pbl -p 500 -t 6 -v 20190504T21 --nofineprint "
+    command_str = "python " + config['source_dir'] + "/planview_fv3.py " + " ./fv3_physics_tend_defaults.yaml " + \
+                  config['history_file'] + " " + config[
+                      'grid_file'] + " tmp pbl -p 500 -t 6 -v 20190504T21 --nofineprint "
     print("command string: ", command_str)
     os.system(command_str)
 
-def run_output_file(config_file):
+
+def run_with_output_file(config_file):
     '''Run the example in the user's guide'''
     config = open_config(config_file)
-    command_str = "python " +  config['source_dir'] + "/planview_fv3.py " + " ./runner_planview.yaml " +  config['history_file'] + " " + config['grid_file'] + " tmp pbl -p 500 -t 6 -v 20190504T21 --nofineprint -o ./output/test_planview.png "
+    command_str = "python " + config['source_dir'] + "/planview_fv3.py " + " ./fv3_physics_tend_defaults.yaml " + \
+                  config['history_file'] + " " + config[
+                      'grid_file'] + " tmp pbl -p 500 -t 6 -v 20190504T21 --nofineprint -o ./test_planview.png"
     print("command string: ", command_str)
     os.system(command_str)
+
+
 def open_config(config_file):
     with open(config_file, 'r') as stream:
         try:
@@ -39,7 +49,9 @@ def open_config(config_file):
             print(exc)
     return config_obj
 
+
 if __name__ == "__main__":
     config_file = sys.argv[1]
     # run_help(config_file)
-    run_example(config_file)
+    # run_example(config_file)
+    run_with_output_file(config_file)
