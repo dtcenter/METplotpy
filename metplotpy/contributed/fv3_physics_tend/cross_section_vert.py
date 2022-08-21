@@ -207,9 +207,7 @@ def main():
         ax.yaxis.set_minor_locator(MultipleLocator(25))
         ax.grid(which="minor", alpha=0.3, lw=0.4)
 
-    # Add time to title and output filename
-    root, ext = os.path.splitext(ofile)
-    ofile = root + f".{time0.strftime('%Y%m%d_%H%M%S')}-{validtime.strftime('%Y%m%d_%H%M%S')}" + ext
+    # Add time to title
     title = f'{time0}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
     plt.suptitle(title, wrap=True)
     # pad top and bottom for title and fineprint. Unfortunately, you must redefine right pad, as xarray no longer controls it. 

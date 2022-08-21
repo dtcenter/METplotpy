@@ -69,11 +69,7 @@ def main():
 
     # Output filename.
     if ofile is None:
-        if len(pfull) == 1:
-            pfull_str = f"{pfull[0]:~.0f}".replace(" ","")
-            ofile = f"{variable}_{pfull_str}.png"
-        else:
-            ofile = f"{variable}_{fill}.png"
+        ofile = default_ofile(args)
     else:
         ofile = os.path.realpath(args.ofile)
         odir = os.path.dirname(ofile)
@@ -203,12 +199,6 @@ def main():
 
     # Mask points outside shape.
     if shp:
-        shp = shp.rstrip("/")
-        # Add shapefile name to output filename
-        shapename = os.path.basename(shp)
-        root, ext = os.path.splitext(ofile)
-        ofile = root + f".{shapename}" + ext
-
         # mask points outside shape
         mask = physics_tend.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
         mask = xarray.DataArray(mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
@@ -243,9 +233,7 @@ def main():
         ax.set_extent(fv3["extent"]) # Why needed only when col=tendency_dim? With col="pfull" it shrinks to unmasked size.
         physics_tend.add_conus_features(ax)
 
-    # Add time to title and output filename
-    root, ext = os.path.splitext(ofile)
-    ofile = root + f".{time0.strftime('%Y%m%d_%H%M%S')}-{validtime.strftime('%Y%m%d_%H%M%S')}" + ext
+    # Add time to title 
     title = f'{time0}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
     if col == tendency_dim:
         title = f'pfull={pfull[0]:~.0f} {title}'
@@ -270,6 +258,22 @@ def main():
 
     plt.savefig(ofile, dpi=fv3["dpi"])
     logging.info(f'created {os.path.realpath(ofile)}')
+
+def default_ofile(args):
+    pfull = args.pfull * units.hPa
+    if len(pfull) == 1:
+        pfull_str = f"{pfull[0]:~.0f}".replace(" ","")
+        ofile = f"{args.statevariable}_{pfull_str}.png"
+    else:
+        ofile = f"{args.statevariable}_{args.fill}.png"
+    if args.shp:
+        shp = shp.rstrip("/")
+        # Add shapefile name to output filename
+        shapename = os.path.basename(shp)
+        root, ext = os.path.splitext(ofile)
+        ofile = root + f".{shapename}" + ext
+    return ofile
+
 
 if __name__ == "__main__":
     main()

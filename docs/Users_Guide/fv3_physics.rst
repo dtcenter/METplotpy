@@ -155,44 +155,43 @@ _________
 
 ::
 
-   usage: planview_fv3.py [-h] [-d] [--method {nearest,linear,loglinear}] 
-                          [--ncols NCOLS] [--nofineprint] [-o OFILE] 
-                          [-p PFULL [PFULL ...]] [-s SHP] [--subtract SUBTRACT] 
-                          [-t TWINDOW] [-v VALIDTIME]
-                          historyfile gridfile {tmp,spfh,ugrd,vgrd} 
-                          {nophys,dvgrd,deepcnv,sw,dtmp,rdamp,orogwd,pbl,dspfh,congwd,shalcnv,mp,resid,lw,dugrd}
+    usage: planview_fv3.py [-h] [-d] [--method {nearest,linear,loglinear}] [--ncols NCOLS]
+                           [--nofineprint] [-o OFILE] [-p PFULL [PFULL ...]] [-s SHP]
+                           [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+                           config historyfile gridfile statevariable fill
 
-   Plan view of FV3 diagnostic tendency
+    Plan view of FV3 diagnostic tendency
 
-   positional arguments:
-     historyfile           FV3 history file
-     gridfile              FV3 grid spec file
-     {tmp,spfh,ugrd,vgrd}  state variable
-     {nophys,dvgrd,deepcnv,sw,dtmp,rdamp,orogwd,pbl,dspfh,congwd,shalcnv,mp,resid,lw,dugrd}
-                           type of tendency. ignored if pfull is a single level
+    positional arguments:
+      config                yaml configuration file
+      historyfile           FV3 history file
+      gridfile              FV3 grid spec file
+      statevariable         moisture, temperature, or wind component variable name
+      fill                  type of tendency. ignored if pfull is a single level
 
-   optional arguments:
-     -h, --help            show this help message and exit
-     -d, --debug
-     --method {nearest,linear,loglinear}
-                           vertical interpolation method (default: nearest)
-     --ncols NCOLS         number of columns (default: None)
-     --nofineprint         Don't add metadata and created by date (for comparing
-                           images) (default: False)
-     -o OFILE, --ofile OFILE
-                           name of output image file (default: None)
-     -p PFULL [PFULL ...], --pfull PFULL [PFULL ...]
-                           pressure level(s) in hPa to plot. If only one pressure 
-                           level is provided, the type-of-tendency argument will 
-                           be ignored and all tendencies will be plotted.
-                           (default: [1000, 925, 850, 700, 500, 300, 200, 100, 0])
-     -s SHP, --shp SHP     shape file directory for mask (default: None)
-     --subtract SUBTRACT   FV3 history file to subtract (default: None)
-     -t TWINDOW, --twindow TWINDOW
-                           time window in hours (default: 3)
-     -v VALIDTIME, --validtime VALIDTIME
-                           valid time (default: None)
+    optional arguments:
+      -h, --help            show this help message and exit
+      -d, --debug
+      --method {nearest,linear,loglinear}
+                            vertical interpolation method (default: nearest)
+      --ncols NCOLS         number of columns (default: None)
+      --nofineprint         Don't add metadata and created by date (for comparing images)
+                            (default: False)
+      -o OFILE, --ofile OFILE
+                            name of output image file (default: None)
+      -p PFULL [PFULL ...], --pfull PFULL [PFULL ...]
+                            pressure level(s) in hPa to plot. If only one pressure level is
+                            provided, the type-of-tendency argument will be ignored and all
+                            tendencies will be plotted. (default: [1000, 925, 850, 700, 500,
+                            300, 200, 100, 0])
+      -s SHP, --shp SHP     shape file directory for mask (default: None)
+      --subtract SUBTRACT   FV3 history file to subtract (default: None)
+      -t TWINDOW, --twindow TWINDOW
+                            time window in hours (default: 3)
+      -v VALIDTIME, --validtime VALIDTIME
+                            valid time (default: None)
 
+                        
 Generate a plan view of all tendencies at 500 hPa:
 
 .. code-block:: bash
@@ -218,33 +217,33 @@ ________________
 
 ::
 
-   usage: vert_profile_fv3.py [-h] [-d] [--nofineprint] [-o OFILE] [--resid] 
-                              [-s SHP] [--subtract SUBTRACT] [-t TWINDOW] 
-                              [-v VALIDTIME]
-                              historyfile gridfile {tmp,spfh,ugrd,vgrd}
+    usage: vert_profile_fv3.py [-h] [-d] [--nofineprint] [-o OFILE] [--resid] [-s SHP]
+                               [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+                               config historyfile gridfile statevariable
 
-   Vertical profile of FV3 diagnostic tendencies
+    Vertical profile of FV3 diagnostic tendencies
 
-   positional arguments:
-     historyfile           FV3 history file
-     gridfile              FV3 grid spec file
-     {tmp,spfh,ugrd,vgrd}  state variable
+    positional arguments:
+      config                yaml configuration file
+      historyfile           FV3 history file
+      gridfile              FV3 grid spec file
+      statevariable         moisture, temperature, or wind component variable name
 
-   optional arguments:
-     -h, --help            show this help message and exit
-     -d, --debug
-     --nofineprint         Don't add metadata and created by date (for comparing
-                           images) (default: False)
-     -o OFILE, --ofile OFILE
-                           name of output image file (default: None)
-     --resid               calculate residual (default: False)
-     -s SHP, --shp SHP     shape file directory for mask (default: None)
-     --subtract SUBTRACT   FV3 history file to subtract (default: None)
-     -t TWINDOW, --twindow TWINDOW
-                           time window in hours (default: 3)
-     -v VALIDTIME, --validtime VALIDTIME
-                           valid time (default: None)
-
+    optional arguments:
+      -h, --help            show this help message and exit
+      -d, --debug
+      --nofineprint         Don't add metadata and created by date (for comparing images)
+                            (default: False)
+      -o OFILE, --ofile OFILE
+                            name of output image file (default: None)
+      --resid               calculate residual (default: False)
+      -s SHP, --shp SHP     shape file directory for mask (default: None)
+      --subtract SUBTRACT   FV3 history file to subtract (default: None)
+      -t TWINDOW, --twindow TWINDOW
+                            time window in hours (default: 3)
+      -v VALIDTIME, --validtime VALIDTIME
+                            valid time (default: None)
+   
 Generate vertical profile of temperature tendencies averaged over the mid-CONUS region:
 
 .. code-block:: bash
@@ -262,39 +261,38 @@ ______________________
    
 Usage::
 
-   usage: cross_section_vert.py [-h] [-d] [--dindex DINDEX] [--ncols NCOLS]
-                                [--nofineprint] [-o OFILE] [-s START START] 
-                                [-e END END] [--subtract SUBTRACT] [-t TWINDOW] 
-                                [-v VALIDTIME]
-                                historyfile gridfile {tmp,spfh,ugrd,vgrd}
+    usage: cross_section_vert.py [-h] [-d] [--dindex DINDEX] [--ncols NCOLS] [--nofineprint]
+                                 [-o OFILE] [-s START START] [-e END END]
+                                 [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+                                 config historyfile gridfile statevariable
 
-   Vertical cross section of FV3 diagnostic tendency
+    Vertical cross section of FV3 diagnostic tendency
 
-   positional arguments:
-     historyfile           FV3 history file
-     gridfile              FV3 grid spec file
-     {tmp,spfh,ugrd,vgrd}  state variable
+    positional arguments:
+      config                yaml configuration file
+      historyfile           FV3 history file
+      gridfile              FV3 grid spec file
+      statevariable         moisture, temperature, or wind component variable name
 
-   optional arguments:
-     -h, --help            show this help message and exit
-     -d, --debug
-     --dindex DINDEX       tick and gridline interval along cross section
-                           (default: 20)
-     --ncols NCOLS         number of columns (default: None)
-     --nofineprint         Don't add metadata and created by date (for comparing
-                           images) (default: False)
-     -o OFILE, --ofile OFILE
-                           name of output image file (default: None)
-     -s START START, --start START START
-                           start point (default: (28, -115))
-     -e END END, --end END END
-                           end point (default: (30, -82))
-     --subtract SUBTRACT   FV3 history file to subtract (default: None)
-     -t TWINDOW, --twindow TWINDOW
-                           time window in hours (default: 3)
-     -v VALIDTIME, --validtime VALIDTIME
-                           valid time (default: None)
-
+    optional arguments:
+      -h, --help            show this help message and exit
+      -d, --debug
+      --dindex DINDEX       tick and gridline interval along cross section (default: 20)
+      --ncols NCOLS         number of columns (default: None)
+      --nofineprint         Don't add metadata and created by date (for comparing images)
+                            (default: False)
+      -o OFILE, --ofile OFILE
+                            name of output image file (default: None)
+      -s START START, --start START START
+                            start point (default: (28, -115))
+      -e END END, --end END END
+                            end point (default: (30, -82))
+      --subtract SUBTRACT   FV3 history file to subtract (default: None)
+      -t TWINDOW, --twindow TWINDOW
+                            time window in hours (default: 3)
+      -v VALIDTIME, --validtime VALIDTIME
+                            valid time (default: None)
+                         
 Generate vertical cross section from 32°N 115°W to 34°N 82°W:
 
 .. code-block:: bash

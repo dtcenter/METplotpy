@@ -65,6 +65,12 @@ def main():
     # Output filename.
     if ofile is None:
         ofile = f"{variable}.vert_profile.png"
+        if shp:
+            shp = shp.rstrip("/")
+            # Add shapefile name to output filename
+            shapename = os.path.basename(shp)
+            root, ext = os.path.splitext(ofile)
+            ofile = root + f".{shapename}" + ext
     else:
         ofile = os.path.realpath(args.ofile)
         odir = os.path.dirname(ofile)
@@ -164,12 +170,6 @@ def main():
 
     # Mask points outside shape.
     if shp:
-        shp = shp.rstrip("/")
-        # Add shapefile name to output filename
-        shapename = os.path.basename(shp)
-        root, ext = os.path.splitext(ofile)
-        ofile = root + f".{shapename}" + ext
-
         # mask points outside shape
         mask = physics_tend.pts_in_shp(latt.values, lont.values, shp, debug=debug) # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
         mask = xarray.DataArray(mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
@@ -213,9 +213,7 @@ def main():
             leghandle.set_marker(special_marker)
             leghandle.set_markersize(special_marker_size)
 
-    # Add time to title and output filename
-    root, ext = os.path.splitext(ofile)
-    ofile = root + f".{time0.strftime('%Y%m%d_%H%M%S')}-{validtime.strftime('%Y%m%d_%H%M%S')}" + ext
+    # Add time to title
     title = f'{time0}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
     ax.set_title(title, wrap=True)
 
