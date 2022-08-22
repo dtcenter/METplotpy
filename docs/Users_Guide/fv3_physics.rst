@@ -134,7 +134,7 @@ Configuration File
 ___________________
 
 There is a YAML config file located in
-*$METPLOTPY_BASE/metplotpy/plots/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
+*$METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
 
 .. literalinclude:: ../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml
 
@@ -148,6 +148,7 @@ To generate example tendency plots using settings in the **fv3_physics_defaults.
 .. code-block:: bash
 
    cd $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
+   set config=../../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml
    python planview_fv3.py -h
    
 Plan view
@@ -196,17 +197,17 @@ Generate a plan view of all tendencies at 500 hPa:
 
 .. code-block:: bash
 
-   python planview_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -p 500 -t 6 -v 20190504T21 --nofineprint
+   python planview_fv3.py $config $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -p 500 -t 1 -v 20190504T14 --nofineprint
 
-.. image:: tmp_500hPa.20190504_150000-20190504_210000.png
+.. image:: tmp_500hPa.png
 
 Generate a plan view of PBL tendency at default pressure levels:
 
 .. code-block:: bash
 
-   python planview_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -t 6 -v 20190504T21 --nofineprint
+   python planview_fv3.py $config $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -t 1 -v 20190504T13 --nofineprint
 
-.. image:: tmp_pbl.20190504_150000-20190504_210000.png
+.. image:: tmp_pbl.png
 
 .. code-block:: bash
 
@@ -248,9 +249,9 @@ Generate vertical profile of temperature tendencies averaged over the mid-CONUS 
 
 .. code-block:: bash
 
-   python vert_profile_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 6 -v 20190504T21 -s test/MID_CONUS --nofineprint
+   python vert_profile_fv3.py $config $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 2 -v 20190504T14 -s test/MID_CONUS --nofineprint
 
-.. image:: tmp.vert_profile.MID_CONUS.20190504_150000-20190504_210000.png
+.. image:: tmp.vert_profile.MID_CONUS.png
 
 Vertical cross section
 ______________________
@@ -297,9 +298,9 @@ Generate vertical cross section from 32°N 115°W to 34°N 82°W:
 
 .. code-block:: bash
 
-   python cross_section_vert.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 6 -v 20190504T21 -s 32 -115 -e 34 -82 --nofineprint
+   python cross_section_vert.py $config $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 2 -v 20190504T14 -s 32 -115 -e 34 -82 --nofineprint
 
-.. image:: tmp_32.0N-115.0E-34.0N-82.0E.20190504_150000-20190504_210000.png
+.. image:: tmp_32.0N-115.0E-34.0N-82.0E.png
 
 Difference plot
 _______________
@@ -309,7 +310,7 @@ Put file you want to subtract after the --subtract argument:
 
 .. code-block:: bash
 
-   python vert_profile_fv3.py $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp --subtract $WORKING_DIR/fv3_history.nc --nofineprint
+   python vert_profile_fv3.py $config $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp --subtract $WORKING_DIR/fv3_history.nc --nofineprint
 
-.. image:: tmp.vert_profile.20190505_090000-20190505_120000.png
+.. image:: tmp.vert_profile.png
 
