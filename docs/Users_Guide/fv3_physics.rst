@@ -147,8 +147,9 @@ To generate example tendency plots using settings in the **fv3_physics_defaults.
 
 .. code-block:: bash
 
+   setenv CONFIG $METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml
+   setenv WORKING_DIR $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend/test
    cd $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
-   setenv CONFIG ../../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml
    python planview_fv3.py -h
    
 Plan view
