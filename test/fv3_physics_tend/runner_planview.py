@@ -31,14 +31,23 @@ def run_example(config_file):
     os.system(command_str)
 
 
-def run_with_output_file(config_file):
-    '''Run the example in the user's guide'''
+def run_with_novel_output_file(config_file):
+    '''Run the example in the user's guide with a novel output file name'''
     config = open_config(config_file)
     command_str = "python " + config['source_dir'] + "/planview_fv3.py " + " ./fv3_physics_tend_defaults.yaml " + \
                   config['history_file'] + " " + config[
                       'grid_file'] + " tmp pbl -p 500 -t 6 -v 20190504T21 --nofineprint -o ./test_planview.png"
     print("command string: ", command_str)
     os.system(command_str)
+
+def run_with_novel_output_dir(config_file):
+        '''Run the example in the user's guide specifying a non-existent output directory'''
+        config = open_config(config_file)
+        command_str = "python " + config['source_dir'] + "/planview_fv3.py " + " ./fv3_physics_tend_defaults.yaml " + \
+                      config['history_file'] + " " + config[
+                          'grid_file'] + " tmp pbl -p 500 -t 6 -v 20190504T21 --nofineprint -o ./output/test_planview.png"
+        print("command string: ", command_str)
+        os.system(command_str)
 
 
 def open_config(config_file):
@@ -53,5 +62,6 @@ def open_config(config_file):
 if __name__ == "__main__":
     config_file = sys.argv[1]
     # run_help(config_file)
-    # run_example(config_file)
-    run_with_output_file(config_file)
+    run_example(config_file)
+    # run_with_novel_output_file(config_file)
+    # run_with_novel_output_dir(config_file)
