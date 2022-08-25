@@ -148,8 +148,8 @@ To generate example tendency plots using settings in the **fv3_physics_defaults.
 .. code-block:: bash
 
    setenv CONFIG $METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml
-   setenv WORKING_DIR $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend/test
-   cd $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
+   setenv WORKING_DIR $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
+   cd $WORKING_DIR
    python planview_fv3.py -h
    
 Plan view
@@ -250,7 +250,7 @@ Generate vertical profile of temperature tendencies averaged over the mid-CONUS 
 
 .. code-block:: bash
 
-   python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 2 -v 20190504T14 -s test/MID_CONUS --nofineprint
+   python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 2 -v 20190504T14 -s shapefiles/MID_CONUS --nofineprint
 
 .. image:: tmp.vert_profile.MID_CONUS.png
 
