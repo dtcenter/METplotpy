@@ -61,6 +61,7 @@ def test_novel_output_dir():
         expected_file = "./output/test_vert_profile.png"
         assert os.path.isfile(expected_file) == True
         os.remove(expected_file)
+        os.removedirs("./output")
 
     except FileNotFoundError as fnfe:
         assert False

@@ -59,6 +59,7 @@ def test_novel_output_dir():
         runner_planview.run_with_novel_output_dir(runner_config_filename)
         expected_file = "./output/test_planview.png"
         assert os.path.isfile(expected_file) == True
+        os.removedirs("./output")
         os.remove(expected_file)
 
     except FileNotFoundError as fnfe:
