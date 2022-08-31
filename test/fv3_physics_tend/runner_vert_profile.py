@@ -26,7 +26,7 @@ def run_example(config_file):
     shapefiles_dir = str(tu.get_fv3_shapefiles_dir())
     command_str = "python " + config['source_dir'] + "/vert_profile_fv3.py " + " ./fv3_physics_tend_defaults.yaml " + \
                   config['history_file'] + " " + config[
-                      'grid_file'] + " tmp -t 2 -v 20190504T14 -s "  + shapefiles_dir +  " --nofineprint "
+                      'grid_file'] + " tmp -t 1 -v 20190504T13 -s "  + shapefiles_dir +  " --nofineprint "
     print("command string: ", command_str)
     os.system(command_str)
 
@@ -45,7 +45,7 @@ def run_example(config_file):
     shapefile_dir = tu.get_fv3_shapefiles_dir()
     command_str = "python " + config['source_dir'] + "/vert_profile_fv3.py " + " ./fv3_physics_tend_defaults.yaml " + \
                   config['history_file'] + " " + config[
-                      'grid_file'] + " tmp -t 2 -v 20190504T14 -s " + shapefile_dir + " --nofineprint"
+                      'grid_file'] + " tmp -t 1 -v 20190504T13 -s " + shapefile_dir + " --nofineprint"
     print("command string: ", command_str)
     os.system(command_str)
 
@@ -55,7 +55,7 @@ def run_with_novel_output_file(config_file):
     shapefile_dir = tu.get_fv3_shapefiles_dir()
     command_str = "python " + config['source_dir'] + "/vert_profile_fv3.py " + " ./fv3_physics_tend_defaults.yaml " + \
                   config['history_file'] + " " + config[
-                      'grid_file'] + " tmp -t 2 -v 20190504T14 -s " + shapefile_dir + " -o ./test_vert_profile.png --nofineprint"
+                      'grid_file'] + " tmp -t 1 -v 20190504T13 -s " + shapefile_dir + " -o ./test_vert_profile.png --nofineprint"
     print("command string: ", command_str)
     os.system(command_str)
 
