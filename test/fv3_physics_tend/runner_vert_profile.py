@@ -49,6 +49,17 @@ def run_example(config_file):
     print("command string: ", command_str)
     os.system(command_str)
 
+def run_diff_example(config_file):
+    '''Run the diff example in the user's guide'''
+    config = open_config(config_file)
+    shapefile_dir = tu.get_fv3_shapefiles_dir()
+    command_str = "python " + config['source_dir'] + "/vert_profile_fv3.py " + " ./fv3_physics_tend_defaults.yaml " + \
+                  config['history_file'] + " " + config[
+                      'grid_file'] + " tmp -t 1 --subtract " + config['history_file'] + " -o diff.png --nofineprint"
+    print("command string: ", command_str)
+    os.system(command_str)
+
+
 def run_with_novel_output_file(config_file):
     '''Run the example in the user's guide with a novel output file name'''
     config = open_config(config_file)
@@ -74,4 +85,5 @@ def run_with_novel_output_dir(config_file):
 if __name__ == "__main__":
     config_file = sys.argv[1]
     # run_help(config_file)
-    run_example(config_file)
+    # run_example(config_file)
+    run_diff_example(config_file)
