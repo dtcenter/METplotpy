@@ -82,6 +82,7 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    weather_regime
    hovmoeller
    spacetime
+   make_maki_enso
    mjo_rmm_omi
    taylor_diagram
    tcrmw_cross_section
