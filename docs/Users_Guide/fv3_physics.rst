@@ -40,7 +40,12 @@ Required input:
 
 #. FV3 2-D grid specification file with latititude and longitude of each grid point (grid_spec.nc)
 
+**Download** the `fv3_history.nc and grid_spec.nc files
+<https://dtcenter.ucar.edu/dfiles/code/METplus/METplotpy/fv3_physics_tendency/>`_
 
+Save this file in a directory where you have read and write permissions, such as
+$WORKING_DIR/data/fv3_physics_tend, where $WORKING_DIR is the path to the directory where you will save
+input data.
 
 For additional details see `grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
 
