@@ -28,15 +28,6 @@ def run_example(config_file):
     print("command string: ", command_str)
     os.system(command_str)
 
-def run_example(config_file):
-    '''Run the example in the user's guide'''
-    config = open_config(config_file)
-    command_str = "python " + config['source_dir'] + "/cross_section_vert.py " + " ./fv3_physics_tend_defaults.yaml " + \
-                  config['history_file'] + " " + config[
-                      'grid_file'] + " tmp -t 2 -v 20190504T14 -s 32 -115 -e 34 -82 --nofineprint "
-    print("command string: ", command_str)
-    os.system(command_str)
-
 
 def run_with_novel_output_file(config_file):
     '''Run the example in the user's guide with a novel output file name'''
