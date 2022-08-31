@@ -35,6 +35,19 @@ def test_plot_created():
     except FileNotFoundError as fnfe:
         assert False
 
+def test_diff_plot_created():
+    '''
+    Test if the difference plot file is created
+    '''
+    runner_config_filename = "./runner_fv3_phys.yaml"
+    try:
+        expected_file = "./diff.png"
+        runner_vert_profile.run_diff_example(runner_config_filename)
+        assert os.path.isfile(expected_file) == True
+        os.remove(expected_file)
+    except FileNotFoundError as fnfe:
+        assert False
+
 def test_plot_created_for_output_file_name():
     '''
     Test if the plot file is created when the output filename is specified when
