@@ -13,13 +13,12 @@ Class Name: LineSeries
  """
 __author__ = 'Tatiana Burek'
 
-import warnings
 from typing import Union
 import math
 import statistics
 import re
+
 import numpy as np
-import pandas as pd
 from pandas import DataFrame
 import metcalcpy.util.correlation as pg
 from scipy.stats import norm
@@ -27,8 +26,6 @@ from scipy.stats import norm
 import metcalcpy.util.utils as utils
 from ..series import Series
 from .. import GROUP_SEPARATOR
-
-
 
 
 class LineSeries(Series):
@@ -85,17 +82,11 @@ class LineSeries(Series):
         """
         # calculate point stat
         if self.config.plot_stat == 'MEAN':
-            with warnings.catch_warnings():
-                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
-                point_stat = np.nanmean(data)
+            point_stat = np.nanmean(data)
         elif self.config.plot_stat == 'MEDIAN':
-            with warnings.catch_warnings():
-                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
-                point_stat = np.nanmedian(data)
+            point_stat = np.nanmedian(data)
         elif self.config.plot_stat == 'SUM':
-            with warnings.catch_warnings():
-                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
-                point_stat = np.nansum(data)
+            point_stat = np.nansum(data)
         else:
             point_stat = None
         return point_stat
@@ -142,19 +133,7 @@ class LineSeries(Series):
                 all_filters.append((self.input_data[field].isin(filter_list)))
 
             # filter by provided indy
-
-            # Duck typing is different in Python 3.6 and Python 3.8, for
-            # Python 3.8 and above, explicitly type cast the self.input_data[self.config.indy_var]
-            # Panda Series object to 'str' if the list of indy_vals are of str type.
-            # This will ensure we are doing str to str comparisons.
-            if isinstance(self.config.indy_vals[0], str):
-                indy_var_series = self.input_data[self.config.indy_var].astype(str)
-            else:
-                # The Panda series is as it was originally coded.
-                indy_var_series = self.input_data[self.config.indy_var]
-
-            all_filters.append(indy_var_series.isin(self.config.indy_vals))
-
+            all_filters.append((self.input_data[self.config.indy_var].isin(self.config.indy_vals)))
             # use numpy to select the rows where any record evaluates to True
             mask = np.array(all_filters).all(axis=0)
             self.series_data = self.input_data.loc[mask]
@@ -204,7 +183,7 @@ class LineSeries(Series):
                         if utils.GROUP_SEPARATOR in val:
                             new_name = 'Group_y1_' + str(group_to_value_index)
                             group_to_value[new_name] = val
-                    group_to_value_index = group_to_value_index + 1
+                            group_to_value_index = group_to_value_index + 1
 
             series_val_2 = self.config.parameters['series_val_2']
             if series_val_2:
@@ -215,7 +194,7 @@ class LineSeries(Series):
                             if GROUP_SEPARATOR in val:
                                 new_name = 'Group_y2_' + str(group_to_value_index)
                                 group_to_value[new_name] = val
-                        group_to_value_index = group_to_value_index + 1
+                                group_to_value_index = group_to_value_index + 1
 
             is_group_exists = False
             for series in self.series_list:
@@ -279,7 +258,6 @@ class LineSeries(Series):
         for indy in indy_vals_ordered:
             if utils.is_string_integer(indy):
                 indy = int(indy)
-
 
             point_data = self.series_data.loc[self.series_data[self.config.indy_var] == indy]
 
@@ -452,7 +430,7 @@ class LineSeries(Series):
             if self.series_data is None:
                 self.series_data = stats_indy_1
             else:
-                self.series_data = pd.concat([self.series_data, stats_indy_1], sort=False)
+                self.series_data = self.series_data.append(stats_indy_1, sort=False)
 
     def _calculate_tost_paired(self, series_data_1: DataFrame, series_data_2: DataFrame) -> dict:
         """

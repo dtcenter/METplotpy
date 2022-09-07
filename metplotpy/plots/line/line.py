@@ -150,26 +150,16 @@ class Line(BasePlot):
         # add derived for y1 axis
         num_series_y1_d = len(self.config_obj.get_config_value('derived_series_1'))
         for i, name in enumerate(self.config_obj.get_config_value('derived_series_1')):
-            # add default operation value if it is not provided
-            if len(name) == 2:
-                name.append("DIFF")
-            # include the series only if the name is valid
-            if len(name) == 3:
-                series_obj = LineSeries(self.config_obj, num_series_y1 + num_series_y2 + i,
+            series_obj = LineSeries(self.config_obj, num_series_y1 + num_series_y2 + i,
                                     input_data, series_list, name)
-                series_list.append(series_obj)
+            series_list.append(series_obj)
 
         # add derived for y2 axis
         for i, name in enumerate(self.config_obj.get_config_value('derived_series_2')):
-            # add default operation value if it is not provided
-            if len(name) == 2:
-                name.append("DIFF")
-            # include the series only if the name is valid
-            if len(name) == 3:
-                series_obj = LineSeries(self.config_obj,
+            series_obj = LineSeries(self.config_obj,
                                     num_series_y1 + num_series_y2 + num_series_y1_d + i,
                                     input_data, series_list, name, 2)
-                series_list.append(series_obj)
+            series_list.append(series_obj)
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
@@ -186,7 +176,6 @@ class Line(BasePlot):
         self._add_yaxis()
         self._add_y2axis()
         self._add_legend()
-
 
         # calculate stag adjustments
         stag_adjustments = self._calc_stag_adjustments()
@@ -244,10 +233,6 @@ class Line(BasePlot):
 
         # add x2 axis
         self._add_x2axis(n_stats)
-
-        # Allow plots to start from the y=0 line if set in the config file
-        if self.config_obj.start_from_zero is True:
-            self.figure.update_xaxes(range=[0, len(x_points_index) - 1])
 
     def _draw_series(self, series: Series, x_points_index_adj: Union[list, None] = None) -> None:
         """
@@ -468,7 +453,7 @@ class Line(BasePlot):
         and attaches it to the initial Figure
         """
         self.figure.update_layout(legend={'x': self.config_obj.bbox_x,
-                                          'y': self.config_obj.bbox_y - 0.1,
+                                          'y': self.config_obj.bbox_y,
                                           'xanchor': 'center',
                                           'yanchor': 'top',
                                           'bordercolor': self.config_obj.legend_border_color,

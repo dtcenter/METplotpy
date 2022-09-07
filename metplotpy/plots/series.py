@@ -17,6 +17,7 @@ import itertools
 import metcalcpy.util.utils as utils
 
 
+
 class Series:
     """
         Represents a series object of data points and their plotting style
