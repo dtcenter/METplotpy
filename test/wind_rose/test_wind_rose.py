@@ -1,11 +1,3 @@
-# !!!IMPORTANT!!!
-# activate conda environment in the testing subshell
-# Use your METplus Python 3.6.3
-# conda environment name after the '-n'
-# !!!!!!!!
-
-# !/usr/bin/env conda run -n blenny_363 python
-
 import pytest
 import os
 from metplotpy.plots.wind_rose import wind_rose
