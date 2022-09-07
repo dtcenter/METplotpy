@@ -88,6 +88,7 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    stratosphere_diagnostics
    polar_plot
    wind_rose
+   fv3_physics
    release-notes
    references
 
