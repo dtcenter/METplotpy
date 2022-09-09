@@ -2,8 +2,7 @@
 name: Task
 about: Describe something that needs to be done
 title: ''
-labels: 'alert: NEED ACCOUNT KEY, alert: NEED MORE DEFINITION, alert: NEED PROJECT
-  ASSIGNMENT, type: task'
+labels: 'alert: NEED ACCOUNT KEY, alert: NEED MORE DEFINITION, alert: NEED PROJECT ASSIGNMENT, type: task'
 assignees: ''
 
 ---
@@ -59,7 +58,7 @@ Branch name: `feature_<Issue Number>_<Description>`
 - [ ] Submit a pull request to merge into **develop**.
 Pull request: `feature <Issue Number> <Description>`
 - [ ] Define the pull request metadata, as permissions allow.
-Select: **Reviewer(s)** and **Development** issues
+Select: **Reviewer(s)** and **Linked issues**
 Select: **Repository** level development cycle **Project** for the next official release
 Select: **Milestone** as the next official version
 - [ ] Iterate until the reviewer(s) accept and merge your changes.
