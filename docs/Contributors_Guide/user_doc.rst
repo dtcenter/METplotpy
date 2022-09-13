@@ -20,6 +20,11 @@ add <plot> (without the .rst extension) to the table of contents.
 To do this, add <plot> to the list below the toctree:: entry.
 Please pay attention to grouping or alphabetizing that is already in use.
 
+Include Images
+==============
+
+Include any images of plots in the METplotpy/docs/Users_Guide directory
+
 Verify a Clean Build
 ====================
 
@@ -42,7 +47,8 @@ From the METplotpy/docs directory, run the following:
 
 
 Look for any warnings or error messages in the stdout
-view the documentation for correctness by opening up the browser and entering:
+
+View the documentation for correctness by opening up the browser and entering:
 
 .. code-block:: ini
 
@@ -50,6 +56,7 @@ view the documentation for correctness by opening up the browser and entering:
 
 Verify that the plot is in the table of contents on the left bar of the
 documentation.
+
 Click on the plot and verify that the documentation is correct and any images
 are rendered correctly.
 

@@ -33,5 +33,6 @@ Add sample data that exceeds x MB to METplus tarball
 yaml Configuration file
 =======================
 
-Use of yaml configuration file to set plot properties, input data, output filename, etc. (contributed vs plots )
+Use of yaml configuration file to set plot properties,
+input data, output filename, etc. (contributed vs plots).
 
