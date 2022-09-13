@@ -2,32 +2,21 @@
 Adding a New Plot
 *****************
 
-Generate a Github Issue
-=======================
+1. Generate a Github Issue
 
+2. Create a Feature Branch in the Github Repository
 
-Create a Feature Branch in the Github Repository
-================================================
+3. Determine the Appropriate Location for the Code
 
+   a. METplus/metplus/plots vs METplus/metplus/contributed
 
-Determine the Appropriate Location for the Code
-===============================================
+   b. Sample Data with Tests in METplus/test/<plot> Directory
 
+      (if data is less than x MB)
 
-METplus/metplus/plots vs METplus/metplus/contributed
-----------------------------------------------------
+   c. Add sample data that exceeds x MB to METplus tarball
 
-
-Sample Data with Tests in METplus/test/<plot> Directory
--------------------------------------------------------
-
-(if data is less than x MB)
-
-
-Add sample data that exceeds x MB to METplus tarball
-----------------------------------------------------
-
-(or wherever sample data is distributed)
+      (or wherever sample data is distributed)
 
 
 yaml Configuration file
