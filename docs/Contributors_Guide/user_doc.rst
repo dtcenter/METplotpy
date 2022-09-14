@@ -5,59 +5,55 @@ Add User Documenation
 This will be added in the METplotpy/docs/Users_Guide
 
 
-New Plot File Name
-==================
+1. New Plot File Name
 
-Put user documentation in a file called <plot>.rst,
-where <plot> is the name of the new plot.
+   Put user documentation in a file called <plot>.rst,
+   where <plot> is the name of the new plot.
 
-Add New Name to the Table of Contents
-=====================================
+2. Add New Name to the Table of Contents
 
-In the
-`index.rst file <https://metplotpy.readthedocs.io/en/latest/Users_Guide/index.html>`_,
-add <plot> (without the .rst extension) to the table of contents.
-To do this, add <plot> to the list below the toctree:: entry.
-Please pay attention to grouping or alphabetizing that is already in use.
+  In the
+  `index.rst file <https://metplotpy.readthedocs.io/en/latest/Users_Guide/index.html>`_,
+  add <plot> (without the .rst extension) to the table of contents.
+  To do this, add <plot> to the list below the toctree:: entry.
+  Please pay attention to grouping or alphabetizing that is already in use.
 
-Include Images
-==============
+3. Include Images
 
-Include any images of plots in the METplotpy/docs/Users_Guide directory
+   Include any images of plots in the METplotpy/docs/Users_Guide directory
 
-Verify a Clean Build
-====================
-
-Installation Items
-------------------
-
-The below items must be installed on the local system or in the virtual
-environment (virtualenv or conda) for this to run.
-
-  * sphinx
-  * sphinx-rtd-themes
-  * sphinx-gallery
-
-From the METplotpy/docs directory, run the following:  
-
-.. code-block:: ini
-		
-  make clean  
-  make html
+4. Verify a Clean Build
 
 
-Look for any warnings or error messages in the stdout
+   a. Installation Items
 
-View the documentation for correctness by opening up the browser and entering:
+      The below items must be installed on the local system or in the
+      virtual environment (virtualenv or conda) for this to run.
 
-.. code-block:: ini
+      * sphinx
+      * sphinx-rtd-themes
+      * sphinx-gallery
 
-  file:///<path-to-your-source-code>/METplotpy/docs/_build/html/Users_Guide/index.html
+      From the METplotpy/docs directory, run the following:  
 
-Verify that the plot is in the table of contents on the left bar of the
-documentation.
+      .. code-block:: ini
 
-Click on the plot and verify that the documentation is correct and any images
-are rendered correctly.
+	make clean  
+	make html
+
+
+5. Look for any warnings or error messages in the stdout
+
+6. View the documentation for correctness by opening up the browser and entering:
+
+   .. code-block:: ini
+
+      file:///<path-to-your-source-code>/METplotpy/docs/_build/html/Users_Guide/index.html
+
+7. Verify that the plot is in the table of contents on the left bar of the
+   documentation.
+
+8. Click on the plot and verify that the documentation is correct and any images
+   are rendered correctly.
 
 
