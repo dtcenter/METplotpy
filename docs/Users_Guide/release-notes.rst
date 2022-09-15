@@ -9,8 +9,31 @@ Version |version| release notes (|release_date|)
 ________________________________________________
 
 
-Version 2.0.0 release notes (20220802)
+Version 2.0.0 release notes (20220914)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+beta3 release
+^^^^^^^^^^^^^
+
+* New Plots:
+
+   * **Analyze FV3 Physics Parameterization Tendencies** (`#117 <https://github.com/dtcenter/METplotpy/issues/117>`_).
+
+
+* Enhancements: 
+
+
+* Internal:
+
+   * **Create checksum for released code** (`#262 <https://github.com/dtcenter/METplotpy/issues/262>`_).
+
+
+   * Add modulefiles used for installations on various machines (`#251 <https://github.com/dtcenter/METplotpy/issues/251>`_).
+
+* Bugfixes:
+
+
+
 
 beta2 release
 ^^^^^^^^^^^^^
@@ -30,7 +53,6 @@ beta2 release
 * Bugfixes:
 
    * **Fix logic to guess path to default config when METPLOTPY_BASE is not set** (`#238 <https://github.com/dtcenter/METplotpy/issues/238>`_).
-
 
 
 
