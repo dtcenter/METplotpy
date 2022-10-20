@@ -19,7 +19,7 @@ and difference plots are also available.
 Required Packages:
 ==================
 
-* cartopy
+* cartopy (0.20.3 only)
 
 * matplotlib
 
