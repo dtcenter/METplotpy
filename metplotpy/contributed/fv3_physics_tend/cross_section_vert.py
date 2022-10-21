@@ -10,7 +10,7 @@ import numpy as np
 import os
 import pandas as pd
 import pdb
-import physics_tend
+from . import physics_tend
 import sys
 import xarray
 import yaml
