@@ -13,11 +13,8 @@ Class Name: mpr_plot.py
  """
 __author__ = 'Tatiana Burek'
 
-import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning, module='statsmodels')
 import pandas as pd
 import numpy as np
-import statsmodels.formula.api as sm
 import yaml
 
 import plotly.graph_objects as go
@@ -382,10 +379,9 @@ class MprPlot(BasePlot):
         x_coords = np.array([fcst.min(), fcst.max()])
 
         # find intercept and slope for the regression line
-        model = sm.ols("OBS ~ FCST", data=case_subset)
-        results = model.fit()
-        intercept = results.params.values[0]
-        slope = results.params.values[1]
+        slope_intercept = np.polyfit(case_subset['FCST'], case_subset['OBS'], 1)
+        slope = slope_intercept[0]
+        intercept = slope_intercept[1]
 
         if intercept == 0 and slope == 0:
             x_coords = [-1, 1]
