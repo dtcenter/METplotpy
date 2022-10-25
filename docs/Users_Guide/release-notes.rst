@@ -1,20 +1,17 @@
-*********************************
-METplotpy |version| Release Notes
-*********************************
+*****************************
+METplotpy Release Information
+*****************************
 
 When applicable, release notes are followed by the GitHub issue number which
 describes the bugfix, enhancement, or new feature:
 `METplotpy GitHub issues. <https://github.com/dtcenter/METplotpy/issues>`_
 
-Version |version| release notes (|release_date|)
-________________________________________________
 
+METplotpy Release Notes
+=======================
 
-Version 2.0.0 release notes (20220914)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-beta3 release
-^^^^^^^^^^^^^
+METplotpy Version 2.0.0-beta3 release notes (20220914)
+______________________________________________________
 
 * New Plots:
 
@@ -39,8 +36,9 @@ beta3 release
 
 
 
-beta2 release
-^^^^^^^^^^^^^
+METplotpy Version 2.0.0-beta2 release notes (20220803)
+______________________________________________________
+
 
 * New Plots:
 
@@ -63,9 +61,9 @@ beta2 release
      (`#238 <https://github.com/dtcenter/METplotpy/issues/238>`_).
 
 
+METplotpy Version 2.0.0-beta1 release notes (20220622)
+______________________________________________________
 
-beta1 release
-^^^^^^^^^^^^^
 
 * New Plots:
 
@@ -93,3 +91,8 @@ beta1 release
   * Issues with generating points1 files for numerous plots
     (`#223 <https://github.com/dtcenter/METplotpy/issues/223>`_).
 
+METplotpy Upgrade Instructions
+==============================
+
+Upgrade instructions will be listed here if they are
+applicable for this release.
