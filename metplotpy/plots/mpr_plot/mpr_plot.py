@@ -13,11 +13,8 @@ Class Name: mpr_plot.py
  """
 __author__ = 'Tatiana Burek'
 
-import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning, module='statsmodels')
 import pandas as pd
 import numpy as np
-import statsmodels.formula.api as sm
 import yaml
 
 import plotly.graph_objects as go
