@@ -10,6 +10,40 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Release Notes
 =======================
 
+METplotpy Version 2.0.0-beta4 release notes (20221028)
+------------------------------------------------------
+
+* New Plots:
+
+
+* Enhancements: 
+
+   * **Remove statsmodels and patsy python packages**
+     (`#275 <https://github.com/dtcenter/METplotpy/issues/275>`_).
+
+
+* Internal:
+
+   * **Clean up release notes**
+     (`#273 <https://github.com/dtcenter/METplotpy/issues/273>`_).
+
+   * **Fix github Actions warnings**
+     (`#272 <https://github.com/dtcenter/METplotpy/issues/272>`_).
+
+
+* Bugfixes:
+
+   * **Fix ensemble spread-skill plot to correctly read in ensemble spread-skill file**
+     (`#271 <https://github.com/dtcenter/METplotpy/issues/271>`_).
+
+   * **Fix type cast issue caused by Python 3.8**
+     (`#269 <https://github.com/dtcenter/METplotpy/issues/269>`_).
+
+   * **Fix import statements in revision_series plot**
+     (`#267 <https://github.com/dtcenter/METplotpy/issues/267>`_).
+
+
+
 METplotpy Version 2.0.0-beta3 release notes (20220914)
 ------------------------------------------------------
 
