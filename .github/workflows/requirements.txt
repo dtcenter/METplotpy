@@ -27,7 +27,6 @@ numpy==1.22.3
 packaging==21.3
 pandas==1.2.3
 partd==1.2.0
-patsy==0.5.2
 Pillow==9.1.0
 plotly==5.7.0
 pluggy==1.0.0
@@ -50,7 +49,6 @@ requests==2.27.1
 scikit-image==0.18.1
 scipy==1.8.0
 six==1.16.0
-statsmodels==0.12.2
 tenacity==8.0.1
 tifffile==2019.7.26.2
 tomli==2.0.1
