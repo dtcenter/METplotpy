@@ -2,6 +2,7 @@ import pytest
 import os
 import runner_vert_profile
 
+@pytest.mark.skip()
 def test_run_help():
     '''
     Run the script with just the help option and the required input files
@@ -22,6 +23,7 @@ def test_run_help():
         assert False
 
 
+@pytest.mark.skip()
 def test_plot_created():
     '''
     Test if the plot file is created
@@ -35,6 +37,7 @@ def test_plot_created():
     except FileNotFoundError as fnfe:
         assert False
 
+@pytest.mark.skip()
 def test_diff_plot_created():
     '''
     Test if the difference plot file is created
@@ -48,6 +51,7 @@ def test_diff_plot_created():
     except FileNotFoundError as fnfe:
         assert False
 
+@pytest.mark.skip()
 def test_plot_created_for_output_file_name():
     '''
     Test if the plot file is created when the output filename is specified when
@@ -63,6 +67,7 @@ def test_plot_created_for_output_file_name():
     except FileNotFoundError as fnfe:
         assert False
 
+@pytest.mark.skip()
 def test_novel_output_dir():
     '''
     Test if the plot file is created in the non-existent output directory. Test that
