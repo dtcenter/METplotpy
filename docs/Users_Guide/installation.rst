@@ -17,6 +17,8 @@ ___________________
 
 * Python 3.8.6
 
+* cartopy 0.20.2 
+
 * imutils 0.5.4
 
 * imageio 2.19.2
@@ -25,11 +27,15 @@ ___________________
 
 * metcalcpy (same version as this version of METplotpy)
 
+* metpy 1.3.1
+
 * netcdf4 1.5.8
 
 * numpy 1.22.3
 
-* pandas 1.2.3
+* pandas 1.2.3 (this version only)
+
+* pint 0.19.2
 
 * plotly 5.8.0
 
