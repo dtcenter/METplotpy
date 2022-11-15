@@ -10,6 +10,25 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Release Notes
 =======================
 
+METplotpy Version 2.0.0-beta5 release notes (20221115)
+------------------------------------------------------
+
+* New Plots:
+
+
+* Enhancements: 
+
+
+
+* Internal:
+
+
+
+* Bugfixes:
+
+
+
+
 METplotpy Version 2.0.0-beta4 release notes (20221028)
 ------------------------------------------------------
 
