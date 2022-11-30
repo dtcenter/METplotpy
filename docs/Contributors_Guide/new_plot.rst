@@ -2,14 +2,18 @@
 Adding a New Plot
 *****************
 
-1. Generate a Github Issue
+1.
+Generate a GitHub issue.
 
-2. Create a Feature Branch in the Github Repository
+2.
+Create a feature branch in the GitHub repository.
 
-3. Place all code in the appropriate locations:
+3.
+Place all code in the appropriate locations:
 
-   a. METplus/metplus/plots vs METplus/metplus/contributed for source
-      code used to create the plot
+a.
+*metplotpy/plots* vs *metplotpy/contributed* for source
+code used to create the plot
 
    b. Sample Data with Tests in METplotpy/test/*plotname* directory
 
