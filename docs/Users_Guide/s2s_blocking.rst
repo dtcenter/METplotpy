@@ -16,7 +16,7 @@ documentation <https://metplus.readthedocs.io/en/develop/generated/model_applica
 Required Packages
 =================
 
-* Python 3.6.3
+* Python 3.8
 
 * Matplotlib 3.3.1
 

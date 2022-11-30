@@ -246,7 +246,7 @@ class TaylorDiagram(BasePlot):
 
         for i, series in enumerate(self.series_list):
 
-            # normalize the OSTDEV: ostdev/fstdev
+            # normalize the OSTDEV: fstdev/ostdev
             stdev = series.series_points.fstdev / series.series_points.ostdev
             correlation = series.series_points.pr_corr
             marker = self.config_obj.marker_list[i]

@@ -28,8 +28,8 @@ from metplotpy.plots import util
 from metplotpy.plots.series import Series
 
 import metcalcpy.util.utils as calc_util
-from plots.revision_series.revision_series_config import RevisionSeriesConfig
-from plots.revision_series.revision_series_series import RevisionSeriesSeries
+from metplotpy.plots.revision_series.revision_series_config import RevisionSeriesConfig
+from metplotpy.plots.revision_series.revision_series_series import RevisionSeriesSeries
 
 
 class RevisionSeries(Line):

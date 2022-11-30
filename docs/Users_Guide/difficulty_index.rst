@@ -50,7 +50,7 @@ _________________
 
 The following Python packages are necessary:
 
-- Python 3.6
+- Python 3.8
 - numpy
 - matplotlib 2.2.2 (minimum)
 - scipy

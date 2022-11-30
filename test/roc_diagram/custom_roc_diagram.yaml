@@ -62,7 +62,7 @@ series_type:
 series_line_style:
     - 'solid'
 
-event_equal: True
+event_equal: False
 
 # Caption settings
 plot_caption: "This is caption"
