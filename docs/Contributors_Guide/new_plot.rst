@@ -61,7 +61,8 @@ In METplotpy, two YAML configuration files are needed because
 they are used by METviewer: A default configuration file and a custom
 config file.
 
-The custom configuration file is required. It can be an empty file
+The custom configuration file is required. They are located in
+*metplotpy/plots/config*.  It can be an empty file
 if the default settings are to be applied. The default config file
 is named with the naming convention **plotname_defaults.yaml**.
 Custom configuration files are saved in the *test/plotname* directory.
