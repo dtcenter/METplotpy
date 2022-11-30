@@ -17,8 +17,7 @@ Place all code in the appropriate locations:
 
   b.
   Sample data with tests in *test/plotname* directory.
-
-  **Sample data must be under 50 MB**
+  **Sample data must be under 50 MB.**
 
   c.
   Sample data that exceeds 50 MB can be added to the METplus tar file.
