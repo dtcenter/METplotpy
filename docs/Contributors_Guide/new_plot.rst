@@ -16,26 +16,27 @@ Place all code in the appropriate locations:
   code used to create the plot
 
   b.
-  Sample data with tests in *test/plotname* directory.
-  **Sample data must be under 50 MB.**
+  Sample data for testing should be placed in *test/<plotname>* directory,
+  where <plotname> is replaced with the name of the plot (e.g. bar, box,
+  etc.). The size of the saample data must be **under 50 MB.**
 
   c.
-  Sample data that exceeds 50 MB can be added to the METplus tar file.
+  If the sample data size exceeds 50 MB it should be added to the METplus tar files.
   Refer to the `Providing New Data
   <https://metplus.readthedocs.io/en/latest/Contributors_Guide/add_use_case.html>`_
   section of the METplus Contributor's Guide for steps to add data.
 
   d.
-  Test code in the *test/plotname* directory.
-
-  Test code should be created using the pytest framework, utilizing
-  sample data that can be readily run.
+  Test code should be placed in the *test/<plotname>* directory,
+  where <plotname> is replaced with the name of the plot (e.g. bar, box,
+  etc.). The test code should be created using the pytest framework,
+  utilizing sample data that can be readily run.
 
 YAML Configuration file
 =======================
 
-Use YAML configuration file(s) to set plot properties,
-input data, output filename, etc.
+Use YAML configuration file(s) to set plot properties, input data, output
+filename, etc.
 
 
 METviewer Plots
@@ -44,30 +45,27 @@ METviewer Plots
 For plots that are used by METviewer, two YAML configuration files are needed:
 a default configuration file and a custom config file.
 
-The default configuration file is used by METviewer.
-The custom configuration file is required.
-It can be an empty file if the default settings are to be applied.
-The default config file is named with the naming convention
-**plotname_defaults.yaml**. Custom configuration files are saved
-in the *METplotpy/test/plotname* directory. In addition to being
-used for testing, these custom configuration files are used in the
-user documentation to illustrate how to generate the plot.
+The default configuration files are used by METviewer and are located in
+*metplotpy/plots/config*. The default config file should be named using the
+naming convention **<plotname>_defaults.yaml**, where <plotname> is replaced
+with the name of the plot (e.g. bar, box, etc.).
+
+The custom configuration file is required. It can be an empty file if the
+default settings are to be applied. Custom configuration files are located
+in the *test/<plotname>* directory, where <plotname> is replaced with the name
+of the plot (e.g. box, bar, etc.).  In addition to being used for testing,
+these custom configuration files are used in the user documentation to
+illustrate how to generate the plot.
 
 
 Contributed Plots
 -----------------
 
-In METplotpy, two YAML configuration files are needed because
-they are used by METviewer: A default configuration file and a custom
-config file.
-
-The custom configuration file is required. They are located in
-*metplotpy/plots/config*.  It can be an empty file
-if the default settings are to be applied. The default config file
-is named with the naming convention **plotname_defaults.yaml**.
-Custom configuration files are saved in the *test/plotname* directory.
-In addition to being used for testing, these custom configuration
-files are used in the user documentation to illustrate how to generate the plot.
+The plots in *metplotpy/contributed* have been contributed from
+various sources and do not follow a specific pattern.  However, it is
+recommended that when contributing plots, every effort is made to enable
+configurability by way of YAML configuration files and to avoid
+hard-coding of plot settings, input file paths, output file paths, etc.
 
 
 
