@@ -14,4 +14,4 @@ section).
 Use the pytest framework to generate tests.
 
 Add an entry for the test in the
-*METplotpy/.github/workflows/unit_tests.yaml* file.
+*.github/workflows/unit_tests.yaml* file.
