@@ -7,22 +7,22 @@ Documentation should be added in the *docs/Users_Guide* directory.
 1.
 Create a new **.rst** file for the new plot type.
 
-Put the documentation in a file called **plot.rst**,
-where **plot** is replaced with the name of the new plot type.
+  Put the documentation in a file called **plot.rst**,
+  where **plot** is replaced with the name of the new plot type.
 
 2.
 Add the new section to the Table of Contents.
 
-In the *docs/Users_Guide/index.rst* file, scroll to the bottom of the page,
-and add **plot** (without the .rst extension) to an appropriate place
-in the list of files below “toctree”, which becomes the table of
-contents after rendering. Please pay attention to grouping or
-alphabetizing that is already in use.
+  In the *docs/Users_Guide/index.rst* file, scroll to the bottom of the page,
+  and add **plot** (without the .rst extension) to an appropriate place
+  in the list of files below “toctree”, which becomes the table of
+  contents after rendering. Please pay attention to grouping or
+  alphabetizing that is already in use.
 
 3.
 Add images
 
-Add and commit any new images of plots in the *docs/Users_Guide* directory.
+  Add and commit any new images of plots in the *docs/Users_Guide* directory.
 
 4.
 Verify a Clean Build
