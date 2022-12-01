@@ -39,10 +39,10 @@ Verify a Clean Build
 
      From the METplotpy/docs directory, run the following:  
 
-     .. code-block:: ini
+       .. code-block:: ini
 
-        make clean  
-	make html
+          make clean  
+          make html
 
 
 5.
