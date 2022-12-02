@@ -20,7 +20,7 @@ Add the new section to the Table of Contents.
   alphabetizing that is already in use.
 
 3.
-Add images
+Add images.
 
   Add and commit any new images of plots in the *docs/Users_Guide* directory.
 
@@ -41,7 +41,7 @@ text “Documentation” underneath.
   If there is a yellow circle, the build is not yet finished.
 
   b.
-  If there is a green check, the task completed successfully 
+  If there is a green check, the task completed successfully. 
 
   c.
   If there is a red “x”, the task did not build correctly.
