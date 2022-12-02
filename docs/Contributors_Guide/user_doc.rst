@@ -31,7 +31,6 @@ Review and check for errors in the automatically generated documentation.
 Once the documentation has been committed and pushed to GitHub,
 GitHub actions will automatically create the online documentation. 
 
-5.
 Contributors will be able to view the run for the build of the documentation
 in the GitHub actions section of the METplotpy repository, which will
 be named with the text of the last commit message and the
@@ -52,20 +51,11 @@ text “Documentation” underneath.
   and look at the warnings or errors given with the line number and page.
   Resolve any warnings or errors.
 
-6.
 Once the documentation has been successfully built, it will be viewable at this URL:
 
   .. code-block:: ini
 
        https://metplotpy.readthedocs.io/en/<feature_branch_name>/Users_Guide/index.html
 
-Where **<feature_branch_name>** is replaced with the name of the
+where **<feature_branch_name>** is replaced with the name of the
 feature branch.
-
-7.
-Review the documentation to ensure that it looks as expected and
-all images are present.
-
-8.
-Verify that the plot is in the table of contents on the left bar of the
-documentation.
