@@ -17,7 +17,7 @@ Place all code in the appropriate locations:
 
   b.
   Sample data for testing should be placed in *test/<plotname>* directory,
-  where <plotname> is replaced with the name of the plot (e.g. bar, box,
+  where **<plotname>** is replaced with the name of the plot (e.g. bar, box,
   etc.). The size of the sample data must be **under 50 MB.**
 
   c.
