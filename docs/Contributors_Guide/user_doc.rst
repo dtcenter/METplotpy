@@ -44,10 +44,9 @@ Review and check for errors in the automatically generated documentation.
 
     c.
     If there is a red “x”, the task did not build correctly.
-
-    Find the documentation_warnings.log file by clicking on the name of
+    Find the **documentation_warnings.log** file by clicking on the name of
     the task that failed and scrolling down to the “Archives” section.
-    Click on the “documentation_warnings.log” file to download it
+    Click on the “**documentation_warnings.log**” file to download it
     and look at the warnings or errors given with the line number and page.
     Resolve any warnings or errors.
 
