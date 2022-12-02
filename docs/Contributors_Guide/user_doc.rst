@@ -11,7 +11,7 @@ Create a new **.rst** file for the new plot type.
   where **<plot>** is replaced with the name of the new plot type.
 
 2.
-Add the new section to the Table of Contents.
+Add the name of the new file to the Table of Contents.
 
   In the *docs/Users_Guide/index.rst* file, scroll to the bottom of the page,
   and add **<plot>** (without the .rst extension) to an appropriate place
