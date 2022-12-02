@@ -7,14 +7,14 @@ Documentation should be added in the *docs/Users_Guide* directory.
 1.
 Create a new **.rst** file for the new plot type.
 
-  Put the documentation in a file called **plot.rst**,
-  where **plot** is replaced with the name of the new plot type.
+  Put the documentation in a file called **<plot.rst>**,
+  where **<plot>** is replaced with the name of the new plot type.
 
 2.
 Add the new section to the Table of Contents.
 
   In the *docs/Users_Guide/index.rst* file, scroll to the bottom of the page,
-  and add **plot** (without the .rst extension) to an appropriate place
+  and add **<plot>** (without the .rst extension) to an appropriate place
   in the list of files below “toctree”, which becomes the table of
   contents after rendering. Please pay attention to grouping or
   alphabetizing that is already in use.
@@ -24,42 +24,48 @@ Add images
 
   Add and commit any new images of plots in the *docs/Users_Guide* directory.
 
+
 4.
-Verify a Clean Build
+Review and check for errors in the automatically generated documentation.
 
-
-  a. Installation Items
-
-     The below items must be installed on the local system or in the
-     virtual environment (virtualenv or conda) for this to run.
-
-     * sphinx
-     * sphinx-rtd-themes
-     * sphinx-gallery
-
-     From the METplotpy/docs directory, run the following:  
-
-       .. code-block:: ini
-
-          make clean  
-          make html
-
+Once the documentation has been committed and pushed to GitHub,
+GitHub actions will automatically create the online documentation. 
 
 5.
-Look for any warnings or error messages in the stdout.
+Contributors will be able to view the run for the build of the documentation
+in the GitHub actions section of the METplotpy repository, which will
+be named with the text of the last commit message and the
+text “Documentation” underneath.  
+
+  a.
+  If there is a yellow circle, the build is not yet finished.
+
+  b.
+  If there is a green check, the task completed successfully 
+
+  c.
+  If there is a red “x”, the task did not build correctly.
+
+  Find the documentation_warnings.log file by clicking on the name of
+  the task that failed and scrolling down to the “Archives” section.
+  Click on the “documentation_warnings.log” file to download it
+  and look at the warnings or errors given with the line number and page.
+  Resolve any warnings or errors.
 
 6.
-View the documentation for correctness by opening up the browser and entering:
+Once the documentation has been successfully built, it will be viewable at this URL:
 
-   .. code-block:: ini
+  .. code-block:: ini
 
-      file:///<path-to-your-source-code>/METplotpy/docs/_build/html/Users_Guide/index.html
+       https://metplotpy.readthedocs.io/en/<feature_branch_name>/Users_Guide/index.html
+
+Where **<feature_branch_name>** is replaced with the name of the
+feature branch.
 
 7.
-Verify that the plot is in the table of contents on the left bar of the
-documentation.
+Review the documentation to ensure that it looks as expected and
+all images are present.
 
 8.
-Verify that the documentation looks correct and any images are rendered correctly.
-
-
+Verify that the plot is in the table of contents on the left bar of the
+documentation.

@@ -3,7 +3,7 @@ Generate Tests and Add to Github Actions
 ****************************************
 
 Create a subdirectory under the *test* directory
-(e.g. *test/newplot* where *newplot* is replaced with the
+(e.g. *test/<newplot>* where **<newplot>** is replaced with the
 name of the plot type that is being added to the repository.)
 
 Add sample data (see applicable information in the
