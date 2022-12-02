@@ -28,34 +28,34 @@ Add images.
 4.
 Review and check for errors in the automatically generated documentation.
 
-Once the documentation has been committed and pushed to GitHub,
-GitHub actions will automatically create the online documentation. 
+  Once the documentation has been committed and pushed to GitHub,
+  GitHub actions will automatically create the online documentation. 
 
-Contributors will be able to view the run for the build of the documentation
-in the GitHub actions section of the METplotpy repository, which will
-be named with the text of the last commit message and the
-text “Documentation” underneath.  
+  Contributors will be able to view the run for the build of the documentation
+  in the GitHub actions section of the METplotpy repository, which will
+  be named with the text of the last commit message and the
+  text “Documentation” underneath.  
 
-  a.
-  If there is a yellow circle, the build is not yet finished.
+    a.
+    If there is a yellow circle, the build is not yet finished.
 
-  b.
-  If there is a green check, the task completed successfully. 
+    b.
+    If there is a green check, the task completed successfully. 
 
-  c.
-  If there is a red “x”, the task did not build correctly.
+    c.
+    If there is a red “x”, the task did not build correctly.
 
-  Find the documentation_warnings.log file by clicking on the name of
-  the task that failed and scrolling down to the “Archives” section.
-  Click on the “documentation_warnings.log” file to download it
-  and look at the warnings or errors given with the line number and page.
-  Resolve any warnings or errors.
+    Find the documentation_warnings.log file by clicking on the name of
+    the task that failed and scrolling down to the “Archives” section.
+    Click on the “documentation_warnings.log” file to download it
+    and look at the warnings or errors given with the line number and page.
+    Resolve any warnings or errors.
 
-Once the documentation has been successfully built, it will be viewable at this URL:
+  Once the documentation has been successfully built, it will be viewable at this URL:
 
-  .. code-block:: ini
+    .. code-block:: ini
 
        https://metplotpy.readthedocs.io/en/<feature_branch_name>/Users_Guide/index.html
 
-where **<feature_branch_name>** is replaced with the name of the
-feature branch.
+  where **<feature_branch_name>** is replaced with the name of the
+  feature branch.
