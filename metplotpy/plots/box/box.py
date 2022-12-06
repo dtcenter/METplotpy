@@ -574,6 +574,9 @@ class Box(BasePlot):
                     if calc_util.is_string_integer(indy_val):
                         data_for_indy = series.series_data[
                             series.series_data[self.config_obj.indy_var] == int(indy_val)]
+                    elif calc_util.is_string_strictly_float(indy_val):
+                        data_for_indy = series.series_data[
+                            series.series_data[self.config_obj.indy_var] == float(indy_val)]
                     else:
                         data_for_indy = series.series_data[
                             series.series_data[self.config_obj.indy_var] == indy_val]

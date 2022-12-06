@@ -76,6 +76,8 @@ class HistSeries(Series):
             for i, filter_val in enumerate(filter_list):
                 if utils.is_string_integer(filter_val):
                     filter_list[i] = int(filter_val)
+                elif utils.is_string_strictly_float(filter_val):
+                    filter_list[i] = float(filter_val)
 
             all_filters.append((self.input_data[field].isin(filter_list)))
 
