@@ -108,6 +108,8 @@ class BoxSeries(Series):
                 for i, filter_val in enumerate(filter_list):
                     if utils.is_string_integer(filter_val):
                         filter_list[i] = int(filter_val)
+                    elif utils.is_string_strictly_float(filter_val):
+                        filter_list[i] = float(filter_val)
 
                 all_filters.append((self.input_data[field].isin(filter_list)))
 
@@ -183,6 +185,8 @@ class BoxSeries(Series):
         for indy in self.config.indy_vals:
             if utils.is_string_integer(indy):
                 indy = int(indy)
+            elif utils.is_string_strictly_float(indy):
+                indy = float(indy)
 
             point_data = self.series_data.loc[self.series_data[self.config.indy_var] == indy]
             series_points_results['nstat'].append(len(point_data['stat_value']))
@@ -211,6 +215,8 @@ class BoxSeries(Series):
         for indy in self.config.indy_vals:
             if utils.is_string_integer(indy):
                 indy = int(indy)
+            elif utils.is_string_strictly_float(indy):
+                indy = float(indy)
 
             stats_indy_1 = \
                 series_data_1.loc[series_data_1[self.config.indy_var] == indy]
