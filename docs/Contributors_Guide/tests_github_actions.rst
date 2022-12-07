@@ -11,7 +11,9 @@ Add sample data (see applicable information in the
 <https://metplotpy.readthedocs.io/en/feature_224_contributors_guide/Contributors_Guide/new_plot.html#adding-a-new-plot>`_
 section).
 
-Use the pytest framework to generate tests.
+Use the pytest framework to generate tests. For more information review
+this `pytest documentation <https://docs.pytest.org/en/7.2.x>`_ for
+more information.
 
 Add an entry for the test in the
 *.github/workflows/unit_tests.yaml* file.
