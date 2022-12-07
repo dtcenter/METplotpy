@@ -54,6 +54,13 @@ class ROCDiagramSeries(Series):
         # Subset data based on self.all_series_vals that we acquired from the
         # config file
         input_df = self.input_data
+
+        # Event equalization can sometimes create an empty data frame.  Check for
+        # an empty data frame and return a tuple of empty lists if this is the case.
+        if input_df.empty:
+            print(f"INFO: No points to plot (most likely as a result of event equalization).  ")
+            return [],[],[]
+
         series_num = self.series_order
         perm = utils.create_permutations(self.all_series_vals)
         if len(self.all_series_vals) > 0:
@@ -143,6 +150,11 @@ class ROCDiagramSeries(Series):
                                use the threshold operator (<,<=,==, >=,>)
                                to determine the order.
         '''
+
+        # If the df_input dataframe is empty (most likely as a result of event equalization),
+        # return the df_input data frame.
+        if df_input.empty:
+            return df_input
 
         # From the fcst_thresh column, create two new columns, thresh_values and
         # op_wts that we can then sort using Pandas' multi-column sorting
