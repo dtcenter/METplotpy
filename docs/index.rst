@@ -115,6 +115,7 @@ To cite this documentation in publications, please refer to the METplotpy User's
    :caption: METplotpy 
 
    Users_Guide/index
+   Contributors_Guide/index
 
 
 
