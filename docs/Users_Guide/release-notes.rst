@@ -20,6 +20,9 @@ METplotpy Version 2.0.0 release notes (20221208)
 
 * Enhancements: 
 
+   * **Create a Contributor's Guide**
+     (`#224 <https://github.com/dtcenter/METplotpy/issues/2245>`_).
+
    * **Remove statsmodels and patsy python packages**
      (`#275 <https://github.com/dtcenter/METplotpy/issues/275>`_).
 
@@ -47,7 +50,6 @@ METplotpy Version 2.0.0 release notes (20221208)
    * **Create checksum for released code**
      (`#262 <https://github.com/dtcenter/METplotpy/issues/262>`_).
 
-
    * Add modulefiles used for installations on various machines
      (`#251 <https://github.com/dtcenter/METplotpy/issues/251>`_).
 
@@ -55,10 +57,16 @@ METplotpy Version 2.0.0 release notes (20221208)
      (`#208 <https://github.com/dtcenter/METplotpy/issues/208>`_).
 
 
-
-
-
 * Bugfixes:
+
+   * ROC diagram needs to gracefully handle empty result from event equalization
+     (`#281 <https://github.com/dtcenter/METplotpy/issues/281>`_).
+
+   * perform_event_equalization dropping column in an empty dataframe
+     (`#238 <https://github.com/dtcenter/METplotpy/issues/238>`_).
+
+   * **Error processing float values by dataframe filtering**
+     (`#287 <https://github.com/dtcenter/METplotpy/issues/287>`_).
 
    * **Fix ensemble spread-skill plot to correctly read in ensemble spread-skill file**
      (`#271 <https://github.com/dtcenter/METplotpy/issues/271>`_).
