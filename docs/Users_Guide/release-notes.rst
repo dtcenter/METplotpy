@@ -10,35 +10,30 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Release Notes
 =======================
 
-METplotpy Version 2.0.0-beta5 release notes (20221115)
+METplotpy Version 2.0.0 release notes (20221208)
 ------------------------------------------------------
 
 * New Plots:
 
-
-* Enhancements: 
-
-
-
-* Internal:
-
-
-
-* Bugfixes:
-
-
-
-
-METplotpy Version 2.0.0-beta4 release notes (20221028)
-------------------------------------------------------
-
-* New Plots:
-
+   * **Analyze FV3 Physics Parameterization Tendencies**
+     (`#117 <https://github.com/dtcenter/METplotpy/issues/117>`_).
 
 * Enhancements: 
 
    * **Remove statsmodels and patsy python packages**
      (`#275 <https://github.com/dtcenter/METplotpy/issues/275>`_).
+
+   * **Add Revision Series Capability to line and box plots**
+     (`#232 <https://github.com/dtcenter/METplotpy/issues/232>`_).
+
+   * **Set up SonarQube to run nightly**
+     (`#38 <https://github.com/dtcenter/METplus-Internal/issues/38>`_).
+
+   * **Allow line plots to start from y=0 line**
+     (`#217 <https://github.com/dtcenter/METplotpy/issues/217>`_).
+
+   * **Make hovmoeller plot more configurable**
+     (`#213 <https://github.com/dtcenter/METplotpy/issues/213>`_).
 
 
 * Internal:
@@ -48,6 +43,19 @@ METplotpy Version 2.0.0-beta4 release notes (20221028)
 
    * **Fix github Actions warnings**
      (`#272 <https://github.com/dtcenter/METplotpy/issues/272>`_).
+
+   * **Create checksum for released code**
+     (`#262 <https://github.com/dtcenter/METplotpy/issues/262>`_).
+
+
+   * Add modulefiles used for installations on various machines
+     (`#251 <https://github.com/dtcenter/METplotpy/issues/251>`_).
+
+   * Identify minimal, "bare-bones" Python packages for NCO operational HPC
+     (`#208 <https://github.com/dtcenter/METplotpy/issues/208>`_).
+
+
+
 
 
 * Bugfixes:
@@ -61,88 +69,20 @@ METplotpy Version 2.0.0-beta4 release notes (20221028)
    * **Fix import statements in revision_series plot**
      (`#267 <https://github.com/dtcenter/METplotpy/issues/267>`_).
 
-
-
-METplotpy Version 2.0.0-beta3 release notes (20220914)
-------------------------------------------------------
-
-* New Plots:
-
-   * **Analyze FV3 Physics Parameterization Tendencies**
-     (`#117 <https://github.com/dtcenter/METplotpy/issues/117>`_).
-
-
-* Enhancements: 
-
-
-* Internal:
-
-   * **Create checksum for released code**
-     (`#262 <https://github.com/dtcenter/METplotpy/issues/262>`_).
-
-
-   * Add modulefiles used for installations on various machines
-     (`#251 <https://github.com/dtcenter/METplotpy/issues/251>`_).
-
-* Bugfixes:
-
-
-
-
-METplotpy Version 2.0.0-beta2 release notes (20220803)
-------------------------------------------------------
-
-
-* New Plots:
-
-* Enhancements: 
-
-   * **Add Revision Series Capability to line and box plots**
-     (`#232 <https://github.com/dtcenter/METplotpy/issues/232>`_).
-   
-   * **Set up SonarQube to run nightly**
-     (`#38 <https://github.com/dtcenter/METplus-Internal/issues/38>`_).
-
-
-* Internal:
-
-
-* Bugfixes:
-
    * **Fix logic to guess path to default config when
      METPLOTPY_BASE is not set**
      (`#238 <https://github.com/dtcenter/METplotpy/issues/238>`_).
 
+   * Fix/handle deprecation, future, and runtime warnings in
+     line plot, ensemble spread-skill, mpr plot, reliability plot
+     (`#230 <https://github.com/dtcenter/METplotpy/issues/230>`_).
 
-METplotpy Version 2.0.0-beta1 release notes (20220622)
-------------------------------------------------------
+   * Add default operation value "DIFF" to the derived series
+     (`#226 <https://github.com/dtcenter/METplotpy/issues/226>`_).
 
+   * Issues with generating points1 files for numerous plots
+     (`#223 <https://github.com/dtcenter/METplotpy/issues/223>`_).
 
-* New Plots:
-
-
-* Enhancements: 
-
-   * **Allow line plots to start from y=0 line**
-     (`#217 <https://github.com/dtcenter/METplotpy/issues/217>`_).
-   * **Make hovmoeller plot more configurable**
-     (`#213 <https://github.com/dtcenter/METplotpy/issues/213>`_).
-
-* Internal:
-
-  * Identify minimal, "bare-bones" Python packages for NCO operational HPC
-    (`#208 <https://github.com/dtcenter/METplotpy/issues/208>`_).
-
-
-* Bugfixes:
-
-  * Fix/handle deprecation, future, and runtime warnings in
-    line plot, ensemble spread-skill, mpr plot, reliability plot
-    (`#230 <https://github.com/dtcenter/METplotpy/issues/230>`_).
-  * Add default operation value "DIFF" to the derived series
-    (`#226 <https://github.com/dtcenter/METplotpy/issues/226>`_).
-  * Issues with generating points1 files for numerous plots
-    (`#223 <https://github.com/dtcenter/METplotpy/issues/223>`_).
 
 METplotpy Upgrade Instructions
 ==============================
