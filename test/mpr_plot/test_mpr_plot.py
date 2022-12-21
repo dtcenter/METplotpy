@@ -1,7 +1,7 @@
 import pytest
 import os
 from metplotpy.plots.mpr_plot import mpr_plot
-from metcalcpy.compare_images import CompareImages
+#from metcalcpy.compare_images import CompareImages
 
 
 @pytest.fixture
