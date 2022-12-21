@@ -15,5 +15,9 @@ Use the pytest framework to generate tests. For more information review
 this `pytest documentation <https://docs.pytest.org/en/7.2.x>`_ for
 more information.
 
+
+Optional image comparison tests can be run (for plot types that have image comparison tests).  Uncomment the `from metcalcpy.compare_images import CompareImages`
+and comment the @pytest.mark.skip above the test_images_xyz tests.  
+
 Add an entry for the test in the
 *.github/workflows/unit_tests.yaml* file.
