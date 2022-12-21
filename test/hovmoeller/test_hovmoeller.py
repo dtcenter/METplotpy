@@ -1,7 +1,7 @@
 import os
 import pytest
 import metplotpy.plots.hovmoeller.hovmoeller as hov
-from metcalcpy.compare_images import CompareImages
+#from metcalcpy.compare_images import CompareImages
 
 def cleanup(file_to_remove):
     try:
