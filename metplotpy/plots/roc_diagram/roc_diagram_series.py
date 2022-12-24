@@ -88,7 +88,6 @@ class ROCDiagramSeries(Series):
         elif self.config.linetype_pct:
             roc_df = pstats._calc_pct_roc(subset_df)
             pody = roc_df['pody']
-            pody = pd.Series([1]).append(pody, ignore_index=True)
             pody = pd.concat([pd.Series([1]), pody], ignore_index=True)
             pody = pd.concat([pody, pd.Series([0])])
             pofd = roc_df['pofd']
