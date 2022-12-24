@@ -1,3 +1,5 @@
+import warnings
+
 import pytest
 import os
 import pandas as pd
@@ -246,3 +248,38 @@ def test_images_match(setup):
         # Typically when files have already been removed or
         # don't exist.  Ignore.
         pass
+
+
+def test_pct_plot_exists():
+    '''
+        Verify that the ROC diagram is generated
+    '''
+
+    custom_config_filename = "./PCT_ROC.yaml"
+    output_plot = "./PCT_ROC.png"
+
+    print("\n Testing for existence of PCT ROC plot...")
+    roc.main(custom_config_filename)
+    assert os.path.isfile(output_plot) == True
+    os.remove(os.path.join(output_plot))
+
+def test_pct_no_warnings():
+    '''
+        Verify that the ROC diagram is generated without FutureWarnings
+    '''
+
+    custom_config_filename = "./PCT_ROC.yaml"
+    output_plot = "./PCT_ROC.png"
+
+    print("\n Testing for FutureWarning..")
+
+    try:
+        roc.main(custom_config_filename)
+    except FutureWarning:
+        print("FutureWarning generated")
+        # FutureWarning generated, test fails
+        assert False
+    else:
+        assert True
+        os.remove(os.path.join(output_plot))
+
