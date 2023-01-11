@@ -3,7 +3,7 @@ import sys
 import pytest
 
 from metplotpy.plots.histogram_2d import histogram_2d as h2d
-from metcalcpy.compare_images import CompareImages
+#from metcalcpy.compare_images import CompareImages
 
 @pytest.fixture
 def setup():

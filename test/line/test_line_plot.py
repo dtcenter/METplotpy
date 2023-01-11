@@ -2,7 +2,7 @@
 import pytest
 import os
 from metplotpy.plots.line import line as l
-from metcalcpy.compare_images import CompareImages
+#from metcalcpy.compare_images import CompareImages
 
 
 @pytest.fixture

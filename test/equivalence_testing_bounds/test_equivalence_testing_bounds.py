@@ -1,7 +1,7 @@
 import pytest
 import os
 from metplotpy.plots.equivalence_testing_bounds import equivalence_testing_bounds as etb
-from metcalcpy.compare_images import CompareImages
+#from metcalcpy.compare_images import CompareImages
 
 
 @pytest.fixture

@@ -1,7 +1,7 @@
 import pytest
 import os
 from metplotpy.plots.wind_rose import wind_rose
-from metcalcpy.compare_images import CompareImages
+#from metcalcpy.compare_images import CompareImages
 
 
 @pytest.fixture

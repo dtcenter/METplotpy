@@ -1,7 +1,7 @@
 import pytest
 import os
 from metplotpy.plots.histogram import rel_hist
-from metcalcpy.compare_images import CompareImages
+#from metcalcpy.compare_images import CompareImages
 
 
 @pytest.fixture
