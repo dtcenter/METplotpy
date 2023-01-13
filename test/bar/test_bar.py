@@ -1,7 +1,7 @@
 import pytest
 import os
 from metplotpy.plots.bar import bar
-from metcalcpy.compare_images import CompareImages
+#from metcalcpy.compare_images import CompareImages
 
 
 @pytest.fixture
