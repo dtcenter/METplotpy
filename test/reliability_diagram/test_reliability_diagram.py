@@ -2,7 +2,7 @@
 import pytest
 import os
 from metplotpy.plots.reliability_diagram import reliability as r
-from metcalcpy.compare_images import CompareImages
+#from metcalcpy.compare_images import CompareImages
 
 
 @pytest.fixture
