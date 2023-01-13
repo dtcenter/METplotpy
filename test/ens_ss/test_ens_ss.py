@@ -1,6 +1,6 @@
 import os
 import pytest
-from metcalcpy.compare_images import CompareImages
+#from metcalcpy.compare_images import CompareImages
 from metplotpy.plots.ens_ss import ens_ss
 
 
