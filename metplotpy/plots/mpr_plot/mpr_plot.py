@@ -110,7 +110,8 @@ class MprPlot(BasePlot):
             if not self.input_df:
                 self.input_df = filtered
             else:
-                self.input_df = self.input_df.append(filtered)
+                # self.input_df = self.input_df.append(filtered)
+                self.input_df = pd.concat([self.input_df, filtered])
 
     def _create_figure(self) -> go.Figure:
         """
