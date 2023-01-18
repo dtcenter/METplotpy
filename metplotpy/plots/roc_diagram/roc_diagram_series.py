@@ -13,8 +13,7 @@ Class Name: ROCDiagramSeries
  """
 __author__ = 'Minna Win'
 
-import sys
-
+import warnings
 import pandas as pd
 import re
 import metcalcpy.util.ctc_statistics as cstats
@@ -51,6 +50,8 @@ class ROCDiagramSeries(Series):
 
 
         """
+        warnings.filterwarnings("error")
+
         # Subset data based on self.all_series_vals that we acquired from the
         # config file
         input_df = self.input_data
@@ -74,27 +75,27 @@ class ROCDiagramSeries(Series):
             subset_df = self._add_ctc_columns(subset_df)
             df_roc = cstats.calculate_ctc_roc(subset_df, ascending=self.config.ctc_ascending)
             pody = df_roc['pody']
-            pody = pd.Series([1]).append(pody, ignore_index=True)
-            pody = pody.append(pd.Series([0]), ignore_index=True)
+            pody = pd.concat([pd.Series([1]), pody], ignore_index=True)
+            pody = pd.concat([pody, pd.Series([0])], ignore_index=True)
             pofd = df_roc['pofd']
-            pofd = pd.Series([1]).append(pofd, ignore_index=True)
-            pofd = pofd.append(pd.Series([0]), ignore_index=True)
+            pofd = pd.concat([pd.Series([1]), pofd], ignore_index=True)
+            pofd = pd.concat([pofd, pd.Series([0])], ignore_index=True)
             thresh = df_roc['thresh']
-            thresh = pd.Series(['']).append(thresh, ignore_index=True)
-            thresh = thresh.append(pd.Series(['']), ignore_index=True)
+            thresh = pd.concat([pd.Series(['']), thresh], ignore_index=True)
+            thresh = pd.concat([thresh, pd.Series([''])], ignore_index=True)
             return pofd, pody, thresh
 
         elif self.config.linetype_pct:
             roc_df = pstats._calc_pct_roc(subset_df)
             pody = roc_df['pody']
-            pody = pd.Series([1]).append(pody, ignore_index=True)
-            pody = pody.append(pd.Series([0]), ignore_index=True)
+            pody = pd.concat([pd.Series([1]), pody], ignore_index=True)
+            pody = pd.concat([pody, pd.Series([0])])
             pofd = roc_df['pofd']
-            pofd = pd.Series([1]).append(pofd, ignore_index=True)
-            pofd = pofd.append(pd.Series([0]), ignore_index=True)
+            pofd = pd.concat([pd.Series([1]), pofd], ignore_index=True)
+            pofd = pd.concat([pofd, pd.Series([0])], ignore_index=True)
             thresh = roc_df['thresh']
-            thresh = pd.Series(['']).append(thresh, ignore_index=True)
-            thresh = thresh.append(pd.Series(['']), ignore_index=True)
+            thresh = pd.concat([pd.Series(['']),thresh], ignore_index=True)
+            thresh = pd.concat([thresh, pd.Series([''])], ignore_index=True)
             return pofd, pody, thresh
         else:
             raise ValueError('error neither ctc or pct linetype ')

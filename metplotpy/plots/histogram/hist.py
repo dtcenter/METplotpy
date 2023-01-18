@@ -149,7 +149,8 @@ class Hist(BasePlot):
                     if input_df_ee is None:
                         input_df_ee = series_data_after_ee
                     else:
-                        input_df_ee = input_df_ee.append(series_data_after_ee).reindex()
+                        # input_df_ee = input_df_ee.append(series_data_after_ee).reindex()
+                        input_df_ee = pd.concat([input_df_ee, series_data_after_ee]).reindex()
         else:
             input_df_ee = event_equalize(self.input_df, "fcst_valid_beg", {}, fix_vals_keys,
                                          fix_vals_permuted_list, True, False)
