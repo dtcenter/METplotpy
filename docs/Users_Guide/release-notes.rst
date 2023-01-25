@@ -10,6 +10,30 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Release Notes
 =======================
 
+METplotpy Version 2.0.1 release notes (20230125)
+------------------------------------------------------
+
+* New Plots:
+
+* Enhancements: 
+
+* Internal:
+
+* Bugfixes:
+
+   * Fix METplotpy tests for NCO host environment
+     (`#294 <https://github.com/dtcenter/METplotpy/issues/294>`_).
+
+   * Address Warnings from pandas in METplotpy 
+     (`#296 <https://github.com/dtcenter/METplotpy/issues/296>`_).
+
+   * Update the nco_requirements.txt file
+     (`#303 <https://github.com/dtcenter/METplotpy/issues/303>`_).
+
+   * Add modulefiles to the repository
+     (`#304 <https://github.com/dtcenter/METplotpy/issues/304>`_).
+
+
 METplotpy Version 2.0.0 release notes (20221208)
 ------------------------------------------------------
 
