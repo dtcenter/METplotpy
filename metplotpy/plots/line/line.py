@@ -69,7 +69,7 @@ class Line(BasePlot):
             raise ValueError("The number of series defined by series_val_1/2 and derived curves is"
                              " inconsistent with the number of settings"
                              " required for describing each series. Please check"
-                             " the number of your configuration file's plot_i,"
+                             " the number of your configuration file's plot_ci,"
                              " plot_disp, series_order, user_legend,"
                              " colors, and series_symbols settings.")
 
@@ -113,7 +113,7 @@ class Line(BasePlot):
 
         """
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
-                           header='infer', float_precision='round_trip')
+                           header='infer', float_precision='round_trip', low_memory=False)
 
     def _create_series(self, input_data):
         """
