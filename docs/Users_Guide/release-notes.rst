@@ -24,7 +24,7 @@ METplotpy Version 2.0.1 release notes (20230125)
    * Fix METplotpy tests for NCO host environment
      (`#294 <https://github.com/dtcenter/METplotpy/issues/294>`_).
 
-   * Address Warnings from pandas in METplotpy 
+   * Address Warnings from pandas in METplotpy ROC diagram code
      (`#296 <https://github.com/dtcenter/METplotpy/issues/296>`_).
 
    * Update the nco_requirements.txt file
