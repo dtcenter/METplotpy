@@ -32,6 +32,10 @@ METplotpy Version 2.0.1 release notes (20230125)
 
    * Add modulefiles to the repository
      (`#304 <https://github.com/dtcenter/METplotpy/issues/304>`_).
+     
+   * line plot has a typo and need to add low_memory=False when reading large csv file 
+     (`#311 <https://github.com/dtcenter/METplotpy/issues/311>`_).
+ 
 
 
 METplotpy Version 2.0.0 release notes (20221208)
