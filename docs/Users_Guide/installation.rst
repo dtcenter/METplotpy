@@ -33,7 +33,7 @@ ___________________
 
 * numpy 1.22.3
 
-* pandas 1.2.3 (this version only)
+* pandas 1.5.1 
 
 * pint 0.19.2
 
