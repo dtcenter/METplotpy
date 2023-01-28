@@ -1,0 +1,18 @@
+name: Audit Python 3rd Party packages in requirements.txt
+
+on:
+  push:
+    branches:
+      - develop
+      - develop-ref
+      - feature_*
+      - main_*
+      - bugfix_*
+  pull_request:
+    types: [opened, reopened, synchronize]
+jobs:
+  pip-audit:
+    steps:
+      - uses: pypa/gh-action-pip-audit@v1.0.0
+        with:
+          inputs: requirements.txt
