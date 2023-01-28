@@ -11,6 +11,20 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 jobs:
+   build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8"]
+         - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pip-audit
+  
+#   Checking 
+     
   pip-audit:
     steps:
       - uses: pypa/gh-action-pip-audit@v1.0.0
