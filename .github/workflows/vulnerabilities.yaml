@@ -40,4 +40,5 @@ jobs:
         run: python -m pip install .
       - uses: pypa/gh-action-pip-audit@v1.0.5
         with:
-           no-deps:true
+          inputs: requirements.txt
+          no-deps: true
