@@ -287,7 +287,7 @@ class PerformanceDiagram(BasePlot):
                 # turn on/off connecting line. 'NA' in config file turns off
                 # connecting line
                 if series.linewidth == 'NA':
-                    linewidth = 0.1
+                    linewidth = 0.01
                 else:
                     linewidth = series.linewidth
 
