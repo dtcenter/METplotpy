@@ -19,7 +19,6 @@ def setup():
     # the test_custom_performance_diagram.yaml custom config file.
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
-    # roc.main(custom_config_filename)
     pd.main(custom_config_filename)
 
 
@@ -66,7 +65,6 @@ def test_files_exist(test_input, expected_bool):
     # the test_custom_performance_diagram.yaml custom config file.
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
-    # roc.main(custom_config_filename)
     pd.main(custom_config_filename)
 
     assert os.path.isfile(test_input) == expected_bool
@@ -101,7 +99,6 @@ def test_files_exist(test_input, expected_bool):
     # the test_custom_performance_diagram.yaml custom config file.
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
-    # roc.main(custom_config_filename)
     pd.main(custom_config_filename)
 
     assert os.path.isfile(test_input) == expected_bool
