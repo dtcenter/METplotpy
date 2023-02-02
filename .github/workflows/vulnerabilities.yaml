@@ -1,8 +1,9 @@
-# This workflow will check third-party Python packages for vulnerabilities using two different tools:
-# python safety checker and pip-audit.  pip-audit finds vulnerabilities from packages that are dependencies of
-# the packages in the requirements.txt file.
+# This workflow will check third-party Python packages for vulnerabilities using pip-audit.
+# pip-audit finds vulnerabilities from packages that are dependencies of
+# the packages in the requirements.txt file. A summary is generated at the end of the action.
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-name: Python safety check
+
+name: Python vulnerability check
 
 on:
   push:
@@ -16,21 +17,6 @@ on:
       - issue_*
   pull_request:
     types: [opened, reopened, synchronize]
-
-env:
-  DEP_PATH: ./requirements.txt
-
-jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Check out main
-#        uses: actions/checkout@master
-#
-#      - name: Security vulnerabilities scan
-#        uses: aufdenpunkt/python-safety-check@master
-#        with: 
-#          scan_requirements_file_only: 'true'
 
   selftest:
     runs-on: ubuntu-latest
@@ -46,3 +32,4 @@ jobs:
           inputs: requirements.txt
           virtual-environment: env/
           local: true
+          summary: true
