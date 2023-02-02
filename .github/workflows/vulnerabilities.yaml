@@ -37,8 +37,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: install
-        run: python -m pip install .
+        run: |
+          python -m venv env/
+          source env/bin/activate
+          python -m pip install .
       - uses: pypa/gh-action-pip-audit@v1.0.5
         with:
           inputs: requirements.txt
-          no-deps: true
+          virtual-environment: env/
+          local: true
