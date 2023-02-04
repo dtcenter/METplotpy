@@ -15,43 +15,44 @@ additional packages that are not listed below.
 Python Requirements
 ___________________
 
-* Python 3.8.6
+* Python 3.10.4 and above
 
-* cartopy 0.20.2 
+* cartopy 0.21.1 
 
 * imutils 0.5.4
 
-* imageio 2.19.2
+* imageio 2.25.0
 
-* matplotlib 3.5.1
+* matplotlib 3.6.3
 
 * metcalcpy (same version as this version of METplotpy)
 
-* metpy 1.3.1
+* metpy 1.4.0
 
-* netcdf4 1.5.8
+* netcdf4 1.6.2
 
-* numpy 1.22.3
+* numpy 1.24.1
 
-* pandas 1.5.1 
+* opencv-python 4.7.0
 
-* pint 0.19.2
+* pandas 1.5.2 
 
-* plotly 5.8.0
+* pint 0.20.1
 
-* python-kaleido 0.0.3
+* plotly 5.13.0
 
-* pytest 7.1.2
+* python-kaleido 0.2.1
+
+* pytest 7.2.1
 
 * pyyaml 6.0
 
-* scikit-image 0.19.2
+* scikit-image 0.19.3
 
-* scipy 1.8.0
+* scipy 1.10.0
 
-* xarray 2022.3.0
+* xarray 2023.1.0
 
-* yaml  0.2.5
 
 .. _METcalcpy_conda:
 
