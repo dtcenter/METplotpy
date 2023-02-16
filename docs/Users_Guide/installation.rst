@@ -21,15 +21,15 @@ ___________________
 
 * imutils 0.5.4
 
-* imageio 2.19.2
+* imageio 2.19.3
 
-* matplotlib 3.5.1
+* matplotlib 3.5.2
 
 * metcalcpy (same version as this version of METplotpy)
 
 * metpy 1.3.1
 
-* netcdf4 1.5.8
+* netcdf4 1.6.2
 
 * numpy 1.22.3
 
@@ -37,17 +37,17 @@ ___________________
 
 * pint 0.19.2
 
-* plotly 5.8.0
+* plotly 5.9.0
 
 * python-kaleido 0.2.1
 
-* pytest 7.1.2
+* pytest 7.2.1
 
 * pyyaml 6.0
 
-* scikit-image 0.19.2
+* scikit-image 0.19.3
 
-* scipy 1.8.0
+* scipy 1.8.1
 
 * xarray 2022.3.0
 
