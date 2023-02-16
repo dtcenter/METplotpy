@@ -15,7 +15,7 @@ additional packages that are not listed below.
 Python Requirements
 ___________________
 
-* Python 3.8.6
+* Python 3.8.6+
 
 * cartopy 0.20.2 
 
@@ -39,7 +39,7 @@ ___________________
 
 * plotly 5.8.0
 
-* python-kaleido 0.0.3
+* python-kaleido 0.2.1
 
 * pytest 7.1.2
 
