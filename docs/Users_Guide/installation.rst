@@ -51,7 +51,6 @@ ___________________
 
 * xarray 2022.3.0
 
-* yaml  0.2.5
 
 .. _METcalcpy_conda:
 
