@@ -191,7 +191,7 @@ Run from the Command Line
 The Hovmoeller plot that uses only the default values defined in
 the **hovmoeller_defaults.yaml** configuration file looks like the following:
 
-.. image:: hovmoeller_default.png
+.. image:: figure/hovmoeller_default.png
 
 Perform the following:
 
@@ -269,7 +269,7 @@ downloaded/cloned METplotpy code.
   shown below.  The user can experiment with the values in the custom_hovmoeller.yaml configuration file
   to achieve the desired appearance.
 
-  .. image:: hovmoeller_custom_plot.png
+  .. image:: figure/hovmoeller_custom_plot.png
 
 * A **custom_hovmoeller.png** output file will be created in the
   directory that was specified in the *plot_filename* configuration

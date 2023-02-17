@@ -190,7 +190,7 @@ The **custom_line.yaml** configuration file, in combination with the
 **line_defaults.yaml** configuration file, generate a plot of
 five series:
 
-.. image:: line.png
+.. image:: figure/line.png
 
 To generate the above plot using the **line_defaults.yaml** and
 **custom_line.yaml** config files, perform the following:
@@ -248,7 +248,7 @@ To generate the above plot using the **line_defaults.yaml** and
   directory specified in the *plot_filename* configuration setting
   in the **line_defaults.yaml** config file.
 
-  .. image:: line_default.png
+  .. image:: figure/line_default.png
 
   **NOTE**: This default plot does not display any of the data points.
   It is to be used as a template for
