@@ -10,16 +10,16 @@ frequency histogram.  These plots are customized versions of the histogram plot.
 
 **Rank histogram:**
 
-.. image:: rank_hist.png
+.. image:: figure/rank_hist.png
 
 
 **Probability histogram:**
 
-.. image:: prob_hist.png
+.. image:: figure/prob_hist.png
 
 **Relative Frequency histogram:**
 
-.. image:: rel_hist.png
+.. image:: figure/rel_hist.png
 
 
 Example
@@ -280,7 +280,7 @@ perform the following:
   in the directory that was specified in the *plot_filename*
   setting of the **minimal_histogram.yaml** config file:
 
-  .. image:: rank_hist.png
+  .. image:: figure/rank_hist.png
 
   **To generate the probability histogram**, re-run the above
   command using the **prob_hist.yaml** file:
@@ -289,7 +289,7 @@ perform the following:
 		
     python $METPLOTPY_BASE/metplotpy/plots/histogram/prob_hist.py $WORKING_DIR/prob_hist.yaml
 
-  .. image:: prob_hist.png
+  .. image:: figure/prob_hist.png
 
 **To generate the relative frequency histogram**, re-run the above
   command using the **rel_hist.yaml** file:
@@ -298,7 +298,7 @@ perform the following:
 
     python $METPLOTPY_BASE/metplotpy/plots/histogram/rel_hist.py $WORKING_DIR/rel_hist.yaml
 
-  .. image:: rel_hist.png
+  .. image:: figure/rel_hist.png
 
 
 * A **rank_hist.png** output file will be created in
