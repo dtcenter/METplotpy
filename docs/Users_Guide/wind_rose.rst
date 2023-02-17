@@ -13,7 +13,7 @@ a polar coordinate system, with data plotted at a distance away from the origin 
 relative to North.
 
 
-.. image:: wind_rose_custom.png
+.. image:: figure/wind_rose_custom.png
 
 Example
 =======
@@ -256,7 +256,7 @@ perform the following:
   in the directory that was specified in the *plot_filename*
   setting of the **minimal_wind_rose.yaml** config file:
 
-  .. image:: wind_rose_default.png
+  .. image:: figure/wind_rose_default.png
 
   To generate the slightly modified, **customized** plot, re-run the above
   command using the **wind_rose_custom.yaml** file:
@@ -265,7 +265,7 @@ perform the following:
 		
     python $METPLOTPY_BASE/metplotpy/plots/wind_rose/wind_rose.py $WORKING_DIR/wind_rose_custom.yaml
 
-  .. image:: wind_rose_custom.png
+  .. image:: figure/wind_rose_custom.png
 
 * A **wind_rose_custom.png** output file will be created in
   the directory that was specified in the *plot_filename* config setting
