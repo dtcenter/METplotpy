@@ -5,12 +5,16 @@ Wind Rose Diagram
 Description
 ===========
 
-A wind rose diagram graphically displays the wind speed and wind direction at a particular location over a period of
-time.  The diagram consists of radiating spokes that represent the wind direction in terms of the cardinal wind
-directions of North, East, South, and West.  Each spoke indicates how often the wind blows from each direction and
-the color bands on each spoke represents the wind speed range (bins).  The wind rose diagram is based on
-a polar coordinate system, with data plotted at a distance away from the origin at an angle that is
-relative to North.
+A wind rose diagram graphically displays the wind speed and wind direction at a
+particular location over a period of
+time.  The diagram consists of radiating spokes that represent the wind
+direction in terms of the cardinal wind
+directions of North, East, South, and West.  Each spoke indicates how often
+the wind blows from each direction and
+the color bands on each spoke represents the wind speed range (bins).
+The wind rose diagram is based on
+a polar coordinate system, with data plotted at a distance away from the
+origin at an angle that is relative to North.
 
 
 .. image:: figure/wind_rose_custom.png
