@@ -113,7 +113,7 @@ def plot_wr_frequency(WRmean,wrnum,dlen,plot_title,output_plotname):
     days = np.arange(1,dlen+1)
     plt.figure(figsize=(10,5))
 
-    for ww in np.arange(np.int(wrnum)):
+    for ww in np.arange(np.int32(wrnum)):
         plt.plot(days,WRmean[ww],label='WR'+str(ww+1)+'')
 
     plt.ylabel('Number of WR days per week')

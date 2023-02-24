@@ -16,7 +16,7 @@ For more information on Contour plots, please refer to the
 
 
 
-.. image:: contour.png
+.. image:: figure/contour.png
 
 Example
 =======
@@ -191,7 +191,7 @@ perform the following:
   in the directory that was specified in the *plot_filename*
   setting of the **custom_contour.yaml** config file:
 
-  .. image:: contour.png
+  .. image:: figure/contour.png
 
 * A **contour.png** output file will be created in
   the directory that was  specified in the *plot_filename* config setting

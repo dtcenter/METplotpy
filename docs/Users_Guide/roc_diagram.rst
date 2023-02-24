@@ -207,7 +207,7 @@ Run from the Command Line
 The ROC diagram plot that uses only the default values defined in
 the **roc_diagram_defaults.yaml** configuration file looks like the following:
 
-.. image:: roc_diagram_default.png
+.. image:: figure/roc_diagram_default.png
 
 Perform the following:
 
@@ -269,7 +269,7 @@ Perform the following:
   to achieve the desired appearance.
    
 
-  .. image:: roc_diagram_custom.png
+  .. image:: figure/roc_diagram_custom.png
 
 * A **custom_roc_diagram.png** output file will be created in the
   directory that was specified in the *plot_filename* configuration

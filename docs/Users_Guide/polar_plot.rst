@@ -133,6 +133,6 @@ directory.
 
 Three plots named **20210305_120000_fcst_ice_north.png**  **20210305_120000_ice_diff_north.png**  **20210305_120000_observation_ice_north.png** will be generated in the sub directory ice_plots from where you ran the above command:
 
-.. image:: fcst_ice_north.png
-.. image:: ice_diff_north.png
-.. image:: obs_ice_north.png
+.. image:: figure/fcst_ice_north.png
+.. image:: figure/ice_diff_north.png
+.. image:: figure/obs_ice_north.png

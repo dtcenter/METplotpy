@@ -156,7 +156,7 @@ Run from the Command Line
 The **custom_bar.yaml** configuration file, in combination with the
 **bar_defaults.yaml** configuration file, generates a bar plot:
 
-.. image:: bar.png
+.. image:: figure/bar.png
 
 To generate the above bar plot, perform the following:
 

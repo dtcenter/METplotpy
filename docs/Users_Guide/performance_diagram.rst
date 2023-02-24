@@ -23,7 +23,7 @@ equal Critical Success Index (CSI) connect the top of the plot to the
 right side.  CSI amounts are listed to the right side of the plot,
 with better values falling closer to the top.
 
-.. image:: performance_diagram_default.png
+.. image:: figure/performance_diagram_default.png
 
 Example
 =======
@@ -255,7 +255,7 @@ perform the following:
   in the directory that was specified in the *plot_filename*
   setting of the **minimal_performance_diagram.yaml** config file:
 
-  .. image:: performance_diagram_default.png
+  .. image:: figure/performance_diagram_default.png
 
   To generate a slightly modified, **customized** plot, re-run the above
   command using the **custom_performance_diagram.yaml** file:
@@ -264,7 +264,7 @@ perform the following:
 		
     python $METPLOTPY_BASE/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/custom_performance_diagram.yaml
 
-  .. image:: performance_diagram_custom.png
+  .. image:: figure/performance_diagram_custom.png
 
 * A **performance_diagram_custom.png** output file will be created in
   the directory that was  specified in the *plot_filename* config setting

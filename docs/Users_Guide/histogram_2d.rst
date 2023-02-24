@@ -189,7 +189,7 @@ The **histogram_2d_defaults.yaml** configuration file, in combination with the
 tool grid_diag), generates a 2D-histogram plot of the hist_TMP_Z2_TMP_P500
 variable:
 
-.. image:: tmp_z2_p500.png
+.. image:: figure/tmp_z2_p500.png
 
 Perform the following:
 
@@ -256,7 +256,7 @@ Perform the following:
 
   In this example, this custom config file changes the title and font size.
 
-  .. image:: custom_tmp_z2_p500.png
+  .. image:: figure/custom_tmp_z2_p500.png
 
 * A **custom_tmp_z2_p500.png** output file will be created in the directory
   specified in the *plot_filename* configuration setting in the
