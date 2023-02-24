@@ -19,6 +19,8 @@ ___________________
 
 * cartopy 0.21.1 
 
+* eofs 1.4.0
+
 * imutils 0.5.4
 
 * imageio 2.25.0
@@ -31,7 +33,7 @@ ___________________
 
 * netcdf4 1.6.2
 
-* numpy 1.24.1
+* numpy 1.24.2
 
 * opencv-python 4.7.0
 
@@ -49,7 +51,9 @@ ___________________
 
 * scikit-image 0.19.3
 
-* scipy 1.10.0
+* scikit-learn 1.2.1 
+
+* scipy 1.9.3
 
 * xarray 2023.1.0
 
