@@ -198,7 +198,7 @@ Run from the Command Line
 The reliability diagram plot that uses only the default values defined in
 the **reliability_defaults.yaml** configuration file looks like the following:
 
-.. image:: default_reliability_diagram.png
+.. image:: figure/default_reliability_diagram.png
 
 To generate the above plot, use the **reliability_defaults.yaml** file,
 the "empty" custom configuration file and the
@@ -261,7 +261,7 @@ Perform the following:
 
   In this example, this custom config file changes the color of the boxes.
 
-  .. image:: custom_reliability_diagram.png
+  .. image:: figure/custom_reliability_diagram.png
 
 * A **custom_reliability_diagram.png** output file will be created in
   the directory specified in the *plot_filename* configuration setting

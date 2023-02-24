@@ -20,12 +20,12 @@ Examples of Taylor diagrams are shown below.
 A Taylor diagram of sample Downward Longwave Radiative Flux (DLWR) data displaying only positive correlation
 values:
 
-.. image:: taylor_pos_corr_plot.png
+.. image:: figure/taylor_pos_corr_plot.png
 
 A Taylor diagram of sample Downward Longwave Radiative Flux (DLWR) data displaying negative and
 positive correlation values:
 
-.. image:: taylor_neg_and_pos_corr_plot.png
+.. image:: figure/taylor_neg_and_pos_corr_plot.png
 
 
 Example
@@ -231,7 +231,7 @@ perform the following:
   in the directory that was specified in the *plot_filename*
   setting of the **minimal_taylor_diagram.yaml** config file:
 
-  .. image:: taylor_diagram_default.png
+  .. image:: figure/taylor_diagram_default.png
 
   To generate a slightly modified, **customized** plot, run the
   command (below) using the **taylor_diagram_custom.yaml** file:
@@ -248,4 +248,4 @@ perform the following:
   output filename, title text, title size, title font style, caption text, and different symbols than the default
   plot, as shown below:
 
-.. image:: taylor_diagram_custom.png
+.. image:: figure/taylor_diagram_custom.png

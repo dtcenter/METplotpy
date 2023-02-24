@@ -13,21 +13,21 @@ for the meridional mean temperature for the polar cap:
 
 * Contour plot of zonal mean wind:
 
-.. image:: zonal_mean_wind_contour.png
+.. image:: figure/zonal_mean_wind_contour.png
 
 
 * Contour plot of zonal mean temperature:
 
-.. image:: zonal_mean_temperature_contour.png
+.. image:: figure/zonal_mean_temperature_contour.png
 
 * Line plot zonal mean wind:
 
-.. image:: zonal_mean_wind.png
+.. image:: figure/zonal_mean_wind.png
 
 
 * Line plot meridional mean temperature at the pole:
 
-.. image:: polar_cap_meridional_mean_temp.png
+.. image:: figure/polar_cap_meridional_mean_temp.png
 
 
 The **directional_means.py** module in the METcalcpy repository
