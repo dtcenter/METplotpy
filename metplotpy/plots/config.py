@@ -598,7 +598,7 @@ class Config:
         return ordered_settings_list
 
 
-    def calculate_plot_dimension(self, config_value: int , output_units: str) -> int:
+    def calculate_plot_dimension(self, config_value: str , output_units: str) -> int:
         '''
            To calculate the width or height that defines the size of the plot.
            Matplotlib defines these values in inches, Python plotly defines these
