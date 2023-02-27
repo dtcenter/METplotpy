@@ -12,7 +12,6 @@
 Class Name: BarSeries
  """
 __author__ = 'Tatiana Burek'
-__email__ = 'met_help@ucar.edu'
 
 from typing import Union
 import warnings

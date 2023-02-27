@@ -125,7 +125,7 @@ of 'example' in the *plot_cross_section.yaml* configuration file).  They will be
 the output directory you specified in the *test_plot_cross_section.sh* Bourne shell script.
 The plot will look like the following:
 
-.. image:: example.png
+.. image:: figure/example.png
 
 
 

@@ -129,30 +129,30 @@ difficulty index and statistics plots:
 
    **swh_North_Pacific_5dy_mean.png**:
 
-     .. image:: swh_North_Pacific_5dy_mean.png
+     .. image:: figure/swh_North_Pacific_5dy_mean.png
 
    **swh_North_Pacific_5dy_std.png**:
 
-     .. image:: swh_North_Pacific_5dy_std.png
+     .. image:: figure/swh_North_Pacific_5dy_std.png
 
 **"Difficulty Index" Plots**
 
    **swh_North_Pacific_difficulty_index_10_00_feet.png**:
 
-     .. image:: swh_North_Pacific_difficulty_index_10_00_feet.png
+     .. image:: figure/swh_North_Pacific_difficulty_index_10_00_feet.png
 
    **swh_North_Pacific_difficulty_index_11_00_feet.png**:
 
-     .. image:: swh_North_Pacific_difficulty_index_11_00_feet.png
+     .. image:: figure/swh_North_Pacific_difficulty_index_11_00_feet.png
 
 
    **swh_North_Pacific_difficulty_index_12_00_feet.png**:
 
-     .. image:: swh_North_Pacific_difficulty_index_12_00_feet.png
+     .. image:: figure/swh_North_Pacific_difficulty_index_12_00_feet.png
 
    **swh_North_Pacific_difficulty_index_9_00_feet.png**:
 
-     .. image:: swh_North_Pacific_difficulty_index_9_00_feet.png
+     .. image:: figure/swh_North_Pacific_difficulty_index_9_00_feet.png
 
 
 

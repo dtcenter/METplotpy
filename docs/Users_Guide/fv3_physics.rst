@@ -206,7 +206,7 @@ Generate a plan view of all tendencies at 500 hPa:
 
    python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -p 500 -t 1 -v 20190504T14 --nofineprint
 
-.. image:: tmp_500hPa.png
+.. image:: figure/tmp_500hPa.png
 
 Generate a plan view of PBL tendency at default pressure levels:
 
@@ -214,7 +214,7 @@ Generate a plan view of PBL tendency at default pressure levels:
 
    python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -t 1 -v 20190504T13 --nofineprint
 
-.. image:: tmp_pbl.png
+.. image:: figure/tmp_pbl.png
 
 .. code-block:: bash
 
@@ -258,7 +258,7 @@ Generate vertical profile of temperature tendencies averaged over the mid-CONUS 
 
    python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 2 -v 20190504T14 -s $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend/shapefiles/MID_CONUS --nofineprint
 
-.. image:: tmp.vert_profile.MID_CONUS.png
+.. image:: figure/tmp.vert_profile.MID_CONUS.png
 
 Vertical cross section
 ______________________
@@ -307,7 +307,7 @@ Generate vertical cross section from 32°N 115°W to 34°N 82°W:
 
    python cross_section_vert.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 2 -v 20190504T14 -s 32 -115 -e 34 -82 --nofineprint
 
-.. image:: tmp_32.0N-115.0E-34.0N-82.0E.png
+.. image:: figure/tmp_32.0N-115.0E-34.0N-82.0E.png
 
 Difference plot
 _______________
@@ -319,5 +319,5 @@ Put file you want to subtract after the --subtract argument:
 
    python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 1 --subtract $WORKING_DIR/fv3_history.nc --nofineprint
 
-.. image:: tmp.vert_profile.png
+.. image:: figure/tmp.vert_profile.png
 

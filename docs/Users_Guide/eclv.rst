@@ -18,7 +18,7 @@ For more information on Economic Cost/Loss Value Plots, please refer to the
 The ECLV score can range from -:math:`\infty` to 1.
 
 
-.. image:: custom_eclv.png
+.. image:: figure/custom_eclv.png
 
 Example
 =======
@@ -198,5 +198,5 @@ perform the following:
   in the directory that was specified in the *plot_filename*
   setting of the **custom_eclv.yaml** config file:
 
-  .. image:: custom_eclv.png
+  .. image:: figure/custom_eclv.png
 

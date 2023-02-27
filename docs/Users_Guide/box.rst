@@ -227,7 +227,7 @@ Perform the following to generate the plots:
   **box_defaults.yaml** configuration file, generates a customized
   box plot:
 
-  .. image:: box.png
+  .. image:: figure/box.png
 
   To generate the above plot using the **box_defaults.yaml** and
   **custom_box.yaml** config files, perform the following:
@@ -242,7 +242,7 @@ Perform the following to generate the plots:
   template/starting point for setting up the margins, plot size, labels, etc.
   and does not plot any data**:
 
-  .. image:: box_default.png
+  .. image:: figure/box_default.png
 
   To generate the above *"defaults"* plot (i.e using default configuration
   settings), use the "minimal" custom configuration file, **minimal_box.yaml**.
