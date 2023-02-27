@@ -355,7 +355,7 @@ class BasePlot:
         image_name = self.get_config_value('plot_filename')
 
         # remove the old file if it exist
-        if os.path.exists(image_name):
+        if image_name is not None and os.path.exists(image_name):
             os.remove(image_name)
 
     def show_in_browser(self):
