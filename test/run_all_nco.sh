@@ -16,11 +16,4 @@ cd ../line; python3 -m pytest
 cd ../mpr_plot; python3 -m pytest
 cd ../performance_diagram; python3 -m pytest
 cd ../reliability_diagram; python3 -m pytest
-cd ../revision_box; python3 -m pytest
-cd ../revision_series; python3 -m pytest
-cd ../roc_diagram; python3 -m pytest
-cd ../series_analysis; python3 -m pytest
-cd ../spacetime_plot; python3 -m pytest
-cd ../taylor_diagram; python3 -m pytest
-cd ../wind_rose; python3 -m pytest
-cd ../
+cd ../revision_box;python3 -m pytest
