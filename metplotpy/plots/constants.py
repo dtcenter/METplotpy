@@ -62,9 +62,9 @@ DEFAULT_TITLE_OFFSET = (-0.48)
 
 
 AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", ".", "h"]
-AVAILABLE_PLOTLY_MARKERS_LIST = ["open-circle", "circle",
+AVAILABLE_PLOTLY_MARKERS_LIST = ["circle-open", "circle",
                                  "square", "diamond",
-                                 "hexagon", "triangle-up"]
+                                 "hexagon", "triangle-up", "asterisk-open"]
 
 PCH_TO_MATPLOTLIB_MARKER = {'20': '.', '19': 'o', '17': '^', '1': 'H',
                             '18': 'd', '15': 's', 'small circle': '.',

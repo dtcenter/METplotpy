@@ -413,7 +413,8 @@ class Line(BasePlot):
                                  },
                                  title_standoff=abs(self.config_obj.parameters['xlab_offset']),
                                  tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size}
+                                 tickfont={'size': self.config_obj.x_tickfont_size},
+                                 tickformat='d'
                                  )
 
     def _add_yaxis(self) -> None:
