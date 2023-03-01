@@ -15,7 +15,7 @@ METplotpy Version 2.1.0-beta1 release notes (20220301)
 
 * New Plots:
 
-   * **Convertt plot_tcmpr.R plotting to Python** (`#240 <https://github.com/dtcenter/METplotpy/issues/240>`_).
+   * **Convert plot_tcmpr.R plotting to Python** (`#240 <https://github.com/dtcenter/METplotpy/issues/240>`_).
 
 * Enhancements: 
 
