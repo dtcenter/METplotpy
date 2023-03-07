@@ -25,7 +25,7 @@ METplotpy Version 2.1.0-beta1 release notes (20220301)
 
      * Create a figure directory (`#293 <https://github.com/dtcenter/METplotpy/issues/293>`_).
 
-     * Add 'License.txt' to the METplotpy repo (`#320 <https://github.com/dtcenter/METplotpy/issues/320>`_).
+     * Add 'LICENSE.md' to the METplotpy repo (`#320 <https://github.com/dtcenter/METplotpy/issues/320>`_).
 
 
   .. dropdown:: Bugfixes
