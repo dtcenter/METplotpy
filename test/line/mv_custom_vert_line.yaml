@@ -119,8 +119,6 @@ random_seed: null
 series_line_style:
 - '-'
 - '-'
-#- '-'
-
 series_line_width:
 - 1
 - 1
