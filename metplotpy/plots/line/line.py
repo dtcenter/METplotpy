@@ -267,12 +267,40 @@ class Line(BasePlot):
         if (no_ci_up is True and no_ci_lo is True) or self.config_obj.plot_ci[series.idx] == 'NONE':
             error_y_visible = False
 
-        # switch x amd y values for the vertical plot
+        # switch x and y values for the vertical plot
         if self.config_obj.vert_plot is True:
             y_points, x_points_index_adj = x_points_index_adj, y_points
 
         # add the plot
-        self.figure.add_trace(
+
+        # orient the confidence interval bars based on the vert_plot setting in the yaml configuration file.
+        if self.config_obj.vert_plot:
+            self.figure.add_trace(
+                go.Scatter(x=x_points_index_adj,
+                           y=y_points,
+                           showlegend=True,
+                           mode=self.config_obj.mode[series.idx],
+                           textposition="top right",
+                           name=self.config_obj.user_legends[series.idx],
+                           connectgaps=self.config_obj.con_series[series.idx] == 1,
+                           line={'color': self.config_obj.colors_list[series.idx],
+                                 'width': self.config_obj.linewidth_list[series.idx],
+                                 'dash': self.config_obj.linestyles_list[series.idx]},
+                           marker_symbol=self.config_obj.marker_list[series.idx],
+                           marker_color=self.config_obj.colors_list[series.idx],
+                           marker_line_color=self.config_obj.colors_list[series.idx],
+                           marker_size=self.config_obj.marker_size[series.idx],
+                           error_x={'type': 'data',
+                                    'symmetric': False,
+                                    'array': series.series_points['dbl_up_ci'],
+                                    'arrayminus': series.series_points['dbl_lo_ci'],
+                                    'visible': error_y_visible,
+                                    'thickness': self.config_obj.linewidth_list[series.idx]}
+                           ),
+                secondary_y=series.y_axis != 1
+            )
+        else:
+            self.figure.add_trace(
             go.Scatter(x=x_points_index_adj,
                        y=y_points,
                        showlegend=True,
