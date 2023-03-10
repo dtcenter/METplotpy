@@ -200,7 +200,7 @@ def test_vertical_plot():
 
      Test that the y1 values from the Python version of the vertical plot
      match the y1 values from the METviewer Rplot version of the vertical plot.
-
+     Avoid relying on image comparison tests.
 
     '''
 
@@ -214,7 +214,6 @@ def test_vertical_plot():
     custom_config_filename = "mv_custom_vert_line.yaml"
     l.main(custom_config_filename)
 
-    # cleanup intermediate files and plot
     try:
         path = os.getcwd()
         plot_file = 'vert_line_plot.png'
@@ -226,16 +225,17 @@ def test_vertical_plot():
         mv_df = pd.read_csv('./intermed_files/vert_plot_y1_from_metviewer.points1', sep=" ", header=None)
         mpp_df = pd.read_csv('./intermed_files/vert_line_plot.points1', sep=" ", header=None)
 
+        # -----------------------
         # Compare various values
-
+        #-----------------------
         # Verify we are comparing data frames created from the same data
-
         # Same number of rows:
         assert mv_df.shape[0] == mpp_df.shape[0]
         # Same number of columns:
         assert mv_df.shape[1] == mpp_df.shape[1]
 
-        # Values for each column are the same (accounting for precision between R and Python)
+        # Values for each column are the same (accounting for precision between R and Python and
+        # different host machines)
         for col in range(mv_df.shape[1]):
             mv_col:pd.Series = mv_df.loc[:,col]
             mpp_col:pd.Series = mpp_df.loc[:,col]
@@ -246,6 +246,7 @@ def test_vertical_plot():
             # allow difference out to 5th significant figure.
             assert sum_diff < 0.00001
 
+        # cleanup intermediate files and plot
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(intermed_path, points_file_1))
         os.remove(os.path.join(intermed_path, points_file_2))
