@@ -1,13 +1,12 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2020
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Class Name: bar.py
  """
@@ -15,26 +14,20 @@ __author__ = 'Tatiana Burek'
 
 import os
 import re
-import csv
 from operator import add
-from typing import Union
-from itertools import chain
 
-import yaml
-import numpy as np
 import pandas as pd
-
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import yaml
 from plotly.graph_objects import Figure
+from plotly.subplots import make_subplots
 
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+import metcalcpy.util.utils as calc_util
+from metplotpy.plots import util
 from metplotpy.plots.bar.bar_config import BarConfig
 from metplotpy.plots.bar.bar_series import BarSeries
 from metplotpy.plots.base_plot import BasePlot
-from metplotpy.plots import util
-
-import metcalcpy.util.utils as calc_util
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 
 
 class Bar(BasePlot):
@@ -142,7 +135,7 @@ class Bar(BasePlot):
             # include the series only if the name is valid
             if len(name) == 3:
                 series_obj = BarSeries(self.config_obj, num_series_y1 + i,
-                                   input_data, series_list, name)
+                                       input_data, series_list, name)
                 series_list.append(series_obj)
 
         # reorder series
@@ -182,7 +175,7 @@ class Bar(BasePlot):
             self._add_lines(
                 self.config_obj,
                 sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique())
-                )
+            )
 
         # apply y axis limits
         self._yaxis_limits()
@@ -197,7 +190,13 @@ class Bar(BasePlot):
         """
 
         y_points = series.series_points['dbl_med']
-        x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
+        if util.is_threshold_value(series.series_data[self.config_obj.indy_var]):
+            # Sort the threshold values after getting unique values because the order of the threshold
+            # is lost during the unique() operation.
+            x_points = util.sort_threshold_values(series.series_data[self.config_obj.indy_var].unique())
+
+        else:
+            x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
 
         # add the plot
         self.figure.add_trace(
@@ -262,9 +261,10 @@ class Bar(BasePlot):
             xaxis={
                 'tickmode': 'array',
                 'tickvals': self.config_obj.indy_vals,
-                'ticktext': self.config_obj.indy_label
+                'ticktext': self.config_obj.indy_label,
             }
         )
+
         return fig
 
     def _add_xaxis(self) -> None:
@@ -285,7 +285,8 @@ class Bar(BasePlot):
                                  },
                                  title_standoff=abs(self.config_obj.parameters['xlab_offset']),
                                  tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size}
+                                 tickfont={'size': self.config_obj.x_tickfont_size},
+                                 type='category'
                                  )
         # reverse xaxis if needed
         if self.config_obj.xaxis_reverse is True:
