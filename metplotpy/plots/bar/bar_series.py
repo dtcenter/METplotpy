@@ -1,27 +1,27 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2020
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Class Name: BarSeries
  """
 __author__ = 'Tatiana Burek'
 
-from typing import Union
+import re
 import warnings
+from typing import Union
 
 import numpy as np
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
+from metplotpy.plots import util
 from .. import GROUP_SEPARATOR
-
 from ..series import Series
 
 
@@ -173,16 +173,41 @@ class BarSeries(Series):
                 # - calculate derived statistic for the each bar
                 self._calculate_derived_values(operation, series_data_1, series_data_2)
 
-        series_points_results = {'dbl_med': [],'nstat': []}
+        series_points_results = {'dbl_med': [], 'nstat': []}
 
         # for each point calculate plot statistic
-        for indy in self.config.indy_vals:
-            if utils.is_string_integer(indy):
-                indy = int(indy)
-            elif utils.is_string_strictly_float(indy):
-                indy = float(indy)
 
-            point_data = self.series_data.loc[self.series_data[self.config.indy_var] == indy]
+        # if the indy_val is a threshold, separate the number from the thresholding operators to
+        # correctly collect the point_stat values.
+        is_threshold = util.is_threshold_value(self.config.indy_vals)
+
+        operators = []
+        for cur_indy in self.config.indy_vals:
+            # treat the cur_indy as comprised of two groups, one
+            # for the operator and the other for the value (which can be a
+            # negative value)
+            match = re.match(r'(\<|\<=|\==|\>=|\>)*((-)*([0-9])(.)*)', cur_indy)
+            if match:
+                operators.append(match.group(1))
+                value = float(match.group(2))
+                if isinstance(value, int):
+                    indy = int(value)
+                elif isinstance(value, float):
+                    indy = float(value)
+            else:
+                # not a threshold
+                if isinstance(cur_indy, int):
+                    indy = int(cur_indy)
+                elif isinstance(cur_indy, float):
+                    indy = float(cur_indy)
+
+            # Ensure that the indy_val is of the correct type, depending on whether we have a threshold (operator +
+            # number)
+            if is_threshold:
+                point_data = self.series_data.loc[self.series_data[self.config.indy_var] == cur_indy]
+            else:
+                point_data = self.series_data.loc[self.series_data[self.config.indy_var] == indy]
+
             if len(point_data) > 0:
                 # calculate point stat
                 point_stat = self._calc_point_stat(point_data['stat_value'].tolist())
