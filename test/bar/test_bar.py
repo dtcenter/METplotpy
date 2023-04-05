@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-from metcalcpy.compare_images import CompareImages
 from metplotpy.plots.bar import bar
+#from metcalcpy.compare_images import CompareImages
 
 
 @pytest.fixture
