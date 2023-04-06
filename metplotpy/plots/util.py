@@ -206,9 +206,10 @@ def is_threshold_value(values: Union[pd.core.series.Series, list]) -> bool:
     # Check all the threshold values, there may be some threshold values that do not
     # have an equality operator when equality is implied.
     for cur_value in values:
-        match = re.match(r'(\<|\<=|\==|\>=|\>)*((-)*([0-9])(.)*)', str(cur_value))
-        if match.group(1):
-            results.append(True)
+        match = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*([+-]?([0-9]*[.])?[0-9]+)', str(cur_value))
+        if match:
+            if match.group(1):
+                results.append(True)
         else:
             results.append(False)
 
@@ -232,14 +233,18 @@ def sort_threshold_values(thresh_values: pd.core.series.Series) -> list:
     operators = []
     values = []
     for cur_val in thresh_values:
-        # treat the fcst_thresh as comprised of two groups, one
+        # treat the thresh value as comprised of two groups, one
         # for the operator and the other for the value (which can be a
         # negative value)
-        match = re.match(r'(\<|\<=|\==|\>=|\>)*((-)*([0-9])(.)*)', str(cur_val))
+        match = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*([+-]?([0-9]*[.])?[0-9]+)', str(cur_val))
         if match:
             operators.append(match.group(1))
-            value = float(match.group(2))
+            value = float(match.group(3))
             values.append(value)
+        else:
+            # This is a bare number (float or int)
+            operators.append(None)
+            values.append(float(cur_val))
 
     # Apply weights to the operators
     wt_maps = {'<': 1, '<=': 2, '==': 3, '>=': 4, '>': 5}
