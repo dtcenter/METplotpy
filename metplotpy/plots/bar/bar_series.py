@@ -186,7 +186,7 @@ class BarSeries(Series):
             # treat the cur_indy as comprised of two groups, one
             # for the operator and the other for the value (which can be a
             # negative value)
-            match = re.match(r'(\<|\<=|\==|\>=|\>)*((-)*([0-9])(.)*)', cur_indy)
+            match = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*([+-]?([0-9]*[.])?[0-9]+)', cur_indy)
             if match:
                 operators.append(match.group(1))
                 value = float(match.group(2))
