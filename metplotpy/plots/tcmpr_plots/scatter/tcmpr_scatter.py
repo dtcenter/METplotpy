@@ -16,9 +16,9 @@ import os
 import plotly.graph_objects as go
 
 from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from plots.tcmpr_plots.scatter.tcmpr_series_scatter import TcmprSeriesScatter
-from plots.tcmpr_plots.tcmpr import Tcmpr
-from plots.tcmpr_plots.tcmpr_util import get_dep_column
+from metplotpy.plots.tcmpr_plots.scatter.tcmpr_series_scatter import TcmprSeriesScatter
+from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
+from metplotpy.plots.tcmpr_plots.tcmpr_util import get_dep_column
 
 
 class TcmprScatter(Tcmpr):

@@ -14,8 +14,8 @@ Class Name: TcmprSeriesLineMedian
 from typing import Union
 
 import metcalcpy.util.utils as utils
-from plots.tcmpr_plots.tcmpr_series import TcmprSeries
-from plots.tcmpr_plots.tcmpr_util import get_median_ci
+from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
+from metplotpy.plots.tcmpr_plots.tcmpr_util import get_median_ci
 
 
 class TcmprSeriesLineMedian(TcmprSeries):

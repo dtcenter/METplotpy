@@ -17,7 +17,7 @@ from typing import Union
 import numpy as np
 
 import metcalcpy.util.utils as utils
-from plots.series import Series
+from metplotpy.plots.series import Series
 
 
 class TcmprSeriesScatter(Series):
