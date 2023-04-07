@@ -189,20 +189,19 @@ class BarSeries(Series):
             match = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*([+-]?([0-9]*[.])?[0-9]+)', cur_indy)
             if match:
                 operators.append(match.group(1))
-                value = float(match.group(2))
+                value = float(match.group(3))
                 if isinstance(value, int):
                     indy = int(value)
                 elif isinstance(value, float):
                     indy = float(value)
             else:
                 # not a threshold
-                if isinstance(cur_indy, int):
+                if utils.is_string_integer(cur_indy):
                     indy = int(cur_indy)
-                elif isinstance(cur_indy, float):
+                elif utils.is_string_float(cur_indy):
                     indy = float(cur_indy)
 
-            # Ensure that the indy_val is of the correct type, depending on whether we have a threshold (operator +
-            # number)
+            # Assign the point_data based on whether the indy var is a threshold
             if is_threshold:
                 point_data = self.series_data.loc[self.series_data[self.config.indy_var] == cur_indy]
             else:
