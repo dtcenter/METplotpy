@@ -142,7 +142,7 @@ class Bar(BasePlot):
             # include the series only if the name is valid
             if len(name) == 3:
                 series_obj = BarSeries(self.config_obj, num_series_y1 + i,
-                                   input_data, series_list, name)
+                                       input_data, series_list, name)
                 series_list.append(series_obj)
 
         # reorder series
@@ -197,7 +197,14 @@ class Bar(BasePlot):
         """
 
         y_points = series.series_points['dbl_med']
-        x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
+
+        # If there are any None types in the series_points['dbl_med'] list, then use the
+        # indy_vals defined in the config file to ensure that the number of y_points is the
+        # same number of x_points.
+        if None in y_points:
+            x_points = self.config_obj.indy_vals
+        else:
+            x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
 
         # add the plot
         self.figure.add_trace(
@@ -210,6 +217,7 @@ class Bar(BasePlot):
                 marker_line_color=self.config_obj.colors_list[series.idx]
             )
         )
+
 
     def _create_layout(self) -> Figure:
         """
