@@ -1,8 +1,8 @@
 import os
 
 from metcalcpy.util import utils
-from plots.tcmpr_plots.skill.median.tcmpr_series_skill_median import TcmprSeriesSkillMedian
-from plots.tcmpr_plots.skill.tcmpr_skill import TcmprSkill
+from metplotpy.plots.tcmpr_plots.skill.median.tcmpr_series_skill_median import TcmprSeriesSkillMedian
+from metplotpy.plots.tcmpr_plots.skill.tcmpr_skill import TcmprSkill
 
 
 class TcmprSkillMedian(TcmprSkill):

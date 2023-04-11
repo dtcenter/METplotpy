@@ -4,8 +4,8 @@ import numpy as np
 import plotly.graph_objects as go
 
 from metcalcpy.util import utils
-from plots.tcmpr_plots.skill.mean.tcmpr_series_skill_mean import TcmprSeriesSkillMean
-from plots.tcmpr_plots.skill.tcmpr_skill import TcmprSkill
+from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_series_skill_mean import TcmprSeriesSkillMean
+from metplotpy.plots.tcmpr_plots.skill.tcmpr_skill import TcmprSkill
 
 
 class TcmprSkillMean(TcmprSkill):

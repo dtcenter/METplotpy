@@ -195,6 +195,12 @@ class Bar(BasePlot):
             # is lost during the unique() operation.
             x_points = util.sort_threshold_values(series.series_data[self.config_obj.indy_var].unique())
 
+
+        # If there are any None types in the series_points['dbl_med'] list, then use the
+        # indy_vals defined in the config file to ensure that the number of y_points is the
+        # same number of x_points.
+        if None in y_points:
+            x_points = self.config_obj.indy_vals
         else:
             x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
 
@@ -209,6 +215,7 @@ class Bar(BasePlot):
                 marker_line_color=self.config_obj.colors_list[series.idx]
             )
         )
+
 
     def _create_layout(self) -> Figure:
         """

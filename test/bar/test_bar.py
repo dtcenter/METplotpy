@@ -3,7 +3,7 @@ import os
 import pytest
 
 from metplotpy.plots.bar import bar
-#from metcalcpy.compare_images import CompareImages
+# from metcalcpy.compare_images import CompareImages
 
 
 @pytest.fixture
@@ -14,6 +14,19 @@ def setup():
     # the config directory containing all the default config files.
     os.environ['METPLOTPY_BASE'] = "../../"
     custom_config_filename = "custom_bar.yaml"
+
+    # Invoke the command to generate a Bar plot based on
+    # the custom_bar.yaml custom config file.
+    bar.main(custom_config_filename)
+
+@pytest.fixture
+def setup_nones():
+    # Cleanup the plotfile and point1 output file from any previous run
+    cleanup()
+    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
+    # the config directory containing all the default config files.
+    os.environ['METPLOTPY_BASE'] = "../../"
+    custom_config_filename = "bar_with_nones.yaml"
 
     # Invoke the command to generate a Bar plot based on
     # the custom_bar.yaml custom config file.
@@ -82,7 +95,28 @@ def test_images_match(setup):
     """
     comparison = CompareImages('./bar_expected.png', './bar.png')
     assert comparison.mssim == 1
+
     cleanup()
+
+
+@pytest.mark.skip("fails on linux host machines")
+def test_none_data_images_match(setup_nones):
+    """
+        Compare an expected plot with the
+        newly created plot to verify that the plot hasn't
+        changed in appearance.
+    """
+    comparison = CompareImages('expected_with_nones.png', './bar_with_nones.png')
+    assert comparison.mssim == 1
+
+    try:
+        path = os.getcwd()
+        plot_file = 'bar_with_nones.png'
+        os.remove(os.path.join(path, plot_file))
+    except OSError as e:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass
 
 
 @pytest.mark.parametrize("test_input, expected",
@@ -147,6 +181,7 @@ def test_point_and_plot_files_exist(test_input, expected):
         pass
 
 
+
 @pytest.mark.skip("fails on linux host machines")
 def test_threshold_plotting():
     """
@@ -175,3 +210,4 @@ def test_threshold_plotting():
         # Typically when files have already been removed or
         # don't exist.  Ignore.
         pass
+
