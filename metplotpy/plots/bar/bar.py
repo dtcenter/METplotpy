@@ -190,11 +190,14 @@ class Bar(BasePlot):
         """
 
         y_points = series.series_points['dbl_med']
-        if util.is_threshold_value(series.series_data[self.config_obj.indy_var]):
+        is_threshold, is_percent_threshold = util.is_threshold_value(series.series_data[self.config_obj.indy_var])
+        if is_threshold and not is_percent_threshold:
             # Sort the threshold values after getting unique values because the order of the threshold
-            # is lost during the unique() operation.
+            # is lost during the unique() operation.  If there are percent thresholds in the fcst_thresh
+            # column, then use the indy_vals specified in the config file.
             x_points = util.sort_threshold_values(series.series_data[self.config_obj.indy_var].unique())
-
+        elif is_percent_threshold:
+            x_points = self.config_obj.indy_vals
         else:
             x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
 
