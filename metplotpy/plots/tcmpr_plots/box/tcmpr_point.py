@@ -2,8 +2,8 @@ import os
 
 import plotly.graph_objects as go
 
-from plots.tcmpr_plots.box.tcmpr_box_point import TcmprBoxPoint
-from plots.tcmpr_plots.tcmpr_series import TcmprSeries
+from metplotpy.plots.tcmpr_plots.box.tcmpr_box_point import TcmprBoxPoint
+from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 
 
 class TcmprPoint(TcmprBoxPoint):

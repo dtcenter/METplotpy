@@ -15,9 +15,9 @@ import os
 
 import plotly.graph_objects as go
 
-from plots.tcmpr_plots.tcmpr import Tcmpr
-from plots.tcmpr_plots.tcmpr_series import TcmprSeries
-from plots.tcmpr_plots.tcmpr_util import get_case_data
+from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
+from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
+from metplotpy.plots.tcmpr_plots.tcmpr_util import get_case_data
 
 
 class TcmprRank(Tcmpr):
