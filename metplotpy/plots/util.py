@@ -198,25 +198,35 @@ def is_threshold_value(values: Union[pd.core.series.Series, list]) -> bool:
        @param values:  pandas Series of independent variables comprising the x-axis
 
     Returns:
-    True if any of these values is a threshold (ie. operator and number)
+    A tuple of boolean values:
+    True if any of these values is a threshold (ie. operator and number) and True if these are mixed threshold
+    (==SFP50,==FBIAS1, etc. ). False otherwise.
 
     """
 
-    results = []
+    thresh_ctr = 0
+    percent_thresh_ctr = 0
+    is_percent_thresh = False
+    is_thresh = False
     # Check all the threshold values, there may be some threshold values that do not
     # have an equality operator when equality is implied.
     for cur_value in values:
-        match = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*([+-]?([0-9]*[.])?[0-9]+)', str(cur_value))
-        if match:
-            if match.group(1):
-                results.append(True)
-        else:
-            results.append(False)
+        match_pct = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*(SFP|SOP|SCP|USP|CDP|FBIAS)(\s)*([+-]?([0-9]*[.])?[0-9]+)',
+                             str(cur_value))
+        match_thresh = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*([+-]?([0-9]*[.])?[0-9]+)',
+                                str(cur_value))
+        if match_pct:
+            # This is a percent threshold, with values like '==FBIAS1'.
+            percent_thresh_ctr += 1
+        elif match_thresh:
+            thresh_ctr += 1
 
-    if True in results:
-        return True
-    else:
-        return False
+    if thresh_ctr >= 1:
+        is_thresh = True
+    if percent_thresh_ctr >= 1:
+        is_percent_thresh = True
+
+    return is_thresh, is_percent_thresh
 
 
 def sort_threshold_values(thresh_values: pd.core.series.Series) -> list:
