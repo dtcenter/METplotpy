@@ -62,6 +62,36 @@ def extract_sounding_data(input_file):
     return df, pressure_levels
 
 
+def retrieve_date_and_basin(input_file) -> tuple:
+    ''' Retrieve the yyyymmdd date and basin and storm id eg AL## from the first
+        two lines of the data file.
+
+        Args:
+           input_file:  The ASCII input file
+
+        Returns:
+           a tuple of strings:  the first is the yyyymdd date, followed by the basin
+           and storm id.
+    '''
+
+    with open(input_file) as infile:
+        data = infile.readlines()
+        for idx, cur in enumerate(data):
+            if idx == 0:
+                ymd_string = cur
+            elif idx == 1:
+                basin_stormid_str = cur
+
+    ymd = re.match(r'(.*)([0-9]{10})', ymd_string)
+    if ymd:
+        ymd_date = ymd.group(2)
+
+    basin_storm = re.match(r'(.*)(\w{4})', basin_stormid_str)
+    if basin_storm:
+        basin_storm_info = basin_storm.group(2)
+
+    return ymd_date, basin_storm_info
+
 def retrieve_units(sounding_data: pd.DataFrame) -> dict:
     '''
        Retrieve the units from the ASCII file.
@@ -70,28 +100,32 @@ def retrieve_units(sounding_data: pd.DataFrame) -> dict:
           sounding_data:  The pandas dataframe containing the sounding data.
 
        Returns:
-         a dictionary of the field as key and units as value
+         units: a dictionary of the field as key and units as value (where the
+         parenthesis
+                are removed from the unit descriptor).
     '''
 
     fields_str = sounding_data.FIELD
-    fields_str.append("Z_1000")
     units = {}
 
     # Get the units for the field (use the surface level, so we can capture the
-    # Pressure units)
+    # Pressure units).
+    # Also get the Z_1000 to get the height, as there is no Z_SURF field.
     for cur_field in fields_str:
-        re.match(r'(\x)_1000', cur_field)
+        level_str = re.match(r'(Z)_1000', cur_field)
         field_level_str = re.match(r'(\w)_SURF', cur_field)
-    if field_level_str:
-        field_name = field_level_str.group(1)
+        if level_str:
+            field_level_str = level_str
+        if field_level_str:
+            field_name = field_level_str.group(1)
 
-        units_str_series: pd.Series = (
-            (sounding_data.loc[sounding_data.FIELD == cur_field]).UNITS)
-        units_str = units_str_series.iloc[0]
+            units_str_series: pd.Series = (
+                (sounding_data.loc[sounding_data.FIELD == cur_field]).UNITS)
+            units_str = units_str_series.iloc[0]
 
-        # Clean up the enclosing parenthesis
-        unit: list = re.findall(r"\((.*?)\)", units_str)
-        units[field_name] = unit[0]
+            # Clean up the enclosing parenthesis
+            unit: list = re.findall(r"\((.*?)\)", units_str)
+            units[field_name] = unit[0]
 
     return units
 
