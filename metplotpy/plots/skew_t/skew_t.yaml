@@ -1,11 +1,17 @@
-#  Settings for skew-T diagram
+#
+#  Settings for METplotpy skew-T diagram
+#
+
 
 # Input and output file information
 input_directory: '/Volumes/d1/minnawin/TCDiag_Data/2022'
 input_file_extension: '.dat'
-
 output_directory: '/Volumes/d1/minnawin/feature_337_tcdiag_skewt'
 
+# Sounding hours of interest. If all_sounding_hours is set to False, then the
+# list of hours from sounding_hours_of_interest will be used.
+all_sounding_hours: True
+sounding_hours_of_interest: [0, 6, 12, 18]
 
 # Turn on/off displaying features on the diagram
 display_dry_adiabats: True
@@ -25,8 +31,6 @@ decimate_barbs: 2
 # figure size in pixels
 figure_size_width: 9
 figure_size_height: 9
-
-
 
 # Appearance of Temperature and dewpoint lines
 temp_line_color: red
