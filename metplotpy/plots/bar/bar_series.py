@@ -191,7 +191,6 @@ class BarSeries(Series):
         is_threshold, is_percent_thresh = util.is_threshold_value(
             self.config.indy_vals)
 
-        operators = []
         for cur_indy in self.config.indy_vals:
             # Assign the point_data based on whether the indy var is a threshold
             if is_threshold:
