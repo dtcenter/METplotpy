@@ -27,7 +27,8 @@ from metplotpy.plots import util
 from metplotpy.plots.bar.bar_config import BarConfig
 from metplotpy.plots.bar.bar_series import BarSeries
 from metplotpy.plots.base_plot import BasePlot
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
+    PLOTLY_PAPER_BGCOOR
 
 
 class Bar(BasePlot):
@@ -47,26 +48,29 @@ class Bar(BasePlot):
         # init common layout
         super().__init__(parameters, "bar_defaults.yaml")
 
-        # instantiate a BarConfig object, which holds all the necessary settings from the
+        # instantiate a BarConfig object, which holds all the necessary settings from
+        # the
         # config file that represents the BasePlot object (Bar).
         self.config_obj = BarConfig(self.parameters)
 
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val_1 and derived curves is"
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check"
-                             " the number of your configuration file's plot_i,"
-                             " plot_disp, series_order, user_legend,"
-                             " colors settings.")
+            raise ValueError(
+                "The number of series defined by series_val_1 and derived curves is"
+                " inconsistent with the number of settings"
+                " required for describing each series. Please check"
+                " the number of your configuration file's plot_i,"
+                " plot_disp, series_order, user_legend,"
+                " colors settings.")
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
-            self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
+            self.input_df = calc_util.perform_event_equalization(self.parameters,
+                                                                 self.input_df)
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -104,15 +108,18 @@ class Bar(BasePlot):
 
     def _create_series(self, input_data):
         """
-           Generate all the series objects that are to be displayed as specified by the plot_disp
-           setting in the config file.  The points are all ordered by datetime.  Each series object
+           Generate all the series objects that are to be displayed as specified by
+           the plot_disp
+           setting in the config file.  The points are all ordered by datetime.  Each
+           series object
            is represented by a bar in the diagram, so they also contain information
            for bar width, colors and other plot-related/
            appearance-related settings (which were defined in the config file).
 
            Args:
                input_data:  The input data in the form of a Pandas dataframe.
-                            This data will be subset to reflect the series data of interest.
+                            This data will be subset to reflect the series data of
+                            interest.
 
            Returns:
                a list of series objects that are to be displayed
@@ -174,7 +181,8 @@ class Bar(BasePlot):
         if len(self.series_list) > 0:
             self._add_lines(
                 self.config_obj,
-                sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique())
+                sorted(
+                    self.series_list[0].series_data[self.config_obj.indy_var].unique())
             )
 
         # apply y axis limits
@@ -190,24 +198,29 @@ class Bar(BasePlot):
         """
 
         y_points = series.series_points['dbl_med']
-        is_threshold, is_percent_threshold = util.is_threshold_value(series.series_data[self.config_obj.indy_var])
-        if is_percent_threshold:
-            x_points = self.config_obj.indy_var
-        elif is_threshold:
-            # Sort the threshold values after getting unique values because the order of the threshold
-            # is lost during the unique() operation.  If there are percent thresholds in the fcst_thresh
-            # column, then use the indy_vals specified in the config file.
-            x_points = util.sort_threshold_values(series.series_data[self.config_obj.indy_var].unique())
-        else:
-            x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
+        is_threshold, is_percent_threshold = util.is_threshold_value(
+            series.series_data[self.config_obj.indy_var])
 
         # If there are any None types in the series_points['dbl_med'] list, then use the
-        # indy_vals defined in the config file to ensure that the number of y_points is the
+        # indy_vals defined in the config file to ensure that the number of y_points
+        # is the
         # same number of x_points.
         if None in y_points:
             x_points = self.config_obj.indy_vals
-        # else:
-        #     x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
+        elif is_percent_threshold:
+            x_points = self.config_obj.indy_var
+        elif is_threshold:
+            # Sort the threshold values after getting unique values because the
+            # order
+            # of the threshold
+            # is lost during the unique() operation.  If there are percent
+            # thresholds
+            # in the fcst_thresh
+            # column, then use the indy_vals specified in the config file.
+            x_points = util.sort_threshold_values(
+                series.series_data[self.config_obj.indy_var].unique())
+        else:
+            x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
 
         # add the plot
         self.figure.add_trace(
@@ -231,7 +244,8 @@ class Bar(BasePlot):
         # create annotation
         annotation = [
             {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-                                             self.config_obj.parameters['caption_weight']),
+                                             self.config_obj.parameters[
+                                                 'caption_weight']),
              'align': 'left',
              'showarrow': False,
              'xref': 'paper',
@@ -245,7 +259,8 @@ class Bar(BasePlot):
              }]
         # create title
         title = {'text': util.apply_weight_style(self.config_obj.title,
-                                                 self.config_obj.parameters['title_weight']),
+                                                 self.config_obj.parameters[
+                                                     'title_weight']),
                  'font': {
                      'size': self.config_obj.title_font_size,
                  },
@@ -294,7 +309,8 @@ class Bar(BasePlot):
                                  title_font={
                                      'size': self.config_obj.x_title_font_size
                                  },
-                                 title_standoff=abs(self.config_obj.parameters['xlab_offset']),
+                                 title_standoff=abs(
+                                     self.config_obj.parameters['xlab_offset']),
                                  tickangle=self.config_obj.x_tickangle,
                                  tickfont={'size': self.config_obj.x_tickfont_size},
                                  type='category'
@@ -309,7 +325,8 @@ class Bar(BasePlot):
         """
         self.figure.update_yaxes(title_text=
                                  util.apply_weight_style(self.config_obj.yaxis_1,
-                                                         self.config_obj.parameters['ylab_weight']),
+                                                         self.config_obj.parameters[
+                                                             'ylab_weight']),
                                  secondary_y=False,
                                  linecolor=PLOTLY_AXIS_LINE_COLOR,
                                  linewidth=PLOTLY_AXIS_LINE_WIDTH,
@@ -322,7 +339,8 @@ class Bar(BasePlot):
                                  title_font={
                                      'size': self.config_obj.y_title_font_size
                                  },
-                                 title_standoff=abs(self.config_obj.parameters['ylab_offset']),
+                                 title_standoff=abs(
+                                     self.config_obj.parameters['ylab_offset']),
                                  tickangle=self.config_obj.y_tickangle,
                                  tickfont={'size': self.config_obj.y_tickfont_size}
                                  )
@@ -336,9 +354,12 @@ class Bar(BasePlot):
                                           'y': self.config_obj.bbox_y,
                                           'xanchor': 'center',
                                           'yanchor': 'top',
-                                          'bordercolor': self.config_obj.legend_border_color,
-                                          'borderwidth': self.config_obj.legend_border_width,
-                                          'orientation': self.config_obj.legend_orientation,
+                                          'bordercolor':
+                                              self.config_obj.legend_border_color,
+                                          'borderwidth':
+                                              self.config_obj.legend_border_width,
+                                          'orientation':
+                                              self.config_obj.legend_orientation,
                                           'font': {
                                               'size': self.config_obj.legend_size,
                                               'color': "black"
@@ -350,9 +371,10 @@ class Bar(BasePlot):
         Apply limits on y axis if needed
         """
         if len(self.config_obj.parameters['ylim']) > 0:
-            self.figure.update_layout(yaxis={'range': [self.config_obj.parameters['ylim'][0],
-                                                       self.config_obj.parameters['ylim'][1]],
-                                             'autorange': False})
+            self.figure.update_layout(
+                yaxis={'range': [self.config_obj.parameters['ylim'][0],
+                                 self.config_obj.parameters['ylim'][1]],
+                       'autorange': False})
 
     def _add_x2axis(self, n_stats) -> None:
         """
@@ -364,7 +386,8 @@ class Bar(BasePlot):
         if self.config_obj.show_nstats:
             self.figure.update_layout(xaxis2={'title_text':
                                                   util.apply_weight_style('NStats',
-                                                                          self.config_obj.parameters['x2lab_weight']
+                                                                          self.config_obj.parameters[
+                                                                              'x2lab_weight']
                                                                           ),
                                               'linecolor': PLOTLY_AXIS_LINE_COLOR,
                                               'linewidth': PLOTLY_AXIS_LINE_WIDTH,
@@ -374,17 +397,20 @@ class Bar(BasePlot):
                                               'zeroline': False,
                                               'ticks': "inside",
                                               'title_font': {
-                                                  'size': self.config_obj.x2_title_font_size
+                                                  'size':
+                                                      self.config_obj.x2_title_font_size
                                               },
                                               'title_standoff': abs(
-                                                  self.config_obj.parameters['x2lab_offset']
+                                                  self.config_obj.parameters[
+                                                      'x2lab_offset']
                                               ),
                                               'tickmode': 'array',
                                               'tickvals': self.config_obj.indy_vals,
                                               'ticktext': n_stats,
                                               'tickangle': self.config_obj.x2_tickangle,
                                               'tickfont': {
-                                                  'size': self.config_obj.x2_tickfont_size
+                                                  'size':
+                                                      self.config_obj.x2_tickfont_size
                                               },
                                               'scaleanchor': 'x'
                                               }
@@ -395,13 +421,15 @@ class Bar(BasePlot):
 
             # need to add an invisible line with all values = None
             self.figure.add_trace(
-                go.Scatter(y=[None] * len(self.config_obj.indy_vals), x=self.config_obj.indy_vals,
+                go.Scatter(y=[None] * len(self.config_obj.indy_vals),
+                           x=self.config_obj.indy_vals,
                            xaxis='x2', showlegend=False)
             )
 
     def remove_file(self):
         """
-           Removes previously made image file .  Invoked by the parent class before self.output_file
+           Removes previously made image file .  Invoked by the parent class before
+           self.output_file
            attribute can be created, but overridden here.
         """
 
@@ -421,7 +449,8 @@ class Bar(BasePlot):
 
     def write_html(self) -> None:
         """
-        Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
+        Is needed - creates and saves the html representation of the plot WITHOUT
+        Plotly.js
         """
         if self.config_obj.create_html is True:
             # construct the file name from plot_filename
@@ -471,7 +500,8 @@ def main(config_filename=None):
             The location of the input data is defined in either the default or
             custom config file.
             Args:
-                @param config_filename: default is None, the name of the custom config file to apply
+                @param config_filename: default is None, the name of the custom
+                config file to apply
         """
 
     # Retrieve the contents of the custom config file to over-ride
