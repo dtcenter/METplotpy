@@ -7,12 +7,14 @@
 # ============================*
 
 import sys
+import re
 import pandas as pd
-from numpy import log as ln
-import math
+import numpy as np
 import matplotlib.pyplot as plt
 from metpy.plots import SkewT
-from metpy.units import units
+import yaml
+
+from metplotpy.plots import util
 
 """
   Generate a skew T-log P diagram from TC Diag output
@@ -26,8 +28,10 @@ def extract_sounding_data(input_file):
         data = infile.readlines()
 
     # Identify the lines that bracket the sounding data.
-    # The data sections are identified as "STORM DATA", "SOUNDING DATA", and "CUSTOM DATA".
-    # Capture the rows of data that fall between the "SOUNDING DATA" header and the "CUSTOM DATA" header.
+    # The data sections are identified as "STORM DATA", "SOUNDING DATA", and "CUSTOM
+    # DATA".
+    # Capture the rows of data that fall between the "SOUNDING DATA" header and the
+    # "CUSTOM DATA" header.
     for idx, cur in enumerate(data):
         text = cur.split()
         if 'SOUNDING' in text:
@@ -38,13 +42,14 @@ def extract_sounding_data(input_file):
 
     # Now extract the lines that are in the SOUNDING section.  The first line
     # contains the pressure levels in mb.
-    pressure_levels_row: list = data[start_line + 2: start_line + 3]
+    pressure_levels_row:list = data[start_line + 2: start_line + 3]
     # Remove the nlevel and nlevel values from the list
     only_pressure_levels = pressure_levels_row[0].split()
     pressure_levels = only_pressure_levels[3:]
     sounding_data: list = data[start_line + 2: end_line - 1]
 
-    # Save the sounding data into a text file, which will then be converted into a pandas dataframe.
+    # Save the sounding data into a text file, which will then be converted into a
+    # pandas dataframe.
     with open("sounding_data.dat", "w") as txt_file:
         for line in sounding_data:
             txt_file.write("".join(line) + "\n")
@@ -57,46 +62,90 @@ def extract_sounding_data(input_file):
     return df, pressure_levels
 
 
-def extract_sfc_pressures(sounding_data: pd.DataFrame, pressure_levels: list, hour_of_interest: str) -> list:
-    ''' From the soundings data, retrieve the surface pressure values and then append the remaining
+def retrieve_units(sounding_data: pd.DataFrame) -> dict:
+    '''
+       Retrieve the units from the ASCII file.
+
+       Args:
+          sounding_data:  The pandas dataframe containing the sounding data.
+
+       Returns:
+         a dictionary of the field as key and units as value
+    '''
+
+    fields_str = sounding_data.FIELD
+    fields_str.append("Z_1000")
+    units = {}
+
+    # Get the units for the field (use the surface level, so we can capture the
+    # Pressure units)
+    for cur_field in fields_str:
+        re.match(r'(\x)_1000', cur_field)
+        field_level_str = re.match(r'(\w)_SURF', cur_field)
+    if field_level_str:
+        field_name = field_level_str.group(1)
+
+        units_str_series: pd.Series = (
+            (sounding_data.loc[sounding_data.FIELD == cur_field]).UNITS)
+        units_str = units_str_series.iloc[0]
+
+        # Clean up the enclosing parenthesis
+        unit: list = re.findall(r"\((.*?)\)", units_str)
+        units[field_name] = unit[0]
+
+    return units
+
+
+def extract_sfc_pressures(sounding_data: pd.DataFrame, pressure_levels: list,
+                          hour_of_interest: str) -> list:
+    ''' From the soundings data, retrieve the surface pressure values and then append
+    the remaining
         pressure values
 
         Args:
             sounding_data:  The dataframe containing the soundings data of interest.
-            pressure_levels:  A list of string values of the pressure levels.  The SURF value will be
-                              extracted from the P_SURF field value for each available time of sounding data.
+            pressure_levels:  A list of string values of the pressure levels.  The
+            SURF value will be
+                              extracted from the P_SURF field value for each
+                              available time of sounding data.
             hour_of_interest:  A string representation of the hour of interest.
 
         Returns:
-            A list of pressures as a dictionary, with each key representing the hour of the sounding data, and
+            A list of pressures as a dictionary, with each key representing the hour
+            of the sounding data, and
             each corresponding value a list of all the associated pressures.
     '''
 
-    # Store all the pressures in a dictionary, where the keys are the hours and the values are a list of pressure
+    # Store all the pressures in a dictionary, where the keys are the hours and the
+    # values are a list of pressure
     # values.  For SURF, read the
     # dataframe and extract the value from the P_SURF row for each time column.
     sfc_pressures_by_hour = {}
-    columns = list(df.columns)
-    times_list = columns[2:]
-    # print ("\n\n Times: ", times_list)
+    columns = list(sounding_data.columns)
+    columns[2:]
 
     # Get the location of the surface pressure from the P_SURF row
-    psfc_idx: pd.Index = sounding_data.index[df.FIELD == 'P_SURF']
+    psfc_idx: pd.Index = sounding_data.index[sounding_data.FIELD == 'P_SURF']
     hours: pd.Series = sounding_data[hour_of_interest]
     pressure: pd.Series = hours.iloc[psfc_idx].values[0]
-    # print(pressure.values[0])
+    # (pressure.values[0])
     sfc_pressures_by_hour[hour_of_interest] = pressure
 
     return sfc_pressures_by_hour
 
 
-def retrieve_pressures(sounding_data: pd.DataFrame, hour_of_interest: str, pressure_levels: list) -> list:
-    '''For each hour of interest, create the list of pressures in mb, extracted from the ASCII data. '''
+def retrieve_pressures(sounding_data: pd.DataFrame, hour_of_interest: str,
+                       pressure_levels: list) -> list:
+    '''For each hour of interest, create the list of pressures in mb, extracted from
+    the ASCII data. '''
 
-    # First, get the surface pressure level, all the other pressure levels that are above surface level are the same
-    sfc_pressure = extract_sfc_pressures(sounding_data, pressure_levels, hour_of_interest)
+    # First, get the surface pressure level, all the other pressure levels that are
+    # above surface level are the same
+    sfc_pressure = extract_sfc_pressures(sounding_data, pressure_levels,
+                                         hour_of_interest)
 
-    # Now retrieve the list of above surface levels (mb) and append these to the sfc_pressure
+    # Now retrieve the list of above surface levels (mb) and append these to the
+    # sfc_pressure
     all_pressure_levels = pressure_levels.copy()
     all_pressure_levels.insert(0, str(sfc_pressure[hour_of_interest]))
 
@@ -104,7 +153,8 @@ def retrieve_pressures(sounding_data: pd.DataFrame, hour_of_interest: str, press
 
 
 def convert_pressures_to_ints(all_pressure_levels: list) -> list:
-    ''' Convert the str representation of the pressures into ints so they can be used by Metpy to generate a
+    ''' Convert the str representation of the pressures into ints so they can be used
+    by Metpy to generate a
         skew T plot.
     '''
     pressures_as_int = [int(level) for level in all_pressure_levels]
@@ -112,18 +162,21 @@ def convert_pressures_to_ints(all_pressure_levels: list) -> list:
     return pressures_as_int
 
 
-def retrieve_temperatures(sounding_data: pd.DataFrame, hour_of_interest: str, all_pressure_levels: list) -> list:
+def retrieve_temperatures(sounding_data: pd.DataFrame, hour_of_interest: str,
+                          all_pressure_levels: list) -> list:
     '''Retrieve all the temperatures in the soundings dataframe based on pressure level.
 
        Args:
            sounding_data:  The dataframe containing the sounding data.
            hour_of_interest:  The hour of sounding data.
-           all_pressure_levels: A list of all the numerical values of pressure in mb (represented as strings)
+           all_pressure_levels: A list of all the numerical values of pressure in mb
+           (represented as strings)
        Returns:
            A list of temperature values, corresponding to the pressure level (in mb).
     '''
 
-    # Replace the value for the surface pressure with SURF so we can construct the name of the temperature field.
+    # Replace the value for the surface pressure with SURF so we can construct the
+    # name of the temperature field.
     above_sfc = all_pressure_levels[1:]
     plevs = above_sfc.copy()
     plevs.insert(0, 'SURF')
@@ -144,18 +197,23 @@ def retrieve_temperatures(sounding_data: pd.DataFrame, hour_of_interest: str, al
     return temperatures_by_hour
 
 
-def retrieve_rh(sounding_data: pd.DataFrame, hour_of_interest: str, all_pressure_levels: list) -> list:
-    '''Retrieve all the relative humidities in the soundings dataframe based on pressure level.
+def retrieve_rh(sounding_data: pd.DataFrame, hour_of_interest: str,
+                all_pressure_levels: list) -> list:
+    '''Retrieve all the relative humidities in the soundings dataframe based on
+    pressure level.
 
        Args:
            sounding_data:  The dataframe containing the sounding data.
            hour_of_interest:  The hour of sounding data.
-           all_pressure_levels: A list of all the numerical values of pressure in mb (represented as strings)
+           all_pressure_levels: A list of all the numerical values of pressure in mb
+           (represented as strings)
        Returns:
-           A list of relative humidity values, corresponding to the pressure level (in mb).
+           A list of relative humidity values, corresponding to the pressure level (
+           in mb).
     '''
 
-    # Replace the value for the surface pressure with SURF so we can construct the name of the temperature field.
+    # Replace the value for the surface pressure with SURF so we can construct the
+    # name of the temperature field.
     above_sfc = all_pressure_levels[1:]
     plevs = above_sfc.copy()
     plevs.insert(0, 'SURF')
@@ -175,7 +233,8 @@ def retrieve_rh(sounding_data: pd.DataFrame, hour_of_interest: str, all_pressure
     return rh_by_hour
 
 
-def retrieve_winds(sounding_data: pd.DataFrame, hour_of_interest: str, all_pressure_levels: list) -> list:
+def retrieve_winds(sounding_data: pd.DataFrame, hour_of_interest: str,
+                   all_pressure_levels: list) -> list:
     '''
         Retrieve the u- and v-wind barbs
 
@@ -187,7 +246,8 @@ def retrieve_winds(sounding_data: pd.DataFrame, hour_of_interest: str, all_press
         Returns:
            a list of tuples: u- and v-winds in kts
     '''
-    # Replace the value for the surface pressure with SURF so we can construct the name of the temperature field.
+    # Replace the value for the surface pressure with SURF so we can construct the
+    # name of the temperature field.
     above_sfc = all_pressure_levels[1:]
     plevs = above_sfc.copy()
     plevs.insert(0, 'SURF')
@@ -201,31 +261,36 @@ def retrieve_winds(sounding_data: pd.DataFrame, hour_of_interest: str, all_press
         u_field = u_prefix + cur_lev
         v_field = v_prefix + cur_lev
 
-        # Get the location of the u_wind and v_wind from the u_field row and v_field row, respectively.
+        # Get the location of the u_wind and v_wind from the u_field row and v_field
+        # row, respectively.
 
         # u-wind
         u_idx: pd.Index = sounding_data.index[sounding_data.FIELD == u_field]
         hours: pd.Series = sounding_data[hour_of_interest]
 
-        # If the field name has been incorrectly formatted, we will observe and IndexError.
+        # If the field name has been incorrectly formatted, we will observe and
+        # IndexError.
         try:
             u_hour: pd.Series = (hours.iloc[u_idx].values[0]) / 10
-        except IndexError as ie:
+        except IndexError:
             print("Could not find the field ", u_field,
-                  ". Probable cause is incorrectly formatted data. Please check data file.")
+                  ". Probable cause is incorrectly formatted data. Please check data "
+                  "file.")
             sys.exit()
         u_wind_by_hour.append(u_hour)
 
         # v-wind
         v_idx: pd.Index = sounding_data.index[sounding_data.FIELD == v_field]
 
-        # If the field name has been incorrectly formatted, we will observe and IndexError.
+        # If the field name has been incorrectly formatted, we will observe and
+        # IndexError.
         try:
             v_hour: pd.Series = (hours.iloc[v_idx].values[0]) / 10
 
-        except IndexError as ie:
+        except IndexError:
             print("Could not find the field ", v_field,
-                  ". Probable cause is incorrectly formatted data. Please check data file.")
+                  ". Probable cause is incorrectly formatted data. Please check data "
+                  "file.")
             sys.exit()
         v_wind_by_hour.append(v_hour)
 
@@ -237,14 +302,7 @@ def calculate_dewpoint(rh: list, temps: list) -> list:
     from metpy.units import units
 
     '''
-       Calculate the dewpoints from the relative humidities and temperatures using the Magnus-Tetens formula:
-       Ts = (b × α(T,RH)) / (a - α(T,RH))
-
-          Where:
-          a=17.625
-          b=243.04 deg C
-          α(T,RH) = ln(RH/100) + aT/(b+T)
-
+       Calculate the dewpoints from the relative humidities and temperatures.
 
        Args:
        rh : a list of relative humidities
@@ -256,42 +314,39 @@ def calculate_dewpoint(rh: list, temps: list) -> list:
 
 
     '''
-    const_a = 17.625
-    const_b = 243.04
     zipped = zip(rh, temps)
     dewpts = []
     for idx, cur_vals in enumerate(zipped):
         cur_rh = cur_vals[0]
         cur_temp = cur_vals[1]
-        # alpha = (ln(cur_rh/100.) + const_a * cur_temp)/(const_b + cur_temp)
-        # divisor = const_b + cur_temp
-        # print(f'const_b + cur_temp = {divisor}')
-        # natlg = ln(cur_rh/100)
-        # print(f'natural humidity = {natlg}, cur_rh= {cur_rh}')
-        # calc_dewpoint = (const_b * alpha)/(const_a - alpha)
 
         if cur_rh == 0:
             dewpoint = np.nan
         else:
-            calc_dewpoint = dewpoint_from_relative_humidity(cur_temp * units.degC, cur_rh * units.percent)
+            calc_dewpoint = dewpoint_from_relative_humidity(cur_temp * units.degC,
+                                                            cur_rh * units.percent)
             dewpoint = calc_dewpoint.magnitude
         dewpts.append(dewpoint)
 
     return dewpts
 
 
-def retrieve_height(sounding_data: pd.DataFrame, hour_of_interest: str, all_pressure_levels: list) -> list:
-    '''Retrieve all the hsights (in decameters) in the soundings dataframe based on pressure level.
+def retrieve_height(sounding_data: pd.DataFrame, hour_of_interest: str,
+                    all_pressure_levels: list) -> list:
+    '''Retrieve all the hsights (in decameters) in the soundings dataframe based on
+    pressure level.
 
        Args:
            sounding_data:  The dataframe containing the sounding data.
            hour_of_interest:  The hour of sounding data.
-           all_pressure_levels: A list of all the numerical values of pressure in mb (represented as strings)
+           all_pressure_levels: A list of all the numerical values of pressure in mb
+           (represented as strings)
        Returns:
            A list of heights in meters, corresponding to the pressure level (in mb).
     '''
 
-    # Replace the value for the surface pressure with SURF so we can construct the name of the height field.
+    # Replace the value for the surface pressure with SURF so we can construct the name
+    # of the height field.
     above_sfc = all_pressure_levels[1:]
     plevs = above_sfc.copy()
     plevs.insert(0, 'SURF')
@@ -314,13 +369,15 @@ def retrieve_height(sounding_data: pd.DataFrame, hour_of_interest: str, all_pres
             try:
 
                 hgt_hour: pd.Series = (hours.iloc[hgt_idx].values[0]) * 10
-            except IndexError as ie:
+            except IndexError:
                 print("Could not find the field ", hgt_field,
-                      ". Probable cause is incorrectly formatted data. Please check data file.")
+                      ". Probable cause is incorrectly formatted data. Please check "
+                      "data file.")
                 sys.exit()
         hgt_by_hour.append(hgt_hour)
 
     return hgt_by_hour
+
 
 def create_skew_t(input_file: str) -> None:
     sounding_df, plevs = extract_sounding_data(input_file)
@@ -337,7 +394,6 @@ def create_skew_t(input_file: str) -> None:
 
         # Convert each pressure to an integer, removing the leading 0's
         pressure = convert_pressures_to_ints(all_pressure_levels)
-        # print(pressure_levels_int)
 
         # Retrieve all the temperatures
         # The first pressure level corresponds to the 'SURF' in the original data file.
@@ -348,7 +404,6 @@ def create_skew_t(input_file: str) -> None:
 
         # Calculate the dew points
         dew_pt = calculate_dewpoint(all_rh, temperature)
-        print(f'dew_points: \n{dew_pt}\n')
 
         # Wind barbs
         u_winds, v_winds = retrieve_winds(sounding_df, cur_time, all_pressure_levels)
@@ -359,8 +414,8 @@ def create_skew_t(input_file: str) -> None:
         # Generate plot
         fig = plt.figure(figsize=(9, 9))
         skew = SkewT(fig)
-        skew.plot(pressure, temperature, 'r', linewidth=2)
-        skew.plot(pressure, dew_pt, 'g', linewidth=2)
+        skew.plot(pressure, temperature, 'r', linewidth=2, linestyle='-')
+        skew.plot(pressure, dew_pt, 'g', linewidth=2, linestyle='-')
         skew.plot_barbs(pressure, u_winds, v_winds)
 
         # skew.plot_barbs(pressure, u_winds, v_winds)
@@ -371,16 +426,40 @@ def create_skew_t(input_file: str) -> None:
 
         # Add height labels
         decimate = 2
-        for p, t, h in zip(pressure[::decimate], temperature[::decimate], height[::decimate]):
+        for p, t, h in zip(pressure[::decimate], temperature[::decimate],
+                           height[::decimate]):
             if p >= 100:
                 # Heights adjacent to temperature curve.
                 # skew.ax.text(t, p, round(h, 0 ))
 
                 # Axis transform to move to x2 axis
-                skew.ax.text(1.08, p, round(h, 0), transform=skew.ax.get_yaxis_transform(which='tick2'))
+                skew.ax.text(1.08, p, round(h, 0),
+                             transform=skew.ax.get_yaxis_transform(which='tick2'))
                 title = "Skew T for " + input_file + " hour: " + str(cur_time)
         plt.title(title)
+        plt.show()
+
+
+def main(config_filename=None):
+    '''
+       Entry point for generating a skewT diagram from the command line.
+
+       Args:
+
+       Returns:
+
+    '''
+    if not config_filename:
+        config_file = util.read_config_from_command_line()
+    else:
+        config_file = config_filename
+    with open(config_file, 'r') as stream:
+        try:
+            yaml.load(stream, Loader=yaml.FullLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
 
 
 if __name__ == "__main__":
-    create_skew_t('./2022/al092022/sal092022_avno_doper_2022092200_diag.dat')
+    create_skew_t(
+        '/Volumes/d1/minnawin/TCDiag_Data/2022/al092022/sal092022_avno_doper_2022092200_diag.dat')
