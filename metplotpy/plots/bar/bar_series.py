@@ -12,7 +12,6 @@ Class Name: BarSeries
  """
 __author__ = 'Tatiana Burek'
 
-import re
 import warnings
 from typing import Union
 
@@ -42,7 +41,8 @@ class BarSeries(Series):
     def _create_all_fields_values_no_indy(self) -> dict:
         """
         Creates a dictionary with two keys that represents each axis
-        values - dictionaries of field values pairs of all series variables (without indy variable)
+        values - dictionaries of field values pairs of all series variables (without
+        indy variable)
         :return: dictionary with field-values pairs for each axis
         """
         all_fields_values_no_indy = {}
@@ -79,7 +79,8 @@ class BarSeries(Series):
             all_filters = []
 
             # create a set of filters for this series
-            for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
+            for field_ind, field in enumerate(
+                    self.all_fields_values_no_indy[self.y_axis].keys()):
                 filter_value = self.series_name[field_ind]
                 if utils.GROUP_SEPARATOR in filter_value:
                     filter_list = filter_value.split(GROUP_SEPARATOR)
@@ -101,7 +102,8 @@ class BarSeries(Series):
 
             # filter by provided indy
             # Duck typing is different in Python 3.6 and Python 3.8, for
-            # Python 3.8 and above, explicitly type cast the self.input_data[self.config.indy_var]
+            # Python 3.8 and above, explicitly type cast the self.input_data[
+            # self.config.indy_var]
             # Panda Series object to 'str' if the list of indy_vals are of str type.
             # This will ensure we are doing str to str comparisons.
             if isinstance(self.config.indy_vals[0], str):
@@ -118,13 +120,17 @@ class BarSeries(Series):
             # sort data by date/time - needed for CI calculations
             if 'fcst_lead' in self.series_data.columns:
                 if 'fcst_valid_beg' in self.series_data.columns:
-                    self.series_data = self.series_data.sort_values(['fcst_valid_beg', 'fcst_lead'])
+                    self.series_data = self.series_data.sort_values(
+                        ['fcst_valid_beg', 'fcst_lead'])
                 if 'fcst_valid' in self.series_data.columns:
-                    self.series_data = self.series_data.sort_values(['fcst_valid', 'fcst_lead'])
+                    self.series_data = self.series_data.sort_values(
+                        ['fcst_valid', 'fcst_lead'])
                 if 'fcst_init_beg' in self.series_data.columns:
-                    self.series_data = self.series_data.sort_values(['fcst_init_beg', 'fcst_lead'])
+                    self.series_data = self.series_data.sort_values(
+                        ['fcst_init_beg', 'fcst_lead'])
                 if 'fcst_init' in self.series_data.columns:
-                    self.series_data = self.series_data.sort_values(['fcst_init', 'fcst_lead'])
+                    self.series_data = self.series_data.sort_values(
+                        ['fcst_init', 'fcst_lead'])
             else:
                 if 'fcst_valid_beg' in self.series_data.columns:
                     self.series_data = self.series_data.sort_values(['fcst_valid_beg'])
@@ -160,14 +166,16 @@ class BarSeries(Series):
             # look for the data with the series name value in the input data frame
             # it could be there if agg or summary statistic logic was applied
             for field in self.all_fields_values_no_indy[self.y_axis]:
-                self.series_data = self.input_data.loc[self.input_data[field] == series_name_str]
+                self.series_data = self.input_data.loc[
+                    self.input_data[field] == series_name_str]
                 if len(self.series_data) > 0:
                     break
 
             # print a message if needed for inconsistent beta_values
             self._check_beta_value()
 
-            # check if the input frame already has derived series ( from calculation agg stats )
+            # check if the input frame already has derived series ( from calculation
+            # agg stats )
             if len(self.series_data) == 0:
                 # no data with with the series name value was found
                 # - calculate derived statistic for the each bar
@@ -177,36 +185,26 @@ class BarSeries(Series):
 
         # for each point calculate plot statistic
 
-        # if the indy_val is a threshold, separate the number from the thresholding operators to
+        # if the indy_val is a threshold, separate the number from the thresholding
+        # operators to
         # correctly collect the point_stat values.
-        is_threshold = util.is_threshold_value(self.config.indy_vals)
+        is_threshold, is_percent_thresh = util.is_threshold_value(
+            self.config.indy_vals)
 
         operators = []
         for cur_indy in self.config.indy_vals:
-            # treat the cur_indy as comprised of two groups, one
-            # for the operator and the other for the value (which can be a
-            # negative value)
-            match = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*([+-]?([0-9]*[.])?[0-9]+)', cur_indy)
-            if match:
-                operators.append(match.group(1))
-                value = float(match.group(3))
-                if isinstance(value, int):
-                    indy = int(value)
-                elif isinstance(value, float):
-                    indy = float(value)
+            # Assign the point_data based on whether the indy var is a threshold
+            if is_threshold:
+                point_data = self.series_data.loc[
+                    self.series_data[self.config.indy_var] == cur_indy]
             else:
                 # not a threshold
                 if utils.is_string_integer(cur_indy):
                     indy = int(cur_indy)
-                elif utils.is_string_float(cur_indy):
+                elif utils.is_string_strictly_float(cur_indy):
                     indy = float(cur_indy)
-
-            # Assign the point_data based on whether the indy var is a threshold
-            if is_threshold:
-                point_data = self.series_data.loc[self.series_data[self.config.indy_var] == cur_indy]
-            else:
-                point_data = self.series_data.loc[self.series_data[self.config.indy_var] == indy]
-
+                point_data = self.series_data.loc[
+                    self.series_data[self.config.indy_var] == indy]
             if len(point_data) > 0:
                 # calculate point stat
                 point_stat = self._calc_point_stat(point_data['stat_value'].tolist())
@@ -230,15 +228,18 @@ class BarSeries(Series):
         # calculate point stat
         if self.config.plot_stat == 'MEAN':
             with warnings.catch_warnings():
-                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                warnings.filterwarnings(action='ignore',
+                                        message='All-NaN slice encountered')
                 point_stat = np.nanmean(data)
         elif self.config.plot_stat == 'MEDIAN':
             with warnings.catch_warnings():
-                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                warnings.filterwarnings(action='ignore',
+                                        message='All-NaN slice encountered')
                 point_stat = np.nanmedian(data)
         elif self.config.plot_stat == 'SUM':
             with warnings.catch_warnings():
-                warnings.filterwarnings(action='ignore', message='All-NaN slice encountered')
+                warnings.filterwarnings(action='ignore',
+                                        message='All-NaN slice encountered')
                 point_stat = np.nansum(data)
         else:
             point_stat = None
@@ -249,7 +250,8 @@ class BarSeries(Series):
                                   series_data_1: DataFrame,
                                   series_data_2: DataFrame) -> None:
         """
-        Validates if both DataFrames have the same fcst_valid_beg values and if it is TRUE
+        Validates if both DataFrames have the same fcst_valid_beg values and if it is
+        TRUE
         Calculates derived statistic for the each bar based on data from the 1st
         and 2nd data frames
         For example, if the operation is 'DIFF' the diferensires between values from
@@ -277,38 +279,47 @@ class BarSeries(Series):
             if 'fcst_lead' in stats_indy_1.columns:
                 if 'fcst_valid_beg' in stats_indy_1.columns:
                     unique_dates = \
-                        stats_indy_1[['fcst_valid_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                        stats_indy_1[['fcst_valid_beg', 'fcst_lead',
+                                      'stat_name']].drop_duplicates().shape[0]
                 elif 'fcst_valid' in stats_indy_1.columns:
                     unique_dates = \
-                        stats_indy_1[['fcst_valid', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                        stats_indy_1[['fcst_valid', 'fcst_lead',
+                                      'stat_name']].drop_duplicates().shape[0]
                 elif 'fcst_init_beg' in stats_indy_1.columns:
                     unique_dates = \
-                        stats_indy_1[['fcst_init_beg', 'fcst_lead', 'stat_name']].drop_duplicates().shape[0]
+                        stats_indy_1[['fcst_init_beg', 'fcst_lead',
+                                      'stat_name']].drop_duplicates().shape[0]
                 else:
                     unique_dates = \
-                        stats_indy_1[['fcst_init', 'fcst_lead', 'stat_name"']].drop_duplicates().shape[0]
+                        stats_indy_1[['fcst_init', 'fcst_lead',
+                                      'stat_name"']].drop_duplicates().shape[0]
             else:
                 if 'fcst_valid_beg' in stats_indy_1.columns:
                     unique_dates = \
-                        stats_indy_1[['fcst_valid_beg', 'stat_name']].drop_duplicates().shape[0]
+                        stats_indy_1[
+                            ['fcst_valid_beg', 'stat_name']].drop_duplicates().shape[0]
                 elif 'fcst_valid' in stats_indy_1.columns:
                     unique_dates = \
-                        stats_indy_1[['fcst_valid', 'stat_name']].drop_duplicates().shape[0]
+                        stats_indy_1[
+                            ['fcst_valid', 'stat_name']].drop_duplicates().shape[0]
                 elif 'fcst_init_beg' in stats_indy_1.columns:
                     unique_dates = \
-                        stats_indy_1[['fcst_init_beg', 'stat_name']].drop_duplicates().shape[0]
+                        stats_indy_1[
+                            ['fcst_init_beg', 'stat_name']].drop_duplicates().shape[0]
                 else:
                     unique_dates = \
-                        stats_indy_1[['fcst_init', 'stat_name"']].drop_duplicates().shape[0]
+                        stats_indy_1[
+                            ['fcst_init', 'stat_name"']].drop_duplicates().shape[0]
             if stats_indy_1.shape[0] != unique_dates:
                 raise ValueError(
                     'Derived curve can\'t be calculated. '
                     'Multiple values for one valid date/fcst_lead')
 
             # data should be sorted sorted  by fcst_init_beg !!!!!
-            stats_values = utils.calc_derived_curve_value(stats_indy_1['stat_value'].tolist(),
-                                                          stats_indy_2['stat_value'].tolist(),
-                                                          operation)
+            stats_values = utils.calc_derived_curve_value(
+                stats_indy_1['stat_value'].tolist(),
+                stats_indy_2['stat_value'].tolist(),
+                operation)
             stats_indy_1 = stats_indy_1.drop(columns=['stat_value'])
             stats_indy_1['stat_value'] = stats_values
 
