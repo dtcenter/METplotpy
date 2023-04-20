@@ -1,0 +1,38 @@
+#  Settings for skew-T diagram
+
+# Input and output file information
+input_directory: '/Volumes/d1/minnawin/TCDiag_Data/2022'
+input_file_extension: '.dat'
+
+output_directory: '/Volumes/d1/minnawin/feature_337_tcdiag_skewt'
+
+
+# Turn on/off displaying features on the diagram
+display_dry_adiabats: True
+display_moist_adiabats: True
+display_mixing_lines: True
+display_windbarbs: True
+display_levels: True
+
+# Display levels in hPa select True for one or the other.
+levels_adjacent_to_temps: True
+levels_along_y2_axis: False
+show_units: True
+
+# Control the density of windbarbs (skip the nth wind barb value)
+decimate_barbs: 2
+
+# figure size in pixels
+figure_size_width: 9
+figure_size_height: 9
+
+
+
+# Appearance of Temperature and dewpoint lines
+temp_line_color: red
+temp_line_style: '-'
+temp_line_thickness: 2
+
+dewpt_line_color: green
+dewpt_line_style: '-'
+dewpt_line_thickness: 2
