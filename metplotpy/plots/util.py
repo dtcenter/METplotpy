@@ -1,13 +1,12 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2020
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 import argparse
 
 """
@@ -15,10 +14,11 @@ import argparse
 """
 __author__ = 'Minna Win'
 
+import re
 import matplotlib
 import numpy as np
 from typing import Union
-
+import pandas as pd
 from plotly.graph_objects import Figure
 
 COLORSCALES = {
@@ -188,3 +188,97 @@ def abline(x_value: float, intercept: float, slope: float) -> float:
     :return: y value
     """
     return slope * x_value + intercept
+
+
+def is_threshold_value(values: Union[pd.core.series.Series, list]) -> bool:
+    """
+    Determines if a pandas Series of values are threshold values (e.g. '>=1', '<5.0', '>21')
+
+    Args:
+       @param values:  pandas Series of independent variables comprising the x-axis
+
+    Returns:
+    A tuple of boolean values:
+    True if any of these values is a threshold (ie. operator and number) and True if these are mixed threshold
+    (==SFP50,==FBIAS1, etc. ). False otherwise.
+
+    """
+
+    thresh_ctr = 0
+    percent_thresh_ctr = 0
+    is_percent_thresh = False
+    is_thresh = False
+    # Check all the threshold values, there may be some threshold values that do not
+    # have an equality operator when equality is implied.
+    for cur_value in values:
+        match_pct = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*(SFP|SOP|SCP|USP|CDP|FBIAS)(\s)*([+-]?([0-9]*[.])?[0-9]+)',
+                             str(cur_value))
+        match_thresh = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*([+-]?([0-9]*[.])?[0-9]+)',
+                                str(cur_value))
+        if match_pct:
+            # This is a percent threshold, with values like '==FBIAS1'.
+            percent_thresh_ctr += 1
+        elif match_thresh:
+            thresh_ctr += 1
+
+    if thresh_ctr >= 1:
+        is_thresh = True
+    if percent_thresh_ctr >= 1:
+        is_percent_thresh = True
+
+    return is_thresh, is_percent_thresh
+
+
+def sort_threshold_values(thresh_values: pd.core.series.Series) -> list:
+    """
+    Sort the threshold values based on operator and numerical value
+
+    Args:
+        @param thresh_values: a pandas Series of threshold values (operator + number)
+
+    Return:
+       sorted_thresholds: A list of threshold values as strings (operator+numerical value)
+    """
+
+    operators = []
+    values = []
+    for cur_val in thresh_values:
+        # treat the thresh value as comprised of two groups, one
+        # for the operator and the other for the value (which can be a
+        # negative value)
+        match = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*([+-]?([0-9]*[.])?[0-9]+)', str(cur_val))
+        if match:
+            operators.append(match.group(1))
+            value = float(match.group(3))
+            values.append(value)
+        else:
+            # This is a bare number (float or int)
+            operators.append(None)
+            values.append(float(cur_val))
+
+    # Apply weights to the operators
+    wt_maps = {'<': 1, '<=': 2, '==': 3, '>=': 4, '>': 5}
+    wts = []
+
+    for operator in operators:
+        # assign weight for == if no
+        # operator is indicated, assuming
+        # that a fcst_thresh of 5 is the same as
+        # ==5
+        # otherwise, assign the appropriate weight to
+        # the operator
+        if operator is None:
+            wts.append(3)
+        else:
+            wts.append(wt_maps[operator])
+
+    # Create a pandas dataframe to use the ability to sort by multiple columns
+    thresh_dict = {'thresh': thresh_values, 'thresh_values': values, 'op_wts': wts}
+    df = pd.DataFrame(thresh_dict)
+
+    # cols is the list of columns upon which we should sort
+    twocols = ['thresh_values', 'op_wts']
+    sorted_val_wt = df.sort_values(by=twocols, inplace=False, ascending=True, ignore_index=True)
+
+    # now the dataframe has the obs_thresh values sorted appropriately
+    return sorted_val_wt['thresh']

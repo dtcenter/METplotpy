@@ -1,5 +1,7 @@
-import pytest
 import os
+
+import pytest
+
 from metplotpy.plots.bar import bar
 # from metcalcpy.compare_images import CompareImages
 
@@ -47,13 +49,14 @@ def cleanup():
 
 
 @pytest.mark.parametrize("test_input, expected",
-                         (["./bar_expected.png", True],["./bar.png", True],["./bar.points1", True]))
-def test_files_exist( setup, test_input, expected):
+                         (["./bar_expected.png", True], ["./bar.png", True], ["./bar.points1", True]))
+def test_files_exist(setup, test_input, expected):
     """
         Checking that the plot and data files are getting created
     """
     assert os.path.isfile(test_input) == expected
     cleanup()
+
 
 def test_no_nans_in_points_file(setup):
     """
@@ -117,8 +120,8 @@ def test_none_data_images_match(setup_nones):
 
 
 @pytest.mark.parametrize("test_input, expected",
-                         (["./bar_points1.png", True],["./intermed_files/bar.points1", True]))
-def test_point_and_plot_files_exist( test_input, expected):
+                         (["./bar_points1.png", True], ["./intermed_files/bar.points1", True]))
+def test_point_and_plot_files_exist(test_input, expected):
     """
         Checking that the plot and (specified location) intermediate file are getting created
     """
@@ -133,7 +136,6 @@ def test_point_and_plot_files_exist( test_input, expected):
     # Invoke the command to generate a Bar plot based on
     # the custom_bar.yaml custom config file.
     bar.main(custom_config_filename)
-
 
     assert os.path.isfile(test_input) == expected
     # remove the .png and .points files
@@ -150,9 +152,10 @@ def test_point_and_plot_files_exist( test_input, expected):
         # don't exist.  Ignore.
         pass
 
+
 @pytest.mark.parametrize("test_input, expected",
-                         (["./bar_defaultpoints1.png", True],["./bar.points1", True]))
-def test_point_and_plot_files_exist( test_input, expected):
+                         (["./bar_defaultpoints1.png", True], ["./bar.points1", True]))
+def test_point_and_plot_files_exist(test_input, expected):
     """
         Checking that the plot and (specified location) intermediate file are getting created
     """
@@ -176,3 +179,35 @@ def test_point_and_plot_files_exist( test_input, expected):
         # Typically when files have already been removed or
         # don't exist.  Ignore.
         pass
+
+
+
+@pytest.mark.skip("fails on linux host machines")
+def test_threshold_plotting():
+    """
+      Verify that the bar plot using data with thresholds is correct.
+
+    """
+
+    # Cleanup the plotfile and point1 output file from any previous run
+    cleanup()
+    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
+    # the config directory containing all the default config files.
+    os.environ['METPLOTPY_BASE'] = "../../"
+    custom_config_filename = "threshold_bar.yaml"
+
+    # Invoke the command to generate a Bar plot based on
+    # the custom_bar.yaml custom config file.
+    bar.main(custom_config_filename)
+
+    comparison = CompareImages('./expected_threshold.png', './threshold_bar.png')
+    assert comparison.mssim == 1
+    try:
+        path = os.getcwd()
+        plot_file = 'threshold_bar.png'
+        os.remove(os.path.join(path, plot_file))
+    except OSError as e:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass
+
