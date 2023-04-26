@@ -4,29 +4,40 @@
 
 
 # Input and output file information
-input_directory: '/Volumes/d1/minnawin/TCDiag_Data/2022'
+input_directory: '/Volumes/d1/minnawin/TCDiag_Data/2022/al092022'
 input_file_extension: '.dat'
 output_directory: '/Volumes/d1/minnawin/feature_337_tcdiag_skewt'
 
+
+# Log level: DEBUG, INFO, WARNING, ERROR
+log_level: INFO
+log_directory: '/Volumes/d1/minnawin/feature_337_tcdiag_skewt/logs'
+log_filename: 'tc_diags_skewt.log'
+
 # Sounding hours of interest. If all_sounding_hours is set to False, then the
 # list of hours from sounding_hours_of_interest will be used.
-all_sounding_hours: True
-sounding_hours_of_interest: [0, 6, 12, 18]
+all_sounding_hours: False
+sounding_hours_of_interest: [0, 6]
 
 # Turn on/off displaying features on the diagram
 display_dry_adiabats: True
 display_moist_adiabats: True
 display_mixing_lines: True
 display_windbarbs: True
-display_levels: True
+display_levels: False
 
 # Display levels in hPa select True for one or the other.
 levels_adjacent_to_temps: True
 levels_along_y2_axis: False
 show_units: True
 
-# Control the density of windbarbs (skip the nth wind barb value)
+# Control the density of windbarbs and levels (eg. skip the nth value)
+
+# Set to 1 if no decimation to be performed.
 decimate_barbs: 2
+
+# Level labels along x-axis (if False, then labels will be along temperature curve).
+level_labels_along_y2-axis: True
 
 # figure size in pixels
 figure_size_width: 9
@@ -40,3 +51,8 @@ temp_line_thickness: 2
 dewpt_line_color: green
 dewpt_line_style: '-'
 dewpt_line_thickness: 2
+
+# Set x-axis limits (temps) by position to "crop out" irrelevant areas.
+set_x_axis_limits: True
+x_axis_min: -50
+x_axis_max: 50
