@@ -1,0 +1,68 @@
+Instructions for generating a Skew T-log P diagram using Metpy with Matplotlib with TC Diag data on
+casper:
+
+casper:/glade/work/jvigh/HFIP-EnsRI/data_output/DIAGNOSTICS/TCDIAG
+
+
+
+1) Create the appropriate Python environment
+   - change to bash shell if you are not already working in bash
+   - tcdiag_env.yaml is in the directory $METPLOTPY_BASE/METplotpy/metplotpy/plots/skew_t
+   - run the following command:
+        conda env create -f tcdiag_env.yaml
+
+        (if you don't have conda in your path, you may have to indicate the full path to conda)
+        This may take a few minutes to complete.
+
+   - run the following to activate the conda environment:
+     conda activate tcdiag_env
+
+2) Update the following in the skew_t.yaml file:
+   input_directory
+   input_file_extension  (if the file extension has changed from .dat)
+   output_directory
+   log_directory
+   all_sounding_hours to True if you want to generate plots for all the sounding hour data, False otherwise
+   sounding_hours_of_interest  provide a list enclosed in square brackets of the sounding hours of interest
+
+Customizations:
+3) You can customize the appearance of the temperature and dewpoint lines:
+   temp_line_color: red
+   temp_line_style: '-'
+   temp_line_thickness: 2
+
+   dewpt_line_color: green
+   dewpt_line_style: '-'
+   dewpt_line_thickness: 2
+
+4) Set the size of the plot (in inches)
+   figure_size_width
+   figure_size_height
+
+5) Modify the density of level and wind barbs by setting decimation:
+   If no decimation, then set to 1
+   decimate_barbs
+
+6) Position the level labels (in meters) along the temperature curve or the y2 axis:
+level_labels_along_y2-axis True if along y2 axis, False if along the temperature curve
+
+7) Turn on/off plotting of adiabat lines, mixing line, etc. by setting to False:
+display_dry_adiabats: True
+display_moist_adiabats: True
+display_mixing_lines: True
+display_windbarbs: True
+
+8) Determine the extent of the x-axis
+set_x_axis_limits if True, then set min and max values
+x_axis_min: -50
+x_axis_max: 50
+
+==============================
+To generate the skew T diagrams
+===============================
+cd to $METPLOTPY_BASE/METplotpy/metplotpy/plots/skew_t
+
+where $METPLOTPY is the directory where you saved the METplotpy source code.
+
+run the following from the command line:
+python skew_t.py skew_t.yaml
