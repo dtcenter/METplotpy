@@ -19,6 +19,8 @@ import yaml
 
 from metplotpy.plots import util
 
+logger = logging.getLogger(__name__)
+
 """
   Generate a skew T-log P diagram from TC Diag output
   Currently supports reading in TC Diag ASCII.
@@ -49,11 +51,11 @@ def extract_sounding_data(input_file):
 
     # Now extract the lines that are in the SOUNDING section.  The first line
     # contains the pressure levels in mb.
-    pressure_levels_row: list = data[start_line + 2: start_line + 3]
+    pressure_levels_row:list = data[start_line + 2: start_line + 3]
     # Remove the nlevel and nlevel values from the list
     only_pressure_levels = pressure_levels_row[0].split()
     pressure_levels = only_pressure_levels[3:]
-    sounding_data: list = data[start_line + 2: end_line - 1]
+    sounding_data:list = data[start_line + 2: end_line - 1]
 
     # Save the sounding data into a text file, which will then be converted into a
     # pandas dataframe.
@@ -450,8 +452,7 @@ def create_skew_t(input_file: str, config: dict) -> None:
      Return:
            None, generate plots as png files in the specified output file directory.
     '''
-
-    logging.info(' Creating skew T plots for input file %s ', input_file)
+    logger.info(' Creating skew T plots for input file %s ', input_file)
     sounding_df, plevs = extract_sounding_data(input_file)
 
     # For each hour of available sounding data, generate a skew T plot.
@@ -554,8 +555,6 @@ def create_skew_t(input_file: str, config: dict) -> None:
         # the data file name, then replacing the datat file extension
         # with '.png'.
 
-
-
         # Create the plot files in the output directory specified in the config
         # file.
         output_dir = config['output_directory']
@@ -564,11 +563,15 @@ def create_skew_t(input_file: str, config: dict) -> None:
         except FileExistsError:
             # Ignore if file/diretory already exists, this is OK.
             pass
-        filename_only, _ = os.path.splitext(input_file)
+        full_filename_only, _ = os.path.splitext(input_file)
+        filename_only = os.path.basename(full_filename_only)
         renamed = filename_only + "_" + cur_time + "_hr.png"
-        plt.savefig(renamed)
+        plot_file = os.path.join(output_dir, renamed)
+        logging.info('saving file %s', plot_file)
 
-        plt.show()
+        plt.savefig(plot_file)
+
+        # plt.show()
 
 
 def main(config_filename=None):
@@ -598,19 +601,29 @@ def main(config_filename=None):
                 # If directory already exists, this is OK.  Continue.
                 pass
 
-            logging.basicConfig(filename=log_full_path, filemode='w',
-                                format='%(name)s - %(levelname)s - (message)s ')
-
             log_level = config['log_level']
             if log_level == 'DEBUG':
-                logging.basicConfig(level=logging.DEBUG)
+                logging.basicConfig(filename=log_full_path, level=logging.DEBUG,
+                                    format='%(asctime)s||%(levelname)s||%('
+                                           'funcName)s||%('
+                                           'message)s',
+                                    filemode='w')
             elif log_level == 'INFO':
-                logging.basicConfig(level=logging.INFO)
+                logging.basicConfig(filename=log_full_path, level=logging.INFO,
+                                    format='%(asctime)s||%(levelname)s||%('
+                                           'funcName)s||%(message)s',
+                                    filemode='w')
             elif log_level == 'WARNING':
-                logging.basicConfig(level=logging.WARNING)
+                logging.basicConfig(filename=log_full_path, level=logging.WARNING,
+                                    format='%(asctime)s||%(levelname)s||%('
+                                           'funcName)s||%(message)s',
+                                    filemode='w')
             else:
                 # log_level == 'ERROR'
-                logging.basicConfig(level=logging.ERROR)
+                logging.basicConfig(filename=log_full_path, level=logging.ERROR,
+                                    format='%(asctime)s||%(levelname)s||%('
+                                           'funcName)s||%(message)s',
+                                    filemode='w')
 
             # Get the list of input files to visualize.
             input_dir = config['input_directory']
