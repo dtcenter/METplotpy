@@ -6,7 +6,11 @@ on:
       - develop
     paths-ignore:
       - 'docs/**'
-
+      - '.github/pull_request_template.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '**/README.md'
+      - '**/LICENSE.md'
+      
 jobs:
   trigger_metplus:
     name: Trigger METplus testing workflow
