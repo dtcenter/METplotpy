@@ -184,6 +184,9 @@ class BarConfig(Config):
         stat_to_plot = self.get_config_value('plot_stat').upper()
 
         if stat_to_plot not in accepted_stats:
+            self.logger.error(f"ValueError: An unsupported statistic was set for the "
+                              f"plot_stat setting: {self.plot_stat}. "
+                              f"Supported values are:sum, mean, and median. ")
             raise ValueError("An unsupported statistic was set for the plot_stat setting. "
                              " Supported values are sum, mean, and median.")
         return stat_to_plot
