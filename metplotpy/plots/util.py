@@ -7,19 +7,24 @@
 # ============================*
 
 
-import argparse
+
+
 
 """
     Collection of utility functions used by multiple plotting classes
 """
 __author__ = 'Minna Win'
 
+import argparse
+import getpass
+import logging
 import re
 import matplotlib
 import numpy as np
 from typing import Union
 import pandas as pd
 from plotly.graph_objects import Figure
+from metplotpy.plots.context_filter import ContextFilter
 
 COLORSCALES = {
     'green_red': ['#E6FFE2', '#B3FAAD', '#74F578', '#30D244', '#00A01E', '#F6A1A2', '#E26667', '#C93F41', '#A42526'],
@@ -36,6 +41,7 @@ COLORSCALES = {
     'rainbow': ["#FF0000", "#FF7600", "#FFEB00", "#9DFF00", "#27FF00", "#00FF4E", "#00FFC4", "#00C4FF", "#004EFF",
                 "#2700FF", "#9D00FF", "#FF00EB", "#FF0076"]
 }
+
 
 
 def read_config_from_command_line():
@@ -140,8 +146,8 @@ def pretty(low, high, number_of_intervals) -> Union[np.ndarray, list]:
     if number_of_intervals == 1:
         return [-1, 0]
 
-    range = nicenumber(high - low, False)
-    d = nicenumber(range / (number_of_intervals - 1), True)
+    num_range = nicenumber(high - low, False)
+    d = nicenumber(num_range / (number_of_intervals - 1), True)
     miny = np.floor(low / d) * d
     maxy = np.ceil(high / d) * d
     return np.arange(miny, maxy + 0.5 * d, d)
@@ -190,7 +196,7 @@ def abline(x_value: float, intercept: float, slope: float) -> float:
     return slope * x_value + intercept
 
 
-def is_threshold_value(values: Union[pd.core.series.Series, list]) -> bool:
+def is_threshold_value(values: Union[pd.core.series.Series, list]):
     """
     Determines if a pandas Series of values are threshold values (e.g. '>=1', '<5.0', '>21')
 
@@ -282,3 +288,34 @@ def sort_threshold_values(thresh_values: pd.core.series.Series) -> list:
 
     # now the dataframe has the obs_thresh values sorted appropriately
     return sorted_val_wt['thresh']
+
+
+def get_common_logger(log_level, log_filename):
+    '''
+      Args:
+         @param log_level:  The log level
+         @param log_filename: The full path to the log file + filename
+      Returns:
+         common_logger: the logger common to all the METplotpy modules that are
+                        currently in use by a plot type.
+    '''
+
+    # Supported log levels.
+    log_levels = {'DEBUG': logging.DEBUG, 'INFO':logging.INFO,
+                 'WARNING':logging.WARNING, 'ERROR':logging.ERROR,
+                 'CRITICAL':logging.CRITICAL}
+
+    common_logger = logging.getLogger("metplotpy_log")
+
+    logging.basicConfig(level=log_levels[log_level],
+                        format='%(asctime)s||User:%('
+                               'user)s||%(funcName)s|| [%(levelname)s]: %('
+                               'message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S',
+                        filename=log_filename,
+                        filemode='w')
+    f = ContextFilter()
+    common_logger.addFilter(f)
+
+
+    return common_logger
