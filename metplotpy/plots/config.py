@@ -19,6 +19,7 @@ import itertools
 from typing import Union
 
 import metcalcpy.util.utils as utils
+import metplotpy.plots.util
 from . import constants
 
 
@@ -30,6 +31,12 @@ class Config:
     def __init__(self, parameters):
 
         self.parameters = parameters
+
+        # Logging
+        self.log_filename = self.get_config_value('log_filename')
+        self.log_level = self.get_config_value('log_level')
+        self.logger = metplotpy.plots.util.get_common_logger(self.log_level,
+                                                             self.log_filename)
 
         #
         # Configuration settings that apply to the plot
