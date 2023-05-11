@@ -13,7 +13,7 @@ class ContextFilter(logging.Filter):
     def filter(self, record):
        '''
          Args:
-           record: data struction containing the user information.
+           @param record: data struction containing the user information.
          Returns: True when the record is created
        '''
 
