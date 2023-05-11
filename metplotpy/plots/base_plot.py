@@ -15,11 +15,15 @@ Class Name: base_plot.py
 __author__ = 'Tatiana Burek'
 
 import os
+import logging
 import numpy as np
 import yaml
 from typing import Union
 
+import metplotpy.plots.util
 from .config import Config
+from metplotpy.plots.context_filter import ContextFilter
+
 
 
 class BasePlot:
@@ -67,6 +71,9 @@ class BasePlot:
 
         self.figure = None
         self.remove_file()
+        self.config_obj = Config(self.parameters)
+        self.logger =  self.config_obj.logger
+
 
     def get_image_format(self):
         """Reads the image format type from user provided image name.
@@ -333,6 +340,8 @@ class BasePlot:
         Returns:
 
         """
+
+
         image_name = self.get_config_value('plot_filename')
 
         # Create the directory for the output plot if it doesn't already exist
@@ -343,10 +352,14 @@ class BasePlot:
             try:
                 self.figure.write_image(image_name)
             except FileNotFoundError:
-                print("Can't save to file " + image_name)
+                self.logger.error(f"FileNotFoundError: Cannot save to file"
+                                  f" {image_name}")
+                # print("Can't save to file " + image_name)
             except ValueError as ex:
-                print(ex)
+                self.logger.error(f"ValueError: Could not save output file.")
+                # print(ex)
         else:
+            self.logger.error(f"The figure {dirname} cannot be saved.")
             print("Oops!  The figure was not created. Can't save.")
 
     def remove_file(self):
@@ -369,6 +382,8 @@ class BasePlot:
         if self.figure:
             self.figure.show()
         else:
+            self.logger.error(f" Figure not created. Nothing to show in the "
+                              f"browser. ")
             print("Oops!  The figure was not created. Can't show")
 
     def _add_lines(self, config_obj: Config, x_points_index: Union[list, None] = None) -> None:
@@ -410,7 +425,11 @@ class BasePlot:
                                   'width': line['line_width']},
                         ))
                     except ValueError:
-                        print(f'WARNING: vertical line with position {line["position"]} can\'t be created')
+                        line_position = line["position"]
+                        self.logger.warning(f" Vertical line with position "
+                                            f"{line_position} cannot be created.")
+                        print(f'WARNING: vertical line with position '
+                              f'{line_position} can\'t be created')
                 # ignore everything else
 
             # draw lines
