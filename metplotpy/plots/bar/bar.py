@@ -12,6 +12,7 @@ Class Name: bar.py
  """
 __author__ = 'Tatiana Burek'
 
+import datetime
 import os
 import re
 from operator import add
@@ -52,25 +53,33 @@ class Bar(BasePlot):
         # the
         # config file that represents the BasePlot object (Bar).
         self.config_obj = BarConfig(self.parameters)
-
+        bar_logger = self.config_obj.logger
+        bar_logger.info(f"Start bar plot: {datetime.datetime.now()}")
         # Check that we have all the necessary settings for each series
+        bar_logger.info(f"Consistency checking of config settings for colors, "
+                        f"legends, etc.")
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            raise ValueError(
-                "The number of series defined by series_val_1 and derived curves is"
-                " inconsistent with the number of settings"
-                " required for describing each series. Please check"
-                " the number of your configuration file's plot_i,"
-                " plot_disp, series_order, user_legend,"
-                " colors settings.")
+            value_error_msg = f"ValueError: The number of series defined by series_val_1 and " \
+                              f"derived curves is inconsistent with the number of " \
+                              f"settings required for describing each series. Please " \
+                              f"check the number of your configuration file's " \
+                              f"plot_i, plot_disp, series_order, user_legend, and "\
+                              f"colors settings."
+            bar_logger.error(value_error_msg)
+            raise ValueError(value_error_msg)
+
 
         # Read in input data, location specified in config file
+        bar_logger.info(f"Begin reading input data: {datetime.datetime.now()}")
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
+            bar_logger.info(f"Performing event equalization: {datetime.datetime.now()}")
             self.input_df = calc_util.perform_event_equalization(self.parameters,
                                                                  self.input_df)
+            bar_logger.info(f"End event equalization: {datetime.datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -82,7 +91,9 @@ class Bar(BasePlot):
         # Need to have a self.figure that we can pass along to
         # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
+        bar_logger.info(f"Begin creating the figure: {datetime.datetime.now()}")
         self._create_figure()
+        bar_logger.info(f"End creating the figure: {datetime.datetime.now()}")
 
     def __repr__(self):
         """ Implement repr which can be useful for debugging this
@@ -103,6 +114,8 @@ class Bar(BasePlot):
             Returns:
 
         """
+        self.config_obj.logger.info(f"Finished reading input data: "
+                                    f"{datetime.datetime.now()}")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
                            header='infer', float_precision='round_trip')
 
@@ -522,6 +535,7 @@ def main(config_filename=None):
         # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
+        plot.config_obj.logger.info(f"Finished bar plot at {datetime.datetime.now()}")
     except ValueError as val_er:
         print(val_er)
 
