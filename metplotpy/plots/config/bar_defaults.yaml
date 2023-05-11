@@ -25,6 +25,8 @@ legend_inset:
   y: -0.25
 legend_ncol: 3
 legend_size: 0.8
+log_filename: /tmp/bar.log
+log_level: 'DEBUG'
 line_type: N/A
 list_stat_1: []
 list_stat_2: []
