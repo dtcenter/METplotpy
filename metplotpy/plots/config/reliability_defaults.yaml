@@ -64,7 +64,7 @@ list_stat_1:
 - PSTD_BASER
 - PSTD_NI
 list_stat_2: []
-log_filename: /tmp/reliability.log
+log_filename: ../reliability_diagram/reliability.log
 log_level: 'DEBUG'
 mar:
 - 8

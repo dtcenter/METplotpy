@@ -25,7 +25,7 @@ line_type: None
 list_stat_1: []
 list_stat_2: []
 
-log_filename: /tmp/box.log
+log_filename: ../box/box.log
 log_level: 'DEBUG'
 mar:
 - 8

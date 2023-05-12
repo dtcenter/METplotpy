@@ -34,7 +34,7 @@ legend_ncol: 3
 legend_size: 0.8
 line_type: None
 
-log_filename: /tmp/contour.log
+log_filename: ../contour/contour.log
 log_level: 'DEBUG'
 mar:
 - 8.0

@@ -27,7 +27,7 @@ angularaxis_ticktext:
   - 'E'
   - 'S'
   - 'W'
-log_filename: /tmp/mpr_plots.log
+log_filename: ../mpr_plot/mpr_plots.log
 log_level: 'DEBUG'
 width: 1200
 height: 7500

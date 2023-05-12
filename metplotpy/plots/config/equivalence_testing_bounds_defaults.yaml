@@ -54,7 +54,7 @@ list_stat_1:
 - ME
 list_stat_2: []
 
-log_filename: /tmp/equiv.log
+log_filename: ../equivalence_testing_bounds/equiv.log
 log_level: 'DEBUG'
 
 low_eqbound: -0.001
