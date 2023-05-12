@@ -14,7 +14,7 @@ Class Name: box.py
 
 __author__ = 'Hank Fisher, Tatiana Burek'
 
-
+from datetime import datetime
 import re
 import os
 from typing import Union
@@ -57,8 +57,12 @@ class Box(BasePlot):
         # config file that represents the BasePlot object (Box).
         self.config_obj = BoxConfig(self.parameters)
 
+        box_logger = self.logger
+        box_logger.info(f"Start bar plot at {datetime.now()}")
+
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
+        box_logger.info(f"Checking consistency of user_legends, colors, etc...")
         if not is_config_consistent:
             raise ValueError("The number of series defined by series_val_1/2 and derived curves is"
                              " inconsistent with the number of settings"
@@ -72,7 +76,9 @@ class Box(BasePlot):
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
+            box_logger.info(f"Start event equalization: {datetime.now()}")
             self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
+            box_logger.info(f"Finish event equalization: {datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -99,7 +105,11 @@ class Box(BasePlot):
             Returns:
 
         """
+        self.config_obj.logger.info(f"Begin reading input data:"
+                                  f" {datetime.now()}")
         file = self.config_obj.parameters['stat_input']
+        self.config_obj.logger.info(f"Finish reading input data:"
+                                 f" {datetime.now()}")
         return pd.read_csv(file, sep='\t', header='infer', float_precision='round_trip')
 
     def _create_series(self, input_data):
@@ -118,6 +128,8 @@ class Box(BasePlot):
 
 
         """
+        self.config_obj.logger.info(f"Begin generating series objects: "
+                                    f"{datetime.now()}")
         series_list = []
 
         # add series for y1 axis
@@ -160,11 +172,15 @@ class Box(BasePlot):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
+        self.config_obj.logger.info(f"End generating series objects: "
+                                    f"{datetime.now()}")
+
         return series_list
 
     def _create_figure(self):
         """ Create a box plot from default and custom parameters"""
-
+        self.config_obj.logger.info(f"Begin creating the figure: "
+                                    f"{datetime.now()}")
         self.figure = self._create_layout()
         self._add_xaxis()
         self._add_yaxis()
@@ -213,6 +229,9 @@ class Box(BasePlot):
 
         self.figure.update_layout(boxmode='group')
 
+        self.config_obj.logger.info(f"End creating the figure: "
+                                    f"{datetime.now()}")
+
     def _draw_series(self, series: BoxSeries) -> None:
         """
         Draws the boxes on the plot
@@ -220,6 +239,9 @@ class Box(BasePlot):
         :param series: Line series object with data and parameters
         """
 
+        self.config_obj.logger.info(f"Begin drawing the boxes on the plot for "
+                                    f"{series.series_name}: "
+                                    f"{datetime.now()}")
         # defaults markers and colors for the regular box plot
         line_color = dict(color='rgb(0,0,0)')
         fillcolor = series.color
@@ -261,6 +283,9 @@ class Box(BasePlot):
             secondary_y=series.y_axis != 1
         )
 
+        self.config_obj.logger.info(f"End drawing the boxes on the plot: "
+                                    f"{datetime.now()}")
+
     @staticmethod
     def _find_min_max(series: BoxSeries, yaxis_min: Union[float, None],
                       yaxis_max: Union[float, None]) -> tuple:
@@ -273,6 +298,8 @@ class Box(BasePlot):
         :param yaxis_max: previously calculated max value
         :return: a tuple with calculated min/max
         """
+        self.config_obj.logger.info(f"Begin finding min and max CI values: "
+                                    f"{datetime.now()}")
         # calculate series upper and lower limits of CIs
         indexes = range(len(series.series_points['dbl_med']))
         upper_range = [series.series_points['dbl_med'][i] + series.series_points['dbl_up_ci'][i]
@@ -282,6 +309,9 @@ class Box(BasePlot):
         # find min max
         if yaxis_min is None or yaxis_max is None:
             return min(low_range), max(upper_range)
+
+        self.config_obj.logger.info(f"End finding min and max CI values: "
+                                    f"{datetime.now()}")
 
         return min(chain([yaxis_min], low_range)), max(chain([yaxis_max], upper_range))
 
@@ -533,6 +563,9 @@ class Box(BasePlot):
         """
         Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
         """
+        self.config_obj.logger.info(f"Begin writing HTML file: "
+                                    f"{datetime.now()}")
+
         # is_create = self.config_obj.create_html
         if self.config_obj.create_html is True:
             # construct the file name from plot_filename
@@ -542,6 +575,9 @@ class Box(BasePlot):
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
+
+            self.config_obj.logger.info(f"End writing HTML file: "
+                                        f"{datetime.now()}")
 
     def write_output_file(self) -> None:
         """
@@ -620,6 +656,7 @@ def main(config_filename=None):
         #plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
+        plot.config_obj.logger.info(f"Finished box plot at {datetime.now()}")
     except ValueError as ve:
         print(ve)
 
