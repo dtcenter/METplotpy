@@ -14,6 +14,7 @@ Class Name: ens_ss.py
 __author__ = 'Tatiana Burek'
 
 import os
+from datetime import datetime
 import re
 import itertools
 
@@ -58,22 +59,35 @@ class EnsSs(BasePlot):
         # config file that represents the BasePlot object (EnsSs).
         self.config_obj = EnsSsConfig(self.parameters)
 
+        ens_logger = self.config_obj.logger
+        ens_logger.info(f"Start Ens_ss plot: {datetime.now()}")
+
         # Check that we have all the necessary settings for each series
+        ens_logger.info(f"Consistency checking of config settings for colors, "
+                        f"legends, etc.{datetime.now()}")
         is_config_consistent = self.config_obj._config_consistency_check()
+        ens_logger.info(f"Finished consistency checking of config settings for colors, "
+                        f"legends, etc.{datetime.now()}")
         if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val_1  is"
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check"
-                             " the number of your configuration file's plot_i,"
-                             " plot_disp, series_order, user_legend,"
-                             " colors, and series_symbols settings.")
+            value_error_msg = f"ValueError: The number of series defined by " \
+                              f"series_val_1 and " \
+                              f"derived curves is inconsistent with the number of " \
+                              f"settings required for describing each series. Please " \
+                              f"check the number of your configuration file's " \
+                              f"plot_i, plot_disp, series_order, user_legend, and " \
+                              f"colors settings."
+            ens_logger.error(value_error_msg)
+            raise ValueError(value_error_msg)
 
         # Read in input data, location specified in config file
+        ens_logger.info(f"Begin reading input data: {datetime.now()}")
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
+            ens_logger.info(f"Performing event equalization: {datetime.now()}")
             self._perform_event_equalization()
+            ens_logger.info(f"Finished event equalization: {datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -182,6 +196,9 @@ class EnsSs(BasePlot):
 
 
         """
+
+        self.config_obj.logger.info(f"Begin creating series objects: {datetime.now()}")
+
         series_list = []
 
         # add series for y1 axis
@@ -194,12 +211,18 @@ class EnsSs(BasePlot):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
+        self.config_obj.logger.info(f"Finished creating series objects:"
+                                    f" {datetime.now()}")
+
         return series_list
 
     def _create_figure(self):
         """
         Create a Ensemble spread-skill plot from defaults and custom parameters
         """
+
+        self.config_obj.logger.info(f"Begin creating the figure: {datetime.now()}")
+
         # create and draw the plot
         self.figure = self._create_layout()
         self._add_xaxis()
@@ -229,6 +252,8 @@ class EnsSs(BasePlot):
         # apply y axis limits
         self._yaxis_limits()
         self._y2axis_limits()
+
+        self.config_obj.logger.info(f"Finished creating the figure: {datetime.now()}")
 
     def _add_y2axis(self) -> None:
         """
@@ -268,6 +293,8 @@ class EnsSs(BasePlot):
 
         :param series: EnsSs series object with data and parameters
         """
+        self.config_obj.logger.info(f"Begin drawing the series on the plot:"
+                                    f" {datetime.now()}")
 
         # add the plot
         self.figure.add_trace(
@@ -307,6 +334,9 @@ class EnsSs(BasePlot):
                            ),
                 secondary_y=True
             )
+
+            self.config_obj.logger.info(f"Finished drawing the series on the plot:"
+                                        f" {datetime.now()}")
 
     def _create_layout(self) -> Figure:
         """
@@ -546,6 +576,7 @@ def main(config_filename=None):
         # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
+        plot.config_obj.logger.info(f"Finished EnsSs plot: {datetime.now()}")
     except ValueError as val_er:
         print(val_er)
 
