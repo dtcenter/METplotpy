@@ -301,6 +301,7 @@ def get_common_logger(log_level, log_filename):
     '''
 
     # Supported log levels.
+    log_level = log_level.upper()
     log_levels = {'DEBUG': logging.DEBUG, 'INFO':logging.INFO,
                  'WARNING':logging.WARNING, 'ERROR':logging.ERROR,
                  'CRITICAL':logging.CRITICAL}
