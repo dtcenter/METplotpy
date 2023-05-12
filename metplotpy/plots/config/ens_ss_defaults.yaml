@@ -31,6 +31,9 @@ legend_size: 0.8
 line_type: None
 list_stat_1: []
 list_stat_2: []
+
+log_filename: /tmp/enss_ss.log
+log_level: 'DEBUG'
 mar:
 - 8
 - 4

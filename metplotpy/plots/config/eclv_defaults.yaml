@@ -22,6 +22,8 @@ legend_inset:
 legend_ncol: 3
 legend_size: 0.8
 line_type: N/A
+log_filename: /tmp/eclv.log
+log_level: 'DEBUG'
 mar:
 - 8
 - 4

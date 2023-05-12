@@ -53,6 +53,10 @@ line_type: sl1l2
 list_stat_1:
 - ME
 list_stat_2: []
+
+log_filename: /tmp/equiv.log
+log_level: 'DEBUG'
+
 low_eqbound: -0.001
 mar:
 - 8

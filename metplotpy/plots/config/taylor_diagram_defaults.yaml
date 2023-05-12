@@ -34,6 +34,8 @@ legend_inset:
   y: -0.25
 legend_ncol: 4
 legend_size: 0.8
+log_filename: /tmp/taylor_diagram.log
+log_level: 'DEBUG'
 
 # Turn on/off plotting of specific points/series
 plot_disp:
@@ -292,14 +294,3 @@ show_signif:
   - 'False'
   - 'False'
   - 'False'
-
-
-
-
-
-
-
-
-
-
-

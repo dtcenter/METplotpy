@@ -34,6 +34,8 @@ legend_size: 0.8
 line_type: None
 
 list_stat_1: []
+log_filename: /tmp/tcmpr.log
+log_level: 'DEBUG'
 
 mar:
   l: 0 #left margin
@@ -143,5 +145,3 @@ subtitle: ''
 prefix:
 baseline_file: ./hfip_baseline.dat
 column_info_file: ./plot_tcmpr_hdr.dat
-
-
