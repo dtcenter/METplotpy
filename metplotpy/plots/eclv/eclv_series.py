@@ -1,20 +1,19 @@
 # ============================*
- # ** Copyright UCAR (c) 2022
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2022
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Class Name: EclvSeries
  """
 __author__ = 'Tatiana Burek'
 
 import math
-
+from datetime import datetime
 import numpy as np
 from scipy.stats import norm
 
@@ -41,13 +40,16 @@ class EclvSeries(LineSeries):
                dictionary with CI ,point values and number of stats as keys
         """
 
+        self.config.logger.info(f"Creating series points: {datetime.now()}")
+
         # different ways to subset data for normal and derived series
         # this is a normal series
         all_filters = []
 
         # create a set of filters for this series
 
-        for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
+        for field_ind, field in enumerate(
+                self.all_fields_values_no_indy[self.y_axis].keys()):
             filter_value = self.series_name[field_ind]
             filter_list = [filter_value]
             for i, filter_val in enumerate(filter_list):
@@ -75,9 +77,11 @@ class EclvSeries(LineSeries):
         dbl_z_val = (dbl_z + dbl_z / math.sqrt(2)) / 2
 
         for thresh in list_thresh:
-            series_points_for_thresh = {'dbl_lo_ci': [], 'dbl_med': [], 'dbl_up_ci': [], 'nstat': [], 'x_pnt': []}
+            series_points_for_thresh = {'dbl_lo_ci': [], 'dbl_med': [], 'dbl_up_ci': [],
+                                        'nstat': [], 'x_pnt': []}
             if 'thresh_i' in self.series_data.columns:
-                thresh_series_data = self.series_data.loc[self.series_data['thresh_i'] == thresh]
+                thresh_series_data = self.series_data.loc[
+                    self.series_data['thresh_i'] == thresh]
             else:
                 thresh_series_data = self.series_data
 
@@ -87,12 +91,13 @@ class EclvSeries(LineSeries):
                 unique_x_pnt_i = thresh_series_data['x_pnt_i'].unique().tolist()
             unique_x_pnt_i.sort()
 
-            #for each x_pnt_i calculate statistic and CIs
+            # for each x_pnt_i calculate statistic and CIs
             for ind_x_pnt_i, x_pnt_i in enumerate(unique_x_pnt_i):
                 if 'stat_bcl' in self.series_data.columns:
                     point_data = thresh_series_data[ind_x_pnt_i]
                 else:
-                    point_data = thresh_series_data.loc[thresh_series_data['x_pnt_i'] == x_pnt_i]
+                    point_data = thresh_series_data.loc[
+                        thresh_series_data['x_pnt_i'] == x_pnt_i]
 
                 if len(point_data) > 0:
                     # calculate point stat
@@ -101,7 +106,8 @@ class EclvSeries(LineSeries):
                     # calculate CI
                     dbl_lo_ci = 0
                     dbl_up_ci = 0
-                    series_ci = self.config.get_config_value('plot_ci')[self.idx].upper()
+                    series_ci = self.config.get_config_value('plot_ci')[
+                        self.idx].upper()
 
                     # count al values that are not non and more than 0
                     nansum = 0
@@ -112,14 +118,17 @@ class EclvSeries(LineSeries):
                     if series_ci == 'STD' and nansum > 0:
                         std_err_vals = None
                         if self.config.plot_stat == 'MEAN':
-                            std_err_vals = utils.compute_std_err_from_mean(point_data['y_pnt_i'].tolist())
-
-                        elif self.config.plot_stat == 'MEDIAN':
-                            std_err_vals = utils.compute_std_err_from_median_no_variance_inflation_factor(
+                            std_err_vals = utils.compute_std_err_from_mean(
                                 point_data['y_pnt_i'].tolist())
 
+                        elif self.config.plot_stat == 'MEDIAN':
+                            std_err_vals = \
+                                utils.compute_std_err_from_median_no_variance_inflation_factor(
+                                    point_data['y_pnt_i'].tolist())
+
                         elif self.config.plot_stat == 'SUM':
-                            std_err_vals = utils.compute_std_err_from_sum(point_data['y_pnt_i'].tolist())
+                            std_err_vals = utils.compute_std_err_from_sum(
+                                point_data['y_pnt_i'].tolist())
 
                         if std_err_vals is not None and std_err_vals[1] == 0:
                             dbl_std_err = dbl_z_val * std_err_vals[0]
@@ -129,9 +138,12 @@ class EclvSeries(LineSeries):
                     elif series_ci == 'BOOT':
                         stat_btcu = 0
                         stat_btcl = 0
-                        if 'stat_btcu' in point_data.head() and 'stat_btcl' in point_data.head():
-                            stat_btcu = self._calc_point_stat(point_data['stat_btcu'].tolist())
-                            stat_btcl = self._calc_point_stat(point_data['stat_btcl'].tolist())
+                        if 'stat_btcu' in point_data.head() and 'stat_btcl' in \
+                                point_data.head():
+                            stat_btcu = self._calc_point_stat(
+                                point_data['stat_btcu'].tolist())
+                            stat_btcl = self._calc_point_stat(
+                                point_data['stat_btcl'].tolist())
                             if stat_btcu == -9999:
                                 stat_btcu = 0
                             if stat_btcl == -9999:
@@ -143,9 +155,12 @@ class EclvSeries(LineSeries):
                     elif series_ci == 'MET_BOOT':
                         stat_bcu = 0
                         stat_bcl = 0
-                        if 'stat_bcu' in point_data.head() and 'stat_bcl' in point_data.head():
-                            stat_bcu = self._calc_point_stat(point_data['stat_bcu'].tolist())
-                            stat_bcl = self._calc_point_stat(point_data['stat_bcl'].tolist())
+                        if 'stat_bcu' in point_data.head() and 'stat_bcl' in \
+                                point_data.head():
+                            stat_bcu = self._calc_point_stat(
+                                point_data['stat_bcu'].tolist())
+                            stat_bcl = self._calc_point_stat(
+                                point_data['stat_bcl'].tolist())
                             if stat_bcu == -9999:
                                 stat_bcu = 0
                             if stat_bcl == -9999:
@@ -157,9 +172,12 @@ class EclvSeries(LineSeries):
                     elif series_ci == 'MET_PRM':
                         stat_ncu = 0
                         stat_ncl = 0
-                        if 'stat_ncu' in point_data.head() and 'stat_ncl' in point_data.head():
-                            stat_ncu = self._calc_point_stat(point_data['stat_ncu'].tolist())
-                            stat_ncl = self._calc_point_stat(point_data['stat_ncl'].tolist())
+                        if 'stat_ncu' in point_data.head() and 'stat_ncl' in \
+                                point_data.head():
+                            stat_ncu = self._calc_point_stat(
+                                point_data['stat_ncu'].tolist())
+                            stat_ncl = self._calc_point_stat(
+                                point_data['stat_ncl'].tolist())
                             if stat_ncu == -9999:
                                 stat_ncu = 0
                             if stat_ncl == -9999:
@@ -182,21 +200,29 @@ class EclvSeries(LineSeries):
                 if 'nstats' in self.series_data.columns:
                     total = sum(point_data['nstats'].tolist())
                 else:
-                    total = sum(x is not None or np.isnan(x) is False for x in point_data['y_pnt_i'])
+                    total = sum(x is not None or np.isnan(x) is False for x in
+                                point_data['y_pnt_i'])
 
                 # add number of records for thresh to the number of records for series
                 if ind_x_pnt_i < len(series_points_for_thresh['nstat']):
-                    series_points_for_thresh['nstat'][ind_x_pnt_i] = total + series_points_for_thresh['nstat'][ind_x_pnt_i]
+                    series_points_for_thresh['nstat'][ind_x_pnt_i] = \
+                        total + \
+                        series_points_for_thresh[
+                            'nstat'][
+                            ind_x_pnt_i]
                 else:
                     series_points_for_thresh['nstat'].append(total)
             series_points_results.append(series_points_for_thresh)
 
+        self.config.logger.info(f"Finished creating series points: {datetime.now()}")
         return series_points_results
 
     def _create_all_fields_values_no_indy(self) -> dict:
         """
         Creates a dictionary with two keys that represents each axis
-        values - dictionaries of field values pairs of all series variables (without indy variable)
+        values - dictionaries of field values pairs of all series variables (without
+        indy variable)
+
         :return: dictionary with field-values pairs for each axis
         """
         all_fields_values_no_indy = {}
