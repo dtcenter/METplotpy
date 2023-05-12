@@ -13,7 +13,7 @@ Class Name: BarSeries
 __author__ = 'Tatiana Burek'
 
 import warnings
-import datetime
+from datetime import datetime
 from typing import Union
 
 import numpy as np
@@ -76,7 +76,7 @@ class BarSeries(Series):
 
         self.config.logger.info(f"Calculating values for each point in "
                                 f"{self.config._get_series_val_names()}: "
-                                f"{datetime.datetime.now()}")
+                                f"{datetime.now()}")
         # different ways to subset data for normal and derived series
         if self.series_name[-1] not in utils.OPERATION_TO_SIGN.keys():
             # this is a normal series
@@ -219,7 +219,7 @@ class BarSeries(Series):
             series_points_results['nstat'].append(len(point_data['stat_value']))
 
         self.config.logger.info(f"Finished calculating values for each point: "
-                                f"{datetime.datetime.now()} ")
+                                f"{datetime.now()} ")
         return series_points_results
 
     def _calc_point_stat(self, data: list) -> Union[float, None]:
@@ -236,7 +236,7 @@ class BarSeries(Series):
                                 f"{self.config.plot_stat} and "
                                 f"{self.config.indy_var}"
                                 f"={self.config.indy_vals}:"
-                                f" {datetime.datetime.now()}")
+                                f" {datetime.now()}")
         # calculate point stat
         nan_msg = 'All-NaN slice encountered'
         if self.config.plot_stat == 'MEAN':
@@ -259,7 +259,7 @@ class BarSeries(Series):
 
         self.config.logger.info(f"Finished calculating the statistic corresponding to "
                                 f"the plot_stat config setting:"
-                                f" {datetime.datetime.now()}")
+                                f" {datetime.now()}")
         return point_stat
 
     def _calculate_derived_values(self,
@@ -281,7 +281,7 @@ class BarSeries(Series):
         """
 
         self.config.logger.info(f"Begin calculating derived values: "
-                                f"{datetime.datetime.now()}")
+                                f"{datetime.now()}")
         # for each independent value
         for indy in self.config.indy_vals:
             if utils.is_string_integer(indy):
