@@ -32,7 +32,7 @@ line_type: None
 list_stat_1: []
 list_stat_2: []
 
-log_filename: ../enss_ss/enss_ss.log
+log_filename: ../ens_ss/enss_ss.log
 log_level: 'DEBUG'
 mar:
 - 8
