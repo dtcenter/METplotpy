@@ -14,6 +14,7 @@ Class Name: equivalence_testing_bounds.py
 __author__ = 'Tatiana Burek'
 
 import os
+from datetime import datetime
 import re
 import csv
 
@@ -55,18 +56,25 @@ class EquivalenceTestingBounds(BasePlot):
         # config file that represents the BasePlot object (EquivalenceTestingBounds).
         self.config_obj = LineConfig(self.parameters)
 
+        eq_logger = self.config_obj.logger
+        eq_logger.info(f"Start equivalence testing bounds:  {datetime.now()}")
+
+
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val_1/2 and derived curves is"
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check"
-                             " the number of your configuration file's plot_i,"
-                             " plot_disp, series_order, user_legend,"
-                             " colors, and series_symbols settings.")
+            error_msg = f"The number of series defined by series_val_1/2 and derived" \
+                        f" curves is inconsistent with the number of settings"\
+                        f" required for describing each series. Please check"\
+                        f" the number of your configuration file's plot_i,"\
+                        f" plot_disp, series_order, user_legend,"\
+                        f" colors, and series_symbols settings."
+            eq_logger.error(f"ValueError: {error_msg}: {datetime.now()}")
+            raise ValueError(error_msg)
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
+        eq_logger.info(f"Finished reading input data: {datetime.now()}")
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
@@ -104,6 +112,7 @@ class EquivalenceTestingBounds(BasePlot):
             Returns:
 
         """
+        self.logger.info(f"Begin reading input data: {datetime.now()}")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
                            header='infer', float_precision='round_trip')
 
@@ -121,6 +130,8 @@ class EquivalenceTestingBounds(BasePlot):
 
 
         """
+
+        self.logger.info(f"Creating series object: {datetime.now()}")
         series_list = []
 
         # add series for y1 axis
@@ -161,12 +172,16 @@ class EquivalenceTestingBounds(BasePlot):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
+        self.logger.info(f"Finished creating series object:"
+                                    f" {datetime.now()}")
         return series_list
 
     def _create_figure(self):
         """
-        Create a Equivalence Testing Bounds plot from defaults and custom parameters
+        Create an Equivalence Testing Bounds plot from defaults and custom parameters
         """
+        self.logger.info(f"Creating the figure: {datetime.now()}")
+
         # create and draw the plot
         self.figure = self._create_layout()
         self._add_xaxis()
@@ -184,6 +199,8 @@ class EquivalenceTestingBounds(BasePlot):
                 self._draw_series(series, ind)
                 ind = ind + 1
 
+        self.logger.info(f"Finished creating the figure: {datetime.now()}")
+
     def _draw_series(self, series: LineSeries, ind: int) -> None:
         """
         Draws the formatted ETB line on the plot
@@ -192,6 +209,7 @@ class EquivalenceTestingBounds(BasePlot):
         :param x_points_index_adj: values for adjusting x-values position
         """
 
+        self.logger.info(f"Start drawing the lines on the plot: {datetime.now()}")
         ci_tost_up = series.series_points['ci_tost'][1]
         ci_tost_lo = series.series_points['ci_tost'][0]
         dif = series.series_points['dif']
@@ -248,6 +266,8 @@ class EquivalenceTestingBounds(BasePlot):
                                     'dash': 'dash'
                                     }
                               )
+
+        self.logger.info(f"Finished drawing the lines on the plot: {datetime.now()}")
 
     def _create_layout(self) -> Figure:
         """
@@ -451,6 +471,9 @@ class EquivalenceTestingBounds(BasePlot):
         """
         Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
         """
+
+        self.logger.info(f"Write html file: {datetime.now()}")
+
         if self.config_obj.create_html is True:
             # construct the fle name from plot_filename
             name_arr = self.get_config_value('plot_filename').split('.')
@@ -459,10 +482,13 @@ class EquivalenceTestingBounds(BasePlot):
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
 
+        self.logger.info(f"Finished writing html file: {datetime.now()}")
+
     def write_output_file(self) -> None:
         """
         Formats y1 and y2 series point data to the 2-dim arrays and saves them to the files
         """
+        self.logger.info(f"Write output file: {datetime.now()}")
 
         # if points_path parameter doesn't exist,
         # open file, name it based on the stat_input config setting,
@@ -502,6 +528,7 @@ class EquivalenceTestingBounds(BasePlot):
             # save points
             self._save_points(ci_tost_df.values.tolist(), filename)
 
+        self.logger.info(f"Finished writing the output file: {datetime.now()}")
 
     @staticmethod
     def _save_points(points: list, output_file: str) -> None:
@@ -559,6 +586,7 @@ def main(config_filename=None):
         #plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
+        plot.logger.info(f"Finished equivalence testing bounds: {datetime.now()}")
     except ValueError as val_er:
         print(val_er)
 

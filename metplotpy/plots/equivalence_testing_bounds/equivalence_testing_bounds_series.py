@@ -14,6 +14,7 @@ Class Name: EquivalenceTestingBoundSeries
 __author__ = 'Tatiana Burek'
 
 from typing import Union
+from datetime import datetime
 import statistics
 import math
 
@@ -52,6 +53,9 @@ class EquivalenceTestingBoundsSeries(LineSeries):
                dictionary with CI ,point values and number of stats as keys
         """
 
+        self.config.logger.info(f"Creating series points (calculating the values for "
+                                f"each point: {datetime.now()}")
+
         # different ways to subset data for normal and derived series
         if self.series_name[-1] not in utils.OPERATION_TO_SIGN.keys():
             # this is a normal series
@@ -76,6 +80,9 @@ class EquivalenceTestingBoundsSeries(LineSeries):
             # use numpy to select the rows where any record evaluates to True
             mask = np.array(all_filters).all(axis=0)
             self.series_data = self.input_data.loc[mask]
+            self.config.logger.info(
+                f"Finished calculating  series points : {datetime.now()}")
+
             return dict()
 
         # this is a derived series
@@ -120,6 +127,9 @@ class EquivalenceTestingBoundsSeries(LineSeries):
             self._calculate_tost_paired(series_data_1.reset_index(drop=True),
                                         series_data_2.reset_index(drop=True))
 
+        self.config.logger.info(f"Finished creating series points (calculating the "
+                                f"values for each point: {datetime.now()}")
+
         return self.series_data
 
     def _calculate_tost_paired(self, series_data_1: DataFrame, series_data_2: DataFrame) -> None:
@@ -134,6 +144,8 @@ class EquivalenceTestingBoundsSeries(LineSeries):
         :param series_data_2: 2nd data frame sorted  by fcst_init_beg
         """
 
+        self.config.logger.info(f"Validating dataframe fcst_valid_beg: "
+                                f"{datetime.now()}")
         all_zero_1 = all(elem is None or math.isnan(elem)
                          for elem in series_data_1['stat_value'].tolist())
         all_zero_2 = all(elem is None or math.isnan(elem)
@@ -172,3 +184,6 @@ class EquivalenceTestingBoundsSeries(LineSeries):
                                              low_eqbound, high_eqbound,
                                              self.config.get_config_value('alpha')
                                              )
+
+        self.config.logger.info(f"Finished validating dataframe fcst_valid_beg:"
+                                f" {datetime.now()}")
