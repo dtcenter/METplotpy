@@ -64,22 +64,30 @@ class Line(BasePlot):
         # config file that represents the BasePlot object (Line).
         self.config_obj = LineConfig(self.parameters)
 
+        line_logger = self.logger
+        line_logger.info(f"Begin creating the line plot: {datetime.now()}")
+
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val_1/2 and derived curves is"
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check"
-                             " the number of your configuration file's plot_ci,"
-                             " plot_disp, series_order, user_legend,"
-                             " colors, and series_symbols settings.")
+            error_msg = f"The number of series defined by series_val_1/2 and derived \
+                        curves is inconsistent with the number of settings \
+                        required for describing each series. Please check \
+                        the number of your configuration file's plot_ci, \
+                        plot_disp, series_order, user_legend\
+                        colors, and series_symbols settings."
+            self.logger.error(f"ValueError: {error_msg}: {datetime.now()}")
+            raise ValueError(error_msg)
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
-            self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
+            self.logger.info(f"Begin event equalization: {datetime.now()}")
+            self.input_df = calc_util.perform_event_equalization(self.parameters,
+                                                                 self.input_df)
+            self.logger.info(f"Finished event equalization: {datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -113,6 +121,7 @@ class Line(BasePlot):
             Returns:
 
         """
+        self.logger.info(f"Reading input data: {datetime.now()}")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
                            header='infer', float_precision='round_trip', low_memory=False)
 
