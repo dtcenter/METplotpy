@@ -1,7 +1,7 @@
 import os
 
-from plots.tcmpr_plots.line.mean.tcmpr_series_line_mean import TcmprSeriesLineMean
-from plots.tcmpr_plots.line.tcmpr_line import TcmprLine
+from metplotpy.plots.tcmpr_plots.line.mean.tcmpr_series_line_mean import TcmprSeriesLineMean
+from metplotpy.plots.tcmpr_plots.line.tcmpr_line import TcmprLine
 
 
 class TcmprLineMean(TcmprLine):

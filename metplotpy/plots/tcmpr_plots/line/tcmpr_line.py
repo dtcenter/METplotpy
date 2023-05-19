@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 
-from plots.tcmpr_plots.tcmpr import Tcmpr
-from plots.tcmpr_plots.tcmpr_series import TcmprSeries
+from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
+from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 
 
 class TcmprLine(Tcmpr):

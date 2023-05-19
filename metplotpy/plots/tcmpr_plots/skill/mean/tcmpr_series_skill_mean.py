@@ -17,7 +17,7 @@ import numpy as np
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
-from plots.tcmpr_plots.tcmpr_series import TcmprSeries
+from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 
 
 class TcmprSeriesSkillMean(TcmprSeries):

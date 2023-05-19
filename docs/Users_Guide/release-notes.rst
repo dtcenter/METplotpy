@@ -10,27 +10,51 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Release Notes
 =======================
 
-METplotpy Version 2.1.0-beta1 release notes (20220301)
+METplotpy Version 2.1.0-beta2 release notes (20230421)
+------------------------------------------------------
+  .. dropdown:: New Plots
+     None
+
+
+  .. dropdown:: Enhancements
+
+     * **Enhance the Release Notes by adding dropdown menus** (`#328 <https://github.com/dtcenter/METplotpy/issues/328>`_).
+
+  .. dropdown:: Internal
+
+     * Address Major SonarQube issues (`#43 <https://github.com/dtcenter/METplus-Internal/issues/43>`_).
+
+
+  .. dropdown:: Bugfixes
+
+     * **The CI's are oriented the wrong way in a vertical levels plot** (`#219 <https://github.com/dtcenter/METplotpy/issues/219>`_).
+     * **Plotly does not produce bar chart data when there is missing data** (`#332 <https://github.com/dtcenter/METplotpy/issues/332>`_).
+     * fix tcmpr import statements to include metplotpy reference (`#335 <https://github.com/dtcenter/METplotpy/issues/335>`_).
+     * **x-axis labeling doesn't follow the order specified in independent Var** (`#218 <https://github.com/dtcenter/METplotpy/issues/218>`_).
+
+
+
+METplotpy Version 2.1.0-beta1 release notes (20230301)
 ------------------------------------------------------
 
-* New Plots:
+  .. dropdown:: New Plots
 
-   * **Convert plot_tcmpr.R plotting to Python** (`#240 <https://github.com/dtcenter/METplotpy/issues/240>`_).
+     None
 
-* Enhancements: 
+  .. dropdown:: Enhancements
 
-   * **Upgrade to using Python 3.10.4** (`#310 <https://github.com/dtcenter/METplotpy/issues/310>`_).
+     * **Upgrade to using Python 3.10.4** (`#310 <https://github.com/dtcenter/METplotpy/issues/310>`_).
 
-* Internal:
+  .. dropdown:: Internal
 
-   * Create a figure directory (`#293 <https://github.com/dtcenter/METplotpy/issues/293>`_).
+     * Create a figure directory (`#293 <https://github.com/dtcenter/METplotpy/issues/293>`_).
 
-   * Add 'License.txt' to the METplotpy repo (`#320 <https://github.com/dtcenter/METplotpy/issues/320>`_).
+     * Add 'LICENSE.md' to the METplotpy repo (`#320 <https://github.com/dtcenter/METplotpy/issues/320>`_).
 
 
-* Bugfixes:
+  .. dropdown:: Bugfixes
 
-   * **Address Warnings from pandas in METplotpy** (`#296 <https://github.com/dtcenter/METplotpy/issues/296>`_).
+     * **Address Warnings from pandas in METplotpy** (`#296 <https://github.com/dtcenter/METplotpy/issues/296>`_).
 
 
 

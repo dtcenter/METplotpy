@@ -29,9 +29,9 @@ from metcalcpy.event_equalize import event_equalize
 from metplotpy.plots import util
 from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from plots.tcmpr_plots.tcmpr_config import TcmprConfig
-from plots.tcmpr_plots.tcmpr_series import TcmprSeries
-from plots.tcmpr_plots.tcmpr_util import init_hfip_baseline, common_member, get_dep_column
+from metplotpy.plots.tcmpr_plots.tcmpr_config import TcmprConfig
+from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
+from metplotpy.plots.tcmpr_plots.tcmpr_util import init_hfip_baseline, common_member, get_dep_column
 
 PLOTS_WITH_BASELINE = ['boxplot', 'point', 'mean', 'skill_mn']
 
@@ -558,35 +558,35 @@ def main(config_filename=None):
     for plot_type in config_obj.plot_list:
         try:
             if plot_type == 'boxplot':
-                from plots.tcmpr_plots.box.tcmpr_box import TcmprBox
+                from metplotpy.plots.tcmpr_plots.box.tcmpr_box import TcmprBox
                 plot = TcmprBox(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
             elif plot_type == 'point':
-                from plots.tcmpr_plots.box.tcmpr_point import TcmprPoint
+                from metplotpy.plots.tcmpr_plots.box.tcmpr_point import TcmprPoint
                 plot = TcmprPoint(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
             elif plot_type == 'mean':
-                from plots.tcmpr_plots.line.mean.tcmpr_line_mean import TcmprLineMean
+                from metplotpy.plots.tcmpr_plots.line.mean.tcmpr_line_mean import TcmprLineMean
                 plot = TcmprLineMean(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
             elif plot_type == 'median':
-                from plots.tcmpr_plots.line.median.tcmpr_line_median import TcmprLineMedian
+                from metplotpy.plots.tcmpr_plots.line.median.tcmpr_line_median import TcmprLineMedian
                 plot = TcmprLineMedian(config_obj, column_info, col_to_plot, common_case_data, input_df)
             elif plot_type == 'relperf':
-                from plots.tcmpr_plots.relperf.tcmpr_relperf import TcmprRelPerf
+                from metplotpy.plots.tcmpr_plots.relperf.tcmpr_relperf import TcmprRelPerf
                 plot = TcmprRelPerf(config_obj, column_info, col_to_plot, common_case_data, input_df)
             elif plot_type == 'rank':
-                from plots.tcmpr_plots.rank.tcmpr_rank import TcmprRank
+                from metplotpy.plots.tcmpr_plots.rank.tcmpr_rank import TcmprRank
                 plot = TcmprRank(config_obj, column_info, col_to_plot, common_case_data, input_df)
             elif plot_type == 'scatter':
-                from plots.tcmpr_plots.scatter.tcmpr_scatter import TcmprScatter
+                from metplotpy.plots.tcmpr_plots.scatter.tcmpr_scatter import TcmprScatter
                 plot = TcmprScatter(config_obj, column_info, col_to_plot, common_case_data, input_df)
             elif plot_type == 'skill_mn':
-                from plots.tcmpr_plots.skill.mean.tcmpr_skill_mean import TcmprSkillMean
+                from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_skill_mean import TcmprSkillMean
                 plot = TcmprSkillMean(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
             elif plot_type == 'skill_md':
-                from plots.tcmpr_plots.skill.median.tcmpr_skill_median import TcmprSkillMedian
+                from metplotpy.plots.tcmpr_plots.skill.median.tcmpr_skill_median import TcmprSkillMedian
                 plot = TcmprSkillMedian(config_obj, column_info, col_to_plot, common_case_data, input_df)
 
             plot.save_to_file()
-            plot.show_in_browser()
+            #plot.show_in_browser()
             if common_case_data is None:
                 common_case_data = plot.case_data
 

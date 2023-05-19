@@ -40,9 +40,11 @@ html_last_updated_fmt = '%c'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+# Adding 'sphinx_design' to use drop-down menus in release_notes. 
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
-              'sphinx_gallery.gen_gallery']
+              'sphinx_gallery.gen_gallery',
+              'sphinx_design']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
