@@ -1,13 +1,12 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2020
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Class Name: Hovmoeller.py
 
@@ -23,9 +22,8 @@ import metcalcpy.util.read_env_vars_in_config
 """
 Import standard modules
 """
-import os
+from datetime import datetime
 import sys
-import logging
 import yaml
 import numpy as np
 import xarray as xr
@@ -45,22 +43,27 @@ class Hovmoeller(BasePlot):
     """
     Class to create a Plotly Hovmoeller plot from a 2D data array
     """
+
     def __init__(self, parameters):
         default_conf_filename = 'hovmoeller_defaults.yaml'
 
         super().__init__(parameters, default_conf_filename)
 
-        # instantiate a HovmoellerConfig object, which holds all the necessary settings from the
+        # instantiate a HovmoellerConfig object, which holds all the necessary
+        # settings from the
         # config file that represents the BasePlot object (Hovmoeller diagram).
         self.config_obj = HovmoellerConfig(self.parameters)
 
+        self.logger.info(f"Begin hovmoeller plotting: {datetime.now()}")
+
         # Read in input data
         dataset = self.read_data_set()
-        self.time = self.ds.time.sel(time=slice(self.config_obj.date_start, self.config_obj.date_end))
+        self.time = self.ds.time.sel(
+            time=slice(self.config_obj.date_start, self.config_obj.date_end))
         self.time_str = self.get_time_str(self.time)
         self.lon = self.ds.lon
         self.data = self.lat_avg(dataset,
-            self.config_obj.lat_min, self.config_obj.lat_max)
+                                 self.config_obj.lat_min, self.config_obj.lat_max)
         self.lat_str = self.get_lat_str(
             self.config_obj.lat_min, self.config_obj.lat_max)
 
@@ -70,6 +73,7 @@ class Hovmoeller(BasePlot):
 
     def create_figure(self):
 
+        self.logger.info(f"Begin creating the figure: {datetime.now()}")
         contour_plot = go.Contour(
             z=self.data.values,
             x=self.lon,
@@ -84,8 +88,10 @@ class Hovmoeller(BasePlot):
                           lenmode='fraction')
         )
 
+        self.logger.info(f"Adding the contour plot: {datetime.now()}")
         self.figure.add_trace(contour_plot)
 
+        self.logger.info(f"Update the layout: {datetime.now()}")
         self.figure.update_layout(
             height=self.config_obj.plot_height,
             width=self.config_obj.plot_width,
@@ -95,6 +101,8 @@ class Hovmoeller(BasePlot):
             xaxis_title=self.config_obj.xaxis,
             yaxis_title=self.config_obj.yaxis,
         )
+
+        self.logger.info(f"Finished creating the figure: {datetime.now()}")
 
     def get_time_str(self, time):
         """
@@ -164,29 +172,36 @@ class Hovmoeller(BasePlot):
             Returns:
                 dataset: xarray dataset
        """
+
+        self.logger.info(f"Reading data: {datetime.now()}")
         filename_in = self.config_obj.input_data_file
         try:
-            logging.info('Opening ' + filename_in)
+            self.logger.info(f"Opening {filename_in}: {datetime.now()}")
             self.ds = xr.open_dataset(filename_in)
-        except IOError as exc:
-            logging.error('Unable to open ' + filename_in)
-            logging.error(exc)
+        except IOError:
+            self.logger.error(f"IOError: Unable to"
+                              f" open {filename_in}: {datetime.now()}")
             sys.exit(1)
-        logging.debug(self.ds)
 
         dataset = self.ds[self.config_obj.var_name]
-        logging.debug(dataset)
-        dataset = dataset.sel(time=slice(self.config_obj.date_start, self.config_obj.date_end))
+        self.logger.debug(f"Data for {self.config_obj.var_name}")
+        dataset = dataset.sel(
+            time=slice(self.config_obj.date_start, self.config_obj.date_end))
 
         dataset = dataset * self.config_obj.unit_conversion
         dataset.attrs['units'] = self.config_obj.var_units
+
+        self.logger.info(f"Finished reading input data: {datetime.now()}")
 
         return dataset
 
     def write_html(self) -> None:
         """
-        Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
+        Is needed - creates and saves the html representation of the plot WITHOUT
+        Plotly.js
         """
+
+        self.logger.info(f"Begin writing html output: {datetime.now()}")
         if self.config_obj.create_html is True:
             # construct the fle name from plot_filename
             name_arr = self.get_config_value('plot_filename').split('.')
@@ -194,6 +209,9 @@ class Hovmoeller(BasePlot):
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
+
+        self.logger.info(f"Finished writing html output: {datetime.now()}")
+
 
 def main(config_filename=None):
     """
@@ -203,7 +221,8 @@ def main(config_filename=None):
                 config file and can be overridden in the custom config file.
 
                  Args:
-                    @param config_filename: default is None, the name of the custom config file to apply
+                    @param config_filename: default is None, the name of the custom
+                    config file to apply
                 Returns:
 
 
@@ -214,9 +233,10 @@ def main(config_filename=None):
         config_file = util.read_config_from_command_line()
     else:
         config_file = config_filename
-    with open(config_file, 'r') as stream:
+    with open(config_file, 'r'):
         try:
-            # Use the METcalcpy parser to parse config files with environment variables that
+            # Use the METcalcpy parser to parse config files with environment
+            # variables that
             # look like:
             #   input_file: !ENV '${ENV_NAME}/some_input_file.nc'
             # This supports METplus hovmoeller use case.
@@ -227,8 +247,10 @@ def main(config_filename=None):
     try:
         plot = Hovmoeller(config)
         plot.save_to_file()
+        plot.logger.info(f"Finished Hovmoeller plotting: {datetime.now()}")
     except ValueError as ve:
         print(ve)
+
 
 if __name__ == "__main__":
     main()
