@@ -23,6 +23,7 @@ Import standard modules
 """
 import os
 import sys
+from datetime import datetime
 import re
 import yaml
 import xarray as xr
@@ -45,7 +46,7 @@ class Histogram_2d(BasePlot):
         default_conf_filename = 'histogram_2d_defaults.yaml'
 
         super().__init__(parameters, default_conf_filename)
-        # logging.debug(self.parameters)
+        self.logger.info(f"Begin histogram 2D plotting: {datetime.now()}")
 
         # Read in input data, location specified in config file
         self.input_file = self.get_config_value('stat_input')
@@ -53,6 +54,7 @@ class Histogram_2d(BasePlot):
         self.data = self.input_ds[self.get_config_value('var_name')]
         self.dims = self.data.dims
         self.coords = self.data.coords
+
 
         # Optional setting, indicates *where* to save the dump_points_1 file
         # used by METviewer
@@ -69,6 +71,7 @@ class Histogram_2d(BasePlot):
 
     def create_figure(self):
 
+        self.logger.info(f"Begin creating the figure: {datetime.now()}")
         if self.get_config_value('normalize_to_pdf'):
             z_data = self.pdf
         else:
@@ -90,6 +93,8 @@ class Histogram_2d(BasePlot):
             yaxis_title=self.get_config_value('yaxis_title'),
         )
 
+        self.logger.info(f"Finished creating the figure: {datetime.now()}")
+
     def save_to_file(self):
         """Saves the image to a file specified in the config file.
          Prints a message if fails
@@ -100,16 +105,20 @@ class Histogram_2d(BasePlot):
 
         """
         image_name = self.get_config_value('plot_filename')
+        self.logger.info(f"Saving plot to file {image_name}: {datetime.now()} ")
         if self.figure:
             try:
                 self.figure.write_image(image_name)
 
             except FileNotFoundError:
-                print("Can't save to file " + image_name)
-            except ValueError as ex:
-                print(ex)
+                self.logger.error(f"FileNotFoundError: Can't save to file {image_name}")
+            except ValueError:
+                self.logger.error(f"ValueError: Some other error occurred "
+                                  f"{datetime.now()}")
         else:
-            print("Oops!  The figure was not created. Can't save.")
+            self.logger.error(f"The figure was not created. Cannot save file.")
+
+        self.logger.info(f"Finished saving plot to file: {datetime.now()}")
 
     def write_output_file(self):
         """
@@ -118,7 +127,9 @@ class Histogram_2d(BasePlot):
 
         :return:
         """
-        print("No intermediate points1 file created. This plot type is not integrated into METviewer")
+        self.logger.info(f"Begin writing plot to output file: {datetime.now()}")
+        self.logger.info(f"No intermediate points1 file created. This plot type is not "
+                "integrated into METviewer: {datetime.now()}")
 
         # if points_path parameter doesn't exist,
         # open file, name it based on the stat_input config setting,
@@ -142,18 +153,23 @@ class Histogram_2d(BasePlot):
 
             # make sure this file doesn't already
             # exist, delete it if it does
+            self.logger.info(f"Check if file exists, delete if it does. "
+                             f"{datetime.now()}")
             try:
                 if os.stat(output_file).st_size == 0:
-                    fileobj = open(output_file, 'a')
+                    open(output_file, 'a')
                 else:
                     os.remove(output_file)
-            except FileNotFoundError as fnfe:
+            except FileNotFoundError:
                 # OK if no file was found
+                self.logger.info(f"FileNotFound while checking if output file exists. "
+                                 f" This is OK:{datetime.now()}")
                 pass
 
+        self.logger.info(f"Finished writing plot to output file: {datetime.now()}")
 
 
-        pass
+
 
     def _read_input_data(self):
         """
@@ -165,11 +181,14 @@ class Histogram_2d(BasePlot):
                 Returns: an xarray dataset representation of the gridded input data
 
         """
+
+        self.logger.info(f"Reading input data: {datetime.now()}")
         try:
             ds = xr.open_dataset(self.input_file)
-        except IOError as ioe:
+        except IOError:
             print("Unable to open input file")
             sys.exit(1)
+        self.logger.info(f"Finished reading input data: {datetime.now()}")
         return ds
 
 
@@ -194,6 +213,7 @@ def main(config_filename=None):
     try:
         h = Histogram_2d(docs)
         h.save_to_file()
+        h.logger.info(f"Finished generating histogram 2D plot: {datetime.now()}")
     except ValueError as ve:
         print(ve)
 
