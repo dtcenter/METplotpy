@@ -1,5 +1,5 @@
 # replace with the location and name of your choosing:
-plot_filename: ../../../test/histogram_2d/custom_tmp_z2_p500.png
+plot_filename: ./custom_tmp_z2_p500.png
 
 height: 800
 width: 1200
@@ -27,4 +27,3 @@ pdf_max: 4.0
 
 # the input data file (replace ./ with the full path)
 stat_input: ./grid_diag_temperature.nc
-
