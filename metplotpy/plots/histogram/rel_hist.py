@@ -14,6 +14,7 @@ Class Name: rel_hist.py
 __author__ = 'Tatiana Burek'
 
 import yaml
+from datetime import datetime
 
 from metplotpy.plots import util
 from metplotpy.plots.histogram.hist import Hist
@@ -29,6 +30,8 @@ class RelHist(Hist):
     series_obj='RelHistSeries'
 
     def _get_x_points(self, series: HistSeries) -> list:
+        self.hist_logger.info(f"Retrieving x points for relative frequency histogram: "
+                              f"{datetime.now()}")
         return sorted(series.series_data['i_value'].unique())
 
 
@@ -61,6 +64,8 @@ def main(config_filename=None):
         # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
+        plot.hist_logger.info(f"Finished creating the relative frequency histogram: "
+                              f"{datetime.now()}")
     except ValueError as val_er:
         print(val_er)
 

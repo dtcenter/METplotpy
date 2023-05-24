@@ -14,6 +14,7 @@ Class Name: HistSeries
 __author__ = 'Tatiana Burek'
 
 from typing import Union
+from datetime import datetime
 import numpy as np
 
 import metcalcpy.util.utils as utils
@@ -67,6 +68,7 @@ class HistSeries(Series):
         Returns:
         """
 
+        self.config.logger.info(f"Begin creating the series points: {datetime.now()}")
         all_filters = []
 
         # create a set of filters for this ser
@@ -101,6 +103,9 @@ class HistSeries(Series):
         else:
             series_points_results = self.series_data.loc[:, 'stat_value'].tolist()
 
+        self.config.logger.info(f"Finished creating the series points:"
+                                f" {datetime.now()}")
+
         return series_points_results
 
 
@@ -111,7 +116,6 @@ class RankHistSeries(HistSeries):
         elements
 
     """
-
     sum_by_columns = ['i_value']
     stat_value = 'rank_i', 'sum'
 
@@ -123,7 +127,6 @@ class ProbHistSeries(HistSeries):
         elements
 
     """
-
     sum_by_columns = ['i_value', 'bin_size']
     stat_value = 'bin_i', 'sum'
 
@@ -135,6 +138,5 @@ class RelHistSeries(HistSeries):
         elements
 
     """
-
     sum_by_columns = ['i_value']
     stat_value = 'ens_i', 'sum'
