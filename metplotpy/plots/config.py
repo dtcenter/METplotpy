@@ -35,8 +35,6 @@ class Config:
         # Logging
         self.log_filename = self.get_config_value('log_filename')
         self.log_level = self.get_config_value('log_level')
-        self.logger = metplotpy.plots.util.get_common_logger(self.log_level,
-                                                             self.log_filename)
 
         #
         # Configuration settings that apply to the plot
