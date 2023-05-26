@@ -22,6 +22,7 @@ import pandas as pd
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
+import metplotpy.plots.util
 from ..series import Series
 
 
@@ -211,7 +212,13 @@ class BoxSeries(Series):
         :param series_data_1: 1st data frame sorted  by fcst_init_beg
         :param series_data_2: 2nd data frame sorted  by fcst_init_beg
         """
-        self.config.logger.info(f"Start calculating derived values: "
+
+        log_level = self.config.log_level
+        log_filename = self.config.log_filename
+        logger = metplotpy.plots.util.get_common_logger(log_level, log_filename)
+
+
+        logger.info(f"Start calculating derived values: "
                                 f"{datetime.now()}")
         # for each independent value
         for indy in self.config.indy_vals:
@@ -239,7 +246,7 @@ class BoxSeries(Series):
                 unique_dates = \
                     stats_indy_1[['fcst_init', 'fcst_lead', 'stat_name"']].drop_duplicates().shape[0]
             if stats_indy_1.shape[0] != unique_dates:
-                self.config.logger.error(f"ValueError:Derived curve cannot be "
+                logger.error(f"ValueError:Derived curve cannot be "
                                          f"calculated.  Multiple values for one valid "
                                          f"date/fcst_lead")
                 raise ValueError(
@@ -258,5 +265,5 @@ class BoxSeries(Series):
             else:
                 self.series_data = pd.concat([self.series_data, (stats_indy_1)], sort=False)
 
-        self.config.logger.info(f"End calculating derived values: "
+        logger.info(f"End calculating derived values: "
                                 f"{datetime.now()}")
