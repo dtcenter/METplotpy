@@ -18,6 +18,7 @@ import numpy as np
 from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
+import metplotpy.plots.util
 from ..line.line_series import LineSeries
 
 
@@ -39,8 +40,9 @@ class EclvSeries(LineSeries):
         Returns:
                dictionary with CI ,point values and number of stats as keys
         """
-
-        self.config.logger.info(f"Creating series points: {datetime.now()}")
+        logger = metplotpy.plots.util.get_common_logger(self.log_level,
+                                                        self.log_filename)
+        logger.info(f"Creating series points: {datetime.now()}")
 
         # different ways to subset data for normal and derived series
         # this is a normal series
@@ -214,7 +216,7 @@ class EclvSeries(LineSeries):
                     series_points_for_thresh['nstat'].append(total)
             series_points_results.append(series_points_for_thresh)
 
-        self.config.logger.info(f"Finished creating series points: {datetime.now()}")
+        logger.info(f"Finished creating series points: {datetime.now()}")
         return series_points_results
 
     def _create_all_fields_values_no_indy(self) -> dict:
