@@ -14,6 +14,7 @@ Class Name: performance_diagram.py
 __author__ = 'Minna Win'
 
 import os
+from datetime import datetime
 import re
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
@@ -66,6 +67,13 @@ class PerformanceDiagram(BasePlot):
         # config file.
         self.config_obj = PerformanceDiagramConfig(self.parameters)
 
+        # Logging in matplotlib plots is different from the plotly plots.  The
+        # ContextFilter cannot be used to add the username/userid to the log.
+        # Use the extra={'user':userid} in the log.xyz(msg,...) syntax instead.
+        self.logger = util.get_common_logger(self.config_obj.log_level,
+                                             self.config_obj.log_filename)
+        self.logger.info(f"Begin performance diagram: {datetime.now()}")
+
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
 
@@ -85,6 +93,8 @@ class PerformanceDiagram(BasePlot):
         # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
         self.figure = self._create_figure()
+
+        self.logger.info(f"Finished performance diagram")
 
     def _read_input_data(self):
         """
