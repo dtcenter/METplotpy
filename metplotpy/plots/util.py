@@ -7,9 +7,6 @@
 # ============================*
 
 
-
-
-
 """
     Collection of utility functions used by multiple plotting classes
 """
@@ -24,24 +21,30 @@ import numpy as np
 from typing import Union
 import pandas as pd
 from plotly.graph_objects import Figure
-from metplotpy.plots.context_filter import ContextFilter
+from metplotpy.plots.context_filter import ContextFilter as cf
 
 COLORSCALES = {
-    'green_red': ['#E6FFE2', '#B3FAAD', '#74F578', '#30D244', '#00A01E', '#F6A1A2', '#E26667', '#C93F41', '#A42526'],
-    'blue_white_brown': ['#1962CF', '#3E94F2', '#B4F0F9', '#00A01E', '#4AF058', '#C7FFC0', '#FFFFFF', '#FFE97F',
+    'green_red': ['#E6FFE2', '#B3FAAD', '#74F578', '#30D244', '#00A01E', '#F6A1A2',
+                  '#E26667', '#C93F41', '#A42526'],
+    'blue_white_brown': ['#1962CF', '#3E94F2', '#B4F0F9', '#00A01E', '#4AF058',
+                         '#C7FFC0', '#FFFFFF', '#FFE97F',
                          '#FF3A20', '#A50C0F', '#E1BFB5', '#A0786F', '#643D34'],
-    'cm_colors': ["#80FFFF", "#95FFFF", "#AAFFFF", "#BFFFFF", "#D4FFFF", "#EAFFFF", "#FFFFFF", "#FFEAFF", "#FFD5FF",
+    'cm_colors': ["#80FFFF", "#95FFFF", "#AAFFFF", "#BFFFFF", "#D4FFFF", "#EAFFFF",
+                  "#FFFFFF", "#FFEAFF", "#FFD5FF",
                   "#FFBFFF", "#FFAAFF", "#FF95FF", "#FF80FF"],
-    'topo_colors': ["#4C00FF", "#0000FF", "#004CFF", "#0099FF", "#00E5FF", "#00FF4D", "#1AFF00", "#80FF00", "#E6FF00",
+    'topo_colors': ["#4C00FF", "#0000FF", "#004CFF", "#0099FF", "#00E5FF", "#00FF4D",
+                    "#1AFF00", "#80FF00", "#E6FF00",
                     "#FFFF00", "#FFE53B", "#FFDB77", "#FFE0B3"],
-    'terrain_colors': ["#00A600", "#24B300", "#4CBF00", "#7ACC00", "#ADD900", "#E6E600", "#E7CB21", "#E9BA43",
+    'terrain_colors': ["#00A600", "#24B300", "#4CBF00", "#7ACC00", "#ADD900", "#E6E600",
+                       "#E7CB21", "#E9BA43",
                        "#EBB165", "#EDB387", "#EFBEAA", "#F0D3CE", "#F2F2F2"],
-    'heat_colors': ["#FF0000", "#FF1C00", "#FF3900", "#FF5500", "#FF7100", "#FF8E00", "#FFAA00", "#FFC600", "#FFE300",
+    'heat_colors': ["#FF0000", "#FF1C00", "#FF3900", "#FF5500", "#FF7100", "#FF8E00",
+                    "#FFAA00", "#FFC600", "#FFE300",
                     "#FFFF00", "#FFFF2A", "#FFFF80", "#FFFFD5"],
-    'rainbow': ["#FF0000", "#FF7600", "#FFEB00", "#9DFF00", "#27FF00", "#00FF4E", "#00FFC4", "#00C4FF", "#004EFF",
+    'rainbow': ["#FF0000", "#FF7600", "#FFEB00", "#9DFF00", "#27FF00", "#00FF4E",
+                "#00FFC4", "#00C4FF", "#004EFF",
                 "#2700FF", "#9D00FF", "#FF00EB", "#FF0076"]
 }
-
 
 
 def read_config_from_command_line():
@@ -136,7 +139,8 @@ def nicenumber(x, to_round):
 
 def pretty(low, high, number_of_intervals) -> Union[np.ndarray, list]:
     """
-    Compute a sequence of about n+1 equally spaced ‘round’ values which cover the range of the values in x
+    Compute a sequence of about n+1 equally spaced ‘round’ values which cover the
+    range of the values in x
     Can be used  to create axis labels or bins
     :param low: min value
     :param high: max value
@@ -198,14 +202,16 @@ def abline(x_value: float, intercept: float, slope: float) -> float:
 
 def is_threshold_value(values: Union[pd.core.series.Series, list]):
     """
-    Determines if a pandas Series of values are threshold values (e.g. '>=1', '<5.0', '>21')
+    Determines if a pandas Series of values are threshold values (e.g. '>=1', '<5.0',
+    '>21')
 
     Args:
        @param values:  pandas Series of independent variables comprising the x-axis
 
     Returns:
     A tuple of boolean values:
-    True if any of these values is a threshold (ie. operator and number) and True if these are mixed threshold
+    True if any of these values is a threshold (ie. operator and number) and True if
+    these are mixed threshold
     (==SFP50,==FBIAS1, etc. ). False otherwise.
 
     """
@@ -217,8 +223,10 @@ def is_threshold_value(values: Union[pd.core.series.Series, list]):
     # Check all the threshold values, there may be some threshold values that do not
     # have an equality operator when equality is implied.
     for cur_value in values:
-        match_pct = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*(SFP|SOP|SCP|USP|CDP|FBIAS)(\s)*([+-]?([0-9]*[.])?[0-9]+)',
-                             str(cur_value))
+        match_pct = re.match(
+            r'(\<|\<=|\==|\>=|\>)(\s)*(SFP|SOP|SCP|USP|CDP|FBIAS)(\s)*([+-]?([0-9]*['
+            r'.])?[0-9]+)',
+            str(cur_value))
         match_thresh = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*([+-]?([0-9]*[.])?[0-9]+)',
                                 str(cur_value))
         if match_pct:
@@ -243,7 +251,8 @@ def sort_threshold_values(thresh_values: pd.core.series.Series) -> list:
         @param thresh_values: a pandas Series of threshold values (operator + number)
 
     Return:
-       sorted_thresholds: A list of threshold values as strings (operator+numerical value)
+       sorted_thresholds: A list of threshold values as strings (operator+numerical
+       value)
     """
 
     operators = []
@@ -252,7 +261,8 @@ def sort_threshold_values(thresh_values: pd.core.series.Series) -> list:
         # treat the thresh value as comprised of two groups, one
         # for the operator and the other for the value (which can be a
         # negative value)
-        match = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*([+-]?([0-9]*[.])?[0-9]+)', str(cur_val))
+        match = re.match(r'(\<|\<=|\==|\>=|\>)(\s)*([+-]?([0-9]*[.])?[0-9]+)',
+                         str(cur_val))
         if match:
             operators.append(match.group(1))
             value = float(match.group(3))
@@ -284,7 +294,8 @@ def sort_threshold_values(thresh_values: pd.core.series.Series) -> list:
 
     # cols is the list of columns upon which we should sort
     twocols = ['thresh_values', 'op_wts']
-    sorted_val_wt = df.sort_values(by=twocols, inplace=False, ascending=True, ignore_index=True)
+    sorted_val_wt = df.sort_values(by=twocols, inplace=False, ascending=True,
+                                   ignore_index=True)
 
     # now the dataframe has the obs_thresh values sorted appropriately
     return sorted_val_wt['thresh']
@@ -302,11 +313,9 @@ def get_common_logger(log_level, log_filename):
 
     # Supported log levels.
     log_level = log_level.upper()
-    log_levels = {'DEBUG': logging.DEBUG, 'INFO':logging.INFO,
-                 'WARNING':logging.WARNING, 'ERROR':logging.ERROR,
-                 'CRITICAL':logging.CRITICAL}
-
-    common_logger = logging.getLogger("metplotpy_log")
+    log_levels = {'DEBUG': logging.DEBUG, 'INFO': logging.INFO,
+                  'WARNING': logging.WARNING, 'ERROR': logging.ERROR,
+                  'CRITICAL': logging.CRITICAL}
 
     logging.basicConfig(level=log_levels[log_level],
                         format='%(asctime)s||User:%('
@@ -315,8 +324,9 @@ def get_common_logger(log_level, log_filename):
                         datefmt='%Y-%m-%d %H:%M:%S',
                         filename=log_filename,
                         filemode='w')
-    f = ContextFilter()
+    mpl_logger = logging.getLogger(name='matplotlib').setLevel(logging.CRITICAL)
+    common_logger = logging.getLogger(__name__)
+    f = cf()
     common_logger.addFilter(f)
-
 
     return common_logger
