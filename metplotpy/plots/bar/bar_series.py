@@ -38,6 +38,7 @@ class BarSeries(Series):
         self.series_list = series_list
         self.series_name = series_name
         super().__init__(config, idx, input_data, y_axis)
+        self.logger = util.get_common_logger(config.log_level, config.log_filename)
 
     def _create_all_fields_values_no_indy(self) -> dict:
         """
@@ -74,7 +75,8 @@ class BarSeries(Series):
         series_data_1 = None
         series_data_2 = None
 
-        self.config.logger.info(f"Calculating values for each point in "
+        logger = util.get_common_logger(self.log_level, self.log_filename)
+        logger.info(f"Calculating values for each point in "
                                 f"{self.config._get_series_val_names()}: "
                                 f"{datetime.now()}")
         # different ways to subset data for normal and derived series
@@ -218,7 +220,8 @@ class BarSeries(Series):
             series_points_results['dbl_med'].append(point_stat)
             series_points_results['nstat'].append(len(point_data['stat_value']))
 
-        self.config.logger.info(f"Finished calculating values for each point: "
+        logger = util.get_common_logger(self.log_level, self.log_filename)
+        logger.info(f"Finished calculating values for each point: "
                                 f"{datetime.now()} ")
         return series_points_results
 
@@ -230,8 +233,8 @@ class BarSeries(Series):
         :return:  mean, median or sum of the values from the input list or
             None if the statistic parameter is invalid
         """
-
-        self.config.logger.info(f"Calculating the statistic corresponding to the "
+        logger = util.get_common_logger(self.log_level, self.log_filename)
+        logger.info(f"Calculating the statistic corresponding to the "
                                 f"plot_stat config setting "
                                 f"{self.config.plot_stat} and "
                                 f"{self.config.indy_var}"
@@ -257,7 +260,8 @@ class BarSeries(Series):
         else:
             point_stat = None
 
-        self.config.logger.info(f"Finished calculating the statistic corresponding to "
+        logger = util.get_common_logger(self.log_level, self.log_filename)
+        logger.info(f"Finished calculating the statistic corresponding to "
                                 f"the plot_stat config setting:"
                                 f" {datetime.now()}")
         return point_stat
@@ -280,7 +284,7 @@ class BarSeries(Series):
         :param series_data_2: 2nd data frame sorted  by fcst_init_beg
         """
 
-        self.config.logger.info(f"Begin calculating derived values: "
+        self.logger.info(f"Begin calculating derived values: "
                                 f"{datetime.now()}")
         # for each independent value
         for indy in self.config.indy_vals:
@@ -332,7 +336,7 @@ class BarSeries(Series):
             if stats_indy_1.shape[0] != unique_dates:
                 error_msg = "Derived curve can\'t be calculated. Multiple values" \
                             " for one valid date/fcst_lead  "
-                self.config.logger.error(f"ValueError: {error_msg}")
+                self.logger.error(f"ValueError: {error_msg}")
                 raise ValueError(error_msg)
 
             # data should be sorted sorted  by fcst_init_beg !!!!!
