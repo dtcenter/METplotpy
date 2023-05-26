@@ -24,6 +24,7 @@ from pandas import DataFrame
 import metcalcpy.util.correlation as pg
 
 import metcalcpy.util.utils as utils
+import metplotpy.plots.util
 from metcalcpy.sum_stat import calculate_statistic
 from .. import GROUP_SEPARATOR
 from ..line.line_series import LineSeries
@@ -53,7 +54,9 @@ class EquivalenceTestingBoundsSeries(LineSeries):
                dictionary with CI ,point values and number of stats as keys
         """
 
-        self.config.logger.info(f"Creating series points (calculating the values for "
+        logger = metplotpy.plots.util.get_common_logger(self.log_level,
+                                                        self.log_filename)
+        logger.info(f"Creating series points (calculating the values for "
                                 f"each point: {datetime.now()}")
 
         # different ways to subset data for normal and derived series
@@ -80,7 +83,7 @@ class EquivalenceTestingBoundsSeries(LineSeries):
             # use numpy to select the rows where any record evaluates to True
             mask = np.array(all_filters).all(axis=0)
             self.series_data = self.input_data.loc[mask]
-            self.config.logger.info(
+            logger.info(
                 f"Finished calculating  series points : {datetime.now()}")
 
             return dict()
@@ -127,7 +130,7 @@ class EquivalenceTestingBoundsSeries(LineSeries):
             self._calculate_tost_paired(series_data_1.reset_index(drop=True),
                                         series_data_2.reset_index(drop=True))
 
-        self.config.logger.info(f"Finished creating series points (calculating the "
+        logger.info(f"Finished creating series points (calculating the "
                                 f"values for each point: {datetime.now()}")
 
         return self.series_data
@@ -144,7 +147,9 @@ class EquivalenceTestingBoundsSeries(LineSeries):
         :param series_data_2: 2nd data frame sorted  by fcst_init_beg
         """
 
-        self.config.logger.info(f"Validating dataframe fcst_valid_beg: "
+        logger = metplotpy.plots.util.get_common_logger(self.log_level,
+                                                        self.log_filename)
+        logger.info(f"Validating dataframe fcst_valid_beg: "
                                 f"{datetime.now()}")
         all_zero_1 = all(elem is None or math.isnan(elem)
                          for elem in series_data_1['stat_value'].tolist())
@@ -185,5 +190,5 @@ class EquivalenceTestingBoundsSeries(LineSeries):
                                              self.config.get_config_value('alpha')
                                              )
 
-        self.config.logger.info(f"Finished validating dataframe fcst_valid_beg:"
+        logger.info(f"Finished validating dataframe fcst_valid_beg:"
                                 f" {datetime.now()}")
