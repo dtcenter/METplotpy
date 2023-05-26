@@ -72,7 +72,6 @@ class BasePlot:
         self.figure = None
         self.remove_file()
         self.config_obj = Config(self.parameters)
-        self.logger =  self.config_obj.logger
 
 
     def get_image_format(self):
