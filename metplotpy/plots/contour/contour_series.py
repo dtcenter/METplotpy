@@ -17,6 +17,8 @@ from typing import Union
 from datetime import datetime
 import numpy as np
 import warnings
+
+import metplotpy.plots.util
 from ..series import Series
 
 
@@ -32,7 +34,10 @@ class ContourSeries(Series):
                  series_name: Union[list, tuple], y_axis: int = 1):
         self.series_list = series_list
         self.series_name = series_name
+        self.logger = metplotpy.plots.util.get_common_logger(config.log_level,
+                                                             config.log_filename)
         super().__init__(config, idx, input_data, y_axis)
+
 
     def _create_all_fields_values_no_indy(self) -> dict:
         """
@@ -63,7 +68,7 @@ class ContourSeries(Series):
             None if the statistic parameter is invalid
         """
 
-        self.config.logger.info(f"Calculating the statistic: {datetime.now()}")
+        self.logger.info(f"Calculating the statistic: {datetime.now()}")
 
         # calculate point stat
         if self.config.plot_stat == 'MEAN':
@@ -80,7 +85,7 @@ class ContourSeries(Series):
                 point_stat = np.nansum(data)
         else:
             point_stat = None
-        self.config.logger.info(f"Finished calculating the statistic: {datetime.now()}")
+        self.logger.info(f"Finished calculating the statistic: {datetime.now()}")
         return point_stat
 
     def _create_series_points(self) -> dict:
@@ -94,7 +99,7 @@ class ContourSeries(Series):
                dictionary with x, y and z point values
         """
 
-        self.config.logger.info(f"Creating the series points: {datetime.now()}")
+        self.logger.info(f"Creating the series points: {datetime.now()}")
         y_real = self.config.indy_vals.copy()
         if self.config.reverse_x is True:
             y_real.reverse()
@@ -112,6 +117,6 @@ class ContourSeries(Series):
                 data = self.input_data.loc[mask]
                 z[ind_x][ind_y] = self._calc_point_stat(data['stat_value'])
 
-        self.config.logger.info(f"Finished creating the series points:"
+        self.logger.info(f"Finished creating the series points:"
                                 f" {datetime.now()}")
         return {'x': y_real, 'y': x_real, 'z': z}
