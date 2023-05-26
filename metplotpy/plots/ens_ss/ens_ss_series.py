@@ -19,6 +19,7 @@ from datetime import datetime
 import numpy as np
 
 import metcalcpy.util.utils as utils
+import metplotpy.plots.util
 from .. import GROUP_SEPARATOR
 
 from ..series import Series
@@ -37,6 +38,8 @@ class EnsSsSeries(Series):
         self.series_list = series_list
         self.series_name = series_name
         super().__init__(config, idx, input_data, y_axis)
+
+
 
     def _create_all_fields_values_no_indy(self) -> dict:
         """
@@ -68,8 +71,9 @@ class EnsSsSeries(Series):
         Returns:
                dictionary with CI ,point values and number of stats as keys
         """
-
-        self.config.logger.info(f"Begin creating the series points: {datetime.now()}")
+        ens_logger = metplotpy.plots.util.get_common_logger(self.log_level,
+                                                            self.log_filename)
+        ens_logger.info(f"Begin creating the series points: {datetime.now()}")
         # different ways to subset data for normal and derived series
         # this is a normal series
         all_filters = []
@@ -184,7 +188,7 @@ class EnsSsSeries(Series):
         series_points_results = {'spread_skill': spread_skill_values, 'mse': mse_values,
                                  'pts': pts_values}
 
-        self.config.logger.info(f"End creating the series points: {datetime.now()}")
+        ens_logger.info(f"End creating the series points: {datetime.now()}")
         return series_points_results
 
     def _aggregate_column(self, column_name: str, agg_bin_n: list) -> list:
