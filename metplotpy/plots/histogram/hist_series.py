@@ -1,13 +1,12 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2020
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Class Name: HistSeries
  """
@@ -18,6 +17,7 @@ from datetime import datetime
 import numpy as np
 
 import metcalcpy.util.utils as utils
+import metplotpy.plots.util
 from ..series import Series
 
 
@@ -42,7 +42,8 @@ class HistSeries(Series):
     def _create_all_fields_values_no_indy(self) -> dict:
         """
         Creates a dictionary with two keys that represents each axis
-        values - dictionaries of field values pairs of all ser variables (without indy variable)
+        values - dictionaries of field values pairs of all ser variables (without
+        indy variable)
         :return: dictionary with field-values pairs for each axis
         """
         all_fields_values_no_indy = {}
@@ -67,12 +68,14 @@ class HistSeries(Series):
 
         Returns:
         """
-
-        self.config.logger.info(f"Begin creating the series points: {datetime.now()}")
+        logger = metplotpy.plots.util.get_common_logger(self.log_level,
+                                                        self.log_filename)
+        logger.info(f"Begin creating the series points: {datetime.now()}")
         all_filters = []
 
         # create a set of filters for this ser
-        for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
+        for field_ind, field in enumerate(
+                self.all_fields_values_no_indy[self.y_axis].keys()):
             filter_value = self.series_name[field_ind]
             filter_list = [filter_value]
             for i, filter_val in enumerate(filter_list):
@@ -90,7 +93,8 @@ class HistSeries(Series):
         else:
             self.series_data = self.input_data
 
-        # group by i_value, ser value, calculate sums of rank_i and store them as stat_value
+        # group by i_value, ser value, calculate sums of rank_i and store them as
+        # stat_value
         columns = self.sum_by_columns.copy()
         columns.extend(self.config.series_val_names)
         self.series_data = self.series_data.groupby(columns) \
@@ -103,7 +107,7 @@ class HistSeries(Series):
         else:
             series_points_results = self.series_data.loc[:, 'stat_value'].tolist()
 
-        self.config.logger.info(f"Finished creating the series points:"
+        logger.info(f"Finished creating the series points:"
                                 f" {datetime.now()}")
 
         return series_points_results

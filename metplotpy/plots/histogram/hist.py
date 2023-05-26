@@ -64,7 +64,8 @@ class Hist(BasePlot):
             getattr(sys.modules['metplotpy.plots.histogram.hist_config'],
                     self.config_obj_name)(self.parameters)
 
-        self.hist_logger = self.logger
+        self.hist_logger = util.get_common_logger(self.get_config_value('log_level'),
+                                                  self.get_config_value('log_filename'))
         self.hist_logger.info(f"Begin [rank|probability|relative frequency] histogram:"
                               f" {datetime.now()}")
 
@@ -74,7 +75,7 @@ class Hist(BasePlot):
         is_config_consistent = self.config_obj._config_consistency_check()
         self.hist_logger.info(f"Finished with consistency check:  {datetime.now()}")
         if not is_config_consistent:
-            error_msg = f"The number of ser defined by series_val_1 is" \
+            error_msg = "The number of ser defined by series_val_1 is" \
                         " inconsistent with the number of settings" \
                         " required for describing each ser. Please check" \
                         " the number of your configuration file's " \
@@ -107,6 +108,9 @@ class Hist(BasePlot):
         self._create_figure()
 
     def _get_x_points(self, series: HistSeries) -> list:
+        '''
+             To be implemented by child classes.
+        '''
         pass
 
     def _get_dtick(self) -> Union[float, str]:
@@ -168,8 +172,6 @@ class Hist(BasePlot):
                     if input_df_ee is None:
                         input_df_ee = series_data_after_ee
                     else:
-                        # input_df_ee = input_df_ee.append(
-                        # series_data_after_ee).reindex()
                         input_df_ee = pd.concat(
                             [input_df_ee, series_data_after_ee]).reindex()
         else:
