@@ -46,6 +46,8 @@ class Histogram_2d(BasePlot):
         default_conf_filename = 'histogram_2d_defaults.yaml'
 
         super().__init__(parameters, default_conf_filename)
+        self.logger = util.get_common_logger(self.config_obj.log_level,
+                                             self.config_obj.log_filename)
         self.logger.info(f"Begin histogram 2D plotting: {datetime.now()}")
 
         # Read in input data, location specified in config file
