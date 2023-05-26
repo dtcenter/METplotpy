@@ -46,6 +46,7 @@ class Line(BasePlot):
 
     defaults_name = 'line_defaults.yaml'
 
+
     def __init__(self, parameters: dict) -> None:
         """ Creates a line plot consisting of one or more lines (traces), based on
             settings indicated by parameters.
@@ -66,6 +67,7 @@ class Line(BasePlot):
 
         self.line_logger = util.get_common_logger(self.config_obj.log_level,
                                                   self.config_obj.log_filename)
+
         self.line_logger.info(f"Begin creating the line plot: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
@@ -122,7 +124,6 @@ class Line(BasePlot):
             Returns:
 
         """
-        self.line_logger.info(f"Reading input data: {datetime.now()}")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
                            header='infer', float_precision='round_trip', low_memory=False)
 
@@ -649,7 +650,9 @@ class Line(BasePlot):
         """
         Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
         """
-        self.line_logger.info(f"Begin writing to html file: {datetime.now()}")
+        logger = util.get_common_logger(self.config_obj.log_level,
+                                        self.config_obj.log_filename)
+        logger.info(f"Begin writing to html file: {datetime.now()}")
         if self.config_obj.create_html is True:
             # construct the file name from plot_filename
             name_arr = self.get_config_value('plot_filename').split('.')
