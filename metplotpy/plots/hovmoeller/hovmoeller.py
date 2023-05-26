@@ -23,6 +23,7 @@ import metcalcpy.util.read_env_vars_in_config
 Import standard modules
 """
 from datetime import datetime
+import getpass
 import sys
 import yaml
 import numpy as np
@@ -54,7 +55,11 @@ class Hovmoeller(BasePlot):
         # config file that represents the BasePlot object (Hovmoeller diagram).
         self.config_obj = HovmoellerConfig(self.parameters)
 
-        self.logger.info(f"Begin hovmoeller plotting: {datetime.now()}")
+
+        self.logger = util.get_common_logger(self.config_obj.log_level,
+                                             self.config_obj.log_filename)
+        self.user = getpass.getuser()
+        self.logger.info('Begin hovmoeller', extra={'User':self.user}  )
 
         # Read in input data
         dataset = self.read_data_set()
