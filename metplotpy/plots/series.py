@@ -30,6 +30,8 @@ class Series:
         self.config = config
         self.idx = idx
         self.input_data = input_data
+        self.log_level = config.log_level
+        self.log_filename = config.log_filename
         self.y_axis = y_axis
         self.plot_disp = config.plot_disp[idx]
         if hasattr(config, 'plot_stat'):
