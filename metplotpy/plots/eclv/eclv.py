@@ -60,8 +60,7 @@ class Eclv(Line):
         # config file that represents the BasePlot object (Eclv).
         self.config_obj = EclvConfig(self.parameters)
 
-        self.eclv_logger = util.get_common_logger(self.config_obj.log_level,
-                                                  self.config_obj.log_filename)
+        self.eclv_logger = self.config_obj.logger
 
         self.eclv_logger.info(f"Start eclv plot: {datetime.now()}")
 

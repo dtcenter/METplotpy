@@ -60,8 +60,7 @@ class Contour(BasePlot):
         self.config_obj = ContourConfig(self.parameters)
 
 
-        self.contour_logger = util.get_common_logger(self.config_obj.log_level,
-                                                self.config_obj.log_filename)
+        self.contour_logger = self.config_obj.logger
         self.contour_logger.info(f"Start contour plot: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series

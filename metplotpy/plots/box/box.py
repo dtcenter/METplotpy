@@ -57,8 +57,7 @@ class Box(BasePlot):
         # config file that represents the BasePlot object (Box).
         self.config_obj = BoxConfig(self.parameters)
 
-        self.box_logger = util.get_common_logger(self.config_obj.log_level,
-                                                    self.config_obj.log_filename)
+        self.box_logger = self.config_obj.logger
 
         self.box_logger.info(f"Start bar plot at {datetime.now()}")
 

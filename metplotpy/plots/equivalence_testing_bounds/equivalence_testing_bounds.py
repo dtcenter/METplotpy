@@ -57,8 +57,7 @@ class EquivalenceTestingBounds(BasePlot):
         # config file that represents the BasePlot object (EquivalenceTestingBounds).
         self.config_obj = LineConfig(self.parameters)
 
-        self.eq_logger = util.get_common_logger(self.config_obj.log_level,
-                                           self.config_obj.log_filename)
+        self.eq_logger = self.config_obj.logger
         self.eq_logger.info(f"Start equivalence testing bounds:  {datetime.now()}")
 
         # Check that we have all the necessary settings for each series

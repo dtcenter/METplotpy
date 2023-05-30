@@ -53,8 +53,7 @@ class Bar(BasePlot):
         # the
         # config file that represents the BasePlot object (Bar).
         self.config_obj = BarConfig(self.parameters)
-        self.bar_logger = util.get_common_logger(self.config_obj.log_level,
-                                                 self.config_obj.log_filename)
+        self.bar_logger = self.config_obj.logger
         self.bar_logger.info(f"Start bar plot: {datetime.now()}")
         # Check that we have all the necessary settings for each series
         self.bar_logger.info(f"Consistency checking of config settings for colors, "

@@ -64,8 +64,7 @@ class Hist(BasePlot):
             getattr(sys.modules['metplotpy.plots.histogram.hist_config'],
                     self.config_obj_name)(self.parameters)
 
-        self.hist_logger = util.get_common_logger(self.get_config_value('log_level'),
-                                                  self.get_config_value('log_filename'))
+        self.hist_logger = self.config_obj.logger
         self.hist_logger.info(f"Begin [rank|probability|relative frequency] histogram:"
                               f" {datetime.now()}")
 

@@ -55,7 +55,6 @@ class Hovmoeller(BasePlot):
         # config file that represents the BasePlot object (Hovmoeller diagram).
         self.config_obj = HovmoellerConfig(self.parameters)
 
-
         self.logger = util.get_common_logger(self.config_obj.log_level,
                                              self.config_obj.log_filename)
         self.user = getpass.getuser()

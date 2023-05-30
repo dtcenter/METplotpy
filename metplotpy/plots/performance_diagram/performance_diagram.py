@@ -70,8 +70,7 @@ class PerformanceDiagram(BasePlot):
         # Logging in matplotlib plots is different from the plotly plots.  The
         # ContextFilter cannot be used to add the username/userid to the log.
         # Use the extra={'user':userid} in the log.xyz(msg,...) syntax instead.
-        self.logger = util.get_common_logger(self.config_obj.log_level,
-                                             self.config_obj.log_filename)
+        self.logger = self.config_obj.logger
         self.logger.info(f"Begin performance diagram: {datetime.now()}")
 
         # Read in input data, location specified in config file
@@ -79,7 +78,10 @@ class PerformanceDiagram(BasePlot):
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee:
-            self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
+            self.logger.info("Begin event equalization")
+            self.input_df = calc_util.perform_event_equalization(self.parameters,
+                                                                 self.input_df)
+            self.logger.info("Finish even equalization")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -94,7 +96,7 @@ class PerformanceDiagram(BasePlot):
         # create binary versions of the plot.
         self.figure = self._create_figure()
 
-        self.logger.info(f"Finished performance diagram")
+        self.logger.info(f"Finished performance diagram: {datetime.now()}")
 
     def _read_input_data(self):
         """
@@ -106,12 +108,14 @@ class PerformanceDiagram(BasePlot):
                  the pandas dataframe representation of the input data file
 
         """
+        self.logger.info("Begin reading input data.")
         df_full = pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
 
         # Remove any columns that are entirely 'NaN' this will be helpful
         # in determining whether we have aggregated statistics (stat_btcl and
         # stat_btu columns with valid values)
         df = df_full.dropna(axis=1, how="all")
+        self.logger.info("Finished reading input data.")
         return df
 
     def _create_series(self, input_data):
@@ -131,15 +135,19 @@ class PerformanceDiagram(BasePlot):
 
 
         """
+        self.logger.info(f"Begin creating series objects: {datetime.now()}")
+
         series_list = []
 
-        # use the list of series ordering values to determine how many series objects we need.
+        # use the list of series ordering values to determine how many series
+        # objects we need.
         num_series = self.config_obj.calculate_number_of_series()
 
         for i, series in enumerate(range(num_series)):
             # Create a PerformanceDiagramSeries object
             series_obj = PerformanceDiagramSeries(self.config_obj, i, input_data)
             series_list.append(series_obj)
+        self.logger.info(f"Finished creating series objects: {datetime.now()}")
         return series_list
 
     def save_to_file(self):
@@ -190,6 +198,9 @@ class PerformanceDiagram(BasePlot):
             Generates a performance diagram with equal lines of CSI (Critical Success Index)
             and equal lines of bias
         """
+
+        self.logger.info(f"Being creating the performance diagram with CSI lines:"
+                         f"{datetime.now()}")
 
         # This creates a figure size that is of a "reasonable" size, in inches
         fig = plt.figure(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
@@ -319,7 +330,7 @@ class PerformanceDiagram(BasePlot):
 
                 # Annotate the points with their PODY (i.e. dependent variable value)
                 if not self.config_obj.anno_var:
-                    pass
+                    self.logger.info("No annotation variable, skip point annotation.")
                 elif self.config_obj.anno_var == 'y':
                     for idx, pody in enumerate(pody_points):
                         plt.annotate(str(pody) + self.config_obj.anno_units,
@@ -382,7 +393,9 @@ class PerformanceDiagram(BasePlot):
         # use plt.tight_layout() to prevent label box from scrolling off the figure
         plt.tight_layout()
         plt.savefig(self.get_config_value('plot_filename'))
+        self.logger.info(f"Finished drawing CSI lines: {datetime.now()}")
         self.save_to_file()
+        self.logger.info("Finished saving file.")
 
     def write_output_file(self):
         """
@@ -393,7 +406,7 @@ class PerformanceDiagram(BasePlot):
 
         """
 
-
+        self.logger.info(f"Write output file: {datetime.now()}")
         # if points_path parameter doesn't exist,
         # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
@@ -421,9 +434,10 @@ class PerformanceDiagram(BasePlot):
                     fileobj = open(output_file, 'a')
                 else:
                     os.remove(output_file)
-            except FileNotFoundError as fnfe:
+            except FileNotFoundError:
                 # OK if no file was found
-                pass
+                self.logger.error("FileNotFoundError: OK to ignore, deleting files "
+                                  "and the file to delete is not found")
 
             fileobj = open(output_file, 'a')
             header_str = "1-far\t pody\n"
@@ -442,6 +456,7 @@ class PerformanceDiagram(BasePlot):
                 fileobj.write(data_str)
 
             fileobj.close()
+            self.logger.info(f"Finished writing output file: {datetime.now()}")
 
 
 def main(config_filename=None):
