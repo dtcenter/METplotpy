@@ -703,7 +703,6 @@ class Reliability(BasePlot):
         :param output_file: the name of the output file
         """
 
-        self.logger.info("Saving points.")
         try:
             all_points_formatted = []
             for row in points:
