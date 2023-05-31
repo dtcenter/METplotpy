@@ -16,6 +16,7 @@ __author__ = 'Tatiana Burek'
 
 import os
 import math
+from datetime import datetime
 from typing import Union
 import pandas as pd
 import numpy as np
@@ -57,11 +58,16 @@ class WindRosePlot(BasePlot):
         # config file that represents the BasePlot object (WindRosePlot).
         self.config_obj = WindRoseConfig(self.parameters)
 
+        self.logger = self.config_obj.logger
+        self.logger.info(f"Begin Wind Rose: {datetime.now()}")
+
         # if u or v DataFrames is not provided - read data from the MET stat file
         if u_wind_data is None or v_wind_data is None:
             # Read in input data, location specified in config file
+            self.logger.info("Reading input data specified in config file.")
             self._read_input_data()
         else:
+            self.logger.info("Reading input data from MET stat file.")
             self.u_wind_data = u_wind_data
             self.v_wind_data = v_wind_data
 
@@ -104,6 +110,7 @@ class WindRosePlot(BasePlot):
              Wind rose plot as Plotly figure
         """
 
+        self.logger.info(f"Creating figure: {datetime.now()}")
         fig = make_subplots(specs=[[{"secondary_y": False}]])
 
         # Set plot height and width in pixel value
@@ -181,6 +188,7 @@ class WindRosePlot(BasePlot):
         Returns:
         """
 
+        self.logger.info(f"Creating wind rose traces: {datetime.now()}")
         # init data based on type
         if self.config_obj.type == 'FCST-OBS':
             u_wind_data = (self.u_wind_data['FCST'] - self.u_wind_data['OBS']).tolist()
@@ -193,12 +201,14 @@ class WindRosePlot(BasePlot):
             v_wind_data = self.v_wind_data['OBS'].tolist()
 
         # calculate the wind speed
+        self.logger.info("Calculating the wind speed.")
         wind_speed = [
             math.sqrt(u_wind_data[i] * u_wind_data[i] + v_wind_data[i] * v_wind_data[i])
             for i in range(len(v_wind_data))
         ]
 
         # calculate the wind dir in degrees for each row and bin it to angles
+        self.logger.info("Calculating the wind direction.")
         wind_dir_deg = []
         for i, v_wind in enumerate(v_wind_data):
             if wind_speed[i] == 0:
@@ -283,6 +293,7 @@ class WindRosePlot(BasePlot):
                 marker_color=self.config_obj.wind_rose_marker_colors[i]
             )
             self.traces.append(trace)
+        self.logger.info(f"Finished creating traces: {datetime.now()}")
 
     def save_to_file(self) -> None:
         """ Saves the image to a file specified in the config file.
@@ -422,6 +433,7 @@ def main(config_filename=None):
         if plot.config_obj.show_in_browser:
             plot.show_in_browser()
         plot.write_output_file()
+        plot.logger.info(f"Finished wind rose plot: {datetime.now()}")
 
     except ValueError as ve:
         print(ve)

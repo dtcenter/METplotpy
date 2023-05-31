@@ -65,8 +65,7 @@ class Line(BasePlot):
         # config file that represents the BasePlot object (Line).
         self.config_obj = LineConfig(self.parameters)
 
-        self.line_logger = util.get_common_logger(self.config_obj.log_level,
-                                                  self.config_obj.log_filename)
+        self.line_logger = self.config_obj.logger
 
         self.line_logger.info(f"Begin creating the line plot: {datetime.now()}")
 
