@@ -13,7 +13,7 @@ Class Name: revision_series_config.py
 Holds values set in the RevisionSeries plot config file(s)
 """
 import itertools
-
+from datetime import datetime
 from ..config import Config
 from .. import constants
 from .. import util
@@ -192,6 +192,8 @@ class RevisionSeriesConfig(Config):
                 and vx_mask defined in the series_val_1 setting)
 
         """
+
+        self.logger.info(f"Begin consistency checK: {datetime.now()}")
         # Determine the number of series based on the number of
         # permutations from the series_var setting in the
         # config file

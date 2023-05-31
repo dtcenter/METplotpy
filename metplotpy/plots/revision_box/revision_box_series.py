@@ -42,6 +42,7 @@ class RevisionBoxSeries(BoxSeries):
         Returns:
                dictionary with point values and  stats as keys
         """
+        self.config.logger.info(f"Begin creating series points: {datetime.now()}")
         all_filters = []
 
         # create a set of filters for this series
@@ -107,9 +108,12 @@ class RevisionBoxSeries(BoxSeries):
                     self.series_data = self.series_data.sort_values(['fcst_init'])
 
             # print a message if needed for inconsistent beta_values
+            self.config.logger.info("Checking for inconsistent beta values")
             self._check_beta_value()
 
         # sort data by fcst_valid_beg ascending and fcst_lead descending
+        self.config.logger.info("sorting by fcst_valid_beg ascending and fcst_lead "
+                                "descending")
         self.series_data = self.series_data.sort_values(by=['fcst_valid_beg', 'fcst_lead'], ascending=[True, False])
         # get unique fcst_valid_beg
         unique_fcst_valid_beg = self.series_data.fcst_valid_beg.unique()

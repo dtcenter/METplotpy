@@ -124,6 +124,7 @@ class Line(BasePlot):
             Returns:
 
         """
+        self.config_obj.logger.info(f"Reading input data: {datetime.now()}")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
                            header='infer', float_precision='round_trip', low_memory=False)
 

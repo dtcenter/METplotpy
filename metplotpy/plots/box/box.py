@@ -106,10 +106,10 @@ class Box(BasePlot):
             Returns:
 
         """
-        self.box_logger.info(f"Begin reading input data:"
+        self.config_obj.logger.info(f"Begin reading input data:"
                                   f" {datetime.now()}")
         file = self.config_obj.parameters['stat_input']
-        self.box_logger.info(f"Finish reading input data:"
+        self.config_obj.logger.info(f"Finish reading input data:"
                                  f" {datetime.now()}")
         return pd.read_csv(file, sep='\t', header='infer', float_precision='round_trip')
 
@@ -564,7 +564,7 @@ class Box(BasePlot):
         """
         Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
         """
-        self.box_logger.info(f"Begin writing HTML file: "
+        self.config_obj.logger.info(f"Begin writing HTML file: "
                                     f"{datetime.now()}")
 
         # is_create = self.config_obj.create_html
