@@ -161,7 +161,7 @@ if __name__ == '__main__':
     """
     Compute interpolation weights
     """
-    pt.compute_interpolation_weights(args, ds)
+    # pt.compute_interpolation_weights(args, ds)
 
     """
     Compute tangential and radial wind components
