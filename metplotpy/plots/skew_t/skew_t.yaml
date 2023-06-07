@@ -31,7 +31,8 @@ display_windbarbs: True
 # Set to 1 if no decimation is to be performed.
 decimate_barbs: 2
 
-# Level labels along x-axis (if False, then labels will be along temperature curve).
+# Level labels along y2-axis (the right-side y-axis). 
+# If False, then labels will be along temperature curve).
 level_labels_along_y2-axis: True
 
 # figure size in inches
