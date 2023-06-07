@@ -4,46 +4,43 @@
 
 
 # Input and output file information
-input_directory: '/Volumes/d1/minnawin/TCDiag_Data/2022/al092022'
+input_directory: 'your/full/path/to/base/dir/of/input'
 input_file_extension: '.dat'
-output_directory: '/Volumes/d1/minnawin/feature_337_tcdiag_skewt'
+output_directory: 'your/output/dir/to/save/plots'
 
 
-# Log level: DEBUG, INFO, WARNING, ERROR
-log_level: INFO
-log_directory: '/Volumes/d1/minnawin/feature_337_tcdiag_skewt/logs'
+# Log level: DEBUG, INFO, WARNING, ERROR.  NOTE: DEBUG is NOT recommended, only useful during development.
+log_level: "INFO"
+log_directory: 'your/directory/to/save/log/file'
 log_filename: 'tc_diags_skewt.log'
 
 # Sounding hours of interest. If all_sounding_hours is set to False, then the
 # list of hours from sounding_hours_of_interest will be used.
 all_sounding_hours: False
-sounding_hours_of_interest: [0, 6]
+
+# Not used if all_sounding_hours is set to True
+sounding_hours_of_interest: [ 0, 6 ]
 
 # Turn on/off displaying features on the diagram
 display_dry_adiabats: True
 display_moist_adiabats: True
 display_mixing_lines: True
 display_windbarbs: True
-display_levels: False
 
-# Display levels in hPa select True for one or the other.
-levels_adjacent_to_temps: True
-levels_along_y2_axis: False
-show_units: True
-
-# Control the density of windbarbs and levels (eg. skip the nth value)
-
-# Set to 1 if no decimation to be performed.
+# Control the density of windbarbs and levels (e.g. skip the nth value)
+# Set to 1 if no decimation is to be performed.
 decimate_barbs: 2
 
 # Level labels along x-axis (if False, then labels will be along temperature curve).
 level_labels_along_y2-axis: True
 
-# figure size in pixels
+# figure size in inches
 figure_size_width: 9
 figure_size_height: 9
 
 # Appearance of Temperature and dewpoint lines
+# solid line '-', dashed line '--', dotted line ':'
+# dashdot '-.'
 temp_line_color: red
 temp_line_style: '-'
 temp_line_thickness: 2
@@ -53,6 +50,6 @@ dewpt_line_style: '-'
 dewpt_line_thickness: 2
 
 # Set x-axis limits (temps) by position to "crop out" irrelevant areas.
-set_x_axis_limits: True
+set_x_axis_limits: False
 x_axis_min: -50
 x_axis_max: 50
