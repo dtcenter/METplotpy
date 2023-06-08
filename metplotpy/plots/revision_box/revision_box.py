@@ -12,6 +12,7 @@ Class Name: revision_box.py
  """
 import os
 import re
+from datetime import datetime
 import yaml
 import plotly.graph_objects as go
 
@@ -47,6 +48,8 @@ class RevisionBox(Box):
         # instantiate a RevisionBoxConfig object, which holds all the necessary settings from the
         # config file that represents the BasePlot object (RevisionBox).
         self.config_obj = RevisionBoxConfig(self.parameters)
+        self.logger = self.config_obj.logger
+        self.logger.info(f"Begin revision box plotting: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
@@ -63,6 +66,7 @@ class RevisionBox(Box):
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
+            self.logger.info("Applying event equalization")
             self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
 
         # Create a list of series objects.
@@ -100,6 +104,7 @@ class RevisionBox(Box):
 
 
         """
+        self.logger.info(f"Begin creating series points: {datetime.now()}")
         series_list = []
 
         # add series for y1 axis
@@ -109,12 +114,14 @@ class RevisionBox(Box):
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
+        self.logger.info(f"Finished creating series points: {datetime.now()}")
 
         return series_list
 
     def _create_figure(self):
         """ Create a box plot from default and custom parameters"""
 
+        self.logger.info(f"Begin creating the figure: {datetime.now()}")
         self.figure = self._create_layout()
         self._add_xaxis()
         self._add_yaxis()
@@ -169,6 +176,8 @@ class RevisionBox(Box):
                                        borderwidth=0
                                        )
 
+            self.logger.info(f"Finished creating figure: {datetime.now()}")
+
     def _draw_series(self, series: RevisionBoxSeries) -> None:
         """
         Draws the boxes on the plot
@@ -176,6 +185,7 @@ class RevisionBox(Box):
         :param series: RevisionBoxSeries object with data and parameters
         """
 
+        self.logger.info(f"Begin drawing series: {datetime.now()}")
         # defaults markers and colors for the regular box plot
         line_color = dict(color='rgb(0,0,0)')
         fillcolor = series.color
@@ -215,6 +225,8 @@ class RevisionBox(Box):
             )
         )
 
+        self.logger.info(f"Finished drawing series:{datetime.now()}")
+
     def _add_xaxis(self) -> None:
         """
         Configures and adds x-axis to the plot
@@ -240,6 +252,8 @@ class RevisionBox(Box):
         # (the input data file) except replace the .data
         # extension with .points1 extension
         # otherwise use points_path path
+
+        self.logger.info("Writing output file.")
 
         match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
         if self.config_obj.dump_points_1 is True and match:
@@ -309,6 +323,7 @@ def main(config_filename=None):
         # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
+        plot.logger.info(f"Finished revision box plot: {datetime.now()}")
     except ValueError as ve:
         print(ve)
 

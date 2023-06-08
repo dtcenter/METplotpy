@@ -15,8 +15,6 @@ Holds values set in the hovmoeller config file(s)
 __author__ = 'Minna Win'
 
 from ..config import Config
-from .. import util
-from .. import constants
 
 class HovmoellerConfig(Config):
     def __init__(self, parameters):
@@ -50,11 +48,3 @@ class HovmoellerConfig(Config):
         self.colorscale = self.get_config_value('colorscale')
         self.xaxis = self.get_config_value('xaxis')
         self.yaxis = self.get_config_value('yaxis')
-
-
-
-
-
-
-
-

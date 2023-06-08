@@ -1,5 +1,7 @@
 type: FCST
 title: Wind Rose
+log_filename: ../wind_rose/wind_rose.log
+log_level: 'DEBUG'
 wind_rose_breaks:
   - 0.0
   - 1.0

@@ -50,6 +50,8 @@ legend_size: 0.8  #required
 
 line_type: N/A
 
+log_filename: ../roc_diagram/roc_diagram.log
+log_level: 'DEBUG'
 plot_disp:
   - True #required
 series_order:

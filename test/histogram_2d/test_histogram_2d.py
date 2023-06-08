@@ -3,7 +3,9 @@ import sys
 import pytest
 
 from metplotpy.plots.histogram_2d import histogram_2d as h2d
-#from metcalcpy.compare_images import CompareImages
+
+
+# from metcalcpy.compare_images import CompareImages
 
 @pytest.fixture
 def setup():
@@ -21,25 +23,32 @@ def setup():
     h2d.main(custom_config_filename)
 
 
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # !!!!!!!!!  IMPORTANT !!!!!!
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # change the stat_input and plot_filename to explicitly point to this directory before
-# running the test below because xarray cannot handle relative paths when reading in filenames
-# def test_plot_exists(setup):
-#     '''
-#         Checking that only the "defaults" plot file is getting created
-#
-#     '''
-#     test_input = "./tmp_z2_p500.png"
-#     assert os.path.exists(test_input)
-#     # cleanup
-#     try:
-#         path = os.getcwd()
-#         plot_file = 'tmp_z2_p500.png'
-#         os.remove(os.path.join(path, plot_file))
-#     except OSError as e:
-#         # Typically when files have already been removed or
-#         # don't exist.  Ignore.
-#         pass
+# running the test below because xarray cannot handle relative paths when reading in
+# filenames
+def test_plot_exists(setup):
+    '''
+        Checking that only the "defaults" plot file is getting created
 
+    '''
+    test_input = "tmp_z2_p500.png"
+    from os.path import exists
+    file_exists = exists(test_input)
+    if file_exists:
+        assert os.path.exists(test_input)
+    else:
+        print("File doesn't exist")
+        assert False
+
+    # cleanup
+    try:
+        path = os.getcwd()
+        plot_file = 'tmp_z2_p500.png'
+        # os.remove(os.path.join(path, plot_file))
+    except OSError:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass

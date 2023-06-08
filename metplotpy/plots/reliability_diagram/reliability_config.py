@@ -16,6 +16,7 @@ Holds values set in the Line plot config file(s)
 __author__ = 'Tatiana Burek'
 
 import itertools
+from datetime import datetime
 
 from ..config import Config
 from .. import constants
@@ -265,6 +266,7 @@ class ReliabilityConfig(Config):
                 and vx_mask defined in the series_val_1 setting)
 
         """
+        self.logger.info(f"Begin consistency check: {datetime.now()}")
         # Determine the number of series based on the number of
         # permutations from the series_var setting in the
         # config file
@@ -284,6 +286,7 @@ class ReliabilityConfig(Config):
                 num_markers == num_series_ord == num_colors \
                 == num_legends == num_line_widths == num_linestyles == num_ci_settings:
             status = True
+        self.logger.info(f"Finished consistency check :{datetime.now()}")
         return status
 
     def _get_plot_ci(self) -> list:

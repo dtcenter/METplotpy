@@ -14,6 +14,7 @@ Class Name: prob_hist.py
 __author__ = 'Tatiana Burek'
 
 from typing import Union
+from datetime import datetime
 import yaml
 
 from metplotpy.plots.histogram.hist import Hist
@@ -28,6 +29,8 @@ class ProbHist(Hist):
 
     config_obj_name = 'ProbHistogramConfig'
     series_obj = 'ProbHistSeries'
+
+
 
     def _get_x_points(self, series: HistSeries) -> list:
         x_points = []
@@ -77,11 +80,16 @@ def main(config_filename=None):
             print(exc)
 
     try:
+
         plot = ProbHist(docs)
         plot.save_to_file()
         # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
+        log_level = plot.get_config_value('log_level')
+        log_filename = plot.get_config_value('log_filename')
+        prob_logger = util.get_common_logger(log_level, log_filename)
+        prob_logger.info(f"Finished probability histogram: {datetime.now()}")
     except ValueError as val_er:
         print(val_er)
 

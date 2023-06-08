@@ -14,6 +14,7 @@ Class Name: LineSeries
 __author__ = 'Tatiana Burek'
 
 import warnings
+from datetime import datetime
 from typing import Union
 import math
 import statistics
@@ -25,6 +26,7 @@ import metcalcpy.util.correlation as pg
 from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
+import metplotpy.plots.util
 from ..series import Series
 from .. import GROUP_SEPARATOR
 
@@ -44,6 +46,8 @@ class LineSeries(Series):
         self.series_list = series_list
         self.series_name = series_name
         super().__init__(config, idx, input_data, y_axis)
+        self.logger = metplotpy.plots.util.get_common_logger(config.log_level,
+                                                             config.log_filename)
 
     def _create_all_fields_values_no_indy(self) -> dict:
         """
@@ -83,6 +87,10 @@ class LineSeries(Series):
         :return:  mean, median or sum of the values from the input list or
             None if the statistic parameter is invalid
         """
+        logger = metplotpy.plots.util.get_common_logger(self.log_level,
+                                                        self.log_filename)
+        logger.info(f"Begin calculating plot_stat parameter: "
+                                f"{datetime.now()}")
         # calculate point stat
         if self.config.plot_stat == 'MEAN':
             with warnings.catch_warnings():
@@ -98,6 +106,11 @@ class LineSeries(Series):
                 point_stat = np.nansum(data)
         else:
             point_stat = None
+
+        logger = metplotpy.plots.util.get_common_logger(self.log_level,
+                                                        self.log_filename)
+        logger.info(f"Begin calculating plot_stat parameter: "
+                                f"{datetime.now()}")
         return point_stat
 
     def _create_series_points(self) -> dict:
@@ -110,7 +123,10 @@ class LineSeries(Series):
         Returns:
                dictionary with CI ,point values and number of stats as keys
         """
-
+        logger = metplotpy.plots.util.get_common_logger(self.log_level,
+                                                        self.log_filename)
+        logger.info(f"Begin calculating values for each series point: "
+                                f"{datetime.now()}")
         series_data_1 = None
         series_data_2 = None
 
@@ -370,6 +386,9 @@ class LineSeries(Series):
             series_points_results['dbl_med'].append(point_stat)
             series_points_results['dbl_up_ci'].append(dbl_up_ci)
             series_points_results['nstat'].append(len(point_data['stat_value']))
+
+        logger.info(f"Finished calculating values for each series point: "
+                                f"{datetime.now()}")
 
         return series_points_results
 

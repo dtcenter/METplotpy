@@ -99,6 +99,9 @@ legend_inset:
   x: 0.0
   y: -0.25
 legend_size: 0.8
+
+log_filename: ../performance_diagram/performance_diagram.log
+log_level: 'DEBUG'
 plot_stat: median
 plot_contour_legend: False
 colors:
@@ -179,5 +182,3 @@ ytlab_size: 1.3
 
 stat_input:  ../../test/performance_diagram/plot_20200317_151252.data
 plot_filename: ./performance_diagram_default.png
-
-

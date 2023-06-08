@@ -16,6 +16,7 @@ __author__ = 'Tatiana Burek'
 import os
 import re
 import csv
+from datetime import datetime
 from typing import Union
 
 import yaml
@@ -54,15 +55,20 @@ class Reliability(BasePlot):
         # config file that represents the BasePlot object (Line).
         self.config_obj = ReliabilityConfig(self.parameters)
 
+        self.logger = self.config_obj.logger
+        self.logger.info(f"Begin reliability diagram: {datetime.now()}")
+
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val_1 "
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check"
-                             " the number of your configuration file's plot_i,"
-                             " plot_disp, series_order, user_legend,"
-                             " colors, and series_symbols settings.")
+            value_error_msg = "The number of series defined by series_val_1 "\
+                             " inconsistent with the number of settings"\
+                             " required for describing each series. Please check"\
+                             " the number of your configuration file's plot_i,"\
+                             " plot_disp, series_order, user_legend,"\
+                             " colors, and series_symbols settings."
+            self.logger.error(f"ValueError:{value_error_msg}")
+            raise ValueError(value_error_msg)
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
@@ -99,6 +105,7 @@ class Reliability(BasePlot):
             Returns:
 
         """
+        self.logger.info("Reading input data")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
                            header='infer', float_precision='round_trip')
 
@@ -119,6 +126,7 @@ class Reliability(BasePlot):
 
 
         """
+        self.logger.info(f"Begin creating series objects: {datetime.now()}")
         series_list = []
         # add series for y1 axis
         for i, name in enumerate(self.config_obj.get_series_y()):
@@ -134,6 +142,8 @@ class Reliability(BasePlot):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
+        self.logger.info(f"Finished creating series object: {datetime.now()}")
+
         return series_list
 
     def _create_figure(self):
@@ -141,6 +151,9 @@ class Reliability(BasePlot):
         Create a line plot from defaults and custom parameters
         """
         # create and draw the plot
+
+        self.logger.info(f"Begin creating the lines on the reliability plot: "
+                         f"{datetime.now()}")
 
         self.figure = self._create_layout()
         self._add_xaxis()
@@ -170,6 +183,9 @@ class Reliability(BasePlot):
         if len(self.series_list) > 0:
             self._add_lines(self.config_obj)
 
+        self.logger.info(f"Finished drawing lines on reliability diagram"
+                         f" {datetime.now()}")
+
     def _draw_series(self, series: ReliabilitySeries, x_points_index_adj: list) -> None:
         """
         Draws the formatted line with CIs if needed on the plot
@@ -178,6 +194,7 @@ class Reliability(BasePlot):
         :param x_points_index_adj: values for adjusting x-values position
         """
 
+        self.logger.info(f"Draw the bar plot and skill lines: {datetime.now()}")
         if series.idx == 0:
             self._add_noskill_polygon(series.series_points['stat_value'][0])
 
@@ -244,6 +261,8 @@ class Reliability(BasePlot):
         else:
             self.figure.add_trace(line_trace, secondary_y=False)
 
+        self.logger.info(f"Finished with bar plot and skill lines :{datetime.now()}")
+
     def _add_y2axis(self) -> None:
         """
         Adds y2-axis if needed
@@ -266,6 +285,8 @@ class Reliability(BasePlot):
         Adds no-skill polygon to the graph if needed and o_bar is not None
         :param o_bar: o_bar value or None
         """
+
+        self.logger.info("Adding no-skill polygon")
         if self.config_obj.add_noskill_line is True:
             if o_bar and o_bar is not None:
                 self.figure.add_trace(
@@ -288,6 +309,8 @@ class Reliability(BasePlot):
         Adds no-skill line to the graph if needed and o_bar is not None
         :param o_bar: o_bar value or None
         """
+
+        self.logger.info("Adding no-skill line")
         if self.config_obj.add_noskill_line is True:
             if o_bar and o_bar is not None:
                 # create a line
@@ -328,6 +351,8 @@ class Reliability(BasePlot):
          Adds perfect reliability line to the graph if needed
         :return:
         """
+
+        self.logger.info("Adding perfect reliability line")
         if self.config_obj.add_skill_line is True:
             self.figure.add_trace(
                 go.Scatter(x=[0, 1],
@@ -361,6 +386,8 @@ class Reliability(BasePlot):
         Adds no-resolution line to the graph if needed and o_bar is not None
         :param o_bar: o_bar value or None
         """
+
+        self.logger.info("Adding no-resolution line")
         if self.config_obj.add_reference_line is True:
             if o_bar and o_bar is not None:
                 self.figure.add_trace(
@@ -584,6 +611,7 @@ class Reliability(BasePlot):
         """
         Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
         """
+        self.logger.info("Writing html file.")
         if self.config_obj.create_html is True:
             # construct the fle name from plot_filename
             name_arr = self.get_config_value('plot_filename').split('.')
@@ -596,7 +624,7 @@ class Reliability(BasePlot):
         """
         Formats series point data to the 2-dim array and saves it to the files
         """
-
+        self.logger.info("Writing output file.")
 
         # if points_path parameter doesn't exist,
         # open file, name it based on the stat_input config setting,
@@ -646,6 +674,8 @@ class Reliability(BasePlot):
         :return: the list of the adjustment values
         """
 
+        self.logger.info("Calculate x-axis adjustment")
+
         # get the total number of series
         num_stag = len(self.config_obj.all_series_y1) + len(self.config_obj.summary_curves)
 
@@ -672,6 +702,7 @@ class Reliability(BasePlot):
             actual value, CI low, CI high
         :param output_file: the name of the output file
         """
+
         try:
             all_points_formatted = []
             for row in points:
@@ -720,6 +751,7 @@ def main(config_filename=None):
         # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
+        plot.logger.info(f"Finished generating reliability diagram: {datetime.now()}")
     except ValueError as val_er:
         print(val_er)
 
