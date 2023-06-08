@@ -564,7 +564,7 @@ def create_skew_t(input_file: str, config: dict) -> None:
         # file.
         output_dir = config['output_directory']
         try:
-            os.mkdir(output_dir)
+            os.makedirs(output_dir, exist_ok=True)
         except FileExistsError:
             # Ignore if file/diretory already exists, this is OK.
             pass
@@ -603,7 +603,7 @@ def main(config_filename=None):
             log_file = config['log_filename']
             log_full_path = os.path.join(log_dir, log_file)
             try:
-                os.mkdir(log_dir)
+                os.makedirs(log_dir, exist_ok=True)
             except FileExistsError:
                 # If directory already exists, this is OK.  Continue.
                 pass
