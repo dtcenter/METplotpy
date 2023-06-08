@@ -572,9 +572,11 @@ def create_skew_t(input_file: str, config: dict) -> None:
         filename_only = os.path.basename(full_filename_only)
         renamed = filename_only + "_" + cur_time + "_hr.png"
         plot_file = os.path.join(output_dir, renamed)
-        logging.info(f"saving file {plot_file}")
+        logging.info(f"Saving file {plot_file}")
 
         plt.savefig(plot_file)
+        # Close any open figures to prevent having too many open figures.
+        plt.close('all')
 
         # plt.show()
 
