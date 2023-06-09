@@ -1,2 +1,2 @@
-plot_filename: /path-to/METplotpy/WorkingDir/hovmoeller_plot.png
-input_data_file: /path-to/precip.erai.sfc.1p0.2x.2014-2016.nc
+plot_filename: ./hovmoeller_plot.png
+input_data_file: /Volumes/d1/minnawin/METplus_Data/model_applications/s2s/precip.erai.sfc.1p0.2x.2014-2016.nc

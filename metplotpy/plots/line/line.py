@@ -14,6 +14,7 @@ Class Name: line.py
 __author__ = 'Tatiana Burek'
 
 import os
+from datetime import datetime
 import re
 import csv
 from operator import add
@@ -45,6 +46,7 @@ class Line(BasePlot):
 
     defaults_name = 'line_defaults.yaml'
 
+
     def __init__(self, parameters: dict) -> None:
         """ Creates a line plot consisting of one or more lines (traces), based on
             settings indicated by parameters.
@@ -63,22 +65,31 @@ class Line(BasePlot):
         # config file that represents the BasePlot object (Line).
         self.config_obj = LineConfig(self.parameters)
 
+        self.line_logger = self.config_obj.logger
+
+        self.line_logger.info(f"Begin creating the line plot: {datetime.now()}")
+
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val_1/2 and derived curves is"
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check"
-                             " the number of your configuration file's plot_ci,"
-                             " plot_disp, series_order, user_legend,"
-                             " colors, and series_symbols settings.")
+            error_msg = f"The number of series defined by series_val_1/2 and derived \
+                        curves is inconsistent with the number of settings \
+                        required for describing each series. Please check \
+                        the number of your configuration file's plot_ci, \
+                        plot_disp, series_order, user_legend\
+                        colors, and series_symbols settings."
+            self.line_logger.error(f"ValueError: {error_msg}: {datetime.now()}")
+            raise ValueError(error_msg)
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
-            self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
+            self.line_logger.info(f"Begin event equalization: {datetime.now()}")
+            self.input_df = calc_util.perform_event_equalization(self.parameters,
+                                                                 self.input_df)
+            self.line_logger.info(f"Finished event equalization: {datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -112,6 +123,7 @@ class Line(BasePlot):
             Returns:
 
         """
+        self.config_obj.logger.info(f"Reading input data: {datetime.now()}")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
                            header='infer', float_precision='round_trip', low_memory=False)
 
@@ -132,6 +144,7 @@ class Line(BasePlot):
 
 
         """
+        self.line_logger.info(f"Begin creating the series objects: {datetime.now()}")
         series_list = []
 
         # add series for y1 axis
@@ -174,12 +187,15 @@ class Line(BasePlot):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
+        self.line_logger.info(f"Finished creating the series objects: {datetime.now()}")
         return series_list
 
     def _create_figure(self):
         """
         Create a line plot from defaults and custom parameters
         """
+        self.line_logger.info(f"Begin create the figure: {datetime.now()}")
+
         # create and draw the plot
         self.figure = self._create_layout()
         self._add_xaxis()
@@ -249,6 +265,8 @@ class Line(BasePlot):
         if self.config_obj.start_from_zero is True:
             self.figure.update_xaxes(range=[0, len(x_points_index) - 1])
 
+        self.line_logger.info(f"Finished creating the figure: {datetime.now()}")
+
     def _draw_series(self, series: Series, x_points_index_adj: Union[list, None] = None) -> None:
         """
         Draws the formatted line with CIs if needed on the plot
@@ -256,7 +274,7 @@ class Line(BasePlot):
         :param series: Line series object with data and parameters
         :param x_points_index_adj: values for adjusting x-values position
         """
-
+        self.line_logger.info(f"Begin drawing the lines on the plot: {datetime.now()}")
         y_points = series.series_points['dbl_med']
 
         # show or not ci
@@ -324,6 +342,9 @@ class Line(BasePlot):
                        ),
             secondary_y=series.y_axis != 1
         )
+
+        self.line_logger.info(f"Finished drawing the lines on the plot:"
+                             f" {datetime.now()}")
 
     def _create_layout(self) -> Figure:
         """
@@ -404,7 +425,7 @@ class Line(BasePlot):
 
         :param x_points_index: list of indexws for the original x -axis
         """
-
+        self.line_logger.info(f"Begin switching x and y axis: {datetime.now()}")
         odered_indy_label = self.config_obj.create_list_by_plot_val_ordering(self.config_obj.indy_label)
         if self.config_obj.vert_plot is True:
             self.figure.update_layout(
@@ -422,6 +443,8 @@ class Line(BasePlot):
                     'ticktext': odered_indy_label
                 }
             )
+
+        self.line_logger.info(f"Finished switching x and y axis: {datetime.now()}")
 
     def _add_xaxis(self) -> None:
         """
@@ -627,6 +650,9 @@ class Line(BasePlot):
         """
         Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
         """
+        logger = util.get_common_logger(self.config_obj.log_level,
+                                        self.config_obj.log_filename)
+        logger.info(f"Begin writing to html file: {datetime.now()}")
         if self.config_obj.create_html is True:
             # construct the file name from plot_filename
             name_arr = self.get_config_value('plot_filename').split('.')
@@ -636,11 +662,14 @@ class Line(BasePlot):
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
 
+            self.line_logger.info(f"Finished writing to html file: {datetime.now()}")
+
     def write_output_file(self) -> None:
         """
         Formats y1 and y2 series point data to the 2-dim arrays and saves them to the files
         """
 
+        self.line_logger.info(f"Begin writing to output file: {datetime.now()}")
         # if points_path parameter doesn't exist,
         # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
@@ -686,6 +715,8 @@ class Line(BasePlot):
             # save points
             self._save_points(all_points_1, filename + ".points1")
             self._save_points(all_points_2, filename + ".points2")
+
+            self.line_logger.info(f"Finished writing to output file: {datetime.now()}")
 
     @staticmethod
     def _find_min_max(series: LineSeries, yaxis_min: Union[float, None],
@@ -767,7 +798,6 @@ class Line(BasePlot):
                 csv_writer = csv.writer(my_csv, delimiter=' ')
                 csv_writer.writerows(all_points_formatted)
             my_csv.close()
-
         except TypeError:
             print('Can\'t save points to a file')
 
@@ -803,6 +833,7 @@ def main(config_filename=None):
         # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
+        plot.line_logger.info(f"Finished creating line plot: {datetime.now()}")
     except ValueError as val_er:
         print(val_er)
 

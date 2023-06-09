@@ -13,6 +13,7 @@ Class Name: LineSeries
  """
 __author__ = 'Tatiana Burek'
 
+from datetime import datetime
 from typing import Union
 import re
 
@@ -21,6 +22,7 @@ import pandas as pd
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
+import metplotpy.plots.util
 from ..series import Series
 
 
@@ -211,6 +213,13 @@ class BoxSeries(Series):
         :param series_data_2: 2nd data frame sorted  by fcst_init_beg
         """
 
+        log_level = self.config.log_level
+        log_filename = self.config.log_filename
+        logger = metplotpy.plots.util.get_common_logger(log_level, log_filename)
+
+
+        logger.info(f"Start calculating derived values: "
+                                f"{datetime.now()}")
         # for each independent value
         for indy in self.config.indy_vals:
             if utils.is_string_integer(indy):
@@ -237,6 +246,9 @@ class BoxSeries(Series):
                 unique_dates = \
                     stats_indy_1[['fcst_init', 'fcst_lead', 'stat_name"']].drop_duplicates().shape[0]
             if stats_indy_1.shape[0] != unique_dates:
+                logger.error(f"ValueError:Derived curve cannot be "
+                                         f"calculated.  Multiple values for one valid "
+                                         f"date/fcst_lead")
                 raise ValueError(
                     'Derived curve can\'t be calculated. '
                     'Multiple values for one valid date/fcst_lead')
@@ -252,3 +264,6 @@ class BoxSeries(Series):
                 self.series_data = stats_indy_1
             else:
                 self.series_data = pd.concat([self.series_data, (stats_indy_1)], sort=False)
+
+        logger.info(f"End calculating derived values: "
+                                f"{datetime.now()}")

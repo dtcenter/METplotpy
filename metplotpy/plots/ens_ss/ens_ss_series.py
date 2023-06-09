@@ -1,13 +1,12 @@
 # ============================*
- # ** Copyright UCAR (c) 2022
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2022
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Class Name: EnsSsSeries
  """
@@ -15,10 +14,12 @@ __author__ = 'Tatiana Burek'
 
 from typing import Union
 import pandas as pd
+from datetime import datetime
 
 import numpy as np
 
 import metcalcpy.util.utils as utils
+import metplotpy.plots.util
 from .. import GROUP_SEPARATOR
 
 from ..series import Series
@@ -38,10 +39,13 @@ class EnsSsSeries(Series):
         self.series_name = series_name
         super().__init__(config, idx, input_data, y_axis)
 
+
+
     def _create_all_fields_values_no_indy(self) -> dict:
         """
         Creates a dictionary with two keys that represents each axis
-        values - dictionaries of field values pairs of all series variables (without indy variable)
+        values - dictionaries of field values pairs of all series variables (without
+        indy variable)
         :return: dictionary with field-values pairs for each axis
         """
         all_fields_values_no_indy = {}
@@ -67,13 +71,16 @@ class EnsSsSeries(Series):
         Returns:
                dictionary with CI ,point values and number of stats as keys
         """
-
+        ens_logger = metplotpy.plots.util.get_common_logger(self.log_level,
+                                                            self.log_filename)
+        ens_logger.info(f"Begin creating the series points: {datetime.now()}")
         # different ways to subset data for normal and derived series
         # this is a normal series
         all_filters = []
 
         # create a set of filters for this series
-        for field_ind, field in enumerate(self.all_fields_values_no_indy[self.y_axis].keys()):
+        for field_ind, field in enumerate(
+                self.all_fields_values_no_indy[self.y_axis].keys()):
             filter_value = self.series_name[field_ind]
             if utils.GROUP_SEPARATOR in filter_value:
                 filter_list = filter_value.split(GROUP_SEPARATOR)
@@ -96,7 +103,8 @@ class EnsSsSeries(Series):
         # filter by provided indy
         if len(self.config.indy_var) > 0:
             # Duck typing is different in Python 3.6 and Python 3.8, for
-            # Python 3.8 and above, explicitly type cast the self.input_data[self.config.indy_var]
+            # Python 3.8 and above, explicitly type cast the self.input_data[
+            # self.config.indy_var]
             # Panda Series object to 'str' if the list of indy_vals are of str type.
             # This will ensure we are doing str to str comparisons.
             if isinstance(self.config.indy_vals[0], str):
@@ -112,26 +120,32 @@ class EnsSsSeries(Series):
 
         # sort data by date/time - needed for CI calculations
         if 'fcst_valid_beg' in self.series_data.columns:
-            self.series_data = self.series_data.sort_values(['fcst_valid_beg', 'fcst_lead'])
+            self.series_data = self.series_data.sort_values(
+                ['fcst_valid_beg', 'fcst_lead'])
         if 'fcst_valid' in self.series_data.columns:
             self.series_data = self.series_data.sort_values(['fcst_valid', 'fcst_lead'])
         if 'fcst_init_beg' in self.series_data.columns:
-            self.series_data = self.series_data.sort_values(['fcst_init_beg', 'fcst_lead'])
+            self.series_data = self.series_data.sort_values(
+                ['fcst_init_beg', 'fcst_lead'])
         if 'fcst_init' in self.series_data.columns:
             self.series_data = self.series_data.sort_values(['fcst_init', 'fcst_lead'])
 
-        agg_bin_n = self.series_data[['bin_n', 'var_min']].groupby('var_min').agg('sum')['bin_n'].tolist()
+        agg_bin_n = \
+        self.series_data[['bin_n', 'var_min']].groupby('var_min').agg('sum')[
+            'bin_n'].tolist()
 
         # aggregate the bins with matching variance limits
         aggregates = pd.DataFrame(list(zip(agg_bin_n,
-                                          self._aggregate_column('var_mean', agg_bin_n),
-                                          self._aggregate_column('fbar', agg_bin_n),
-                                          self._aggregate_column('obar', agg_bin_n),
-                                          self._aggregate_column('fobar', agg_bin_n),
-                                          self._aggregate_column('ffbar', agg_bin_n),
-                                          self._aggregate_column('oobar', agg_bin_n)
-                                          )),
-                                 columns=['bin_n', 'var_mean', 'fbar', 'obar', 'fobar', 'ffbar', 'oobar'])
+                                           self._aggregate_column('var_mean',
+                                                                  agg_bin_n),
+                                           self._aggregate_column('fbar', agg_bin_n),
+                                           self._aggregate_column('obar', agg_bin_n),
+                                           self._aggregate_column('fobar', agg_bin_n),
+                                           self._aggregate_column('ffbar', agg_bin_n),
+                                           self._aggregate_column('oobar', agg_bin_n)
+                                           )),
+                                  columns=['bin_n', 'var_mean', 'fbar', 'obar', 'fobar',
+                                           'ffbar', 'oobar'])
 
         # if the number of binned points is not specified, use a default
         binned_points = self.config.ensss_pts
@@ -150,10 +164,15 @@ class EnsSsSeries(Series):
         # build bins with roughly equals amounts of points
         for index, row in aggregates.iterrows():
             # if the bin is large enough, calculate a spread/skill point
-            if (current_bins is not None) and (binned_points < sum(current_bins['bin_n']) or index == len(aggregates.index) - 1):
+            if (current_bins is not None) and (
+                    binned_points < sum(current_bins['bin_n']) or index == len(
+                    aggregates.index) - 1):
                 scale = 1 / sum(current_bins['bin_n'])
-                spread_skill = scale * sum(current_bins['bin_n'] * current_bins['var_mean'])
-                mse = scale * (sum(current_bins['bin_n'] * current_bins['ffbar']) - 2 * sum(current_bins['bin_n'] * current_bins['fobar']) + sum(
+                spread_skill = scale * sum(
+                    current_bins['bin_n'] * current_bins['var_mean'])
+                mse = scale * (sum(
+                    current_bins['bin_n'] * current_bins['ffbar']) - 2 * sum(
+                    current_bins['bin_n'] * current_bins['fobar']) + sum(
                     current_bins['bin_n'] * current_bins['oobar']))
                 spread_skill_values.append(spread_skill)
                 mse_values.append(mse)
@@ -166,12 +185,15 @@ class EnsSsSeries(Series):
                 # current_bins = current_bins.append(pd.DataFrame([row]))
                 current_bins = pd.concat([current_bins, pd.DataFrame([row])])
 
-        series_points_results = {'spread_skill': spread_skill_values, 'mse': mse_values, 'pts': pts_values}
+        series_points_results = {'spread_skill': spread_skill_values, 'mse': mse_values,
+                                 'pts': pts_values}
 
+        ens_logger.info(f"End creating the series points: {datetime.now()}")
         return series_points_results
 
     def _aggregate_column(self, column_name: str, agg_bin_n: list) -> list:
         a = self.series_data[['bin_n', 'var_min', column_name]]
         a['bin_n'] = a['bin_n'] * a[column_name]
-        agg_list = a[['bin_n', 'var_min']].groupby('var_min').agg('sum')['bin_n'].tolist()
+        agg_list = a[['bin_n', 'var_min']].groupby('var_min').agg('sum')[
+            'bin_n'].tolist()
         return [i / j for i, j in zip(agg_list, agg_bin_n)]

@@ -13,6 +13,7 @@ Class Name: BarSeries
 __author__ = 'Tatiana Burek'
 
 import warnings
+from datetime import datetime
 from typing import Union
 
 import numpy as np
@@ -37,6 +38,7 @@ class BarSeries(Series):
         self.series_list = series_list
         self.series_name = series_name
         super().__init__(config, idx, input_data, y_axis)
+        self.logger = util.get_common_logger(config.log_level, config.log_filename)
 
     def _create_all_fields_values_no_indy(self) -> dict:
         """
@@ -73,6 +75,10 @@ class BarSeries(Series):
         series_data_1 = None
         series_data_2 = None
 
+        logger = util.get_common_logger(self.log_level, self.log_filename)
+        logger.info(f"Calculating values for each point in "
+                                f"{self.config._get_series_val_names()}: "
+                                f"{datetime.now()}")
         # different ways to subset data for normal and derived series
         if self.series_name[-1] not in utils.OPERATION_TO_SIGN.keys():
             # this is a normal series
@@ -214,6 +220,9 @@ class BarSeries(Series):
             series_points_results['dbl_med'].append(point_stat)
             series_points_results['nstat'].append(len(point_data['stat_value']))
 
+        logger = util.get_common_logger(self.log_level, self.log_filename)
+        logger.info(f"Finished calculating values for each point: "
+                                f"{datetime.now()} ")
         return series_points_results
 
     def _calc_point_stat(self, data: list) -> Union[float, None]:
@@ -224,24 +233,37 @@ class BarSeries(Series):
         :return:  mean, median or sum of the values from the input list or
             None if the statistic parameter is invalid
         """
+        logger = util.get_common_logger(self.log_level, self.log_filename)
+        logger.info(f"Calculating the statistic corresponding to the "
+                                f"plot_stat config setting "
+                                f"{self.config.plot_stat} and "
+                                f"{self.config.indy_var}"
+                                f"={self.config.indy_vals}:"
+                                f" {datetime.now()}")
         # calculate point stat
+        nan_msg = 'All-NaN slice encountered'
         if self.config.plot_stat == 'MEAN':
             with warnings.catch_warnings():
                 warnings.filterwarnings(action='ignore',
-                                        message='All-NaN slice encountered')
+                                        message=nan_msg)
                 point_stat = np.nanmean(data)
         elif self.config.plot_stat == 'MEDIAN':
             with warnings.catch_warnings():
                 warnings.filterwarnings(action='ignore',
-                                        message='All-NaN slice encountered')
+                                        message=nan_msg)
                 point_stat = np.nanmedian(data)
         elif self.config.plot_stat == 'SUM':
             with warnings.catch_warnings():
                 warnings.filterwarnings(action='ignore',
-                                        message='All-NaN slice encountered')
+                                        message=nan_msg)
                 point_stat = np.nansum(data)
         else:
             point_stat = None
+
+        logger = util.get_common_logger(self.log_level, self.log_filename)
+        logger.info(f"Finished calculating the statistic corresponding to "
+                                f"the plot_stat config setting:"
+                                f" {datetime.now()}")
         return point_stat
 
     def _calculate_derived_values(self,
@@ -262,6 +284,8 @@ class BarSeries(Series):
         :param series_data_2: 2nd data frame sorted  by fcst_init_beg
         """
 
+        self.logger.info(f"Begin calculating derived values: "
+                                f"{datetime.now()}")
         # for each independent value
         for indy in self.config.indy_vals:
             if utils.is_string_integer(indy):
@@ -310,9 +334,10 @@ class BarSeries(Series):
                         stats_indy_1[
                             ['fcst_init', 'stat_name"']].drop_duplicates().shape[0]
             if stats_indy_1.shape[0] != unique_dates:
-                raise ValueError(
-                    'Derived curve can\'t be calculated. '
-                    'Multiple values for one valid date/fcst_lead')
+                error_msg = "Derived curve can\'t be calculated. Multiple values" \
+                            " for one valid date/fcst_lead  "
+                self.logger.error(f"ValueError: {error_msg}")
+                raise ValueError(error_msg)
 
             # data should be sorted sorted  by fcst_init_beg !!!!!
             stats_values = utils.calc_derived_curve_value(

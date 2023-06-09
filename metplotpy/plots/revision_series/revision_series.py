@@ -13,6 +13,8 @@ Class Name: revision_series.py
 
 import os
 import re
+from datetime import datetime
+
 from typing import Union
 
 import yaml
@@ -57,15 +59,19 @@ class RevisionSeries(Line):
         # config file that represents the BasePlot object (RevisionSeries).
         self.config_obj = RevisionSeriesConfig(self.parameters)
 
+        self.config_obj.logger.info(f'Begin revision series plotting.')
+
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val_1 is"
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check"
-                             " the number of your configuration file's plot_i,"
-                             " plot_disp, series_order, user_legend,"
-                             " colors, and series_symbols settings.")
+            value_error_msg = "The number of series defined by series_val_1 is" \
+                             " inconsistent with the number of settings" \
+                             " required for describing each series. Please check "\
+                             " the number of your configuration file's plot_i," \
+                             " plot_disp, series_order, user_legend," \
+                             " colors, and series_symbols settings."
+            self.config_obj.logger.error(f"ValueError: {value_error_msg}")
+            raise ValueError(value_error_msg)
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
@@ -126,6 +132,9 @@ class RevisionSeries(Line):
         """
         Create a Revision Series plot from defaults and custom parameters
         """
+
+        self.config_obj.logger.info(f"Begin creating the revision series figure:"
+                                    f" {datetime.now()}")
         # create and draw the plot
         self.figure = self._create_layout()
         self._add_xaxis()
@@ -170,6 +179,9 @@ class RevisionSeries(Line):
         # apply y axis limits
         self._yaxis_limits()
 
+        self.config_obj.logger.info(f"Finish creating revision series figure: "
+                                    f"{datetime.now()}")
+
     def _draw_series(self, series: Series, x_points_index_adj: Union[list, None] = None) -> None:
         """
         Draws the formatted series points on the plot
@@ -178,6 +190,7 @@ class RevisionSeries(Line):
         :param x_points_index_adj: values for adjusting x-values position
         """
 
+        self.config_obj.logger.info(f"Draw the formatted series: {datetime.now()}")
         y_points = series.series_points['points']['stat_value'].tolist()
 
         # add the plot
@@ -195,6 +208,7 @@ class RevisionSeries(Line):
                        ),
             secondary_y=False
         )
+        self.config_obj.logger.info(f"Finished drawing series: {datetime.now()}")
 
     def _add_xaxis(self) -> None:
         """
@@ -225,6 +239,7 @@ class RevisionSeries(Line):
         :return: the list of the adjustment values
         """
 
+        self.config_obj.logger.info("Calculating the x-axis adjustment.")
         # get the total number of series
         num_stag = len(self.config_obj.all_series_y1)
 
@@ -245,7 +260,7 @@ class RevisionSeries(Line):
         """
         Formats y1 series point data and saves them to the files
         """
-
+        self.config_obj.logger.info("Write output file")
         # if points_path parameter doesn't exist,
         # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
@@ -310,6 +325,8 @@ def main(config_filename=None):
         #plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
+        plot.config_obj.logger.info(f"Finished creating revision series plot: "
+                                    f"{datetime.now()}")
     except ValueError as val_er:
         print(val_er)
 
