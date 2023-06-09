@@ -1,5 +1,5 @@
 # ============================*
-# ** Copyright UCAR (c) 2020
+# ** Copyright UCAR (c) 2023
 # ** University Corporation for Atmospheric Research (UCAR)
 # ** National Center for Atmospheric Research (NCAR)
 # ** Research Applications Lab (RAL)
@@ -53,11 +53,11 @@ def extract_sounding_data(input_file):
 
     # Now extract the lines that are in the SOUNDING section.  The first line
     # contains the pressure levels in mb.
-    pressure_levels_row:list = data[start_line + 2: start_line + 3]
+    pressure_levels_row: list = data[start_line + 2: start_line + 3]
     # Remove the nlevel and nlevel values from the list
     only_pressure_levels = pressure_levels_row[0].split()
     pressure_levels = only_pressure_levels[3:]
-    sounding_data:list = data[start_line + 2: end_line - 1]
+    sounding_data: list = data[start_line + 2: end_line - 1]
 
     # Save the sounding data into a text file, which will then be converted into a
     # pandas dataframe.
@@ -246,7 +246,7 @@ def retrieve_temperatures(sounding_data: pd.DataFrame, hour_of_interest: str,
         temp_idx: pd.Index = sounding_data.index[sounding_data.FIELD == temp_field]
         hours: pd.Series = sounding_data[hour_of_interest]
         temp_hour: pd.Series = hours.iloc[temp_idx].values[0]
-        # Temperatures need to be divie by 10 since units are 10C
+        # Temperatures need to be divide by 10 since units are 10C
         temperatures_by_hour.append(temp_hour / 10)
 
     return temperatures_by_hour
@@ -326,8 +326,8 @@ def retrieve_winds(sounding_data: pd.DataFrame, hour_of_interest: str,
         # If the field name has been incorrectly formatted, we will observe and
         # IndexError.
         error_msg_1 = "Could not find the field"
-        error_msg_2 = "Probable cause is incorrectly formatted data. Please check the " \
-                      "data file"
+        error_msg_2 = "Probable cause is incorrectly formatted data. Please check the"\
+                      " data file"
         try:
             u_hour: pd.Series = (hours.iloc[u_idx].values[0]) / 10
         except IndexError:
@@ -388,7 +388,7 @@ def calculate_dewpoint(rh: list, temps: list) -> list:
 
 def retrieve_height(sounding_data: pd.DataFrame, hour_of_interest: str,
                     all_pressure_levels: list) -> list:
-    '''Retrieve all the hsights (in decameters) in the soundings dataframe based on
+    '''Retrieve all the heights (in decameters) in the soundings dataframe based on
     pressure level.
 
        Args:
@@ -422,7 +422,6 @@ def retrieve_height(sounding_data: pd.DataFrame, hour_of_interest: str,
             hgt_hour = 0
         else:
             try:
-
                 hgt_hour: pd.Series = (hours.iloc[hgt_idx].values[0]) * 10
             except IndexError:
                 logger.error(f"IndexError: Could not find field  {hgt_field}.  "
@@ -526,7 +525,7 @@ def create_skew_t(input_file: str, config: dict) -> None:
 
         if config['display_windbarbs']:
             skew.plot_barbs(pressure[::decimate], u_winds[::decimate], v_winds[
-                ::decimate])
+                                                                       ::decimate])
 
         # Add height labels
 
