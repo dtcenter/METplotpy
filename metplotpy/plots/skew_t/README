@@ -28,7 +28,7 @@ casper:/glade/work/jvigh/HFIP-EnsRI/data_output/DIAGNOSTICS/TCDIAG
 Customizations:
 3) You can customize the appearance of the temperature and dewpoint lines:
    temp_line_color: red
-   temp_line_style: '-'
+   temp_line_style: '-'       NOTE: supported values are '-', '--', '-.', ':', 'None', ' ', '', 'solid', 'dashed', 'dashdot', 'dotted'
    temp_line_thickness: 2
 
    dewpt_line_color: green
