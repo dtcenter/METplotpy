@@ -11,6 +11,8 @@ import os
 import re
 import logging
 import warnings
+
+import pandas
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -65,10 +67,13 @@ def extract_sounding_data(input_file):
         for line in sounding_data:
             txt_file.write("".join(line) + "\n")
 
-    df_raw = pd.read_csv("sounding_data.dat", delim_whitespace=True, skiprows=1)
+    # Read in the current sounding data file, replacing any 9999 values with NaN.
+    df_raw: pandas.DataFrame = pd.read_csv("sounding_data.dat", delim_whitespace=True,
+                                           skiprows=1,
+                                           na_values=['9999'])
 
     # Rename some columns so they are more descriptive
-    df = df_raw.rename(columns={'TIME': 'FIELD', '(HR)': 'UNITS'})
+    df: pandas.DataFrame = df_raw.rename(columns={'TIME': 'FIELD', '(HR)': 'UNITS'})
 
     return df, pressure_levels
 
@@ -212,7 +217,11 @@ def convert_pressures_to_ints(all_pressure_levels: list) -> list:
            all_pressure_levels: A list of all the numerical values of pressure in mb
            (represented as strings)
     '''
-    pressures_as_int = [int(level) for level in all_pressure_levels]
+    # pressures_as_int = [int(level) for level in all_pressure_levels if level ! NA]
+    pressures_as_int = []
+    for level in all_pressure_levels:
+        if level != 'nan':
+            pressures_as_int.append(int(level))
 
     return pressures_as_int
 
@@ -326,7 +335,7 @@ def retrieve_winds(sounding_data: pd.DataFrame, hour_of_interest: str,
         # If the field name has been incorrectly formatted, we will observe and
         # IndexError.
         error_msg_1 = "Could not find the field"
-        error_msg_2 = "Probable cause is incorrectly formatted data. Please check the"\
+        error_msg_2 = "Probable cause is incorrectly formatted data. Please check the" \
                       " data file"
         try:
             u_hour: pd.Series = (hours.iloc[u_idx].values[0]) / 10
@@ -342,7 +351,6 @@ def retrieve_winds(sounding_data: pd.DataFrame, hour_of_interest: str,
         # IndexError.
         try:
             v_hour: pd.Series = (hours.iloc[v_idx].values[0]) / 10
-
         except IndexError:
             error_msg = error_msg_1 + error_msg_2
             logger.error(f"Index Error: {error_msg}")
@@ -433,10 +441,56 @@ def retrieve_height(sounding_data: pd.DataFrame, hour_of_interest: str,
     return hgt_by_hour
 
 
+def check_for_all_na(input_file, soundings_df: pandas.DataFrame) -> bool:
+    ''' Checks if the file consists entirely of the fill/missing data value of 9999.
+
+        Args:
+            @param soundings_df: The soundings dataframe to check.
+        Returns:
+            boolean: True if data consists solely of na (missing values).
+    '''
+
+    logger.info("")
+    num_rows = soundings_df.shape[0]
+    num_columns = soundings_df.shape[1]
+    num_na = soundings_df.isnull().sum().sum()
+
+    if num_na == num_rows * (num_columns - 2):
+        return True
+    else:
+        return False
+
+
+def check_list_for_all_nan(input_list: list) -> bool:
+    '''
+       Checks if a list consists entirely of nan values.
+
+       Args:
+       @param input_list: A list of values.
+
+       Returns:
+           True if all the values are nan, False otherwise.
+    '''
+
+    num_items = len(input_list)
+    counter = 0
+    for item in input_list:
+        # Convert the float nan values to string.
+        item_str = str(item)
+        if item_str == 'nan':
+            counter += 1
+    if counter == num_items:
+        return True
+    else:
+        return False
+
+
 def create_skew_t(input_file: str, config: dict) -> None:
     '''
 
-      Create a skew T diagram from the TC Diag output.
+      Create a skew T diagram from the TC Diag output. Check for a file that is
+      entirely comprised of empty/fill values and for any sounding hours that result in
+      no data for temperature, winds, or relative humidity.
 
       Args:
           input_file: The input file of interest.  Generate skew T plots for
@@ -448,8 +502,15 @@ def create_skew_t(input_file: str, config: dict) -> None:
      Return:
            None, generate plots as png files in the specified output file directory.
     '''
-    logger.info(f" Creating skew T plots for input file {input_file} ")
+    file_only = os.path.basename(input_file)
+    logger.info(f" Creating skew T plots for input file {file_only} ")
     sounding_df, plevs = extract_sounding_data(input_file)
+
+    # Check if sounding data consists entirely of na-values.
+    all_na = check_for_all_na(input_file, sounding_df)
+    if all_na:
+        logger.warning(f"NO DATA to plot for {file_only}. NO PLOT GENERATED.")
+        return
 
     # For each hour of available sounding data, generate a skew T plot.
     # Each column contains all the sounding data for a particular hour 0-240
@@ -468,6 +529,8 @@ def create_skew_t(input_file: str, config: dict) -> None:
         times_list = [str(cur_time) for cur_time in times_list_config]
 
     for cur_time in times_list:
+        logger.info(f"Creating plot for the {cur_time} hour sounding.")
+
         # Retrieve all the pressures
         all_pressure_levels = retrieve_pressures(sounding_df, cur_time, plevs)
 
@@ -477,15 +540,37 @@ def create_skew_t(input_file: str, config: dict) -> None:
         # Retrieve all the temperatures
         # The first pressure level corresponds to the 'SURF' in the original data file.
         temperature = retrieve_temperatures(sounding_df, cur_time, all_pressure_levels)
+        all_temps_nan = check_list_for_all_nan(temperature)
+        if all_temps_nan:
+            logger.warning(f"No data for temperatures, cannot generate skew-T plot "
+                           f"for time {cur_time} and {file_only}")
+            continue
 
         # Retrieve all the relative humidities
         all_rh = retrieve_rh(sounding_df, cur_time, all_pressure_levels)
+        all_rh_nan = check_list_for_all_nan(all_rh)
+        if all_rh_nan:
+            logger.warning(f"No data for relative humidities, cannot generate skew-T "
+                           f"plot for time {cur_time} hour  and {file_only}")
+            continue
 
         # Calculate the dew points
         dew_pt = calculate_dewpoint(all_rh, temperature)
 
         # Wind barbs
         u_winds, v_winds = retrieve_winds(sounding_df, cur_time, all_pressure_levels)
+
+        u_winds_all_nan = check_list_for_all_nan(u_winds)
+        if u_winds_all_nan:
+            logger.warning(f"No data for the u-winds for  {cur_time} hour and "
+                           f"{file_only}")
+            continue
+
+        v_winds_all_nan = check_list_for_all_nan(v_winds)
+        if u_winds_all_nan:
+            logger.warning(f"No data for the v-winds for  {cur_time} hour and "
+                           f"{file_only}")
+            continue
 
         # Retrieve the heights in meters
         height = retrieve_height(sounding_df, cur_time, all_pressure_levels)
@@ -505,15 +590,19 @@ def create_skew_t(input_file: str, config: dict) -> None:
         dewpt_linewidth = config['dewpt_line_thickness']
         dewpt_linestyle = config['dewpt_line_style']
         dewpt_linecolor = config['dewpt_line_color']
+        logger.info(f"Generate the dew point line for  {cur_time} hour")
         skew.plot(pressure, dew_pt, 'g', linewidth=dewpt_linewidth,
                   linestyle=dewpt_linestyle, color=dewpt_linecolor)
 
         # Adiabat and mixing lines.
         if config['display_dry_adiabats']:
+            logger.info("Adding dry adiabat lines.")
             skew.plot_dry_adiabats()
         if config['display_moist_adiabats']:
+            logger.info("Adding moist adiabat lines.")
             skew.plot_moist_adiabats()
         if config['display_mixing_lines']:
+            logger.info("Adding mixing lines.")
             skew.plot_mixing_lines()
 
         # Wind barbs
@@ -524,11 +613,11 @@ def create_skew_t(input_file: str, config: dict) -> None:
         decimate = config['decimate_barbs']
 
         if config['display_windbarbs']:
+            logger.info("Adding wind barbs.")
             skew.plot_barbs(pressure[::decimate], u_winds[::decimate], v_winds[
                                                                        ::decimate])
 
         # Add height labels
-
         for p, t, h in zip(pressure[::decimate], temperature[::decimate],
                            height[::decimate]):
             # Masking to only plot wind barbs and pressures that are >= 100 hPa
@@ -565,7 +654,7 @@ def create_skew_t(input_file: str, config: dict) -> None:
         try:
             os.makedirs(output_dir, exist_ok=True)
         except FileExistsError:
-            # Ignore if file/diretory already exists, this is OK.
+            # Ignore if file/directory already exists, this is OK.
             pass
         full_filename_only, _ = os.path.splitext(input_file)
         filename_only = os.path.basename(full_filename_only)
@@ -576,13 +665,12 @@ def create_skew_t(input_file: str, config: dict) -> None:
         plt.savefig(plot_file)
         # Close any open figures to prevent having too many open figures.
         plt.close('all')
-
-        # plt.show()
+        logger.info(f"Finished generating plots for {cur_time} hr in {file_only}")
 
 
 def main(config_filename=None):
     '''
-       Entry point for generating a skewT diagram from the command line.
+       Entry point for generating a skewT logP diagram from the command line.
 
        Args:
 
@@ -630,10 +718,12 @@ def main(config_filename=None):
             # Get the list of input files to visualize.
             input_dir = config['input_directory']
             file_ext = config['input_file_extension']
-            for root, dir, files in os.walk(input_dir):
-                all_files = [file for file in files if file.endswith(file_ext)]
-                files_of_interest = [os.path.join(root, file) for file in all_files]
+            files_of_interest = []
 
+            for root, dir, files in os.walk(input_dir):
+                for item in files:
+                    if item.endswith(file_ext):
+                        files_of_interest.append(os.path.join(root, item))
             # Create skew T diagrams for each input file.
             for file_of_interest in files_of_interest:
                 create_skew_t(file_of_interest, config)
