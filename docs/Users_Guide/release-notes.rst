@@ -14,21 +14,26 @@ METplotpy Version 2.1.0-rc1 release notes (20230613)
 ------------------------------------------------------
   .. dropdown:: New Plots
 
+
      * **Create skew-T (sounding) plots from TC-Diag ASCII output** (`#339 <https://github.com/dtcenter/METplotpy/issues/339>`_).
 
 
+
   .. dropdown:: Enhancements
+
 
      None
 
 
   .. dropdown:: Internal
 
+
      * Feature develop cycle change (`#301 <https://github.com/dtcenter/METplotpy/issues/301>`_).
      * **Improve logging for 5 STIGS** (`#47 <https://github.com/dtcenter/METplus-Internal/issues/47>`_).
 
 
   .. dropdown:: Bugfixes
+
 
      None
 
@@ -37,14 +42,17 @@ METplotpy Version 2.1.0-beta2 release notes (20230421)
 ------------------------------------------------------
   .. dropdown:: New Plots
 
+
      None
 
 
   .. dropdown:: Enhancements
 
+
      * **Enhance the Release Notes by adding dropdown menus** (`#328 <https://github.com/dtcenter/METplotpy/issues/328>`_).
 
   .. dropdown:: Internal
+
 
      * Address Major SonarQube issues (`#43 <https://github.com/dtcenter/METplus-Internal/issues/43>`_).
 
