@@ -18,6 +18,7 @@ METplotpy Version 2.1.0-rc1 release notes (20230613)
 
 
   .. dropdown:: Enhancements
+
      None
 
 
@@ -28,12 +29,14 @@ METplotpy Version 2.1.0-rc1 release notes (20230613)
 
 
   .. dropdown:: Bugfixes
+
      None
 
 
 METplotpy Version 2.1.0-beta2 release notes (20230421)
 ------------------------------------------------------
   .. dropdown:: New Plots
+
      None
 
 
