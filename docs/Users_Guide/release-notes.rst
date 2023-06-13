@@ -17,6 +17,7 @@ METplotpy Version 2.1.0-rc1 release notes (20230613)
      * **Create skew-T (sounding) plots from TC-Diag ASCII output** (`#339 <https://github.com/dtcenter/METplotpy/issues/339>`_).
 
   .. dropdown:: Enhancements
+
      None
 
   .. dropdown:: Internal
@@ -26,6 +27,7 @@ METplotpy Version 2.1.0-rc1 release notes (20230613)
 
 
   .. dropdown:: Bugfixes
+
      None
 
 METplotpy Version 2.1.0-beta2 release notes (20230421)
