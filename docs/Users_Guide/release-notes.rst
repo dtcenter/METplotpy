@@ -13,14 +13,15 @@ METplotpy Release Notes
 METplotpy Version 2.1.0-rc1 release notes (20230613)
 ------------------------------------------------------
   .. dropdown:: New Plots
+
      * **Create skew-T (sounding) plots from TC-Diag ASCII output** (`#339 <https://github.com/dtcenter/METplotpy/issues/339>`_).
 
   .. dropdown:: Enhancements
      None
 
   .. dropdown:: Internal
-     * Feature develop cycle change (`#301 <https://github.com/dtcenter/METplotpy/issues/301>`_).
 
+     * Feature develop cycle change (`#301 <https://github.com/dtcenter/METplotpy/issues/301>`_).
      * **Improve logging for 5 STIGS** (`#47 <https://github.com/dtcenter/METplus-Internal/issues/47>`_).
 
 
