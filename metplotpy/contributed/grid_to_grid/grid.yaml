@@ -1,5 +1,5 @@
+# Data is available for download: https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Plotting_Data/grid_to_grid/
 # The directory where the grid stat netcdf output files are located.
-#input_dir: "/d1/METplus_Plotting_Data/grid_to_grid/201706130000/grid_stat"
 input_dir: "path-to/grid_to_grid/201706130000/grid_stat"
 
 # The directory where you wish to save the plots
