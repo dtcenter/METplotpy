@@ -45,9 +45,9 @@ Sample Data
 ___________
 
 The sample data used to create an example Polar Ice plot is available in
-the `marine_coastal METplus data tar file
-<https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/v4.0/sample_data-marine_coastal-4.1.tgz>`_  in the directory
-*model_applications/marine_coastal/GridStat_fcstRTOFS_obsOSTIA_iceCover/grid_stat_north_000000L_20210305_120000V_pairs.nc.*
+the `marine_coastal file
+<https://dtcenter.ucar.edu/dfiles/code/METplus/METplotpy/marine_and_coastal/polar_ice/grid_stat_north_000000L_20210305_120000V_pairs.nc>`_  
+*grid_stat_north_000000L_20210305_120000V_pairs.nc.*
 
 Save this file in a directory where you have read and write permissions, such as
 $WORKING_DIR/data/polar_plot, where $WORKING_DIR is the path to your data directory.
