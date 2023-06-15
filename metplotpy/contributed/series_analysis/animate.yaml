@@ -1,6 +1,6 @@
-input_dir: "/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output"
+input_dir: "path-to/METplus_Plotting_Output/series_by_lead_all_fhrs/output"
 
-output_dir: "/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python"
+output_dir: "path-to/METplus_Plotting_Output/series_by_lead_all_fhrs/output/series_animate_python"
 
 fhrs_list:
   - "F000"
