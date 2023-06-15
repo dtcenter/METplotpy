@@ -43,7 +43,7 @@ METplus Configuration
 Required Configuration File
 ___________________________
 
-The plotter requires a *mandatory* configuration, which is
+The plotter requires a *mandatory* configuration file, which is
 used to customize the settings to the skew-T plot. The **skew_t.yaml**
 file is included with the source code:
 
