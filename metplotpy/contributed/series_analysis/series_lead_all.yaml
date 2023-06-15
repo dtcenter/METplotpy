@@ -1,11 +1,9 @@
-
+# Data is available for download: https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Plotting_Data/series_analysis_lead/
 #The directory just above the Fxyz directories
-input_nc_file_dir: '/Volumes/d1/minnawin/METplus_Plotting_Data/series_analysis_lead'
-# on host 'kiowa', sample data is found here:
-#input_nc_file_dir: '/d1/projects/METplus/METplus_Plotting_Data/series_analysis_lead/'
+input_nc_file_dir: '/path-to/METplus_Plotting_Data/series_analysis_lead'
 
 # Output directory where final plots will be saved
-output_dir: '/Volumes/d1/minnawin/METplus_Plotting_Output/series_by_lead_all_fhrs/output'
+output_dir: 'path-to/METplus_Plotting_Output/series_by_lead_all_fhrs/output'
 
 #Background map with coastlines are by default turned "off", set to True to
 #draw coastlines.
