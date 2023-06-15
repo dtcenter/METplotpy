@@ -3,9 +3,8 @@
 # settings used to determine what to plot.
 
 #The directory just above the storm directories
-input_nc_file_dir: '/Volumes/d1/minnawin/METplus_Plotting_Data/series_analysis_init/20141214_00'
-# on host 'kiowa', sample data is found here:
-#input_nc_file_dir: '/d1/projects/METplus/METplus_Plotting_Data/series_analysis_init/20141214_00'
+# Data is available for download: https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Plotting_Data/series_analysis_init/
+input_nc_file_dir: 'path-to/METplus_Plotting_Data/series_analysis_init/20141214_00'
 
 #The name of the netcdf input file containing the variable of interest
 input_nc_file: 'series_TMP_Z2.nc'
@@ -25,7 +24,7 @@ storm_number: 'ML1200942014'
 output_filename_base: 'TMP_Z2'
 
 #The directory where you wish to store the output plots.
-output_dir: '/Volumes/d1/minnawin/METplus_Plotting_Output'
+output_dir: 'path-to/METplus_Plotting_Output'
 
 #Background map with coastlines are by default turned "off", set to True to
 #draw coastlines.
