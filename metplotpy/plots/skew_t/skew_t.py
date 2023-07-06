@@ -502,9 +502,21 @@ def create_skew_t(input_file: str, config: dict) -> None:
      Return:
            None, generate plots as png files in the specified output file directory.
     '''
+
+
     file_only = os.path.basename(input_file)
     logger.info(f" Creating skew T plots for input file {file_only} ")
+
+    # Check for zero-sized file and log empty file and return to continue to the next
+    # file in the input directory.
+    if os.stat(input_file).st_size == 0:
+        logger.warning(f"EMPTY FILE, NO CONTENT in {file_only}. NO PLOT "
+                       f"GENERATED.")
+        return
+
     sounding_df, plevs = extract_sounding_data(input_file)
+
+
 
     # Check if sounding data consists entirely of na-values.
     all_na = check_for_all_na(input_file, sounding_df)
@@ -666,6 +678,8 @@ def create_skew_t(input_file: str, config: dict) -> None:
         # Close any open figures to prevent having too many open figures.
         plt.close('all')
         logger.info(f"Finished generating plots for {cur_time} hr in {file_only}")
+
+        return
 
 
 def main(config_filename=None):
