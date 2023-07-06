@@ -12,6 +12,7 @@ plotly==5.13.0
 pytest>=7.2.1
 pyyaml==6.0
 scikit-image==0.19.3
+<<<<<<< HEAD
 scipy==1.10.0
 xarray==2023.1.0
 eofs==1.4.0
