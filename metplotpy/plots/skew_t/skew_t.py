@@ -441,7 +441,7 @@ def retrieve_height(sounding_data: pd.DataFrame, hour_of_interest: str,
     return hgt_by_hour
 
 
-def check_for_all_na(input_file, soundings_df: pandas.DataFrame) -> bool:
+def check_for_all_na(soundings_df: pandas.DataFrame) -> bool:
     ''' Checks if the file consists entirely of the fill/missing data value of 9999.
 
         Args:
@@ -516,10 +516,8 @@ def create_skew_t(input_file: str, config: dict) -> None:
 
     sounding_df, plevs = extract_sounding_data(input_file)
 
-
-
     # Check if sounding data consists entirely of na-values.
-    all_na = check_for_all_na(input_file, sounding_df)
+    all_na = check_for_all_na(sounding_df)
     if all_na:
         logger.warning(f"NO DATA to plot for {file_only}. NO PLOT GENERATED.")
         return
@@ -579,7 +577,7 @@ def create_skew_t(input_file: str, config: dict) -> None:
             continue
 
         v_winds_all_nan = check_list_for_all_nan(v_winds)
-        if u_winds_all_nan:
+        if v_winds_all_nan:
             logger.warning(f"No data for the v-winds for  {cur_time} hour and "
                            f"{file_only}")
             continue
