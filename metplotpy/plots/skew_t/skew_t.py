@@ -11,6 +11,7 @@ import os
 import re
 import logging
 import warnings
+import shutil
 
 import pandas
 import pandas as pd
@@ -677,7 +678,7 @@ def create_skew_t(input_file: str, config: dict) -> None:
         plt.close('all')
         logger.info(f"Finished generating plots for {cur_time} hr in {file_only}")
 
-        return
+    return
 
 
 def main(config_filename=None):
@@ -740,7 +741,6 @@ def main(config_filename=None):
             for file_of_interest in files_of_interest:
                 create_skew_t(file_of_interest, config)
 
-            # create_skew_t(input_file, config)
         except yaml.YAMLError as exc:
             logger.error(f"YAMLError: {exc}")
 
