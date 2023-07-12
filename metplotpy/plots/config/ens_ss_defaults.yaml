@@ -32,8 +32,8 @@ line_type: None
 list_stat_1: []
 list_stat_2: []
 
-log_filename: ../ens_ss/enss_ss.log
-log_level: 'DEBUG'
+log_filename: stdout
+log_level: 'WARNING'
 mar:
 - 8
 - 4

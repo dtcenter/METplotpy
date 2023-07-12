@@ -25,8 +25,8 @@ legend_inset:
   y: -0.25
 legend_ncol: 3
 legend_size: 0.8
-log_filename: ../bar/bar.log
-log_level: 'DEBUG'
+log_filename: stdout
+log_level: 'WARNING'
 line_type: N/A
 list_stat_1: []
 list_stat_2: []
