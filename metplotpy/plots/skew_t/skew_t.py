@@ -11,6 +11,7 @@ import os
 import re
 import logging
 import warnings
+import shutil
 
 import pandas
 import pandas as pd
@@ -441,7 +442,7 @@ def retrieve_height(sounding_data: pd.DataFrame, hour_of_interest: str,
     return hgt_by_hour
 
 
-def check_for_all_na(input_file, soundings_df: pandas.DataFrame) -> bool:
+def check_for_all_na(soundings_df: pandas.DataFrame) -> bool:
     ''' Checks if the file consists entirely of the fill/missing data value of 9999.
 
         Args:
@@ -502,12 +503,22 @@ def create_skew_t(input_file: str, config: dict) -> None:
      Return:
            None, generate plots as png files in the specified output file directory.
     '''
+
+
     file_only = os.path.basename(input_file)
     logger.info(f" Creating skew T plots for input file {file_only} ")
+
+    # Check for zero-sized file and log empty file and return to continue to the next
+    # file in the input directory.
+    if os.stat(input_file).st_size == 0:
+        logger.warning(f"EMPTY FILE, NO CONTENT in {file_only}. NO PLOT "
+                       f"GENERATED.")
+        return
+
     sounding_df, plevs = extract_sounding_data(input_file)
 
     # Check if sounding data consists entirely of na-values.
-    all_na = check_for_all_na(input_file, sounding_df)
+    all_na = check_for_all_na(sounding_df)
     if all_na:
         logger.warning(f"NO DATA to plot for {file_only}. NO PLOT GENERATED.")
         return
@@ -567,7 +578,7 @@ def create_skew_t(input_file: str, config: dict) -> None:
             continue
 
         v_winds_all_nan = check_list_for_all_nan(v_winds)
-        if u_winds_all_nan:
+        if v_winds_all_nan:
             logger.warning(f"No data for the v-winds for  {cur_time} hour and "
                            f"{file_only}")
             continue
@@ -667,6 +678,8 @@ def create_skew_t(input_file: str, config: dict) -> None:
         plt.close('all')
         logger.info(f"Finished generating plots for {cur_time} hr in {file_only}")
 
+    return
+
 
 def main(config_filename=None):
     '''
@@ -728,7 +741,6 @@ def main(config_filename=None):
             for file_of_interest in files_of_interest:
                 create_skew_t(file_of_interest, config)
 
-            # create_skew_t(input_file, config)
         except yaml.YAMLError as exc:
             logger.error(f"YAMLError: {exc}")
 
