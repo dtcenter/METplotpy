@@ -26,8 +26,8 @@ legend_inset:
 legend_ncol: 3
 legend_size: 0.8
 list_stat_1: []
-log_filename: ../revision_series/revision_series.log
-log_level: 'DEBUG'
+log_filename: stdout
+log_level: 'warning'
 mar:
 - 8
 - 4

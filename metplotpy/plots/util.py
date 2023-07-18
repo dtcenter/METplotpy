@@ -13,6 +13,7 @@
 __author__ = 'Minna Win'
 
 import argparse
+import sys
 import getpass
 import logging
 import re
@@ -317,7 +318,16 @@ def get_common_logger(log_level, log_filename):
                   'WARNING': logging.WARNING, 'ERROR': logging.ERROR,
                   'CRITICAL': logging.CRITICAL}
 
-    logging.basicConfig(level=log_levels[log_level],
+    if log_filename.lower() == 'stdout':
+        logging.basicConfig(level=log_levels[log_level],
+                            format='%(asctime)s||User:%('
+                                   'user)s||%(funcName)s|| [%(levelname)s]: %('
+                                   'message)s',
+                            datefmt='%Y-%m-%d %H:%M:%S',
+                            stream=sys.stdout)
+    else:
+
+        logging.basicConfig(level=log_levels[log_level],
                         format='%(asctime)s||User:%('
                                'user)s||%(funcName)s|| [%(levelname)s]: %('
                                'message)s',
