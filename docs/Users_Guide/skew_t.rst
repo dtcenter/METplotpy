@@ -12,13 +12,15 @@ https://en.wikipedia.org/wiki/Skew-T_log-P_diagram
 
 https://www.e-education.psu.edu/meteo300/node/638
 
+
+
 Example
 =======
 
 Sample Data
 ___________
 
-Sample data are included with the source code. The data are ASCII text files in columnar format. The data are located in:
+Sample data from CIRA are included with the source code. The data are ASCII text files in columnar format. The data are located in:
 *$METPLOTPY_BASE/metplotpy/test/skew_t/data*
 
 where *$METPLOTPY_BASE* is the directory where the METplotpy code is saved.
@@ -31,6 +33,14 @@ or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
 the Github repository.  The *x.y.z* is the release number.
+
+
+For background information on the CIRA data, please refer to:
+
+McNoldy, B. D., K. D. Musgrave, and M. DeMaria, 2012: Diagnostics and verification of the tropical cyclone environment in regional models. AMS 30th Conference on Hurricanes and Tropical Meteorology, April 2012, Ponte Vedra Beach, Florida.
+
+https://bmcnoldy.rsmas.miami.edu/papers/MMD_30HURR.pdf
+
 
 
 Configuration Files
