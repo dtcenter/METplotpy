@@ -35,7 +35,7 @@ or
 the Github repository.  The *x.y.z* is the release number.
 
 
-For background information on the CIRA data, please refer to:
+For background information on the CIRA TC model diagnostics, please refer to:
 
 McNoldy, B. D., K. D. Musgrave, and M. DeMaria, 2012: Diagnostics and verification of the tropical cyclone environment in regional models. AMS 30th Conference on Hurricanes and Tropical Meteorology, April 2012, Ponte Vedra Beach, Florida.
 
