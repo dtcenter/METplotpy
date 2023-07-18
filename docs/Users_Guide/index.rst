@@ -86,6 +86,7 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    mjo_rmm_omi
    taylor_diagram
    tcrmw_cross_section
+   skew_t
    stratosphere_diagnostics
    polar_plot
    wind_rose
@@ -99,4 +100,3 @@ Indices and tables
 
 * :ref:`genindex`
 * :ref:`search`
-    
