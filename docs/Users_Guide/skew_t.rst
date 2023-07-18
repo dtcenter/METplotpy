@@ -154,4 +154,5 @@ ___________________
 
 The **skew_t.yaml** configuration file in combination with the
 Python script and sample data, generates the following skew-T plot:
+
 .. image:: figure/ssh052023_avno_doper_2023010100_diag_0_hr.png
