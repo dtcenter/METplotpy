@@ -40,6 +40,10 @@ class ContourConfig(Config):
         # used by METviewer
         self.points_path = self.get_config_value('points_path')
 
+        # Logging
+        self.log_level = self.get_config_value('log_level')
+        self.log_filename = self.get_config_value('log_filename')
+
         # plot parameters
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')

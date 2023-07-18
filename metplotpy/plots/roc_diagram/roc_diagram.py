@@ -14,6 +14,7 @@ Class Name: roc_diagram.py
 __author__ = 'Minna Win'
 
 import os
+from datetime import datetime
 import yaml
 import re
 import sys
@@ -54,13 +55,16 @@ class ROCDiagram(BasePlot):
         # instantiate a ROCDiagramConfig object, which holds all the necessary settings from the
         # config file that represents the BasePlot object (ROC diagram).
         self.config_obj = ROCDiagramConfig(self.parameters)
+        self.logger = self.config_obj.logger
+        self.logger.info(f"Begin ROC diagram: {datetime.now()}")
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
-        if self.config_obj.use_ee:
 
+        if self.config_obj.use_ee:
+            self.logger.info("Applying event equalization")
             #
             # for both PCT and CTC linetypes, the indy_var is fcst_valid_beg,
             # as verified by looking at the METviewer GUI for ROC diagram
@@ -80,6 +84,7 @@ class ROCDiagram(BasePlot):
                 self.parameters['fixed_vars_vals_input']['thresh_i'] = thresh_i_0
 
             self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
+            self.logger.info("Finished performing event equalization.")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -110,6 +115,7 @@ class ROCDiagram(BasePlot):
             Returns:
 
         """
+        self.logger.info("Reading input data.")
         return pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
 
     def _create_series(self, input_data):
@@ -129,6 +135,7 @@ class ROCDiagram(BasePlot):
 
 
         """
+        self.logger.info("Creating series object.")
         series_list = []
 
         # use the list of series ordering values to determine how many series objects we need.
@@ -166,6 +173,7 @@ class ROCDiagram(BasePlot):
              ROC diagram
         """
 
+        self.logger.info(f"Begin creating figure: {datetime.now()}")
         fig = make_subplots(specs=[[{"secondary_y": True}]])
 
         # Set plot height and width in pixel value
@@ -319,6 +327,7 @@ class ROCDiagram(BasePlot):
                 legend_label = self.config_obj.user_legends[idx]
 
                 # add the plot
+                self.logger.info("Adding traces for markers and legend.")
                 fig.add_trace(
                     go.Scatter(mode="lines+markers", x=pofd_points, y=pody_points, showlegend=True,
                                text=thresh_list, textposition="top right", name=legend_label,
@@ -329,12 +338,15 @@ class ROCDiagram(BasePlot):
                 )
 
 
+
+
             def add_trace_copy(trace):
                 """Adds separate traces for markers and a legend.
                    This is a fix for not printing 'Aa' in the legend
                     Args:
                     Returns:
                 """
+
                 fig.add_traces(trace)
                 new_trace = fig.data[-1]
                 # if self.config_obj.add_point_thresholds:
@@ -347,6 +359,7 @@ class ROCDiagram(BasePlot):
             if self.config_obj.add_point_thresholds:
                 fig.for_each_trace(add_trace_copy)
 
+        self.logger.info(f"Finished creating figure: {datetime.now()}")
 
         return fig
 
@@ -365,11 +378,12 @@ class ROCDiagram(BasePlot):
                 self.figure.write_image(image_name)
 
             except FileNotFoundError:
-                print("Can't save to file " + image_name)
+                self.logger.error(f"FileNotFoundError: Cannot save "
+                                  f"{image_name} to file.")
             except ValueError as ex:
-                print(ex)
+                self.logger.error(f"ValueError: {ex}")
         else:
-            print("Oops!  The figure was not created. Can't save.")
+            self.logger.warning("Oops! The figure wasn't created.  Cannot save file.")
 
     def write_output_file(self):
         """
@@ -378,6 +392,7 @@ class ROCDiagram(BasePlot):
 
         """
 
+        self.logger.info("Writing output file")
         # if points_path parameter doesn't exist,
         # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
@@ -431,6 +446,8 @@ class ROCDiagram(BasePlot):
         """
         Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
         """
+
+        self.logger.info("Writing HTML file")
         if self.config_obj.create_html is True:
             # construct the fle name from plot_filename
             name_arr = self.get_config_value('plot_filename').split('.')
@@ -470,6 +487,7 @@ def main(config_filename=None):
         r.save_to_file()
 
         r.write_html()
+        r.logger.info(f"Finished ROC diagram: {datetime.now()}")
 
         #r.show_in_browser()
     except ValueError as ve:

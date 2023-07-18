@@ -14,6 +14,7 @@ Class Name: series.py
 __author__ = 'Minna Win'
 
 import itertools
+from datetime import datetime
 import metcalcpy.util.utils as utils
 
 
@@ -29,6 +30,8 @@ class Series:
         self.config = config
         self.idx = idx
         self.input_data = input_data
+        self.log_level = config.log_level
+        self.log_filename = config.log_filename
         self.y_axis = y_axis
         self.plot_disp = config.plot_disp[idx]
         if hasattr(config, 'plot_stat'):
@@ -108,5 +111,8 @@ class Series:
                 and 'beta_value' in self.series_data.columns:
             unique_beta_value = self.series_data['beta_value'].unique()
             if len(unique_beta_value) > 1:
-                print(f'WARNING: note that beta_value differs for one or more GBETA values for {name} '
-                      f'so that comparisons across cases may not be comparable.')
+                warning_msg = f"WARNING: note that beta_value differs for one or more" \
+                              f" GBETA values for {name} so that comparisons across" \
+                              f" cases may not be comparable."
+                self.config.logger.warning(f"{warning_msg}: {datetime.now()}")
+                print(warning_msg)

@@ -161,7 +161,7 @@ if __name__ == '__main__':
     """
     Compute interpolation weights
     """
-    pt.compute_interpolation_weights(args, ds, levels)
+    # pt.compute_interpolation_weights(args, ds)
 
     """
     Compute tangential and radial wind components
@@ -179,6 +179,3 @@ if __name__ == '__main__':
     Make plots
     """
     plot_pressure_lev(args, ds)
-
-
-

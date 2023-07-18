@@ -1,19 +1,19 @@
 # ============================*
- # ** Copyright UCAR (c) 2022
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2022
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Class Name: equivalence_testing_bounds.py
  """
 __author__ = 'Tatiana Burek'
 
 import os
+from datetime import datetime
 import re
 import csv
 
@@ -24,7 +24,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
+    PLOTLY_PAPER_BGCOOR
 from metplotpy.plots.equivalence_testing_bounds.equivalence_testing_bounds_series \
     import EquivalenceTestingBoundsSeries
 from metplotpy.plots.line.line_config import LineConfig
@@ -51,26 +52,34 @@ class EquivalenceTestingBounds(BasePlot):
         # init common layout
         super().__init__(parameters, "equivalence_testing_bounds_defaults.yaml")
 
-        # instantiate a LineConfig object, which holds all the necessary settings from the
+        # instantiate a LineConfig object, which holds all the necessary settings
+        # from the
         # config file that represents the BasePlot object (EquivalenceTestingBounds).
         self.config_obj = LineConfig(self.parameters)
+
+        self.eq_logger = self.config_obj.logger
+        self.eq_logger.info(f"Start equivalence testing bounds:  {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val_1/2 and derived curves is"
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check"
-                             " the number of your configuration file's plot_i,"
-                             " plot_disp, series_order, user_legend,"
-                             " colors, and series_symbols settings.")
+            error_msg = "The number of series defined by series_val_1/2 and derived" \
+                        " curves is inconsistent with the number of settings" \
+                        " required for describing each series. Please check" \
+                        " the number of your configuration file's plot_i," \
+                        " plot_disp, series_order, user_legend," \
+                        " colors, and series_symbols settings."
+            self.eq_logger.error(f"ValueError: {error_msg}: {datetime.now()}")
+            raise ValueError(error_msg)
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
+        self.eq_logger.info(f"Finished reading input data: {datetime.now()}")
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
-            self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
+            self.input_df = calc_util.perform_event_equalization(self.parameters,
+                                                                 self.input_df)
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -104,29 +113,35 @@ class EquivalenceTestingBounds(BasePlot):
             Returns:
 
         """
+        self.eq_logger.info(f"Begin reading input data: {datetime.now()}")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
                            header='infer', float_precision='round_trip')
 
     def _create_series(self, input_data):
         """
-           Generate all the series objects that are to be displayed as specified by the plot_disp
+           Generate all the series objects that are to be displayed as specified by
+           the plot_disp
            setting in the config file.  The points are all ordered by datetime.
 
            Args:
                input_data:  The input data in the form of a Pandas dataframe.
-                            This data will be subset to reflect the series data of interest.
+                            This data will be subset to reflect the series data of
+                            interest.
 
            Returns:
                a list of series objects that are to be displayed
 
 
         """
+
+        self.eq_logger.info(f"Creating series object: {datetime.now()}")
         series_list = []
 
         # add series for y1 axis
         num_series_y1 = len(self.config_obj.get_series_y(1))
         for i, name in enumerate(self.config_obj.get_series_y(1)):
-            series_obj = EquivalenceTestingBoundsSeries(self.config_obj, i, input_data, series_list, name)
+            series_obj = EquivalenceTestingBoundsSeries(self.config_obj, i, input_data,
+                                                        series_list, name)
             # we don't need to display the regular series - set disp to false
             series_obj.plot_disp = False
             series_list.append(series_obj)
@@ -134,8 +149,10 @@ class EquivalenceTestingBounds(BasePlot):
         # add series for y2 axis
         num_series_y2 = len(self.config_obj.get_series_y(2))
         for i, name in enumerate(self.config_obj.get_series_y(2)):
-            series_obj = EquivalenceTestingBoundsSeries(self.config_obj, num_series_y1 + i,
-                                                        input_data, series_list, name, 2)
+            series_obj = EquivalenceTestingBoundsSeries(self.config_obj,
+                                                        num_series_y1 + i,
+                                                        input_data, series_list, name,
+                                                        2)
             # we don't need to display the regular series - set disp to false
             series_obj.plot_disp = False
             series_list.append(series_obj)
@@ -145,8 +162,11 @@ class EquivalenceTestingBounds(BasePlot):
         for i, name in enumerate(self.config_obj.get_config_value('derived_series_1')):
             # add only ETB curves
             if name[2] == "ETB":
-                series_obj = EquivalenceTestingBoundsSeries(self.config_obj, num_series_y1 + num_series_y2 + i,
-                                                            input_data, series_list, name)
+                series_obj = EquivalenceTestingBoundsSeries(self.config_obj,
+                                                            num_series_y1 +
+                                                            num_series_y2 + i,
+                                                            input_data, series_list,
+                                                            name)
                 series_list.append(series_obj)
 
         # add derived for y2 axis
@@ -154,19 +174,26 @@ class EquivalenceTestingBounds(BasePlot):
             if name[2] == "ETB":
                 # add only ETB curves
                 series_obj = EquivalenceTestingBoundsSeries(self.config_obj,
-                                                            num_series_y1 + num_series_y2 + num_series_y1_d + i,
-                                                            input_data, series_list, name, 2)
+                                                            num_series_y1 +
+                                                            num_series_y2 +
+                                                            num_series_y1_d + i,
+                                                            input_data, series_list,
+                                                            name, 2)
                 series_list.append(series_obj)
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
+        self.eq_logger.info(f"Finished creating series object:"
+                         f" {datetime.now()}")
         return series_list
 
     def _create_figure(self):
         """
-        Create a Equivalence Testing Bounds plot from defaults and custom parameters
+        Create an Equivalence Testing Bounds plot from defaults and custom parameters
         """
+        self.eq_logger.info(f"Creating the figure: {datetime.now()}")
+
         # create and draw the plot
         self.figure = self._create_layout()
         self._add_xaxis()
@@ -184,6 +211,8 @@ class EquivalenceTestingBounds(BasePlot):
                 self._draw_series(series, ind)
                 ind = ind + 1
 
+        self.eq_logger.info(f"Finished creating the figure: {datetime.now()}")
+
     def _draw_series(self, series: LineSeries, ind: int) -> None:
         """
         Draws the formatted ETB line on the plot
@@ -192,6 +221,7 @@ class EquivalenceTestingBounds(BasePlot):
         :param x_points_index_adj: values for adjusting x-values position
         """
 
+        self.eq_logger.info(f"Start drawing the lines on the plot: {datetime.now()}")
         ci_tost_up = series.series_points['ci_tost'][1]
         ci_tost_lo = series.series_points['ci_tost'][0]
         dif = series.series_points['dif']
@@ -249,6 +279,8 @@ class EquivalenceTestingBounds(BasePlot):
                                     }
                               )
 
+        self.eq_logger.info(f"Finished drawing the lines on the plot: {datetime.now()}")
+
     def _create_layout(self) -> Figure:
         """
         Creates a new layout based on the properties from the config file
@@ -259,7 +291,8 @@ class EquivalenceTestingBounds(BasePlot):
         # create annotation
         annotation = [
             {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-                                             self.config_obj.parameters['caption_weight']),
+                                             self.config_obj.parameters[
+                                                 'caption_weight']),
              'align': 'left',
              'showarrow': False,
              'xref': 'paper',
@@ -273,7 +306,8 @@ class EquivalenceTestingBounds(BasePlot):
              }]
         # create title
         title = {'text': util.apply_weight_style(self.config_obj.title,
-                                                 self.config_obj.parameters['title_weight']),
+                                                 self.config_obj.parameters[
+                                                     'title_weight']),
                  'font': {
                      'size': self.config_obj.title_font_size,
                  },
@@ -314,7 +348,8 @@ class EquivalenceTestingBounds(BasePlot):
                                  title_font={
                                      'size': self.config_obj.x_title_font_size
                                  },
-                                 title_standoff=abs(self.config_obj.parameters['xlab_offset']),
+                                 title_standoff=abs(
+                                     self.config_obj.parameters['xlab_offset']),
                                  tickangle=self.config_obj.x_tickangle,
                                  tickfont={'size': self.config_obj.x_tickfont_size}
                                  )
@@ -325,7 +360,8 @@ class EquivalenceTestingBounds(BasePlot):
         """
         self.figure.update_yaxes(title_text=
                                  util.apply_weight_style(self.config_obj.yaxis_1,
-                                                         self.config_obj.parameters['ylab_weight']),
+                                                         self.config_obj.parameters[
+                                                             'ylab_weight']),
                                  secondary_y=False,
                                  linecolor=PLOTLY_AXIS_LINE_COLOR,
                                  linewidth=PLOTLY_AXIS_LINE_WIDTH,
@@ -338,7 +374,8 @@ class EquivalenceTestingBounds(BasePlot):
                                  title_font={
                                      'size': self.config_obj.y_title_font_size
                                  },
-                                 title_standoff=abs(self.config_obj.parameters['ylab_offset']) + 15,
+                                 title_standoff=abs(
+                                     self.config_obj.parameters['ylab_offset']) + 15,
                                  tickangle=self.config_obj.y_tickangle,
                                  tickfont={'size': self.config_obj.y_tickfont_size},
                                  showticklabels=False
@@ -351,7 +388,8 @@ class EquivalenceTestingBounds(BasePlot):
         if self.config_obj.parameters['list_stat_2']:
             self.figure.update_yaxes(title_text=
                                      util.apply_weight_style(self.config_obj.yaxis_2,
-                                                             self.config_obj.parameters['y2lab_weight']),
+                                                             self.config_obj.parameters[
+                                                                 'y2lab_weight']),
                                      secondary_y=True,
                                      linecolor=PLOTLY_AXIS_LINE_COLOR,
                                      linewidth=PLOTLY_AXIS_LINE_WIDTH,
@@ -361,7 +399,8 @@ class EquivalenceTestingBounds(BasePlot):
                                      title_font={
                                          'size': self.config_obj.y2_title_font_size
                                      },
-                                     title_standoff=abs(self.config_obj.parameters['y2lab_offset']),
+                                     title_standoff=abs(
+                                         self.config_obj.parameters['y2lab_offset']),
                                      tickangle=self.config_obj.y2_tickangle,
                                      tickfont={'size': self.config_obj.y2_tickfont_size}
                                      )
@@ -375,9 +414,12 @@ class EquivalenceTestingBounds(BasePlot):
                                           'y': self.config_obj.bbox_y,
                                           'xanchor': 'center',
                                           'yanchor': 'top',
-                                          'bordercolor': self.config_obj.legend_border_color,
-                                          'borderwidth': self.config_obj.legend_border_width,
-                                          'orientation': self.config_obj.legend_orientation,
+                                          'bordercolor':
+                                              self.config_obj.legend_border_color,
+                                          'borderwidth':
+                                              self.config_obj.legend_border_width,
+                                          'orientation':
+                                              self.config_obj.legend_orientation,
                                           'font': {
                                               'size': self.config_obj.legend_size,
                                               'color': "black"
@@ -395,7 +437,8 @@ class EquivalenceTestingBounds(BasePlot):
             x_points_index = list(range(0, len(n_stats)))
             self.figure.update_layout(xaxis2={'title_text':
                                                   util.apply_weight_style('NStats',
-                                                                          self.config_obj.parameters['x2lab_weight']
+                                                                          self.config_obj.parameters[
+                                                                              'x2lab_weight']
                                                                           ),
                                               'linecolor': PLOTLY_AXIS_LINE_COLOR,
                                               'linewidth': PLOTLY_AXIS_LINE_WIDTH,
@@ -405,17 +448,20 @@ class EquivalenceTestingBounds(BasePlot):
                                               'zeroline': False,
                                               'ticks': "inside",
                                               'title_font': {
-                                                  'size': self.config_obj.x2_title_font_size
+                                                  'size':
+                                                      self.config_obj.x2_title_font_size
                                               },
                                               'title_standoff': abs(
-                                                  self.config_obj.parameters['x2lab_offset']
+                                                  self.config_obj.parameters[
+                                                      'x2lab_offset']
                                               ),
                                               'tickmode': 'array',
                                               'tickvals': x_points_index,
                                               'ticktext': n_stats,
                                               'tickangle': self.config_obj.x2_tickangle,
                                               'tickfont': {
-                                                  'size': self.config_obj.x2_tickfont_size
+                                                  'size':
+                                                      self.config_obj.x2_tickfont_size
                                               },
                                               'scaleanchor': 'x'
                                               }
@@ -429,7 +475,8 @@ class EquivalenceTestingBounds(BasePlot):
 
     def remove_file(self):
         """
-           Removes previously made image file .  Invoked by the parent class before self.output_file
+           Removes previously made image file .  Invoked by the parent class before
+           self.output_file
            attribute can be created, but overridden here.
         """
 
@@ -449,8 +496,12 @@ class EquivalenceTestingBounds(BasePlot):
 
     def write_html(self) -> None:
         """
-        Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
+        Is needed - creates and saves the html representation of the plot WITHOUT
+        Plotly.js
         """
+
+        self.eq_logger.info(f"Write html file: {datetime.now()}")
+
         if self.config_obj.create_html is True:
             # construct the fle name from plot_filename
             name_arr = self.get_config_value('plot_filename').split('.')
@@ -459,10 +510,14 @@ class EquivalenceTestingBounds(BasePlot):
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
 
+        self.eq_logger.info(f"Finished writing html file: {datetime.now()}")
+
     def write_output_file(self) -> None:
         """
-        Formats y1 and y2 series point data to the 2-dim arrays and saves them to the files
+        Formats y1 and y2 series point data to the 2-dim arrays and saves them to the
+        files
         """
+        self.eq_logger.info(f"Write output file: {datetime.now()}")
 
         # if points_path parameter doesn't exist,
         # open file, name it based on the stat_input config setting,
@@ -471,8 +526,10 @@ class EquivalenceTestingBounds(BasePlot):
         # otherwise use points_path path
 
         ci_tost_df = pd.DataFrame(columns=['ci_tost_lo', 'diff', 'ci_tost_hi'],
-                                  index=range(0, len(self.config_obj.get_config_value('derived_series_1')) +
-                                              len(self.config_obj.get_config_value('derived_series_2'))))
+                                  index=range(0, len(self.config_obj.get_config_value(
+                                      'derived_series_1')) +
+                                              len(self.config_obj.get_config_value(
+                                                  'derived_series_2'))))
         ind = 0
         for series in self.series_list:
             if series.plot_disp:
@@ -502,13 +559,17 @@ class EquivalenceTestingBounds(BasePlot):
             # save points
             self._save_points(ci_tost_df.values.tolist(), filename)
 
+        self.eq_logger.info(f"Finished writing the output file: {datetime.now()}")
 
     @staticmethod
     def _save_points(points: list, output_file: str) -> None:
         """
-        Saves array of points to the file. Ir replaces all None values to N/A and format floats
-        :param points: 2-dimensional array. The 1st dimension is the number of x-axis points
-        The 2nd - is the all y-points for a single  x-axis points. Each y-points has 3 numbers:
+        Saves array of points to the file. Ir replaces all None values to N/A and
+        format floats
+        :param points: 2-dimensional array. The 1st dimension is the number of x-axis
+        points
+        The 2nd - is the all y-points for a single  x-axis points. Each y-points has
+        3 numbers:
         actual value, CI low, CI high
         :param output_file: the name of the output file
         """
@@ -556,9 +617,10 @@ def main(config_filename=None):
     try:
         plot = EquivalenceTestingBounds(docs)
         plot.save_to_file()
-        #plot.show_in_browser()
+        # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
+        plot.eq_logger.info(f"Finished equivalence testing bounds: {datetime.now()}")
     except ValueError as val_er:
         print(val_er)
 

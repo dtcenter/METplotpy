@@ -25,7 +25,7 @@ colors:
   - "#1500ff" # royal blue
   - "#7f00ff" # purple
 
-fcst_var_val_1: DLWRF
+fcst_var_val_1: {DLWRF}
 
 legend_box: 'box'
 
@@ -34,6 +34,9 @@ legend_inset:
   y: -0.25
 legend_ncol: 4
 legend_size: 0.8
+
+log_filename: STDOUT
+log_level: 'DEBUG'
 
 # Turn on/off plotting of specific points/series
 plot_disp:
@@ -292,14 +295,3 @@ show_signif:
   - 'False'
   - 'False'
   - 'False'
-
-
-
-
-
-
-
-
-
-
-

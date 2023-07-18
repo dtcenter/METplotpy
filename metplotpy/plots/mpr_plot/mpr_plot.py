@@ -13,6 +13,8 @@ Class Name: mpr_plot.py
  """
 __author__ = 'Tatiana Burek'
 
+
+from datetime import datetime
 import pandas as pd
 import numpy as np
 import yaml
@@ -35,6 +37,8 @@ class MprPlotInfo():
     """
 
     def __init__(self):
+
+
         # plotly traces for the plot
         self.traces = []
 
@@ -60,6 +64,7 @@ class MprPlotInfo():
         )
 
 
+
 class MprPlot(BasePlot):
     """
        Creates a set of graphics based on settings in a config file from MPR line type data.
@@ -82,6 +87,9 @@ class MprPlot(BasePlot):
         # instantiate a MprPlotConfig object, which holds all the necessary settings from the
         # config file that represents the BasePlot object.
         self.config_obj = MprPlotConfig(self.parameters)
+        self.logger = util.get_common_logger(self.config_obj.log_level,
+                                             self.config_obj.log_filename)
+        self.logger.info(f"Begin matched pair plotting: {datetime.now()}")
         self.input_df = None
         self.plot_info_list = []
         self.figure = self._create_figure()
@@ -95,6 +103,7 @@ class MprPlot(BasePlot):
             Returns:
 
         """
+        self.logger.info(f"Reading input data: {datetime.now()}")
         dtypes = {"VERSION": 'str', 'MODEL': 'str', 'DESC': 'str', 'FCST_LEAD': int}
 
         # for each file
@@ -113,6 +122,8 @@ class MprPlot(BasePlot):
                 # self.input_df = self.input_df.append(filtered)
                 self.input_df = pd.concat([self.input_df, filtered])
 
+        self.logger.info(f"Finished reading input data: {datetime.now()}")
+
     def _create_figure(self) -> go.Figure:
         """
             Initialise the figure and add Wnd roses traces
@@ -122,6 +133,7 @@ class MprPlot(BasePlot):
             Returns:
                     Multipanel plot as Plotly figure
             """
+        self.logger.info(f"Begin creating the figure: {datetime.now()}")
 
         # read data
         self._read_input_data()
@@ -240,6 +252,8 @@ class MprPlot(BasePlot):
             width=self.config_obj.width,
             height=self.config_obj.height,
         )
+
+        self.logger.info(f"Finished creating the figure: {datetime.now()}")
         return fig
 
     def _create_plots(self, cases: np.ndarray) -> None:
@@ -254,6 +268,8 @@ class MprPlot(BasePlot):
         :param cases:  list of unique cases
         :return:
         """
+
+        self.logger.info(f"Creating a plot for each case {datetime.now()}")
         row_n = 1
         for case_ind, case in enumerate(cases):
             # Get the subset for this case
@@ -321,7 +337,9 @@ class MprPlot(BasePlot):
                     self.plot_info_list.append(info)
                     row_n = row_n + 2
                 else:
-                    print("WARNING: UGRD/VGRD vectors do not exactly match")
+                    self.logger.warning(" WARNINING:: UGRD/VGRD vectors do not "
+                                        "exactly matc ")
+        self.logger.info(f"Finished creating a plot: {datetime.now()}")
 
     def _create_wind_rose_plot(self, u_wind_data: pd.DataFrame,
                                v_wind_data: pd.DataFrame, case_title: str,
@@ -338,6 +356,7 @@ class MprPlot(BasePlot):
         :return: MprPlotInfo object with wind rose traces and title
         """
 
+        self.logger.info('Begin creating a wind rose plot')
         if data_type == 'FCST-OBS':
             title = 'Wind Errors'
         elif data_type == 'FCST':
@@ -365,6 +384,8 @@ class MprPlot(BasePlot):
         # record traces
         for trace in plot.traces:
             info.traces.append(trace)
+
+        self.logger.info(f"Finished creating wind rose: {datetime.now()} ")
 
         return info
 
@@ -411,6 +432,7 @@ class MprPlot(BasePlot):
         :return: MprPlotInfo object with Q-Q plot traces and title
         """
 
+        self.logger.info(f"Begin creating qq plot: {datetime.now()}")
         # subset and sort data
         qq_fcst = case_subset['FCST'].tolist()
         qq_fcst.sort()
@@ -440,6 +462,8 @@ class MprPlot(BasePlot):
         info.title = f"Q-Q Plot of {len(case_subset)} points<br>{case_title}"
         info.xaxes['title_text'] = 'Forecast'
         info.yaxes['title_text'] = 'Observation'
+
+        self.logger.info(f"Finished creating qq plot: {datetime.now()}")
         return info
 
     def _create_scatter_plot(self, case_title: str, case_subset: pd.DataFrame,
@@ -452,6 +476,7 @@ class MprPlot(BasePlot):
         :return: MprPlotInfo object with Scatter plot traces and title
         """
 
+        self.logger.info(f"Begin creating scatter plot: {datetime.now()}")
         # create the plot
         scatter = go.Scatter(
             x=case_subset['FCST'],
@@ -474,6 +499,7 @@ class MprPlot(BasePlot):
         info.title = f"Scatter Plot of {len(case_subset)} points<br>{case_title}"
         info.xaxes['title_text'] = 'Forecast'
         info.yaxes['title_text'] = 'Observation'
+        self.logger.info(f"Finished creating scatter plot: {datetime.now()}")
         return info
 
     def _create_histogtam(self, case_title: str, case_subset: pd.DataFrame,
@@ -487,7 +513,7 @@ class MprPlot(BasePlot):
         :return: MprPlotInfo object with Scatter plot traces and title
         """
 
-
+        self.logger.info(f"Begin creating the histogram: {datetime.now()}")
         info = MprPlotInfo()
         if data_type == 'FCST':
             title = 'Forecast'
@@ -524,6 +550,7 @@ class MprPlot(BasePlot):
         info.xaxes['title_text'] = title
         info.xaxes['range'] = [0, n_bins[-1]]
         info.yaxes['title_text'] = 'Frequency'
+        self.logger.info(f"Finished creating histogram: {datetime.now()}")
         return info
 
     def save_to_file(self) -> None:
@@ -535,6 +562,7 @@ class MprPlot(BasePlot):
         Returns:
 
         """
+        self.logger.info(f"Saving to file")
         image_name = self.get_config_value('plot_filename')
         pio.kaleido.scope.default_format = "png"
         pio.kaleido.scope.default_height = self.config_obj.height
@@ -543,11 +571,13 @@ class MprPlot(BasePlot):
             try:
                 self.figure.write_image(image_name)
             except FileNotFoundError:
-                print("Can't save to file " + image_name)
+                self.logger.error(f"FileNotFoundError: {image_name}")
             except ValueError as ex:
-                print(ex)
+                self.logger.error(f"ValueError: {ex}")
         else:
-            print("Oops!  The figure was not created. Can't save.")
+            self.logger.warning("WARNING: Oops!  The figure was not created. Can't "
+                                "save.")
+        self.logger.info(f"Finished saving mpr plot {datetime.now()}")
 
 
 def main(config_filename=None):
@@ -576,6 +606,7 @@ def main(config_filename=None):
         plot.save_to_file()
         if plot.config_obj.show_in_browser:
             plot.show_in_browser()
+        plot.logger.info(f"Finished plotting for mpr: {datetime.now()}")
     except ValueError as ve:
         print(ve)
 

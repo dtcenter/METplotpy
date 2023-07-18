@@ -1,13 +1,12 @@
 # ============================*
- # ** Copyright UCAR (c) 2022
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2022
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Class Name: eclv.py
  """
@@ -23,6 +22,7 @@ import itertools
 
 import plotly.graph_objects as go
 
+from datetime import datetime
 from metcalcpy.event_equalize import event_equalize
 from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH
@@ -33,9 +33,9 @@ from metplotpy.plots import util
 from metplotpy.plots.series import Series
 
 
-
 class Eclv(Line):
-    """  Generates a Plotly Economic Cost Loss Relative Value plot for 1 or more traces (lines)
+    """  Generates a Plotly Economic Cost Loss Relative Value plot for 1 or more
+    traces (lines)
          where each line is represented by a text point data file.
     """
     defaults_name = "eclv_defaults.yaml"
@@ -55,13 +55,28 @@ class Eclv(Line):
         self.x_axis_ticktext = []
         self.allow_secondary_y = False
 
-        # instantiate a EclvConfig object, which holds all the necessary settings from the
+        # instantiate an EclvConfig object, which holds all the necessary settings
+        # from the
         # config file that represents the BasePlot object (Eclv).
         self.config_obj = EclvConfig(self.parameters)
+
+        self.eclv_logger = self.config_obj.logger
+
+        self.eclv_logger.info(f"Start eclv plot: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
+            self.line_logger.error(f"ValueError: The number of series defined by "
+                                   f"series_val_1 is "
+                                   f"inconsistent with the number of settings "
+                                   f"required for"
+                                   f" describing each series. Please check the number "
+                                   f"of"
+                                   f" your configuration file's plot_i, plot_disp, "
+                                   f"series_order, user_legend, colors, and "
+                                   f"series_symbols settings. {datetime.now()}")
+
             raise ValueError("The number of series defined by series_val_1 is"
                              " inconsistent with the number of settings"
                              " required for describing each series. Please check"
@@ -70,23 +85,28 @@ class Eclv(Line):
                              " colors, and series_symbols settings.")
 
         # Read in input data, location specified in config file
+        self.eclv_logger.info(f"Begin reading input data: {datetime.now()}")
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
+            self.line_logger.info(f"Performing event equalization: {datetime.now()}")
             fix_vals_permuted_list = []
 
             for key in self.config_obj.fixed_vars_vals_input:
-                vals_permuted = list(itertools.product(*self.config_obj.fixed_vars_vals_input[key].values()))
-                vals_permuted_list = [item for sublist in vals_permuted for item in sublist]
+                vals_permuted = list(itertools.product(
+                    *self.config_obj.fixed_vars_vals_input[key].values()))
+                vals_permuted_list = [item for sublist in vals_permuted for item in
+                                      sublist]
                 fix_vals_permuted_list.append(vals_permuted_list)
 
             fix_vals_keys = list(self.config_obj.fixed_vars_vals_input.keys())
 
             self.input_df = event_equalize(self.input_df, self.ECLV_INDY_VAR,
-                                self.parameters['series_val_1'],
-                                fix_vals_keys,
-                                fix_vals_permuted_list, True,True)
+                                           self.parameters['series_val_1'],
+                                           fix_vals_keys,
+                                           fix_vals_permuted_list, True, True)
+        self.eclv_logger.info(f"End even equalization: {datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -99,7 +119,9 @@ class Eclv(Line):
         # Need to have a self.figure that we can pass along to
         # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
+        self.eclv_logger.info(f"Begin creating the figure: {datetime.now()}")
         self._create_figure()
+        self.eclv_logger.info(f"End creating the figure: {datetime.now()}")
 
     def __repr__(self):
         """ Implement repr which can be useful for debugging this
@@ -110,7 +132,8 @@ class Eclv(Line):
 
     def _create_series(self, input_data):
         """
-           Generate all the series objects that are to be displayed as specified by the plot_disp
+           Generate all the series objects that are to be displayed as specified by
+           the plot_disp
            setting in the config file.  Each series object
            is represented by a line in the diagram, so they also contain information
            for line width, line- and marker-colors, line style, and other plot-related/
@@ -118,13 +141,16 @@ class Eclv(Line):
 
            Args:
                input_data:  The input data in the form of a Pandas dataframe.
-                            This data will be subset to reflect the series data of interest.
+                            This data will be subset to reflect the series data of
+                            interest.
 
            Returns:
                a list of series objects that are to be displayed
 
 
         """
+
+        self.eclv_logger.info(f"Begin creating series objects: {datetime.now()}")
         series_list = []
 
         # add series for y1 axis
@@ -137,12 +163,15 @@ class Eclv(Line):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
+        self.eclv_logger.info(f"Finished creating series objects:"
+                                    f" {datetime.now()}")
         return series_list
 
     def _create_figure(self):
         """
         Create a eclv plot from defaults and custom parameters
         """
+        self.eclv_logger.info(f"Begin creating the figure: {datetime.now()}")
         # create and draw the plot
         self.figure = self._create_layout()
         self._add_xaxis()
@@ -171,8 +200,9 @@ class Eclv(Line):
         # apply y axis limits
         self._yaxis_limits()
 
-        # some x points could be very close to each other and the x-axis  ticktext is bunched up
-        # do not print the ticktext for the first points by creating the custom array of x values
+        # some x points could be very close to each other and the x-axis  ticktext is
+        # bunched up do not print the ticktext for the first points by creating the
+        # custom array of x values
         for ind, val in enumerate(self.series_list[0].series_points[0]['x_pnt']):
             var_round = round(val, 2)
             if ind != 0 and var_round < 0.06:
@@ -196,6 +226,8 @@ class Eclv(Line):
 
         # add x2 axis
         self._add_x2axis(n_stats)
+
+        self.eclv_logger.info(f"Finished creating the figure: {datetime.now()}")
 
     def _add_x2axis(self, n_stats) -> None:
         """
@@ -241,19 +273,21 @@ class Eclv(Line):
 
             # need to add an invisible line with all values = None
             self.figure.add_trace(
-                go.Scatter(y=[None] * len(self.series_list[0].series_points[0]['x_pnt']),
-                           x=self.series_list[0].series_points[0]['x_pnt'],
-                           xaxis='x2', showlegend=False)
+                go.Scatter(
+                    y=[None] * len(self.series_list[0].series_points[0]['x_pnt']),
+                    x=self.series_list[0].series_points[0]['x_pnt'],
+                    xaxis='x2', showlegend=False)
             )
 
-    def _draw_series(self, series: Series, x_points_index_adj: Union[list, None] = None) -> None:
+    def _draw_series(self, series: Series,
+                     x_points_index_adj: Union[list, None] = None) -> None:
         """
         Draws the formatted line with CIs if needed on the plot
 
         :param series: Eclv series object with data and parameters
         :param x_points_index_adj: values for adjusting x-values position
         """
-
+        self.eclv_logger.info(f"Begin drawing the series : {datetime.now()}")
         # pct series can have mote than one line
         for ind, series_points in enumerate(series.series_points):
             y_points = series_points['dbl_med']
@@ -264,7 +298,8 @@ class Eclv(Line):
             no_ci_up = all(v == 0 for v in series_points['dbl_up_ci'])
             no_ci_lo = all(v == 0 for v in series_points['dbl_lo_ci'])
             error_y_visible = True
-            if (no_ci_up is True and no_ci_lo is True) or self.config_obj.plot_ci[series.idx] == 'NONE':
+            if (no_ci_up is True and no_ci_lo is True) or self.config_obj.plot_ci[
+                series.idx] == 'NONE':
                 error_y_visible = False
 
             # add the plot
@@ -288,7 +323,8 @@ class Eclv(Line):
                                     'array': series_points['dbl_up_ci'],
                                     'arrayminus': series_points['dbl_lo_ci'],
                                     'visible': error_y_visible,
-                                    'thickness': self.config_obj.linewidth_list[series.idx]},
+                                    'thickness': self.config_obj.linewidth_list[
+                                        series.idx]},
                            hovertemplate="<br>".join([
                                "Cost/Lost Ratio: %{customdata}",
                                "Economic Value: %{y}"
@@ -298,10 +334,15 @@ class Eclv(Line):
                 secondary_y=False
             )
 
+            self.eclv_logger.info(f"Finished  drawing the series :"
+                                        f" {datetime.now()}")
+
     def write_output_file(self) -> None:
         """
         saves series points to the files
         """
+
+        self.eclv_logger.info(f"Begin writing output file: {datetime.now()}")
 
         # Open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
@@ -334,10 +375,13 @@ class Eclv(Line):
                         for ind, dbl_med in enumerate(vals['dbl_med']):
                             vals['dbl_lo_ci'][ind] = dbl_med - vals['dbl_lo_ci'][ind]
                             vals['dbl_up_ci'][ind] = dbl_med + vals['dbl_up_ci'][ind]
-                        writer.writerows(zip(*[[round(num, 6) for num in vals[key]] for key in keys]))
+                        writer.writerows(
+                            zip(*[[round(num, 6) for num in vals[key]] for key in
+                                  keys]))
                     file.writelines('\n')
                     file.writelines('\n')
                 file.close()
+        self.eclv_logger.info(f"Finished writing output file: {datetime.now()}")
 
 
 def main(config_filename=None):
@@ -347,7 +391,8 @@ def main(config_filename=None):
             The location of the input data is defined in either the default or
             custom config file.
             Args:
-                @param config_filename: default is None, the name of the custom config file to apply
+                @param config_filename: default is None, the name of the custom
+                config file to apply
         """
 
     # Retrieve the contents of the custom config file to over-ride
@@ -366,9 +411,10 @@ def main(config_filename=None):
     try:
         plot = Eclv(docs)
         plot.save_to_file()
-        #plot.show_in_browser()
+        # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
+        plot.eclv_logger.info(f"Finished ECLV plot: {datetime.now()}")
     except ValueError as val_er:
         print(val_er)
 

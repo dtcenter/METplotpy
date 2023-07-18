@@ -31,6 +31,9 @@ legend_size: 0.8
 line_type: None
 list_stat_1: []
 list_stat_2: []
+
+log_filename: stdout
+log_level: 'WARNING'
 mar:
 - 8
 - 4

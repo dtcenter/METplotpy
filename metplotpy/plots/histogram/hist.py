@@ -1,19 +1,19 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2020
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Class Name: Hist
  """
 __author__ = 'Tatiana Burek'
 
 import re
+from datetime import datetime
 import itertools
 import sys
 import os
@@ -27,7 +27,8 @@ from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
 from metplotpy.plots.histogram import hist_config
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
+    PLOTLY_PAPER_BGCOOR
 from metplotpy.plots.histogram.hist_series import HistSeries
 from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots import util
@@ -56,28 +57,41 @@ class Hist(BasePlot):
         # init common layout
         super().__init__(parameters, self.defaults_name)
 
-        # instantiate a HistogramConfig object, which holds all the necessary settings from the
+        # instantiate a HistogramConfig object, which holds all the necessary
+        # settings from the
         # config file that represents the BasePlot object.
         self.config_obj = \
             getattr(sys.modules['metplotpy.plots.histogram.hist_config'],
                     self.config_obj_name)(self.parameters)
 
+        self.hist_logger = self.config_obj.logger
+        self.hist_logger.info(f"Begin [rank|probability|relative frequency] histogram:"
+                              f" {datetime.now()}")
+
         # Check that we have all the necessary settings for each ser
+        self.hist_logger.info(f"Performing consistency check for settings in config "
+                              f"file: {datetime.now()}")
         is_config_consistent = self.config_obj._config_consistency_check()
+        self.hist_logger.info(f"Finished with consistency check:  {datetime.now()}")
         if not is_config_consistent:
-            raise ValueError("The number of ser defined by series_val_1 is"
-                             " inconsistent with the number of settings"
-                             " required for describing each ser. Please check"
-                             " the number of your configuration file's "
-                             " plot_disp, series_order, user_legend,"
-                             " colors settings.")
+            error_msg = "The number of ser defined by series_val_1 is" \
+                        " inconsistent with the number of settings" \
+                        " required for describing each ser. Please check" \
+                        " the number of your configuration file's " \
+                        " plot_disp, series_order, user_legend," \
+                        " colors settings."
+            self.hist_logger.error(f"ValueError: {error_msg}")
+            raise ValueError(error_msg)
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
+        self.hist_logger.info(f"Finished reading input data: {datetime.now()}")
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
+            self.hist_logger.info(f"Begin event equalization: {datetime.now()}")
             self._perform_event_equalization()
+            self.hist_logger.info(f"Event equalization complete: {datetime.now()}")
 
         # Create a list of ser objects.
         # Each ser object contains all the necessary information for plotting,
@@ -93,6 +107,9 @@ class Hist(BasePlot):
         self._create_figure()
 
     def _get_x_points(self, series: HistSeries) -> list:
+        '''
+             To be implemented by child classes.
+        '''
         pass
 
     def _get_dtick(self) -> Union[float, str]:
@@ -107,8 +124,10 @@ class Hist(BasePlot):
         # use provided fixed parameters for the initial criteria
         if len(self.config_obj.fixed_vars_vals_input) > 0:
             for key in self.config_obj.fixed_vars_vals_input:
-                vals_permuted = list(itertools.product(*self.config_obj.fixed_vars_vals_input[key].values()))
-                vals_permuted_list = [item for sublist in vals_permuted for item in sublist]
+                vals_permuted = list(itertools.product(
+                    *self.config_obj.fixed_vars_vals_input[key].values()))
+                vals_permuted_list = [item for sublist in vals_permuted for item in
+                                      sublist]
                 fix_vals_permuted_list.append(vals_permuted_list)
 
             fix_vals_keys = list(self.config_obj.fixed_vars_vals_input.keys())
@@ -120,7 +139,8 @@ class Hist(BasePlot):
         # do EE for the each ser data
         if len(self.config_obj.series_val_names) > 0:
             input_df_ee = None
-            all_fields_values_orig = self.config_obj.get_config_value('series_val_1').copy()
+            all_fields_values_orig = self.config_obj.get_config_value(
+                'series_val_1').copy()
             all_fields_values = {}
             for field in reversed(list(all_fields_values_orig.keys())):
                 all_fields_values[field] = all_fields_values_orig.get(field)
@@ -143,16 +163,19 @@ class Hist(BasePlot):
                     # use numpy to select the rows where any record evaluates to True
                     mask = np.array(all_filters).all(axis=0)
                     series_data_for_ee = self.input_df.loc[mask]
-                    series_data_after_ee = event_equalize(series_data_for_ee, "fcst_valid_beg",
+                    series_data_after_ee = event_equalize(series_data_for_ee,
+                                                          "fcst_valid_beg",
                                                           {}, fix_vals_keys,
-                                                          fix_vals_permuted_list, True, False)
+                                                          fix_vals_permuted_list, True,
+                                                          False)
                     if input_df_ee is None:
                         input_df_ee = series_data_after_ee
                     else:
-                        # input_df_ee = input_df_ee.append(series_data_after_ee).reindex()
-                        input_df_ee = pd.concat([input_df_ee, series_data_after_ee]).reindex()
+                        input_df_ee = pd.concat(
+                            [input_df_ee, series_data_after_ee]).reindex()
         else:
-            input_df_ee = event_equalize(self.input_df, "fcst_valid_beg", {}, fix_vals_keys,
+            input_df_ee = event_equalize(self.input_df, "fcst_valid_beg", {},
+                                         fix_vals_keys,
                                          fix_vals_permuted_list, True, False)
 
         self.input_df = input_df_ee.drop('equalize', axis=1)
@@ -174,29 +197,37 @@ class Hist(BasePlot):
             Returns:
 
         """
+
+        self.hist_logger.info(f"Reading input data: {datetime.now()}")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
                            header='infer', float_precision='round_trip')
 
     def _create_series(self, input_data):
         """
-           Generate all the ser objects that are to be displayed as specified by the plot_disp
-           setting in the config file.  The points are all ordered by datetime.  Each ser object
+           Generate all the ser objects that are to be displayed as specified by the
+           plot_disp
+           setting in the config file.  The points are all ordered by datetime.  Each
+           ser object
            is represented by a line in the diagram, so they also contain information
            for line width, line- and marker-colors, line style, and other plot-related/
            appearance-related settings (which were defined in the config file).
 
            Args:
                input_data:  The input data in the form of a Pandas dataframe.
-                            This data will be subset to reflect the ser data of interest.
+                            This data will be subset to reflect the ser data of
+                            interest.
 
            Returns:
                a list of ser objects that are to be displayed
 
 
         """
+
+        self.hist_logger.info(f"Creating the series objects: {datetime.now()}")
         series_list = []
         hist_series_type = \
-            getattr(sys.modules['metplotpy.plots.histogram.hist_series'], self.series_obj)
+            getattr(sys.modules['metplotpy.plots.histogram.hist_series'],
+                    self.series_obj)
 
         # create ser in teh correct order
         for i, name in enumerate(self.config_obj.get_series_y()):
@@ -209,22 +240,26 @@ class Hist(BasePlot):
                     ind = order_index
                     break
 
-            series_obj = hist_series_type(self.config_obj, ind, input_data, series_list, name)
+            series_obj = hist_series_type(self.config_obj, ind, input_data, series_list,
+                                          name)
             series_list.append(series_obj)
 
         if len(series_list) == 0:
-            series_obj = hist_series_type(self.config_obj, 0, input_data, series_list, [])
+            series_obj = hist_series_type(self.config_obj, 0, input_data, series_list,
+                                          [])
             series_list.append(series_obj)
         else:
             # reorder ser
             series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
+        self.hist_logger.info(f"Finished creating the series objects: {datetime.now()}")
         return series_list
 
     def _create_figure(self):
         """
         Create a box plot from defaults and custom parameters
         """
+        self.hist_logger.info(f"Begin creating the histogram figure: {datetime.now()}")
         # create and draw the plot
         self.figure = self._create_layout()
         self._add_xaxis()
@@ -240,6 +275,9 @@ class Hist(BasePlot):
             self._add_lines(
                 self.config_obj
             )
+
+        self.hist_logger.info(f"Finished creating the histogram figure: "
+                              f"{datetime.now()}")
 
     def _draw_series(self, series: HistSeries) -> None:
         """
@@ -266,10 +304,13 @@ class Hist(BasePlot):
 
         :return: Figure object
         """
+        self.hist_logger.info(f"Creating the layout: {datetime.now()}")
+
         # create annotation
         annotation = [
             {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-                                             self.config_obj.parameters['caption_weight']),
+                                             self.config_obj.parameters[
+                                                 'caption_weight']),
              'align': 'left',
              'showarrow': False,
              'xref': 'paper',
@@ -283,7 +324,8 @@ class Hist(BasePlot):
              }]
         # create title
         title = {'text': util.apply_weight_style(self.config_obj.title,
-                                                 self.config_obj.parameters['title_weight']),
+                                                 self.config_obj.parameters[
+                                                     'title_weight']),
                  'font': {
                      'size': self.config_obj.title_font_size,
                  },
@@ -306,12 +348,16 @@ class Hist(BasePlot):
             title=title,
             plot_bgcolor=PLOTLY_PAPER_BGCOOR
         )
+
+        self.hist_logger.info(f"Finished creating the layout: {datetime.now()}")
         return fig
 
     def _add_xaxis(self) -> None:
         """
         Configures and adds x-axis to the plot
         """
+        self.hist_logger.info(f"Configuring and adding the x-axis: {datetime.now()}")
+
         self.figure.update_xaxes(title_text=self.config_obj.xaxis,
                                  linecolor=PLOTLY_AXIS_LINE_COLOR,
                                  linewidth=PLOTLY_AXIS_LINE_WIDTH,
@@ -323,19 +369,25 @@ class Hist(BasePlot):
                                  title_font={
                                      'size': self.config_obj.x_title_font_size
                                  },
-                                 title_standoff=abs(self.config_obj.parameters['xlab_offset']),
+                                 title_standoff=abs(
+                                     self.config_obj.parameters['xlab_offset']),
                                  tickangle=self.config_obj.x_tickangle,
                                  tickfont={'size': self.config_obj.x_tickfont_size},
                                  dtick=self._get_dtick()
                                  )
+        self.hist_logger.info(f"Finished configuring and adding the x-axis:"
+                              f" {datetime.now()}")
 
     def _add_yaxis(self) -> None:
         """
         Configures and adds y-axis to the plot
         """
+
+        self.hist_logger.info(f"Configuring and adding the y-axis: {datetime.now()}")
         self.figure.update_yaxes(title_text=
                                  util.apply_weight_style(self.config_obj.yaxis_1,
-                                                         self.config_obj.parameters['ylab_weight']),
+                                                         self.config_obj.parameters[
+                                                             'ylab_weight']),
                                  secondary_y=False,
                                  linecolor=PLOTLY_AXIS_LINE_COLOR,
                                  linewidth=PLOTLY_AXIS_LINE_WIDTH,
@@ -348,33 +400,46 @@ class Hist(BasePlot):
                                  title_font={
                                      'size': self.config_obj.y_title_font_size
                                  },
-                                 title_standoff=abs(self.config_obj.parameters['ylab_offset']),
+                                 title_standoff=abs(
+                                     self.config_obj.parameters['ylab_offset']),
                                  tickangle=self.config_obj.y_tickangle,
                                  tickfont={'size': self.config_obj.y_tickfont_size}
                                  )
+        self.hist_logger.info(f"Finished configuring and adding the y-axis:"
+                              f" {datetime.now()}")
 
     def _add_legend(self) -> None:
         """
         Creates a plot legend based on the properties from the config file
         and attaches it to the initial Figure
         """
+
+        self.hist_logger.info(f"Adding the legend: {datetime.now()}")
         self.figure.update_layout(legend={'x': self.config_obj.bbox_x,
                                           'y': self.config_obj.bbox_y,
                                           'xanchor': 'center',
                                           'yanchor': 'top',
-                                          'bordercolor': self.config_obj.legend_border_color,
-                                          'borderwidth': self.config_obj.legend_border_width,
-                                          'orientation': self.config_obj.legend_orientation,
+                                          'bordercolor':
+                                              self.config_obj.legend_border_color,
+                                          'borderwidth':
+                                              self.config_obj.legend_border_width,
+                                          'orientation':
+                                              self.config_obj.legend_orientation,
                                           'font': {
                                               'size': self.config_obj.legend_size,
                                               'color': "black"
                                           }
                                           })
+        self.hist_logger.info(f"Finished adding the legend: {datetime.now()}")
 
     def write_html(self) -> None:
         """
-        Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
+        Is needed - creates and saves the html representation of the plot WITHOUT
+        Plotly.js
         """
+
+        self.hist_logger.info(f"Begin writing html: {datetime.now()}")
+
         if self.config_obj.create_html is True:
             # construct the file name from plot_filename
             name_arr = self.get_config_value('plot_filename').split('.')
@@ -384,10 +449,13 @@ class Hist(BasePlot):
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
 
+        self.hist_logger.info(f"Finished writing html: {datetime.now()}")
+
     def write_output_file(self) -> None:
         """
         saves box points to the file
         """
+        self.hist_logger.info(f"Begin writing the output file: {datetime.now()}")
 
         # if points_path parameter doesn't exist,
         # open file, name it based on the stat_input config setting,
@@ -417,3 +485,5 @@ class Hist(BasePlot):
                             [round(num, 6) for num in series.series_points]))
                     file.writelines('\n')
                 file.close()
+
+        self.hist_logger.info(f"Finished writing the output file: {datetime.now()}")

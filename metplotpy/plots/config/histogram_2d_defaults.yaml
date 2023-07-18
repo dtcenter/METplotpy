@@ -1,4 +1,4 @@
-plot_filename: 'tmp_z2_p500.png'
+plot_filename: './tmp_z2_p500.png'
 
 height: 800
 width: 1200
@@ -21,3 +21,6 @@ normalize_to_pdf: False
 
 pdf_min: 0.0
 pdf_max: 4.0
+
+log_level: WARNING
+log_filename: stdout
