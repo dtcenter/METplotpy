@@ -13,13 +13,16 @@ module load intel/2021.2
 
 prepend-path PATH /glade/p/ral/jntp/MET/METplus/miniconda/miniconda3/envs/metplus_v5.1_py3.10/bin
 
-prepend-path PATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0-beta2/metplotpy/contributed
-prepend-path PATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0-beta2/metplotpy/plots/performance_diagram
-prepend-path PATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0-beta2/metplotpy/plots
-prepend-path PATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0-beta2/metplotpy
-prepend-path PATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0-beta2
-prepend-path PYTHONPATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0-beta2/metplotpy/contributed
-prepend-path PYTHONPATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0-beta2/metplotpy/plots/performance_diagram
-prepend-path PYTHONPATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0-beta2/metplotpy/plots
-prepend-path PYTHONPATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0-beta2/metplotpy
-prepend-path PYTHONPATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0-beta2
+setenv METPLOTPY_SOURCE /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0
+setenv METPLOTPY_BASE /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0
+
+prepend-path PATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0/metplotpy/contributed
+prepend-path PATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0/metplotpy/plots/performance_diagram
+prepend-path PATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0/metplotpy/plots
+prepend-path PATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0/metplotpy
+prepend-path PATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0
+prepend-path PYTHONPATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0/metplotpy/contributed
+prepend-path PYTHONPATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0/metplotpy/plots/performance_diagram
+prepend-path PYTHONPATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0/metplotpy/plots
+prepend-path PYTHONPATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0/metplotpy
+prepend-path PYTHONPATH /glade/p/ral/jntp/MET/METplotpy/METplotpy-2.1.0
