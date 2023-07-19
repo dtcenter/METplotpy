@@ -71,7 +71,8 @@ or
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
 the Github repository.  The *x.y.z* is the release number.
 
-The Hovmoeller plot utilizes YAML configuration files to indicate where input data is located and to set plot attributes.
+The Hovmoeller plot utilizes YAML configuration files to indicate where input data is located and to set plot attributes,
+and logging preferences.
 YAML is a recursive acronym for “YAML Ain’t Markup Language” and according to yaml.org, it is a “human-friendly data
 serialization language”.
 
@@ -96,6 +97,10 @@ a Hovmoeller plot.
 **hovmoeller.py**.
 
 .. literalinclude:: ../../metplotpy/plots/config/hovmoeller_defaults.yaml
+
+
+By default, logging is set to stdout and the log level is set to 'INFO'.
+
 
 Custom Configuration File
 _________________________
@@ -180,6 +185,12 @@ configuration files are being saved.  **NOTE**: Specifying the
 *plot_filename* (output directory) to a directory other than the
 *$WORKING_DIR/output_plots* can be done as long as it is an
 existing directory where the user has read and write permissions.
+
+To save the log output to a file, uncomment the *log_filename* entry and specify the path and
+name of the log file.  Select a directory with the appropriate read and write
+privileges.  To modify the verbosity of logging than what is set in the default config
+file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
+are lower verbosity).
 
 
 
