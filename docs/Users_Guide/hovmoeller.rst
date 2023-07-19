@@ -145,6 +145,12 @@ then the *plot_filename* setting specified in the
 *$METPLOTPY_BASE/metplotpy/plots/config/hovmoeller_defaults.yaml*
 configuration file will be used.
 
+To save the log output to a file, uncomment the *log_filename* entry and specify the path and
+name of the log file.  Select a directory with the appropriate read and write
+privileges.  To modify the verbosity of logging than what is set in the default config
+file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
+are lower verbosity).
+
 
 Using Defaults
 ______________
@@ -186,12 +192,9 @@ configuration files are being saved.  **NOTE**: Specifying the
 *$WORKING_DIR/output_plots* can be done as long as it is an
 existing directory where the user has read and write permissions.
 
-To save the log output to a file, uncomment the *log_filename* entry and specify the path and
-name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
-file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
-are lower verbosity).
-
+In the default config file, logging is set to stdout and the log level is INFO (i.e. any log messages
+of type INFO, WARNING, and DEBUG will be logged).  If the log_filename and log_level are
+not specified in the custom configuration file, these settings will be used.
 
 
 Run from the Command Line
