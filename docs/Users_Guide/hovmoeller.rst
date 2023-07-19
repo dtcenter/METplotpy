@@ -22,8 +22,6 @@ Required Packages:
 ==================
 
 
-Python 3.8.6 is the minimum version that is required
-
 * metcalcpy
 
 * netcdf4 1.5.7 or above
@@ -34,7 +32,7 @@ Python 3.8.6 is the minimum version that is required
 
 * plotly 5.7.0 or above
 
-* scipy 1.8.0
+* scipy 1.8.0 or above
 
 * xarray 2022.3.0
 
@@ -274,5 +272,3 @@ downloaded/cloned METplotpy code.
 * A **custom_hovmoeller.png** output file will be created in the
   directory that was specified in the *plot_filename* configuration
   setting in the **custom_hovmoeller.yaml** config file.
-
-
