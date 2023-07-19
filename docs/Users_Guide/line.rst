@@ -61,6 +61,12 @@ configuration file. This  file is used to customize/override the default
 settings in the **line_defaults.yaml** file. The custom configuration
 file can be an empty file if all default settings are to be applied.
 
+.. note::
+
+  The YAML configuration files do not support expanding environment variables. If you see an environment variable
+  referenced in this documentation for a YAML configuration item, please be aware the full value of that environment
+  variable must be used.
+
 METplus Configuration
 =====================
 
@@ -167,7 +173,8 @@ file (anywhere below the comment block). The *stat_input* setting
 explicitly indicates where the sample data and custom configuration
 files are located.  Set the *stat_input* to
 *$METPLOTPY_BASE/test/line/line.data* and set the
-*plot_filename* to *$WORKING_DIR/output_plots/line_default.png*:
+*plot_filename* to *$WORKING_DIR/output_plots/line_default.png* (making sure to
+replace environment variables with their actual values):
 
 *stat_input: $METPLOTPY_BASE/test/line/line.data*
 
