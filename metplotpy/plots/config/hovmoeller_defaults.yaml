@@ -30,5 +30,5 @@ contour_max: 1.6
 contour_del: 0.2
 colorscale: 'BuPu'
 
-log_level: WARNING
+log_level: INFO
 log_filename: stdout

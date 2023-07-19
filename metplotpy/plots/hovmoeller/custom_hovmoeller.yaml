@@ -1,2 +1,10 @@
 plot_filename: ./hovmoeller_plot.png
 input_data_file: /Volumes/d1/minnawin/METplus_Data/model_applications/s2s/precip.erai.sfc.1p0.2x.2014-2016.nc
+
+# To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
+# permissions to the directory you specify.  The default, as specified in the default config file is stdout.
+#log_filename: ./hovmoeller.log
+
+# To change the log level, specify a log level: debug, info, warning, error and uncomment the line below.
+#  Debug and info log level will produce more log output.
+#log_level: WARNING
