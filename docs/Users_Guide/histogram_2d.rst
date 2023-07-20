@@ -79,6 +79,10 @@ set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/histogram_2d_defaults.yaml
 
+In the default config file, logging is set to stdout and the log level is INFO (i.e. any log messages
+of type INFO, WARNING, and DEBUG will be logged).  If the log_filename and log_level are
+not specified in the custom configuration file, these settings will be used.
+
 Custom Configuration File
 _________________________
 
@@ -139,6 +143,12 @@ settings can be commented out (i.e. line begins with a '#'):
 *# dump_points_1: False*
 
 *# dump_points_2: False*
+
+To save the log output to a file, uncomment the *log_filename* entry and specify the path and
+name of the log file.  Select a directory with the appropriate read and write
+privileges.  To modify the verbosity of logging than what is set in the default config
+file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
+are lower verbosity).
 
 
 Using Defaults
@@ -261,9 +271,3 @@ Perform the following:
 * A **custom_tmp_z2_p500.png** output file will be created in the directory
   specified in the *plot_filename* configuration setting in the
   **custom_histogram_2d.yaml** config file.
-
-
-
-
-
-
