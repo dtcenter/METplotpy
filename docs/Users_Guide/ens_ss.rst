@@ -75,6 +75,11 @@ plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/ens_ss_defaults.yaml
 
+In the default config file, logging is set to stdout and the log level is INFO (i.e. any log messages
+of type INFO, WARNING, and DEBUG will be logged).  If the log_filename and log_level are
+not specified in the custom configuration file, these settings will be used.
+
+
 Custom Configuration File
 _________________________
 
@@ -140,6 +145,12 @@ this directory exists and has the appropriate read and write permissions.
 **NOTE**: the *points_path* setting is **optional** and does not need
 to be defined unless saving the intermediate **.points1** file is desired.
 
+To save the log output to a file, uncomment the *log_filename* entry and specify the path and
+name of the log file.  Select a directory with the appropriate read and write
+privileges.  To modify the verbosity of logging than what is set in the default config
+file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
+are lower verbosity).
+
 
 Run from the Command Line
 =========================
@@ -179,7 +190,7 @@ Perform the following:
 
   .. code-block:: ini
 
-    python $METPLOTPY_BASE/metplotpy/plotsens_ss.py $WORKING_DIR/custom_ens_ss.yaml
+    python $METPLOTPY_BASE/metplotpy/plots/ens_ss.py $WORKING_DIR/custom_ens_ss.yaml
 
 * An **ens_ss.png** output file will be created in the directory specified
   in the *plot_filename* configuration setting in the
