@@ -27,3 +27,11 @@ pdf_max: 4.0
 
 # the input data file (replace ./ with the full path)
 stat_input: ./grid_diag_temperature.nc
+
+# To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
+# permissions to the directory you specify.  The default, as specified in the default config file is stdout.
+#log_filename: ./histogram_2d.log
+
+# To change the log level, specify a log level: debug, info, warning, error and uncomment the line below.
+# The debug and info log levels will produce more log output.
+#log_level: WARNING

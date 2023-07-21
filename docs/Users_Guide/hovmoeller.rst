@@ -22,8 +22,6 @@ Required Packages:
 ==================
 
 
-Python 3.8.6 is the minimum version that is required
-
 * metcalcpy
 
 * netcdf4 1.5.7 or above
@@ -34,7 +32,7 @@ Python 3.8.6 is the minimum version that is required
 
 * plotly 5.7.0 or above
 
-* scipy 1.8.0
+* scipy 1.8.0 or above
 
 * xarray 2022.3.0
 
@@ -73,7 +71,8 @@ or
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
 the Github repository.  The *x.y.z* is the release number.
 
-The Hovmoeller plot utilizes YAML configuration files to indicate where input data is located and to set plot attributes.
+The Hovmoeller plot utilizes YAML configuration files to indicate where input data is located and to set plot attributes,
+and logging preferences.
 YAML is a recursive acronym for “YAML Ain’t Markup Language” and according to yaml.org, it is a “human-friendly data
 serialization language”.
 
@@ -98,6 +97,13 @@ a Hovmoeller plot.
 **hovmoeller.py**.
 
 .. literalinclude:: ../../metplotpy/plots/config/hovmoeller_defaults.yaml
+
+
+In the default config file, logging is set to stdout and the log level is INFO (i.e. any log messages
+of type INFO, WARNING, and ERROR will be logged).  If the log_filename and log_level are
+not specified in the custom configuration file, these settings will be used.
+
+
 
 Custom Configuration File
 _________________________
@@ -142,6 +148,12 @@ then the *plot_filename* setting specified in the
 *$METPLOTPY_BASE/metplotpy/plots/config/hovmoeller_defaults.yaml*
 configuration file will be used.
 
+To save the log output to a file, uncomment the *log_filename* entry and specify the path and
+name of the log file.  Select a directory with the appropriate read and write
+privileges.  To modify the verbosity of logging than what is set in the default config
+file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
+are lower verbosity).
+
 
 Using Defaults
 ______________
@@ -183,6 +195,9 @@ configuration files are being saved.  **NOTE**: Specifying the
 *$WORKING_DIR/output_plots* can be done as long as it is an
 existing directory where the user has read and write permissions.
 
+In the default config file, logging is set to stdout and the log level is INFO (i.e. any log messages
+of type INFO, WARNING, and DEBUG will be logged).  If the log_filename and log_level are
+not specified in the custom configuration file, these settings will be used.
 
 
 Run from the Command Line
@@ -192,6 +207,7 @@ The Hovmoeller plot that uses only the default values defined in
 the **hovmoeller_defaults.yaml** configuration file looks like the following:
 
 .. image:: figure/hovmoeller_default.png
+
 
 Perform the following:
 
@@ -274,5 +290,3 @@ downloaded/cloned METplotpy code.
 * A **custom_hovmoeller.png** output file will be created in the
   directory that was specified in the *plot_filename* configuration
   setting in the **custom_hovmoeller.yaml** config file.
-
-

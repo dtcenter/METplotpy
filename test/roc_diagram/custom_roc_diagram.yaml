@@ -101,4 +101,10 @@ create_html: 'True'
 stat_input: ./plot_20200507_074426.data
 plot_filename: ./roc_diagram_custom.png
 
+# To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
+# permissions to the directory you specify.  The default, as specified in the default config file is stdout.
+#log_filename: ./roc_diagram.log
 
+# To change the log level, specify a log level: debug, info, warning, error and uncomment the line below.
+# The debug and info log levels will produce more log output.
+#log_level: WARNING

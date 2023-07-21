@@ -107,3 +107,11 @@ series_line_style:
 stat_input:  ./plot_20200317_151252.data
 plot_filename: ./performance_diagram_actual.png
 event_equal: False
+
+# To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
+# permissions to the directory you specify.  The default, as specified in the default config file is stdout.
+#log_filename: ./performance_diagram.log
+
+# To change the log level, specify a log level: debug, info, warning, error and uncomment the line below.
+#  Debug and info log level will produce more log output.
+#log_level: WARNING
