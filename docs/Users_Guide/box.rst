@@ -201,7 +201,7 @@ to that directory.
 template for setting the margins, plot size, labels, etc.
 
 In the default config file, logging is set to stdout and the log level is INFO (i.e. any log messages
-of type INFO, WARNING, and DEBUG will be logged).  If the log_filename and log_level are
+of type INFO, WARNING, and ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
 Run from the Command Line
