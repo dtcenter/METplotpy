@@ -64,3 +64,6 @@ xbins:  # bins used for histogram
   #start: 0
   #end: 200
   size: 10
+
+log_level: INFO
+log_filename: stdout
