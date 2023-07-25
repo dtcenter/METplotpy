@@ -121,3 +121,11 @@ y2tlab_size: 1.0
 
 stat_input: ./ens_ss.data
 plot_filename: ./ens_ss.png
+
+# To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
+# permissions to the directory you specify.  The default, as specified in the default config file is stdout.
+#log_filename: ./ens_ss.log
+
+# To change the log level, specify a log level: debug, info, warning, error and uncomment the line below.
+#  Debug and info log level will produce more log output.
+#log_level: WARNING

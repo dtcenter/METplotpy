@@ -95,6 +95,11 @@ performance diagram plot,  as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/performance_diagram_defaults.yaml
 
+In the default config file, logging is set to stdout and the log level is INFO (i.e. any log messages
+of type INFO, WARNING, and ERROR will be logged).  If the log_filename and log_level are
+not specified in the custom configuration file, these settings will be used.
+
+
 Custom Configuration File
 _________________________
 
@@ -159,6 +164,13 @@ appropriate read and write permissions.  **NOTE**: the *points_path* setting
 is **optional** and does not need to be defined in the configuration
 file unless saving the intermediate **.points1** file is desired.
 
+To save the log output to a file, uncomment the *log_filename* entry and specify the path and
+name of the log file.  Select a directory with the appropriate read and write
+privileges.  To modify the verbosity of logging than what is set in the default config
+file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
+are lower verbosity).
+
+
 Using defaults
 ______________
 
@@ -213,6 +225,7 @@ for debugging), add the following lines to the
 Replace the */dir_to_save_points1_file* to the same directory where
 the **.points** file is saved. Make sure that this directory exists
 and has the appropriate read and write permissions.
+
 
 Run from the Command Line
 =========================

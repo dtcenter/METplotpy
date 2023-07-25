@@ -152,3 +152,11 @@ ytlab_size: 1
 
 stat_input: ./contour.data
 plot_filename: ./contour.png
+
+# To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
+# permissions to the directory you specify.  The default, as specified in the default config file is stdout.
+#log_filename: ./contour.log
+
+# To change the log level, specify a log level: debug, info, warning, error and uncomment the line below.
+#  Debug and info log level will produce more log output.
+#log_level: WARNING

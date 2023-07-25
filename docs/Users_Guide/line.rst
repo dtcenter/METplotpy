@@ -61,6 +61,12 @@ configuration file. This  file is used to customize/override the default
 settings in the **line_defaults.yaml** file. The custom configuration
 file can be an empty file if all default settings are to be applied.
 
+.. note::
+
+  The YAML configuration files do not support expanding environment variables. If you see an environment variable
+  referenced in this documentation for a YAML configuration item, please be aware the full value of that environment
+  variable must be used.
+
 METplus Configuration
 =====================
 
@@ -75,6 +81,11 @@ plot as it represents the default values set in METviewer.
 **line.py**.
 
 .. literalinclude:: ../../metplotpy/plots/config/line_defaults.yaml
+
+In the default config file, logging is set to stdout and the log level is INFO (i.e. any log messages
+of type INFO, WARNING, and ERROR will be logged).  If the log_filename and log_level are
+not specified in the custom configuration file, these settings will be used.
+
 
 Custom Configuration File
 _________________________
@@ -140,6 +151,13 @@ appropriate read and write permissions.  **NOTE**: the *points_path* setting
 is **optional** and does not need to be defined in the configuration file
 unless saving the intermediate **.points1** file is desired.
 
+To save the log output to a file, uncomment the *log_filename* entry and specify the path and
+name of the log file.  Select a directory with the appropriate read and write
+privileges.  To modify the verbosity of logging than what is set in the default config
+file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
+are lower verbosity).
+
+
 Using Defaults
 ______________
 
@@ -167,7 +185,8 @@ file (anywhere below the comment block). The *stat_input* setting
 explicitly indicates where the sample data and custom configuration
 files are located.  Set the *stat_input* to
 *$METPLOTPY_BASE/test/line/line.data* and set the
-*plot_filename* to *$WORKING_DIR/output_plots/line_default.png*:
+*plot_filename* to *$WORKING_DIR/output_plots/line_default.png* (making sure to
+replace environment variables with their actual values):
 
 *stat_input: $METPLOTPY_BASE/test/line/line.data*
 

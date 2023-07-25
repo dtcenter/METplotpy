@@ -20,3 +20,11 @@ contour_min: 0.2
 contour_max: 1.6
 contour_del: 0.2
 colorscale: 'BuPu'
+
+# To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
+# permissions to the directory you specify.  The default, as specified in the default config file is stdout.
+#log_filename: ./hovmoeller.log
+
+# To change the log level, specify a log level: debug, info, warning, error and uncomment the line below.
+# The debug and info log levels will produce more log output.
+#log_level: WARNING
