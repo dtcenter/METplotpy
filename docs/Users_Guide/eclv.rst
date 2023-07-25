@@ -161,7 +161,7 @@ privileges.  To modify the verbosity of logging than what is set in the default 
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
-Using defaults
+Using Defaults
 --------------
 
 There isn't a set of "default" values to create a meaningful ECLV plot. Use the combination of the

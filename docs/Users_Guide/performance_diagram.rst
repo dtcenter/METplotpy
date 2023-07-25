@@ -171,7 +171,7 @@ file, uncomment the *log_level* entry and specify the log level  (debug and info
 are lower verbosity).
 
 
-Using defaults
+Using Defaults
 --------------
 
 To use the *default* settings defined in the
