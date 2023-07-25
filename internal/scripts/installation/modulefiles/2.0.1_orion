@@ -1,0 +1,27 @@
+#%Module######################################################################
+##
+##      METplotpy
+##
+proc ModulesHelp { } {
+  puts stderr "Sets up the paths and environment variables to use the METplotpy-2.0.1.
+     *** For help see the official MET webpage at http://www.dtcenter.org/met/users ***"
+}
+
+module load contrib
+module load intel/2020.2
+module load intelpython3/2020.2
+
+setenv METPLOTPY_SOURCE /apps/contrib/MET/METplotpy/METplotpy-2.0.1
+setenv METPLOTPY_BASE /apps/contrib/MET/METplotpy/METplotpy-2.0.1/
+
+#setenv METPLOTPY_PATH /apps/contrib/MET/METplotpy/METplotpy-2.0.1/
+prepend-path PATH /apps/contrib/MET/METplotpy/METplotpy-2.0.1/metplotpy/contributed
+prepend-path PATH /apps/contrib/MET/METplotpy/METplotpy-2.0.1/metplotpy/plots/performance_diagram
+prepend-path PATH /apps/contrib/MET/METplotpy/METplotpy-2.0.1/metplotpy/plots
+prepend-path PATH /apps/contrib/MET/METplotpy/METplotpy-2.0.1/metplotpy
+prepend-path PATH /apps/contrib/MET/METplotpy/METplotpy-2.0.1
+prepend-path PYTHONPATH /apps/contrib/MET/METplotpy/METplotpy-2.0.1/metplotpy/contributed
+prepend-path PYTHONPATH /apps/contrib/MET/METplotpy/METplotpy-2.0.1/metplotpy/plots/performance_diagram
+prepend-path PYTHONPATH /apps/contrib/MET/METplotpy/METplotpy-2.0.1/metplotpy/plots
+prepend-path PYTHONPATH /apps/contrib/MET/METplotpy/METplotpy-2.0.1/metplotpy
+prepend-path PYTHONPATH /apps/contrib/MET/METplotpy/METplotpy-2.0.1
