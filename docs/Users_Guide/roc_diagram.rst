@@ -19,7 +19,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 Sample data used to create an example ROC diagram is
 available in the METplotpy repository, where the ROC diagram
@@ -41,7 +41,7 @@ the Github repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
-___________________
+-------------------
 
 The ROC diagram utilizes YAML configuration files to indicate where input
 data is located and to set plot attributes. These plot attributes correspond
@@ -69,7 +69,7 @@ METplus Configuration
 
 
 Default Configuration File
-__________________________
+--------------------------
 
 The following is the *mandatory*, **roc_diagram_defaults.yaml**
 configuration file, which serves as a starting point for creating
@@ -86,7 +86,7 @@ not specified in the custom configuration file, these settings will be used.
 
 
 Custom Configuration File
-_________________________
+-------------------------
 
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to the ROC diagram plot. The
@@ -155,7 +155,7 @@ are lower verbosity).
 
 
 Using Defaults
-______________
+--------------
 
 If the user wishes to use the **default** settings defined in the
 **roc_diagram_defaults.yaml** file, specify a minimal custom configuration

@@ -17,7 +17,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 The data is in netCDF format.  The sample data used to create an example 2d histogram is available in the
 METplotpy repository, where the **histogram_2d.py** code is located:
@@ -37,7 +37,7 @@ the Github repository.  The *x.y.z* is the release number.
 
 
 Configuration File
-__________________
+------------------
 
 The histogram_2d utilizes YAML configuration files to indicate where
 input data is located and to set plot attributes. **NOTE**: The
@@ -67,7 +67,7 @@ METplus Configuration
 =====================
 
 Default Configuration File
-__________________________
+--------------------------
 
 The following is the *mandatory*, **histogram_2d_defaults.yaml**
 configuration file, which serves as a starting point for creating a
@@ -84,7 +84,7 @@ of type INFO, WARNING, and ERROR will be logged).  If the log_filename and log_l
 not specified in the custom configuration file, these settings will be used.
 
 Custom Configuration File
-_________________________
+-------------------------
 
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to the histogram_2d plot. The
@@ -152,7 +152,7 @@ are lower verbosity).
 
 
 Using Defaults
-______________
+--------------
 
 To use the **default** settings defined in the **histogram_2d_defaults.yaml**
 file, specify a minimal custom configuration file

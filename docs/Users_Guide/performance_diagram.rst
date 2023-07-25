@@ -29,7 +29,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 The data is text output from MET in columnar format.
 The sample data used to create these plots is available in the METplotpy
@@ -52,7 +52,7 @@ the Github repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
-___________________
+-------------------
 
 The performance diagram utilizes YAML configuration files to indicate where
 input data is located and to set plot attributes. These plot attributes
@@ -83,7 +83,7 @@ METplus Configuration
 =====================
 
 Default Configuration File
-__________________________
+--------------------------
 
 The following is the *mandatory*, **performance_diagram_defaults.yaml**
 configuration file, which serves as a starting point for creating a
@@ -101,7 +101,7 @@ not specified in the custom configuration file, these settings will be used.
 
 
 Custom Configuration File
-_________________________
+-------------------------
 
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to the performance diagram plot.
@@ -172,7 +172,7 @@ are lower verbosity).
 
 
 Using defaults
-______________
+--------------
 
 To use the *default* settings defined in the
 **performance_diagram_defaults.yaml**

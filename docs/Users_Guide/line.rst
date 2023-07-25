@@ -15,7 +15,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 The data is text output from MET in columnar format. The sample data used to
 create an example line plot is available in the
@@ -36,7 +36,7 @@ the Github repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
-___________________
+-------------------
 
 The line plot utilizes YAML configuration files to indicate where input
 data is located and to set plot attributes. These plot attributes correspond
@@ -71,7 +71,7 @@ METplus Configuration
 =====================
 
 Default Configuration File
-__________________________
+--------------------------
 
 The following is the *mandatory*, **line_defaults.yaml** configuration file,
 which serves as a good starting point for creating a line
@@ -88,7 +88,7 @@ not specified in the custom configuration file, these settings will be used.
 
 
 Custom Configuration File
-_________________________
+-------------------------
 
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to the line plot. The **custom_line.yaml**
@@ -159,7 +159,7 @@ are lower verbosity).
 
 
 Using Defaults
-______________
+--------------
 
 To use the *default* settings defined in the **line_defaults.yaml**
 file, specify a minimal custom configuration file (**minimal_line.yaml**),

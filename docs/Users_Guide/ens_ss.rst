@@ -12,7 +12,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 The data is text output from MET in columnar format.
 The sample data used to create an example Ensemble spread-skill plot is
@@ -67,7 +67,7 @@ METplus Configuration
 =====================
 
 Default Configuration File
-__________________________
+--------------------------
 
 The following is the *mandatory*, **ens_ss_defaults.yaml** configuration
 file, which serves as a good starting point for creating a line
@@ -81,7 +81,7 @@ not specified in the custom configuration file, these settings will be used.
 
 
 Custom Configuration File
-_________________________
+-------------------------
 
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to the plot. The **custom_ens_ss.yaml**

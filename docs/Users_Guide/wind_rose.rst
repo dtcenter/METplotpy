@@ -23,7 +23,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 The data used to create a wind rose plot is columnar text output from MET for the MPR (matched pair)
 line type.
@@ -48,7 +48,7 @@ the Github repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
-___________________
+-------------------
 
 The wind rose diagram utilizes YAML configuration files to indicate where
 input data is located and to set plot attributes. These plot attributes
@@ -79,7 +79,7 @@ METplus Configuration
 =====================
 
 Default Configuration File
-__________________________
+--------------------------
 
 The following is the *mandatory*, **wind_rose_defaults.yaml**
 configuration file, which serves as a starting point for creating a
@@ -96,7 +96,7 @@ of type INFO, WARNING, and ERROR will be logged).  If the log_filename and log_l
 not specified in the custom configuration file, these settings will be used.
 
 Custom Configuration File
-_________________________
+-------------------------
 
 As previously mentioned, a second *mandatory* configuration file is required, which is
 used to customize the settings to the wind rose diagram plot.
@@ -177,8 +177,8 @@ file, uncomment the *log_level* entry and specify the log level  (debug and info
 are lower verbosity).
 
 
-Using defaults
-______________
+Using Defaults
+--------------
 
 To use the *default* settings defined in the
 **wind_rose_defaults.yaml**

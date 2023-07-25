@@ -15,7 +15,8 @@ Example
 =======
 
 
-**Sample Data**
+Sample Data
+-----------
 
 Create the sample data by performing the conversion from pressure levels to height levels by following the instructions:
 
@@ -28,7 +29,8 @@ source code) is where your *tc_rmw_example_vertical_interp.nc* file will be loca
 *tc_rmw_example_vertical_interp.nc* is the input file to the cross section plot,
 *plot_cross_section.py*.
 
-**Configuration Files**
+Configuration Files
+-------------------
 
 An example configuration file (YAML, with .yaml extension) is available as a starting point
 for customizing the cross-plot of the height level data:

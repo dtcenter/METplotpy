@@ -42,7 +42,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 The sample data used to create an example Polar Ice plot is available in
 the `marine_coastal file
@@ -55,7 +55,7 @@ $WORKING_DIR/data/polar_plot, where $WORKING_DIR is the path to your data direct
 
 
 Configuration Files
-___________________
+-------------------
 
 There is a YAML config file located in
 *$METPLOTPY_BASE/metplotpy/plots/polar_plot/polar_ice.yaml*
