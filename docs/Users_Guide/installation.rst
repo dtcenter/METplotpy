@@ -13,7 +13,7 @@ additional packages that are not listed below.
 .. _python_req:
 
 Python Requirements
-___________________
+-------------------
 
 * Python 3.10.4 and above
 
@@ -60,8 +60,8 @@ ___________________
 
 .. _METcalcpy_conda:
 
-Install METcalcpy in the conda environment
-__________________________________________
+Install METcalcpy in the Conda Environment
+------------------------------------------
 
 This is the recommended method for installation.
 
@@ -88,7 +88,7 @@ will avoid the need to reinstall if any changes are made to the METcalcpy
 code.
 
 Setting up the PYTHONPATH
-_________________________
+-------------------------
 
 This is a workaround for users who can not or do not have permission to
 create conda environments.
@@ -110,7 +110,7 @@ downloaded/cloned METplotpy code.
   $METCALCPY_SOURCE/METcalcpy:$METCALCPY_SOURCE/METcalcpy/util:$METPLOTPY_SOURCE/METplotpy${PYTHONPATH}
 
 Overview of Plots
-_________________
+-----------------
 
 The plots in the METplotpy repository reside under one of two directories:
 *METplotpy/metplotpy/contributed* or

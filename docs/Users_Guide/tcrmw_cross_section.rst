@@ -1,8 +1,9 @@
+*************************
 TC-RMW Cross-section Plot
-=========================
+*************************
 
 Description
-~~~~~~~~~~~
+===========
 
 Generate cross-section plots for TC-RMW data based on *height levels* using output
 from the METcalcpy vertical interpolation module, *vertical_interpolation.py*:
@@ -11,10 +12,11 @@ https://metcalcpy.readthedocs.io/en/develop/Users_Guide/vertical_interpolation.h
 
 
 Example
-~~~~~~~
+=======
 
 
-**Sample Data**
+Sample Data
+-----------
 
 Create the sample data by performing the conversion from pressure levels to height levels by following the instructions:
 
@@ -27,7 +29,8 @@ source code) is where your *tc_rmw_example_vertical_interp.nc* file will be loca
 *tc_rmw_example_vertical_interp.nc* is the input file to the cross section plot,
 *plot_cross_section.py*.
 
-**Configuration Files**
+Configuration Files
+-------------------
 
 An example configuration file (YAML, with .yaml extension) is available as a starting point
 for customizing the cross-plot of the height level data:
@@ -56,7 +59,7 @@ available field name from the input file (*tc_rmw_example_vertical_interp.nc*).
 
 
 Run from the Command Line
-~~~~~~~~~~~~~~~~~~~~~~~~~
+=========================
 
 You can generate a cross-section plot using the *test_plot_cross_section.sh* Bourne shell script:
 

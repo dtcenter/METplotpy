@@ -62,7 +62,7 @@ Import plot_weather_regime into the script:
    import plot_weather_regime as pwr
 
 For plot_elbow
-______________
+--------------
 
 In the code, generate the following as numpy
 arrays (except K, pot_title, and output_plotname).
@@ -87,7 +87,7 @@ squared distances.
 a **.png** version will be written.
 
 For plot_eof
-____________
+------------
 
 In the code, generate the following as numpy arrays
 (except wrnum, output_plotname, and plevels).
@@ -110,7 +110,7 @@ file, a **.png** version will be written.
 in the plots.
 
 For plot_K_means
-________________
+----------------
 
 In the code, generate the following as numpy arrays
 (except wrnum, output_plotname, and plevels).

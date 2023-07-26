@@ -18,7 +18,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 Sample data from CIRA are included with the source code. The data are ASCII text files in columnar format. The data are located in:
 *$METPLOTPY_BASE/metplotpy/test/skew_t/data*
@@ -44,7 +44,7 @@ https://bmcnoldy.rsmas.miami.edu/papers/MMD_30HURR.pdf
 
 
 Configuration Files
-___________________
+-------------------
 
 The skew-T plotter utilizes a single YAML configuration file to indicate where input data is located and to set plot attributes. YAML is a recursive acronym
 for "YAML Ain't Markup Language" and according to
@@ -57,7 +57,7 @@ METplus Configuration
 =====================
 
 Required Configuration File
-___________________________
+---------------------------
 
 The plotter requires a *mandatory* configuration file, which is
 used to customize the settings to the skew-T plot. The **skew_t.yaml**
@@ -101,7 +101,7 @@ Modify the following settings in the configuration file:
    Replace these hours in the example with all the hours you wish to plot.
 
 
-Running the plotter from the Command Line
+Running the Plotter from the Command Line
 =========================================
 
 To generate a skew-T plot from the sample data and your
@@ -149,8 +149,8 @@ To generate a skew-T plot from the sample data and your
    *.dat* extension of the data file. The
    plot title is generated from the name of the input file and the corresponding sounding hour.
 
-Example output plot
-___________________
+Example Output Plot
+-------------------
 
 The **skew_t.yaml** configuration file in combination with the
 Python script and sample data, generates the following skew-T plot:

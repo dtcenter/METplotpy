@@ -24,7 +24,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 The data is text output from MET in columnar format.
 The sample data used to create these plots is available in the METplotpy
@@ -45,7 +45,7 @@ the Github repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
-___________________
+-------------------
 
 The ECLV plot utilizes YAML configuration files to indicate where
 input data is located and to set plot attributes. These plot attributes
@@ -74,7 +74,7 @@ METplus Configuration
 =====================
 
 Default Configuration File
-__________________________
+--------------------------
 
 The following is the *mandatory*, **eclv_defaults.yaml**
 configuration file along with another *mandatory* configuration file, **custom_eclv.yaml** . These configuration files
@@ -92,7 +92,7 @@ of type INFO, WARNING, and ERROR will be logged).  If the log_filename and log_l
 not specified in the custom configuration file, these settings will be used.
 
 Custom Configuration File
-_________________________
+-------------------------
 
 As mentioned above a second, *mandatory* configuration file is required.  This is
 used to customize the settings to the ECLV plot.
@@ -161,8 +161,8 @@ privileges.  To modify the verbosity of logging than what is set in the default 
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
-Using defaults
-______________
+Using Defaults
+--------------
 
 There isn't a set of "default" values to create a meaningful ECLV plot. Use the combination of the
 default_eclv.yaml and custom_eclv.yaml file to create a sample ECLV plot.

@@ -28,7 +28,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 The sample data used to create an example bar plot is available in the
 METplotpy repository, where the bar plot tests are located:
@@ -49,7 +49,7 @@ the Github repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
-___________________
+-------------------
 
 The bar plot utilizes YAML configuration files to indicate where input data
 is located and to set plot attributes. These plot attributes correspond to
@@ -76,7 +76,7 @@ METplus Configuration
 =====================
 
 Default Configuration File
-__________________________
+--------------------------
 
 The following is the *mandatory*, **bar_defaults.yaml** configuration file,
 which serves as a good starting point for creating a line
@@ -92,7 +92,7 @@ of type INFO, WARNING, and ERROR will be logged).  If the log_filename and log_l
 not specified in the custom configuration file, these settings will be used.
 
 Custom Configuration File
-_________________________
+-------------------------
 
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to the bar plot. The **custom_bar.yaml**

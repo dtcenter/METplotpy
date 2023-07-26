@@ -13,7 +13,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 The data is text output from MET in columnar format.
 The sample data used to create an example reliability diagram is available
@@ -35,7 +35,7 @@ the Github repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
-___________________
+-------------------
 
 The reliability diagram utilizes YAML configuration files to indicate where
 input data is located and to set plot attributes. These plot attributes
@@ -63,7 +63,7 @@ METplotpy Configuration
 =======================
 
 Default Configuration File
-__________________________
+--------------------------
 
 The following is the *mandatory*, **reliability_defaults.yaml** configuration
 file, which serves as a starting point for creating a reliability diagram
@@ -81,7 +81,7 @@ not specified in the custom configuration file, these settings will be used
 
 
 Custom Configuration File
-_________________________
+-------------------------
 
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to the reliability diagram plot.
@@ -150,7 +150,7 @@ are lower verbosity).
 
 
 Using Defaults
-______________
+--------------
 
 If the user wishes to use all the default settings defined in the
 **reliability_defaults.yaml** file, an empty custom configuration file

@@ -27,7 +27,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 Sample data used to create an example difficulty index plot is
 available in the METplotpy repository, where the difficulty index plot
@@ -46,7 +46,7 @@ directory you created to store input data.
 
 
 Required Packages
-_________________
+-----------------
 
 The following Python packages are necessary:
 
@@ -57,7 +57,7 @@ The following Python packages are necessary:
 
 
 Configuration Files
-___________________
+-------------------
 
 All the settings for the example difficulty index plot are incorporated in
 the mycolormaps.py and plot_difficulty_index.py code.  The example_difficulty_index.py script imports these modules to

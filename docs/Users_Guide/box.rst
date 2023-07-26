@@ -30,7 +30,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 
 The data is text output from MET in columnar format.
@@ -52,7 +52,7 @@ the Github repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
-___________________
+-------------------
 
 The box plot utilizes YAML configuration files to indicate where input data
 is located and to set plot attributes. These plot attributes correspond
@@ -80,7 +80,7 @@ METplus Configuration
 =====================
 
 Default Configuration File
-__________________________
+--------------------------
 
 The following is the *mandatory*, **box_defaults.yaml** configuration file,
 which serves as a good starting point for creating a line
@@ -89,7 +89,7 @@ plot as it represents the default values set in METviewer.
 .. literalinclude:: ../../metplotpy/plots/config/box_defaults.yaml
 
 Custom Configuration File
-_________________________
+-------------------------
 
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to the box plot. The **custom_box.yaml**
@@ -161,7 +161,7 @@ are lower verbosity).
 
 
 Using Defaults
-______________
+--------------
 
 To use the *default* settings defined in the **box_defaults.yaml**
 file, specify a minimal custom configuration file (**minimal_box.yaml**),

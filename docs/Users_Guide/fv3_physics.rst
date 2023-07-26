@@ -50,8 +50,8 @@ input data.
 For additional details see `grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
 
 
-Available tendency variables
-____________________________
+Available Tendency Variables
+----------------------------
 
 A small description of each tendency variable and their nicknames are shown below. Some  
 tendencies do not apply to all four state variables, so these cells are blank. 
@@ -126,7 +126,7 @@ Example
 =======
 
 Sample Data
-___________
+-----------
 
 Sample data to plot physics tendencies are available in the `METplus data tar file
 <https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/vX.y/sample_data-xxx-x.y.tgz>`_  in the directory
@@ -137,7 +137,7 @@ $WORKING_DIR/data/fv3_physics_tend, where $WORKING_DIR is the path to the direct
 input data.
 
 Configuration File
-___________________
+------------------
 
 There is a YAML config file located in
 *$METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
@@ -158,8 +158,8 @@ To generate example tendency plots using settings in the **fv3_physics_defaults.
    cd $WORKING_DIR
    python planview_fv3.py -h
    
-Plan view
-_________
+Plan View
+---------
 
 ::
 
@@ -220,8 +220,8 @@ Generate a plan view of PBL tendency at default pressure levels:
 
    python vert_profile_fv3.py -h 
    
-Vertical profile
-________________
+Vertical Profile
+----------------
 
 ::
 
@@ -260,8 +260,8 @@ Generate vertical profile of temperature tendencies averaged over the mid-CONUS 
 
 .. image:: figure/tmp.vert_profile.MID_CONUS.png
 
-Vertical cross section
-______________________
+Vertical Cross Section
+----------------------
 
 .. code-block:: bash
 
@@ -309,8 +309,8 @@ Generate vertical cross section from 32°N 115°W to 34°N 82°W:
 
 .. image:: figure/tmp_32.0N-115.0E-34.0N-82.0E.png
 
-Difference plot
-_______________
+Difference Plot
+---------------
 
 
 Put file you want to subtract after the --subtract argument:
