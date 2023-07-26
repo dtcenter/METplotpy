@@ -260,7 +260,7 @@ Generate vertical profile of temperature tendencies averaged over the mid-CONUS 
 
 .. image:: figure/tmp.vert_profile.MID_CONUS.png
 
-Vertical cross section
+Vertical Cross Section
 ----------------------
 
 .. code-block:: bash
