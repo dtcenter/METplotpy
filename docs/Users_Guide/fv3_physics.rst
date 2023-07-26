@@ -309,7 +309,7 @@ Generate vertical cross section from 32°N 115°W to 34°N 82°W:
 
 .. image:: figure/tmp_32.0N-115.0E-34.0N-82.0E.png
 
-Difference plot
+Difference Plot
 ---------------
 
 
