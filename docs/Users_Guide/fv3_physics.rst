@@ -50,7 +50,7 @@ input data.
 For additional details see `grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
 
 
-Available tendency variables
+Available Tendency Variables
 ----------------------------
 
 A small description of each tendency variable and their nicknames are shown below. Some  
