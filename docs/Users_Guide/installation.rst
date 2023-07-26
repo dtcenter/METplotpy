@@ -60,7 +60,7 @@ Python Requirements
 
 .. _METcalcpy_conda:
 
-Install METcalcpy in the conda environment
+Install METcalcpy in the Conda Environment
 ------------------------------------------
 
 This is the recommended method for installation.
