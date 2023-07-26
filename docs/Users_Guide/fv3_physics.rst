@@ -158,7 +158,7 @@ To generate example tendency plots using settings in the **fv3_physics_defaults.
    cd $WORKING_DIR
    python planview_fv3.py -h
    
-Plan view
+Plan View
 ---------
 
 ::
