@@ -101,7 +101,7 @@ Modify the following settings in the configuration file:
    Replace these hours in the example with all the hours you wish to plot.
 
 
-Running the Pplotter from the Command Line
+Running the Plotter from the Command Line
 =========================================
 
 To generate a skew-T plot from the sample data and your
