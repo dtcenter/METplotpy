@@ -220,7 +220,7 @@ Generate a plan view of PBL tendency at default pressure levels:
 
    python vert_profile_fv3.py -h 
    
-Vertical profile
+Vertical Profile
 ----------------
 
 ::
