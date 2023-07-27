@@ -98,12 +98,12 @@ Authors
 Many authors, listed below in alphabetical order, have contributed to the documentation of METplus.
 To cite this documentation in publications, please refer to the METplotpy User's Guide :ref:`Citation Instructions<citations>`.
 
-* Hank Fisher [#NCAR]_
-* Christina Kalb [#NCAR]_
-* Minna Win-Gildenmeister [#NCAR]_
 * Daniel Adriaansen [#NCAR]_
 * Tatiana Burek [#NCAR]_
 * David Fillmore [#NCAR]_
+* Hank Fisher [#NCAR]_
+* Christina Kalb [#NCAR]_
+* Minna Win-Gildenmeister [#NCAR]_
 
 .. rubric:: Organization
 
