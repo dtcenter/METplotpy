@@ -101,7 +101,7 @@ legend_inset:
 legend_size: 0.8
 
 log_filename: STDOUT
-log_level: error
+log_level: 'info'
 plot_stat: median
 plot_contour_legend: False
 colors:

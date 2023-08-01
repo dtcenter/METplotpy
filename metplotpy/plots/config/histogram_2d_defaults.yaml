@@ -22,5 +22,5 @@ normalize_to_pdf: False
 pdf_min: 0.0
 pdf_max: 4.0
 
-log_level: ERROR
+log_level: INFO
 log_filename: stdout
