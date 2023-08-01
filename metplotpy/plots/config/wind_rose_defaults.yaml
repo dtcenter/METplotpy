@@ -1,7 +1,7 @@
 type: FCST
 title: Wind Rose
 log_filename: stdout
-log_level: ERROR
+log_level: 'INFO'
 wind_rose_breaks:
   - 0.0
   - 1.0
