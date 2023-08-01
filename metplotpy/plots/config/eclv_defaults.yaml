@@ -23,7 +23,7 @@ legend_ncol: 3
 legend_size: 0.8
 line_type: N/A
 log_filename: stdout
-log_level: error
+log_level: info
 mar:
 - 8
 - 4

@@ -33,7 +33,7 @@ list_stat_1: []
 list_stat_2: []
 
 log_filename: stdout
-log_level: ERROR
+log_level: 'INFO'
 mar:
 - 8
 - 4

@@ -35,7 +35,7 @@ line_type: None
 
 list_stat_1: []
 log_filename: stdout
-log_level: ERROR
+log_level: 'WARNING'
 
 mar:
   l: 0 #left margin

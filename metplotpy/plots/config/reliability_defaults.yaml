@@ -65,7 +65,7 @@ list_stat_1:
 - PSTD_NI
 list_stat_2: []
 log_filename: STDOUT
-log_level: ERROR
+log_level: 'INFO'
 mar:
 - 8
 - 4
