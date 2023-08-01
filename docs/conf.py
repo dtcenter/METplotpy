@@ -22,12 +22,12 @@ project = 'METplotpy'
 copyright = '2023, NCAR'
 author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Fisher, H., D. Adriaansen, C. Kalb, D. Fillmore, T. Jensen, L. Goodrich, M. Win-Gildenmeister and T. Burek'
-version = '3.0.0'
+version = '2.1.0'
 verinfo = version
 release = f'{version}'
 release_year = '2023'
 
-release_date = f'{release_year}-09-12'
+release_date = f'{release_year}-08-01'
 
 copyright = f'{release_year}, {author}'
 
