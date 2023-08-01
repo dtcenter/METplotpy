@@ -27,7 +27,7 @@ legend_ncol: 3
 legend_size: 0.8
 list_stat_1: []
 log_filename: stdout
-log_level: 'info'
+log_level: error
 mar:
 - 8
 - 4
