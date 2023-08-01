@@ -51,7 +51,7 @@ legend_size: 0.8  #required
 line_type: N/A
 
 log_filename: stdout
-log_level: 'INFO'
+log_level: ERROR
 plot_disp:
   - True #required
 series_order:
