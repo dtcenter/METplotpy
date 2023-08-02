@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import xarray
 import yaml
-from . import physics_tend
+import physics_tend
 
 
 def parse_args():
@@ -209,11 +209,11 @@ def main():
         # Concatenate all_tendencies, actual_tendency, and resid DataArrays.
         # Give them a name and long_name along tendency_dim.
         all_tendencies = all_tendencies.expand_dims({tendency_dim:["all"]}).assign_coords(
-                long_name="sum of physics tendencies")
+                long_name="sum of tendencies")
         actual_tendency = actual_tendency.expand_dims({tendency_dim:["actual"]}).assign_coords(
                 long_name=f"actual rate of change of {variable}")
         resid = resid.expand_dims({tendency_dim:["resid"]}).assign_coords(
-                long_name=f"sum of physics tendencies - actual rate of change of {variable} (residual)")
+                long_name=f"sum of tendencies - actual rate of change of {variable} (residual)")
         da2plot = xarray.concat([da2plot, all_tendencies, actual_tendency, resid], dim=tendency_dim)
         col = tendency_dim
     else:

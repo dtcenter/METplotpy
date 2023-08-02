@@ -1,14 +1,14 @@
 # Names of tendency variables in model output (i.e. FV3 history file)
 # Each type of tendency (moisture, temperature, wind component) has its own set of variables.
 tendency_varnames:
-    qv:
+    spfh:
     - dtend_qv_pbl
     - dtend_qv_deepcnv
     - dtend_qv_shalcnv
     - dtend_qv_mp
     - dtend_qv_nophys
     - dtend_qv_phys
-    temp:
+    tmp:
     - dtend_temp_lw
     - dtend_temp_sw
     - dtend_temp_pbl
@@ -19,7 +19,7 @@ tendency_varnames:
     - dtend_temp_cnvgwd
     - dtend_temp_nophys
     - dtend_temp_phys
-    u:
+    ugrd:
     - dtend_u_pbl
     - dtend_u_orogwd
     - dtend_u_deepcnv
@@ -27,7 +27,7 @@ tendency_varnames:
     - dtend_u_shalcnv
     - dtend_u_nophys
     - dtend_u_phys
-    v:
+    vgrd:
     - dtend_v_pbl
     - dtend_v_orogwd
     - dtend_v_deepcnv
