@@ -1,48 +1,47 @@
 # Names of tendency variables in model output (i.e. FV3 history file)
 # Each type of tendency (moisture, temperature, wind component) has its own set of variables.
 tendency_varnames:
-    spfh:
-    - dq3dt_deepcnv
-    - dq3dt_mp
-    - dq3dt_pbl
-    - dq3dt_shalcnv
-    - dq3dt_nophys
-    tmp:
-    - dt3dt_congwd
-    - dt3dt_deepcnv
-    - dt3dt_lw
-    - dt3dt_mp
-    - dt3dt_orogwd
-    - dt3dt_pbl
-    - dt3dt_rdamp
-    - dt3dt_shalcnv
-    - dt3dt_sw
-    - dt3dt_nophys
-    ugrd:
-    - du3dt_congwd
-    - du3dt_deepcnv
-    - du3dt_mp
-    - du3dt_orogwd
-    - du3dt_pbl
-    - du3dt_rdamp
-    - du3dt_shalcnv
-    - du3dt_nophys
-    vgrd:
-    - dv3dt_congwd
-    - dv3dt_deepcnv
-    - dv3dt_mp
-    - dv3dt_orogwd
-    - dv3dt_pbl
-    - dv3dt_rdamp
-    - dv3dt_shalcnv
-    - dv3dt_nophys
+    qv:
+    - dtend_qv_pbl
+    - dtend_qv_deepcnv
+    - dtend_qv_shalcnv
+    - dtend_qv_mp
+    - dtend_qv_nophys
+    - dtend_qv_phys
+    temp:
+    - dtend_temp_lw
+    - dtend_temp_sw
+    - dtend_temp_pbl
+    - dtend_temp_deepcnv
+    - dtend_temp_shalcnv
+    - dtend_temp_mp
+    - dtend_temp_orogwd
+    - dtend_temp_cnvgwd
+    - dtend_temp_nophys
+    - dtend_temp_phys
+    u:
+    - dtend_u_pbl
+    - dtend_u_orogwd
+    - dtend_u_deepcnv
+    - dtend_u_cnvgwd
+    - dtend_u_shalcnv
+    - dtend_u_nophys
+    - dtend_u_phys
+    v:
+    - dtend_v_pbl
+    - dtend_v_orogwd
+    - dtend_v_deepcnv
+    - dtend_v_cnvgwd
+    - dtend_v_shalcnv
+    - dtend_v_nophys
+    - dtend_v_phys
 
 # Name of variables in history file that contain the temperature, moisture, wind at time zero (initialization time).
 time0_varname:
-    tmp :  tmp_i
+    tmp : temp_i
     spfh:   qv_i
-    ugrd: ugrd_i
-    vgrd: vgrd_i
+    ugrd:    u_i
+    vgrd:    v_i
 
 
 # Name of the longitude and latitude variables in the grid specification file.
