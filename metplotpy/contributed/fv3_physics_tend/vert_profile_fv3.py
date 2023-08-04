@@ -97,7 +97,7 @@ def main():
 
     # Read lat/lon/area from gfile
     logging.debug(f"read lat/lon/area from {gfile}")
-    gds = xarray.open_dataset(gfile)
+    gds = xarray.open_mfdataset(gfile)
     lont = gds[fv3["lon_name"]]
     latt = gds[fv3["lat_name"]]
     area = gds["area"]
@@ -109,7 +109,7 @@ def main():
     if subtract:
         logging.info("subtracting %s", subtract)
         with xarray.set_options(keep_attrs=True):
-            fv3ds -= xarray.open_dataset(subtract)
+            fv3ds -= xarray.open_mfdataset(subtract)
 
     datetimeindex = fv3ds.indexes['time']
     if hasattr(datetimeindex, "to_datetimeindex"):
@@ -121,7 +121,7 @@ def main():
     ragged_times = datetimeindex != datetimeindex.round('1ms')
     if any(ragged_times):
         logging.info(
-            f"round times to nearest millisecond. before: {datetimeindex[ragged_times].values}")
+            f"round times to nearest millisec. before: {datetimeindex[ragged_times].values}")
         datetimeindex = datetimeindex.round('1ms')
         logging.info(f"after: {datetimeindex[ragged_times].values}")
     fv3ds['time'] = datetimeindex
@@ -278,20 +278,21 @@ def main():
             [.7, .001, .19, .13], projection=projection)
         # astype(int) to avoid TypeError: numpy boolean subtract
         cbar_kwargs = {"ticks":[0.25, 0.75], "shrink":0.6}
-        pc = mask.assign_coords(lont=lont, latt=latt).astype(int).plot.pcolormesh(
+        pcm = mask.assign_coords(lont=lont, latt=latt).astype(int).plot.pcolormesh(
             ax=ax_inset, x="lont", y="latt", infer_intervals=True,
             transform=cartopy.crs.PlateCarree(), cmap=plt.cm.get_cmap('cool', 2),
             add_labels=False, cbar_kwargs=cbar_kwargs)
-        pc.colorbar.ax.set_yticklabels(
+        pcm.colorbar.ax.set_yticklabels(
             ["masked", "valid"], fontsize='xx-small')
-        pc.colorbar.outline.set_visible(False)
+        pcm.colorbar.outline.set_visible(False)
         physics_tend.add_conus_features(ax_inset)
         extent = fv3["extent"]
         ax_inset.set_extent(extent)
 
     # Annotate figure with args namespace, total area, and timestamp
     fineprint = f"{args} "
-    fineprint += f"total area={totalarea.data:~.0f}, created {datetime.datetime.now(tz=None)}"
+    fineprint += (f"total area={totalarea.compute().data:~.0f}, "
+                  f"created {datetime.datetime.now(tz=None)}")
     if nofineprint:
         logging.debug(fineprint)
     else:

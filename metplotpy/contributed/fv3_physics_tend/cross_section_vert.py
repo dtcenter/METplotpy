@@ -21,7 +21,7 @@ def parse_args():
 
     # =============Arguments===================
     parser = argparse.ArgumentParser(
-        description="Vertical cross section of FV3 diagnostic tendency",
+        description="Vertical cross section of FV3 diagnostic tendencies",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # ==========Mandatory Arguments===================
     parser.add_argument("config", help="yaml configuration file")
@@ -106,7 +106,7 @@ def main():
 
     # Read lat/lon from gfile
     logging.debug(f"read lat/lon from {gfile}")
-    gds = xarray.open_dataset(gfile)
+    gds = xarray.open_mfdataset(gfile)
     lont = gds[fv3["lon_name"]]
     latt = gds[fv3["lat_name"]]
 
@@ -117,7 +117,7 @@ def main():
     if subtract:
         logging.info("subtracting %s", subtract)
         with xarray.set_options(keep_attrs=True):
-            fv3ds -= xarray.open_dataset(subtract)
+            fv3ds -= xarray.open_mfdataset(subtract)
 
     datetimeindex = fv3ds.indexes['time']
     if hasattr(datetimeindex, "to_datetimeindex"):
@@ -129,7 +129,7 @@ def main():
     ragged_times = datetimeindex != datetimeindex.round('1ms')
     if any(ragged_times):
         logging.info(
-            f"round times to nearest millisecond. before: {datetimeindex[ragged_times].values}")
+            f"round times to nearest millisec. before: {datetimeindex[ragged_times].values}")
         datetimeindex = datetimeindex.round('1ms')
         logging.info(f"after: {datetimeindex[ragged_times].values}")
     fv3ds['time'] = datetimeindex
@@ -239,9 +239,7 @@ def main():
         ncols = int(np.ceil(np.sqrt(len(da2plot))))
 
     if da2plot["pfull"].size == 1:
-        # Avoid ValueError: ('grid_yt', 'grid_xt') must be a
-        # permuted list of ('pfull', 'grid_yt', 'grid_xt'), unless `...` is included
-        # Error occurs in pcolormesh().
+        # Avoid ValueError in pcolormesh().
         da2plot = da2plot.squeeze()
 
     # Kludgy steps to prepare metadata for metpy cross section
@@ -263,11 +261,11 @@ def main():
     logging.info("plot pcolormesh")
     # normalized width and height of inset. Shrink colorbar to provide space.
     wid_inset, hgt_inset = 0.18, 0.18
-    pc = cross.plot.pcolormesh(x="index", y="pfull", yincrease=False, col=col, col_wrap=ncols,
+    pcm = cross.plot.pcolormesh(x="index", y="pfull", yincrease=False, col=col, col_wrap=ncols,
             robust=robust, infer_intervals=True, vmin=vmin, vmax=vmax, cmap=fv3["cmap"],
             cbar_kwargs={'shrink': 1-hgt_inset, 'anchor': (0, 0.25-hgt_inset)})
 
-    for ax in pc.axes.flat:
+    for ax in pcm.axes.flat:
         ax.grid(visible=True, color="grey", alpha=0.5, lw=0.5)
         ax.xaxis.set_major_locator(MultipleLocator(dindex))
         ax.yaxis.set_major_locator(MultipleLocator(100))

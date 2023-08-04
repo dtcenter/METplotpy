@@ -110,7 +110,7 @@ def main():
 
     # Read lat/lon/area from gfile
     logging.debug(f"read lat/lon/area from {gfile}")
-    gds = xarray.open_dataset(gfile)
+    gds = xarray.open_mfdataset(gfile)
     lont = gds[fv3["lon_name"]]
     latt = gds[fv3["lat_name"]]
     area = gds["area"]
@@ -122,7 +122,7 @@ def main():
     if subtract:
         logging.info("subtracting %s", subtract)
         with xarray.set_options(keep_attrs=True):
-            fv3ds -= xarray.open_dataset(subtract)
+            fv3ds -= xarray.open_mfdataset(subtract)
 
     datetimeindex = fv3ds.indexes['time']
     if hasattr(datetimeindex, "to_datetimeindex"):
@@ -134,7 +134,7 @@ def main():
     ragged_times = datetimeindex != datetimeindex.round('1ms')
     if any(ragged_times):
         logging.info(
-            f"round times to nearest millisecond. before: {datetimeindex[ragged_times].values}")
+            f"round times to nearest millisec. before: {datetimeindex[ragged_times].values}")
         datetimeindex = datetimeindex.round('1ms')
         logging.info(f"after: {datetimeindex[ragged_times].values}")
     fv3ds['time'] = datetimeindex
@@ -274,9 +274,7 @@ def main():
         ncols = int(np.ceil(np.sqrt(len(da2plot))))
 
     if da2plot["pfull"].size == 1:
-        # Avoid ValueError: ('grid_yt', 'grid_xt') must be a
-        # permuted list of ('pfull', 'grid_yt', 'grid_xt'), unless `...` is included
-        # Error occurs in pcolormesh().
+        # Avoid ValueError in pcolormesh().
         da2plot = da2plot.squeeze()
 
     # central lon/lat from https://github.com/NOAA-EMC/regional_workflow/blob/
@@ -307,7 +305,8 @@ def main():
 
     # Annotate figure with args namespace, total area, and timestamp
     fineprint = f"{args} "
-    fineprint += f"total area={totalarea.data:~.0f}, created {datetime.datetime.now(tz=None)}"
+    fineprint += (f"total area={totalarea.compute().data:~.0f}, "
+                  f"created {datetime.datetime.now(tz=None)}")
     if nofineprint:
         logging.debug(fineprint)
     else:
