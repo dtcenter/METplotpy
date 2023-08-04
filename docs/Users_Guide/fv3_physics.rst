@@ -336,7 +336,7 @@ Generate vertical cross section from 32°N 119°W to 34°N 87°W. Compress color
     python cross_section_vert.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp \
     -t 1 -v 20190615T20 -s 32 -119 -e 34 -87 --vmin -0.0006 --vmax 0.0006 --nofineprint
 
-.. image:: figure/tmp_32.0N-115.0E-34.0N-82.0E.png
+.. image:: figure/tmp_32.0N-119.0E-34.0N-87.0E.png
 
 Difference Plot
 ---------------
