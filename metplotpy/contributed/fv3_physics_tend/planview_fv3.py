@@ -10,8 +10,7 @@ import numpy as np
 import pandas as pd
 import xarray
 import yaml
-import physics_tend
-
+from . import physics_tend
 
 def parse_args():
     """
@@ -20,7 +19,7 @@ def parse_args():
 
     # =============Arguments===================
     parser = argparse.ArgumentParser(
-        description="Plan view of FV3 diagnostic tendency",
+        description="Plan view of FV3 diagnostic tendencies",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     # ==========Mandatory Arguments===================
     parser.add_argument("config", help="yaml configuration file")
@@ -60,7 +59,6 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-
 def main():
     """
     Plan view of tendencies of t, q, u, or v from physics parameterizations,
@@ -74,7 +72,6 @@ def main():
     variable = args.statevariable
     tendencytype = args.tendencytype
     config = args.config
-    debug = args.debug
     method = args.method
     ncols = args.ncols
     nofineprint = args.nofineprint
@@ -90,7 +87,7 @@ def main():
     vmax = args.vmax
 
     level = logging.INFO
-    if debug:
+    if args.debug:
         level = logging.DEBUG
     # prepend log message with time
     logging.basicConfig(format='%(asctime)s - %(message)s', level=level)
@@ -106,7 +103,7 @@ def main():
             logging.info(
                 f"output directory {odir} does not exist. Creating it")
             os.mkdir(odir)
-    logging.info("output filename=%s", ofile)
+    logging.debug("output filename=%s", ofile)
 
     # Reload fv3 in case user specifies a custom --config file
     fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
@@ -183,7 +180,7 @@ def main():
     # for example dtend_u_pbl -> pbl
     name_dict = {da: "_".join(da.split("_")[-1:])
                  for da in tendencies_avg.data_vars}
-    logging.info("rename %s", name_dict)
+    logging.debug("rename %s", name_dict)
     tendencies_avg = tendencies_avg.rename(name_dict)
 
     # Stack variables along new tendency dimension of new DataArray.

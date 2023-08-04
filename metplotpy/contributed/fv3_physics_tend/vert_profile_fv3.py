@@ -10,8 +10,7 @@ from metpy.units import units
 import pandas as pd
 import xarray
 import yaml
-import physics_tend
-
+from . import physics_tend
 
 def parse_args():
     """
@@ -45,7 +44,6 @@ def parse_args():
 
     args = parser.parse_args()
     return args
-
 
 def main():
     """
@@ -92,7 +90,7 @@ def main():
             logging.info(
                 f"output directory {odir} does not exist. Creating it")
             os.mkdir(odir)
-    logging.info("output filename=%s", ofile)
+    logging.debug("output filename=%s", ofile)
 
     # Reload fv3 in case user specifies a custom --config file
     fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
@@ -169,7 +167,7 @@ def main():
     # for example dtend_u_pbl -> pbl
     name_dict = {da: "_".join(da.split("_")[-1:])
                  for da in tendencies_avg.data_vars}
-    logging.info("rename %s", name_dict)
+    logging.debug("rename %s", name_dict)
     tendencies_avg = tendencies_avg.rename(name_dict)
 
     # Stack variables along new tendency dimension of new DataArray.

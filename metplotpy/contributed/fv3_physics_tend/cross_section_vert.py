@@ -12,8 +12,7 @@ import numpy as np
 import pandas as pd
 import xarray
 import yaml
-import physics_tend
-
+from . import physics_tend
 
 def parse_args():
     """
@@ -57,25 +56,25 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-
 def main():
     """
-    Vertical cross section view of tendencies of t, q, u, or v from physics parameterizations, dynamics (non-physics),
-    the combination of all tendencies (physics and non-physics),
-    the actual tendency, and the residual. Residual is the sum of all tendencies minus the actual tendency.
+    Vertical cross section view of tendencies of t, q, u, or v from physics parameterizations,
+    dynamics (non-physics), the combination of all tendencies (physics and non-physics),
+    the actual tendency, and the residual. Residual is the sum of all tendencies minus the
+    actual tendency.
     """
     args = parse_args()
     gfile = args.gridfile
     ifile = args.historyfile
     variable = args.statevariable
     config = args.config
-    debug = args.debug
     dindex = args.dindex
     ncols = args.ncols
     nofineprint = args.nofineprint
     ofile = args.ofile
     startpt = args.start
     endpt = args.end
+    robust = not args.norobust
     subtract = args.subtract
     twindow = datetime.timedelta(hours=args.twindow)
     twindow_quantity = twindow.total_seconds() * units.seconds
@@ -84,7 +83,7 @@ def main():
     vmax = args.vmax
 
     level = logging.INFO
-    if debug:
+    if args.debug:
         level = logging.DEBUG
     # prepend log message with time
     logging.basicConfig(format='%(asctime)s - %(message)s', level=level)
@@ -100,7 +99,7 @@ def main():
             logging.info(
                 f"output directory {odir} does not exist. Creating it")
             os.mkdir(odir)
-    logging.info("output filename=%s", ofile)
+    logging.debug("output filename=%s", ofile)
 
     # Reload fv3 in case user specifies a custom --config file
     fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
@@ -176,7 +175,7 @@ def main():
     # for example dtend_u_pbl -> pbl
     name_dict = {da: "_".join(da.split("_")[-1:])
                  for da in tendencies_avg.data_vars}
-    logging.info("rename %s", name_dict)
+    logging.debug("rename %s", name_dict)
     tendencies_avg = tendencies_avg.rename(name_dict)
 
     # Stack variables along new tendency dimension of new DataArray.
@@ -251,18 +250,22 @@ def main():
             {"grid_yt":"y", "grid_xt":"x"})
     # fv3 uses Extended Schmidt Gnomomic grid for regional applications. This is not in cartopy.
     # Found similar Lambert Conformal projection by trial and error.
-    da2plot = da2plot.metpy.assign_crs(grid_mapping_name="lambert_conformal_conic", standard_parallel=fv3["standard_parallel"], longitude_of_central_meridian=-
-                                       97.5, latitude_of_projection_origin=fv3["standard_parallel"]).metpy.assign_y_x(force=True, tolerance=44069*units.m)
-    # Define cross section. Use different variable than da2plot because da2plot is used later for inset.
-    # upgraded xarray to 0.21.1 to avoid FutureWarning: Passing method to Float64Index.get_loc is deprecated
+    da2plot = da2plot.metpy.assign_crs(
+            grid_mapping_name="lambert_conformal_conic", standard_parallel=fv3["standard_parallel"],
+            longitude_of_central_meridian=-97.5,
+            latitude_of_projection_origin=fv3["standard_parallel"]).metpy.assign_y_x(
+                    force=True, tolerance=44069*units.m)
+    # Define cross section. Use different variable than da2plot because da2plot is used later for
+    # inset. Upgrade to xarray to 0.21.1 to avoid
+    # FutureWarning: Passing method to Float64Index.get_loc is deprecated
     cross = cross_section(da2plot, startpt, endpt)
 
     logging.info("plot pcolormesh")
     # normalized width and height of inset. Shrink colorbar to provide space.
-    w, h = 0.18, 0.18
-    # robust (bool, optional) – If True and vmin or vmax are absent, the colormap range is computed with 2nd and 98th percentiles instead of the extreme values
-    pc = cross.plot.pcolormesh(x="index", y="pfull", yincrease=False, col=col, col_wrap=ncols, robust=True, infer_intervals=True,
-                               vmin=vmin, vmax=vmax, cmap=fv3["cmap"], cbar_kwargs={'shrink': 1-h, 'anchor': (0, 0.25-h)})
+    wid_inset, hgt_inset = 0.18, 0.18
+    pc = cross.plot.pcolormesh(x="index", y="pfull", yincrease=False, col=col, col_wrap=ncols,
+            robust=robust, infer_intervals=True, vmin=vmin, vmax=vmax, cmap=fv3["cmap"],
+            cbar_kwargs={'shrink': 1-hgt_inset, 'anchor': (0, 0.25-hgt_inset)})
 
     for ax in pc.axes.flat:
         ax.grid(visible=True, color="grey", alpha=0.5, lw=0.5)
@@ -274,12 +277,14 @@ def main():
     # Add time to title
     title = f'{time0}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
     plt.suptitle(title, wrap=True)
-    # pad top and bottom for title and fineprint. Unfortunately, you must redefine right pad, as xarray no longer controls it.
+    # pad top and bottom for title and fineprint.
+    # Unfortunately, you must redefine right pad, as xarray no longer controls it.
     plt.subplots_adjust(top=0.9, right=0.8, bottom=0.1)
 
     # Locate cross section on conus map background. Put in inset.
     data_crs = da2plot.metpy.cartopy_crs
-    ax_inset = plt.gcf().add_axes([.999-w, .999-h, w, h], projection=data_crs)
+    ax_inset = plt.gcf().add_axes(
+            [.999-wid_inset, .999-hgt_inset, wid_inset, hgt_inset], projection=data_crs)
     # Plot the endpoints of the cross section (make sure they match path)
     endpoints = data_crs.transform_points(
         cartopy.crs.Geodetic(), *np.vstack([startpt, endpt]).transpose()[::-1])
