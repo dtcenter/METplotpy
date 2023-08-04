@@ -64,5 +64,5 @@ standard_parallel : 38.139
 cmap : "Spectral_r"
 
 # resolution (dots per inch) of output
-dpi : 150
+dpi : 100
 

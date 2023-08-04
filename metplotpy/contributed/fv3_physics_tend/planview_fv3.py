@@ -29,7 +29,7 @@ def parse_args():
     parser.add_argument(
         "statevariable", help="moisture, temperature, or wind component variable name")
     parser.add_argument(
-        "fill", help='type of tendency. ignored if pfull is a single level')
+        "tendencytype", help='type of tendency. ignored if pfull is a single level')
     # ==========Optional Arguments===================
     parser.add_argument("-d", "--debug", action='store_true')
     parser.add_argument("--method", choices=["nearest", "linear", "loglinear"], default="nearest",
@@ -63,15 +63,16 @@ def parse_args():
 
 def main():
     """
-    Plan view of tendencies of t, q, u, or v from physics parameterizations, dynamics (non-physics),
-    the combination of all tendencies (physics and non-physics),
-    the actual tendency, and the residual. Residual is the sum of all tendencies minus the actual tendency.
+    Plan view of tendencies of t, q, u, or v from physics parameterizations,
+    dynamics (non-physics), the combination of all tendencies (physics and non-physics),
+    the actual tendency, and the residual. Residual is the sum of all tendencies minus the
+    actual tendency.
     """
     args = parse_args()
     gfile = args.gridfile
     ifile = args.historyfile
     variable = args.statevariable
-    fill = args.fill
+    tendencytype = args.tendencytype
     config = args.config
     debug = args.debug
     method = args.method
@@ -120,6 +121,12 @@ def main():
     # Open input file
     logging.debug("open %s", ifile)
     fv3ds = xarray.open_dataset(ifile)
+
+    if subtract:
+        logging.info("subtracting %s", subtract)
+        with xarray.set_options(keep_attrs=True):
+            fv3ds -= xarray.open_dataset(subtract)
+
     datetimeindex = fv3ds.indexes['time']
     if hasattr(datetimeindex, "to_datetimeindex"):
         # Convert from CFTime to pandas datetime or get warning
@@ -134,10 +141,6 @@ def main():
         datetimeindex = datetimeindex.round('1ms')
         logging.info(f"after: {datetimeindex[ragged_times].values}")
     fv3ds['time'] = datetimeindex
-    if subtract:
-        logging.info("subtracting %s", subtract)
-        with xarray.set_options(keep_attrs=True):
-            fv3ds -= xarray.open_dataset(subtract)
 
     # lont and latt used by pcolorfill()
     fv3ds = fv3ds.assign_coords(lont=lont, latt=latt)
@@ -218,32 +221,23 @@ def main():
         "subtract actual tendency from all_tendencies to get residual")
     resid = all_tendencies - actual_tendency
 
-    logging.debug("Define DataArray to plot (da2plot).")
-    if len(pfull) == 1:
-        # If only 1 pressure level was requested, plot all tendencies.
-        da2plot = tendencies_avg
-        # Concatenate all_tendencies, actual_tendency, and resid DataArrays.
-        # Give them a name and long_name along tendency_dim.
-        all_tendencies = all_tendencies.expand_dims({tendency_dim: ["all"]}).assign_coords(
-            long_name="sum of tendencies")
-        actual_tendency = actual_tendency.expand_dims({tendency_dim: ["actual"]}).assign_coords(
-            long_name=f"actual rate of change of {variable}")
-        resid = resid.expand_dims({tendency_dim: ["resid"]}).assign_coords(
-            long_name=f"sum of tendencies - actual rate of change of {variable} (residual)")
-        da2plot = xarray.concat(
-            [da2plot, all_tendencies, actual_tendency, resid], dim=tendency_dim)
-        col = tendency_dim
-    else:
-        # otherwise pick a DataArray (resid, state_variable, actual_tendency, tendency)
+    # Concatenate all_tendencies, actual_tendency, and resid DataArrays.
+    # Give them a name and long_name along tendency_dim.
+    all_tendencies = all_tendencies.expand_dims({tendency_dim: ["all"]}).assign_coords(
+        long_name="sum of tendencies")
+    actual_tendency = actual_tendency.expand_dims({tendency_dim: ["actual"]}).assign_coords(
+        long_name=f"actual rate of change of {variable}")
+    resid = resid.expand_dims({tendency_dim: ["resid"]}).assign_coords(
+        long_name=f"sum of tendencies - actual rate of change of {variable} (residual)")
+    da2plot = xarray.concat(
+        [tendencies_avg, all_tendencies, actual_tendency, resid], dim=tendency_dim)
+    col = tendency_dim
+
+    if len(pfull) > 1:
+        # If more than one pressure level was specified
         col = "pfull"
-        if fill == 'resid':  # residual
-            da2plot = resid
-        elif fill == "":  # plain-old state variable
-            da2plot = state_variable.sel(time=validtime)
-        elif fill == "d"+variable:  # actual change in state variable
-            da2plot = actual_tendency
-        else:  # expected change in state variable from tendencies
-            da2plot = tendencies_avg.sel({tendency_dim: fill})
+        # just select one type of tendency
+        da2plot = da2plot.sel({tendency_dim: tendencytype})
 
     if da2plot.metpy.vertical.attrs["units"] == "mb":
         # For MetPy. Otherwise, mb is interpreted as millibarn.
@@ -269,7 +263,7 @@ def main():
     if shp is not None:
         # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
         mask = physics_tend.pts_in_shp(
-            latt.values, lont.values, shp, debug=debug)
+            latt.values, lont.values, shp)
         mask = xarray.DataArray(
             mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
         da2plot = da2plot.where(mask, drop=True)
@@ -299,7 +293,8 @@ def main():
         logging.warning("compute colormap range with 2nd and 98th percentiles")
     pcm = da2plot.plot.pcolormesh(x="lont", y="latt", col=col, col_wrap=ncols, robust=robust,
                                   infer_intervals=True, transform=cartopy.crs.PlateCarree(),
-                                  vmin=vmin, vmax=vmax, cmap=fv3["cmap"], cbar_kwargs={'shrink': 0.8}, subplot_kws=subplot_kws)
+                                  vmin=vmin, vmax=vmax, cmap=fv3["cmap"],
+                                  cbar_kwargs={'shrink': 0.8}, subplot_kws=subplot_kws)
     for ax in pcm.axes.flat:
         # Why needed only when col=tendency_dim? With col="pfull" it shrinks to unmasked size.
         ax.set_extent(fv3["extent"])
@@ -336,7 +331,7 @@ def default_ofile(args):
         pfull_str = f"{pfull[0]:~.0f}".replace(" ", "")
         ofile = f"{args.statevariable}_{pfull_str}.png"
     else:
-        ofile = f"{args.fill}.png"
+        ofile = f"{args.statevariable}_{args.tendencytype}.png"
     if args.shp is not None:
         shp = shp.rstrip("/")
         # Add shapefile name to output filename

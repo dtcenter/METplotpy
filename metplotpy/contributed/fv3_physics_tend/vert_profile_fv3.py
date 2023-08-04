@@ -107,6 +107,12 @@ def main():
     # Open input file
     logging.debug("open %s", ifile)
     fv3ds = xarray.open_dataset(ifile)
+
+    if subtract:
+        logging.info("subtracting %s", subtract)
+        with xarray.set_options(keep_attrs=True):
+            fv3ds -= xarray.open_dataset(subtract)
+
     datetimeindex = fv3ds.indexes['time']
     if hasattr(datetimeindex, "to_datetimeindex"):
         # Convert from CFTime to pandas datetime or get warning
@@ -121,10 +127,6 @@ def main():
         datetimeindex = datetimeindex.round('1ms')
         logging.info(f"after: {datetimeindex[ragged_times].values}")
     fv3ds['time'] = datetimeindex
-    if subtract:
-        logging.info("subtracting %s", subtract)
-        with xarray.set_options(keep_attrs=True):
-            fv3ds -= xarray.open_dataset(subtract)
 
     # lont and latt used by pcolorfill()
     fv3ds = fv3ds.assign_coords(lont=lont, latt=latt)
@@ -205,10 +207,10 @@ def main():
         "subtract actual tendency from all_tendencies to get residual")
     resid = all_tendencies - actual_tendency
 
-    logging.debug("Define DataArray to plot (da2plot).")
     da2plot = tendencies_avg
     if args.resid:
-        # Add all_tendencies and resid DataArrays to tendency_dim.
+        # Concatenate all_tendencies, actual_tendency, and resid DataArrays.
+        # Give them a name and long_name along tendency_dim.
         all_tendencies = all_tendencies.expand_dims({tendency_dim: ["all"]}).assign_coords(
             long_name="sum of tendencies")
         actual_tendency = actual_tendency.expand_dims({tendency_dim: ["actual"]}).assign_coords(

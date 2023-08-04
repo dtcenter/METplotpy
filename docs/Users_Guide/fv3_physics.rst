@@ -48,7 +48,8 @@ Save this file in a directory where you have read and write permissions, such as
 $WORKING_DIR/data/fv3_physics_tend, where $WORKING_DIR is the path to the directory where you will save
 input data.
 
-For additional details see `grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
+For additional details see 
+`grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
 
 
 Available Tendency Variables
@@ -123,7 +124,7 @@ time. You must choose a later valid time or a shorter time window that does not 
 the initialization time. In other words, it is a problem if your model initialization time is 0z, your
 valid time is 1z and your time window is one hour. One work-around is to append the state variables
 at initialization time to the history file, naming them something different and providing the different
-varialble name in the configuration file. 
+variable name in the configuration file. 
 
 
 Example
@@ -153,7 +154,8 @@ There is a YAML config file located in
 Run from the Command Line
 =========================
 
-To generate example tendency plots using settings in the **fv3_physics_defaults.yaml** configuration file, perform the following:
+To generate example tendency plots using settings in the **fv3_physics_defaults.yaml** 
+configuration file, perform the following:
 
 .. code-block:: bash
 
@@ -209,11 +211,12 @@ Plan View
       --vmax VMAX           color bar maximum (overrides robust=True) (default: None)
 
                         
-Generate a plan view of all tendencies at 500 hPa:
+Generate a plan view of all tendencies at 500 hPa for the 1-hour time window ending 20190615 20z:
 
 .. code-block:: bash
 
-   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -p 500 -t 1 -v 20190504T14 --nofineprint
+   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl \
+   -p 500 -t 1 -v 20190615T20 --nofineprint
 
 .. image:: figure/tmp_500hPa.png
 
@@ -221,7 +224,8 @@ Generate a plan view of PBL tendency at default pressure levels:
 
 .. code-block:: bash
 
-   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -t 1 -v 20190504T13 --nofineprint
+   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl \
+   -t 1 -v 20190615T20 --nofineprint
 
 .. image:: figure/tmp_pbl.png
 
@@ -264,11 +268,13 @@ Vertical Profile
       --xmin XMIN           x-axis minimum (default: None)
       --xmax XMAX           x-axis maximum (default: None)
        
-Generate vertical profile of temperature tendencies averaged over the mid-CONUS region:
+Generate vertical profile of temperature tendencies averaged over the central US. Plot residual
+tendency and its components. Limit the x-axis range with --xmin and --xmax.
 
 .. code-block:: bash
 
-   python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 2 -v 20190504T14 -s $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend/shapefiles/MID_CONUS --nofineprint
+    python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp \
+    -t 1 -v 20190615T20 -s shapefiles/MID_CONUS --resid --xmin -0.0005 --xmax 0.0004 --nofineprint
 
 .. image:: figure/tmp.vert_profile.MID_CONUS.png
 
@@ -318,11 +324,13 @@ Vertical Cross Section
       --vmin VMIN           color bar minimum (overrides robust=True) (default: None)
       --vmax VMAX           color bar maximum (overrides robust=True) (default: None)
                          
-Generate vertical cross section from 32°N 115°W to 34°N 82°W:
+Generate vertical cross section from 32°N 119°W to 34°N 87°W. Compress colormap range to 
+[-0.006, 0.006] with --vmin and --vmax.
 
 .. code-block:: bash
 
-   python cross_section_vert.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 2 -v 20190504T14 -s 32 -115 -e 34 -82 --nofineprint
+    python cross_section_vert.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp \
+    -t 1 -v 20190615T20 -s 32 -119 -e 34 -87 --vmin -0.0006 --vmax 0.0006 --nofineprint
 
 .. image:: figure/tmp_32.0N-115.0E-34.0N-82.0E.png
 
@@ -334,7 +342,8 @@ Put file you want to subtract after the --subtract argument:
 
 .. code-block:: bash
 
-   python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 1 --subtract $WORKING_DIR/fv3_history.nc --nofineprint
+   python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp \
+   -t 1 --subtract $WORKING_DIR/fv3_history.nc --nofineprint
 
 .. image:: figure/tmp.vert_profile.png
 
