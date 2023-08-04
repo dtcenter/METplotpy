@@ -9,7 +9,11 @@ and spatial domain. Tendencies are partitioned into physics parameterizations an
 dynamics. Physics parameterizations include schemes like deep convection, convective 
 gravity wave drag, short wave radiation, planetary boundary layer, microphysics, 
 and others listed below. Non-physics tendencies (or dynamics) are due to horizontal
-and vertical motion (advection). The residual (which should be close to zero) is the 
+and vertical motion (advection). 
+
+residual = all tendencies - actual tendency
+
+The residual (which should be close to zero) is the 
 difference between
 the actual change in the state variable over the requested time window and the
 combined change due to all physics parameterizations and dynamics tendencies. One can plot
