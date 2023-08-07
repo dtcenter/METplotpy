@@ -288,52 +288,49 @@ Vertical Cross Section
    
 ::
 
-    usage: cross_section_vert.py [-h] [-d] [--dindex DINDEX] [--ncols NCOLS] [--nofineprint]
-                                 [--norobust] [-o OFILE] [-s START START] [-e END END]
-                                 [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
-                                 [--vmin VMIN] [--vmax VMAX]
-                                 config historyfile gridfile statevariable
+usage: cross_section_vert.py [-h] [-d] [--ncols NCOLS] [--nofineprint] [--norobust] [-o OFILE]
+                             [-s START START] [-e END END] [--subtract SUBTRACT] [-t TWINDOW]
+                             [-v VALIDTIME] [--vmin VMIN] [--vmax VMAX]
+                             config historyfile gridfile statevariable
 
-    Vertical cross section of FV3 diagnostic tendency
+Vertical cross section of FV3 diagnostic tendencies
 
-    positional arguments:
-      config                yaml configuration file
-      historyfile           FV3 history file
-      gridfile              FV3 grid spec file
-      statevariable         moisture, temperature, or wind component variable name
+positional arguments:
+  config                yaml configuration file
+  historyfile           FV3 history file
+  gridfile              FV3 grid spec file
+  statevariable         moisture, temperature, or wind component variable name
 
-    optional arguments:
-      -h, --help            show this help message and exit
-      -d, --debug
-      --dindex DINDEX       tick and gridline interval along cross section (default: 20)
-      --ncols NCOLS         number of columns (default: None)
-      --nofineprint         Don't add metadata and created by date (for comparing images)
-                            (default: False)
-      --norobust            compute colormap range with extremes, not 2nd and 98th
-                            percentiles (default: False)
-      -o OFILE, --ofile OFILE
-                            name of output image file (default: None)
-      -s START START, --start START START
-                            start point (default: (28, -115))
-      -e END END, --end END END
-                            end point (default: (30, -82))
-      --subtract SUBTRACT   FV3 history file to subtract (default: None)
-      -t TWINDOW, --twindow TWINDOW
-                            time window in hours (default: 3)
-      -v VALIDTIME, --validtime VALIDTIME
-                            valid time (default: None)
-      --vmin VMIN           color bar minimum (overrides robust=True) (default: None)
-      --vmax VMAX           color bar maximum (overrides robust=True) (default: None)
-                         
-Generate vertical cross section from 32°N 119°W to 34°N 87°W. Compress colormap range to 
-[-0.006, 0.006] with --vmin and --vmax.
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --debug
+  --ncols NCOLS         number of columns (default: None)
+  --nofineprint         Don't add metadata and created by date (for comparing images) (default: False)
+  --norobust            compute colormap range with extremes, not 2nd and 98th percentiles (default:
+                        False)
+  -o OFILE, --ofile OFILE
+                        name of output image file (default: None)
+  -s START START, --start START START
+                        start point lat lon (default: (28, -115))
+  -e END END, --end END END
+                        end point lat lon (default: (30, -82))
+  --subtract SUBTRACT   FV3 history file to subtract (default: None)
+  -t TWINDOW, --twindow TWINDOW
+                        time window in hours (default: 3)
+  -v VALIDTIME, --validtime VALIDTIME
+                        valid time (default: None)
+  --vmin VMIN           color bar minimum (overrides robust=True) (default: None)
+  --vmax VMAX           color bar maximum (overrides robust=True) (default: None)
+
+Generate vertical cross section of u-wind tendencies from 28°N 120°W to 26°N 75°W over one-hour
+time window ending 23z June 15, 2019.
 
 .. code-block:: bash
 
     python cross_section_vert.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp \
-    -t 1 -v 20190615T20 -s 32 -119 -e 34 -87 --vmin -0.0006 --vmax 0.0006 --nofineprint
+    -t 1 -v "2019-06-15 23" -s 28 -120 -e 26 -75 --nofineprint
 
-.. image:: figure/tmp_32.0N-119.0E-34.0N-87.0E.png
+.. image:: figure/ugrd_28.0N-120.0E-26.0N-75.0E.png
 
 Difference Plot
 ---------------
