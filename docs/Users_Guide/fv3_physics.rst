@@ -123,13 +123,12 @@ If time window overlaps initialization time
 
 The history file does not necessarily have the temperature, moisture, or wind at the exact
 time of model initialization. It is usally the next timestep (e.g. 180 seconds later). 
-This means you cannot derive the actual change in temperature from model initialization time to the valid
-time. You must choose a later valid time or a shorter time window that does not overlap
+This means you cannot derive the actual change in temperature starting at the model initialization
+time. You must choose a later valid time and/or a shorter time window that does not overlap
 the initialization time. In other words, it is a problem if your model initialization time is 0z, your
 valid time is 1z and your time window is one hour. One work-around is to append the state variables
-at initialization time to the history file, naming them something different and providing the different
-variable name in the configuration file. 
-
+at initialization time to the history file, naming them something different and setting the 
+*time0_varname* variable to those different names in the configuration file.
 
 Example
 =======
