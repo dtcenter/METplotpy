@@ -56,23 +56,23 @@ For additional details see
 `grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
 
 
-Available Tendency Variables
-----------------------------
+Default tendency variable names
+-------------------------------
 
-Available tendency variables and their expected names are below.
-Some tendencies do not apply to all four state variables, so these cells are blank.  
-
-The expected names can be changed in the configuration file 
-*$METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml*.
-You will need to do this if your FV3 history file uses a different naming convention or 
-has a different number of output variables. 
+Default tendency variable names are below. The tendencies that are available depend on the 
+physics suite that the user selects when running FV3; more specifically, its contents are 
+determined by the diag_table file that the user sets up. The history file that we
+use our example is for a specific diag_table and so may change with different FV3 configurations. 
+The user must make sure the names in the configuration file 
+*$METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml*
+match the names used in fv3_history.nc for their case.
+Some tendencies do not apply to all four state variables, so these cells are left blank.
 
 **NOTE**: *$METPLOTPY_BASE* is the directory where the METplotpy code is saved (e.g. */path/to/user/dir/METplotpy*).
 
-State variables
 
 +-----------------------------+-------------+-------------------+-------------+-------------+
-|                             | temperature | specific humidity |   u-wind    |   v-wind    |
+|      State Variable         | temperature | specific humidity |   u-wind    |   v-wind    |
 +=============================+=============+===================+=============+=============+
 |       expected name         |     tmp     |        spfh       |    ugrd     |    vgrd     |
 +-----------------------------+-------------+-------------------+-------------+-------------+
@@ -80,7 +80,7 @@ State variables
 Tendency variables:
 
 +-----------------------------+-------------------+-------------------+----------------+----------------+
-|            tendency         |    temperature    | specific humidity |     u-wind     |     v-wind     |
+|     Tendency  Variable      |    temperature    | specific humidity |     u-wind     |     v-wind     |
 +=============================+===================+===================+================+================+
 | convective gravity wave drag| dtend_temp_cnvgwd |                   | dtend_u_cnvgwd | dtend_v_cnvgwd |
 +-----------------------------+-------------------+-------------------+----------------+----------------+
@@ -109,7 +109,7 @@ Tendency variables:
 Derived tendency variables that show up in plots:
 
 +-----------------------------+-------------------+-------------------+----------------+----------------+
-|      derived variable       |    temperature    | specific humidity |     u-wind     |     v-wind     |
+|      Derived Variable       |    temperature    | specific humidity |     u-wind     |     v-wind     |
 +=============================+===================+===================+================+================+
 |     all phys and nophys     |        all        |        all        |       all      |      all       |
 +-----------------------------+-------------------+-------------------+----------------+----------------+

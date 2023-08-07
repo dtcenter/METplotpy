@@ -6,8 +6,8 @@ tendency_varnames:
     - dtend_qv_deepcnv
     - dtend_qv_shalcnv
     - dtend_qv_mp
-    - dtend_qv_nophys
     - dtend_qv_phys
+    - dtend_qv_nophys
     tmp:
     - dtend_temp_lw
     - dtend_temp_sw
@@ -17,24 +17,24 @@ tendency_varnames:
     - dtend_temp_mp
     - dtend_temp_orogwd
     - dtend_temp_cnvgwd
-    - dtend_temp_nophys
     - dtend_temp_phys
+    - dtend_temp_nophys
     ugrd:
     - dtend_u_pbl
     - dtend_u_orogwd
     - dtend_u_deepcnv
     - dtend_u_cnvgwd
     - dtend_u_shalcnv
-    - dtend_u_nophys
     - dtend_u_phys
+    - dtend_u_nophys
     vgrd:
     - dtend_v_pbl
     - dtend_v_orogwd
     - dtend_v_deepcnv
     - dtend_v_cnvgwd
     - dtend_v_shalcnv
-    - dtend_v_nophys
     - dtend_v_phys
+    - dtend_v_nophys
 
 # Name of variables in history file that contain the temperature, moisture, wind at time zero (initialization time).
 time0_varname:
