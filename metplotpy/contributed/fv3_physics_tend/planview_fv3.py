@@ -160,8 +160,8 @@ def main():
     tendencies = tendencies.metpy.quantify()
 
     # Define time slice starting with time-after-time0 and ending with validtime.
-    # We use the time *after* time0 because the time range of the tendency field is the period
-    # immediately prior to the tendency timestamp.
+    # We use the time *after* time0 because the time range corresponding to the tendency
+    # output is the period immediately prior to the tendency timestamp.
     # That way, slice(time_after_time0, validtime) has a time range of [time0,validtime].
     idx_first_time_after_time0 = (fv3ds.time > time0).argmax()
     time_after_time0 = fv3ds.time[idx_first_time_after_time0]
