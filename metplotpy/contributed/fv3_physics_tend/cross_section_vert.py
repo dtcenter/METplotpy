@@ -155,8 +155,8 @@ def main():
     tendencies = tendencies.metpy.quantify()
 
     # Define time slice starting with time-after-time0 and ending with validtime.
-    # We use the time *after* time0 because the time range of the tendency field is the period
-    # immediately prior to the tendency timestamp.
+    # We use the time *after* time0 because the time range corresponding to the tendency
+    # output is the period immediately prior to the tendency timestamp.
     # That way, slice(time_after_time0, validtime) has a time range of [time0,validtime].
     idx_first_time_after_time0 = (fv3ds.time > time0).argmax()
     time_after_time0 = fv3ds.time[idx_first_time_after_time0]
@@ -249,7 +249,8 @@ def main():
     # fv3 uses Extended Schmidt Gnomomic grid for regional applications. This is not in cartopy.
     # Found similar Lambert Conformal projection by trial and error.
     da2plot = da2plot.metpy.assign_crs(
-            grid_mapping_name="lambert_conformal_conic", standard_parallel=fv3["standard_parallel"],
+            grid_mapping_name="lambert_conformal_conic",
+            standard_parallel=fv3["standard_parallel"],
             longitude_of_central_meridian=-97.5,
             latitude_of_projection_origin=fv3["standard_parallel"]).metpy.assign_y_x(
                     force=True, tolerance=44069*units.m)
