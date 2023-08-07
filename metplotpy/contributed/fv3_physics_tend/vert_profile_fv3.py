@@ -10,7 +10,7 @@ from metpy.units import units
 import pandas as pd
 import xarray
 import yaml
-from . import physics_tend
+import physics_tend
 
 def parse_args():
     """
@@ -136,9 +136,8 @@ def main():
             "validtime not provided on command line. Using last time in history file %s.",
             validtime)
     time0 = validtime - twindow
-    if time0 not in fv3ds.time:
-        logging.info("time0 %s not in history file. add it.", time0)
-        fv3ds = physics_tend.add_time0(fv3ds, variable, fv3)
+    assert time0 in fv3ds.time, (f"time0 {time0} not in history file. Closest is "
+                                 f"{fv3ds.time.sel(time=time0, method='nearest').time.data}")
 
     # list of tendency variable names for requested state variable
     tendency_vars = fv3["tendency_varnames"][variable]

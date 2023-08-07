@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import xarray
 import yaml
-from . import physics_tend
+import physics_tend
 
 def parse_args():
     """
@@ -31,8 +31,6 @@ def parse_args():
         "statevariable", help="moisture, temperature, or wind component variable name")
     # ==========Optional Arguments===================
     parser.add_argument("-d", "--debug", action='store_true')
-    parser.add_argument("--dindex", type=int, default=20,
-                        help="tick and gridline interval along cross section")
     parser.add_argument("--ncols", type=int, default=None,
                         help="number of columns")
     parser.add_argument("--nofineprint", action='store_true',
@@ -41,9 +39,9 @@ def parse_args():
                         help="compute colormap range with extremes, not 2nd and 98th percentiles")
     parser.add_argument("-o", "--ofile", help="name of output image file")
     parser.add_argument("-s", "--start", nargs=2, type=float,
-                        default=(28, -115), help="start point")
+                        default=(28, -115), help="start point lat lon")
     parser.add_argument("-e", "--end", nargs=2, type=float,
-                        default=(30, -82), help="end point")
+                        default=(30, -82), help="end point lat lon")
     parser.add_argument("--subtract", help="FV3 history file to subtract")
     parser.add_argument("-t", "--twindow", type=float,
                         default=3, help="time window in hours")
@@ -68,7 +66,6 @@ def main():
     ifile = args.historyfile
     variable = args.statevariable
     config = args.config
-    dindex = args.dindex
     ncols = args.ncols
     nofineprint = args.nofineprint
     ofile = args.ofile
@@ -144,9 +141,8 @@ def main():
             "validtime not provided on command line. Using last time in history file %s.",
             validtime)
     time0 = validtime - twindow
-    if time0 not in fv3ds.time:
-        logging.info("time0 %s not in history file. add it.", time0)
-        fv3ds = physics_tend.add_time0(fv3ds, variable, fv3)
+    assert time0 in fv3ds.time, (f"time0 {time0} not in history file. Closest is "
+                                 f"{fv3ds.time.sel(time=time0, method='nearest').time.data}")
 
     # list of tendency variable names for requested state variable
     tendency_vars = fv3["tendency_varnames"][variable]
@@ -229,18 +225,10 @@ def main():
         # For MetPy. Otherwise, mb is interpreted as millibarn.
         da2plot.metpy.vertical.attrs["units"] = "hPa"
 
-    # dequantify moves units from DataArray to attributes. Now they show up in colorbar.
-    # And they aren't lost in xarray.DataArray.interp.
-    da2plot = da2plot.metpy.dequantify()
-
     # Make default dimensions of facetgrid kind of square.
     if not ncols:
         # Default # of cols is square root of # of panels
         ncols = int(np.ceil(np.sqrt(len(da2plot))))
-
-    if da2plot["pfull"].size == 1:
-        # Avoid ValueError in pcolormesh().
-        da2plot = da2plot.squeeze()
 
     # Kludgy steps to prepare metadata for metpy cross section
     # grid_yt and grid_xt confuse metpy
@@ -254,21 +242,22 @@ def main():
             longitude_of_central_meridian=-97.5,
             latitude_of_projection_origin=fv3["standard_parallel"]).metpy.assign_y_x(
                     force=True, tolerance=44069*units.m)
-    # Define cross section. Use different variable than da2plot because da2plot is used later for
-    # inset. Upgrade to xarray to 0.21.1 to avoid
-    # FutureWarning: Passing method to Float64Index.get_loc is deprecated
+    logging.info("Define cross section.")
     cross = cross_section(da2plot, startpt, endpt)
+
+    # dequantify moves units from DataArray to attributes. Now they show up in colorbar.
+    da2plot = da2plot.metpy.dequantify()
 
     logging.info("plot pcolormesh")
     # normalized width and height of inset. Shrink colorbar to provide space.
     wid_inset, hgt_inset = 0.18, 0.18
-    pcm = cross.plot.pcolormesh(x="index", y="pfull", yincrease=False, col=col, col_wrap=ncols,
-            robust=robust, infer_intervals=True, vmin=vmin, vmax=vmax, cmap=fv3["cmap"],
+    pcm = cross.squeeze().plot.pcolormesh(x="lont", y="pfull", yincrease=False,
+            col=col, col_wrap=ncols, robust=robust, infer_intervals=True,
+            vmin=vmin, vmax=vmax, cmap=fv3["cmap"],
             cbar_kwargs={'shrink': 1-hgt_inset, 'anchor': (0, 0.25-hgt_inset)})
 
     for ax in pcm.axes.flat:
         ax.grid(visible=True, color="grey", alpha=0.5, lw=0.5)
-        ax.xaxis.set_major_locator(MultipleLocator(dindex))
         ax.yaxis.set_major_locator(MultipleLocator(100))
         ax.yaxis.set_minor_locator(MultipleLocator(25))
         ax.grid(which="minor", alpha=0.3, lw=0.4)
@@ -283,13 +272,12 @@ def main():
     # Locate cross section on conus map background. Put in inset.
     data_crs = da2plot.metpy.cartopy_crs
     ax_inset = plt.gcf().add_axes(
-            [.999-wid_inset, .999-hgt_inset, wid_inset, hgt_inset], projection=data_crs)
+            [.995-wid_inset, .999-hgt_inset, wid_inset, hgt_inset], projection=data_crs)
     # Plot the endpoints of the cross section (make sure they match path)
     endpoints = data_crs.transform_points(
         cartopy.crs.Geodetic(), *np.vstack([startpt, endpt]).transpose()[::-1])
-    bb = ax_inset.scatter(
-        endpoints[:, 0], endpoints[:, 1], s=1.3, c='k', zorder=2)
-    ax_inset.scatter(cross['x'][dindex::dindex], cross['y'][dindex::dindex],
+    bb = ax_inset.scatter(endpoints[:, 0], endpoints[:, 1], c='k', zorder=2)
+    ax_inset.scatter(cross['x'], cross['y'],
                      s=3.4, c='white', linewidths=0.2, edgecolors='k', zorder=bb.get_zorder()+1)
     # Plot the path of the cross section
     ax_inset.plot(cross['x'], cross['y'], c='k', zorder=2)

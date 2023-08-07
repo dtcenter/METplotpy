@@ -126,9 +126,7 @@ time of model initialization. It is usally the next timestep (e.g. 180 seconds l
 This means you cannot derive the actual change in temperature starting at the model initialization
 time. You must choose a later valid time and/or a shorter time window that does not overlap
 the initialization time. In other words, it is a problem if your model initialization time is 0z, your
-valid time is 1z and your time window is one hour. One work-around is to append the state variables
-at initialization time to the history file, naming them something different and setting the 
-*time0_varname* variable to those different names in the configuration file.
+valid time is 1z and your time window is one hour.
 
 Example
 =======

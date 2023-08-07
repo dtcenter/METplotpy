@@ -36,12 +36,6 @@ tendency_varnames:
     - dtend_v_phys
     - dtend_v_nophys
 
-# Name of variables in history file that contain the temperature, moisture, wind at time zero (initialization time).
-time0_varname:
-    tmp : temp_i
-    spfh:   qv_i
-    ugrd:    u_i
-    vgrd:    v_i
 
 
 # Name of the longitude and latitude variables in the grid specification file.

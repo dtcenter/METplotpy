@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import xarray
 import yaml
-from . import physics_tend
+import physics_tend
 
 def parse_args():
     """
@@ -149,9 +149,8 @@ def main():
             "validtime not provided on command line. Using last time in history file %s.",
             validtime)
     time0 = validtime - twindow
-    if time0 not in fv3ds.time:
-        logging.info("time0 %s not in history file. add it.", time0)
-        fv3ds = physics_tend.add_time0(fv3ds, variable, fv3)
+    assert time0 in fv3ds.time, (f"time0 {time0} not in history file. Closest is "
+                                 f"{fv3ds.time.sel(time=time0, method='nearest').time.data}")
 
     # list of tendency variable names for requested state variable
     tendency_vars = fv3["tendency_varnames"][variable]
@@ -244,7 +243,7 @@ def main():
     # And they aren't lost in xarray.DataArray.interp.
     da2plot = da2plot.metpy.dequantify()
 
-    # Select vertical levels.
+    logging.info(f"Select vertical levels with '{method}' method")
     if method == "nearest":
         da2plot = da2plot.metpy.sel(
             vertical=pfull, method=method, tolerance=10.*units.hPa)
@@ -298,7 +297,7 @@ def main():
     # Add time to title
     title = f'{time0}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
     if col == tendency_dim:
-        title = f'pfull={pfull[0]:~.0f} {title}'
+        title = f'pfull={da2plot.pfull.metpy.quantify().data:~.1f} {title}'
     elif 'long_name' in da2plot.coords:
         title = f'{da2plot.coords["long_name"].data} {title}'
     plt.suptitle(title, wrap=True)
