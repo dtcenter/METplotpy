@@ -87,8 +87,8 @@ serve as a starting point for creating an eclv plot.
 .. literalinclude:: ../../metplotpy/plots/config/eclv_defaults.yaml
 
 
-In the default config file, logging is set to stdout and the log level is INFO (i.e. any log messages
-of type INFO, WARNING, and ERROR will be logged).  If the log_filename and log_level are
+In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
 Custom Configuration File
