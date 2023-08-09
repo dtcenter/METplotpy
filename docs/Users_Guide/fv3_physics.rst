@@ -323,12 +323,12 @@ Vertical Cross Section
       --vmax VMAX           color bar maximum (overrides robust=True) (default: None)
 
 Generate vertical cross section of u-wind tendencies from 28°N 120°W to 26°N 75°W over one-hour
-time window ending 23z June 15, 2019.
+time window ending 20z June 15, 2019.
 
 .. code-block:: bash
 
-    python cross_section_vert.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp \
-    -t 1 -v "2019-06-15 23" -s 28 -120 -e 26 -75 --nofineprint
+    python cross_section_vert.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc ugrd \
+    -t 1 -v "2019-06-15 20" -s 28 -120 -e 26 -75 --nofineprint
 
 .. image:: figure/ugrd_28.0N-120.0E-26.0N-75.0E.png
 
