@@ -341,7 +341,7 @@ Put file you want to subtract after the --subtract argument:
 .. code-block:: bash
 
    python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp \
-   -t 1 --subtract $WORKING_DIR/fv3_history.nc --nofineprint
+   -t 1 --subtract $WORKING_DIR/fv3_history.nc --resid --nofineprint
 
 .. image:: figure/tmp.vert_profile.png
 
