@@ -225,10 +225,7 @@ def main():
             latt.values, lont.values, shp)
         mask = xarray.DataArray(
             mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
-        da2plot = da2plot.where(mask, drop=True)
-        area = area.where(mask).fillna(0)
-
-    totalarea = area.metpy.convert_units("km**2").sum()
+        da2plot = da2plot.where(mask)
 
     logging.info("area-weighted spatial average")
     da2plot = da2plot.weighted(area).mean(area.dims)
@@ -290,8 +287,7 @@ def main():
 
     # Annotate figure with args namespace, total area, and timestamp
     fineprint = f"{args} "
-    fineprint += (f"total area={totalarea.compute().data:~.0f}, "
-                  f"created {datetime.datetime.now(tz=None)}")
+    fineprint += (f"created {datetime.datetime.now(tz=None)}")
     if nofineprint:
         logging.debug(fineprint)
     else:
