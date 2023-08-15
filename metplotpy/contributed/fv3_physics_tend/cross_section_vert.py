@@ -109,7 +109,7 @@ def main():
 
     # Open input file
     logging.debug("open %s", ifile)
-    fv3ds = xarray.open_dataset(ifile)
+    fv3ds = xarray.open_mfdataset(ifile)
 
     if subtract:
         logging.info("subtracting %s", subtract)
@@ -176,7 +176,7 @@ def main():
 
     # Stack variables along new tendency dimension of new DataArray.
     tendency_dim = f"{variable} tendency"
-    tendencies_avg = tendencies_avg.to_array(dim=tendency_dim)
+    tendencies_avg = tendencies_avg.to_array(dim=tendency_dim, name=tendency_dim)
     # Assign long_names to a new DataArray coordinate.
     # It will have the same shape as tendency dimension.
     tendencies_avg = tendencies_avg.assign_coords(
