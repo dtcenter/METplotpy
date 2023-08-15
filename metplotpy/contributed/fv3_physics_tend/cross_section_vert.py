@@ -241,7 +241,7 @@ def main():
             standard_parallel=fv3["standard_parallel"],
             longitude_of_central_meridian=-97.5,
             latitude_of_projection_origin=fv3["standard_parallel"]).metpy.assign_y_x(
-                    force=True, tolerance=44069*units.m)
+                    force=True, tolerance=55000*units.m)
     logging.info("Define cross section.")
     cross = cross_section(da2plot, startpt, endpt)
 
