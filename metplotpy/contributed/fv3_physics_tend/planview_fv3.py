@@ -300,9 +300,9 @@ def main():
         title = f'{da2plot.coords["long_name"].data} {title}'
     plt.suptitle(title, wrap=True)
 
-    # Annotate figure with args namespace, total area, and timestamp
+    # Annotate figure with args namespace and timestamp
     fineprint = f"{args} "
-    fineprint += (f"created {datetime.datetime.now(tz=None)}")
+    fineprint += f"created {datetime.datetime.now(tz=None)}"
     if nofineprint:
         logging.debug(fineprint)
     else:

@@ -242,11 +242,13 @@ def main():
             longitude_of_central_meridian=-97.5,
             latitude_of_projection_origin=fv3["standard_parallel"]).metpy.assign_y_x(
                     force=True, tolerance=55000*units.m)
-    logging.info("Define cross section.")
-    cross = cross_section(da2plot, startpt, endpt)
 
     # dequantify moves units from DataArray to attributes. Now they show up in colorbar.
+    # and avoid NotImplementedError: Don't yet support nd fancy indexing from cross_section()
     da2plot = da2plot.metpy.dequantify()
+
+    logging.info("Define cross section.")
+    cross = cross_section(da2plot, startpt, endpt)
 
     logging.info("plot pcolormesh")
     # normalized width and height of inset. Shrink colorbar to provide space.
@@ -287,7 +289,7 @@ def main():
 
     # Annotate figure with args namespace and timestamp
     fineprint = f"{args} "
-    fineprint += f", created {datetime.datetime.now(tz=None)}"
+    fineprint += f"created {datetime.datetime.now(tz=None)}"
     if nofineprint:
         logging.debug(fineprint)
     else:
