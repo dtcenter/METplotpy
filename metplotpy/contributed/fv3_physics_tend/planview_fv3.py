@@ -278,7 +278,7 @@ def main():
     # release/public-v1/ush/Python/plot_allvars.py
     subplot_kws = {
         "projection": cartopy.crs.LambertConformal(
-            central_longitude=-97.6, central_latitude=35.4, standard_parallels=None)}
+            central_longitude=-97.6, central_latitude=35.4)}
 
     logging.debug("plot pcolormesh")
     if robust:

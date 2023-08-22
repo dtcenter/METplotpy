@@ -285,9 +285,9 @@ def main():
         extent = fv3["extent"]
         ax_inset.set_extent(extent)
 
-    # Annotate figure with args namespace, total area, and timestamp
+    # Annotate figure with args namespace and timestamp
     fineprint = f"{args} "
-    fineprint += (f"created {datetime.datetime.now(tz=None)}")
+    fineprint += f"created {datetime.datetime.now(tz=None)}"
     if nofineprint:
         logging.debug(fineprint)
     else:
