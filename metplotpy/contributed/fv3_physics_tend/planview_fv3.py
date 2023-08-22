@@ -276,6 +276,8 @@ def main():
 
     # central lon/lat from https://github.com/NOAA-EMC/regional_workflow/blob/
     # release/public-v1/ush/Python/plot_allvars.py
+    # switching from central_latitude=35.4 to central_latitude=fv3["standard_parallel"]
+    # (38.139 as of Aug 22, 2023) did not change plot appearance.
     subplot_kws = {
         "projection": cartopy.crs.LambertConformal(
             central_longitude=-97.6, central_latitude=35.4)}
