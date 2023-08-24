@@ -103,18 +103,18 @@ def main():
 
     # Read lat/lon from gfile
     logging.debug(f"read lat/lon from {gfile}")
-    gds = xarray.open_mfdataset(gfile)
+    gds = xarray.open_dataset(gfile)
     lont = gds[fv3["lon_name"]]
     latt = gds[fv3["lat_name"]]
 
     # Open input file
     logging.debug("open %s", ifile)
-    fv3ds = xarray.open_mfdataset(ifile)
+    fv3ds = xarray.open_dataset(ifile)
 
     if subtract:
         logging.info("subtracting %s", subtract)
         with xarray.set_options(keep_attrs=True):
-            fv3ds -= xarray.open_mfdataset(subtract)
+            fv3ds -= xarray.open_dataset(subtract)
 
     datetimeindex = fv3ds.indexes['time']
     if hasattr(datetimeindex, "to_datetimeindex"):
