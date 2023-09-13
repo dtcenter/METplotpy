@@ -8,7 +8,7 @@ The line plot is a scatter plot where each point is connected by a line.
 It is used by METviewer for generating series plots.
 Refer to the
 `METviewer documentation
-<https://metviewer.readthedocs.io/en/latest/Users_Guide/boxplot.html>`_
+<https://metviewer.readthedocs.io/en/latest/Users_Guide/seriesplots.html>`_
 for details on how this plot is utilized.
 
 Example
