@@ -10,7 +10,7 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Release Notes
 =======================
 
-METplotpy Version 3.0.0 release notes (20230915)
+METplotpy Version 3.0.0-beta1 release notes (20230915)
 ------------------------------------------------------
 
   .. dropdown:: New Plots
