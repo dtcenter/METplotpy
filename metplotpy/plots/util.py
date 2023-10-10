@@ -298,7 +298,7 @@ def sort_threshold_values(thresh_values: pd.core.series.Series) -> list:
     sorted_val_wt = df.sort_values(by=twocols, inplace=False, ascending=True,
                                    ignore_index=True)
 
-    # now the dataframe has the obs_thresh values sorted appropriately
+    # now the dataframe has the xyz_thresh values sorted appropriately
     return sorted_val_wt['thresh']
 
 
@@ -340,3 +340,89 @@ def get_common_logger(log_level, log_filename):
     common_logger.addFilter(f)
 
     return common_logger
+
+def is_thresh_column(column_name:str)->bool:
+    '''
+       Determines if a column is a threshold column, i.e. cov_thresh, fcst_thresh,
+       or obs_thresh.
+
+       Args:
+
+       @param column_name:  A string representation of the column name
+
+       Returns: True if this column is a threshold column, False otherwise
+    '''
+
+    match = re.match(r'.*_thresh.*', column_name)
+    if match:
+        return True
+    else:
+        return False
+
+
+def create_query(input_df:pd.DataFrame, settings_dict: dict) -> str:
+
+    """
+        Create a query string to filter the input dataframe, based on the
+        settings provided in the YAML file.  These settings are represented
+        by the settings_dict dictionary.
+
+        Args:
+           input_df: The input dataframe to be subset.  This is needed to check for
+                     valid columns.
+           settings_dict: The dictionary representation of the settings in the YAML
+           configuration file
+
+        Returns:
+           df_query_string: The query string to provide to the pd.query() method
+    """
+
+    # check if columns (keys) in fixed_vars_vals_dict exist in the dataframe before
+    # attempting to subset
+    valid_columns = [col for col in settings_dict if col in input_df.columns]
+
+    # Use the valid columns to create the query string in the format:
+    # col_a in ('x', 'y', 'z') and col_b in ('a', 'b', 'c')
+    # where the items in the parenthesis represent the list of
+    # values associated with a particular column (e.g. col_a, col_b).
+    query_string = ''
+    prev_query_string = ''
+    val_string = ''
+    prev_val_string = ''
+
+    for idx, col in enumerate(valid_columns):
+        # Identify when we've reached the last
+        # column so we don't add an extraneous
+        # '&' at the end of the query.
+        last_col = idx + 1
+        prev_val_string = ''
+        single_quote = "'"
+        list_sep = "', "
+        in_token = " in ("
+        list_terminator = ')'
+        and_token = ') &'
+        values = settings_dict[col]
+        query_string = col + ' in ('
+        for val_idx, val in enumerate(values):
+            # Identify when the last value in the list
+            # has been reached to avoid adding a ',' after
+            # the last value.
+            last_val = val_idx + 1
+
+            if last_val == len(values):
+                val_string = single_quote + val + single_quote
+            else:
+                val_string = single_quote + val + list_sep
+            val_string = prev_val_string + val_string
+            prev_val_string = val_string
+        if last_col == len(valid_columns):
+            query_string = col + in_token + val_string + list_terminator
+        else:
+            # Adding the & in between each "col in list"
+            query_string = col + in_token + val_string + and_token
+
+        query_string = prev_query_string + query_string
+        prev_query_string = query_string
+    df_query_string = prev_query_string
+
+    return df_query_string
