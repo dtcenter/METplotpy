@@ -205,19 +205,50 @@ class LineConfig(Config):
 
         return fcst_var_val_dict
 
-    def _get_fixed_vars_vals(self):
+    def _get_fixed_vars_vals(self) -> dict:
         """
            Retrieve a list of the inner keys (name of the variables to hold 'fixed') to
            the fixed_vars_vals dictionary. These values correspond to the Fixed
            Values set in the METviewer user interface. In the YAML configuration file,
-           the value(s) are set under the fixed_vars_vals_input setting.
+           the value(s) are set under the fixed_vars_vals_input setting:
+
+           fixed_vars_vals_input:
+              - fcst_lev:
+                - 'Z0'
+              - vx_mask:
+                - 'CONUS'
+                - 'WEST'
+              - fcst_thresh:
+                 - '>0.0'
+                 - '>=5.1'
+
+           Also supports the 'legacy' format (used by METviewer when R script was
+           employed):
+
+           fixed_vars_vals_input:
+              - fcst_lev:
+                 - fcst_lev_0:
+                   - 'Z0'
+              - vx_mask:
+                 - vx_mask_1:
+                   - 'CONUS'
+                   - 'EAST'
+
+            Generate a new dictionary where the value of the inner key is
+            associated to the outer key.
+
+           Mixing of the two formats is also supported.
+
+
+
 
            Args:
 
            Returns:
-               a list containing all the fixed variables requested in the
-               fixed_vars_vals_input setting in the config file.  This will be
-               used to subset the input data that corresponds to a particular series.
+               updated_fixed_vars_vals_dict:
+               a dictionary of the keys and values associated with the
+               fixed_vars_vals_input setting in the configuration file (corresponds to
+               the METviewer Fixed Variable setting(s) ).
 
         """
 
@@ -225,9 +256,31 @@ class LineConfig(Config):
         if len(fixed_vars_vals_dict) == 0:
             # If user hasn't specified anything in the fixed_var_vals_input setting,
             # return an empty dictionary.
-            fixed_vars_vals_dict = {}
+            return {}
+        else:
+            # Use the outer dictionary key and the inner dictionary value
+            # Retrieve all the inner keys, then their corresponding values and
+            # associate those inner values with the outer key in a new dictionary.
+            outer_keys = fixed_vars_vals_dict.keys()
+            updated_fixed_vars_vals_dict = {}
+            inner_exists = False
+            for key in outer_keys:
+                try:
+                    inner_keys = fixed_vars_vals_dict[key].keys()
+                except AttributeError:
+                    # No inner dictionary, format looks like:
+                    #
+                    updated_fixed_vars_vals_dict[key] = fixed_vars_vals_dict[key]
+                else:
+                    # inner dictionary, assign the value corresponding to the
+                    # inner dictionary to the key of the outer dictionary.
+                    for inner_key in inner_keys:
+                        updated_fixed_vars_vals_dict[key] = fixed_vars_vals_dict[
+                            key][inner_key]
 
-        return fixed_vars_vals_dict
+
+            return updated_fixed_vars_vals_dict
+
 
     def _get_mode(self) -> list:
         """
