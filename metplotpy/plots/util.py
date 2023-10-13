@@ -328,12 +328,12 @@ def get_common_logger(log_level, log_filename):
     else:
 
         logging.basicConfig(level=log_levels[log_level],
-                        format='%(asctime)s||User:%('
-                               'user)s||%(funcName)s|| [%(levelname)s]: %('
-                               'message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S',
-                        filename=log_filename,
-                        filemode='w')
+                            format='%(asctime)s||User:%('
+                                   'user)s||%(funcName)s|| [%(levelname)s]: %('
+                                   'message)s',
+                            datefmt='%Y-%m-%d %H:%M:%S',
+                            filename=log_filename,
+                            filemode='w')
     mpl_logger = logging.getLogger(name='matplotlib').setLevel(logging.CRITICAL)
     common_logger = logging.getLogger(__name__)
     f = cf()
@@ -341,7 +341,8 @@ def get_common_logger(log_level, log_filename):
 
     return common_logger
 
-def is_thresh_column(column_name:str)->bool:
+
+def is_thresh_column(column_name: str) -> bool:
     '''
        Determines if a column is a threshold column, i.e. cov_thresh, fcst_thresh,
        or obs_thresh.
@@ -360,7 +361,7 @@ def is_thresh_column(column_name:str)->bool:
         return False
 
 
-def create_query(input_df:pd.DataFrame, settings_dict: dict) -> str:
+def create_query(input_df: pd.DataFrame, settings_dict: dict) -> str:
 
     """
         Create a query string to filter the input dataframe, based on the
@@ -375,11 +376,18 @@ def create_query(input_df:pd.DataFrame, settings_dict: dict) -> str:
 
         Returns:
            df_query_string: The query string to provide to the pd.query() method
+                            An empty query string is returned if requested
+                            variables do not have corresponding columns in the data.
     """
 
     # check if columns (keys) in fixed_vars_vals_dict exist in the dataframe before
     # attempting to subset
     valid_columns = [col for col in settings_dict if col in input_df.columns]
+    if len(valid_columns) == 0:
+        logging.INFO(
+            "No columns in data match what is requested.  Empty query string will"
+            "be returned.")
+        return ""
 
     # Use the valid columns to create the query string in the format:
     # col_a in ('x', 'y', 'z') and col_b in ('a', 'b', 'c')
