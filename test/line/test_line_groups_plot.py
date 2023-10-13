@@ -62,7 +62,7 @@ def test_images_match(setup):
 
 @pytest.mark.parametrize("test_input,expected",
                          (["./intermed_files/line_groups.png", True], ["./intermed_files/line_groups.points1", True]))
-def test_files_exist(setup, test_input, expected):
+def test_files_exist( test_input, expected):
     '''
         Checking that the plot and data files are getting created
     '''
@@ -79,9 +79,8 @@ def test_files_exist(setup, test_input, expected):
     # the test_custom_performance_diagram.yaml custom config file.
     l.main(custom_config_filename)
     assert os.path.isfile(test_input) == expected
-    cleanup()
 
-    # remove the subdirectory that was created
+    # remove the files that were created, cleanup() isn't applicable for this test.
     try:
         path = os.getcwd()
         subdir = os.path.join(path, intermed_dir)
