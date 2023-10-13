@@ -138,7 +138,10 @@ class LineSeries(Series):
 
             query_string = metplotpy.plots.util.create_query(self.input_data,
                                                          self.config.fixed_vars_vals)
-            filtered_df = self.input_data.query(query_string)
+            if query_string == " ":
+                filtered_df = self.input_data
+            else:
+                filtered_df = self.input_data.query(query_string)
         else:
             # Otherwise use the original input data
             filtered_df = self.input_data
