@@ -383,11 +383,12 @@ def create_query(input_df: pd.DataFrame, settings_dict: dict) -> str:
     # check if columns (keys) in fixed_vars_vals_dict exist in the dataframe before
     # attempting to subset
     valid_columns = [col for col in settings_dict if col in input_df.columns]
+
     if len(valid_columns) == 0:
-        logging.INFO(
-            "No columns in data match what is requested.  Empty query string will"
+        print(
+            "No columns in data match what is requested.  Empty query string will "
             "be returned.")
-        return ""
+        return " "
 
     # Use the valid columns to create the query string in the format:
     # col_a in ('x', 'y', 'z') and col_b in ('a', 'b', 'c')
