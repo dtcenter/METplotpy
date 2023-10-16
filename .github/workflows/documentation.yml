@@ -7,6 +7,7 @@ on:
       - feature_*
       - main_*
       - bugfix_*
+      - issue_*
     paths: 
       - docs/**
   pull_request:

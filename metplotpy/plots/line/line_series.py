@@ -46,6 +46,9 @@ class LineSeries(Series):
         self.series_list = series_list
         self.series_name = series_name
         super().__init__(config, idx, input_data, y_axis)
+        # Retrieve any fixed variables
+
+
         self.logger = metplotpy.plots.util.get_common_logger(config.log_level,
                                                              config.log_filename)
 
@@ -130,6 +133,19 @@ class LineSeries(Series):
         series_data_1 = None
         series_data_2 = None
 
+        # first subset based on the fixed variable values if any exist
+        if len(self.config.fixed_vars_vals) > 0:
+
+            query_string = metplotpy.plots.util.create_query(self.input_data,
+                                                         self.config.fixed_vars_vals)
+            if query_string == " ":
+                filtered_df = self.input_data
+            else:
+                filtered_df = self.input_data.query(query_string)
+        else:
+            # Otherwise use the original input data
+            filtered_df = self.input_data
+
         # different ways to subset data for normal and derived series
         if self.series_name[-1] not in utils.OPERATION_TO_SIGN.keys():
             # this is a normal series
@@ -156,8 +172,7 @@ class LineSeries(Series):
                         filter_list[i] = int(filter_val)
                     elif utils.is_string_strictly_float(filter_val):
                         filter_list[i] = float(filter_val)
-
-                all_filters.append((self.input_data[field].isin(filter_list)))
+                all_filters.append((filtered_df[field].isin(filter_list)))
 
             # filter by provided indy
 
@@ -165,17 +180,20 @@ class LineSeries(Series):
             # Python 3.8 and above, explicitly type cast the self.input_data[self.config.indy_var]
             # Panda Series object to 'str' if the list of indy_vals are of str type.
             # This will ensure we are doing str to str comparisons.
+
             if isinstance(self.config.indy_vals[0], str):
                 indy_var_series = self.input_data[self.config.indy_var].astype(str)
+                indy_var_series = filtered_df[self.config.indy_var].astype(str)
             else:
                 # The Panda series is as it was originally coded.
                 indy_var_series = self.input_data[self.config.indy_var]
+                indy_var_series = filtered_df[self.config.indy_var]
 
             all_filters.append(indy_var_series.isin(self.config.indy_vals))
 
             # use numpy to select the rows where any record evaluates to True
             mask = np.array(all_filters).all(axis=0)
-            self.series_data = self.input_data.loc[mask]
+            self.series_data = filtered_df.loc[mask]
 
             # sort data by date/time - needed for CI calculations
             if 'fcst_lead' in self.series_data.columns:

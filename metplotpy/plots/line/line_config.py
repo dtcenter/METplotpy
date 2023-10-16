@@ -42,6 +42,11 @@ class LineConfig(Config):
         # used by METviewer
         self.points_path = self.get_config_value('points_path')
 
+        # Associated fixed values corresponding the METviewer Fixed Values
+        # to identify groups over which statistics are calculated.
+
+        self.fixed_vars_vals = self._get_fixed_vars_vals()
+
         # plot parameters
         self.grid_on = self._get_bool('grid_on')
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
@@ -200,6 +205,83 @@ class LineConfig(Config):
 
         return fcst_var_val_dict
 
+    def _get_fixed_vars_vals(self) -> dict:
+        """
+           Retrieve a list of the inner keys (name of the variables to hold 'fixed') to
+           the fixed_vars_vals dictionary. These values correspond to the Fixed
+           Values set in the METviewer user interface. In the YAML configuration file,
+           the value(s) are set under the fixed_vars_vals_input setting:
+
+           fixed_vars_vals_input:
+              - fcst_lev:
+                - 'Z0'
+              - vx_mask:
+                - 'CONUS'
+                - 'WEST'
+              - fcst_thresh:
+                 - '>0.0'
+                 - '>=5.1'
+
+           Also supports the 'legacy' format (used by METviewer when R script was
+           employed):
+
+           fixed_vars_vals_input:
+              - fcst_lev:
+                 - fcst_lev_0:
+                   - 'Z0'
+              - vx_mask:
+                 - vx_mask_1:
+                   - 'CONUS'
+                   - 'EAST'
+
+            Generate a new dictionary where the value of the inner key is
+            associated to the outer key.
+
+           Mixing of the two formats is also supported.
+
+
+
+
+           Args:
+
+           Returns:
+               updated_fixed_vars_vals_dict:
+               a dictionary of the keys and values associated with the
+               fixed_vars_vals_input setting in the configuration file (corresponds to
+               the METviewer Fixed Variable setting(s) ).
+
+        """
+
+        fixed_vars_vals_dict = self.get_config_value('fixed_vars_vals_input')
+        if len(fixed_vars_vals_dict) == 0:
+            # If user hasn't specified anything in the fixed_var_vals_input setting,
+            # return an empty dictionary.
+            return {}
+        else:
+            # Use the outer dictionary key and the inner dictionary value
+            # Retrieve all the inner keys, then their corresponding values and
+            # associate those inner values with the outer key in a new dictionary.
+            outer_keys = fixed_vars_vals_dict.keys()
+            updated_fixed_vars_vals_dict = {}
+            inner_exists = False
+            for key in outer_keys:
+                try:
+                    inner_keys = fixed_vars_vals_dict[key].keys()
+                except AttributeError:
+                    # No inner dictionary, format looks like:
+                    #
+                    updated_fixed_vars_vals_dict[key] = fixed_vars_vals_dict[key]
+                else:
+                    # inner dictionary, assign the value corresponding to the
+                    # inner dictionary to the key of the outer dictionary.
+                    for inner_key in inner_keys:
+                        updated_fixed_vars_vals_dict[key] = fixed_vars_vals_dict[
+                            key][inner_key]
+
+
+            return updated_fixed_vars_vals_dict
+
+
     def _get_mode(self) -> list:
         """
            Retrieve all the modes. Convert mode names from
@@ -294,15 +376,17 @@ class LineConfig(Config):
             to represent this combination. Acceptable values are sum, mean, and median.
 
             Returns:
-                 stat_to_plot: one of the following values for the plot_stat: MEAN, MEDIAN, or SUM
+                 stat_to_plot: one of the following values for the plot_stat: MEAN,
+                 MEDIAN, or SUM
         """
 
         accepted_stats = ['MEAN', 'MEDIAN', 'SUM']
         stat_to_plot = self.get_config_value('plot_stat').upper()
 
         if stat_to_plot not in accepted_stats:
-            raise ValueError("An unsupported statistic was set for the plot_stat setting. "
-                             " Supported values are sum, mean, and median.")
+            raise ValueError(
+                "An unsupported statistic was set for the plot_stat setting. "
+                " Supported values are sum, mean, and median.")
         return stat_to_plot
 
     def _config_consistency_check(self) -> bool:
@@ -347,8 +431,10 @@ class LineConfig(Config):
             Args:
 
             Returns:
-                list of values to indicate whether or not to plot the confidence interval for
-                a particular series, and which confidence interval (bootstrap or normal).
+                list of values to indicate whether or not to plot the confidence
+                interval for
+                a particular series, and which confidence interval (bootstrap or
+                normal).
 
         """
         plot_ci_list = self.get_config_value('plot_ci')
@@ -360,22 +446,27 @@ class LineConfig(Config):
             if ci_setting not in constants.ACCEPTABLE_CI_VALS:
                 raise ValueError("A plot_ci value is set to an invalid value. "
                                  "Accepted values are (case insensitive): "
-                                 "None, met_prm, or boot. Please check your config file.")
+                                 "None, met_prm, or boot. Please check your config "
+                                 "file.")
 
         return self.create_list_by_series_ordering(ci_settings_list)
 
     def _get_user_legends(self, legend_label_type: str = '') -> list:
         """
-        Retrieve the text that is to be displayed in the legend at the bottom of the plot.
+        Retrieve the text that is to be displayed in the legend at the bottom of the
+        plot.
         Each entry corresponds to a series.
 
         Args:
-                @parm legend_label_type:  The legend label, such as 'Performance' that indicates
-                                          the type of series line. Used when the user hasn't
+                @parm legend_label_type:  The legend label, such as 'Performance'
+                that indicates
+                                          the type of series line. Used when the user
+                                          hasn't
                                           indicated a legend.
 
         Returns:
-                a list consisting of the series label to be displayed in the plot legend.
+                a list consisting of the series label to be displayed in the plot
+                legend.
 
         """
 
@@ -397,7 +488,8 @@ class LineConfig(Config):
             # index of the legend
             legend_idx = idx + num_series_y1
 
-            if legend_idx >= len(all_user_legends) or all_user_legends[legend_idx].strip() == '':
+            if legend_idx >= len(all_user_legends) or all_user_legends[
+                legend_idx].strip() == '':
                 # user did not provide the legend - create it
                 legend_list.append(' '.join(map(str, ser_components)))
             else:
@@ -410,7 +502,8 @@ class LineConfig(Config):
         for idx, ser_components in enumerate(self.get_config_value('derived_series_1')):
             # index of the legend
             legend_idx = idx + num_series_y1 + num_series_y2
-            if legend_idx >= len(all_user_legends) or all_user_legends[legend_idx].strip() == '':
+            if legend_idx >= len(all_user_legends) or all_user_legends[
+                legend_idx].strip() == '':
                 # user did not provide the legend - create it
                 legend_list.append(utils.get_derived_curve_name(ser_components))
             else:
@@ -422,7 +515,8 @@ class LineConfig(Config):
             # index of the legend
             legend_idx = idx + num_series_y1 + num_series_y2 \
                          + len(self.get_config_value('derived_series_1'))
-            if legend_idx >= len(all_user_legends) or all_user_legends[legend_idx].strip() == '':
+            if legend_idx >= len(all_user_legends) or all_user_legends[
+                legend_idx].strip() == '':
                 # user did not provide the legend - create it
                 legend_list.append(utils.get_derived_curve_name(ser_components))
             else:
@@ -433,12 +527,14 @@ class LineConfig(Config):
 
     def get_series_y(self, axis: int) -> list:
         """
-        Creates an array of series components (excluding derived) tuples for the specified y-axis
+        Creates an array of series components (excluding derived) tuples for the
+        specified y-axis
         :param axis: y-axis (1 or 2)
         :return: an array of series components tuples
         """
         if self.get_config_value('series_val_' + str(axis)) is not None:
-            all_fields_values_orig = all_fields_values_orig = self.get_config_value('series_val_' + str(axis)).copy()
+            all_fields_values_orig = all_fields_values_orig = self.get_config_value(
+                'series_val_' + str(axis)).copy()
         else:
             all_fields_values_orig = {}
         all_fields_values = {}
@@ -464,7 +560,8 @@ class LineConfig(Config):
 
         # add derived series if exist
         if self.get_config_value('derived_series_' + str(axis)):
-            all_series = all_series + self.get_config_value('derived_series_' + str(axis))
+            all_series = all_series + self.get_config_value(
+                'derived_series_' + str(axis))
 
         return all_series
 
