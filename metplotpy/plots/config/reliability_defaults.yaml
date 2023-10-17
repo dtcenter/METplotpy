@@ -158,3 +158,5 @@ ytlab_horiz: 0.5
 ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
+noskill_line_col: 'red'
+reference_line_col: 'red'
