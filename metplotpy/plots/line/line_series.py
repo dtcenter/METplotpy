@@ -33,6 +33,7 @@ from .. import GROUP_SEPARATOR
 
 
 
+
 class LineSeries(Series):
     """
         Represents a Line plot series object
@@ -136,14 +137,15 @@ class LineSeries(Series):
         # first subset based on the fixed variable values if any exist
         if len(self.config.fixed_vars_vals) > 0:
 
-            query_string = metplotpy.plots.util.create_query(self.input_data,
+            # Utilize variable name substitution in the pandas query.
+            # @nan_val is substituted for the 'NA' in the list of values
+            # that correspond to a column.
+
+            filtered_df = metplotpy.plots.util.filter_by_fixed_vars(self.input_data,
                                                          self.config.fixed_vars_vals)
-            if query_string == " ":
-                filtered_df = self.input_data
-            else:
-                filtered_df = self.input_data.query(query_string)
         else:
-            # Otherwise use the original input data
+            # Nothing specified in the fixed_vars_vals_input setting,
+            # use the original input data
             filtered_df = self.input_data
 
         # different ways to subset data for normal and derived series
