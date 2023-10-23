@@ -13,9 +13,11 @@
 __author__ = 'Minna Win'
 
 import argparse
+from typing import Tuple
 import sys
 import getpass
 import logging
+import gc
 import re
 import matplotlib
 import numpy as np
@@ -361,12 +363,24 @@ def is_thresh_column(column_name: str) -> bool:
         return False
 
 
-def create_query(input_df: pd.DataFrame, settings_dict: dict) -> str:
+def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.DataFrame:
 
     """
-        Create a query string to filter the input dataframe, based on the
-        settings provided in the YAML file.  These settings are represented
-        by the settings_dict dictionary.
+        Filter the input data based on values in the settings_dict dictionary.
+        For each key (corresponding to a column in the input_df dataframe),
+        create a query string.  Use that query string to filter the input dataframe.
+        Repeat for all the keys and their corresponding values in the settings_dict.
+
+        Use the pandas query() to perform database-like syntax for filtering the data:
+            col in ('a', 'b', '3', ...,'z')
+
+            where col is the name of the key and the values in the parens represent
+            the values corresponding to that key.
+
+        Since Python handles nan values in an unexpected way, if 'NA' is a value in the
+        list of values corresponding to a key, then different syntax will be required:
+
+             col.isnull() | col in ('a', 'b', ..., 'z')
 
         Args:
            input_df: The input dataframe to be subset.  This is needed to check for
@@ -375,63 +389,156 @@ def create_query(input_df: pd.DataFrame, settings_dict: dict) -> str:
            configuration file
 
         Returns:
-           df_query_string: The query string to provide to the pd.query() method
-                            An empty query string is returned if requested
-                            variables do not have corresponding columns in the data.
+           filtered_df:  The filtered dataframe
     """
 
-    # check if columns (keys) in fixed_vars_vals_dict exist in the dataframe before
-    # attempting to subset
+    # check if columns (keys) in the settings_dict exist in the dataframe before
+    # attempting to subset.  If the settings_dict has keys that do not have
+    # corresponding column values in the dataframe, return the input dataframe.
     valid_columns = [col for col in settings_dict if col in input_df.columns]
 
     if len(valid_columns) == 0:
         print(
-            "No columns in data match what is requested.  Empty query string will "
-            "be returned.")
-        return " "
+            "No columns in data match what is requested.  Input dataframe will be "
+            "returned")
+        return input_df
 
-    # Use the valid columns to create the query string in the format:
-    # col_a in ('x', 'y', 'z') and col_b in ('a', 'b', 'c')
-    # where the items in the parenthesis represent the list of
-    # values associated with a particular column (e.g. col_a, col_b).
-    query_string = ''
-    prev_query_string = ''
-    val_string = ''
-    prev_val_string = ''
+    # The pandas query method does not work as expected if
+    # one of the values in the list is 'NA'. When 'NA' is an element in the list
+    # use the col.isnull() syntax with the col in ('a', 'b', ..., 'z') syntax
+    #
+
+    # Create a query string for each column and save in a list
+    query_string_list = []
+
+    # Use an intermediate dataframe for filtering iteratively by column
+    filtered_df = input_df.copy(deep=True)
 
     for idx, col in enumerate(valid_columns):
         # Identify when we've reached the last
         # column so we don't add an extraneous
         # '&' at the end of the query.
-        last_col = idx + 1
-        prev_val_string = ''
+
+        prev_val_string = ""
         single_quote = "'"
-        list_sep = "', "
-        in_token = " in ("
-        list_terminator = ')'
-        and_token = ') &'
+        list_sep = ", "
+        list_start = "("
+        list_terminator = ")"
+        or_token = "| "
         values = settings_dict[col]
-        query_string = col + ' in ('
-        for val_idx, val in enumerate(values):
-            # Identify when the last value in the list
-            # has been reached to avoid adding a ',' after
-            # the last value.
-            last_val = val_idx + 1
+        in_token = " in "
+        isnull_token = ".isnull()"
+        is_last_val = False
 
-            if last_val == len(values):
-                val_string = single_quote + val + single_quote
+        na_found = False
+        updated_vals = []
+
+        for val in values:
+            if val == 'NA':
+                na_found = True
+
             else:
-                val_string = single_quote + val + list_sep
-            val_string = prev_val_string + val_string
-            prev_val_string = val_string
-        if last_col == len(valid_columns):
-            query_string = col + in_token + val_string + list_terminator
+                updated_vals.append(val)
+
+        # Determine if this column contains an 'NA' value and remove it from the list
+        # of  values for the corresponding column.
+        if na_found:
+            if len(updated_vals) == 0:
+                # NA was the only value for this column, create the query
+                # then move onto the next column
+                prev_val_string = col + isnull_token
+                query_string_list.append(prev_val_string)
+
+            else:
+                # At least one non-NA value in the list of values
+                prev_val_string = col + isnull_token + or_token
+                is_last_val = False
+                # Build remaining portion of the query (ie the col in ('a', 'b',
+                # 'c'))
+                for val_idx, val in enumerate(updated_vals):
+
+                    # Identify when the last value in the list
+                    # has been reached to avoid adding a ',' after
+                    # the last value.
+                    last_val = val_idx + 1
+
+                    if last_val == len(updated_vals):
+                        is_last_val = True
+
+                    #  Create the 'col in' portion of the query
+                    if val_idx == 0 and is_last_val:
+                        # Both the first and last element in the list (i.e. list of one
+                        # element)
+                        prev_val_string = prev_val_string + col + in_token + \
+                                          list_start + single_quote + val + \
+                                          single_quote + list_terminator
+
+                    elif val_idx == 0 & (not is_last_val):
+                        # First value of a list of values
+                        prev_val_string = prev_val_string + col + in_token + \
+                                          list_start + single_quote + val + \
+                                          single_quote + list_sep
+
+
+
+                    elif val_idx > 0 and not is_last_val:
+                       # One of the middle values in the list
+                       query_string = prev_val_string + single_quote + val + \
+                                      single_quote + list_sep
+
+                    else:
+                        # The last value in the list
+                        prev_val_string = prev_val_string + single_quote + val + \
+                                          single_quote + list_terminator
+
+                query_string_list.append(prev_val_string)
+
+
         else:
-            # Adding the & in between each "col in list"
-            query_string = col + in_token + val_string + and_token
 
-        query_string = prev_query_string + query_string
-        prev_query_string = query_string
-    df_query_string = prev_query_string
+            # No NA's found in values. Create the query: col in ('a', 'b', 'c')
+            prev_val_string = ""
+            is_last_val = False
 
-    return df_query_string
+            for val_idx, val in enumerate(updated_vals):
+
+                # Identify when the last value in the list
+                # has been reached to avoid adding a ',' after
+                # the last value.
+                last_val = val_idx + 1
+
+                if last_val == len(updated_vals):
+                    is_last_val = True
+
+                # Only one value in the values list (both first and last element)
+                if val_idx == 0 and is_last_val:
+                    prev_val_string = prev_val_string + col + in_token + list_start\
+                                      + single_quote + val + single_quote +\
+                                      list_terminator
+
+                elif val_idx == 0 and (not is_last_val):
+                    # First value of a list of values
+                    prev_val_string = prev_val_string + col + in_token +\
+                                      list_start + single_quote + val +\
+                                      single_quote + list_sep
+
+                elif val_idx > 0 and not is_last_val:
+                    # One of the middle values in the list
+                    prev_val_string = prev_val_string + single_quote + val + single_quote + list_sep
+                else:
+                    # Last value in the list
+                    prev_val_string = prev_val_string + single_quote + val + single_quote + list_terminator
+
+            query_string_list.append(prev_val_string)
+
+
+        # Perform query for each list
+        for cur_query in query_string_list:
+            working_df = filtered_df.query(cur_query)
+            filtered_df = working_df.copy(deep=True)
+
+        # clean up
+        del working_df
+        gc.collect()
+
+        return filtered_df
