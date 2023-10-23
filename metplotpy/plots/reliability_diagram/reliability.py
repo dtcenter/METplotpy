@@ -318,7 +318,7 @@ class Reliability(BasePlot):
                 self.figure.add_trace(
                     go.Scatter(x=[0, 1],
                                y=[util.abline(0, intercept, 0.5), util.abline(1, intercept, 0.5)],
-                               line={'color': 'red',
+                               line={'color': self.config_obj.noskill_line_col,
                                      'dash': 'dash',
                                      'width': 1},
                                showlegend=False,
@@ -393,7 +393,7 @@ class Reliability(BasePlot):
                 self.figure.add_trace(
                     go.Scatter(x=[0, 1],
                                y=[util.abline(0, o_bar, 0), util.abline(1, o_bar, 0)],
-                               line={'color': 'red',
+                               line={'color': self.config_obj.reference_line_col,
                                      'dash': 'dash',
                                      'width': 1},
                                showlegend=False,

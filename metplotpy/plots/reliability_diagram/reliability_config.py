@@ -63,6 +63,8 @@ class ReliabilityConfig(Config):
         self.rely_event_hist = self._get_bool('rely_event_hist')
         self.inset_hist = self._get_bool('inset_hist')
         self.summary_curves = self.get_config_value('summary_curves')
+        self.noskill_line_col = self.get_config_value('noskill_line_col')
+        self.reference_line_col = self.get_config_value('reference_line_col')
 
         ##############################################
         # caption parameters
