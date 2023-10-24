@@ -1,6 +1,7 @@
 import pandas as pd
 
 import metplotpy.plots.util as util
+import gc
 
 
 def test_is_threshold():
@@ -125,28 +126,61 @@ def test_filter_by_fixed_vars():
 
     """
 
-settings_dict = {'fcst_thresh': ['NA', '>0.0', '>=0.254'], 'obtype': ['CCPA'],
+    settings_dict = {'fcst_thresh': ['NA', '>0.0', '>=0.254'], 'obtype': ['CCPA'],
                  'vx_mask': ['CONUS'], 'fcst_init_beg': ['2023-06-24 12:00:00']}
 
-expected_query_list = ["fcst_thresh.isnull() | fcst_thresh in ( '>0.0', '>=0.254') ",
+    expected_query_list = ["fcst_thresh.isnull() | fcst_thresh in ( '>0.0', "
+                           "'>=0.254') ",
                   "obtype in ('CCPA') ",
                   "vx_mask in ('CONUS')",
                   "fcst_init_beg in ('2023-06-24 12:00:00')"]
 
-input_df = pd.read_csv("./full_thresh_data.txt", sep='\t')
-filtered_df = util.filter_by_fixed_vars(input_df, settings_dict)
+    input_df = pd.read_csv("./full_thresh_data.txt", sep='\t')
+    filtered_df = util.filter_by_fixed_vars(input_df, settings_dict)
+    expected_df = input_df.copy(deep=True)
 
-expected_df = input_df.copy(deep=True)
+    for qry in expected_query_list:
+        intermed_df = expected_df.query(qry)
+        expected_df = intermed_df.copy(deep=True)
 
-for qry in expected_query_list:
-    intermed_df = expected_df.query(qry)
-    expected_df = intermed_df.copy(deep=True)
-
-assert filtered_df.shape == expected_df.shape
+    # Verify that the expected and filtered dataframes have the same dimensions
+    assert filtered_df.shape == expected_df.shape
 
 
-filtered_list = filtered_df['fcst_thresh'].to_list()
-expected_list = expected_df['fcst_thresh'].to_list()
+    filtered_list = filtered_df['fcst_thresh'].to_list()
+    expected_list = expected_df['fcst_thresh'].to_list()
 
-for filtered in filtered_list:
-   assert filtered in expected_list
+    for filtered in filtered_list:
+       assert filtered in expected_list
+
+
+    # Clean up previous dataframes
+    del intermed_df
+    del expected_df
+    gc.collect()
+
+
+    # Now test when there is only one value in fcst_thresh and it is NA
+    settings_dict2 = {'fcst_thresh': ['NA'], 'obtype': ['CCPA'],
+                 'vx_mask': ['CONUS'], 'fcst_init_beg': ['2023-06-24 12:00:00']}
+
+    expected_query_list2 = ["fcst_thresh.isnull() ",
+                  "obtype in ('CCPA') ",
+                  "vx_mask in ('CONUS')",
+                  "fcst_init_beg in ('2023-06-24 12:00:00')"]
+
+    filtered_df = util.filter_by_fixed_vars(input_df, settings_dict2)
+    expected_df = input_df.copy(deep=True)
+
+    for qry in expected_query_list2:
+        intermed_df = expected_df.query(qry)
+        expected_df = intermed_df.copy(deep=True)
+
+    assert filtered_df.shape == expected_df.shape
+
+
+    filtered_list = filtered_df['fcst_thresh'].to_list()
+    expected_list = expected_df['fcst_thresh'].to_list()
+
+    for filtered in filtered_list:
+       assert filtered in expected_list
