@@ -406,7 +406,7 @@ def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.Data
     # The pandas query method does not work as expected if
     # one of the values in the list is 'NA'. When 'NA' is an element in the list
     # use the col.isnull() syntax with the col in ('a', 'b', ..., 'z') syntax
-    #
+    # for the remaining values.
 
     # Create a query string for each column and save in a list
     query_string_list = []
@@ -415,33 +415,29 @@ def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.Data
     filtered_df = input_df.copy(deep=True)
 
     for idx, col in enumerate(valid_columns):
-        # Identify when we've reached the last
-        # column so we don't add an extraneous
-        # '&' at the end of the query.
-
+        # Variables for creating the query string
         prev_val_string = ""
         single_quote = "'"
         list_sep = ", "
         list_start = "("
         list_terminator = ")"
         or_token = "| "
-        values = settings_dict[col]
         in_token = " in "
         isnull_token = ".isnull()"
         is_last_val = False
-
         na_found = False
         updated_vals = []
 
+        # Remove NA from the list of values and create a new
+        # list of values containing the remaining non-NA values.
+        values = settings_dict[col]
         for val in values:
             if val == 'NA':
                 na_found = True
-
             else:
                 updated_vals.append(val)
 
-        # Determine if this column contains an 'NA' value and remove it from the list
-        # of  values for the corresponding column.
+        # Create the query string based on whether or not there is/are NA values.
         if na_found:
             if len(updated_vals) == 0:
                 # NA was the only value for this column, create the query
@@ -456,7 +452,6 @@ def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.Data
                 # Build remaining portion of the query (ie the col in ('a', 'b',
                 # 'c'))
                 for val_idx, val in enumerate(updated_vals):
-
                     # Identify when the last value in the list
                     # has been reached to avoid adding a ',' after
                     # the last value.
@@ -473,7 +468,7 @@ def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.Data
                                           list_start + single_quote + val + \
                                           single_quote + list_terminator
 
-                    elif val_idx == 0 & (not is_last_val):
+                    elif val_idx == 0 and (not is_last_val):
                         # First value of a list of values
                         prev_val_string = prev_val_string + col + in_token + \
                                           list_start + single_quote + val + \
@@ -532,13 +527,14 @@ def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.Data
             query_string_list.append(prev_val_string)
 
 
-        # Perform query for each list
-        for cur_query in query_string_list:
-            working_df = filtered_df.query(cur_query)
-            filtered_df = working_df.copy(deep=True)
+    # Perform query for each column (key)
+    for cur_query in query_string_list:
+        working_df = filtered_df.query(cur_query)
+        filtered_df = working_df.copy(deep=True)
 
-        # clean up
-        del working_df
-        gc.collect()
 
-        return filtered_df
+    #  clean up
+    del working_df
+    gc.collect()
+
+    return filtered_df
