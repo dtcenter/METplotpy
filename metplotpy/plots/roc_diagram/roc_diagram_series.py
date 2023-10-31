@@ -15,6 +15,7 @@ __author__ = 'Minna Win'
 
 import warnings
 import pandas as pd
+import numpy as np
 import re
 import metcalcpy.util.ctc_statistics as cstats
 import metcalcpy.util.pstd_statistics as pstats
@@ -165,24 +166,29 @@ class ROCDiagramSeries(Series):
         thresholds = df_input['fcst_thresh']
         # Assign weights to the operators, 1 for the <, 5 for the > so that
         # > supercedes all other operators.
-        wt_maps = {'<': 1, '<=': 2, '==': 3, '>=': 4, '>': 5}
+        wt_maps = {'NA': 1, '<': 2, '<=': 3, '==': 4, '>=': 5, '>': 6}
         wts = []
-        for thrsh in thresholds:
+        for idx, thrsh in enumerate(thresholds):
             # treat the fcst_thresh as two groups, one for
             # the operator and the other for the value (which
-            # can be a negative value).
-            match = re.match(r'(\<|\<=|\==|\>=|\>)*((-)*([0-9])(.)*)', thrsh)
-            match_text = re.match(r'(\<|\<=|\==|\>=|\>)*(.*)', thrsh)
-            if match:
-                operators.append(match.group(1))
-                value = float(match.group(2))
-                values.append(value)
-            elif match_text:
-                operators.append(match_text.group(1))
-                value = match_text.group(2)
-                values.append(value)
+            # can be a negative value). If the value is NA, assign to np.nan
+            if thrsh is np.nan:
+                print(f"index: {idx}")
+                operators.append('NA')
+                values.append(np.nan)
             else:
-                raise ValueError("fcst_thresh has a value that doesn't conform to "
+                match = re.match(r'(\<|\<=|\==|\>=|\>)*((-)*([0-9])(.)*)', thrsh)
+                match_text = re.match(r'(\<|\<=|\==|\>=|\>)*(.*)', thrsh)
+                if match:
+                    operators.append(match.group(1))
+                    value = float(match.group(2))
+                    values.append(value)
+                elif match_text:
+                    operators.append(match_text.group(1))
+                    value = match_text.group(2)
+                    values.append(value)
+                else:
+                    raise ValueError("fcst_thresh has a value that doesn't conform to "
                                  "the expected format")
 
         for operator in operators:
