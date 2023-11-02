@@ -74,12 +74,12 @@ class Hist(BasePlot):
         is_config_consistent = self.config_obj._config_consistency_check()
         self.hist_logger.info(f"Finished with consistency check:  {datetime.now()}")
         if not is_config_consistent:
-            error_msg = "The number of ser defined by series_val_1 is" \
-                        " inconsistent with the number of settings" \
-                        " required for describing each ser. Please check" \
-                        " the number of your configuration file's " \
-                        " plot_disp, series_order, user_legend," \
-                        " colors settings."
+            error_msg = ("The number of ser defined by series_val_1 is"
+                        " inconsistent with the number of settings"
+                        " required for describing each ser. Please check"
+                        " the number of your configuration file's "
+                        " plot_disp, series_order, user_legend, show_legend"
+                        " colors settings.")
             self.hist_logger.error(f"ValueError: {error_msg}")
             raise ValueError(error_msg)
 
@@ -290,7 +290,7 @@ class Hist(BasePlot):
             go.Bar(
                 x=self._get_x_points(series),
                 y=series.series_points,
-                showlegend=True,
+                showlegend=self.config_obj.show_legend[series.idx] == 1,
                 name=self.config_obj.user_legends[series.idx],
                 marker_color=self.config_obj.colors_list[series.idx],
                 marker_line_color=self.config_obj.colors_list[series.idx]

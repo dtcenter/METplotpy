@@ -72,12 +72,12 @@ class Line(BasePlot):
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            error_msg = f"The number of series defined by series_val_1/2 and derived \
-                        curves is inconsistent with the number of settings \
-                        required for describing each series. Please check \
-                        the number of your configuration file's plot_ci, \
-                        plot_disp, series_order, user_legend\
-                        colors, and series_symbols settings."
+            error_msg = ("The number of series defined by series_val_1/2 and derived "
+                         "curves is inconsistent with the number of settings "
+                         "required for describing each series. Please check "
+                         "the number of your configuration file's plot_ci, "
+                         "plot_disp, series_order, user_legend "
+                         "colors,  series_symbols, show_legend settings.")
             self.line_logger.error(f"ValueError: {error_msg}: {datetime.now()}")
             raise ValueError(error_msg)
 
@@ -305,7 +305,7 @@ class Line(BasePlot):
             self.figure.add_trace(
                 go.Scatter(x=x_points_index_adj,
                            y=y_points,
-                           showlegend=True,
+                           showlegend=self.config_obj.show_legend[series.idx] == 1,
                            mode=self.config_obj.mode[series.idx],
                            textposition="top right",
                            name=self.config_obj.user_legends[series.idx],
@@ -331,7 +331,7 @@ class Line(BasePlot):
             self.figure.add_trace(
                 go.Scatter(x=x_points_index_adj,
                            y=y_points,
-                           showlegend=True,
+                           showlegend=self.config_obj.show_legend[series.idx] == 1,
                            mode=self.config_obj.mode[series.idx],
                            textposition="top right",
                            name=self.config_obj.user_legends[series.idx],
@@ -873,7 +873,7 @@ def main(config_filename=None):
     try:
         plot = Line(docs)
         plot.save_to_file()
-        # plot.show_in_browser()
+        plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
         plot.line_logger.info(f"Finished creating line plot: {datetime.now()}")

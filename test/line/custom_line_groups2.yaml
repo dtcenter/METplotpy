@@ -15,10 +15,18 @@ colors:
 - '#ff0000'
 - '#8000ff'
 - '#00ff7f'
+
 con_series:
 - 1
 - 1
 - 1
+
+show_legend:
+- true
+- true
+- true
+
+
 create_html: 'False'
 derived_series_1:
 - - Group_y1_1 TMP ME

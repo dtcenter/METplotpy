@@ -135,6 +135,7 @@ class ROCDiagramConfig(Config):
 
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
+        self.show_legend = self._get_show_legend()
 
 
     def _get_series_inner_dict(self, index):

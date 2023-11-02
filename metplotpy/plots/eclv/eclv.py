@@ -67,14 +67,14 @@ class Eclv(Line):
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            self.line_logger.error(f"ValueError: The number of series defined by "
-                                   f"series_val_1 is "
-                                   f"inconsistent with the number of settings "
-                                   f"required for"
-                                   f" describing each series. Please check the number "
-                                   f"of"
-                                   f" your configuration file's plot_i, plot_disp, "
-                                   f"series_order, user_legend, colors, and "
+            self.line_logger.error("ValueError: The number of series defined by "
+                                   "series_val_1 is "
+                                   "inconsistent with the number of settings "
+                                   "required for"
+                                   " describing each series. Please check the number "
+                                   "of"
+                                   " your configuration file's plot_i, plot_disp, "
+                                   "series_order, user_legend, colors and "
                                    f"series_symbols settings. {datetime.now()}")
 
             raise ValueError("The number of series defined by series_val_1 is"

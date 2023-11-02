@@ -60,12 +60,12 @@ class Bar(BasePlot):
                         f"legends, etc.")
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            value_error_msg = f"ValueError: The number of series defined by series_val_1 and " \
-                              f"derived curves is inconsistent with the number of " \
-                              f"settings required for describing each series. Please " \
-                              f"check the number of your configuration file's " \
-                              f"plot_i, plot_disp, series_order, user_legend, and "\
-                              f"colors settings."
+            value_error_msg = ("ValueError: The number of series defined by series_val_1 and "
+                               "derived curves is inconsistent with the number of "
+                               "settings required for describing each series. Please "
+                               "check the number of your configuration file's "
+                               "plot_i, plot_disp, series_order, user_legend, show_legend and "
+                               "colors settings.")
             self.bar_logger.error(value_error_msg)
             raise ValueError(value_error_msg)
 
@@ -240,7 +240,7 @@ class Bar(BasePlot):
             go.Bar(
                 x=x_points,
                 y=y_points,
-                showlegend=True,
+                showlegend=self.config_obj.show_legend[series.idx] == 1,
                 name=self.config_obj.user_legends[series.idx],
                 marker_color=self.config_obj.colors_list[series.idx],
                 marker_line_color=self.config_obj.colors_list[series.idx]

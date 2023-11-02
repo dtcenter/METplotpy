@@ -64,16 +64,15 @@ class Contour(BasePlot):
         self.contour_logger.info(f"Start contour plot: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
-        self.contour_logger.info(f"Consistency checking of config settings for colors, "
-                            f"legends, etc.")
+        self.contour_logger.info("Consistency checking of config settings for colors,legends, etc.")
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            self.contour_logger.error(f"ValueError: The number of series defined by "
-                                 f"series_val_1 is inconsistent with the number of "
-                                 f"settings required for describing each series. "
-                                 f"Please check  the number of your configuration"
-                                 f" file's  plot_disp, series_order, user_legend,"
-                                 f" colors settings. ")
+            self.contour_logger.error("ValueError: The number of series defined by "
+                                 "series_val_1 is inconsistent with the number of "
+                                 "settings required for describing each series. "
+                                 "Please check  the number of your configuration"
+                                 " file's  plot_disp, series_order, user_legend,"
+                                 " colors settings. ")
             raise ValueError("The number of series defined by series_val_1 is"
                              " inconsistent with the number of settings"
                              " required for describing each series. Please check"
@@ -90,7 +89,7 @@ class Contour(BasePlot):
         if self.config_obj.use_ee is True:
             self.contour_logger.info(f"Begin event equalization: {datetime.now()} ")
             self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
-            self.contour_logger.info(f"Event equalization complet: {datetime.now()}")
+            self.contour_logger.info(f"Event equalization complete: {datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,

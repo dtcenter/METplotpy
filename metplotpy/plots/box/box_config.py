@@ -117,6 +117,7 @@ class BoxConfig(Config):
         self.all_series_y1 = self._get_all_series_y(1)
         self.all_series_y2 = self._get_all_series_y(2)
         self.num_series = self.calculate_number_of_series()
+        self.show_legend = self._get_show_legend()
 
         ##############################################
         # legend parameters

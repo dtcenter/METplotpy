@@ -64,12 +64,12 @@ class RevisionSeries(Line):
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            value_error_msg = "The number of series defined by series_val_1 is" \
-                             " inconsistent with the number of settings" \
-                             " required for describing each series. Please check "\
-                             " the number of your configuration file's plot_i," \
-                             " plot_disp, series_order, user_legend," \
-                             " colors, and series_symbols settings."
+            value_error_msg = ("The number of series defined by series_val_1 is"
+                             " inconsistent with the number of settings"
+                             " required for describing each series. Please check "
+                             " the number of your configuration file's plot_i,"
+                             " plot_disp, series_order, user_legend,"
+                             " colors, show_legend and series_symbols settings.")
             self.config_obj.logger.error(f"ValueError: {value_error_msg}")
             raise ValueError(value_error_msg)
 
@@ -197,7 +197,7 @@ class RevisionSeries(Line):
         self.figure.add_trace(
             go.Scatter(x=x_points_index_adj,
                        y=y_points,
-                       showlegend=True,
+                       showlegend=self.config_obj.show_legend[series.idx] == 1,
                        mode='markers',
                        textposition="top right",
                        name=series.user_legends,

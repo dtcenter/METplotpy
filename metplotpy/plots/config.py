@@ -129,6 +129,7 @@ class Config:
         self.indy_plot_val = self.get_config_value('indy_plot_val')
         self.lines = self._get_lines()
 
+
     def get_config_value(self, *args:Union[str,int,float]):
         """Gets the value of a configuration parameter.
         Looks for parameter in the user parameter dictionary
@@ -341,6 +342,23 @@ class Config:
         """
         con_series_settings = self.get_config_value('con_series')
         return self.create_list_by_series_ordering(list(con_series_settings))
+
+    def _get_show_legend(self) -> list:
+        """
+           Retrieves the 'show_legend' values used for displaying or
+           not the legend of a trace in the legend box, from the
+           config file. If 'show_legend' is not provided - throws an error
+           Args:
+
+           Returns:
+               show_legend_list or show_legend_from_config: a list of 1 and/or 0 to
+               be used for the traces
+        """
+        show_legend_settings = self.get_config_value('show_legend')
+        if show_legend_settings is None:
+            raise ValueError("ERROR: show_legend parameter is not provided.")
+
+        return self.create_list_by_series_ordering(list(show_legend_settings))
 
     def _get_markers(self):
         """

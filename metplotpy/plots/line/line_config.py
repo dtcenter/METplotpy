@@ -137,6 +137,7 @@ class LineConfig(Config):
         self.all_series_y2 = self._get_all_series_y(2)
         self.con_series = self._get_con_series()
         self.num_series = self.calculate_number_of_series()
+        self.show_legend = self._get_show_legend()
 
         ##############################################
         # legend parameters
@@ -417,11 +418,14 @@ class LineConfig(Config):
         num_legends = len(self.user_legends)
         num_line_widths = len(self.linewidth_list)
         num_linestyles = len(self.linestyles_list)
+        num_show_legend = len(self.show_legend)
+        num_con_series = len(self.con_series)
         status = False
 
-        if self.num_series == num_plot_disp == \
+        if (self.num_series == num_plot_disp == \
                 num_markers == num_series_ord == num_colors \
-                == num_legends == num_line_widths == num_linestyles == num_ci_settings:
+                == num_legends == num_line_widths == num_linestyles == num_ci_settings \
+                == num_show_legend == num_con_series):
             status = True
         return status
 
