@@ -18,6 +18,11 @@ from datetime import datetime
 import yaml
 import re
 import sys
+import warnings
+# with warnings.catch_warnings():
+#     warnings.simplefilter("ignore", category="DeprecationWarning")
+#     warnings.simplefilter("ignore", category="ResourceWarning")
+
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -27,6 +32,7 @@ from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.roc_diagram.roc_diagram_config import ROCDiagramConfig
 from metplotpy.plots.roc_diagram.roc_diagram_series import ROCDiagramSeries
 import metcalcpy.util.utils as calc_util
+
 
 
 class ROCDiagram(BasePlot):
@@ -154,6 +160,7 @@ class ROCDiagram(BasePlot):
         """
 
         image_name = self.get_config_value('plot_filename')
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # remove the old file if it exist
         if os.path.exists(image_name):
@@ -364,27 +371,7 @@ class ROCDiagram(BasePlot):
 
         return fig
 
-    def save_to_file(self):
-        """Saves the image to a file specified in the config file.
-         Prints a message if fails
 
-        Args:
-
-        Returns:
-
-        """
-        image_name = self.get_config_value('plot_filename')
-        if self.figure:
-            try:
-                self.figure.write_image(image_name)
-
-            except FileNotFoundError:
-                self.logger.error(f"FileNotFoundError: Cannot save "
-                                  f"{image_name} to file.")
-            except ValueError as ex:
-                self.logger.error(f"ValueError: {ex}")
-        else:
-            self.logger.warning("Oops! The figure wasn't created.  Cannot save file.")
 
     def write_output_file(self):
         """
