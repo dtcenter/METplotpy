@@ -695,7 +695,7 @@ class Line(BasePlot):
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
 
-            self.line_logger.info(f"Finished writing to html file: {datetime.now()}")
+            logger.info(f"Finished writing to html file: {datetime.now()}")
 
     def write_output_file(self) -> None:
         """
