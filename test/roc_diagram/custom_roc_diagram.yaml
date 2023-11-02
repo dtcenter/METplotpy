@@ -10,7 +10,7 @@ dump_points_1: 'False'
 # points_path: '/dir_to_save_points1_file'
 
 # Title settings
-title: "Custom: ROC PCT 20200507_074426 "
+title: "Custom: ROC CTC 20200507_074426 "
 # value of 0.5 centers the title, smaller values moves text to the left
 title_align: 0.3
 # -2 locates title at top, -1.5 puts title inside plotting region

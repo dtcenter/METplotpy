@@ -90,7 +90,8 @@ show_signif:
   - 'False'
 stat_input: PCT_ROC.data
 sync_yaxes: 'False'
-title: test title
+title: test title PCT ROC data
+
 title_align: 0.5
 title_offset: -2
 title_size: 1.4
