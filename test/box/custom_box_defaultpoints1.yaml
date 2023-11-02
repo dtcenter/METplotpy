@@ -176,4 +176,8 @@ ytlab_size: 1
 
 stat_input: ./box.data
 plot_filename: ./box_defaultpoints1.png
-
+show_legend:
+  -True
+  -True
+  -True
+  -True

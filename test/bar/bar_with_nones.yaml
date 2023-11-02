@@ -165,3 +165,6 @@ ytlab_size: 1
 
 stat_input: ./bar_with_nones.data
 plot_filename: ./bar_with_nones.png
+
+show_legend:
+  -True

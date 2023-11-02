@@ -113,3 +113,7 @@ ytlab_size: 1
 
 stat_input: ./eclv_ctc.data
 plot_filename: ./eclv_ctc.png
+
+show_legend:
+  -True
+  -True
