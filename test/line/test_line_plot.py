@@ -140,7 +140,6 @@ def test_no_nans_in_points_files():
         os.remove(os.path.join(path, plot_file))
         os.remove(os.path.join(intermed_path, points_file_1))
         os.remove(os.path.join(intermed_path, points_file_2))
-        os.remove("./intermed_files/nan.points1")
     except OSError as e:
         # Typically when files have already been removed or
         # don't exist.  Ignore.
