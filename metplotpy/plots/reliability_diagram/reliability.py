@@ -748,7 +748,7 @@ def main(config_filename=None):
     try:
         plot = Reliability(docs)
         plot.save_to_file()
-        plot.show_in_browser()
+        #plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
         plot.logger.info(f"Finished generating reliability diagram: {datetime.now()}")

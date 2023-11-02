@@ -873,7 +873,7 @@ def main(config_filename=None):
     try:
         plot = Line(docs)
         plot.save_to_file()
-        plot.show_in_browser()
+        #plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
         plot.line_logger.info(f"Finished creating line plot: {datetime.now()}")
