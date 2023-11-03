@@ -122,7 +122,7 @@ def test_no_nans_in_points_files():
     assert nans_found == False
 
     # Verify that the nan.points1 file does indeed trigger a "nans_found"
-    with open("./intermed_files/nan.points1", "r") as f:
+    with open("./nan.points1", "r") as f:
         data = f.read()
         if "NaN" in data:
             nans_found = True
