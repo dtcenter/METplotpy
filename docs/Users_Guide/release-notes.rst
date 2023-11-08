@@ -50,7 +50,7 @@ METplotpy Version 3.0.0-beta1 release notes (20230915)
 
      * **Bugfix for ROC plot image saving to file** (`#394 <https://github.com/dtcenter/METplotpy/issues/394>`_).
 
-     * **Bugfix for erros in line and revision_series tests ** (`#401 <https://github.com/dtcenter/METplotpy/issues/401>`_).
+     * **Bugfix for erros in line and revision_series tests** (`#401 <https://github.com/dtcenter/METplotpy/issues/401>`_).
 
 METplotpy Upgrade Instructions
 ==============================
