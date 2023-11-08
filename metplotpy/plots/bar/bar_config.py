@@ -122,6 +122,8 @@ class BarConfig(Config):
         else:
             self.legend_orientation = 'h'
         self.legend_border_color = "black"
+        self.show_legend = self._get_show_legend()
+
 
     def _get_plot_disp(self) -> list:
         """

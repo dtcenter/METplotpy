@@ -115,3 +115,9 @@ xaxis_reverse: 'False'
 stat_input: ./box.data
 plot_filename: ./default_box.png
 
+show_legend:
+  -True
+  -True
+  -True
+  -True
+

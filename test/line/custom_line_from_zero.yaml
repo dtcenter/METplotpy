@@ -217,3 +217,10 @@ lines:
   line_width: 1
   position: "18"
   type: vert_line
+
+show_legend:
+    -True
+    -True
+    -True
+    -True
+    -True

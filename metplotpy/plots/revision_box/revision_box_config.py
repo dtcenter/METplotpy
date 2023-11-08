@@ -88,6 +88,7 @@ class RevisionBoxConfig(Config):
         self.colors_list = self._get_colors()
         self.all_series_y1 = self.get_series_y()
         self.num_series = self.calculate_number_of_series()
+        self.show_legend = self._get_show_legend()
 
         ##############################################
         # legend parameters

@@ -5,9 +5,9 @@
  # ** Research Applications Lab (RAL)
  # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
  # ============================*
- 
- 
- 
+
+
+
 """
 Class Name: roc_diagram.py
  """
@@ -336,7 +336,8 @@ class ROCDiagram(BasePlot):
                 # add the plot
                 self.logger.info("Adding traces for markers and legend.")
                 fig.add_trace(
-                    go.Scatter(mode="lines+markers", x=pofd_points, y=pody_points, showlegend=True,
+                    go.Scatter(mode="lines+markers", x=pofd_points, y=pody_points,
+                               showlegend=self.config_obj.show_legend[series.idx] == 1,
                                text=thresh_list, textposition="top right", name=legend_label,
                                line=dict(color=self.config_obj.colors_list[idx],
                                          width=self.config_obj.linewidth_list[idx]),

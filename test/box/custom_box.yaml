@@ -190,3 +190,8 @@ plot_filename: ./box.png
 # To change the log level, specify a log level: debug, info, warning, error and uncomment the line below.
 #  Debug and info log level will produce more log output.
 #log_level: WARNING
+show_legend:
+  -True
+  -True
+  -True
+  -True

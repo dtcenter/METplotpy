@@ -132,3 +132,6 @@ ytlab_size: 1
 
 stat_input: ./bar.data
 plot_filename: ./bar_defaultpoints1.png
+show_legend:
+  -True
+  -True

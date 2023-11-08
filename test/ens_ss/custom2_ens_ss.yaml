@@ -115,3 +115,6 @@ y2tlab_size: 1.0
 stat_input: ./ens_ss.data
 plot_filename: ./intermed_files/ens_ss.png
 points_path: ./intermed_files
+show_legend:
+  -True
+  -True

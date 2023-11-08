@@ -131,3 +131,6 @@ ytlab_perp: 0.5
 ytlab_size: 1
 
 points_path: ./intermed_files
+show_legend:
+- 'True'
+- 'True'

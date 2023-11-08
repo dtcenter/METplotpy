@@ -69,13 +69,13 @@ class EnsSs(BasePlot):
         self.ens_logger.info(f"Finished consistency checking of config settings for colors, "
                         f"legends, etc.{datetime.now()}")
         if not is_config_consistent:
-            value_error_msg = f"ValueError: The number of series defined by " \
-                              f"series_val_1 and " \
-                              f"derived curves is inconsistent with the number of " \
-                              f"settings required for describing each series. Please " \
-                              f"check the number of your configuration file's " \
-                              f"plot_i, plot_disp, series_order, user_legend, and " \
-                              f"colors settings."
+            value_error_msg = ("ValueError: The number of series defined by "
+                              "series_val_1 and "
+                              "derived curves is inconsistent with the number of "
+                              "settings required for describing each series. Please "
+                              "check the number of your configuration file's "
+                              "plot_i, plot_disp, series_order, user_legend, show_legend and "
+                              "colors settings.")
             self.ens_logger.error(value_error_msg)
             raise ValueError(value_error_msg)
 
@@ -300,7 +300,7 @@ class EnsSs(BasePlot):
         self.figure.add_trace(
             go.Scatter(x=series.series_points['spread_skill'],
                        y=series.series_points['mse'],
-                       showlegend=True,
+                       showlegend=self.config_obj.show_legend[series.idx] == 1,
                        mode=self.config_obj.mode[series.idx],
                        textposition="top right",
                        name=self.config_obj.user_legends[series.idx],
