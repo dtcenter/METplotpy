@@ -60,7 +60,7 @@ def read_config_from_command_line():
             The full path to the config file
     """
     # Create Parser
-    parser = argparse.ArgumentParser(description='Generates a performance diagram')
+    parser = argparse.ArgumentParser(description='Read in config file')
 
     # Add arguments
     parser.add_argument('Path', metavar='path', type=str,
