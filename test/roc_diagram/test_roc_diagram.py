@@ -4,7 +4,7 @@ import pytest
 import os
 import pandas as pd
 from metplotpy.plots.roc_diagram import roc_diagram as roc
-#from metcalcpy.compare_images import CompareImages
+# from metcalcpy.compare_images import CompareImages
 import metcalcpy.util.ctc_statistics as ctc
 
 
@@ -36,6 +36,28 @@ def setup_rev_points():
     custom_config_filename = "./CTC_ROC_thresh_reverse_pts.yaml"
     print("\n current directory: ", os.getcwd())
     print("\ncustom config file: ", custom_config_filename, '\n')
+
+    # Invoke the command to generate a Performance Diagram based on
+    # the test_custom_performance_diagram.yaml custom config file.
+    roc.main(custom_config_filename)
+
+
+@pytest.fixture
+def setup_summary():
+    # Cleanup the plotfile and point1 output file from any previous run
+    path = os.getcwd()
+
+    subdir_path = os.path.join(path, 'intermed_files')
+
+    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
+    # the config directory containing all the default config files.
+    os.environ['METPLOTPY_BASE'] = "../../"
+    custom_config_filename = "./CTC_ROC_summary.yaml"
+
+    try:
+        os.mkdir(os.path.join(os.getcwd(), 'intermed_files'))
+    except FileExistsError as e:
+        pass
 
     # Invoke the command to generate a Performance Diagram based on
     # the test_custom_performance_diagram.yaml custom config file.
@@ -142,6 +164,57 @@ def test_expected_CTC_thresh_dump_points(setup_dump_points):
     assert True
 
 
+def test_expected_CTC_summary(setup_summary):
+    '''
+        For test data, verify that the points in the .points1 file are in the
+        directory we specified and the values
+        match what is expected (within round-off tolerance/acceptable precision).
+    :return:
+    '''
+    expected_pofd = pd.Series([1, 0.0052708, 0, 1, 0.0084788, 0, 1, 0.0068247, 0])
+    expected_pody = pd.Series([1, 0.0878715, 0, 1, 0.1166785, 0, 1, 0.1018776, 0])
+
+    df = pd.read_csv("./intermed_files/CTC_ROC_summary.points1", sep='\t', header='infer')
+    pofd = df.iloc[:, 0]
+    pody = df.iloc[:, 1]
+
+    for index, expected in enumerate(expected_pody):
+        if ctc.round_half_up(expected) - ctc.round_half_up(pody[index]) == 0.0:
+            pass
+        else:
+            assert False
+
+    # if we get here, then all elements matched in value and position
+    assert True
+
+    # do the same test for pofd
+    for index, expected in enumerate(expected_pofd):
+        if ctc.round_half_up(expected) - ctc.round_half_up(pofd[index]) == 0.0:
+            pass
+        else:
+            assert False
+
+    # different cleanup than what is provided by cleanup()
+    # clean up the intermediate subdirectory and other files
+    try:
+        path = os.getcwd()
+        plot_file = 'CTC_ROC_summary.png'
+        html_file = '.html'
+        points_file = 'CTC_ROC_summary.points1'
+        intermed_path = os.path.join(path, "intermed_files")
+        os.remove(os.path.join(intermed_path, points_file))
+        os.rmdir(intermed_path)
+        os.remove(os.path.join(path, plot_file))
+        os.remove(os.path.join(path, html_file))
+    except OSError as e:
+        # Typically when files have already been removed or
+        # don't exist.  Ignore.
+        pass
+
+    # if we get here, then all elements matched in value and position
+    assert True
+
+
 def test_expected_CTC_thresh_points_reversed(setup_rev_points):
     '''
         For test data, verify that the points in the .points1 file
@@ -220,6 +293,7 @@ def test_ee_returns_empty_df(capsys):
         # don't exist.  Ignore.
         pass
 
+
 @pytest.mark.skip("skip image comparison")
 def test_images_match(setup):
     '''
@@ -263,6 +337,7 @@ def test_pct_plot_exists():
     assert os.path.isfile(output_plot) == True
     os.remove(os.path.join(output_plot))
 
+
 def test_pct_no_warnings():
     '''
         Verify that the ROC diagram is generated without FutureWarnings
@@ -282,4 +357,3 @@ def test_pct_no_warnings():
     else:
         assert True
         os.remove(os.path.join(output_plot))
-

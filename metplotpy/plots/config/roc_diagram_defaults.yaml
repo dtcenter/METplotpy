@@ -115,3 +115,6 @@ reverse_connection_order: False
 create_html: True  #optional
 stat_input:  ../../test/roc_diagram/plot_20200507_074426.data #required
 plot_filename: ./roc_diagram_default.png #required
+
+summary_curve: none
+

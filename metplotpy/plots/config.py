@@ -468,7 +468,11 @@ class Config:
         # resulting in a zero-sized series_list.  In this case,
         # the legend label will just be the legend_label_type.
         if len(series_list) == 0 and legend_label_unspecified:
-            return [legend_label_type]
+            # check if summary_curve is present
+            if 'summary_curve' in self.parameters.keys() and self.parameters['summary_curve'] != 'none':
+                return [legend_label_type, self.parameters['summary_curve'] + ' ' + legend_label_type]
+            else:
+                return [legend_label_type]
 
         perms = utils.create_permutations(series_list)
         for idx,ll in enumerate(legends_list):
@@ -481,6 +485,8 @@ class Config:
                 ll_list.append(legend_label)
             else:
                 ll_list.append(ll)
+        if 'summary_curve' in self.parameters.keys() and self.parameters['summary_curve'] != 'none':
+            ll_list.append(self.parameters['summary_curve'] + ' ' + legend_label_type)
 
         legends_list_ordered = self.create_list_by_series_ordering(ll_list)
         return legends_list_ordered

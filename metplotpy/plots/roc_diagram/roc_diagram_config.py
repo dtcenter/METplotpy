@@ -137,6 +137,11 @@ class ROCDiagramConfig(Config):
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
         self.show_legend = self._get_show_legend()
 
+        if 'summary_curve' in self.parameters.keys():
+            self.summary_curve = self.parameters['summary_curve']
+        else:
+            self.summary_curve = 'none'
+
 
     def _get_series_inner_dict(self, index):
         """
@@ -303,4 +308,6 @@ class ROCDiagramConfig(Config):
                 markers_list.append(constants.PCH_TO_PLOTLY_MARKER[m])
         markers_list_ordered = self.create_list_by_series_ordering(markers_list)
         return markers_list_ordered
+
+
 
