@@ -17,7 +17,6 @@ import os
 from datetime import datetime
 import yaml
 import re
-import sys
 import warnings
 # with warnings.catch_warnings():
 #     warnings.simplefilter("ignore", category="DeprecationWarning")
@@ -32,7 +31,7 @@ from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.roc_diagram.roc_diagram_config import ROCDiagramConfig
 from metplotpy.plots.roc_diagram.roc_diagram_series import ROCDiagramSeries
 import metcalcpy.util.utils as calc_util
-
+from metplotpy.plots.util import prepare_pct_roc, prepare_ctc_roc
 
 
 class ROCDiagram(BasePlot):
@@ -146,11 +145,70 @@ class ROCDiagram(BasePlot):
 
         # use the list of series ordering values to determine how many series objects we need.
         num_series = len(self.config_obj.series_ordering)
+        if self.config_obj.summary_curve != 'none':
+            num_series = num_series -1
 
         for i, series in enumerate(range(num_series)):
             # Create a ROCDiagramSeries object
             series_obj = ROCDiagramSeries(self.config_obj, i, input_data)
             series_list.append(series_obj)
+
+        if self.config_obj.summary_curve != 'none':
+            # add Summary Curve bassd on teh summary dataframes of each ROCDiagramSeries
+            df_sum_main = None
+            for idx, series in enumerate(series_list):
+                # create a main summary frame from series summary frames
+                if self.config_obj.linetype_ctc:
+                    if df_sum_main is None:
+                        df_sum_main = pd.DataFrame(columns=['fcst_thresh', 'fy_oy', 'fy_on', 'fn_oy', 'fn_on'])
+                elif self.config_obj.linetype_pct:
+                    if df_sum_main is None:
+                        df_sum_main = pd.DataFrame(columns=['thresh_i', 'i_value', 'on_i', 'oy_i'])
+
+                df_sum_main = pd.concat([df_sum_main, series.series_points[3]], axis=0)
+
+            if self.config_obj.linetype_ctc:
+                df_summary_curve = pd.DataFrame(columns=['fcst_thresh', 'fy_oy', 'fy_on', 'fn_oy', 'fn_on'])
+                fcst_thresh_list = df_sum_main['fcst_thresh'].unique()
+                for thresh in fcst_thresh_list:
+                    if self.config_obj.summary_curve == 'median':
+                        group_stats_fy_oy = df_sum_main['fy_oy'][df_sum_main['fcst_thresh'] == thresh].median()
+                        group_stats_fn_oy = df_sum_main['fn_oy'][df_sum_main['fcst_thresh'] == thresh].median()
+                        group_stats_fy_on = df_sum_main['fy_on'][df_sum_main['fcst_thresh'] == thresh].median()
+                        group_stats_fn_on = df_sum_main['fn_on'][df_sum_main['fcst_thresh'] == thresh].median()
+                    else:
+                        group_stats_fy_oy = df_sum_main['fy_oy'][df_sum_main['fcst_thresh'] == thresh].mean()
+                        group_stats_fn_oy = df_sum_main['fn_oy'][df_sum_main['fcst_thresh'] == thresh].mean()
+                        group_stats_fy_on = df_sum_main['fy_on'][df_sum_main['fcst_thresh'] == thresh].mean()
+                        group_stats_fn_on = df_sum_main['fn_on'][df_sum_main['fcst_thresh'] == thresh].mean()
+                    df_summary_curve.loc[len(df_summary_curve)] = {'fcst_thresh': thresh,
+                                                                   'fy_oy': group_stats_fy_oy,
+                                                                   'fn_oy': group_stats_fn_oy,
+                                                                   'fy_on': group_stats_fy_on,
+                                                                   'fn_on': group_stats_fn_on,
+                                                                   }
+                df_summary_curve.reset_index()
+                pody, pofd, thresh = prepare_ctc_roc(df_summary_curve,self.config_obj.ctc_ascending)
+            else:
+                df_summary_curve = pd.DataFrame(columns=['thresh_i', 'on_i', 'oy_i'])
+                thresh_i_list = df_sum_main['thresh_i'].unique()
+                for index, thresh in enumerate(thresh_i_list):
+                    if self.config_obj.summary_curve == 'median':
+                        on_i_sum = df_sum_main['on_i'][df_sum_main['thresh_i'] == thresh].median()
+                        oy_i_sum = df_sum_main['oy_i'][df_sum_main['thresh_i'] == thresh].median()
+                    else:
+                        on_i_sum = df_sum_main['on_i'][df_sum_main['thresh_i'] == thresh].mean()
+                        oy_i_sum = df_sum_main['oy_i'][df_sum_main['thresh_i'] == thresh].mean()
+                    df_summary_curve.loc[len(df_summary_curve)] = {'thresh_i': thresh, 'on_i': on_i_sum,
+                                                                   'oy_i': oy_i_sum, }
+                df_summary_curve.reset_index()
+                pody, pofd, thresh = prepare_pct_roc(df_summary_curve)
+
+            series_obj = ROCDiagramSeries(self.config_obj, num_series -1, None)
+            series_obj.series_points = (pofd, pody, thresh, None)
+
+            series_list.append(series_obj)
+
         return series_list
 
     def remove_file(self):
@@ -316,6 +374,9 @@ class ROCDiagram(BasePlot):
 
         thresh_list = []
 
+
+
+
         # "Dump" False Detection Rate (POFD) and PODY points to an output
         # file based on the output image filename (useful in debugging)
         # This output file is used by METviewer and not necessary for other uses.
@@ -344,8 +405,6 @@ class ROCDiagram(BasePlot):
                                marker_symbol=self.config_obj.marker_list[idx]),
                     secondary_y=False
                 )
-
-
 
 
             def add_trace_copy(trace):
