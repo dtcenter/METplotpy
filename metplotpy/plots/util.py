@@ -25,6 +25,8 @@ from typing import Union
 import pandas as pd
 from plotly.graph_objects import Figure
 from metplotpy.plots.context_filter import ContextFilter as cf
+import metcalcpy.util.pstd_statistics as pstats
+import metcalcpy.util.ctc_statistics as cstats
 
 COLORSCALES = {
     'green_red': ['#E6FFE2', '#B3FAAD', '#74F578', '#30D244', '#00A01E', '#F6A1A2',
@@ -364,7 +366,6 @@ def is_thresh_column(column_name: str) -> bool:
 
 
 def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.DataFrame:
-
     """
         Filter the input data based on values in the settings_dict dictionary.
         For each key (corresponding to a column in the input_df dataframe),
@@ -477,9 +478,9 @@ def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.Data
 
 
                     elif val_idx > 0 and not is_last_val:
-                       # One of the middle values in the list
-                       query_string = prev_val_string + single_quote + val + \
-                                      single_quote + list_sep
+                        # One of the middle values in the list
+                        query_string = prev_val_string + single_quote + val + \
+                                       single_quote + list_sep
 
                     else:
                         # The last value in the list
@@ -507,14 +508,14 @@ def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.Data
 
                 # Only one value in the values list (both first and last element)
                 if val_idx == 0 and is_last_val:
-                    prev_val_string = prev_val_string + col + in_token + list_start\
-                                      + single_quote + val + single_quote +\
+                    prev_val_string = prev_val_string + col + in_token + list_start \
+                                      + single_quote + val + single_quote + \
                                       list_terminator
 
                 elif val_idx == 0 and (not is_last_val):
                     # First value of a list of values
-                    prev_val_string = prev_val_string + col + in_token +\
-                                      list_start + single_quote + val +\
+                    prev_val_string = prev_val_string + col + in_token + \
+                                      list_start + single_quote + val + \
                                       single_quote + list_sep
 
                 elif val_idx > 0 and not is_last_val:
@@ -526,15 +527,54 @@ def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.Data
 
             query_string_list.append(prev_val_string)
 
-
     # Perform query for each column (key)
     for cur_query in query_string_list:
         working_df = filtered_df.query(cur_query)
         filtered_df = working_df.copy(deep=True)
-
 
     #  clean up
     del working_df
     gc.collect()
 
     return filtered_df
+
+
+def prepare_pct_roc(subset_df):
+    """
+    Initialize the PCT ROC plot data, appends a beginning and end point
+    :param subset_df: PCT data
+    :return: PCT ROC plot data
+    """
+    roc_df = pstats._calc_pct_roc(subset_df)
+    pody = roc_df['pody']
+    pody = pd.concat([pd.Series([1]), pody], ignore_index=True)
+    pody = pd.concat([pody, pd.Series([0])])
+    pofd = roc_df['pofd']
+    pofd = pd.concat([pd.Series([1]), pofd], ignore_index=True)
+    pofd = pd.concat([pofd, pd.Series([0])], ignore_index=True)
+    thresh = roc_df['thresh']
+    thresh = pd.concat([pd.Series(['']), thresh], ignore_index=True)
+    thresh = pd.concat([thresh, pd.Series([''])], ignore_index=True)
+
+    return pody, pofd, thresh
+
+
+def prepare_ctc_roc(subset_df, is_ascending):
+    """
+    Initialize the CTC ROC plot data, appends a beginning and end point
+    :param subset_df: CTC data
+    :param is_ascending: thresh order
+    :return: CTC ROC plot data
+    """
+    df_roc = cstats.calculate_ctc_roc(subset_df, ascending=is_ascending)
+    pody = df_roc['pody']
+    pody = pd.concat([pd.Series([1]), pody], ignore_index=True)
+    pody = pd.concat([pody, pd.Series([0])], ignore_index=True)
+    pofd = df_roc['pofd']
+    pofd = pd.concat([pd.Series([1]), pofd], ignore_index=True)
+    pofd = pd.concat([pofd, pd.Series([0])], ignore_index=True)
+    thresh = df_roc['thresh']
+    thresh = pd.concat([pd.Series(['']), thresh], ignore_index=True)
+    thresh = pd.concat([thresh, pd.Series([''])], ignore_index=True)
+
+    return pody, pofd, thresh
