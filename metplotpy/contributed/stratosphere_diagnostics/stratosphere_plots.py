@@ -27,19 +27,19 @@ def plot_zonal_bias(lats,levels,bias,obar,outfile,ptitle,plevs):
     plt.close()
 
 
-def plot_polar_cap_bias(leads,levels,pdata,outfile,ptitle,plevs):
+def plot_polar_bias(leads,levels,pdata,outfile,ptitle,plevs):
 
     ctable = cmocean.cm.balance
-    plot_polar_cap_contour(leads,levels,pdata,outfile,ptitle,plevs,ctable)
+    plot_polar_contour(leads,levels,pdata,outfile,ptitle,plevs,ctable)
 
 
-def plot_polar_cap_rmse(leads,levels,pdata,outfile,ptitle,plevs):
+def plot_polar_rmse(leads,levels,pdata,outfile,ptitle,plevs):
 
     ctable = cm.viridis
-    plot_polar_cap_contour(leads,levels,pdata,outfile,ptitle,plevs,ctable)
+    plot_polar_contour(leads,levels,pdata,outfile,ptitle,plevs,ctable)
 
 
-def plot_polar_cap_contour(leads,levels,pdata,outfile,ptitle,plevs,ctable):
+def plot_polar_contour(leads,levels,pdata,outfile,ptitle,plevs,ctable):
 
     plt.figure(0)
     plt.contourf(leads,levels,pdata,cmap=ctable,levels = plevs)
