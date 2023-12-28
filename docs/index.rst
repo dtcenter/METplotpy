@@ -70,7 +70,7 @@ follows:
 The umbrella repository will be brought together by using a software package
 called `manage_externals <https://github.com/ESMCI/manage_externals>`_
 developed by the Community Earth System Modeling (CESM) team, hosted at NCAR
-and NOAA Earth System's Research Laboratory.  The manage_externals paackage
+and NOAA Earth System's Research Laboratory.  The manage_externals package
 was developed because CESM is comprised of a number of different components
 that are developed and managed independently. Each component also may have
 additional "external" dependencies that need to be maintained independently.
