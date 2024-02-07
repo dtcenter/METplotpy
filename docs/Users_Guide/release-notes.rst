@@ -27,7 +27,7 @@ METplotpy Version 3.0.0-beta2 release notes (20231108)
   .. dropdown:: Internal
 
 
-     * Update GitHub actions workflows to switch from node 16 to nod 20 (`#414 <https://github.com/dtcenter/METplotpy/issues/414>`_).
+     * Update GitHub actions workflows to switch from node 16 to node 20 (`#414 <https://github.com/dtcenter/METplotpy/issues/414>`_).
 
 
 
