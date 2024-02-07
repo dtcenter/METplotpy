@@ -13,6 +13,34 @@ METplotpy Release Notes
 METplotpy Version 3.0.0-beta2 release notes (20231108)
 ------------------------------------------------------
 
+
+  .. dropdown:: New Plots
+
+
+
+  .. dropdown:: Enhancements
+
+
+     * **Add a summary curve to the ROC diagram** (`#399 <https://github.com/dtcenter/METplotpy/issues/399>`_).
+
+
+  .. dropdown:: Internal
+
+
+     * Update GitHub actions workflows to switch from node 16 to node 20 (`#414 <https://github.com/dtcenter/METplotpy/issues/414>`_).
+
+
+
+
+
+  .. dropdown:: Bugfixes
+
+
+
+
+METplotpy Version 3.0.0-beta2 release notes (20231108)
+------------------------------------------------------
+
   .. dropdown:: New Plots
 
 
@@ -37,6 +65,7 @@ METplotpy Version 3.0.0-beta2 release notes (20231108)
      * **Bugfix for ROC plot image saving to file** (`#394 <https://github.com/dtcenter/METplotpy/issues/394>`_).
 
      * Bugfix for erros in line and revision_series tests (`#401 <https://github.com/dtcenter/METplotpy/issues/401>`_).
+
 
 METplotpy Version 3.0.0-beta1 release notes (20230915)
 ------------------------------------------------------
