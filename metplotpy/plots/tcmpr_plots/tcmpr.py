@@ -75,7 +75,7 @@ class Tcmpr(BasePlot):
         self.baseline_lead_time = 'lead'
         self.yaxis_1 = self.config_obj.yaxis_1
 
-        self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.list_stat_1[0]}_{self.config_obj.plot_list}.png"
+        self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.list_stat_1[0]}_{self.config_obj.plot_type}.png"
         # Check that we have all the necessary settings for each series
         # TODO  implement the consistency check if no series values were specified
         # is_config_consistent = self.config_obj._config_consistency_check()
@@ -139,7 +139,7 @@ class Tcmpr(BasePlot):
     def _calc_stag_adjustments(self) -> list:
         """
         Calculates the x-axis adjustment for each point if requested.
-        It needed so hte points and CIs for each x-axis values don't be placed on top of each other
+        It needed so the points and CIs for each x-axis values don't be placed on top of each other
 
         :return: the list of the adjustment values
         """
@@ -158,7 +158,7 @@ class Tcmpr(BasePlot):
         return stag_vals
 
     def _add_hfip_baseline(self):
-        # Add HFIP baseline for each lead time
+        # Add  baseline for each lead time
         if self.cur_baseline_data is not None:
             baseline_x_values = []
             baseline_y_values = []
@@ -511,7 +511,7 @@ def main(config_filename=None):
     if config_obj.use_ee is True:
         output_data = pd.DataFrame()
         series = copy.deepcopy(config_obj.parameters['series_val_1'])
-        if 'skill_mn' in config_obj.plot_list or 'skill_md' in config_obj.plot_list:
+        if 'skill_mn' in config_obj.plot_type or 'skill_md' in config_obj.plot_type:
             series['AMODEL'].extend(config_obj.skill_ref)
 
         for series_var, series_var_vals in series.items():
@@ -533,7 +533,7 @@ def main(config_filename=None):
     input_df.reset_index(drop=True, inplace=True)
 
     # Define a demo and retro column
-    # TODO these values neve get used - maybe need to remove
+    # TODO these values never get used - maybe need to remove
     if config_obj.demo_yr is not None and config_obj.demo_yr != 'NA':
         demo_yr_obj = datetime.strptime(str(config_obj.demo_yr), '%Y')
         input_df.loc[input_df['VALID_TIME'] >= demo_yr_obj, "TYPE"] = "DEMO"
@@ -546,52 +546,55 @@ def main(config_filename=None):
                               sep=r'\s+', header='infer',
                               quotechar='"', skipinitialspace=True, encoding='utf-8')
 
-    col_to_plot = get_dep_column(config_obj.list_stat_1[0], column_info, input_df)
-    input_df['PLOT'] = col_to_plot['val']
+    for cur_stat in config_obj.list_stat_1:
+       # col_to_plot = get_dep_column(config_obj.list_stat_1[0], column_info, input_df)
+       col_to_plot = get_dep_column(cur_stat, column_info, input_df)
+       input_df['PLOT'] = col_to_plot['val']
 
-    baseline_data = None
-    if common_member(config_obj.plot_list, PLOTS_WITH_BASELINE):
-        baseline_data = init_hfip_baseline(config_obj, config_obj.baseline_file, input_df)
+       baseline_data = None
+       if common_member(config_obj.plot_type, PLOTS_WITH_BASELINE):
+           baseline_data = init_hfip_baseline(config_obj, config_obj.baseline_file, input_df)
 
-    plot = None
-    common_case_data = None
-    for plot_type in config_obj.plot_list:
-        try:
-            if plot_type == 'boxplot':
-                from metplotpy.plots.tcmpr_plots.box.tcmpr_box import TcmprBox
-                plot = TcmprBox(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
-            elif plot_type == 'point':
-                from metplotpy.plots.tcmpr_plots.box.tcmpr_point import TcmprPoint
-                plot = TcmprPoint(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
-            elif plot_type == 'mean':
-                from metplotpy.plots.tcmpr_plots.line.mean.tcmpr_line_mean import TcmprLineMean
-                plot = TcmprLineMean(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
-            elif plot_type == 'median':
-                from metplotpy.plots.tcmpr_plots.line.median.tcmpr_line_median import TcmprLineMedian
-                plot = TcmprLineMedian(config_obj, column_info, col_to_plot, common_case_data, input_df)
-            elif plot_type == 'relperf':
-                from metplotpy.plots.tcmpr_plots.relperf.tcmpr_relperf import TcmprRelPerf
-                plot = TcmprRelPerf(config_obj, column_info, col_to_plot, common_case_data, input_df)
-            elif plot_type == 'rank':
-                from metplotpy.plots.tcmpr_plots.rank.tcmpr_rank import TcmprRank
-                plot = TcmprRank(config_obj, column_info, col_to_plot, common_case_data, input_df)
-            elif plot_type == 'scatter':
-                from metplotpy.plots.tcmpr_plots.scatter.tcmpr_scatter import TcmprScatter
-                plot = TcmprScatter(config_obj, column_info, col_to_plot, common_case_data, input_df)
-            elif plot_type == 'skill_mn':
-                from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_skill_mean import TcmprSkillMean
-                plot = TcmprSkillMean(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
-            elif plot_type == 'skill_md':
-                from metplotpy.plots.tcmpr_plots.skill.median.tcmpr_skill_median import TcmprSkillMedian
-                plot = TcmprSkillMedian(config_obj, column_info, col_to_plot, common_case_data, input_df)
+       plot = None
+       common_case_data = None
+       for plot_type in config_obj.plot_type:
+           try:
+               if plot_type == 'boxplot':
+                   from metplotpy.plots.tcmpr_plots.box.tcmpr_box import TcmprBox
+                   plot = TcmprBox(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
+               elif plot_type == 'point':
+                   from metplotpy.plots.tcmpr_plots.box.tcmpr_point import TcmprPoint
+                   plot = TcmprPoint(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
+               elif plot_type == 'mean':
+                   from metplotpy.plots.tcmpr_plots.line.mean.tcmpr_line_mean import TcmprLineMean
+                   plot = TcmprLineMean(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data,
+                                        cur_stat)
+               elif plot_type == 'median':
+                   from metplotpy.plots.tcmpr_plots.line.median.tcmpr_line_median import TcmprLineMedian
+                   plot = TcmprLineMedian(config_obj, column_info, col_to_plot, common_case_data, input_df, cur_stat)
+               elif plot_type == 'relperf':
+                   from metplotpy.plots.tcmpr_plots.relperf.tcmpr_relperf import TcmprRelPerf
+                   plot = TcmprRelPerf(config_obj, column_info, col_to_plot, common_case_data, input_df)
+               elif plot_type == 'rank':
+                   from metplotpy.plots.tcmpr_plots.rank.tcmpr_rank import TcmprRank
+                   plot = TcmprRank(config_obj, column_info, col_to_plot, common_case_data, input_df)
+               elif plot_type == 'scatter':
+                   from metplotpy.plots.tcmpr_plots.scatter.tcmpr_scatter import TcmprScatter
+                   plot = TcmprScatter(config_obj, column_info, col_to_plot, common_case_data, input_df)
+               elif plot_type == 'skill_mn':
+                   from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_skill_mean import TcmprSkillMean
+                   plot = TcmprSkillMean(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
+               elif plot_type == 'skill_md':
+                   from metplotpy.plots.tcmpr_plots.skill.median.tcmpr_skill_median import TcmprSkillMedian
+                   plot = TcmprSkillMedian(config_obj, column_info, col_to_plot, common_case_data, input_df)
 
-            plot.save_to_file()
-            #plot.show_in_browser()
-            if common_case_data is None:
-                common_case_data = plot.case_data
+               plot.save_to_file()
+               #plot.show_in_browser()
+               if common_case_data is None:
+                   common_case_data = plot.case_data
 
-        except (ValueError, Exception) as ve:
-            print(ve)
+           except (ValueError, Exception) as ve:
+               print(ve)
 
 
 def print_data_info(input_df, series):
@@ -616,7 +619,7 @@ def print_data_info(input_df, series):
 def read_tcst_files(config_obj, tcst_files):
     all_fields_values = copy.deepcopy(config_obj.parameters['series_val_1'])
     all_fields_values.update(config_obj.parameters['fixed_vars_vals_input'])
-    if 'skill_mn' in config_obj.plot_list or 'skill_md' in config_obj.plot_list:
+    if 'skill_mn' in config_obj.plot_type or 'skill_md' in config_obj.plot_type:
         all_fields_values['AMODEL'].extend(config_obj.skill_ref)
     input_df = None
     for file in tcst_files:
