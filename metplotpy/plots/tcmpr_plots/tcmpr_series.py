@@ -36,7 +36,8 @@ class TcmprSeries(Series):
         self.series_list = series_list
         self.series_name = series_name
         self.rank_min_val = []
-        self.series_len = len(config.get_series_y(1)) + len(config.get_config_value('derived_series_1'))
+        # self.series_len = len(config.get_series_y(1)) + len(config.get_config_value('derived_series_1'))
+        self.series_len = len(self.series_list) + len(config.get_config_value('derived_series_1'))
         self.skill_ref_data = skill_ref_data
         if idx >= self.series_len:
             super().__init__(config, 0, input_data, 1)

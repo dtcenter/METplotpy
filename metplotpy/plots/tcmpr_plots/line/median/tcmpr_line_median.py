@@ -5,20 +5,20 @@ from metplotpy.plots.tcmpr_plots.line.tcmpr_line import TcmprLine
 
 
 class TcmprLineMedian(TcmprLine):
-    def __init__(self, config_obj, column_info, col, case_data, input_df):
-        super().__init__(config_obj, column_info, col, case_data, input_df, None)
+    def __init__(self, config_obj, column_info, col, case_data, input_df, stat_name):
+        super().__init__(config_obj, column_info, col, case_data, input_df, None, stat_name)
         print("--------------------------------------------------------")
         print(f"Plotting MEDIAN time series by {self.config_obj.series_val_names[0]}")
 
         print("Plot HFIP Baseline:" + self.cur_baseline)
         self._adjust_titles()
-        self.series_list = self._create_series(self.input_df)
+        self.series_list = self._create_series(self.input_df, stat_name)
         self.case_data = None
         if self.config_obj.prefix is None or len(self.config_obj.prefix) == 0:
-            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.list_stat_1[0]}_median.png"
+            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{stat_name}_median.png"
         else:
-            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}.png"
-
+            # self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}.png"
+            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}_{stat_name}_median.png"
         # remove the old file if it exist
         if os.path.exists(self.plot_filename):
             os.remove(self.plot_filename)
@@ -33,7 +33,7 @@ class TcmprLineMedian(TcmprLine):
                          + self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]][
                              "DESCRIPTION"].tolist()[0]
 
-    def _create_series(self, input_data):
+    def _create_series(self, input_data, stat_name):
         """
            Generate all the series objects that are to be displayed as specified by the plot_disp
            setting in the config file.  The points are all ordered by datetime.  Each series object
@@ -52,10 +52,16 @@ class TcmprLineMedian(TcmprLine):
         series_list = []
 
         # add series for y1 axis
-        num_series_y1 = len(self.config_obj.get_series_y(1))
-        for i, name in enumerate(self.config_obj.get_series_y(1)):
+        all_series = self.config_obj.get_series_y(1)
+
+        # Limit the series to only the current statistic, list_stat_1 in config file
+        series_by_stat = [cur for cur in all_series if stat_name in cur]
+
+        num_series_y1 = len(series_by_stat)
+        for i, name in enumerate(series_by_stat):
             if not isinstance(name, list):
                 name = [name]
+
             series_obj = TcmprSeriesLineMedian(self.config_obj, i, input_data, series_list, name)
             series_list.append(series_obj)
 

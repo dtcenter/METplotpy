@@ -22,7 +22,7 @@ from metplotpy.plots.tcmpr_plots.tcmpr_util import get_mean_ci
 
 class TcmprSeriesLineMean(TcmprSeries):
     """
-        Represents a Box plot series object
+        Represents a TCMPR mean  series object
         of data points and their plotting style
         elements (line colors,  etc.)
 

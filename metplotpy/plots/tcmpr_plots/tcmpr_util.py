@@ -120,13 +120,18 @@ def init_hfip_baseline(config, baseline_file, input_df):
                 all_filters = [baseline['BASIN'].isin(input_df['BASIN']), baseline['VARIABLE'].isin([stat]),
                                baseline['LEAD_HR'].isin(input_df['LEAD_HR'])]
                 mask = np.array(all_filters).all(axis=0)
-                cur_baseline_data = baseline.loc[mask]
+                cur_baseline_data_filtered = baseline.loc[mask]
+                # work on a copy to prevent the SettingWithCopyWarning
+                cur_baseline_data = cur_baseline_data_filtered.copy()
+
+                # cur_baseline_data = cur_baseline_data_filtered.copy(deep=True)
                 if config.hfip_bsln == "0":
                     cur_baseline = "HFIP Baseline"
                 elif config.hfip_bsln == "5":
                     cur_baseline = 'Error Target for 20% HFIP Goal'
                     cur_baseline_data['VALUE'] = cur_baseline_data['VALUE'].apply(
                         lambda x: calc_util.round_half_up(x * 0.8, 1))
+
                 else:  # config.hfip_bsln == "10":
                     cur_baseline = 'Error Target for 50% HFIP Goal'
                     cur_baseline_data['VALUE'] = cur_baseline_data['VALUE'].apply(

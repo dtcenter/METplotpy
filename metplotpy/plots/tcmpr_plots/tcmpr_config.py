@@ -36,7 +36,7 @@ class TcmprConfig(Config):
         super().__init__(parameters)
 
         ##############################################
-        self.plot_list = self._get_plot()
+        self.plot_type = self._get_plot()
         self.tcst_files = self._get_tcst_files()
         self.tcst_dir = self._get_tcst_dir()
         self.rp_diff = self._get_rp_diff()
@@ -219,9 +219,9 @@ class TcmprConfig(Config):
         return self.create_list_by_series_ordering(markers_size)
 
     def _get_plot(self) -> list:
-        plot_list = self.get_config_value('plot_list')
+        plot_type = self.get_config_value('plot_type')
         # TODO validate plots BOXPLOT, POINT, MEAN, MEDIAN, RELPERF, RANK, SKILL_MN, SKILL_MD
-        return plot_list
+        return plot_type
 
     def _get_tcst_files(self) -> list:
         tcst_files = self.get_config_value('tcst_files')

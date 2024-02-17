@@ -5,7 +5,7 @@ from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 
 
 class TcmprLine(Tcmpr):
-    def __init__(self, config_obj, column_info, col, case_data, input_df, baseline_data):
+    def __init__(self, config_obj, column_info, col, case_data, input_df, baseline_data, stat_name):
         super().__init__(config_obj, column_info, col, case_data, input_df)
 
     def _create_figure(self):
