@@ -22,7 +22,7 @@ class TcmprPoint(TcmprBoxPoint):
         if self.config_obj.prefix is None or len(self.config_obj.prefix) == 0:
             self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.list_stat_1[0]}_pointplot.png"
         else:
-            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}.png"
+            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}_pointplot.png"
 
         # remove the old file if it exist
         if os.path.exists(self.plot_filename):
