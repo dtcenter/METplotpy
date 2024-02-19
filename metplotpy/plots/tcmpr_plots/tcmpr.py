@@ -37,12 +37,12 @@ PLOTS_WITH_BASELINE = ['boxplot', 'point', 'mean', 'skill_mn']
 
 
 class Tcmpr(BasePlot):
-    """  Generates a Plotly box plot for 1 or more traces
+    """  Generates a Plotly  plot for 1 or more traces
          where each box is represented by a text point data file.
     """
 
-    def __init__(self, config_obj, column_info, col, case_data, input_df):
-        """ Creates a box plot, based on
+    def __init__(self, config_obj, column_info, col, case_data, input_df, stat_name=None):
+        """ Creates a plot, based on
             settings indicated by parameters.
 
             Args:
@@ -91,7 +91,7 @@ class Tcmpr(BasePlot):
         if len(self.config_obj.indy_vals) == 0 and self.config_obj.indy_var != '':
             self.config_obj.indy_vals = sorted(self.input_df[self.config_obj.indy_var].unique())
 
-    def _create_series(self, input_data):
+    def _create_series(self, input_data, stat_name):
         """
            Generate all the series objects that are to be displayed as specified by the plot_disp
            setting in the config file.  The points are all ordered by datetime.  Each series object
@@ -101,6 +101,9 @@ class Tcmpr(BasePlot):
            Args:
                input_data:  The input data in the form of a Pandas dataframe.
                             This data will be subset to reflect the series data of interest.
+               stat_name:   The name of the current 'statistic', as specified as the list_stat_1
+                            list of values in the configuration file (e.g. TK_ERR, ABS(AMAX_WIND-BMAX_WIND), etc.)
+                            Default is None.
 
            Returns:
                a list of series objects that are to be displayed
@@ -110,12 +113,19 @@ class Tcmpr(BasePlot):
         series_list = []
 
         # add series for y1 axis
-        num_series_y1 = len(self.config_obj.get_series_y(1))
-        for i, name in enumerate(self.config_obj.get_series_y(1)):
-            if not isinstance(name, list):
-                name = [name]
-            series_obj = TcmprSeries(self.config_obj, i, input_data, series_list, name)
-            series_list.append(series_obj)
+
+        # Determine the series list based on the current
+        # list_stat_1 value (e.g. TK_ERR, ABS(AMAX_WIND-BMAX_WIND), etc.) under consideration.
+        all_series = self.config_obj.get_series_y(1)
+
+        # Limit the series to only the current statistic, list_stat_1 in config file
+        series_by_stat = [cur for cur in all_series if stat_name in cur]
+        num_series_y1 = len(series_by_stat)
+        for i, name in enumerate(series_by_stat):
+             if not isinstance(name, list):
+                 name = [name]
+             series_obj = TcmprSeries(self.config_obj, i, input_data, series_list, name)
+             series_list.append(series_obj)
 
         # add derived for y1 axis
         for i, name in enumerate(self.config_obj.get_config_value('derived_series_1')):
@@ -126,7 +136,7 @@ class Tcmpr(BasePlot):
             if len(name) == 3:
                 # add stat if needed
                 oper = name[2]
-                name[:] = [(s + ' ' + self.config_obj.list_stat_1[0]) if ' ' not in s else s for s in name[:2]]
+                name[:] = [(s + ' ' + stat_name) if ' ' not in s else s for s in name[:2]]
                 name.append(oper)
                 series_obj = TcmprSeries(self.config_obj, num_series_y1 + i, input_data, series_list, name)
                 series_list.append(series_obj)
@@ -457,7 +467,7 @@ class Tcmpr(BasePlot):
 
 def main(config_filename=None):
     """
-        Generates a sample, default, box plot using a combination of
+        Generates a sample, default, TCMPR plot using a combination of
         default and custom config files on sample data found in this directory.
         The location of the input data is defined in either the default or
         custom config file.
@@ -467,7 +477,6 @@ def main(config_filename=None):
 
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
-    # with open("./custom_box.yaml", 'r') as stream:
     if not config_filename:
         config_file = util.read_config_from_command_line()
     else:
@@ -547,54 +556,58 @@ def main(config_filename=None):
                               quotechar='"', skipinitialspace=True, encoding='utf-8')
 
     for cur_stat in config_obj.list_stat_1:
-       # col_to_plot = get_dep_column(config_obj.list_stat_1[0], column_info, input_df)
-       col_to_plot = get_dep_column(cur_stat, column_info, input_df)
-       input_df['PLOT'] = col_to_plot['val']
+        # col_to_plot = get_dep_column(config_obj.list_stat_1[0], column_info, input_df)
+        col_to_plot = get_dep_column(cur_stat, column_info, input_df)
+        input_df['PLOT'] = col_to_plot['val']
 
-       baseline_data = None
-       if common_member(config_obj.plot_type, PLOTS_WITH_BASELINE):
-           baseline_data = init_hfip_baseline(config_obj, config_obj.baseline_file, input_df)
+        baseline_data = None
+        if common_member(config_obj.plot_type, PLOTS_WITH_BASELINE):
+            baseline_data = init_hfip_baseline(config_obj, config_obj.baseline_file, input_df)
 
-       plot = None
-       common_case_data = None
-       for plot_type in config_obj.plot_type:
-           try:
-               if plot_type == 'boxplot':
-                   from metplotpy.plots.tcmpr_plots.box.tcmpr_box import TcmprBox
-                   plot = TcmprBox(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
-               elif plot_type == 'point':
-                   from metplotpy.plots.tcmpr_plots.box.tcmpr_point import TcmprPoint
-                   plot = TcmprPoint(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
-               elif plot_type == 'mean':
-                   from metplotpy.plots.tcmpr_plots.line.mean.tcmpr_line_mean import TcmprLineMean
-                   plot = TcmprLineMean(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data,
-                                        cur_stat)
-               elif plot_type == 'median':
-                   from metplotpy.plots.tcmpr_plots.line.median.tcmpr_line_median import TcmprLineMedian
-                   plot = TcmprLineMedian(config_obj, column_info, col_to_plot, common_case_data, input_df, cur_stat)
-               elif plot_type == 'relperf':
-                   from metplotpy.plots.tcmpr_plots.relperf.tcmpr_relperf import TcmprRelPerf
-                   plot = TcmprRelPerf(config_obj, column_info, col_to_plot, common_case_data, input_df)
-               elif plot_type == 'rank':
-                   from metplotpy.plots.tcmpr_plots.rank.tcmpr_rank import TcmprRank
-                   plot = TcmprRank(config_obj, column_info, col_to_plot, common_case_data, input_df)
-               elif plot_type == 'scatter':
-                   from metplotpy.plots.tcmpr_plots.scatter.tcmpr_scatter import TcmprScatter
-                   plot = TcmprScatter(config_obj, column_info, col_to_plot, common_case_data, input_df)
-               elif plot_type == 'skill_mn':
-                   from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_skill_mean import TcmprSkillMean
-                   plot = TcmprSkillMean(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data)
-               elif plot_type == 'skill_md':
-                   from metplotpy.plots.tcmpr_plots.skill.median.tcmpr_skill_median import TcmprSkillMedian
-                   plot = TcmprSkillMedian(config_obj, column_info, col_to_plot, common_case_data, input_df)
+        plot = None
+        common_case_data = None
+        for plot_type in config_obj.plot_type:
+            try:
+                if plot_type == 'boxplot':
+                    from metplotpy.plots.tcmpr_plots.box.tcmpr_box import TcmprBox
+                    plot = TcmprBox(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data,
+                                    cur_stat)
+                elif plot_type == 'point':
+                    from metplotpy.plots.tcmpr_plots.box.tcmpr_point import TcmprPoint
+                    plot = TcmprPoint(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data,
+                                      cur_stat)
+                elif plot_type == 'mean':
+                    from metplotpy.plots.tcmpr_plots.line.mean.tcmpr_line_mean import TcmprLineMean
+                    plot = TcmprLineMean(config_obj, column_info, col_to_plot, common_case_data, input_df,
+                                         baseline_data,
+                                         cur_stat)
+                elif plot_type == 'median':
+                    from metplotpy.plots.tcmpr_plots.line.median.tcmpr_line_median import TcmprLineMedian
+                    plot = TcmprLineMedian(config_obj, column_info, col_to_plot, common_case_data, input_df, cur_stat)
+                elif plot_type == 'relperf':
+                    from metplotpy.plots.tcmpr_plots.relperf.tcmpr_relperf import TcmprRelPerf
+                    plot = TcmprRelPerf(config_obj, column_info, col_to_plot, common_case_data, input_df, cur_stat)
+                elif plot_type == 'rank':
+                    from metplotpy.plots.tcmpr_plots.rank.tcmpr_rank import TcmprRank
+                    plot = TcmprRank(config_obj, column_info, col_to_plot, common_case_data, input_df, cur_stat)
+                elif plot_type == 'scatter':
+                    from metplotpy.plots.tcmpr_plots.scatter.tcmpr_scatter import TcmprScatter
+                    plot = TcmprScatter(config_obj, column_info, col_to_plot, common_case_data, input_df, cur_stat)
+                elif plot_type == 'skill_mn':
+                    from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_skill_mean import TcmprSkillMean
+                    plot = TcmprSkillMean(config_obj, column_info, col_to_plot, common_case_data, input_df,
+                                          baseline_data, cur_stat)
+                elif plot_type == 'skill_md':
+                    from metplotpy.plots.tcmpr_plots.skill.median.tcmpr_skill_median import TcmprSkillMedian
+                    plot = TcmprSkillMedian(config_obj, column_info, col_to_plot, common_case_data, cur_stat, input_df)
 
-               plot.save_to_file()
-               #plot.show_in_browser()
-               if common_case_data is None:
-                   common_case_data = plot.case_data
+                plot.save_to_file()
+                # plot.show_in_browser()
+                if common_case_data is None:
+                    common_case_data = plot.case_data
 
-           except (ValueError, Exception) as ve:
-               print(ve)
+            except (ValueError, Exception) as ve:
+                print(ve)
 
 
 def print_data_info(input_df, series):
