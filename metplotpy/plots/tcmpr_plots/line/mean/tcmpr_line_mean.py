@@ -25,7 +25,7 @@ class TcmprLineMean(TcmprLine):
         # remove the old file if it exist
         if os.path.exists(self.plot_filename):
             os.remove(self.plot_filename)
-        self._create_figure()
+        self._create_figure(stat_name)
 
     def _adjust_titles(self, stat_name):
         if self.yaxis_1 is None or len(self.yaxis_1) == 0:
@@ -87,7 +87,7 @@ class TcmprLineMean(TcmprLine):
             if len(name) == 3:
                 # add stat if needed
                 oper = name[2]
-                name[:] = [(s + ' ' + self.config_obj.list_stat_1[0]) if ' ' not in s else s for s in name[:2]]
+                name[:] = [(s + ' ' + stat_name) if ' ' not in s else s for s in name[:2]]
                 name.append(oper)
 
                 series_obj = TcmprSeriesLineMean(self.config_obj, num_series_y1 + i, input_data, series_list, name)
