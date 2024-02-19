@@ -8,7 +8,7 @@ class TcmprLine(Tcmpr):
     def __init__(self, config_obj, column_info, col, case_data, input_df, baseline_data, stat_name):
         super().__init__(config_obj, column_info, col, case_data, input_df)
 
-    def _create_figure(self):
+    def _create_figure(self, stat_name):
         """ Create a box plot from default and custom parameters"""
 
         self.figure = self._create_layout()
@@ -45,7 +45,7 @@ class TcmprLine(Tcmpr):
                 x_points_index_adj = x_points_index + stag_adjustments[series.idx]
                 self._draw_series(series, x_points_index_adj)
 
-        print(f'Range of {self.config_obj.list_stat_1[0]}: {yaxis_min}, {yaxis_max}')
+        print(f'Range of {stat_name}: {yaxis_min}, {yaxis_max}')
 
         self._add_hfip_baseline()
 
