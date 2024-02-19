@@ -25,7 +25,7 @@ class TcmprRank(Tcmpr):
 
     """
 
-    def __init__(self, config_obj, column_info, col, case_data, input_df):
+    def __init__(self, config_obj, column_info, col, case_data, input_df, stat_name):
         """ Creates a rank plot, based on
             settings indicated by parameters.
 
@@ -34,7 +34,7 @@ class TcmprRank(Tcmpr):
         """
 
         # init common layout
-        super().__init__(config_obj, column_info, col, case_data, input_df)
+        super().__init__(config_obj, column_info, col, case_data, input_df, stat_name)
         print("--------------------------------------------------------")
 
         if not self.config_obj.use_ee:
@@ -47,7 +47,7 @@ class TcmprRank(Tcmpr):
         # Each series object contains all the necessary information for plotting,
         # such as line color, marker symbol,
         # line width, and criteria needed to subset the input dataframe.
-        self.series_list = self._create_series(self.input_df)
+        self.series_list = self._create_series(self.input_df, stat_name)
 
         # Get the case data when necessary
         if self.case_data is None:
@@ -55,11 +55,11 @@ class TcmprRank(Tcmpr):
                                            self.config_obj.rp_diff, len(self.series_list))
 
         if self.config_obj.prefix is None or len(self.config_obj.prefix) == 0:
-            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.list_stat_1[0]}_rank.png"
+            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{stat_name}_rank.png"
         else:
-            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}.png"
+            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}_{stat_name}_rank.png"
 
-        # remove the old file if it exist
+        # remove the old file if it exists
         if os.path.exists(self.plot_filename):
             os.remove(self.plot_filename)
         # create figure
@@ -67,7 +67,7 @@ class TcmprRank(Tcmpr):
         # Need to have a self.figure that we can pass along to
         # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
-        self._create_figure()
+        self._create_figure(stat_name)
 
     def _adjust_titles(self):
         if self.yaxis_1 is None or len(self.yaxis_1) == 0:
@@ -80,7 +80,7 @@ class TcmprRank(Tcmpr):
                              "DESCRIPTION"].tolist()[0] + ' ' \
                          + self.col['desc'] + 'Rank Frequency'
 
-    def _create_figure(self):
+    def _create_figure(self, stat_name):
         """ Create a box plot from default and custom parameters"""
 
         self.figure = self._create_layout()
@@ -126,7 +126,7 @@ class TcmprRank(Tcmpr):
         # Draw a reference line at 100/n_series
         self.figure.add_hline(y=100 / len(self.series_list), line_width=1, line_dash="solid", line_color="#e5e7e9")
 
-        print(f'Range of {self.config_obj.list_stat_1[0]}: {yaxis_min}, {yaxis_max}')
+        print(f'Range of {stat_name}: {yaxis_min}, {yaxis_max}')
         # Draw an invisible line to create a CI legend
         self.figure.add_trace(
             go.Scatter(x=[0],
