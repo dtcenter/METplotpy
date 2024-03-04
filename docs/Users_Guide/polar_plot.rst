@@ -17,26 +17,30 @@ Required Packages:
 
 * metplotpy
 
-* netcdf4 1.5.6
+* netcdf4
 
-* numpy 1.20.2
+* numpy 
 
-* pandas 1.2.3
+* pandas 
 
-* scipy 1.5.3
+* scipy
 
-* xarray 0.16.0
+* xarray
 
-* cartopy 0.18.0
+* cartopy
 
-* matplotlib 3.3.0
+* matplotlib
 
-* pyproj 2.4.2
+* pyproj
 
-* pyresample 2.1.3
+* pyresample
 
-* pillow 8.3.1
+* pillow
 
+For the version numbers for the packages listed above, please refer to
+the **requirements.txt** file, included below for convenience.
+  
+.. literalinclude:: ../../requirements.txt
 
 Example
 =======
