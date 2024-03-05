@@ -1,0 +1,25 @@
+#%Module######################################################################
+##
+##      METplotpy
+##
+proc ModulesHelp { } {
+  puts stderr "Sets up the paths and environment variables to use the METplotpy-3.0.0.
+     *** For help see the official MET webpage at http://www.dtcenter.org/met/users ***"
+}
+
+module load intel-oneapi/2022.0.2
+
+setenv METPLOTPY_SOURCE /usw/met/METplotpy/METplotpy-3.0.0-beta3
+setenv METPLOTPY_BASE /usw/met/METplotpy/METplotpy-3.0.0-beta3
+
+prepend-path PATH 
+prepend-path PATH /usw/met/METplotpy/METplotpy-3.0.0-beta3/metplotpy/contributed
+prepend-path PATH /usw/met/METplotpy/METplotpy-3.0.0-beta3/metplotpy/plots/performance_diagram
+prepend-path PATH /usw/met/METplotpy/METplotpy-3.0.0-beta3/metplotpy/plots
+prepend-path PATH /usw/met/METplotpy/METplotpy-3.0.0-beta3/metplotpy
+prepend-path PATH /usw/met/METplotpy/METplotpy-3.0.0-beta3
+prepend-path PYTHONPATH /usw/met/METplotpy/METplotpy-3.0.0-beta3/metplotpy/contributed
+prepend-path PYTHONPATH /usw/met/METplotpy/METplotpy-3.0.0-beta3/metplotpy/plots/performance_diagram
+prepend-path PYTHONPATH /usw/met/METplotpy/METplotpy-3.0.0-beta3/metplotpy/plots
+prepend-path PYTHONPATH /usw/met/METplotpy/METplotpy-3.0.0-beta3/metplotpy
+prepend-path PYTHONPATH /usw/met/METplotpy/METplotpy-3.0.0-beta3
