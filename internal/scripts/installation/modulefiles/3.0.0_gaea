@@ -12,7 +12,7 @@ module load intel-oneapi/2022.0.2
 setenv METPLOTPY_SOURCE /usw/met/METplotpy/METplotpy-3.0.0-beta3
 setenv METPLOTPY_BASE /usw/met/METplotpy/METplotpy-3.0.0-beta3
 
-prepend-path PATH 
+prepend-path PATH /gpfs/f5/esrl/proj-shared/Julie.Prestopnik/projects/miniconda/miniconda3/envs/metplus_v5.1_py3.10/bin
 prepend-path PATH /usw/met/METplotpy/METplotpy-3.0.0-beta3/metplotpy/contributed
 prepend-path PATH /usw/met/METplotpy/METplotpy-3.0.0-beta3/metplotpy/plots/performance_diagram
 prepend-path PATH /usw/met/METplotpy/METplotpy-3.0.0-beta3/metplotpy/plots
