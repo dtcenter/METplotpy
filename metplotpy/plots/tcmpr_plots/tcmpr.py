@@ -16,7 +16,9 @@ import os
 import sys
 from datetime import datetime
 from typing import Union
-
+# Ignore DeprecationWarning for pyarrow in Pandas3 for now
+import warnings
+warnings.filterwarnings('ignore')
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
@@ -41,7 +43,7 @@ class Tcmpr(BasePlot):
          where each box is represented by a text point data file.
     """
 
-    def __init__(self, config_obj, column_info, col, case_data, input_df, stat_name=None):
+    def __init__(self, config_obj, column_info, col, case_data, input_df, stat_name):
         """ Creates a plot, based on
             settings indicated by parameters.
 
@@ -52,6 +54,9 @@ class Tcmpr(BasePlot):
 
         # init common layout
         super().__init__(None, "tcmpr_defaults.yaml")
+
+        # Set up Logging
+        self.logger = util.get_common_logger(config_obj.log_level, config_obj.log_filename)
 
         self.series_list = []
 
@@ -75,7 +80,7 @@ class Tcmpr(BasePlot):
         self.baseline_lead_time = 'lead'
         self.yaxis_1 = self.config_obj.yaxis_1
 
-        self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.list_stat_1[0]}_{self.config_obj.plot_type}.png"
+        self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.list_stat_1[0]}_{self.config_obj.plot_type_list}.png"
         # Check that we have all the necessary settings for each series
         # TODO  implement the consistency check if no series values were specified
         # is_config_consistent = self.config_obj._config_consistency_check()
@@ -110,6 +115,7 @@ class Tcmpr(BasePlot):
 
 
         """
+        self.logger.info(f"Creating series for {stat_name}: {datetime.now()}")
         series_list = []
 
         # add series for y1 axis
@@ -124,7 +130,9 @@ class Tcmpr(BasePlot):
         for i, name in enumerate(series_by_stat):
              if not isinstance(name, list):
                  name = [name]
-             series_obj = TcmprSeries(self.config_obj, i, input_data, series_list, name)
+             # cur_plot_type = self.config_obj.get_config_value('plot_type_list')
+             series_obj = TcmprSeries(self.config_obj, i, input_data, series_list,
+                                      name, stat_name)
              series_list.append(series_obj)
 
         # add derived for y1 axis
@@ -138,12 +146,12 @@ class Tcmpr(BasePlot):
                 oper = name[2]
                 name[:] = [(s + ' ' + stat_name) if ' ' not in s else s for s in name[:2]]
                 name.append(oper)
-                series_obj = TcmprSeries(self.config_obj, num_series_y1 + i, input_data, series_list, name)
+                series_obj = TcmprSeries(self.config_obj, num_series_y1 + i, input_data, series_list, name, stat_name)
                 series_list.append(series_obj)
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
-
+        self.logger.info(f"Series list created: {datetime.now()}")
         return series_list
 
     def _calc_stag_adjustments(self) -> list:
@@ -168,6 +176,8 @@ class Tcmpr(BasePlot):
         return stag_vals
 
     def _add_hfip_baseline(self):
+
+        self.logger.info(f"Adding the hfip baseline: {datetime.now()}")
         # Add  baseline for each lead time
         if self.cur_baseline_data is not None:
             baseline_x_values = []
@@ -412,7 +422,7 @@ class Tcmpr(BasePlot):
         dirname = os.path.dirname(os.path.abspath(self.plot_filename))
         if not os.path.exists(dirname):
             os.mkdir(dirname)
-        print(f'Creating image file: {self.plot_filename}')
+        self.logger.info(f'Saving the image file: {self.plot_filename}')
         if self.figure:
             try:
                 self.figure.write_image(file=self.plot_filename, format='png',
@@ -420,11 +430,11 @@ class Tcmpr(BasePlot):
                                         height=self.config_obj.plot_height,
                                         scale=2)
             except FileNotFoundError:
-                print("Can't save to file " + self.plot_filename)
+                self.logger.error(f"Cannot save to file {self.plot_filename}")
             except ValueError as ex:
                 print(ex)
         else:
-            print("Oops!  The figure was not created. Can't save.")
+            self.logger.error(f"The figure wasn't created.  Nothing to save")
 
     @staticmethod
     def find_min_max(series: TcmprSeries, yaxis_min: Union[float, None],
@@ -463,6 +473,44 @@ class Tcmpr(BasePlot):
             return low_range, upper_range
 
         return min(yaxis_min, low_range), max(yaxis_max, upper_range)
+
+def perform_event_equalization(input_df:pd.DataFrame, is_skill:bool, config_obj:dict) -> pd.DataFrame:
+    '''
+       Performs event equalization.  The skill_mn and skill_md plots require the skill_ref value to be included.
+
+    Args:
+       @param input_df: The original input data, comprised of all the specified data files.
+
+       @param is_skill: Boolean value to indicate whether the plot type is skill_mn or skill_md.
+
+       @param config_obj: A dictionary representation of the settings and values in the yaml config file.
+
+    Returns:
+        output_data: pd.Dataframe containing the results
+
+    '''
+
+
+    logger = util.get_common_logger(config_obj.log_level, config_obj.log_filename)
+    logger.info(f"Performing requested event equalization: {datetime.now()}")
+    output_data = pd.DataFrame()
+    series = copy.deepcopy(config_obj.parameters['series_val_1'])
+    if is_skill:
+        series['AMODEL'].extend(config_obj.skill_ref)
+
+    for series_var, series_var_vals in series.items():
+        series_data = input_df[input_df[series_var].isin(series_var_vals)]
+
+        # Run event_equalize as a process to capture the stdout to the logfile
+        series_data = event_equalize(series_data, '', config_obj.parameters['series_val_1'], [], [], True, False)
+        if output_data.empty:
+            output_data = series_data
+        else:
+            output_data.append(series_data)
+
+    return output_data
+
+
 
 
 def main(config_filename=None):
@@ -514,59 +562,57 @@ def main(config_filename=None):
         if file not in tcst_files:
             tcst_files.append(file)
 
-    input_df = read_tcst_files(config_obj, tcst_files)
-
-    # Apply event equalization, if requested
-    if config_obj.use_ee is True:
-        output_data = pd.DataFrame()
-        series = copy.deepcopy(config_obj.parameters['series_val_1'])
-        if 'skill_mn' in config_obj.plot_type or 'skill_md' in config_obj.plot_type:
-            series['AMODEL'].extend(config_obj.skill_ref)
-
-        for series_var, series_var_vals in series.items():
-            series_data = input_df[input_df[series_var].isin(series_var_vals)]
-            series_data = event_equalize(series_data, '', config_obj.parameters['series_val_1'], [], [], True, False)
-            if output_data.empty:
-                output_data = series_data
-            else:
-                output_data.append(series_data)
-
-        input_df = output_data
-        # input_df = output_data.copy(deep=True)
-        # output_data = output_data.drop(columns=['equalize', 'VALID_TIME'])
-        # output_data.to_csv('/Users/tatiana/PycharmProjects/METplotpy/metplotpy/plots/tcmpr_plots/tc_pairs_2.tcst',  index=False, sep='\t', na_rep='NA')
-
-    input_df.rename({'equalize': 'CASE'}, axis=1, inplace=True)
-    # Sort the data by the CASE column
-    input_df = input_df.sort_values(by=['CASE', 'AMODEL'])
-    input_df.reset_index(drop=True, inplace=True)
+    orig_input_df = read_tcst_files(config_obj, tcst_files)
+    input_df = orig_input_df.copy(deep=True)
 
     # Define a demo and retro column
-    # TODO these values never get used - maybe need to remove
-    if config_obj.demo_yr is not None and config_obj.demo_yr != 'NA':
-        demo_yr_obj = datetime.strptime(str(config_obj.demo_yr), '%Y')
-        input_df.loc[input_df['VALID_TIME'] >= demo_yr_obj, "TYPE"] = "DEMO"
-        input_df.loc[input_df['VALID_TIME'] < demo_yr_obj, "TYPE"] = "RETRO"
-
-    print_data_info(input_df, config_obj.series_val_names[0])
+    # TODO these values never get used comment out for now
+    # input_df = orig_input_df.copy(deep=True)
+    # if config_obj.demo_yr is not None and config_obj.demo_yr != 'NA':
+    #     demo_yr_obj = datetime.strptime(str(config_obj.demo_yr), '%Y')
+    #     input_df.loc[input_df['VALID_TIME'] >= demo_yr_obj, "TYPE"] = "DEMO"
+    #     input_df.loc[input_df['VALID_TIME'] < demo_yr_obj, "TYPE"] = "RETRO"
 
     # Read the TCMPR column information from a data file.
     column_info = pd.read_csv(os.path.join(sys.path[0], config_obj.column_info_file),
                               sep=r'\s+', header='infer',
                               quotechar='"', skipinitialspace=True, encoding='utf-8')
 
-    for cur_stat in config_obj.list_stat_1:
-        # col_to_plot = get_dep_column(config_obj.list_stat_1[0], column_info, input_df)
-        col_to_plot = get_dep_column(cur_stat, column_info, input_df)
-        input_df['PLOT'] = col_to_plot['val']
+    logger = util.get_common_logger(config_obj.log_level, config_obj.log_filename)
+    for plot_type in config_obj.plot_type_list:
 
-        baseline_data = None
-        if common_member(config_obj.plot_type, PLOTS_WITH_BASELINE):
-            baseline_data = init_hfip_baseline(config_obj, config_obj.baseline_file, input_df)
+        # Apply event equalization, if requested
+        # Event equalization is different for the skill_mn and skill_md
+        is_skill = False
+        if config_obj.use_ee:
+            if plot_type == 'skill_mn' or plot_type == 'skill_md':
+               is_skill = True
+               # perform event equalization on the skill_mn|skill_md plot type
+               logger.info(f"Perform event equalization for {plot_type}: {datetime.now()}")
+               output_result = perform_event_equalization(orig_input_df, is_skill, config_obj)
+               input_df = output_result
+            else:
+                logger.info(f"Perform event equalization for {plot_type}: {datetime.now()}")
+                output_result = perform_event_equalization(orig_input_df, is_skill, config_obj)
+                input_df = output_result
 
-        plot = None
-        common_case_data = None
-        for plot_type in config_obj.plot_type:
+        input_df.rename({'equalize': 'CASE'}, axis=1, inplace=True)
+        # Sort the data by the CASE column
+        input_df = input_df.sort_values(by=['CASE', 'AMODEL'])
+        input_df.reset_index(drop=True, inplace=True)
+
+        for cur_stat in config_obj.list_stat_1:
+            logger.info(f"Statistic of interest: {cur_stat}")
+            # col_to_plot = get_dep_column(config_obj.list_stat_1[0], column_info, input_df)
+            col_to_plot = get_dep_column(cur_stat, column_info, input_df)
+            input_df['PLOT'] = col_to_plot['val']
+
+            baseline_data = None
+            if common_member(config_obj.plot_type_list, PLOTS_WITH_BASELINE):
+                baseline_data = init_hfip_baseline(config_obj, config_obj.baseline_file, input_df)
+
+            plot = None
+            common_case_data = None
             try:
                 if plot_type == 'boxplot':
                     from metplotpy.plots.tcmpr_plots.box.tcmpr_box import TcmprBox
@@ -579,8 +625,7 @@ def main(config_filename=None):
                 elif plot_type == 'mean':
                     from metplotpy.plots.tcmpr_plots.line.mean.tcmpr_line_mean import TcmprLineMean
                     plot = TcmprLineMean(config_obj, column_info, col_to_plot, common_case_data, input_df,
-                                         baseline_data,
-                                         cur_stat)
+                                         baseline_data, cur_stat)
                 elif plot_type == 'median':
                     from metplotpy.plots.tcmpr_plots.line.median.tcmpr_line_median import TcmprLineMedian
                     plot = TcmprLineMedian(config_obj, column_info, col_to_plot, common_case_data, input_df, cur_stat)
@@ -596,10 +641,10 @@ def main(config_filename=None):
                 elif plot_type == 'skill_mn':
                     from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_skill_mean import TcmprSkillMean
                     plot = TcmprSkillMean(config_obj, column_info, col_to_plot, common_case_data, input_df,
-                                          baseline_data, cur_stat)
+                                         cur_stat,  baseline_data)
                 elif plot_type == 'skill_md':
                     from metplotpy.plots.tcmpr_plots.skill.median.tcmpr_skill_median import TcmprSkillMedian
-                    plot = TcmprSkillMedian(config_obj, column_info, col_to_plot, common_case_data, cur_stat, input_df)
+                    plot = TcmprSkillMedian(config_obj, column_info, col_to_plot, common_case_data, input_df, cur_stat)
 
                 plot.save_to_file()
                 # plot.show_in_browser()
@@ -632,7 +677,7 @@ def print_data_info(input_df, series):
 def read_tcst_files(config_obj, tcst_files):
     all_fields_values = copy.deepcopy(config_obj.parameters['series_val_1'])
     all_fields_values.update(config_obj.parameters['fixed_vars_vals_input'])
-    if 'skill_mn' in config_obj.plot_type or 'skill_md' in config_obj.plot_type:
+    if 'skill_mn' in config_obj.plot_type_list or 'skill_md' in config_obj.plot_type_list:
         all_fields_values['AMODEL'].extend(config_obj.skill_ref)
     input_df = None
     for file in tcst_files:
