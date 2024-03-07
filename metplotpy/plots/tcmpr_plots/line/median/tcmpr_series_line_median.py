@@ -27,9 +27,9 @@ class TcmprSeriesLineMedian(TcmprSeries):
     """
 
     def __init__(self, config, idx: int, input_data, series_list: list,
-                 series_name: Union[list, tuple]):
+                 series_name: Union[list, tuple], stat_name):
 
-        super().__init__(config, idx, input_data, series_list, series_name)
+        super().__init__(config, idx, input_data, series_list, series_name, stat_name)
 
     def _create_series_points(self) -> dict:
         """

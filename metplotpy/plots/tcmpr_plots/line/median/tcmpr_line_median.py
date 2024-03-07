@@ -1,32 +1,37 @@
 import os
+from datetime import datetime
 
 from metplotpy.plots.tcmpr_plots.line.median.tcmpr_series_line_median import TcmprSeriesLineMedian
 from metplotpy.plots.tcmpr_plots.line.tcmpr_line import TcmprLine
+import metplotpy.plots.util as util
 
 
 class TcmprLineMedian(TcmprLine):
     def __init__(self, config_obj, column_info, col, case_data, input_df, stat_name):
-        super().__init__(config_obj, column_info, col, case_data, input_df, None, stat_name)
-        print("--------------------------------------------------------")
-        print(f"Plotting MEDIAN time series by {self.config_obj.series_val_names[0]}")
+        super().__init__(config_obj, column_info, col, case_data, input_df,stat_name, None )
 
-        print("Plot HFIP Baseline:" + self.cur_baseline)
-        self._adjust_titles()
+        # Set up Logging
+        self.linemd_logger = util.get_common_logger(self.config_obj.log_level, self.config_obj.log_filename)
+
+        self.linemd_logger.info(f"--------------------------------------------------------")
+        self.linemd_logger.info(f"Plotting MEDIAN time series by {self.config_obj.series_val_names[0]}")
+
+        self.linemd_logger.info(f"Plot HFIP Baseline: {self.cur_baseline}")
+        self._adjust_titles(stat_name)
         self.series_list = self._create_series(self.input_df, stat_name)
         self.case_data = None
         if self.config_obj.prefix is None or len(self.config_obj.prefix) == 0:
             self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{stat_name}_median.png"
         else:
-            # self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}.png"
             self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}_{stat_name}_median.png"
-        # remove the old file if it exist
+        # remove the old file if it exists
         if os.path.exists(self.plot_filename):
             os.remove(self.plot_filename)
         self._create_figure(stat_name)
 
-    def _adjust_titles(self):
+    def _adjust_titles(self, stat_name):
         if self.yaxis_1 is None or len(self.yaxis_1) == 0:
-            self.yaxis_1 = self.config_obj.list_stat_1[0] + '(' + self.col['units'] + ')'
+            self.yaxis_1 = stat_name + '(' + self.col['units'] + ')'
 
         if self.title is None or len(self.title) == 0:
             self.title = 'Median of ' + self.col['desc'] + ' by ' \
@@ -49,6 +54,9 @@ class TcmprLineMedian(TcmprLine):
 
 
         """
+
+        start_time = datetime.now()
+
         series_list = []
 
         # add series for y1 axis
@@ -62,7 +70,7 @@ class TcmprLineMedian(TcmprLine):
             if not isinstance(name, list):
                 name = [name]
 
-            series_obj = TcmprSeriesLineMedian(self.config_obj, i, input_data, series_list, name)
+            series_obj = TcmprSeriesLineMedian(self.config_obj, i, input_data, series_list, name, stat_name)
             series_list.append(series_obj)
 
         # add derived for y1 axis
@@ -81,5 +89,9 @@ class TcmprLineMedian(TcmprLine):
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
+
+        end_time = datetime.now()
+        total_time = end_time - start_time
+        self.linemd_logger.info(f"Took {total_time} milliseconds to create series for {stat_name}")
 
         return series_list
