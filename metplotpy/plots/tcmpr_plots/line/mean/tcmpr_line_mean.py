@@ -1,14 +1,20 @@
 import os
+from datetime import datetime
 
 from metplotpy.plots.tcmpr_plots.line.mean.tcmpr_series_line_mean import TcmprSeriesLineMean
 from metplotpy.plots.tcmpr_plots.line.tcmpr_line import TcmprLine
+import metplotpy.plots.util as util
 
 
 class TcmprLineMean(TcmprLine):
     def __init__(self, config_obj, column_info, col, case_data, input_df, baseline_data, stat_name):
-        super().__init__(config_obj, column_info, col, case_data, input_df, None, stat_name)
-        print("--------------------------------------------------------")
-        print(f"Plotting MEAN time series by {self.config_obj.series_val_names[0]}")
+        super().__init__(config_obj, column_info, col, case_data, input_df, baseline_data, stat_name)
+
+        # Set up Logging
+        self.line_logger = util.get_common_logger(self.config_obj.log_level, self.config_obj.log_filename)
+
+        self.line_logger.info(f"--------------------------------------------------------")
+        self.line_logger.info(f"Plotting MEAN time series by {self.config_obj.series_val_names[0]}")
 
         self._adjust_titles(stat_name)
         self.series_list = self._create_series(self.input_df, stat_name)
@@ -18,11 +24,10 @@ class TcmprLineMean(TcmprLine):
         self.baseline_lead_time = 'ind'
         self._init_hfip_baseline_for_plot()
         if self.config_obj.prefix is None or len(self.config_obj.prefix) == 0:
-            # self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.list_stat_1[0]}_{stat_name}_mean.png"
             self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{stat_name}_mean.png"
         else:
             self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}_{stat_name}_mean.png"
-        # remove the old file if it exist
+        # remove the old file if it exists
         if os.path.exists(self.plot_filename):
             os.remove(self.plot_filename)
         self._create_figure(stat_name)
@@ -39,10 +44,10 @@ class TcmprLineMean(TcmprLine):
 
     def _init_hfip_baseline_for_plot(self):
         if 'Water Only' in self.config_obj.title or self.cur_baseline == 'no':
-            print("Plot HFIP Baseline:" + self.cur_baseline)
+            self.line_logger.info(f"Plot HFIP Baseline: {self.cur_baseline}")
         else:
             self.cur_baseline_data = self.cur_baseline_data[(self.cur_baseline_data['TYPE'] == 'CONS')]
-            print('Plot HFIP Baseline:' + self.cur_baseline.replace('Error ', ''))
+            self.line_logger.info(f"Plot HFIP Baseline: {self.cur_baseline.replace('Error ', '')}")
 
     def _create_series(self, input_data, stat_name):
         """
@@ -62,6 +67,9 @@ class TcmprLineMean(TcmprLine):
 
 
         """
+
+        start_time = datetime.now()
+
         series_list = []
 
         # add series for y1 axis
@@ -75,7 +83,7 @@ class TcmprLineMean(TcmprLine):
             if not isinstance(name, list):
                 name = [name]
 
-            series_obj = TcmprSeriesLineMean(self.config_obj, i, input_data, series_list, name)
+            series_obj = TcmprSeriesLineMean(self.config_obj, i, input_data, series_list, name, stat_name)
             series_list.append(series_obj)
 
         # add derived for y1 axis
@@ -95,5 +103,9 @@ class TcmprLineMean(TcmprLine):
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
+
+        end_time = datetime.now()
+        total_time = end_time - start_time
+        self.line_logger.info(f"Took {total_time} milliseconds to create series for {stat_name}")
 
         return series_list

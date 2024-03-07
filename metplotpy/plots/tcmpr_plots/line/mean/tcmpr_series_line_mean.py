@@ -12,12 +12,14 @@ Class Name: TcmprSeriesLineMean
  """
 
 from typing import Union
+from datetime import datetime
 
 import numpy as np
 
 import metcalcpy.util.utils as utils
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 from metplotpy.plots.tcmpr_plots.tcmpr_util import get_mean_ci
+import metplotpy.plots.util as util
 
 
 class TcmprSeriesLineMean(TcmprSeries):
@@ -29,8 +31,11 @@ class TcmprSeriesLineMean(TcmprSeries):
     """
 
     def __init__(self, config, idx: int, input_data, series_list: list,
-                 series_name: Union[list, tuple]):
-        super().__init__(config, idx, input_data, series_list, series_name)
+                 series_name: Union[list, tuple], stat_name):
+        super().__init__(config, idx, input_data, series_list, series_name, stat_name)
+
+        # Set up Logging
+        self.seriesmn_logger = util.get_common_logger(config.log_level, config.log_filename)
 
     def _create_series_points(self) -> dict:
         """
@@ -43,6 +48,7 @@ class TcmprSeriesLineMean(TcmprSeries):
                dictionary with CI ,point values and number of stats as keys
         """
 
+        start_time = datetime.now()
         self._init_series_data()
 
         series_points_results = {'val': [], 'ncl': [], 'ncu': [], 'nstat': [], 'mean': []}
@@ -76,4 +82,7 @@ class TcmprSeriesLineMean(TcmprSeries):
             else:
                 series_points_results['mean'].append(np.nanmean(point_data['PLOT'].tolist()))
 
+        end_time = datetime.now()
+        total_time = end_time - start_time
+        # self.seriesmn_logger.info(f"Took {total_time} milliseconds to calculate series points for line mean plot.")
         return series_points_results
