@@ -12,12 +12,15 @@ Class Name:TcmprRank
  """
 
 import os
+import datetime
 
 import plotly.graph_objects as go
 
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
+from metplotpy.plots.tcmpr_plots.tcmpr_config import TcmprConfig
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 from metplotpy.plots.tcmpr_plots.tcmpr_util import get_case_data
+import metplotpy.plots.util as util
 
 
 class TcmprRank(Tcmpr):
@@ -35,14 +38,19 @@ class TcmprRank(Tcmpr):
 
         # init common layout
         super().__init__(config_obj, column_info, col, case_data, input_df, stat_name)
-        print("--------------------------------------------------------")
+
+
+        # Set up Logging
+        self.rank_logger = util.get_common_logger(self.config_obj.log_level, self.config_obj.log_filename)
+
+        self.rank_logger.info(f"--------------------------------------------------------")
 
         if not self.config_obj.use_ee:
             raise Exception("ERROR: Cannot plot relative rank frequency when event equalization is disabled.")
-        print("Creating Rank plot")
-        print("Plot HFIP Baseline:" + self.cur_baseline)
+        self.rank_logger.info("Creating Rank plot")
+        self.rank_logger.info("Plot HFIP Baseline:" + self.cur_baseline)
 
-        self._adjust_titles()
+        self._adjust_titles(stat_name)
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
         # such as line color, marker symbol,
@@ -51,6 +59,7 @@ class TcmprRank(Tcmpr):
 
         # Get the case data when necessary
         if self.case_data is None:
+            self.rank_logger.info("Getting case data")
             self.case_data = get_case_data(self.input_df, self.config_obj.series_vals_1, self.config_obj.indy_vals,
                                            self.config_obj.rp_diff, len(self.series_list))
 
@@ -58,6 +67,7 @@ class TcmprRank(Tcmpr):
             self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{stat_name}_rank.png"
         else:
             self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}_{stat_name}_rank.png"
+        self.rank_logger.info(f"Plot will be saved as {self.plot_filename}" )
 
         # remove the old file if it exists
         if os.path.exists(self.plot_filename):
@@ -67,11 +77,13 @@ class TcmprRank(Tcmpr):
         # Need to have a self.figure that we can pass along to
         # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
+        self.rank_logger.info(f"Creating figure {datetime.datetime.now()}")
         self._create_figure(stat_name)
 
-    def _adjust_titles(self):
+
+    def _adjust_titles(self, stat_name):
         if self.yaxis_1 is None or len(self.yaxis_1) == 0:
-            self.yaxis_1 = 'Percent of Cases'
+            self.yaxis_1 = f'Percent of Cases for  {stat_name}'
 
         if self.title is None or len(self.title) == 0:
             self.title = self.config_obj.series_vals_1[0][0] + ' ' + \
@@ -81,8 +93,10 @@ class TcmprRank(Tcmpr):
                          + self.col['desc'] + 'Rank Frequency'
 
     def _create_figure(self, stat_name):
-        """ Create a box plot from default and custom parameters"""
 
+        self.rank_logger.info(f"Creating the rank plot figure...")
+        """ Create a box plot from default and custom parameters"""
+        start_time = datetime.datetime.now()
         self.figure = self._create_layout()
         self._add_xaxis()
         self._add_yaxis()
@@ -114,19 +128,20 @@ class TcmprRank(Tcmpr):
         self.config_obj.user_legends = legend_str
         yaxis_min = None
         yaxis_max = None
-        for series in self.series_list:
+        for idx, series in enumerate(self.series_list):
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
             if series.plot_disp:
                 x_points_index_adj = x_points_index + stag_adjustments[series.idx]
                 series.create_rank_points(self.case_data)
                 yaxis_min, yaxis_max = self.find_min_max(series, yaxis_min, yaxis_max)
+                self.rank_logger.info(f"Drawing series for {stat_name} and {series.series_vals_1[idx-1][idx]}")
                 self._draw_series(series, x_points_index_adj)
 
         # Draw a reference line at 100/n_series
         self.figure.add_hline(y=100 / len(self.series_list), line_width=1, line_dash="solid", line_color="#e5e7e9")
 
-        print(f'Range of {stat_name}: {yaxis_min}, {yaxis_max}')
+        self.rank_logger.info(f'Range of {stat_name}: {yaxis_min}, {yaxis_max}')
         # Draw an invisible line to create a CI legend
         self.figure.add_trace(
             go.Scatter(x=[0],
@@ -152,6 +167,10 @@ class TcmprRank(Tcmpr):
         # add x2 axis
         self._add_x2axis(list(range(0, len(self.config_obj.indy_vals))))
 
+        end_time = datetime.datetime.now()
+        total_time = end_time - start_time
+        self.rank_logger.info(f"Creating rank plot figure took {total_time} milliseconds")
+
     def _draw_series(self, series: TcmprSeries, x_points_index_adj: list) -> None:
         """
         Draws the line on the plot
@@ -159,6 +178,7 @@ class TcmprRank(Tcmpr):
         :param series: Line series object with data and parameters
         """
 
+        start_time = datetime.datetime.now()
         color = self.config_obj.colors_list[series.idx]
         width = self.config_obj.linewidth_list[series.idx]
         dash = self.config_obj.linestyles_list[series.idx]
@@ -238,3 +258,6 @@ class TcmprRank(Tcmpr):
                 ),
                 secondary_y=series.y_axis != 1
             )
+        end_time = datetime.datetime.now()
+        total_time = end_time - start_time
+        self.rank_logger.debug(f"Drawing series points took {total_time} millisecs")
