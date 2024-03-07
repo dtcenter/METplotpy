@@ -76,7 +76,7 @@ class TcmprScatter(Tcmpr):
         if self.config_obj.prefix is None or len(self.config_obj.prefix) == 0:
             self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{out_file_x}_vs_{out_file_y}_scatter.png"
         else:
-            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}.png"
+            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}_scatter.png"
 
         # remove the old file if it exist
         if os.path.exists(self.plot_filename):
