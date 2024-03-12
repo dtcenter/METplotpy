@@ -92,6 +92,7 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    polar_plot
    wind_rose
    fv3_physics
+   tcmpr_plots
    release-notes
    references
 
