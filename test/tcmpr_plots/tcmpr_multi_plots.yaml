@@ -102,9 +102,7 @@ series_symbols_size:
   - 7
 
 show_nstats: 'True'
-#tcst_dir: '/Users/minnawin/feature_383_tcmpr_docs_test/Data/tcmpr_files/tc_pairs/original_dakota_test'
-tcst_dir: '/Users/minnawin/feature_383_tcmpr_docs_test/Data'
-#tcst_dir: '/path/to/tcmpr_sample_data'
+tcst_dir: '/path/to/tcmpr_sample_data'
 tcst_files: [ ]
 title: ''
 
@@ -134,11 +132,11 @@ event_equal: 'True'
 skill_ref:
   - HFSA
 
-plot_dir: '/Users/minnawin/feature_383_tcmpr_docs_test/METplotpy/metplotpy/plots/tcmpr_plots/output'
+plot_dir: '/path/to/output'
 prefix: ''
 subtitle:
-log_level: DEBUG
-log_filename: '/Users/minnawin/feature_383_tcmpr_docs_test/METplotpy/metplotpy/plots/tcmpr_plots/output/tcmpr_log.out'
+log_level: INFO
+log_filename: '/path/to/log/output/tcmpr_log.out'
 
 
 
