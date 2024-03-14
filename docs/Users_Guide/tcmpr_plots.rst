@@ -143,7 +143,7 @@ saved to the working directory:
 Set up the custom configuration file:
 -------------------------------------
 
-For this example, the only changes that need to be made are the tcst_dir, plot_dir, and
+For this example, the only settings requiring changes are: **tcst_dir**, **plot_dir**, and **log_filename**.
 
 **Specify the input data in one of two ways**:
 
