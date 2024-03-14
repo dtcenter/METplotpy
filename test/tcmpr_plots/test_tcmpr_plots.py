@@ -71,11 +71,8 @@ def test_plots_created(setup):
     # Check that file sizes (in bytes) are consistent (cannot check rank files, the confidence
     # intervals are generated using random seed-they will not be identical from one run to another
     for cur_file in only_files:
-        match = re.match(r'.+_(rank).png', cur_file)
+        match = re.match(r'.+_(mean).png', cur_file)
         if match:
-            # rank file encountered, skip the check
-            continue
-        else:
           cur_file_size = int(os.path.getsize(os.path.join(output_dir, cur_file)))
           expected_size = int(expected_sizes[cur_file])
           if cur_file_size >= expected_size:
