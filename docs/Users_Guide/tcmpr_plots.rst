@@ -6,8 +6,17 @@ Description
 ===========
 
 The TCMPR plots were originally available under the MET repository: https://github.com/dtcenter/MET
-and written in R script.  The code has been rewritten in Python and is located in the METplotpy repository:
+and written in R script.  The code has been rewritten in Python and is now located in the METplotpy repository:
 https://github.com/dtcenter/METplotpy/metplotpy/plots/tcmpr_plots
+
+The TCMPR plots require TCMPR line type data produced by the MET TC-pairs tool. In addition, the METcalcpy
+source code will be needed to perform event equalization and other necessary calculations.
+
+The METcalcpy repository is located:
+https://github.com/dtcenter/METcalcpy
+
+Use the same release versions for METplotpy and METcalcpy (i.e. if using a vx.y.z of METplotpy, use the
+same version for METcalcpy).
 
 
 There are numerous TCMPR plots that can be generated within **one** YAML configuration files:
@@ -20,13 +29,15 @@ There are numerous TCMPR plots that can be generated within **one** YAML configu
   * mean skill line plot
   * median skill line plot
 
-Generating multiple plots within a single configuration file reduces the number of command line
-commands to generate the plots.
+Using a single configuration file to generate multiple plot types is advantageous. This reduces the number of
+times the TCMPR plotter code is invoked from the command line.
 
-However, when more specific titles and plot customizations are desired for particular plot types,
+When more specific titles and plot customizations are desired for particular plot types,
 each plot type can be defined with a corresponding configuration file
 (e.g. a box plot will have a config file specifying settings specific to the
 boxplot, a reliability plot will have a corresponding config file with settings relevant to a reliability plot, etc.).
+However, the TCMPR plotter code will now need to be invoked for each of these special plot type/config file
+combinations.
 
 Example
 =======
@@ -34,11 +45,11 @@ Example
 Sample Data
 -----------
 
-The data is text output from MET in columnar format. The sample data used to
-create various TCMPR plots is available in the
+The data is columnar text output from the MET TC-Pairs tool for the TCMPR line type (saved as .tcst files).
+The sample data used to create various TCMPR plots is available in the
 `METplotpy <https://github.com/dtcenter/METplotpy>`_ repository, where the TCMPR plot tests are located:
 
-*$METPLOTPY_BASE/metplotpy/test/tcmpr_plots/Data*
+*$METPLOTPY_BASE/test/tcmpr_plots/Data*
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
@@ -65,13 +76,14 @@ It is commonly used for configuration files and in applications where
 data is being stored or transmitted.
 
 A **mandatory default configuration** file specifies line/series colors, symbol shapes, symbol sizes,
-margins, log levels, x- and y-label settings that can be used by numerous plot types. These default values
-can be overridden by the custom configuration file.
+margins, log levels, x- and y-axis settings that can be generically applied to numerous plot types. These default
+values can be overridden by the custom configuration file. The default configuration file is automatically
+loaded by the TCMPR plotting code.
 
 A **mandatory custom configuration file is also required**. Multiple plot types can be requested
 in **one** configuration file (resulting in a single call to tcmpr.py to generate all the specified plots).
-In this case, the TCMPR plotting scripts can create the title and  x- and y-axis
-labels based on the plot type and requested statistics specified in the config file.
+In this case, the TCMPR plotting scripts will automatically create the title, output file prefix, and y-axis
+label based on the plot type and requested statistics specified in the config file.
 
 If particular plot types require specific/custom titles and/or
 x- and y-axis labels, then each plot type can have a corresponding configuration file with values specific to this plot
@@ -91,27 +103,35 @@ Default Configuration File
 --------------------------
 
 A default configuration file, tcmpr_defaults.yaml has some default settings for three lines/series such as plot
-size, margins, etc. that don't require modification.  There are some example colors and line and symbol styles and
-sizes for three lines/series.  The default logging level is set to ERROR, the least verbose.  Any of these
-settings can be overridden by setting new values in the custom configuration file(s).
+size, margins, etc. This config file **does not require any modification**.
+There are some example colors and line and symbol styles and sizes for *three* lines/series.
+The default logging level is set to ERROR, the least verbose. By default, logging
+is directed to stdout.  Any of these settings can be overridden by setting new values in the custom
+configuration file(s).
 
 .. literalinclude:: ../../metplotpy/plots/config/tcmpr_defaults.yaml
 
 **NOTE**: This default configuration file is automatically loaded by
 **tcmpr.py** and **does not require any modifications**.
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. any log messages
-of type ERROR will be logged).  If the log_filename and log_level are
-not specified in the custom configuration file, these settings will be used.
+The default configuration file also specifies the name (including path) of the HFIP baseline data file, the
+column information file, and the HFIP baseline comparison:
 
+.. code-block:: ini
+
+   baseline_file: ./hfip_baseline.dat
+   column_info_file: ./plot_tcmpr_hdr.dat
+   hfip_bsln: 'no'
+
+The HFIP baseline is turned off.
 
 Custom Configuration File
 -------------------------
 
 A second, *mandatory* configuration file is required, which is
-used to customize the settings to the specified TCMPR plot type(s). The **tcmpr_multi_plots.yaml**
-file is included with the source code.  The settings in this custom configuration file override those in the
-default config file.
+used to customize the settings to the specified TCMPR plot type(s). The settings in this custom configuration
+file override those in the default config file. The **tcmpr_multi_plots.yaml**
+file is included with the source code and is located in the $METPLOTPY_BASE/test/tcmpr_plots directory.
 
 Copy this custom config file from the directory where the source code was
 saved to the working directory:
@@ -120,170 +140,378 @@ saved to the working directory:
 		
   cp $METPLOTPY_BASE/test/tcmpr_plots/tcmpr_multi_plots.yaml $WORKING_DIR/tcmpr_multi_plots.yaml
 
-Specify the input data in one of two ways:
+Set up the custom configuration file:
+-------------------------------------
+
+**Specify the input data in one of two ways**:
 
 * Specify by directory (use all files under this directory):
 
+.. code-block:: ini
+
     tcst_dir: '/path/to/tcmpr_sample_data'
 
-    Replace the */path/to* with the full path to the sample data
+Replace the */path/to* with the full path to the sample data, $METPLOTPY_BASE/test/tcmpr_plots/Data/
+**except replace $METPLOTPY_BASE with the full path to the METplotpy source code**.
+
+This will read in all the .tcst files under the specified directory.
 
 * Specify by list of .tcst files:
 
-    tcst_files: ['a.tcst', 'b.tcst', 'w.tcst', 'z.tcst' ]
+.. code-block:: ini
 
-Specify the series/line values of interest:
+   tcst_files: ['/path/to/a.tcst', '/path/to/b.tcst', '/path/to/w.tcst', '/path/to/z.tcst' ]
 
-* series_val_1:
-  AMODEL:
-    - H221
-    - M221
+Replace the a.tcst, b.tcst, etc. with files of interest (include full file path).
 
-  specify a key (AMODEL) and a list of one or more values of interest (e.g. the H221 and M221 models)
 
-Specify the independent (x-axis) variable,  values and labels:
+**Specify the output directory where the plot files will be saved**:
 
-* indy_var: 'LEAD'
+.. code-block:: ini
 
-* indy_vals:
+   plot_dir: '/path/to/output_dir'
+
+Replace */path/to/output_dir* to an existing directory that has the appropriate read and write privileges.
+
+**Specify the series/line values of interest**:
+
+.. code-block:: ini
+
+  series_val_1:
+    AMODEL:
+      - H221
+      - M221
+
+Specify a key (AMODEL) and a list of one or more values of interest (e.g. the H221 and M221 models)
+The above example will produce a plot with **two** lines/series, one for each AMODEL.  The number of series/lines
+dictates the number of required plot settings. In this case,  **two** values are needed for plot settings such as
+colors, symbols, series order, plot display (on/off), line widths, line styles, symbol appearance
+(style and size), and series confidence intervals (plot or hide). **NOTE**: If the sufficient number of settings
+is not met (that is there are fewer settings than there are series/lines requested), an error message will be
+produced.
+
+The following settings are necessary for generating the plot types for this data set.
+The settings will override the defaults in the tcmpr_defaults.yaml
+
+**Specify the independent (i.e. x-axis) variable, series, values and labels**:
+
+.. code-block:: ini
+
+    indy_var: 'LEAD'
+
+.. code-block:: ini
+
+   series_val_1:
+    AMODEL:
+      - H221
+      - M221
+
+
+.. code-block:: ini
+
+    indy_vals:
      - 0
      - 6
      - 12
      - 18
+     - 24
+     - 30
+     - 36
+     - 42
+     - 48
+     - 54
+     - 60
+     - 66
+     - 72
+     - 78
+     - 84
+     - 90
+     - 96
+     - 102
+     - 108
+     - 114
+     - 120
+     - 126
 
-* indy_labels:
-    - '00'
-    - '06'
-    - '12'
-    - '18'
+.. code-block:: ini
 
-The example above is requesting the forecast lead times ('LEAD' for the example data set provided) for 0, 6, 12, and 18
-hours with the corresponding labels (surrounded by either single or double quotes).  The indy_var is set to 'LEAD' in
-the tcmpr_defaults.yaml config file.  Override this to the name of the forecast lead column in the input
-data.
-
-
-Specify the criteria for subsetting the input data:
-
-* fixed_vars_vals_input:
-  BASIN:
-    - AL
-  LEVEL:
-    - SS
-    - SD
-    - TS
-    - TD
-    - HU
-
-
-In the example above, the data to be considered should correspond to the Atlantic Basin and the five specified levels.
-
-Modify the *tcst_dir* setting in the
-*$WORKING_DIR/tcmpr_multi_plots.yaml* file to
-explicitly point to the *$METPLOTPY_BASE/test/tcmpr_plots/Data*
-directory to use the sample data.
-Replace the */path/to/tcmpr_sample_data* with the full path
-*$METPLOTPY/test/tcmpr_plots/Data*
-(including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
-installation on the system).  Modify the *tcst_dir*
-setting to point to the output path where the plot will be saved.
-
-
-For example:
-
-*tcst_dir: /username/myworkspace/METplotpy/test/tcmpr_plots/Data*
-
-*prefix: /prefix_applied_to_all_plot_names*
-
-The */username/myworkspace/METplotpy* corresponds to *$METPLOTPY_BASE* and
-*/username/working_dir* corresponds to *$WORKING_DIR*.  Make sure that the
-*$WORKING_DIR* directory that is specified exists and has the appropriate
-read and write permissions.  The prefix specified for *plot_filename* may be
-changed to the output directory of one's choosing.  If this is not set,
-then the *plot_filename* setting specified in the
-*$METPLOTPY_BASE/metplotpy/plots/config/line_defaults.yaml*
-configuration file will be used.
-
-To save the intermediate **.points1** file (used by METviewer and is useful
-for debugging but not required), set the *dump_points_1*
-setting to True. Uncomment or add (if it doesn't exist) the
-*points_path* setting.
-
-*dump_points_1: 'True'*
-
-*points_path: '/dir_to_save_points1_file'*
-
-Replace the */dir_to_save_points1_file* to the same directory where
-the **.points1** file is saved.
-If *points_path* is commented out (indicated by a '#' symbol in front of it),
-remove the '#' symbol to uncomment the points_path so that it will be
-used by the code.  Make sure that this directory exists and has the
-appropriate read and write permissions.  **NOTE**: the *points_path* setting
-is **optional** and does not need to be defined in the configuration file
-unless saving the intermediate **.points1** file is desired.
-
-To save the log output to a file, uncomment the *log_filename* entry and specify the path and
-name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
-file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
-are lower verbosity).
+    indy_labels:
+      - '00'
+      - '06'
+      - '12'
+      - '18'
+      - '24'
+      - '30'
+      - '36'
+      - '42'
+      - '48'
+      - '54'
+      - '60'
+      - '66'
+      - '72'
+      - '78'
+      - '84'
+      - '90'
+      - '96'
+      - '102'
+      - '108'
+      - '114'
+      - '120'
+      - '126'
 
 
-Generate seven different plot types in one configuration file:
--------------------------------------------------------------
+The example above is requesting the forecast lead times (the 'LEAD' column in the example data set provided) for
+0, 6, 12, ..., 126 hours with the corresponding labels (surrounded by either single or double quotes).
+The indy_var is set to 'LEAD' in the tcmpr_defaults.yaml config file.  Override this to the name of the
+forecast lead column if this name differs from that in the input data.
 
-To use the *default* settings defined in the **line_defaults.yaml**
-file, specify a minimal custom configuration file (**minimal_line.yaml**),
-which consists of only a comment block, but can be any empty file
-(if the user has write permissions for the output filename path corresponding
-to the *plot_filename* setting in the default configuration file.
-Otherwise the user  will need to specify a *plot_filename* in the
-**minimal_line.yaml** file):
 
-.. literalinclude:: ../../test/line/minimal_line.yaml
+**Specify the criteria for subsetting/limiting the input data** (optional):
 
+.. code-block:: ini
+
+
+   fixed_vars_vals_input:
+     BASIN:
+      - AL
+     LEVEL:
+      - SS
+      - SD
+      - TS
+      - TD
+      - HU
+
+
+In the example above, the data of interest/focus corresponds to the Atlantic Basin and the
+five specified levels.
+
+**Specify the log level and log file** (optional):
+
+.. code-block:: ini
+
+   log_level: INFO
+
+.. code-block:: ini
+
+   log_filename: /path/to/output/tcmpr_log.out
+
+Replace */path/to/output* to an existing directory with the appropriate read and write permissions.
+By default, the log level is set to ERROR (the least verbose) and logging is directed to STDOUT.  The following
+log levels are available (from most verbose to least): INFO, DEBUG, WARNING, ERROR.
+
+**Specify whether to perform event equalization**:
+
+.. code-block:: ini
+
+   event_equal: 'True'
+
+Event equalization must be set to True for generating the rank plots.
+
+**Specify the plot types to generate**:
+
+.. code-block:: ini
+
+   plot_type_list:
+     - 'boxplot'
+     - 'skill_mn'
+     - 'skill_md'
+     - 'relperf'
+     - 'mean'
+     - 'median'
+     - 'rank'
+
+The seven supported plot types are requested.
+
+**Specify the relative performance threshold** (for relative performance plots):
+
+.. code-block:: ini
+
+    rp_diff:
+      - '>=100'
+
+Enclose threshold values with single or double quotes.
+
+**Specify the model to use for the skill reference line** (for mean/median skill line plots):
+
+.. code-block:: ini
+
+    skill_ref:
+       - HFSA
+
+**Specify the columns of interest**:
+
+.. code-block:: ini
+
+   list_stat_1:
+     - "ABS(AMAX_WIND-BMAX_WIND)"
+     - "TK_ERR"
+
+The absolute difference between the AMAX_WIND and BMAX_WIND columns and the TK_ERR columns are selected. In
+addition to the absolute difference (ABS), the difference (DIFF) between columns is also supported.
+
+**Allow the code to generate the y-axis label, title, and output filenames** (leave these settings
+to empty string):
+
+
+.. code-block:: ini
+
+   yaxis_1: ''
+
+.. code-block:: ini
+
+   title: ''
+
+.. code-block:: ini
+
+   prefix: ''
+
+
+
+When the prefix is set to something other than an empty string, that value will be prepended to the
+auto-generated name of the plot. If the auto-generated plot name is *ABS(AMAX_WIND-BMAX_WIND)_median.png*,
+and the *prefix* is set to 'Example_Data', then the plot file name becomes
+*Example_Data_ABS(AMAX_WIND-BMAX_WIND)_median.png*.
+
+
+**Use the xaxis setting in the default config file**:
+
+.. code-block:: ini
+
+   xaxis: 'Lead Time(h)'
+
+The *xaxis* setting is absent in the custom config file, tcmpr_multi_plots.yaml.  When a setting is absent in
+the custom config file. the default value is used.
+If a different setting is desired,  add the xaxis setting in the custom config file (anywhere in the file),
+tcmpr_multi_plots.yaml and set it to the desired text (surrounded by single or double quotes).
+
+
+The above settings define the creation of a boxplot, mean line plot, median line plot, rank plot, median skill
+plot, and mean skill plot for ABS(AMAX_WIND-BMAX_WIND) and TK_ERR.  Each plot contains the lines/boxes for
+the AMODEL M221 and H221, resulting in a total of fourteen plots. The plot titles, y-axis label,and  output
+filenames are generated by the code.
+
+
+
+Generate seven plot types using one configuration file:
+-------------------------------------------------------
+
+The **tcmpr_multi_plots.yaml** configuration file, in combination with the
+**tcmpr_defaults.yaml** configuration file, generates the following plots:
+
+
+.. image:: figure/ABS(AMAX_WIND-BMAX_WIND)_mean.png
+
+.. image:: figure/ABS(AMAX_WIND-BMAX_WIND)_median.png
+
+.. image:: figure/ABS(AMAX_WIND-BMAX_WIND)_boxplot.png
+
+.. image:: figure/ABS(AMAX_WIND-BMAX_WIND)_relperf.png
+
+.. image:: figure/ABS(AMAX_WIND-BMAX_WIND)_rank.png
+
+.. image:: figure/ABS(AMAX_WIND-BMAX_WIND)_skill_mn.png
+
+.. image:: figure/ABS(AMAX_WIND-BMAX_WIND)_skill_md.png
+
+.. image:: figure/TK_ERR_mean.png
+
+.. image:: figure/TK_ERR_median.png
+
+.. image:: figure/TK_ERR_boxplot.png
+
+.. image:: figure/TK_ERR_relperf.png
+
+.. image:: figure/TK_ERR_rank.png
+
+.. image:: figure/TK_ERR_skill_mn.png
+
+.. image:: figure/TK_ERR_skill_md.png
+
+
+
+Generate plots with separate, specific configuration files:
+-----------------------------------------------------------
+
+This is an example of generating single plot types with titles axis labels specific to
+that plot type.  Two plot types will be generated, a boxplot and a relative performance plot.
+The line colors, series, independent values and labels, etc. are the same as those used in the
+tcmpr_multi_plots.yaml custom config file.
 
 Copy this file to the working directory:
 
 .. code-block:: ini
 
-  cp $METPLOTPY_BASE/test/line/minimal_line.yaml $WORKING_DIR/minimal_line.yaml
+  cp $METPLOTPY_BASE/test/tcmpr_plots/tcmpr_multi_plots.yaml $WORKING_DIR/boxplot.yaml
 
+  cp $METPLOTPY_BASE/test/tcmpr_plots/tcmpr_multi_plots.yaml $WORKING_DIR/relperf.yaml
 
-Add the *stat_input* (input data) and *plot_filename* (output file/plot path)
-settings to the **$WORKING_DIR/minimal_line.yaml**
-file (anywhere below the comment block). The *stat_input* setting
-explicitly indicates where the sample data and custom configuration
-files are located.  Set the *stat_input* to
-*$METPLOTPY_BASE/test/line/line.data* and set the
-*plot_filename* to *$WORKING_DIR/output_plots/line_default.png* (making sure to
-replace environment variables with their actual values):
+**Boxplot**
 
-*stat_input: $METPLOTPY_BASE/test/line/line.data*
+Generate a boxplot for the TK_ERR.  In the boxplot.yaml file, delete all other plot types from
+the plot_type_list, leaving only the boxplot:
 
-*plot_filename: $WORKING_DIR/output_plots/line_default.png*
+.. code-block:: ini
 
-*$WORKING_DIR* is the working directory where all the custom
-configuration files are being saved. **NOTE**: If the *plot_filename*
-(output directory) is specified to a directory other than the
-*$WORKING_DIR/output_plots*, the user must have read and write permissions
-to that directory.
+   plot_type_list:
+     - 'boxplot'
 
-**NOTE**: This default plot does not display any of the data points.
-It is to be used as a template for setting up margins, captions,
-label sizes, etc.
+Specify the title, y-axis label, and prefix for the boxplot:
+
+.. code-block:: ini
+
+   title: 'Sample Data- TK_ERR for AL basin'
+
+.. code-block:: ini
+
+   yaxis_1: 'TK_ERR'
+
+.. code-block:: ini
+
+   prefix: 'BOXPLOT_SAMPLE_DATA'
+
+Specify only the TK_ERR:
+
+.. code-block:: ini
+
+   list_stat_1:
+     - "TK_ERR"
+
+**Relative performance plot**
+
+In the relperf.yaml file, delete all the other plot types from the plot_type_list, leaving only the relperf:
+
+.. code-block:: ini
+
+   plot_type_list:
+     - 'relperf'
+
+Specify the title, y-axis label, and prefix for the relative performance plot:
+
+.. code-block:: ini
+
+   title: 'Sample Data- AL Basin Relative Performance'
+
+.. code-block:: ini
+
+   yaxis_1: 'TK_ERR'
+
+.. code-block:: ini
+
+   prefix: 'RELPERF_SAMPLE_DATA'
+
+Specify only the TK_ERR:
+
+.. code-block:: ini
+
+   list_stat_1:
+     - "TK_ERR"
+
 
 Run from the Command Line
 =========================
 
-The **tcmpr_multi_plots.yaml** configuration file, in combination with the
-**tcmpr_defaults.yaml** configuration file, generates the following plots:
-    *
 
-.. image:: figure/line.png
-
-To generate the seven plot types using the **tcmpr_defaults.yaml** and
-**tcmpr_multi_plots.yaml** config files, perform the following:
+**Pre-requisites**
 
 * If using the conda environment, verify the conda environment
   is running and has the required
@@ -291,45 +519,183 @@ To generate the seven plot types using the **tcmpr_defaults.yaml** and
   <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_
   outlined in the requirements section.
 
-* Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_BASE*.
+* Set the METPLOTPY_BASE environment variable to point to where the METplotpy source code resides
+
 
   For the ksh environment:
 
   .. code-block:: ini
-		
-    export METPLOTPY_BASE=$METPLOTPY_BASE
+
+     export METPLOTPY_BASE=/path/to/METplotpy_source_cod
 
   For the csh environment:
 
   .. code-block:: ini
 
-    setenv METPLOTPY_BASE $METPLOTPY_BASE
+     setenv METPLOTPY_BASE /path/to/METplotpy_source_cod
 
-  Recall that *$METPLOTPY_BASE* is the directory path indicating where the METplotpy source code was saved.
+Replace /path/to/METplotpy_source_code to the directory path where the METplotpy source code is saved.
 
-  To generate the above **"custom"** plot (i.e using some custom
-  configuration settings), use the custom configuration file,
-  **custom_line.yaml**.
+* Set the METCALCPY_BASE environment variable to point to where the METcalcpy source code resides, for example:
 
-* Enter the following command:
-  
   .. code-block:: ini
 
-    python $METPLOTPY_BASE/metplotpy/plots/tcmpr_plots/tcmpr.py $WORKING_DIR/tcmpr_multi_plots.yaml
+     export METPLOTPY_BASE=/home/username/METplotpy
+
+  .. code-block:: ini
+
+     setenv METPLOTPY_BASE=/home/username/METplotpy
+
+
+For the ksh environment:
+
+  .. code-block:: ini
+
+    export METCALCPY_BASE=/path/to/METcalcpy_source_code
+
+For the csh environment:
+
+  .. code-block:: ini
+
+    setenv METCALCPY_BASE /path/to/METcalcpy_source_code
+
+Replace /path/to/METcalcpy_source_code to the directory path where the METcalcpy source code is saved, for
+example:
+
+    .. code-block:: ini
+
+       export METCALCPY_BASE=/home/username/METcalcpy
+
+    .. code-block:: ini
+
+       setenv METCALCPY_BASE /home/username/METcalcpy
+
+* Set the PYTHONPATH
+
+  For the ksh environment:
+
+ .. code-block:: ini
+
+    export PYTHONPATH=$METCALCPY_BASE:$METCALCPY_BASE/metcalcpy:$METPLOTPY_BASE:$METPLOTPY_BASE/metplotpy:$METPLOTPY_BASE/metplotpy/plots
+
+
+   For the csh environment:
+
+  .. code-block:: ini
+
+     setenv PYTHONPATH $METCALCPY_BASE:$METCALCPY_BASE/metcalcpy:$METPLOTPY_BASE:$METPLOTPY_BASE/metplotpy:$METPLOTPY_BASE/metplotpy/plots
+
+
+Multiple plot types using one config file:
+------------------------------------------
+
+To generate the seven plot types using the **tcmpr_defaults.yaml** and
+**tcmpr_multi_plots.yaml** config files, perform the following:
+
+
+* Enter the following command:
+
+  .. code-block:: ini
+
+     python $METPLOTPY_BASE/metplotpy/plots/tcmpr_plots/tcmpr.py $WORKING_DIR/tcmpr_multi_plots.yaml
 
 
 * Fourteen different output files will be created in the directory specified in
-  the *plot_dir* configuration setting in the **tcmpr_multi_plots.yaml** config file.
+  the *plot_dir* configuration setting in the **tcmpr_multi_plots.yaml** config file (see above for the
+  plots):
+
+  * ABS(AMAX_WIND-BMAX_WIND)_boxplot.png
+
+  * ABS(AMAX_WIND-BMAX_WIND)_mean.png
+
+  * ABS(AMAX_WIND-BMAX_WIND)_median.png
+
+  * ABS(AMAX_WIND-BMAX_WIND)_rank.png
+
+  * ABS(AMAX_WIND-BMAX_WIND)_relperf.png
+
+  * ABS(AMAX_WIND-BMAX_WIND)_skill_md.png
+
+  * ABS(AMAX_WIND-BMAX_WIND)_skill_mn.png
+
+  * TK_ERR_boxplot.png
+
+  * TK_ERR_mean.png
+
+  * TK_ERR_median.png
+
+  * TK_ERR_rank.png
+
+  * TK_ERR_relperf.png
+
+  * TK_ERR_skill_md.png
+
+  * TK_ERR_skill_mn.png
+
+NOTE: Some of the titles are cut-off in some of the plots.  The default title_size can be overridden by adding the
+title_size setting to the tcmpr_multi_plots.yaml file (anywhere in the file) and reducing it from the
+default value of 1.4:
+
+  .. code-block:: ini
+
+     title_size: 1.0
+
+The above setting of 1.0 significantly reduces the font size of the title to accommodate long titles.
+Experiment with other values to achieve the desired result.
+
+
+Plots with separate, corresponding config files:
+------------------------------------------------
+
+Two plot types, boxplot and relative performance will be generated using the same settings as
+the tcmpr_multi_plots.yaml file with some changes to the title, y-axis, and plot filename. All the
+other settings (i.e. color, symbol settings, series, variables) will be the same.
+
+
+**Boxplot**
+
+The **boxplot.yaml** configuration file, in combination with the
+**tcmpr_defaults.yaml** configuration file, generates the following files in the directory specified by the
+*plot_dir* setting:
+
+.. image:: figure/BOXPLOT_SAMPLE_DATA_ABS(AMAX_WIND-BMAX_WIND)_boxplot.png
 
 
 
-* A **line_default.png** output file will be created in the
-  directory specified in the *plot_filename* configuration setting
-  in the **line_defaults.yaml** config file.
 
-  .. image:: figure/line_default.png
+**To generate the boxplot for the TK_ERR, enter the following command**:
+  
+  .. code-block:: ini
 
-  **NOTE**: This default plot does not display any of the data points.
-  It is to be used as a template for
-  setting up margins, captions, label sizes, etc.
+     python $METPLOTPY_BASE/metplotpy/plots/tcmpr_plots/tcmpr.py $WORKING_DIR/boxplot.yaml
+
+This generates the boxplot for the  TK_ERR columns for the M221 and H221 AMODELs:
+
+    * BOXPLOT_SAMPLE_DATA_TK_ERR_boxplot.png
+
+**Relative performance**
+
+
+The **relperf.yaml** configuration file, in combination with the
+**tcmpr_defaults.yaml** configuration file, generates the following files in the directory specified by the
+*plot_dir* setting:
+
+.. image:: figure/RELPERF_SAMPLE_DATA_TK_ERR_relperf.png
+
+**To generate the relative performance plot for TK_ERR, enter the following command**:
+
+.. code-block:: ini
+
+   python $METPLOTPY_BASE/metplotpy/plots/tcmpr_plots/tcmpr.py $WORKING_DIR/relperf.yaml
+
+This generates the relative performance plots for the ABS(AMAX_WIND-BMAX_WIND) and TK_ERR columns for the M221 and H221
+AMODELs:
+
+ * RELPERF_SAMPLE_DATA_ABS(AMAX_WIND-BMAX_WIND)_relperf.png
+
+ * RELPERF_SAMPLE_DATA_TK_ERR_relperf.png
+
+
+
+
+
