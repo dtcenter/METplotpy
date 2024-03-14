@@ -82,6 +82,7 @@ def test_plots_created(setup):
               assert True
           else:
               print(f"Gross mismatch for {cur_file}")
+              assert False
 
 
     # Clean up
