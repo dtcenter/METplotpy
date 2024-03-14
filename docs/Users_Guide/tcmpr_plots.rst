@@ -143,7 +143,8 @@ saved to the working directory:
 Set up the custom configuration file:
 -------------------------------------
 
-For this example, the only settings requiring changes are: **tcst_dir**, **plot_dir**, and **log_filename**.
+For this example, the only settings requiring changes are: **tcst_dir**, **plot_dir**, **log_filename**,
+**baseline_file**, and **column_info_file**.
 
 **Specify the input data in one of two ways**:
 
@@ -190,7 +191,15 @@ Replace */path/to/output* to an existing directory with the appropriate read and
 By default, the log level is set to ERROR (the least verbose) and logging is directed to STDOUT.  The following
 log levels are available (from most verbose to least): INFO, DEBUG, WARNING, ERROR.
 
+*Specify the baseline_file and column_info_file**:
 
+.. code-block:: ini
+
+baseline_file: '$METPLOTPY_BASE/metplotpy/plots/tcmpr_plots/hfip_baseline.dat'
+column_info_file: '$METPLOTPY_BASE/metplotpy/plots/tcmpr_plots/plot_tcmpr_hdr.dat'
+
+Replace $METPLOTPY_BASE with the full path to where the METplotpy source code was saved
+(i.e. /home/username/METplotpy).
 
 The following settings do not need to be modified to run this example.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
