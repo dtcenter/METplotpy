@@ -140,6 +140,7 @@ log_level: INFO
 log_filename: './output/tcmpr_log.out'
 baseline_file: './metplotpy/plots/tcmpr_plots/hfip_baseline.dat'
 column_info_file: './metplotpy/plots/tcmpr_plots/plot_tcmpr_hdr.dat'
+hfip_bsln: 'no'
 
 
 
