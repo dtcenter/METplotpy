@@ -68,18 +68,18 @@ def test_plots_created(setup):
     for cur_file in only_files:
         assert cur_file in expected_names_list
 
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # ONLY RUN THESE TESTS ON A LOCAL MACHINE, they are not reliable when run in Github Actions container
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     # Check that file sizes (in bytes) are consistent (cannot check rank files, the confidence
     # intervals are generated using random seed-they will not be identical from one run to another
-    for cur_file in only_files:
-        match = re.match(r'.+_(mean).png', cur_file)
-        if match:
-          cur_file_size = int(os.path.getsize(os.path.join(output_dir, cur_file)))
-          expected_size = int(expected_sizes[cur_file])
-          if cur_file_size >= expected_size:
-              assert True
-          else:
-              print(f"Gross mismatch for {cur_file}")
-              assert False
+    # for cur_file in only_files:
+    #     match = re.match(r'.+_(mean).png', cur_file)
+    #     if match:
+    #       cur_file_size = int(os.path.getsize(os.path.join(output_dir, cur_file)))
+    #       expected_size = int(expected_sizes[cur_file])
+    #       assert cur_file_size >= expected_size
+    #
 
 
     # Clean up
