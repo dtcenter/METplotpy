@@ -658,9 +658,7 @@ The **boxplot.yaml** configuration file, in combination with the
 **tcmpr_defaults.yaml** configuration file, generates the following files in the directory specified by the
 *plot_dir* setting:
 
-.. image:: figure/BOXPLOT_SAMPLE_DATA_ABS(AMAX_WIND-BMAX_WIND)_boxplot.png
-
-
+.. image:: figure/BOXPLOT_SAMPLE_DATA_TK_ERR_boxplot.png
 
 
 **To generate the boxplot for the TK_ERR, enter the following command**:
@@ -691,7 +689,6 @@ The **relperf.yaml** configuration file, in combination with the
 This generates the relative performance plots for the ABS(AMAX_WIND-BMAX_WIND) and TK_ERR columns for the M221 and H221
 AMODELs:
 
- * RELPERF_SAMPLE_DATA_ABS(AMAX_WIND-BMAX_WIND)_relperf.png
 
  * RELPERF_SAMPLE_DATA_TK_ERR_relperf.png
 
