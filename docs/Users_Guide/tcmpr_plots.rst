@@ -143,6 +143,8 @@ saved to the working directory:
 Set up the custom configuration file:
 -------------------------------------
 
+For this example, the only changes that need to be made are the tcst_dir, plot_dir, and
+
 **Specify the input data in one of two ways**:
 
 * Specify by directory (use all files under this directory):
@@ -172,6 +174,27 @@ Replace the a.tcst, b.tcst, etc. with files of interest (include full file path)
    plot_dir: '/path/to/output_dir'
 
 Replace */path/to/output_dir* to an existing directory that has the appropriate read and write privileges.
+
+
+**Specify the log level and log file** (optional):
+
+.. code-block:: ini
+
+   log_level: INFO
+
+.. code-block:: ini
+
+   log_filename: /path/to/output/tcmpr_log.out
+
+Replace */path/to/output* to an existing directory with the appropriate read and write permissions.
+By default, the log level is set to ERROR (the least verbose) and logging is directed to STDOUT.  The following
+log levels are available (from most verbose to least): INFO, DEBUG, WARNING, ERROR.
+
+
+
+The following settings do not need to be modified to run this example.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 
 **Specify the series/line values of interest**:
 
@@ -285,19 +308,7 @@ forecast lead column if this name differs from that in the input data.
 In the example above, the data of interest/focus corresponds to the Atlantic Basin and the
 five specified levels.
 
-**Specify the log level and log file** (optional):
 
-.. code-block:: ini
-
-   log_level: INFO
-
-.. code-block:: ini
-
-   log_filename: /path/to/output/tcmpr_log.out
-
-Replace */path/to/output* to an existing directory with the appropriate read and write permissions.
-By default, the log level is set to ERROR (the least verbose) and logging is directed to STDOUT.  The following
-log levels are available (from most verbose to least): INFO, DEBUG, WARNING, ERROR.
 
 **Specify whether to perform event equalization**:
 
@@ -437,7 +448,7 @@ that plot type.  Two plot types will be generated, a boxplot and a relative perf
 The line colors, series, independent values and labels, etc. are the same as those used in the
 tcmpr_multi_plots.yaml custom config file.
 
-Copy this file to the working directory:
+Copy the config files to the working directory:
 
 .. code-block:: ini
 
