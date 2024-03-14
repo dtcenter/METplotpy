@@ -63,7 +63,7 @@ class TcmprSkill(Tcmpr):
 
         self.skill_logger.info(f'Range of {stat_name}: {yaxis_min}, {yaxis_max}')
 
-        if self.config_obj.hfip_bsln is not 'no':
+        if self.config_obj.hfip_bsln != 'no':
            # This will be a valid value for hfip_bsln. This has been
            # validated/vetted in the configuration code (tcmpr_config.py).
            super()._add_hfip_baseline()
