@@ -10,6 +10,7 @@ from the METcalcpy vertical interpolation module, *vertical_interpolation.py*:
 
 https://metcalcpy.readthedocs.io/en/develop/Users_Guide/vertical_interpolation.html
 
+**NOTE**:Data must have the following **required fields**: **temperature**, **relative humidity**, and **surface pressure**.  These are required by the METcalcpy vertical_interpolation module to compute pressure indices.
 
 Example
 =======
