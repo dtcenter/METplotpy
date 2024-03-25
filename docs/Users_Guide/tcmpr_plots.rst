@@ -9,7 +9,10 @@ The TCMPR plots were originally available under the MET repository: https://gith
 and written in R script.  The code has been rewritten in Python and is now located in the METplotpy repository:
 https://github.com/dtcenter/METplotpy/metplotpy/plots/tcmpr_plots
 
-The TCMPR plots require TCMPR line type data produced by the MET TC-pairs tool. In addition, the METcalcpy
+The TCMPR plots require TCMPR line type data produced by the MET TC-pairs tool. The data
+must have all header names consistent with those in the MET User's Guide, section 24.2.
+
+In addition, the METcalcpy
 source code will be needed to perform event equalization and other necessary calculations.
 
 The METcalcpy repository is located:
