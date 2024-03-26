@@ -18,6 +18,15 @@ refer to the
 Example
 =======
 
+Data
+----
+
+The ROC diagram utilizes MET CTC or PCT linetype data.  The MET .stat output files must
+first be reformatted into a format recognized by the ROC diagram code.  The METdataio METreformat
+module provides reformatting support for these linetypes.  Please refer to the
+`METdataio User's Guide <https://metdataio.readthedocs.io/en/v3.0.0-beta3/Users_Guide/reformat_stat_data.html>`_
+for instructions on reformatting the MET .stat output.
+
 Sample Data
 -----------
 
@@ -152,7 +161,8 @@ privileges.  To modify the verbosity of logging than what is set in the default 
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
-
+*NOTE*:
+The ROC diagram does not provide support for selecting data based on
 
 Using Defaults
 --------------

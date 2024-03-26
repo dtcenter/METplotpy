@@ -357,3 +357,23 @@ def test_pct_no_warnings():
     else:
         assert True
         os.remove(os.path.join(output_plot))
+
+
+def test_ctc_reformatted():
+    '''
+        Verify that the ROC diagram is generated successfully
+        from reformatted CTC data.
+    '''
+
+    custom_config_filename = "./CTC_wind_reformatted.yaml"
+    output_plot = "./CTC_wind_reformatted.png"
+
+    print("\n Testing for presence of the CTC_wind_reformatted.png plot...")
+
+    roc.main(custom_config_filename)
+    assert os.path.isfile(output_plot) == True
+    # Checking for plot size isn't reliable
+    #expected_filesize = int(43239)
+    #plot_filesize =  int(os.path.getsize(output_plot))
+    #assert plot_filesize >= expected_filesize
+    os.remove(os.path.join(output_plot))

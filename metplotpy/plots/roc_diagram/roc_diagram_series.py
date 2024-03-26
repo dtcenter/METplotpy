@@ -15,7 +15,6 @@ __author__ = 'Minna Win'
 
 import warnings
 import pandas as pd
-import re
 import metcalcpy.util.utils as utils
 from ..series import Series
 from ..util import prepare_pct_roc, prepare_ctc_roc
@@ -78,7 +77,6 @@ class ROCDiagramSeries(Series):
 
         df_sum = None
         if self.config.linetype_ctc:
-            subset_df = self._add_ctc_columns(subset_df)
             pody, pofd, thresh = prepare_ctc_roc(subset_df, self.config.ctc_ascending)
 
             if self.config.summary_curve != 'none':
@@ -151,69 +149,4 @@ class ROCDiagramSeries(Series):
 
         return df_subset
 
-    def _add_ctc_columns(self, df_input):
-        '''
-        Create two new columns in the data frame from the fcst_thresh
-        column of the CTC linetype data. This will be useful in sorting
-        based on the fcst_thresh values.
 
-        Args:
-        @param df_input:  the dataframe containing all the CTC data
-
-        Returns:
-        @param thresh_sorted:  a new dataframe that is sorted based on
-                               the threshold value and threshold operator
-                               that comprise the fcst_thresh column.
-                               If two or more threshold values are identical,
-                               use the threshold operator (<,<=,==, >=,>)
-                               to determine the order.
-        '''
-
-        # If the df_input dataframe is empty (most likely as a result of event equalization),
-        # return the df_input data frame.
-        if df_input.empty:
-            return df_input
-
-        # From the fcst_thresh column, create two new columns, thresh_values and
-        # op_wts that we can then sort using Pandas' multi-column sorting
-        # capability.
-        operators = []
-        values = []
-        thresholds = df_input['fcst_thresh']
-        # Assign weights to the operators, 1 for the <, 5 for the > so that
-        # > supercedes all other operators.
-        wt_maps = {'<': 1, '<=': 2, '==': 3, '>=': 4, '>': 5}
-        wts = []
-        for thrsh in thresholds:
-            # treat the fcst_thresh as two groups, one for
-            # the operator and the other for the value (which
-            # can be a negative value).
-            match = re.match(r'(\<|\<=|\==|\>=|\>)*((-)*([0-9])(.)*)', thrsh)
-            match_text = re.match(r'(\<|\<=|\==|\>=|\>)*(.*)', thrsh)
-            if match:
-                operators.append(match.group(1))
-                value = float(match.group(2))
-                values.append(value)
-            elif match_text:
-                operators.append(match_text.group(1))
-                value = match_text.group(2)
-                values.append(value)
-            else:
-                raise ValueError("fcst_thresh has a value that doesn't conform to "
-                                 "the expected format")
-
-        for operator in operators:
-            # if no operator precedes the number in fcst_thresh,
-            # then assume this is the same as == and assign a weight of 3
-            if operator is None:
-                wts.append(3)
-            else:
-                wts.append(wt_maps[operator])
-
-        # Add these columns to the input dataframe
-        df_input['thresh_values'] = values
-        df_input['op_wts'] = wts
-
-        # return the input dataframe with two additional columns if
-        # everything worked as expected
-        return df_input
