@@ -13,9 +13,8 @@
 __author__ = 'Minna Win'
 
 import argparse
-from typing import Tuple
 import sys
-import getpass
+import os
 import logging
 import gc
 import re
@@ -316,6 +315,13 @@ def get_common_logger(log_level, log_filename):
                         currently in use by a plot type.
     '''
 
+    # If directory for logfile doesn't exist, create it
+    log_dir = os.path.dirname(log_filename)
+    try:
+       os.makedirs(log_dir, exist_ok=True)
+    except OSError:
+        pass
+
     # Supported log levels.
     log_level = log_level.upper()
     log_levels = {'DEBUG': logging.DEBUG, 'INFO': logging.INFO,
@@ -338,7 +344,7 @@ def get_common_logger(log_level, log_filename):
                             datefmt='%Y-%m-%d %H:%M:%S',
                             filename=log_filename,
                             filemode='w')
-    mpl_logger = logging.getLogger(name='matplotlib').setLevel(logging.CRITICAL)
+    logging.getLogger(name='matplotlib').setLevel(logging.CRITICAL)
     common_logger = logging.getLogger(__name__)
     f = cf()
     common_logger.addFilter(f)
