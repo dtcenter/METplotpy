@@ -8,11 +8,11 @@ colors:
   - '#800080'
   - '#FFA500'
 create_html: 'False'
-derived_series_1: [ ]
+derived_series_1: []
 fixed_vars_vals_input:
   BASIN:
     BASIN_0:
-      - AL
+    - AL
 
 grid_col: '#cccccc'
 grid_lty: 3
@@ -20,9 +20,9 @@ grid_lwd: 1
 grid_on: 'False'
 grid_x: listX
 
-indy_vals: [ ]
+indy_vals: []
 
-indy_label: [ ]
+indy_label: []
 
 indy_var: 'LEAD'
 legend_box: o
@@ -33,7 +33,7 @@ legend_ncol: 3
 legend_size: 0.8
 line_type: None
 
-list_stat_1: [ ]
+list_stat_1: []
 log_filename: stdout
 log_level: ERROR
 
@@ -43,11 +43,11 @@ mar:
   b: 105 #bottom margin
   t: 120 #top margin
 mgp:
-  - 1
-  - 1
-  - 0
+- 1
+- 1
+- 0
 plot_caption: ''
-plot_disp: [ ]
+plot_disp: []
 
 plot_height: 8.5
 plot_res: 72
@@ -55,21 +55,21 @@ plot_stat: median
 plot_type: png16m
 plot_units: in
 plot_width: 11.0
-series_order: [ ]
-series_val_1: { }
-series_ci: [ ]
+series_order: []
+series_val_1: {}
+series_ci: []
 series_line_width:
-  - 1
-  - 1
-  - 1
+- 1
+- 1
+- 1
 series_line_style:
   - '-'
   - '-'
   - '-'
 series_symbols:
-  - 'circle-open'
-  - 'circle-open'
-  - 'circle-open'
+- 'circle-open'
+- 'circle-open'
+- 'circle-open'
 
 series_symbols_size:
   - 7
@@ -80,14 +80,14 @@ series_symbols_size:
 show_nstats: 'True'
 
 tcst_dir:
-tcst_files: [ ]
+tcst_files: []
 
 title:
 title_align: 0.5
 title_offset: -2.0833
 title_size: 1.4
 title_weight: 2.0
-user_legend: [ ]
+user_legend: []
 x2lab_align: 0.5
 x2lab_offset: -0.5
 x2lab_size: 0.8
@@ -130,7 +130,7 @@ caption_weight: 1
 caption_align: 0
 caption_col: '#333333'
 n_min: 11
-plot_list: [] # boxplot, point, mean, median, relperf, rank, scatter ,skill_mn, skill_md
+plot_type_list: [] # boxplot, point, mean, median, relperf, rank, scatter ,skill_mn, skill_md
 rp_diff:
   - '>=100'
 hfip_bsln: no
