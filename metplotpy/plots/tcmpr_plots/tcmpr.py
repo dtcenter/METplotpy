@@ -511,8 +511,6 @@ def perform_event_equalization(input_df:pd.DataFrame, is_skill:bool, config_obj:
     return output_data
 
 
-
-
 def main(config_filename=None):
     """
         Generates a sample, default, TCMPR plot using a combination of
@@ -683,7 +681,10 @@ def read_tcst_files(config_obj, tcst_files):
     for file in tcst_files:
         if os.path.exists(file):
             print(f'Reading track data:{file}')
-            file_df = pd.read_csv(file, sep=r'\s+|;|:', header='infer', engine="python")
+            if config_obj.is_tcdiag:
+                file_df = pd.read_csv(file, sep='\t')
+            else:
+                file_df = pd.read_csv(file, sep=r'\s+|;|:', header='infer', engine="python")
             file_df['LEAD_HR'] = file_df['LEAD'] / 10000
             file_df['LEAD_HR'] = file_df['LEAD_HR'].astype('int')
             all_filters = []
@@ -704,7 +705,10 @@ def read_tcst_files(config_obj, tcst_files):
             # use numpy to select the rows where any record evaluates to True
             mask = np.array(all_filters).all(axis=0)
 
-            file_df['VALID_TIME'] = pd.to_datetime(file_df['VALID'], format='%Y%m%d_%H%M%S')  # 20170417_060000
+            if config_obj.is_tcdiag:
+                file_df['VALID_TIME'] = file_df['VALID']
+            else:
+                file_df['VALID_TIME'] = pd.to_datetime(file_df['VALID'], format='%Y%m%d_%H%M%S')  # 20170417_060000
             # Define a case column
             file_df['equalize'] = file_df.loc[:, 'BMODEL'].astype(str) \
                                   + ':' + file_df.loc[:, 'STORM_ID'].astype(str) \
