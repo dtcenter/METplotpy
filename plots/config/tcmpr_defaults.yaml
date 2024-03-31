@@ -102,7 +102,7 @@ xlab_align: 0.5
 xlab_offset: 2
 xlab_size: 1
 xlab_weight: 1
-xlim: [ ]
+xlim: []
 xtlab_decim: 0
 xtlab_horiz: 0.5
 xtlab_orient: 1
@@ -114,7 +114,7 @@ ylab_align: 0.5
 ylab_offset: 15
 ylab_size: 1
 ylab_weight: 1
-ylim: [ ]
+ylim: []
 ytlab_horiz: 0.5
 ytlab_orient: 1
 ytlab_perp: 0.5
@@ -130,16 +130,16 @@ caption_weight: 1
 caption_align: 0
 caption_col: '#333333'
 n_min: 11
-plot_list: [ ] # boxplot, point, mean, median, relperf, rank, scatter ,skill_mn, skill_md
+plot_list: [] # boxplot, point, mean, median, relperf, rank, scatter ,skill_mn, skill_md
 rp_diff:
   - '>=100'
 hfip_bsln: no
 footnote_flag: 'False'
 event_equal: 'False'
-skill_ref: [ ]
+skill_ref: []
 demo_yr: NA  #not used in Rscript. not sure if we need it
-scatter_x: [ ]
-scatter_y: [ ]
+scatter_x: []
+scatter_y: []
 plot_dir: './'
 subtitle: ''
 prefix:
