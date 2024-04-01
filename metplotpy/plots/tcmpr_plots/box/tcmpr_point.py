@@ -66,8 +66,39 @@ class TcmprPoint(TcmprBoxPoint):
         # create a trace
 
         # boxplot, when connect_points is False in config file
-       
-        if not self.config_obj.connect_points:
+        if 'point' in self.config_obj.plot_type_list:
+            if self.config_obj.connect_points:
+                # line plot
+                mode = 'lines+markers'
+            else:
+                # points only
+                mode = 'markers'
+            # Create a point plot
+            self.figure.add_trace(
+                go.Scatter(x=series.series_data['LEAD_HR'],
+                           y=series.series_points['mean'],
+                           showlegend=True,
+                           mode=mode,
+                           name=self.config_obj.user_legends[series.idx],
+                           marker=dict(
+                               color=marker_line_color,
+                               size=8,
+                               opacity=0.7,
+                               line=dict(
+                                   color=self.config_obj.colors_list[series.idx],
+                                   width=1
+                               )
+                           ),
+                           ),
+                secondary_y=series.y_axis != 1
+            )
+
+            # When a line plot is requested, connect any gaps
+            if self.config_obj.connect_points:
+                self.figure.update_traces(connectgaps=True)
+
+        else:
+            # Boxplot
             self.figure.add_trace(
                 go.Box(x=series.series_data['LEAD_HR'],
                        y=series.series_data['PLOT'],
@@ -92,25 +123,4 @@ class TcmprPoint(TcmprBoxPoint):
                        ),
                 secondary_y=series.y_axis != 1
             )
-        else:
-            # Create a point plot
-            self.figure.add_trace(
-                go.Scatter(x=series.series_data['LEAD_HR'],
-                           y=series.series_points['mean'],
-                           showlegend=True,
-                           mode='lines+markers',
-                           name=self.config_obj.user_legends[series.idx],
-                           marker=dict(
-                               color=marker_line_color,
-                               size=8,
-                               line=dict(
-                                   color=self.config_obj.colors_list[series.idx],
-                                   width=1
-                               )
-                           ),
-                           ),
-                secondary_y=series.y_axis != 1
-            )
 
-            # Connect any gaps, so we always have line plot(s)
-            self.figure.update_traces(connectgaps=True)
