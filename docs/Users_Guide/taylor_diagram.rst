@@ -35,8 +35,9 @@ Sample Data
 -----------
 
 
-Continuous statistics line type or SL1L2 line type from the MET tool's Point-Stat or Grid-Stat
-tools is required for creating a Taylor diagram, where the data is text output in columnar format.
+The continuous statistics line type CNT, from the MET tool's Point-Stat or Grid-Stat
+tools is required for creating a Taylor diagram, where the data is text output in columnar format and
+the FSTDEV, OSTDEV, and PR_CORR statistics are available for plotting.
 
 The sample data used to create these plots is available in the METplotpy
 repository, where the Taylor diagram scripts are located:
