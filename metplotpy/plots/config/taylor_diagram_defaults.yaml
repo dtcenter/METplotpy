@@ -25,7 +25,9 @@ colors:
   - "#1500ff" # royal blue
   - "#7f00ff" # purple
 
-fcst_var_val_1: {DLWRF}
+# Not used in filtering data.  Set as fcst_var under the
+# series_val_1 setting below:
+fcst_var_val_1: {}
 
 legend_box: 'box'
 
@@ -90,6 +92,8 @@ series_val_1:
     - Penn_State
     - Sioux_Falls
     - Table_Mountain
+  fcst_var:
+    - DLWRF
 
 # input file
 stat_input: ../../../test/taylor_diagram/plot_dlwr_sample.data
