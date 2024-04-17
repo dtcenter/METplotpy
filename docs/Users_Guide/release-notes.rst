@@ -10,7 +10,34 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Release Notes
 =======================
 
-METplotpy Version 3.0.0-beta3 release notes (20231108)
+METplotpy Version 3.0.0-beta4 release notes (20240417)
+------------------------------------------------------
+
+
+  .. dropdown:: New Plots
+
+
+
+  .. dropdown:: Enhancements
+
+
+     * Update GitHub actions workflows to switch from node 16 to node 20 (`#414 <https://github.com/dtcenter/METplotpy/issues/414>`_).
+
+     * **Add GitHub action to run SonarQube for METplotpy pull requests and feature branches** (`#429 <https://github.com/dtcenter/METplotpy/issues/429>`_).
+
+
+  .. dropdown:: Internal
+
+
+
+  .. dropdown:: Bugfixes
+
+
+    * **TC-RMW plot needs updating to support changes to input** (`#425 <https://github.com/dtcenter/METplotpy/issues/425>`_).
+
+
+
+METplotpy Version 3.0.0-beta3 release notes (20240206)
 ------------------------------------------------------
 
 
@@ -27,13 +54,10 @@ METplotpy Version 3.0.0-beta3 release notes (20231108)
   .. dropdown:: Internal
 
 
-     * Update GitHub actions workflows to switch from node 16 to node 20 (`#414 <https://github.com/dtcenter/METplotpy/issues/414>`_).
-
-
-
-
 
   .. dropdown:: Bugfixes
+
+ * TC-RMW plot needs updating to support changes to input (`#425 <https://github.com/dtcenter/METplotpy/issues/425>`_).
 
 
 
@@ -47,7 +71,7 @@ METplotpy Version 3.0.0-beta2 release notes (20231108)
   .. dropdown:: Enhancements
 
 
-     * **hide/show the legend entrie line-by-line** (`#355 <https://github.com/dtcenter/METplotpy/issues/355>`_).
+     * **hide/show the legend entries line-by-line** (`#355 <https://github.com/dtcenter/METplotpy/issues/355>`_).
 
 
      * **specify the color of the no resolution and no skill lines for the reliability diagram** (`#329 <https://github.com/dtcenter/METplotpy/issues/329>`_).
