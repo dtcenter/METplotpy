@@ -65,7 +65,7 @@ class TcmprPoint(TcmprBoxPoint):
 
         # create a trace
 
-        # boxplot, when connect_points is False in config file
+        # line plot, when connect_points is False in config file
         if 'point' in self.config_obj.plot_type_list:
             if self.config_obj.connect_points:
                 # line plot
@@ -74,9 +74,24 @@ class TcmprPoint(TcmprBoxPoint):
                 # points only
                 mode = 'markers'
             # Create a point plot
+
+            # Ensure that the size of the list of x and y values
+            # are the same, or the resulting plot will be incorrect.
+            # This mismatch occurs when the x_list represents the
+            # available lead hours in the series data and the
+            # series_points has None where there isn't data corresponding
+            # to lead hours in the series_points dataframe.
+            #
+            y_list = series.series_points['mean']
+            x_list = series.series_data['LEAD_HR']
+            if len(x_list) != len(y_list):
+                # Clean up None values in the series.series_points['mean'] list
+                # The None values are assigned by the _create_series_points() method.
+                y_list = [y_values for y_values in y_list if y_values is not None]
+
             self.figure.add_trace(
-                go.Scatter(x=series.series_data['LEAD_HR'],
-                           y=series.series_points['mean'],
+                go.Scatter(x=x_list,
+                           y=y_list,
                            showlegend=True,
                            mode=mode,
                            name=self.config_obj.user_legends[series.idx],
