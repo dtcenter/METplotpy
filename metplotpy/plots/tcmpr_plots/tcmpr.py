@@ -551,6 +551,23 @@ def main(config_filename=None):
 
     config_obj = TcmprConfig(docs)
 
+    # Create the requested plot(s)
+    create_plot(config_obj)
+
+
+def create_plot(config_obj:dict)-> None:
+    """
+        One or more TCMPR plots is generated. Event equalization is performed if
+        it was requested by a setting in the yaml configuration file.
+
+        Args:
+           @param config_obj:  The config object containing all the necessary information obtained
+                               from the yaml configuration file.
+
+        Returns: None, creates one or more plots
+    """
+
+
     tcst_files = []
     # list all .tcst files in tcst_dir
     if config_obj.tcst_dir is not None and len(config_obj.tcst_dir) > 0 and os.path.exists(config_obj.tcst_dir):
@@ -584,11 +601,11 @@ def main(config_filename=None):
         is_skill = False
         if config_obj.use_ee:
             if plot_type == 'skill_mn' or plot_type == 'skill_md':
-               is_skill = True
-               # perform event equalization on the skill_mn|skill_md plot type
-               logger.info(f"Perform event equalization for {plot_type}: {datetime.now()}")
-               output_result = perform_event_equalization(orig_input_df, is_skill, config_obj)
-               input_df = output_result
+                is_skill = True
+                # perform event equalization on the skill_mn|skill_md plot type
+                logger.info(f"Perform event equalization for {plot_type}: {datetime.now()}")
+                output_result = perform_event_equalization(orig_input_df, is_skill, config_obj)
+                input_df = output_result
             else:
                 logger.info(f"Perform event equalization for {plot_type}: {datetime.now()}")
                 output_result = perform_event_equalization(orig_input_df, is_skill, config_obj)
@@ -639,7 +656,7 @@ def main(config_filename=None):
                 elif plot_type == 'skill_mn':
                     from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_skill_mean import TcmprSkillMean
                     plot = TcmprSkillMean(config_obj, column_info, col_to_plot, common_case_data, input_df,
-                                         cur_stat,  baseline_data)
+                                          cur_stat, baseline_data)
                 elif plot_type == 'skill_md':
                     from metplotpy.plots.tcmpr_plots.skill.median.tcmpr_skill_median import TcmprSkillMedian
                     plot = TcmprSkillMedian(config_obj, column_info, col_to_plot, common_case_data, input_df, cur_stat)
