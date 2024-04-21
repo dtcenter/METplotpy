@@ -555,7 +555,7 @@ def main(config_filename=None):
     create_plot(config_obj)
 
 
-def create_plot(config_obj:dict)-> None:
+def create_plot(config_obj: dict) -> None:
     """
         One or more TCMPR plots is generated. Event equalization is performed if
         it was requested by a setting in the yaml configuration file.
@@ -564,10 +564,11 @@ def create_plot(config_obj:dict)-> None:
            @param config_obj:  The config object containing all the necessary information obtained
                                from the yaml configuration file.
 
-        Returns: None, creates one or more plots
+        Returns: None, creates one or more plots as specified in the yaml config file
     """
 
-
+    # Find input files, they must have the .tcst extension and filename must have
+    # the prefix "tc_pairs" (e.g. tc_pairs_gfso_20220401.tcst)
     tcst_files = []
     # list all .tcst files in tcst_dir
     if config_obj.tcst_dir is not None and len(config_obj.tcst_dir) > 0 and os.path.exists(config_obj.tcst_dir):
@@ -581,7 +582,7 @@ def create_plot(config_obj:dict)-> None:
     input_df = orig_input_df.copy(deep=True)
 
     # Define a demo and retro column
-    # TODO these values never get used comment out for now
+    # Note: Currently not supported, leave commented out for now.
     # input_df = orig_input_df.copy(deep=True)
     # if config_obj.demo_yr is not None and config_obj.demo_yr != 'NA':
     #     demo_yr_obj = datetime.strptime(str(config_obj.demo_yr), '%Y')
@@ -594,6 +595,8 @@ def create_plot(config_obj:dict)-> None:
                               quotechar='"', skipinitialspace=True, encoding='utf-8')
 
     logger = util.get_common_logger(config_obj.log_level, config_obj.log_filename)
+
+    # Determine the plot type and create that plot
     for plot_type in config_obj.plot_type_list:
 
         # Apply event equalization, if requested
