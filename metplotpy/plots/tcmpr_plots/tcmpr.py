@@ -420,8 +420,11 @@ class Tcmpr(BasePlot):
 
         # Create the directory for the output plot if it doesn't already exist
         dirname = os.path.dirname(os.path.abspath(self.plot_filename))
-        if not os.path.exists(dirname):
-            os.mkdir(dirname)
+        try:
+           os.makedirs(dirname, exist_ok=True)
+        except FileExistsError:
+            pass
+
         self.logger.info(f'Saving the image file: {self.plot_filename}')
         if self.figure:
             try:
