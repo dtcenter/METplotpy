@@ -1,5 +1,5 @@
 ---
-plot_filename: /tmp/scatterplot.png
+plot_filename: ./scatterplot.png
 
 legend:
   x: 0.5
@@ -12,7 +12,7 @@ legend:
   bordercolor: # black in default config
   borderwidth: 2
 
-connect_data_gaps: true
+connect_data_gaps: false
 title: Scatter plot of point data
 xaxis:
   title: X
@@ -23,13 +23,19 @@ lines:
     data_file:
       ./scatter1_plot_data.txt
     color: blue
-    width: 2
-    dash:
+    line_width: 2
+    type: horiz_line
+    position: 0
+    line_style:
 
   - name: Data2 Trace
     data_file:
       ./scatter2_plot_data.txt
     color: firebrick
-    width: 4
-    dash: dash
+    line_width: 4
+    type: horiz_line
+    position: 0
+    line_style:
 
+log_level: info
+log_filename: ./scatter_log.txt
