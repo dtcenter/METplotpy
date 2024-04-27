@@ -10,11 +10,18 @@ scatters:
   - name: Scatter 1
     data_file: ./scatter1_plot_data.txt
     color: black
-    width: 1
-    dash:
+    line_width: 1
+    type: horiz_line
+    position: 0
+    line_style: dash
 
   - name: Scatter 2
     data_file: ./scatter2_plot_data.txt
     color: black
-    width: 1
-    dash:
+    line_width: 1
+    type: horiz_line
+    position: 0
+    line_style: dash
+
+    log_level: ERROR
+    log_filename: ./scatter_log.txt
