@@ -251,7 +251,7 @@ class TcmprConfig(Config):
         """
 
         hfip_bsln = str(self.get_config_value('hfip_bsln'))
-        hfip_bsln.lower()
+        hfip_bsln = hfip_bsln.lower()
 
         # Validate that hfip_bsln is one of the following; (no, 0, 5, 10 year goal)
         supported_bsln = ['no', '0', '5', '10']
