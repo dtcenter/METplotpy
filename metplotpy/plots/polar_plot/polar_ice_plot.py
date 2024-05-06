@@ -41,7 +41,6 @@ from pandas.plotting import register_matplotlib_converters
 
 import metplotpy.plots.util as util
 import warnings
-warnings.catch_warnings()
 
 register_matplotlib_converters()
 
@@ -281,7 +280,7 @@ if __name__ == '__main__':
         config = yaml.load(
             open(yaml_file_name), Loader=yaml.FullLoader)
     except yaml.YAMLError as exc:
-        sys.exit(exc)
+        sys.exi.t(exc)
 
     polar_logger = util.get_common_logger(config['log_level'], config['log_filename'])
     start = datetime.now()
