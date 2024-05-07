@@ -13,6 +13,7 @@ Class Name: TcmprSeries
 
 import re
 from typing import Union
+from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -21,6 +22,7 @@ from pandas import DataFrame
 import metcalcpy.util.utils as utils
 from .tcmpr_util import get_prop_ci
 from ..series import Series
+import metplotpy.plots.util as util
 
 
 class TcmprSeries(Series):
@@ -32,11 +34,23 @@ class TcmprSeries(Series):
     """
 
     def __init__(self, config, idx: int, input_data, series_list: list,
-                 series_name: Union[list, tuple], skill_ref_data: DataFrame = None):
+                 series_name: Union[list, tuple], stat_name, skill_ref_data: DataFrame = None):
         self.series_list = series_list
         self.series_name = series_name
         self.rank_min_val = []
-        self.series_len = len(config.get_series_y(1)) + len(config.get_config_value('derived_series_1'))
+        unique_series_val = []
+
+        # Set up Logging
+        self.series_logger = util.get_common_logger(config.log_level, config.log_filename)
+
+        # The number of series for each plot is determined by the number of entries under series_val_1
+        all_series:list = config.get_series_y(1)
+        for cur in all_series:
+            if cur[0] not in unique_series_val:
+                unique_series_val.append(cur[0])
+
+        self.series_len = len(unique_series_val) + len(config.get_config_value('derived_series_1'))
+
         self.skill_ref_data = skill_ref_data
         if idx >= self.series_len:
             super().__init__(config, 0, input_data, 1)
@@ -74,6 +88,8 @@ class TcmprSeries(Series):
                dictionary with CI ,point values and number of stats as keys
         """
 
+        start_time = datetime.now()
+
         self._init_series_data()
 
         series_points_results = {'val': [], 'ncl': [], 'ncu': [], 'nstat': [], 'mean': []}
@@ -93,6 +109,9 @@ class TcmprSeries(Series):
                 series_points_results['mean'].append(None)
             else:
                 series_points_results['mean'].append(np.nanmean(point_data['PLOT'].tolist()))
+        end_time = datetime.now()
+        total_time = end_time - start_time
+        self.series_logger.info(f"Took {total_time} milliseconds to generate series points.")
 
         return series_points_results
 
@@ -151,14 +170,17 @@ class TcmprSeries(Series):
             self._calculate_derived_values(operation, series_data_1, series_data_2)
 
     def create_relperf_points(self, case_data):
-        print('Case_data size =' + str(len(case_data.index)))
+
+        start_time = datetime.now()
+
+        self.series_logger.info('Case_data size =' + str(len(case_data.index)))
         for indy in self.config.indy_vals:
 
             if utils.is_string_integer(indy):
                 indy = int(indy)
             elif utils.is_string_strictly_float(indy):
                 indy = float(indy)
-                print("indy float =" + str(indy))
+                self.series_logger.info("indy float =" + str(indy))
             if self.idx >= self.series_len:
                 series_val = self.series_name[0]
             else:
@@ -173,7 +195,15 @@ class TcmprSeries(Series):
             self.series_points['val'].append(s['val'])
             self.series_points['ncu'].append(s['ncu'])
 
+        end_time = datetime.now()
+        total_time = end_time - start_time
+        self.series_logger.info(f"Took {total_time} milliseconds to compute relative performance and CI points")
+
+
     def create_rank_points(self, case_data):
+
+        start_time = datetime.now()
+
         for indy in self.config.indy_vals:
             if utils.is_string_integer(indy):
                 indy = int(indy)
@@ -199,6 +229,10 @@ class TcmprSeries(Series):
                 n_tot = len(case_data_indy)
                 rank_min = 100 * n_cur / n_tot
                 self.rank_min_val.append(rank_min)
+
+        end_time = datetime.now()
+        total_time = end_time - start_time
+        self.series_logger.info(f"Took {total_time} milliseconds to create rank points for relative performance")
 
     def _calculate_derived_values(self,
                                   operation: str,

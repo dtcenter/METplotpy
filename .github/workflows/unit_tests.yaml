@@ -90,5 +90,8 @@ jobs:
           pytest test_prob_hist.py
           pytest test_rank_hist.py
           pytest test_rel_hist.py
+          cd ../tcmpr_plots
+          pytest --capture=fd test_tcmpr_plots.py
+
           
          
