@@ -1,24 +1,30 @@
+import datetime
+
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
-
+import metplotpy.plots.util as util
 
 class TcmprBoxPoint(Tcmpr):
-    def __init__(self, config_obj, column_info, col, case_data, input_df, baseline_data):
-        super().__init__(config_obj, column_info, col, case_data, input_df)
+    def __init__(self, config_obj, column_info, col, case_data, input_df,  baseline_data, stat_name):
+        super().__init__(config_obj, column_info, col, case_data, input_df, stat_name)
+        # Set up Logging
+        self.box_point_logger = util.get_common_logger(self.config_obj.log_level, self.config_obj.log_filename)
+        self.series_len = len(config_obj.get_series_y(1)) + len(config_obj.get_config_value('derived_series_1'))
+
 
     def _init_hfip_baseline_for_plot(self):
         if 'Water Only' in self.config_obj.title or self.cur_baseline == 'no':
-            print("Plot HFIP Baseline:" + self.cur_baseline)
+            self.box_point_logger.info(f"Plot HFIP Baseline: {self.cur_baseline}")
         else:
             self.cur_baseline_data = self.cur_baseline_data[(self.cur_baseline_data['TYPE'] == 'CONS')]
-            print('Plot HFIP Baseline:' + self.cur_baseline.replace('Error ', ''))
+            self.box_point_logger.info(f"Plot HFIP Baseline: {self.cur_baseline.replace('Error ', '')}")
 
     def _draw_series(self, series: TcmprSeries) -> None:
         pass
 
     def _create_figure(self):
         """ Create a box plot from default and custom parameters"""
-
+        start_time = datetime.datetime.now()
         self.figure = self._create_layout()
         self._add_xaxis()
         self._add_yaxis()
@@ -48,7 +54,7 @@ class TcmprBoxPoint(Tcmpr):
                 yaxis_min, yaxis_max = self.find_min_max(series, yaxis_min, yaxis_max)
                 self._draw_series(series)
 
-        print(f'Range of {self.config_obj.list_stat_1[0]}: {yaxis_min}, {yaxis_max}')
+        self.box_point_logger.info(f'Range of {self.config_obj.list_stat_1[0]}: {yaxis_min}, {yaxis_max}')
         self._add_hfip_baseline()
 
         self.figure.update_layout(shapes=[dict(
@@ -73,3 +79,7 @@ class TcmprBoxPoint(Tcmpr):
 
         # add x2 axis
         self._add_x2axis(self.config_obj.indy_vals)
+        end_time = datetime.datetime.now()
+        total_time = end_time - start_time
+        self.box_point_logger.info(f"Took {total_time} millisecs to create a boxplot")
+

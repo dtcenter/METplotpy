@@ -13,19 +13,21 @@ Class Name: tcmpr_config.py
 Holds values set in the box plot config file(s)
 """
 
+import warnings
 import itertools
 
 import metcalcpy.util.utils as utils
 from .. import constants
 from .. import util
 from ..config import Config
+import metplotpy.plots.util as util
 
 
 class TcmprConfig(Config):
     """
     Prepares and organises Line plot parameters
     """
-
+    SUPPORTED_PLOT_TYPES = ['boxplot', 'point', 'mean', 'median', 'relperf', 'rank', 'skill_mn', 'skill_md']
     def __init__(self, parameters: dict) -> None:
         """ Reads in the plot settings from a box plot config file.
 
@@ -35,8 +37,13 @@ class TcmprConfig(Config):
         """
         super().__init__(parameters)
 
+        # Logging
+        self.log_filename = self.get_config_value('log_filename')
+        self.log_level = self.get_config_value('log_level')
+        self.logger = util.get_common_logger(self.log_level, self.log_filename)
+
         ##############################################
-        self.plot_list = self._get_plot()
+        self.plot_type_list = self._get_plot()
         self.tcst_files = self._get_tcst_files()
         self.tcst_dir = self._get_tcst_dir()
         self.rp_diff = self._get_rp_diff()
@@ -219,9 +226,12 @@ class TcmprConfig(Config):
         return self.create_list_by_series_ordering(markers_size)
 
     def _get_plot(self) -> list:
-        plot_list = self.get_config_value('plot_list')
-        # TODO validate plots BOXPLOT, POINT, MEAN, MEDIAN, RELPERF, RANK, SKILL_MN, SKILL_MD
-        return plot_list
+        plot_type_list = self.get_config_value('plot_type_list')
+        for cur_plot_type in plot_type_list:
+            if cur_plot_type not in self.SUPPORTED_PLOT_TYPES:
+                raise ValueError("Requesting an unsupported plot type. Supported types: boxplot, "
+                             "point, mean, median, relperf, rank, skill_mn, and skill_md ")
+        return plot_type_list
 
     def _get_tcst_files(self) -> list:
         tcst_files = self.get_config_value('tcst_files')
@@ -235,8 +245,19 @@ class TcmprConfig(Config):
         return rp_diff
 
     def _get_hfip_bsln(self) -> str:
+        """
+           Expect hfip_bsln value to be 'no', 0, 5, or 10
+
+        """
+
         hfip_bsln = str(self.get_config_value('hfip_bsln'))
-        # TODO validate hfip_bsln (no, 0, 5, 10 year goal)
+        hfip_bsln = hfip_bsln.lower()
+
+        # Validate that hfip_bsln is one of the following; (no, 0, 5, 10 year goal)
+        supported_bsln = ['no', '0', '5', '10']
+        if hfip_bsln not in supported_bsln:
+            raise ValueError(f"Error: Valid hfip_bsln values are: {supported_bsln}. ")
+
         return hfip_bsln
 
     def _get_plot_disp(self) -> list:

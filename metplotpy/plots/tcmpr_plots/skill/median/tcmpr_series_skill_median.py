@@ -29,8 +29,8 @@ class TcmprSeriesSkillMedian(TcmprSeries):
     """
 
     def __init__(self, config, idx: int, input_data, series_list: list,
-                 series_name: Union[list, tuple], skill_ref_data: DataFrame = None):
-        super().__init__(config, idx, input_data, series_list, series_name, skill_ref_data)
+                 series_name: Union[list, tuple], stat_name, skill_ref_data: DataFrame = None):
+        super().__init__(config, idx, input_data, series_list, series_name, stat_name, skill_ref_data)
 
     def _create_series_points(self) -> dict:
         """

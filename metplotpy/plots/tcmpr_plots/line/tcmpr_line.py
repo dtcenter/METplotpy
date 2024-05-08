@@ -1,15 +1,21 @@
 import plotly.graph_objects as go
+from datetime import datetime
 
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
-
+import metplotpy.plots.util as util
 
 class TcmprLine(Tcmpr):
-    def __init__(self, config_obj, column_info, col, case_data, input_df, baseline_data):
-        super().__init__(config_obj, column_info, col, case_data, input_df)
+    def __init__(self, config_obj, column_info, col, case_data, input_df, baseline_data, stat_name):
+        super().__init__(config_obj, column_info, col, case_data, input_df, stat_name)
 
-    def _create_figure(self):
+        # Set up Logging
+        self.line_logger = util.get_common_logger(self.config_obj.log_level, self.config_obj.log_filename)
+
+    def _create_figure(self, stat_name):
         """ Create a box plot from default and custom parameters"""
+
+        start_time = datetime.now()
 
         self.figure = self._create_layout()
         self._add_xaxis()
@@ -45,7 +51,7 @@ class TcmprLine(Tcmpr):
                 x_points_index_adj = x_points_index + stag_adjustments[series.idx]
                 self._draw_series(series, x_points_index_adj)
 
-        print(f'Range of {self.config_obj.list_stat_1[0]}: {yaxis_min}, {yaxis_max}')
+        self.line_logger.info(f'Range of {stat_name}: {yaxis_min}, {yaxis_max}')
 
         self._add_hfip_baseline()
 
@@ -70,12 +76,18 @@ class TcmprLine(Tcmpr):
         # add x2 axis
         self._add_x2axis(list(range(0, len(self.config_obj.indy_vals))))
 
+        end_time = datetime.now()
+        total_time = end_time - start_time
+        self.line_logger.info(f"Took {total_time} milliseconds to create figure for {stat_name}")
+
     def _draw_series(self, series: TcmprSeries, x_points_index_adj: list) -> None:
         """
         Draws the boxes on the plot
 
         :param series: Line series object with data and parameters
         """
+
+        start_time = datetime.now()
 
         y_points = series.series_points['val']
         # show or not ci
@@ -110,3 +122,8 @@ class TcmprLine(Tcmpr):
                        ),
             secondary_y=series.y_axis != 1
         )
+
+        end_time = datetime.now()
+        total_time = end_time - start_time
+        self.line_logger.info(
+            f"Took {total_time} milliseconds to draw the series for one of the series values in: {series.series_vals_1}")

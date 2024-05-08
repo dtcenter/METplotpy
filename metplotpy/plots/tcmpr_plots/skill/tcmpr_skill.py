@@ -1,18 +1,31 @@
 from typing import Union
 import plotly.graph_objects as go
+from datetime import datetime
 
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 from metcalcpy.util import utils
+import metplotpy.plots.util as util
 
 
 class TcmprSkill(Tcmpr):
-    def __init__(self, config_obj, column_info, col, case_data, input_df, baseline_data):
-        super().__init__(config_obj, column_info, col, case_data, input_df)
+    def __init__(self, config_obj, column_info, col, case_data, input_df,  baseline_data, stat_name):
+        super().__init__(config_obj, column_info, col, case_data, input_df, stat_name)
 
-    def _create_figure(self):
-        """ Create a box plot from default and custom parameters"""
+        # Set up Logging
+        self.skill_logger = util.get_common_logger(config_obj.log_level, config_obj.log_filename)
 
+    def _create_figure(self, stat_name):
+        """ Create a skill line plot from default and custom parameters
+
+            Args:
+                stat_name: the name of the current 'statistic' (eg TK_ERR, AMSLP-BMSLP, etc.)
+                           corresponding to list_stat_1 in the config file
+
+
+        """
+
+        start_time = datetime.now()
         self.figure = self._create_layout()
         self._add_xaxis()
         self._add_yaxis()
@@ -48,9 +61,12 @@ class TcmprSkill(Tcmpr):
                 x_points_index_adj = x_points_index + stag_adjustments[series.idx]
                 self._draw_series(series, x_points_index_adj)
 
-        print(f'Range of {self.config_obj.list_stat_1[0]}: {yaxis_min}, {yaxis_max}')
+        self.skill_logger.info(f'Range of {stat_name}: {yaxis_min}, {yaxis_max}')
 
-        self._add_hfip_baseline()
+        if self.config_obj.hfip_bsln != 'no':
+           # This will be a valid value for hfip_bsln. This has been
+           # validated/vetted in the configuration code (tcmpr_config.py).
+           super()._add_hfip_baseline()
 
         self.figure.update_layout(shapes=[dict(
             type='line',
@@ -62,16 +78,21 @@ class TcmprSkill(Tcmpr):
         )])
 
         # add custom lines
-        if len(self.series_list) > 0:
-            self._add_lines(
-                self.config_obj,
-                sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique())
-            )
+        num_series = len(self.series_list)
+        if num_series > 0:
+            for idx in range(num_series):
+                self._add_lines(self.config_obj,
+                    sorted(self.series_list[idx].series_data[self.config_obj.indy_var].unique())
+                )
         # apply y axis limits
         self._yaxis_limits()
 
         # add x2 axis
         self._add_x2axis(list(range(0, len(self.config_obj.indy_vals))))
+
+        end_time = datetime.now()
+        total_time = end_time - start_time
+        self.skill_logger.info(f"Took {total_time} milliseconds to create the figure for {stat_name}")
 
     def _draw_series(self, series: TcmprSeries, x_points_index_adj: list) -> None:
         """
