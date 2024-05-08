@@ -338,7 +338,6 @@ def get_common_logger(log_level, log_filename):
                             datefmt='%Y-%m-%d %H:%M:%S',
                             filename=log_filename,
                             filemode='w')
-    mpl_logger = logging.getLogger(name='matplotlib').setLevel(logging.CRITICAL)
     common_logger = logging.getLogger(__name__)
     f = cf()
     common_logger.addFilter(f)
