@@ -30,6 +30,7 @@ This is a sub-issue of #*List the parent issue number here*.
 - [ ] Select **requestor(s)**
 
 ### Milestone and Projects ###
-- [ ] Select **Milestone** as the next official version, **Consider for Next Release**, or **Backlog of Development Ideas**
-- [ ] For the next official version, select the **METplotpy-X.Y.Z Development** project
+- [ ] Select **Milestone** as a **METplotpy-X.Y.Z** version, **Consider for Next Release**, or **Backlog of Development Ideas**
+- [ ] For a **METplotpy-X.Y.Z** version, select the **METplotpy-X.Y.Z Development** project
+
 
