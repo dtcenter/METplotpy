@@ -180,7 +180,7 @@ class Hist(BasePlot):
 
         self.input_df = input_df_ee.drop('equalize', axis=1)
 
-       def _read_input_data(self):
+    def _read_input_data(self):
         """
             Read the input data file
             and store as a pandas dataframe so we can subset the
