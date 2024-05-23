@@ -120,8 +120,17 @@ custom config files and sample data reside).  Replace the relative path
 *./plot_20200507_074426.data* with the full path
 *$WORKING_DIR/plot_20200507_074426.data*
 (including replacing *$WORKING_DIR* with the full path to the working directory).
+
 Modify the *plot_filename* setting to point to the output path where the
 plot will be saved, including the name of the plot.
+
+Modify the *roc_pct* and *roc_ctc* settings in the
+*$WORKING_DIR/custom_roc_diagram.yaml*
+file to explicitly indicate the linetype of the input data.  If using
+PCT input data, then set *roc_pct* to True and *roc_ctc* to False. The data used in this
+example is CTC linetype data, therefore the *roc_pct* setting is set to False and the *roc_ctc*
+setting is set to True.
+
 
 For example:
 
