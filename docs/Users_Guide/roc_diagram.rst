@@ -170,8 +170,7 @@ privileges.  To modify the verbosity of logging than what is set in the default 
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
-*NOTE*:
-The ROC diagram does not provide support for selecting data based on
+
 
 Using Defaults
 --------------
