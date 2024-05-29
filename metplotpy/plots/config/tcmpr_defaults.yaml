@@ -145,3 +145,5 @@ subtitle: ''
 prefix:
 baseline_file: ./hfip_baseline.dat
 column_info_file: ./plot_tcmpr_hdr.dat
+is_tcdiag_linetype: False
+connect_points: False

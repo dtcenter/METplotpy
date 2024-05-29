@@ -1,0 +1,162 @@
+colors:
+  #  - 'green'
+  - 'blue'
+  - 'orange'
+  - 'red'
+  - 'purple'
+  - 'green'
+  - 'blue'
+  - 'orange'
+  - 'red'
+  - 'purple'
+
+plot_disp:
+  - 'True'
+  - 'True'
+  - 'True'
+  - 'True'
+
+series_order:
+  - 1
+  - 2
+  - 3
+  - 4
+
+mar:
+  l: 0 #left margin
+  r: 0 #right margin
+  b: 110 #bottom margin
+  t: 100 #top margin
+title_offset: -2.03
+
+series_val_1:
+  AMODEL:
+    - 'OFCL'
+    - 'GFSO'
+    - 'SHIP'
+
+fixed_vars_vals_input:
+  BASIN:
+    - AL
+  LEVEL:
+    - HU
+    - TS
+    - EX
+  INIT:
+    - '2022-09-26 00:00:00'
+
+series_ci:
+  - 'True'
+  - 'True'
+  - 'True'
+  - 'True'
+series_line_width:
+  - 1
+  - 1
+  - 1
+  - 1
+
+series_line_style:
+  - '-'
+  - '-'
+  - '-'
+  - '-'
+series_symbols:
+  - 'circle-open'
+  - 'circle-open'
+  - 'circle-open'
+  - 'circle-open'
+series_symbols_size:
+  - 7
+  - 7
+  - 7
+  - 7
+
+
+
+tcst_dir: './Data/TCDiag/'
+tcst_files: [ ]
+title: ''
+title_size: 1.
+
+yaxis_1: ''
+
+plot_type_list:
+  - 'point'
+
+
+
+event_equal: 'False'
+
+
+plot_dir: './output/'
+prefix: ''
+
+
+indy_vals:
+  - 0
+  - 6
+  - 12
+  - 18
+  - 24
+  - 30
+  - 36
+  - 42
+  - 48
+  - 54
+  - 60
+  - 66
+  - 72
+  - 78
+  - 84
+  - 90
+  - 96
+  - 102
+  - 108
+  - 114
+  - 120
+  - 126
+
+indy_label:
+  - '00'
+  - '06'
+  - '12'
+  - '18'
+  - '24'
+  - '30'
+  - '36'
+  - '42'
+  - '48'
+  - '54'
+  - '60'
+  - '66'
+  - '72'
+  - '78'
+  - '84'
+  - '90'
+  - '96'
+  - '102'
+  - '108'
+  - '114'
+  - '120'
+  - '126'
+
+list_stat_1:
+  - "SHEAR_MAGNITUDE"
+  #  - "TK_ERR"
+  - "AMAX_WIND-BMAX_WIND"
+
+
+rp_diff:
+  - '>=100'
+
+subtitle: ''
+is_tcdiag_linetype: true
+hfip_bsln: 'no'
+line_type: '-'
+
+# for line plot set to True
+connect_points: True
+
+log_level: INFO
+log_filename: './output/tcmpr.log'

@@ -28,6 +28,7 @@ class TcmprConfig(Config):
     Prepares and organises Line plot parameters
     """
     SUPPORTED_PLOT_TYPES = ['boxplot', 'point', 'mean', 'median', 'relperf', 'rank', 'skill_mn', 'skill_md']
+
     def __init__(self, parameters: dict) -> None:
         """ Reads in the plot settings from a box plot config file.
 
@@ -36,6 +37,9 @@ class TcmprConfig(Config):
 
         """
         super().__init__(parameters)
+
+        self.is_tcdiag = self._get_bool('is_tcdiag_linetype')
+        self.connect_points = self._get_bool('connect_points')
 
         # Logging
         self.log_filename = self.get_config_value('log_filename')
@@ -251,7 +255,8 @@ class TcmprConfig(Config):
         """
 
         hfip_bsln = str(self.get_config_value('hfip_bsln'))
-        hfip_bsln = hfip_bsln.lower()
+        hfip_bsln_lower = hfip_bsln.lower()
+
 
         # Validate that hfip_bsln is one of the following; (no, 0, 5, 10 year goal)
         supported_bsln = ['no', '0', '5', '10']

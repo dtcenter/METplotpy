@@ -420,8 +420,11 @@ class Tcmpr(BasePlot):
 
         # Create the directory for the output plot if it doesn't already exist
         dirname = os.path.dirname(os.path.abspath(self.plot_filename))
-        if not os.path.exists(dirname):
-            os.mkdir(dirname)
+        try:
+           os.makedirs(dirname, exist_ok=True)
+        except FileExistsError:
+            pass
+
         self.logger.info(f'Saving the image file: {self.plot_filename}')
         if self.figure:
             try:
@@ -511,8 +514,6 @@ def perform_event_equalization(input_df:pd.DataFrame, is_skill:bool, config_obj:
     return output_data
 
 
-
-
 def main(config_filename=None):
     """
         Generates a sample, default, TCMPR plot using a combination of
@@ -553,6 +554,24 @@ def main(config_filename=None):
 
     config_obj = TcmprConfig(docs)
 
+    # Create the requested plot(s)
+    create_plot(config_obj)
+
+
+def create_plot(config_obj: dict) -> None:
+    """
+        One or more TCMPR plots is generated. Event equalization is performed if
+        it was requested by a setting in the yaml configuration file.
+
+        Args:
+           @param config_obj:  The config object containing all the necessary information obtained
+                               from the yaml configuration file.
+
+        Returns: None, creates one or more plots as specified in the yaml config file
+    """
+
+    # Find input files, they must have the .tcst extension and filename must have
+    # the prefix "tc_pairs" (e.g. tc_pairs_gfso_20220401.tcst)
     tcst_files = []
     # list all .tcst files in tcst_dir
     if config_obj.tcst_dir is not None and len(config_obj.tcst_dir) > 0 and os.path.exists(config_obj.tcst_dir):
@@ -566,7 +585,9 @@ def main(config_filename=None):
     input_df = orig_input_df.copy(deep=True)
 
     # Define a demo and retro column
-    # TODO these values never get used comment out for now
+
+    # Note: Currently not supported, leave commented out for now.
+
     # input_df = orig_input_df.copy(deep=True)
     # if config_obj.demo_yr is not None and config_obj.demo_yr != 'NA':
     #     demo_yr_obj = datetime.strptime(str(config_obj.demo_yr), '%Y')
@@ -579,6 +600,7 @@ def main(config_filename=None):
                               quotechar='"', skipinitialspace=True, encoding='utf-8')
 
     logger = util.get_common_logger(config_obj.log_level, config_obj.log_filename)
+\
     for plot_type in config_obj.plot_type_list:
 
         # Apply event equalization, if requested
@@ -586,11 +608,11 @@ def main(config_filename=None):
         is_skill = False
         if config_obj.use_ee:
             if plot_type == 'skill_mn' or plot_type == 'skill_md':
-               is_skill = True
-               # perform event equalization on the skill_mn|skill_md plot type
-               logger.info(f"Perform event equalization for {plot_type}: {datetime.now()}")
-               output_result = perform_event_equalization(orig_input_df, is_skill, config_obj)
-               input_df = output_result
+                is_skill = True
+                # perform event equalization on the skill_mn|skill_md plot type
+                logger.info(f"Perform event equalization for {plot_type}: {datetime.now()}")
+                output_result = perform_event_equalization(orig_input_df, is_skill, config_obj)
+                input_df = output_result
             else:
                 logger.info(f"Perform event equalization for {plot_type}: {datetime.now()}")
                 output_result = perform_event_equalization(orig_input_df, is_skill, config_obj)
@@ -641,7 +663,7 @@ def main(config_filename=None):
                 elif plot_type == 'skill_mn':
                     from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_skill_mean import TcmprSkillMean
                     plot = TcmprSkillMean(config_obj, column_info, col_to_plot, common_case_data, input_df,
-                                         cur_stat,  baseline_data)
+                                          cur_stat, baseline_data)
                 elif plot_type == 'skill_md':
                     from metplotpy.plots.tcmpr_plots.skill.median.tcmpr_skill_median import TcmprSkillMedian
                     plot = TcmprSkillMedian(config_obj, column_info, col_to_plot, common_case_data, input_df, cur_stat)
@@ -683,7 +705,10 @@ def read_tcst_files(config_obj, tcst_files):
     for file in tcst_files:
         if os.path.exists(file):
             print(f'Reading track data:{file}')
-            file_df = pd.read_csv(file, sep=r'\s+|;|:', header='infer', engine="python")
+            if config_obj.is_tcdiag:
+                file_df = pd.read_csv(file, sep='\t')
+            else:
+                file_df = pd.read_csv(file, sep=r'\s+|;|:', header='infer', engine="python")
             file_df['LEAD_HR'] = file_df['LEAD'] / 10000
             file_df['LEAD_HR'] = file_df['LEAD_HR'].astype('int')
             all_filters = []
@@ -704,7 +729,10 @@ def read_tcst_files(config_obj, tcst_files):
             # use numpy to select the rows where any record evaluates to True
             mask = np.array(all_filters).all(axis=0)
 
-            file_df['VALID_TIME'] = pd.to_datetime(file_df['VALID'], format='%Y%m%d_%H%M%S')  # 20170417_060000
+            if config_obj.is_tcdiag:
+                file_df['VALID_TIME'] = file_df['VALID']
+            else:
+                file_df['VALID_TIME'] = pd.to_datetime(file_df['VALID'], format='%Y%m%d_%H%M%S')  # 20170417_060000
             # Define a case column
             file_df['equalize'] = file_df.loc[:, 'BMODEL'].astype(str) \
                                   + ':' + file_df.loc[:, 'STORM_ID'].astype(str) \
