@@ -180,11 +180,6 @@ class Hist(BasePlot):
 
         self.input_df = input_df_ee.drop('equalize', axis=1)
 
-    def __repr__(self):
-        """ Implement repr which can be useful for debugging this
-            class.
-        """
-
     def _read_input_data(self):
         """
             Read the input data file

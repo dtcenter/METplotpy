@@ -30,6 +30,7 @@ class TcmprPoint(TcmprBoxPoint):
         else:
             self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}_{stat_name}_pointplot.png"
         # remove the old file if it exists
+
         if os.path.exists(self.plot_filename):
             os.remove(self.plot_filename)
         self._create_figure()

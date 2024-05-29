@@ -585,7 +585,9 @@ def create_plot(config_obj: dict) -> None:
     input_df = orig_input_df.copy(deep=True)
 
     # Define a demo and retro column
+
     # Note: Currently not supported, leave commented out for now.
+
     # input_df = orig_input_df.copy(deep=True)
     # if config_obj.demo_yr is not None and config_obj.demo_yr != 'NA':
     #     demo_yr_obj = datetime.strptime(str(config_obj.demo_yr), '%Y')
@@ -598,8 +600,7 @@ def create_plot(config_obj: dict) -> None:
                               quotechar='"', skipinitialspace=True, encoding='utf-8')
 
     logger = util.get_common_logger(config_obj.log_level, config_obj.log_filename)
-
-    # Determine the plot type and create that plot
+\
     for plot_type in config_obj.plot_type_list:
 
         # Apply event equalization, if requested

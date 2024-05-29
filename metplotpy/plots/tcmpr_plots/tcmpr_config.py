@@ -41,6 +41,11 @@ class TcmprConfig(Config):
         self.is_tcdiag = self._get_bool('is_tcdiag_linetype')
         self.connect_points = self._get_bool('connect_points')
 
+        # Logging
+        self.log_filename = self.get_config_value('log_filename')
+        self.log_level = self.get_config_value('log_level')
+        self.logger = util.get_common_logger(self.log_level, self.log_filename)
+
         ##############################################
         self.plot_type_list = self._get_plot()
         self.tcst_files = self._get_tcst_files()
@@ -251,6 +256,7 @@ class TcmprConfig(Config):
 
         hfip_bsln = str(self.get_config_value('hfip_bsln'))
         hfip_bsln.lower()
+
 
         # Validate that hfip_bsln is one of the following; (no, 0, 5, 10 year goal)
         supported_bsln = ['no', '0', '5', '10']
