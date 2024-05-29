@@ -1,148 +1,63 @@
 # ============================*
- # ** Copyright UCAR (c) 2019
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
-"""
-Class Name: scatter.py
- """
-__author__ = 'Hank Fisher'
+# ** Copyright UCAR (c) 2024
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Science Foundation National Center for Atmospheric Research (NSF NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
 
-import plotly.graph_objects as go
+"""
+Class Name: Scatter
+ """
+__author__ = 'Minna Win'
+
+import os
+from datetime import datetime
+import re
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.font_manager import FontProperties
+import numpy as np
 import yaml
 import pandas as pd
-from plots.base_plot import BasePlot
+from metplotpy.plots.base_plot import BasePlot
+import metcalcpy.util.utils as calc_util
+from metplotpy.plots.scatter.scatter_config import ScatterConfig
+# from metplotpy.plots.performance_diagram.performance_diagram_series import PerformanceDiagramSeries
+from metplotpy.plots import util
+from metplotpy.plots import constants
 
 class Scatter(BasePlot):
-    """  Generates a Plotly scatter plot,
+    """
+       Generate a scatter plot using Matplotlib and MPR linetyp output from the MET point-stat tool.
+
+       PRE-CONDITION:  The MET .stat output data MUST be reformatted for the scatter plot, where all column headers
+                       are present AND there are additional columns for stat_name, stat_value, stat_ncl, stat_ncu,
+                       stat_bcu, and stat_bcl.
+
 
     """
-    def __init__(self, parameters):
-        """ Creates a scatter plot, based on
-            settings indicated by parameters.
 
-            Args:
-            @param parameters: dictionary containing user defined parameters
+    defaults_name = 'scatter_defaults.yaml'
+
+    def __init__(self, parameters: dict) -> None:
+        """
+           Create a scatter plot of one or two 'lines', with marker color of the variable
+           of interest varies based on values.  The colors are determined by the colormap
+           specified in the configuration file.  Requires a configuration file to be used
+           in conjunction with the default configuration file.
+
+           Args:
+               @param parameters: a dictionary representation of the settings in the YAML configuration file
+           Returns:
+               None
 
         """
 
-        default_conf_filename = "scatter_defaults.yaml"
-        # init common layout
-        super().__init__(parameters, default_conf_filename)
+        super().__init__(parameters, self.defaults_name)
 
-        # create figure
-        # pylint:disable=assignment-from-no-return
-        # Need to have a self.figure that we can pass along to
-        # the methods in base_plot.py (BasePlot class methods) to
-        # create binary versions of the plot.
-        self.figure = self._create_figure()
+        # instantiate a ScatterConfig object that contains all the settings
+        self.config_obj = ScatterConfig(self.parameters)
 
-    def __repr__(self):
-        """ Implement repr which can be useful for debugging this
-            class.
-        """
-
-        return f'Line({self.parameters!r})'
-
-    def _get_all_scatters(self):
-        """ Retrieve a list of all scatters.  Each scatters is a dictionary comprised of
-            key-values that represent the necessary settings to create a scatter plot.
-            Each scatter has an associated text data file containing point data.
-
-            Returns:
-                scatters :  a list of dictionaries representing settings for each scatter plot.
-
-        """
-
-        return self.get_config_value('scatters')
-
-    def get_xaxis_title(self):
-        """ Override the method in the parent class, BasePlot, as this is located
-            in a different location in the config file.
-        """
-
-        return self.parameters['xaxis']['title']
-
-
-    def get_yaxis_title(self):
-        """ Override the method in the parent class, BasePlot, as this is located
-            in a different location in the config file.
-        """
-
-        return self.parameters['yaxis']['title']
-
-
-    def _create_figure(self):
-        """ Create a scatter plot from default and custom parameters"""
-
-        # pylint:disable=too-many-locals
-        # Need to have all these local variables input
-        # to Plotly to generate a scatter plot.
-
-        fig = go.Figure()
-
-        # Generate each scatter based on settings in the default and
-        # custom parameters specified in the YAML files.
-        scatters = self._get_all_scatters()
-
-        connect_gap = self.parameters['connect_data_gaps']
-
-        # Retrieve the settings for the n-scatters specified
-        # in the default or custom config file.
-        for scatter_dict in scatters:
-            name = scatter_dict['name']
-
-            # Extract the data defined in the custom config file
-            # A list of 1..n entries, with each data file corresponding
-            # to a scatter on the plot.
-            input_data_file = scatter_dict['data_file']
-            data = pd.read_csv(input_data_file, delim_whitespace=True)
-
-            #color = line_dict['color']
-            #width = line_dict['width']
-            #dash = line_dict['dash']
-            scatter_x = data['x']
-            scatter_y = data['y']
-            fig.add_trace(go.Scatter(
-                x=scatter_x, y=scatter_y, name=name
-            ))
-
-
-        # Edit the final layout, set the plot title and axis labels
-        fig.update_layout(legend=self.get_legend(), title=self.get_title(), xaxis_title=self.get_xaxis_title(), yaxis_title=self.get_yaxis_title())
-
-        return fig
-
-
-def main():
-    """
-        Generates a sample, default, scatter plot using a combination of
-        default and custom config files on sample data found in this directory.
-        The location of the input data is defined in either the default or
-        custom config file.
-    """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    with open("./custom_scatter.yaml", 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-
-    try:
-      s = Scatter(docs)
-      s.save_to_file()
-      s.show_in_browser()
-    except ValueError as ve:
-        print(ve)
-
-
-if __name__ == "__main__":
-    main()
+        # use the logger set up in the METplotpy util module
+        self.logger = self.config_obj.logger
