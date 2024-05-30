@@ -444,7 +444,7 @@ def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.Data
             else:
                 updated_vals.append(val)
 
-        # Create the query string based on whether or not there is/are NA values.
+        # Create the query string based on whether NA values exist.
         if na_found:
             if len(updated_vals) == 0:
                 # NA was the only value for this column, create the query
