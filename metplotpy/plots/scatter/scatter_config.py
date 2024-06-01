@@ -39,10 +39,12 @@ class ScatterConfig(Config):
 
         super().__init__(parameters)
 
-        # Write (if dump_points_1 is True) output points file provided by the METplotpy YAML config file
+        # Write (if dump_points is True) output points file provided by the METplotpy YAML config file
         self.dump_points = self._get_bool('dump_points')
         if self.dump_points:
             self.points_path = self.get_config_value('points_path')
+
+        self.plot_filename = self.get_config_value('plot_filename')
 
         # Corresponds to the "Fixed Values" in METviewer UI
         self.fixed_vars_vals = self._get_fixed_vars_vals()
@@ -54,8 +56,11 @@ class ScatterConfig(Config):
         # Fcst variable of interest
         self.fcst_var = self.get_config_value('fcst_var')
 
-        # Plot trend line, or not
-        self.show_trend = self.get_config_value('show_trend_line')
+        # trendline
+        self.show_trendline = self.get_config_value('show_trendline')
+        self.trendline_color = self.get_config_value('trendline_color')
+        self.trendline_width = self.get_config_value('trendline_width')
+        self.trendline_style = self.get_config_value('trendline_style')
 
         # plot parameters
         self.grid_on = self._get_bool('grid_on')
@@ -80,7 +85,10 @@ class ScatterConfig(Config):
 
         ##############################################
         # caption parameters
+        self.add_caption = False
         self.caption = self.get_config_value('plot_caption')
+        if len(self.caption) > 0:
+            self.add_caption = True
         mv_caption_weight = self.get_config_value('caption_weight')
         self.caption_color = self.get_config_value('caption_col')
 
@@ -118,7 +126,7 @@ class ScatterConfig(Config):
         ##############################################
         # legend parameters
         self.show_user_legend = self.get_config_value('show_legend')
-        self.user_legend =  self._get_user_legend()
+        self.user_legend = self.get_user_legend()
 
         self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * self.parameters['legend_size'])
         if self.parameters['legend_box'].lower() == 'n':
@@ -266,11 +274,8 @@ class ScatterConfig(Config):
             # Enclose legend labels in a box
             self.draw_box = True
 
-
-
-
-        def _get_user_legend(self, legend_label_type: str = '') -> list:
-            """
+    def get_user_legend(self) -> list:
+        """
             Retrieve the text that is to be displayed in the legend at the bottom of the
             plot.
 
@@ -286,16 +291,16 @@ class ScatterConfig(Config):
                     a list consisting of the series label to be displayed in the plot
                     legend.
 
-            """
+        """
 
-            user_legend = list(self.get_config_value('user_legend'))
+        user_legend = list(self.get_config_value('user_legend'))
 
-            if len(user_legend) == 0:
-                # Use the variable by value as the colorbar legend
-                self.get_config_value('variable_val_by_color')
-
-            return user_legend
-
+        if len(user_legend) == 0:
+            # Use the variable by value as the colorbar legend
+            user_legend = self.get_config_value('variable_val_by_color')
+        else:
+            user_legend = user_legend[0]
+        return user_legend
 
     def _get_fixed_vars_vals(self) -> dict:
         """
