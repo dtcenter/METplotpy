@@ -62,7 +62,6 @@ jobs:
           cd scatter
           pytest test_scatter.py
           cd ../bar
-          cd bar 
           pytest test_bar.py
           cd ../box
           pytest test_box.py
