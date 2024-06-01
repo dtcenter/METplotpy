@@ -3,7 +3,7 @@ import math
 import shutil
 import pandas as pd
 import yaml
-from metplotpy.plots.scatter import scatter as sc
+from plots.scatter import scatter as sc
 
 """
    Test for the scatter plot 
@@ -32,7 +32,7 @@ def test_files_exist():
 
     """
     os.environ['METPLOTPY_BASE'] = "../../"
-    test_config_filename = os.path.join(os.getcwd(),"test_scatter_mpr.yaml")
+    test_config_filename = os.path.join(os.getcwd(), "test_scatter_mpr.yaml")
     sc.main(test_config_filename)
 
     # Verify that the plot was generated
