@@ -92,6 +92,8 @@ jobs:
           pytest test_rel_hist.py
           cd ../tcmpr_plots
           pytest --capture=fd test_tcmpr_plots.py
+          cd ../scatter
+          pytest test_scatter.py
 
           
          
