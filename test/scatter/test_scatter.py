@@ -3,7 +3,7 @@ import math
 import shutil
 import pandas as pd
 import yaml
-from METplotpy.metplotpy.plots.scatter import scatter as sc
+from metplotpy.plots.scatter import scatter as sc
 
 """
    Test for the scatter plot 
