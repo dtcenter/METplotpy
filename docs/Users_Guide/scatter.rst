@@ -183,7 +183,7 @@ The data has been further filtered based on the interpolation method and forecas
 The grid lines and trendline are turned on, the FCST, OBS, and OBS_LAT points are saved to a text file, and the
 OBS_LAT points are colored by their values using a colormap:
 
-.. image:: figure/scatter.png
+.. image:: /figure/scatter_mpr_tmp_obs_lat.png
 
 To generate the above plot using the **scatter_defaults.yaml** and
 **custom_scatter.yaml** config files, perform the following:
