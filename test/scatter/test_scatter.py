@@ -56,4 +56,4 @@ def test_files_exist():
 
     # clean up files in the output directory and
     # the output directory
-    shutil.rmtree(os.path.join(os.getcwd(), 'output'))
+    # shutil.rmtree(os.path.join(os.getcwd(), 'output'))

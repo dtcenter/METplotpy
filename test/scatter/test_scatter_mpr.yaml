@@ -32,7 +32,7 @@ plot_width: 11.0
 show_legend: True
 show_trendline: True
 start_from_zero: False
-stat_input: ./reformatted_usecase_data_for_scatter.data
+stat_input: ./reformatted_data_for_scatter.data
 title: "MPR usecase data for TMP, P900-750"
 title_align: 0.5
 title_offset: -2
