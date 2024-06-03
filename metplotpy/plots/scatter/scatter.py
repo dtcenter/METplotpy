@@ -76,6 +76,10 @@ class Scatter(BasePlot):
         self.logger.info("Reading input data")
         input_datafile = self.config_obj.stat_input
         df = pd.read_csv(input_datafile, sep="\t")
+        if df.empty:
+            self.logger.error("Input dataframe is empty.  Check that the directory and filename are correct. ")
+            raise ValueError("Input dataframe is empty")
+
         total_read = datetime.now() - start
         self.logger.info(f"Reading input data completed in {total_read} seconds")
 
