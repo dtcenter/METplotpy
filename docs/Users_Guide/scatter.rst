@@ -157,7 +157,7 @@ Modify the *points_path* setting or add it (if it doesn't exist).
 *points_path: '/dir_to_save_plot_points_file'*
 
 Replace the */dir_to_save_plot_points_file* to the same directory where
-the ***plot_points.txt** file is saved.
+the **plot_points.txt** file is saved.
 Make sure that this directory has the appropriate read and write permissions.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
