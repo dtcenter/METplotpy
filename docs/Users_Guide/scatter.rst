@@ -6,7 +6,7 @@ Description
 ===========
 The scatter plot is useful for illustrating relationships between pairs of continuous variables.
 This plot was developed to support plotting MPR (matched pair) data from the MET point-stat tool.
-**NOTE** This MET output data must first be reformatted into a format that can be read in by the scatter plot code.
+**NOTE:** This MET output data must first be reformatted into a format that can be read in by the scatter plot code.
 This reformatting was accomplished through the METdataio METreformat module. The reformatted data
 consists solely of MPR linetype data and all the column headers are labelled according to the
 MPR linetype column names specified in the MET User's Guide, Table 11.20 (Point-stat tool).
@@ -83,8 +83,8 @@ Default Configuration File
 
 The following is the *mandatory*, **scatter_defaults.yaml** configuration file,
 which serves as a good starting point for creating a scatter
-plot as it represents the default values set in METviewer.  This default config file
-is **NOT** to be configured.  Use the custom configuration file to over ride the settings
+plot.  This default config file **SHOULD NOT** be modified.
+The custom configuration file is used to over ride the settings
 of interest (i.e. marker colors, marker styles, trendline styles, etc.).
 
 **NOTE**: This default configuration file is automatically loaded by
@@ -176,6 +176,10 @@ Run from the Command Line
 The **custom_scatter.yaml** configuration file, in combination with the
 **scatter_defaults.yaml** configuration file, generates a plot of the matched
 pair (MPR) linetype data for the TMP variable and the two continuous variables FCST and OBS.
+
+The data has been further filtered based on the interpolation method and forecast level ( via the
+*fixed_vars_vals_input* setting).
+
 The grid lines and trendline are turned on, the FCST, OBS, and OBS_LAT points are saved to a text file, and the
 OBS_LAT points are colored by their values using a colormap:
 
@@ -207,9 +211,6 @@ To generate the above plot using the **scatter_defaults.yaml** and
 
   Recall that *$METPLOTPY_BASE* is the directory path indicating where the METplotpy source code was saved.
 
-  To generate the above **"custom"** plot (i.e using some custom
-  configuration settings), use the custom configuration file,
-  **custom_scatter.yaml** that was edited with the appropriate paths to the input and output directories and files.
 
 * Enter the following command:
   
