@@ -59,7 +59,7 @@ class RevisionBox(Box):
                              " required for describing each series. Please check"
                              " the number of your configuration file's plot_i,"
                              " plot_disp, series_order, user_legend,"
-                             " colors, and series_symbols settings.")
+                             " colors, show_legend and series_symbols settings.")
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
@@ -209,7 +209,7 @@ class RevisionBox(Box):
                 line=line_color,
                 fillcolor=fillcolor,
                 name=series.user_legends,
-                showlegend=True,
+                showlegend=self.config_obj.show_legend[series.idx] == 1,
                 boxmean=self.config_obj.box_avg,
                 boxpoints=self.config_obj.boxpoints,  # outliers, all, False
                 pointpos=0,

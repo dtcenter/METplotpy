@@ -19,15 +19,15 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'METplotpy'
-copyright = '2023, NCAR'
-author = 'UCAR/NCAR, NOAA, CSU/CIRA, and CU/CIRES'
+copyright = '2024, NSF NCAR'
+author = 'UCAR/NSF NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Fisher, H., D. Adriaansen, C. Kalb, D. Fillmore, T. Jensen, L. Goodrich, M. Win-Gildenmeister and T. Burek'
-version = '3.0.0'
+version = 'v3.0.0-beta5-dev'
 verinfo = version
 release = f'{version}'
-release_year = '2023'
+release_year = '2024'
 
-release_date = f'{release_year}-09-12'
+release_date = f'{release_year}-04-17'
 
 copyright = f'{release_year}, {author}'
 
@@ -44,7 +44,8 @@ html_last_updated_fmt = '%c'
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.intersphinx',
               'sphinx_gallery.gen_gallery',
-              'sphinx_design']
+              'sphinx_design',
+              'sphinx_rtd_theme',]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

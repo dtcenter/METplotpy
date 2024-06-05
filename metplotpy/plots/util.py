@@ -14,8 +14,9 @@ __author__ = 'Minna Win'
 
 import argparse
 import sys
-import getpass
+import os
 import logging
+import gc
 import re
 import matplotlib
 import numpy as np
@@ -23,6 +24,8 @@ from typing import Union
 import pandas as pd
 from plotly.graph_objects import Figure
 from metplotpy.plots.context_filter import ContextFilter as cf
+import metcalcpy.util.pstd_statistics as pstats
+import metcalcpy.util.ctc_statistics as cstats
 
 COLORSCALES = {
     'green_red': ['#E6FFE2', '#B3FAAD', '#74F578', '#30D244', '#00A01E', '#F6A1A2',
@@ -58,7 +61,7 @@ def read_config_from_command_line():
             The full path to the config file
     """
     # Create Parser
-    parser = argparse.ArgumentParser(description='Generates a performance diagram')
+    parser = argparse.ArgumentParser(description='Read in config file')
 
     # Add arguments
     parser.add_argument('Path', metavar='path', type=str,
@@ -298,7 +301,7 @@ def sort_threshold_values(thresh_values: pd.core.series.Series) -> list:
     sorted_val_wt = df.sort_values(by=twocols, inplace=False, ascending=True,
                                    ignore_index=True)
 
-    # now the dataframe has the obs_thresh values sorted appropriately
+    # now the dataframe has the xyz_thresh values sorted appropriately
     return sorted_val_wt['thresh']
 
 
@@ -311,6 +314,13 @@ def get_common_logger(log_level, log_filename):
          common_logger: the logger common to all the METplotpy modules that are
                         currently in use by a plot type.
     '''
+
+    # If directory for logfile doesn't exist, create it
+    log_dir = os.path.dirname(log_filename)
+    try:
+       os.makedirs(log_dir, exist_ok=True)
+    except OSError:
+        pass
 
     # Supported log levels.
     log_level = log_level.upper()
@@ -328,15 +338,249 @@ def get_common_logger(log_level, log_filename):
     else:
 
         logging.basicConfig(level=log_levels[log_level],
-                        format='%(asctime)s||User:%('
-                               'user)s||%(funcName)s|| [%(levelname)s]: %('
-                               'message)s',
-                        datefmt='%Y-%m-%d %H:%M:%S',
-                        filename=log_filename,
-                        filemode='w')
-    mpl_logger = logging.getLogger(name='matplotlib').setLevel(logging.CRITICAL)
+                            format='%(asctime)s||User:%('
+                                   'user)s||%(funcName)s|| [%(levelname)s]: %('
+                                   'message)s',
+                            datefmt='%Y-%m-%d %H:%M:%S',
+                            filename=log_filename,
+                            filemode='w')
+    logging.getLogger(name='matplotlib').setLevel(logging.CRITICAL)
     common_logger = logging.getLogger(__name__)
     f = cf()
     common_logger.addFilter(f)
 
     return common_logger
+
+
+def is_thresh_column(column_name: str) -> bool:
+    '''
+       Determines if a column is a threshold column, i.e. cov_thresh, fcst_thresh,
+       or obs_thresh.
+
+       Args:
+
+       @param column_name:  A string representation of the column name
+
+       Returns: True if this column is a threshold column, False otherwise
+    '''
+
+    match = re.match(r'.*_thresh.*', column_name)
+    if match:
+        return True
+    else:
+        return False
+
+
+def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.DataFrame:
+    """
+        Filter the input data based on values in the settings_dict dictionary.
+        For each key (corresponding to a column in the input_df dataframe),
+        create a query string.  Use that query string to filter the input dataframe.
+        Repeat for all the keys and their corresponding values in the settings_dict.
+
+        Use the pandas query() to perform database-like syntax for filtering the data:
+            col in ('a', 'b', '3', ...,'z')
+
+            where col is the name of the key and the values in the parens represent
+            the values corresponding to that key.
+
+        Since Python handles nan values in an unexpected way, if 'NA' is a value in the
+        list of values corresponding to a key, then different syntax will be required:
+
+             col.isnull() | col in ('a', 'b', ..., 'z')
+
+        Args:
+           input_df: The input dataframe to be subset.  This is needed to check for
+                     valid columns.
+           settings_dict: The dictionary representation of the settings in the YAML
+           configuration file
+
+        Returns:
+           filtered_df:  The filtered dataframe
+    """
+
+    # check if columns (keys) in the settings_dict exist in the dataframe before
+    # attempting to subset.  If the settings_dict has keys that do not have
+    # corresponding column values in the dataframe, return the input dataframe.
+    valid_columns = [col for col in settings_dict if col in input_df.columns]
+
+    if len(valid_columns) == 0:
+        print(
+            "No columns in data match what is requested.  Input dataframe will be "
+            "returned")
+        return input_df
+
+    # The pandas query method does not work as expected if
+    # one of the values in the list is 'NA'. When 'NA' is an element in the list
+    # use the col.isnull() syntax with the col in ('a', 'b', ..., 'z') syntax
+    # for the remaining values.
+
+    # Create a query string for each column and save in a list
+    query_string_list = []
+
+    # Use an intermediate dataframe for filtering iteratively by column
+    filtered_df = input_df.copy(deep=True)
+
+    for idx, col in enumerate(valid_columns):
+        # Variables for creating the query string
+        prev_val_string = ""
+        single_quote = "'"
+        list_sep = ", "
+        list_start = "("
+        list_terminator = ")"
+        or_token = "| "
+        in_token = " in "
+        isnull_token = ".isnull()"
+        is_last_val = False
+        na_found = False
+        updated_vals = []
+
+        # Remove NA from the list of values and create a new
+        # list of values containing the remaining non-NA values.
+        values = settings_dict[col]
+        for val in values:
+            if val == 'NA':
+                na_found = True
+            else:
+                updated_vals.append(val)
+
+        # Create the query string based on whether or not there is/are NA values.
+        if na_found:
+            if len(updated_vals) == 0:
+                # NA was the only value for this column, create the query
+                # then move onto the next column
+                prev_val_string = col + isnull_token
+                query_string_list.append(prev_val_string)
+
+            else:
+                # At least one non-NA value in the list of values
+                prev_val_string = col + isnull_token + or_token
+                is_last_val = False
+                # Build remaining portion of the query (ie the col in ('a', 'b',
+                # 'c'))
+                for val_idx, val in enumerate(updated_vals):
+                    # Identify when the last value in the list
+                    # has been reached to avoid adding a ',' after
+                    # the last value.
+                    last_val = val_idx + 1
+
+                    if last_val == len(updated_vals):
+                        is_last_val = True
+
+                    #  Create the 'col in' portion of the query
+                    if val_idx == 0 and is_last_val:
+                        # Both the first and last element in the list (i.e. list of one
+                        # element)
+                        prev_val_string = prev_val_string + col + in_token + \
+                                          list_start + single_quote + val + \
+                                          single_quote + list_terminator
+
+                    elif val_idx == 0 and (not is_last_val):
+                        # First value of a list of values
+                        prev_val_string = prev_val_string + col + in_token + \
+                                          list_start + single_quote + val + \
+                                          single_quote + list_sep
+
+
+
+                    elif val_idx > 0 and not is_last_val:
+                        # One of the middle values in the list
+                        query_string = prev_val_string + single_quote + val + \
+                                       single_quote + list_sep
+
+                    else:
+                        # The last value in the list
+                        prev_val_string = prev_val_string + single_quote + val + \
+                                          single_quote + list_terminator
+
+                query_string_list.append(prev_val_string)
+
+
+        else:
+
+            # No NA's found in values. Create the query: col in ('a', 'b', 'c')
+            prev_val_string = ""
+            is_last_val = False
+
+            for val_idx, val in enumerate(updated_vals):
+
+                # Identify when the last value in the list
+                # has been reached to avoid adding a ',' after
+                # the last value.
+                last_val = val_idx + 1
+
+                if last_val == len(updated_vals):
+                    is_last_val = True
+
+                # Only one value in the values list (both first and last element)
+                if val_idx == 0 and is_last_val:
+                    prev_val_string = prev_val_string + col + in_token + list_start \
+                                      + single_quote + val + single_quote + \
+                                      list_terminator
+
+                elif val_idx == 0 and (not is_last_val):
+                    # First value of a list of values
+                    prev_val_string = prev_val_string + col + in_token + \
+                                      list_start + single_quote + val + \
+                                      single_quote + list_sep
+
+                elif val_idx > 0 and not is_last_val:
+                    # One of the middle values in the list
+                    prev_val_string = prev_val_string + single_quote + val + single_quote + list_sep
+                else:
+                    # Last value in the list
+                    prev_val_string = prev_val_string + single_quote + val + single_quote + list_terminator
+
+            query_string_list.append(prev_val_string)
+
+    # Perform query for each column (key)
+    for cur_query in query_string_list:
+        working_df = filtered_df.query(cur_query)
+        filtered_df = working_df.copy(deep=True)
+
+    #  clean up
+    del working_df
+    gc.collect()
+
+    return filtered_df
+
+
+def prepare_pct_roc(subset_df):
+    """
+    Initialize the PCT ROC plot data, appends a beginning and end point
+    :param subset_df: PCT data
+    :return: PCT ROC plot data
+    """
+    roc_df = pstats._calc_pct_roc(subset_df)
+    pody = roc_df['pody']
+    pody = pd.concat([pd.Series([1]), pody], ignore_index=True)
+    pody = pd.concat([pody, pd.Series([0])])
+    pofd = roc_df['pofd']
+    pofd = pd.concat([pd.Series([1]), pofd], ignore_index=True)
+    pofd = pd.concat([pofd, pd.Series([0])], ignore_index=True)
+    thresh = roc_df['thresh']
+    thresh = pd.concat([pd.Series(['']), thresh], ignore_index=True)
+    thresh = pd.concat([thresh, pd.Series([''])], ignore_index=True)
+
+    return pody, pofd, thresh
+
+
+def prepare_ctc_roc(subset_df, is_ascending):
+    """
+    Initialize the CTC ROC plot data, appends a beginning and end point
+    :param subset_df: CTC data
+    :param is_ascending: thresh order
+    :return: CTC ROC plot data
+    """
+    df_roc = cstats.calculate_ctc_roc(subset_df, ascending=is_ascending)
+    pody = df_roc['pody']
+    pody = pd.concat([pd.Series([1]), pody], ignore_index=True)
+    pody = pd.concat([pody, pd.Series([0])], ignore_index=True)
+    pofd = df_roc['pofd']
+    pofd = pd.concat([pd.Series([1]), pofd], ignore_index=True)
+    pofd = pd.concat([pofd, pd.Series([0])], ignore_index=True)
+    thresh = df_roc['thresh']
+    thresh = pd.concat([pd.Series(['']), thresh], ignore_index=True)
+    thresh = pd.concat([thresh, pd.Series([''])], ignore_index=True)
+
+    return pody, pofd, thresh

@@ -16,6 +16,7 @@ __author__ = 'Tatiana Burek'
 
 import os
 import logging
+import warnings
 import numpy as np
 import yaml
 from typing import Union
@@ -343,6 +344,9 @@ class BasePlot:
 
         image_name = self.get_config_value('plot_filename')
 
+        # Suppress deprecation warnings from third-party packages that are not in our control.
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
+
         # Create the directory for the output plot if it doesn't already exist
         dirname = os.path.dirname(os.path.abspath(image_name))
         if not os.path.exists(dirname):
@@ -354,9 +358,12 @@ class BasePlot:
                 self.logger.error(f"FileNotFoundError: Cannot save to file"
                                   f" {image_name}")
                 # print("Can't save to file " + image_name)
+            except ResourceWarning:
+                self.logger.warning(f"ResourceWarning: in _kaleido"
+                                  f" {image_name}")
+
             except ValueError as ex:
                 self.logger.error(f"ValueError: Could not save output file.")
-                # print(ex)
         else:
             self.logger.error(f"The figure {dirname} cannot be saved.")
             print("Oops!  The figure was not created. Can't save.")

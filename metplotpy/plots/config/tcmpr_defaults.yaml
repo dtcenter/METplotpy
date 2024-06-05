@@ -130,7 +130,7 @@ caption_weight: 1
 caption_align: 0
 caption_col: '#333333'
 n_min: 11
-plot_list: [] # boxplot, point, mean, median, relperf, rank, scatter ,skill_mn, skill_md
+plot_type_list: [] # boxplot, point, mean, median, relperf, rank, scatter ,skill_mn, skill_md
 rp_diff:
   - '>=100'
 hfip_bsln: no
@@ -145,3 +145,5 @@ subtitle: ''
 prefix:
 baseline_file: ./hfip_baseline.dat
 column_info_file: ./plot_tcmpr_hdr.dat
+is_tcdiag_linetype: False
+connect_points: False

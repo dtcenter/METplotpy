@@ -104,3 +104,5 @@ ytlab_size: 1
 
 stat_input: ./eclv_pct.data
 plot_filename: ./eclv_pct.png
+show_legend:
+  -True

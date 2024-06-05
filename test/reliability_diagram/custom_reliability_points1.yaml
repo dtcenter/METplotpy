@@ -182,4 +182,9 @@ ytlab_perp: 0.5
 ytlab_size: 1
 plot_filename: ./intermed_files/reliability.png
 stat_input: ./reliability.data
-
+noskill_line_col: 'green'
+reference_line_col: 'blue'
+show_legend:
+- 'True'
+- 'True'
+- 'True'

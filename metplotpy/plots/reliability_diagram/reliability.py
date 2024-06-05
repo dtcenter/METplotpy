@@ -61,12 +61,12 @@ class Reliability(BasePlot):
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            value_error_msg = "The number of series defined by series_val_1 "\
-                             " inconsistent with the number of settings"\
-                             " required for describing each series. Please check"\
-                             " the number of your configuration file's plot_i,"\
-                             " plot_disp, series_order, user_legend,"\
-                             " colors, and series_symbols settings."
+            value_error_msg = ("The number of series defined by series_val_1 "
+                             " inconsistent with the number of settings"
+                             " required for describing each series. Please check"
+                             " the number of your configuration file's plot_i,"
+                             " plot_disp, series_order, user_legend,"
+                             " colors, show_legend and series_symbols settings.")
             self.logger.error(f"ValueError:{value_error_msg}")
             raise ValueError(value_error_msg)
 
@@ -235,7 +235,7 @@ class Reliability(BasePlot):
         # add the plot
         line_trace = go.Scatter(x=x_points_index_adj,
                                 y=y_points,
-                                showlegend=True,
+                                showlegend=self.config_obj.show_legend[series.idx] == 1,
                                 mode=self.config_obj.mode[series.idx],
                                 textposition="top right",
                                 name=self.config_obj.user_legends[series.idx],
@@ -318,7 +318,7 @@ class Reliability(BasePlot):
                 self.figure.add_trace(
                     go.Scatter(x=[0, 1],
                                y=[util.abline(0, intercept, 0.5), util.abline(1, intercept, 0.5)],
-                               line={'color': 'red',
+                               line={'color': self.config_obj.noskill_line_col,
                                      'dash': 'dash',
                                      'width': 1},
                                showlegend=False,
@@ -393,7 +393,7 @@ class Reliability(BasePlot):
                 self.figure.add_trace(
                     go.Scatter(x=[0, 1],
                                y=[util.abline(0, o_bar, 0), util.abline(1, o_bar, 0)],
-                               line={'color': 'red',
+                               line={'color': self.config_obj.reference_line_col,
                                      'dash': 'dash',
                                      'width': 1},
                                showlegend=False,
@@ -748,7 +748,7 @@ def main(config_filename=None):
     try:
         plot = Reliability(docs)
         plot.save_to_file()
-        # plot.show_in_browser()
+        #plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
         plot.logger.info(f"Finished generating reliability diagram: {datetime.now()}")

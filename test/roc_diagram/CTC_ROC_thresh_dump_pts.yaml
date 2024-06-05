@@ -141,3 +141,5 @@ ytlab_horiz: 0.5
 ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
+show_legend:
+- 'True'

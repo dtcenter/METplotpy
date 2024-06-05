@@ -5,9 +5,9 @@
  # ** Research Applications Lab (RAL)
  # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
  # ============================*
- 
- 
- 
+
+
+
 """
 Class Name: roc_diagram.py
  """
@@ -17,7 +17,11 @@ import os
 from datetime import datetime
 import yaml
 import re
-import sys
+import warnings
+# with warnings.catch_warnings():
+#     warnings.simplefilter("ignore", category="DeprecationWarning")
+#     warnings.simplefilter("ignore", category="ResourceWarning")
+
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -27,6 +31,7 @@ from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.roc_diagram.roc_diagram_config import ROCDiagramConfig
 from metplotpy.plots.roc_diagram.roc_diagram_series import ROCDiagramSeries
 import metcalcpy.util.utils as calc_util
+from metplotpy.plots.util import prepare_pct_roc, prepare_ctc_roc
 
 
 class ROCDiagram(BasePlot):
@@ -103,7 +108,7 @@ class ROCDiagram(BasePlot):
         if len(self.series_list) > 0:
             self._add_lines(self.config_obj)
 
-    def _read_input_data(self):
+    def _read_input_data(self) -> pd.DataFrame:
         """
             Read the input data file (either CTC or PCT linetype)
             and store as a pandas dataframe so we can subset the
@@ -112,11 +117,60 @@ class ROCDiagram(BasePlot):
 
             Args:
 
-            Returns:
+            Returns: input_df the dataframe representation of the input data
 
         """
         self.logger.info("Reading input data.")
-        return pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
+        # If self.config_obj.lineype_ctc is True, check for the presence of the fy_oy column.
+        # If present, proceed as usual, otherwise extract the fcst_thresh, fy_oy, fy_on, fn_on, and fn_oy data
+        # from the stat_name and stat_value columns (long to wide).
+        input_df = pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
+        if self.config_obj.linetype_ctc:
+            # Check if there is a column name 'fy_oy'.  If it is missing, then this data has been reformatted by
+            # the METdataio reformatter.
+            input_columns = input_df.columns.to_list()
+            if 'fy_oy' in input_columns:
+                # This data has been created from the METviewer database
+                return input_df
+
+            else:
+                # This data was created by the METdataio reformatter and needs to be modified from long to wide format.
+                wide_input_df = self.ctc_long_to_wide(input_df)
+                return wide_input_df
+        else:
+            # PCT data
+            return input_df
+
+    def ctc_long_to_wide(self, input_df: pd.DataFrame) -> pd.DataFrame:
+        """
+          Convert the dataframe representation of the CTC linetype data (that was reformatted by METdataio) from long
+          to wide format.  The fcst_thresh, fy_oy, fy_on, fn_oy, and fn_on will be in separate columns,
+          rather than residing under the stat_name and stat_value.
+
+          Args:
+              @param input_df:  The input dataframe that represents the CTC data reformatted by METdataio.
+
+          Returns:  ctc_df: a dataframe that has the additional columns: fy_oy, fy_on, fn_on, fn_oy, and
+                    fcst_thresh extracted from the stat_name and stat_values columns
+        """
+
+
+        # Use all the columns (except the stat_name, stat_value,stat_bcl, stat_bcu, stat_ncl, stat_ncu,
+        # and Idx column) as the pivot index
+        col_index = input_df.columns.to_list()
+        ignore_cols = ['Idx', 'stat_name', 'stat_value', 'stat_bcl', 'stat_bcu', 'stat_ncl', 'stat_ncu']
+        for cur in ignore_cols:
+            if cur in col_index:
+               col_index.remove(cur)
+        df_wide = input_df.pivot(index=col_index, columns='stat_name', values='stat_value')
+
+        # reset the index
+        reset_df_wide = df_wide.reset_index()
+
+        # Convert all the header names (column labels) to all lower case
+        reset_df_wide.columns = [x.lower() for x in reset_df_wide.columns]
+
+        return reset_df_wide
 
     def _create_series(self, input_data):
         """
@@ -140,11 +194,70 @@ class ROCDiagram(BasePlot):
 
         # use the list of series ordering values to determine how many series objects we need.
         num_series = len(self.config_obj.series_ordering)
+        if self.config_obj.summary_curve != 'none':
+            num_series = num_series -1
 
         for i, series in enumerate(range(num_series)):
             # Create a ROCDiagramSeries object
             series_obj = ROCDiagramSeries(self.config_obj, i, input_data)
             series_list.append(series_obj)
+
+        if self.config_obj.summary_curve != 'none':
+            # add Summary Curve bassd on teh summary dataframes of each ROCDiagramSeries
+            df_sum_main = None
+            for idx, series in enumerate(series_list):
+                # create a main summary frame from series summary frames
+                if self.config_obj.linetype_ctc:
+                    if df_sum_main is None:
+                        df_sum_main = pd.DataFrame(columns=['fcst_thresh', 'fy_oy', 'fy_on', 'fn_oy', 'fn_on'])
+                elif self.config_obj.linetype_pct:
+                    if df_sum_main is None:
+                        df_sum_main = pd.DataFrame(columns=['thresh_i', 'i_value', 'on_i', 'oy_i'])
+
+                df_sum_main = pd.concat([df_sum_main, series.series_points[3]], axis=0)
+
+            if self.config_obj.linetype_ctc:
+                df_summary_curve = pd.DataFrame(columns=['fcst_thresh', 'fy_oy', 'fy_on', 'fn_oy', 'fn_on'])
+                fcst_thresh_list = df_sum_main['fcst_thresh'].unique()
+                for thresh in fcst_thresh_list:
+                    if self.config_obj.summary_curve == 'median':
+                        group_stats_fy_oy = df_sum_main['fy_oy'][df_sum_main['fcst_thresh'] == thresh].median()
+                        group_stats_fn_oy = df_sum_main['fn_oy'][df_sum_main['fcst_thresh'] == thresh].median()
+                        group_stats_fy_on = df_sum_main['fy_on'][df_sum_main['fcst_thresh'] == thresh].median()
+                        group_stats_fn_on = df_sum_main['fn_on'][df_sum_main['fcst_thresh'] == thresh].median()
+                    else:
+                        group_stats_fy_oy = df_sum_main['fy_oy'][df_sum_main['fcst_thresh'] == thresh].mean()
+                        group_stats_fn_oy = df_sum_main['fn_oy'][df_sum_main['fcst_thresh'] == thresh].mean()
+                        group_stats_fy_on = df_sum_main['fy_on'][df_sum_main['fcst_thresh'] == thresh].mean()
+                        group_stats_fn_on = df_sum_main['fn_on'][df_sum_main['fcst_thresh'] == thresh].mean()
+                    df_summary_curve.loc[len(df_summary_curve)] = {'fcst_thresh': thresh,
+                                                                   'fy_oy': group_stats_fy_oy,
+                                                                   'fn_oy': group_stats_fn_oy,
+                                                                   'fy_on': group_stats_fy_on,
+                                                                   'fn_on': group_stats_fn_on,
+                                                                   }
+                df_summary_curve.reset_index()
+                pody, pofd, thresh = prepare_ctc_roc(df_summary_curve,self.config_obj.ctc_ascending)
+            else:
+                df_summary_curve = pd.DataFrame(columns=['thresh_i', 'on_i', 'oy_i'])
+                thresh_i_list = df_sum_main['thresh_i'].unique()
+                for index, thresh in enumerate(thresh_i_list):
+                    if self.config_obj.summary_curve == 'median':
+                        on_i_sum = df_sum_main['on_i'][df_sum_main['thresh_i'] == thresh].median()
+                        oy_i_sum = df_sum_main['oy_i'][df_sum_main['thresh_i'] == thresh].median()
+                    else:
+                        on_i_sum = df_sum_main['on_i'][df_sum_main['thresh_i'] == thresh].mean()
+                        oy_i_sum = df_sum_main['oy_i'][df_sum_main['thresh_i'] == thresh].mean()
+                    df_summary_curve.loc[len(df_summary_curve)] = {'thresh_i': thresh, 'on_i': on_i_sum,
+                                                                   'oy_i': oy_i_sum, }
+                df_summary_curve.reset_index()
+                pody, pofd, thresh = prepare_pct_roc(df_summary_curve)
+
+            series_obj = ROCDiagramSeries(self.config_obj, num_series -1, None)
+            series_obj.series_points = (pofd, pody, thresh, None)
+
+            series_list.append(series_obj)
+
         return series_list
 
     def remove_file(self):
@@ -154,6 +267,7 @@ class ROCDiagram(BasePlot):
         """
 
         image_name = self.get_config_value('plot_filename')
+        warnings.filterwarnings("ignore", category=DeprecationWarning)
 
         # remove the old file if it exist
         if os.path.exists(image_name):
@@ -309,6 +423,9 @@ class ROCDiagram(BasePlot):
 
         thresh_list = []
 
+
+
+
         # "Dump" False Detection Rate (POFD) and PODY points to an output
         # file based on the output image filename (useful in debugging)
         # This output file is used by METviewer and not necessary for other uses.
@@ -329,15 +446,14 @@ class ROCDiagram(BasePlot):
                 # add the plot
                 self.logger.info("Adding traces for markers and legend.")
                 fig.add_trace(
-                    go.Scatter(mode="lines+markers", x=pofd_points, y=pody_points, showlegend=True,
+                    go.Scatter(mode="lines+markers", x=pofd_points, y=pody_points,
+                               showlegend=self.config_obj.show_legend[series.idx] == 1,
                                text=thresh_list, textposition="top right", name=legend_label,
                                line=dict(color=self.config_obj.colors_list[idx],
                                          width=self.config_obj.linewidth_list[idx]),
                                marker_symbol=self.config_obj.marker_list[idx]),
                     secondary_y=False
                 )
-
-
 
 
             def add_trace_copy(trace):
@@ -363,27 +479,7 @@ class ROCDiagram(BasePlot):
 
         return fig
 
-    def save_to_file(self):
-        """Saves the image to a file specified in the config file.
-         Prints a message if fails
 
-        Args:
-
-        Returns:
-
-        """
-        image_name = self.get_config_value('plot_filename')
-        if self.figure:
-            try:
-                self.figure.write_image(image_name)
-
-            except FileNotFoundError:
-                self.logger.error(f"FileNotFoundError: Cannot save "
-                                  f"{image_name} to file.")
-            except ValueError as ex:
-                self.logger.error(f"ValueError: {ex}")
-        else:
-            self.logger.warning("Oops! The figure wasn't created.  Cannot save file.")
 
     def write_output_file(self):
         """

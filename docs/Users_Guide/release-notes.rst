@@ -10,53 +10,102 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Release Notes
 =======================
 
-METplotpy Version 2.1.0 release notes (20230727)
+METplotpy Version 3.0.0-beta4 release notes (20240417)
 ------------------------------------------------------
+
 
   .. dropdown:: New Plots
 
-     * **Create skew-T (sounding) plots from TC-Diag ASCII output** (`#339 <https://github.com/dtcenter/METplotpy/issues/339>`_).
 
-     * **Convert plot_tcmp.R plotting to Python** (`#240 <https://github.com/dtcenter/METplotpy/issues/240>`_).
 
   .. dropdown:: Enhancements
 
-     * **Enhance the Release Notes by adding dropdown menus** (`#328 <https://github.com/dtcenter/METplotpy/issues/328>`_).
 
-     * **Update documentation on plots that now support logging** (`#368 <https://github.com/dtcenter/METplotpy/issues/368>`_).
+     * Update GitHub actions workflows to switch from node 16 to node 20 (`#414 <https://github.com/dtcenter/METplotpy/issues/414>`_).
 
-     * **Documentation: add Sphinx callout reminding users they cannot user environment variables in the YAML file in line plots chapter** (`#367 <https://github.com/dtcenter/METplotpy/issues/367>`_).
-
-     * **Make Headers Consistent in METplus components User's Guides** (`#371 <https://github.com/dtcenter/METplotpy/issues/371>`_).
+     * **Add GitHub action to run SonarQube for METplotpy pull requests and feature branches** (`#429 <https://github.com/dtcenter/METplotpy/issues/429>`_).
 
 
   .. dropdown:: Internal
 
-     * Create a figure directory (`#293 <https://github.com/dtcenter/METplotpy/issues/293>`_).
 
-     * Add 'LICENSE.md' to the METplotpy repo (`#320 <https://github.com/dtcenter/METplotpy/issues/320>`_).
-
-     * **Upgrade to using Python 3.10.4** (`#310 <https://github.com/dtcenter/METplotpy/issues/310>`_).
-
-     * Feature develop cycle change (`#301 <https://github.com/dtcenter/METplotpy/issues/301>`_).
-
-     * **Improve logging for 5 STIGS** (`#47 <https://github.com/dtcenter/METplus-Internal/issues/47>`_).
-
-     * Address Major SonarQube issues (`#43 <https://github.com/dtcenter/METplus-Internal/issues/43>`_).
-
-     * Replace the Polar Ice plot data that was removed.  (`#351 <https://github.com/dtcenter/METplus-Internal/issues/351>`_).
 
   .. dropdown:: Bugfixes
 
-     * **The CI's are oriented the wrong way in a vertical levels plot** (`#219 <https://github.com/dtcenter/METplotpy/issues/219>`_).
 
-     * **Plotly does not produce bar chart data when there is missing data** (`#332 <https://github.com/dtcenter/METplotpy/issues/332>`_).
+    * **TC-RMW plot needs updating to support changes to input** (`#425 <https://github.com/dtcenter/METplotpy/issues/425>`_).
 
-     * **x-axis labeling doesn't follow the order specified in independent Var** (`#218 <https://github.com/dtcenter/METplotpy/issues/218>`_).
 
-     * fix tcmpr import statements to include metplotpy reference (`#335 <https://github.com/dtcenter/METplotpy/issues/335>`_).
 
-     * **Address Warnings from pandas in METplotpy** (`#296 <https://github.com/dtcenter/METplotpy/issues/296>`_).
+METplotpy Version 3.0.0-beta3 release notes (20240206)
+------------------------------------------------------
+
+
+  .. dropdown:: New Plots
+
+
+
+  .. dropdown:: Enhancements
+
+
+     * **Add a summary curve to the ROC diagram** (`#399 <https://github.com/dtcenter/METplotpy/issues/399>`_).
+
+
+  .. dropdown:: Internal
+
+
+
+  .. dropdown:: Bugfixes
+
+ * TC-RMW plot needs updating to support changes to input (`#425 <https://github.com/dtcenter/METplotpy/issues/425>`_).
+
+
+
+
+METplotpy Version 3.0.0-beta2 release notes (20231108)
+------------------------------------------------------
+
+  .. dropdown:: New Plots
+
+
+  .. dropdown:: Enhancements
+
+
+     * **hide/show the legend entries line-by-line** (`#355 <https://github.com/dtcenter/METplotpy/issues/355>`_).
+
+
+     * **specify the color of the no resolution and no skill lines for the reliability diagram** (`#329 <https://github.com/dtcenter/METplotpy/issues/329>`_).
+
+  .. dropdown:: Internal
+
+
+
+  .. dropdown:: Bugfixes
+
+     * **Documentation-Fix METviewer link in line plot** (`#385 <https://github.com/dtcenter/METplotpy/issues/385>`_).
+
+     * **Inconsistency with generating plot in METviewer vs command line** (`#391 <https://github.com/dtcenter/METplotpy/issues/391>`_).
+
+     * **Bugfix for ROC plot image saving to file** (`#394 <https://github.com/dtcenter/METplotpy/issues/394>`_).
+
+     * Bugfix for erros in line and revision_series tests (`#401 <https://github.com/dtcenter/METplotpy/issues/401>`_).
+
+
+METplotpy Version 3.0.0-beta1 release notes (20230915)
+------------------------------------------------------
+
+  .. dropdown:: New Plots
+
+
+  .. dropdown:: Enhancements
+
+
+  .. dropdown:: Internal
+
+
+  .. dropdown:: Bugfixes
+
+
 
 
 METplotpy Upgrade Instructions

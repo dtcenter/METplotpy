@@ -10,7 +10,7 @@ dump_points_1: 'False'
 # points_path: '/dir_to_save_points1_file'
 
 # Title settings
-title: "Custom: ROC PCT 20200507_074426 "
+title: "Custom: ROC CTC 20200507_074426 "
 # value of 0.5 centers the title, smaller values moves text to the left
 title_align: 0.3
 # -2 locates title at top, -1.5 puts title inside plotting region
@@ -108,3 +108,5 @@ plot_filename: ./roc_diagram_custom.png
 # To change the log level, specify a log level: debug, info, warning, error and uncomment the line below.
 # The debug and info log levels will produce more log output.
 #log_level: WARNING
+show_legend:
+- 'True'

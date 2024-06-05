@@ -88,9 +88,11 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    tcrmw_cross_section
    skew_t
    stratosphere_diagnostics
+   stratosphere_plots
    polar_plot
    wind_rose
    fv3_physics
+   tcmpr_plots
    release-notes
    references
 

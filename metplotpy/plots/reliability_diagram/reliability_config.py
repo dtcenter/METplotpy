@@ -63,6 +63,8 @@ class ReliabilityConfig(Config):
         self.rely_event_hist = self._get_bool('rely_event_hist')
         self.inset_hist = self._get_bool('inset_hist')
         self.summary_curves = self.get_config_value('summary_curves')
+        self.noskill_line_col = self.get_config_value('noskill_line_col')
+        self.reference_line_col = self.get_config_value('reference_line_col')
 
         ##############################################
         # caption parameters
@@ -108,6 +110,7 @@ class ReliabilityConfig(Config):
         self.all_series_y1 = self._get_all_series_y()
         self.con_series = self._get_con_series()
         self.num_series = self.calculate_number_of_series()
+        self.show_legend = self._get_show_legend()
 
         ##############################################
         # legend parameters
@@ -280,11 +283,12 @@ class ReliabilityConfig(Config):
         num_legends = len(self.user_legends)
         num_line_widths = len(self.linewidth_list)
         num_linestyles = len(self.linestyles_list)
+        num_show_legend = len(self.show_legend)
         status = False
 
         if self.num_series == num_plot_disp == \
                 num_markers == num_series_ord == num_colors \
-                == num_legends == num_line_widths == num_linestyles == num_ci_settings:
+                == num_legends == num_line_widths == num_linestyles == num_ci_settings == num_show_legend:
             status = True
         self.logger.info(f"Finished consistency check :{datetime.now()}")
         return status

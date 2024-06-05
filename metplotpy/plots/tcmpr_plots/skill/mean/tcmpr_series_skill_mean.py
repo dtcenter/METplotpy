@@ -15,6 +15,8 @@ from typing import Union
 
 import numpy as np
 from pandas import DataFrame
+from datetime import datetime
+import metplotpy.plots.util as util
 
 import metcalcpy.util.utils as utils
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
@@ -29,8 +31,13 @@ class TcmprSeriesSkillMean(TcmprSeries):
     """
 
     def __init__(self, config, idx: int, input_data, series_list: list,
-                 series_name: Union[list, tuple], skill_ref_data: DataFrame = None):
-        super().__init__(config, idx, input_data, series_list, series_name, skill_ref_data)
+                 series_name: Union[list, tuple], stat_name, skill_ref_data: DataFrame = None):
+
+        # Set up Logging
+        self.skill_series_logger = util.get_common_logger(config.log_level, config.log_filename)
+
+        self.skill_series_logger.info(f"Creating TcmprSeriesSkillMean object: {datetime.now()}")
+        super().__init__(config, idx, input_data, series_list, series_name, stat_name, skill_ref_data)
 
     def _create_series_points(self) -> dict:
         """
@@ -43,6 +50,7 @@ class TcmprSeriesSkillMean(TcmprSeries):
                dictionary with CI ,point values and number of stats as keys
         """
 
+        start_time = datetime.now()
         self._init_series_data()
 
         result_size = len(self.config.indy_vals)
@@ -76,5 +84,9 @@ class TcmprSeriesSkillMean(TcmprSeries):
                     series_points_results['val'][i] = val
 
             series_points_results['nstat'][i] = len(point_data)
+
+        end_time = datetime.now()
+        total_time = end_time - start_time
+        self.skill_series_logger.info(f"Took {total_time} milliseconds to create series points")
 
         return series_points_results

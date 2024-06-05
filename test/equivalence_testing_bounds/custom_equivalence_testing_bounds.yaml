@@ -165,3 +165,7 @@ ytlab_perp: 0.5
 ytlab_size: 1
 plot_filename: ./equivalence_testing_bounds.png
 stat_input: ./equivalence_testing_bounds.data
+show_legend:
+- 'True'
+- 'True'
+- 'True'

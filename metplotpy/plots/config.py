@@ -129,6 +129,7 @@ class Config:
         self.indy_plot_val = self.get_config_value('indy_plot_val')
         self.lines = self._get_lines()
 
+
     def get_config_value(self, *args:Union[str,int,float]):
         """Gets the value of a configuration parameter.
         Looks for parameter in the user parameter dictionary
@@ -342,6 +343,23 @@ class Config:
         con_series_settings = self.get_config_value('con_series')
         return self.create_list_by_series_ordering(list(con_series_settings))
 
+    def _get_show_legend(self) -> list:
+        """
+           Retrieves the 'show_legend' values used for displaying or
+           not the legend of a trace in the legend box, from the
+           config file. If 'show_legend' is not provided - throws an error
+           Args:
+
+           Returns:
+               show_legend_list or show_legend_from_config: a list of 1 and/or 0 to
+               be used for the traces
+        """
+        show_legend_settings = self.get_config_value('show_legend')
+        if show_legend_settings is None:
+            raise ValueError("ERROR: show_legend parameter is not provided.")
+
+        return self.create_list_by_series_ordering(list(show_legend_settings))
+
     def _get_markers(self):
         """
            Retrieve all the markers.
@@ -450,7 +468,11 @@ class Config:
         # resulting in a zero-sized series_list.  In this case,
         # the legend label will just be the legend_label_type.
         if len(series_list) == 0 and legend_label_unspecified:
-            return [legend_label_type]
+            # check if summary_curve is present
+            if 'summary_curve' in self.parameters.keys() and self.parameters['summary_curve'] != 'none':
+                return [legend_label_type, self.parameters['summary_curve'] + ' ' + legend_label_type]
+            else:
+                return [legend_label_type]
 
         perms = utils.create_permutations(series_list)
         for idx,ll in enumerate(legends_list):
@@ -463,6 +485,8 @@ class Config:
                 ll_list.append(legend_label)
             else:
                 ll_list.append(ll)
+        if 'summary_curve' in self.parameters.keys() and self.parameters['summary_curve'] != 'none':
+            ll_list.append(self.parameters['summary_curve'] + ' ' + legend_label_type)
 
         legends_list_ordered = self.create_list_by_series_ordering(ll_list)
         return legends_list_ordered

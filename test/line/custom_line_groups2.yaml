@@ -15,11 +15,19 @@ colors:
 - '#ff0000'
 - '#8000ff'
 - '#00ff7f'
+
 con_series:
 - 1
 - 1
 - 1
-create_html: 'True'
+
+show_legend:
+- true
+- true
+- true
+
+
+create_html: 'False'
 derived_series_1:
 - - Group_y1_1 TMP ME
   - Group_y1_2 TMP ME
@@ -34,10 +42,7 @@ fcst_var_val_1:
   TMP:
   - ME
 fcst_var_val_2: {}
-fixed_vars_vals_input:
-  fcst_lev:
-    fcst_lev_0:
-    - Z02
+fixed_vars_vals_input: {}
 grid_col: '#cccccc'
 grid_lty: 3
 grid_lwd: 1
@@ -178,3 +183,4 @@ ytlab_horiz: 0.5
 ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
+
