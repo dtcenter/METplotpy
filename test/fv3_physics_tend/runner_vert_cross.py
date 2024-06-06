@@ -24,7 +24,7 @@ def run_example(config_file):
     config = open_config(config_file)
     command_str = "python " + config['source_dir'] + "/cross_section_vert.py " + " ./fv3_physics_tend_defaults.yaml " + \
                   config['history_file'] + " " + config[
-                      'grid_file'] + " tmp -t 2 -v 20190504T14 -s 32 -115 -e 34 -82 --nofineprint "
+                      'grid_file'] + " tmp -t 1 -v 20190615T20 -s 32 -115 -e 34 -82 --nofineprint "
     print("command string: ", command_str)
     os.system(command_str)
 
@@ -34,7 +34,7 @@ def run_with_novel_output_file(config_file):
     config = open_config(config_file)
     command_str = "python " + config['source_dir'] + "/cross_section_vert.py " + " ./fv3_physics_tend_defaults.yaml " + \
                   config['history_file'] + " " + config[
-                      'grid_file'] + " tmp -t 2 -v 20190504T14 -s 32 -115 -e 34 -82 -o ./test_vert_cross.png --nofineprint "
+                      'grid_file'] + " tmp -t 1 -v 20190615T20 -s 32 -115 -e 34 -82 -o ./test_vert_cross.png --nofineprint "
     print("command string: ", command_str)
     os.system(command_str)
 
@@ -43,7 +43,7 @@ def run_with_novel_output_dir(config_file):
     config = open_config(config_file)
     command_str = "python " + config['source_dir'] + "/cross_section_vert.py " + " ./fv3_physics_tend_defaults.yaml " + \
                   config['history_file'] + " " + config[
-                      'grid_file'] + " tmp -t 2 -v 20190504T14 -s 32 -115 -e 34 -82 -o ./output/test_vert_cross.png --nofineprint "
+                      'grid_file'] + " tmp -t 1 -v 20190615T20 -s 32 -115 -e 34 -82 -o ./output/test_vert_cross.png --nofineprint "
     print("command string: ", command_str)
     os.system(command_str)
 
