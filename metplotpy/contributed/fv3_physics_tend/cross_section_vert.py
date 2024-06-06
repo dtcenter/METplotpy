@@ -258,7 +258,7 @@ def main():
             vmin=vmin, vmax=vmax, cmap=fv3["cmap"],
             cbar_kwargs={'shrink': 1-hgt_inset, 'anchor': (0, 0.25-hgt_inset)})
 
-    for ax in pcm.axes.flat:
+    for ax in pcm.axs.flat:
         ax.grid(visible=True, color="grey", alpha=0.5, lw=0.5)
         ax.yaxis.set_major_locator(MultipleLocator(100))
         ax.yaxis.set_minor_locator(MultipleLocator(25))

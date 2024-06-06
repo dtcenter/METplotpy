@@ -253,7 +253,7 @@ def main():
         # zip d{variable}, resid line and their respective legend handles together and change
         # their style together.
         # [-2:] means take last two elements of da2plot.
-        special_lines = list(zip(lines, ax.get_legend().legendHandles))[-2:]
+        special_lines = list(zip(lines, ax.get_legend().legend_handles))[-2:]
         special_marker = 'o'
         special_marker_size = 3
         for line, leghandle in special_lines:
@@ -276,7 +276,7 @@ def main():
         cbar_kwargs = {"ticks":[0.25, 0.75], "shrink":0.6}
         pcm = mask.assign_coords(lont=lont, latt=latt).astype(int).plot.pcolormesh(
             ax=ax_inset, x="lont", y="latt", infer_intervals=True,
-            transform=cartopy.crs.PlateCarree(), cmap=plt.cm.get_cmap('cool', 2),
+            transform=cartopy.crs.PlateCarree(), cmap=plt.colormaps['cool'],
             add_labels=False, cbar_kwargs=cbar_kwargs)
         pcm.colorbar.ax.set_yticklabels(
             ["masked", "valid"], fontsize='xx-small')

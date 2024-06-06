@@ -289,7 +289,7 @@ def main():
                                   infer_intervals=True, transform=cartopy.crs.PlateCarree(),
                                   vmin=vmin, vmax=vmax, cmap=fv3["cmap"],
                                   cbar_kwargs={'shrink': 0.8}, subplot_kws=subplot_kws)
-    for ax in pcm.axes.flat:
+    for ax in pcm.axs.flat:
         # Why needed only when col=tendency_dim? With col="pfull" it shrinks to unmasked size.
         ax.set_extent(fv3["extent"])
         physics_tend.add_conus_features(ax)
