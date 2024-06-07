@@ -10,7 +10,7 @@ from metpy.units import units
 import pandas as pd
 import xarray
 import yaml
-import physics_tend
+from . import physics_tend
 
 def parse_args():
     """
