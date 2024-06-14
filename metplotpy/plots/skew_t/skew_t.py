@@ -37,7 +37,7 @@ logging.getLogger(name='matplotlib').setLevel(logging.ERROR)
 warnings.filterwarnings(action='ignore', category=UserWarning)
 
 
-def extract_sounding_data(input_file):
+def extract_sounding_data(input_file, output_directory):
     with open(input_file) as infile:
         data = infile.readlines()
 
@@ -64,12 +64,14 @@ def extract_sounding_data(input_file):
 
     # Save the sounding data into a text file, which will then be converted into a
     # pandas dataframe.
-    with open("sounding_data.dat", "w") as txt_file:
+    sounding_data_file = os.path.join(output_directory, 'sounding_data.dat')
+    os.makedirs(output_directory, exist_ok=True)
+    with open(sounding_data_file, "w") as txt_file:
         for line in sounding_data:
             txt_file.write("".join(line) + "\n")
 
     # Read in the current sounding data file, replacing any 9999 values with NaN.
-    df_raw: pandas.DataFrame = pd.read_csv("sounding_data.dat", delim_whitespace=True,
+    df_raw: pandas.DataFrame = pd.read_csv(sounding_data_file, delim_whitespace=True,
                                            skiprows=1,
                                            na_values=['9999'])
 
@@ -515,7 +517,7 @@ def create_skew_t(input_file: str, config: dict) -> None:
                        f"GENERATED.")
         return
 
-    sounding_df, plevs = extract_sounding_data(input_file)
+    sounding_df, plevs = extract_sounding_data(input_file, config['output_directory'])
 
     # Check if sounding data consists entirely of na-values.
     all_na = check_for_all_na(sounding_df)
