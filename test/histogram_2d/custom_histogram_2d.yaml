@@ -1,5 +1,5 @@
 # replace with the location and name of your choosing:
-plot_filename: ./custom_tmp_z2_p500.png
+plot_filename: !ENV '${TEST_DIR}/custom_tmp_z2_p500.png'
 
 height: 800
 width: 1200
@@ -26,7 +26,7 @@ pdf_max: 4.0
 # dump_points_2: 'False'
 
 # the input data file (replace ./ with the full path)
-stat_input: ./grid_diag_temperature.nc
+stat_input: !ENV '${TEST_DIR}/grid_diag_temperature.nc'
 
 # To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
 # permissions to the directory you specify.  The default, as specified in the default config file is stdout.

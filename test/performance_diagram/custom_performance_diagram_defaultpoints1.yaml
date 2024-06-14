@@ -102,6 +102,6 @@ series_line_style:
   - "--"
   # dotted line
   - ":"
-stat_input:  ./plot_20200317_151252.data
-plot_filename: ./performance_diagram_defaultpoints1.png
+stat_input: !ENV '${TEST_DIR}/plot_20200317_151252.data'
+plot_filename: !ENV '${TEST_DIR}/performance_diagram_defaultpoints1.png'
 event_equalize: False

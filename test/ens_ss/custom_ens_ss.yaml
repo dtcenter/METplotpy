@@ -119,8 +119,8 @@ y2tlab_orient: 1
 y2tlab_perp: 1
 y2tlab_size: 1.0
 
-stat_input: ./ens_ss.data
-plot_filename: ./ens_ss.png
+stat_input: !ENV '${TEST_DIR}/ens_ss.data'
+plot_filename: !ENV '${TEST_DIR}/ens_ss.png'
 
 # To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
 # permissions to the directory you specify.  The default, as specified in the default config file is stdout.

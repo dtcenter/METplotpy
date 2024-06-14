@@ -7,17 +7,17 @@ from metplotpy.plots.roc_diagram import roc_diagram as roc
 # from metcalcpy.compare_images import CompareImages
 import metcalcpy.util.ctc_statistics as ctc
 
+cwd = os.path.dirname(__file__)
+
 
 # Fixture used for the image comparison
 # test.
 @pytest.fixture
-def setup():
+def setup(setup_env):
     # Cleanup the plotfile and point1 output file from any previous run
     cleanup()
-    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
-    # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../"
-    custom_config_filename = "./CTC_ROC_thresh.yaml"
+    setup_env(cwd)
+    custom_config_filename = f"{cwd}/CTC_ROC_thresh.yaml"
     # print("\n current directory: ", os.getcwd())
     # print("\ncustom config file: ", custom_config_filename, '\n')
 
@@ -27,14 +27,12 @@ def setup():
 
 
 @pytest.fixture
-def setup_rev_points():
+def setup_rev_points(setup_env):
     # Cleanup the plotfile and point1 output file from any previous run
-    path = os.getcwd()
-    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
-    # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../"
-    custom_config_filename = "./CTC_ROC_thresh_reverse_pts.yaml"
-    print("\n current directory: ", os.getcwd())
+    cleanup()
+    setup_env(cwd)
+    custom_config_filename = f"{cwd}/CTC_ROC_thresh_reverse_pts.yaml"
+    print("\n current directory: ", cwd)
     print("\ncustom config file: ", custom_config_filename, '\n')
 
     # Invoke the command to generate a Performance Diagram based on
@@ -43,20 +41,15 @@ def setup_rev_points():
 
 
 @pytest.fixture
-def setup_summary():
+def setup_summary(setup_env):
     # Cleanup the plotfile and point1 output file from any previous run
-    path = os.getcwd()
-
-    subdir_path = os.path.join(path, 'intermed_files')
-
-    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
-    # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../"
-    custom_config_filename = "./CTC_ROC_summary.yaml"
+    cleanup()
+    setup_env(cwd)
+    custom_config_filename = f"{cwd}/CTC_ROC_summary.yaml"
 
     try:
-        os.mkdir(os.path.join(os.getcwd(), 'intermed_files'))
-    except FileExistsError as e:
+        os.mkdir(os.path.join(cwd, 'intermed_files'))
+    except FileExistsError:
         pass
 
     # Invoke the command to generate a Performance Diagram based on
@@ -65,22 +58,19 @@ def setup_summary():
 
 
 @pytest.fixture
-def setup_dump_points():
+def setup_dump_points(setup_env):
     # Cleanup the plotfile and point1 output file from any previous run
-    path = os.getcwd()
+    cleanup()
+    setup_env(cwd)
     # put any intermediate files in the intermed_files subdirectory of this current
     # working directory. *NOTE* This MUST match with what you set up in CTC_ROC_thresh.yaml for the
     # points_path configuration setting.
-    subdir_path = os.path.join(path, 'intermed_files')
-    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
-    # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../"
-    custom_config_filename = "./CTC_ROC_thresh_dump_pts.yaml"
+    custom_config_filename = f"{cwd}/CTC_ROC_thresh_dump_pts.yaml"
     # print("\n current directory: ", os.getcwd())
     # print("\ncustom config file: ", custom_config_filename, '\n')
     try:
-        os.mkdir(os.path.join(os.getcwd(), 'intermed_files'))
-    except FileExistsError as e:
+        os.mkdir(os.path.join(cwd, 'intermed_files'))
+    except FileExistsError:
         pass
 
     # Invoke the command to generate a Performance Diagram based on
@@ -93,28 +83,25 @@ def cleanup():
     # from any previous runs
     # The subdir_path is where the .points1 file will be stored
     try:
-        path = os.getcwd()
         plot_file = 'CTC_ROC_thresh.png'
-        html_file = '.html'
-        os.remove(os.path.join(path, html_file))
-        os.remove(os.path.join(path, plot_file))
-    except OSError as e:
-        # Typically when files have already been removed or
-        # don't exist.  Ignore.
+        html_file = 'CTC_ROC_thresh.html'
+        os.remove(os.path.join(cwd, html_file))
+        os.remove(os.path.join(cwd, plot_file))
+    except OSError:
         pass
 
 
 @pytest.mark.parametrize("test_input,expected_boolean",
-                         (["./CTC_ROC_thresh_expected.png", True], ["./CTC_ROC_thresh.points1", False]))
+                         (["CTC_ROC_thresh_expected.png", True], ["CTC_ROC_thresh.points1", False]))
 def test_files_exist(setup, test_input, expected_boolean):
     '''
         Checking that the plot file is getting created but the points1 file is NOT
     '''
-    assert os.path.isfile(test_input) == expected_boolean
+    assert os.path.isfile(f"{cwd}/{test_input}") == expected_boolean
     cleanup()
 
 
-def test_expected_CTC_thresh_dump_points(setup_dump_points):
+def test_expected_ctc_thresh_dump_points(setup_dump_points, remove_files):
     '''
         For test data, verify that the points in the .points1 file are in the
         directory we specified and the values
@@ -123,48 +110,25 @@ def test_expected_CTC_thresh_dump_points(setup_dump_points):
     '''
     expected_pody = pd.Series([1, 0.8457663, 0.7634846, 0.5093934, 0.1228585, 0])
     expected_pofd = pd.Series([1, 0.0688293, 0.049127, 0.0247044, 0.0048342, 0])
-    df = pd.read_csv("./intermed_files/CTC_ROC_thresh.points1", sep='\t', header='infer')
+    df = pd.read_csv(f"{cwd}/intermed_files/CTC_ROC_thresh.points1", sep='\t', header='infer')
     pofd = df.iloc[:, 0]
     pody = df.iloc[:, 1]
 
     for index, expected in enumerate(expected_pody):
-        if ctc.round_half_up(expected) - ctc.round_half_up(pody[index]) == 0.0:
-            pass
-        else:
-            assert False
+        assert ctc.round_half_up(expected) - ctc.round_half_up(pody[index]) == 0.0
 
     # if we get here, then all elements matched in value and position
-    assert True
 
     # do the same test for pofd
     for index, expected in enumerate(expected_pofd):
-        if ctc.round_half_up(expected) - ctc.round_half_up(pofd[index]) == 0.0:
-            pass
-        else:
-            assert False
+        assert ctc.round_half_up(expected) - ctc.round_half_up(pofd[index]) == 0.0
 
     # different cleanup than what is provided by cleanup()
     # clean up the intermediate subdirectory and other files
-    try:
-        path = os.getcwd()
-        plot_file = 'CTC_ROC_thresh_dump_pts.png'
-        html_file = '.html'
-        points_file = 'CTC_ROC_thresh.points1'
-        intermed_path = os.path.join(path, "intermed_files")
-        os.remove(os.path.join(intermed_path, points_file))
-        os.rmdir(intermed_path)
-        os.remove(os.path.join(path, plot_file))
-        os.remove(os.path.join(path, html_file))
-    except OSError as e:
-        # Typically when files have already been removed or
-        # don't exist.  Ignore.
-        pass
-
-    # if we get here, then all elements matched in value and position
-    assert True
+    remove_files(cwd, ['CTC_ROC_thresh_dump_pts.png', 'CTC_ROC_thresh_dump_pts.html'])
 
 
-def test_expected_CTC_summary(setup_summary):
+def test_expected_ctc_summary(setup_summary, remove_files):
     '''
         For test data, verify that the points in the .points1 file are in the
         directory we specified and the values
@@ -174,48 +138,25 @@ def test_expected_CTC_summary(setup_summary):
     expected_pofd = pd.Series([1, 0.0052708, 0, 1, 0.0084788, 0, 1, 0.0068247, 0])
     expected_pody = pd.Series([1, 0.0878715, 0, 1, 0.1166785, 0, 1, 0.1018776, 0])
 
-    df = pd.read_csv("./intermed_files/CTC_ROC_summary.points1", sep='\t', header='infer')
+    df = pd.read_csv(f"{cwd}/intermed_files/CTC_ROC_summary.points1", sep='\t', header='infer')
     pofd = df.iloc[:, 0]
     pody = df.iloc[:, 1]
 
     for index, expected in enumerate(expected_pody):
-        if ctc.round_half_up(expected) - ctc.round_half_up(pody[index]) == 0.0:
-            pass
-        else:
-            assert False
+        assert ctc.round_half_up(expected) - ctc.round_half_up(pody[index]) == 0.0
 
     # if we get here, then all elements matched in value and position
-    assert True
 
     # do the same test for pofd
     for index, expected in enumerate(expected_pofd):
-        if ctc.round_half_up(expected) - ctc.round_half_up(pofd[index]) == 0.0:
-            pass
-        else:
-            assert False
+        assert ctc.round_half_up(expected) - ctc.round_half_up(pofd[index]) == 0.0
 
     # different cleanup than what is provided by cleanup()
     # clean up the intermediate subdirectory and other files
-    try:
-        path = os.getcwd()
-        plot_file = 'CTC_ROC_summary.png'
-        html_file = '.html'
-        points_file = 'CTC_ROC_summary.points1'
-        intermed_path = os.path.join(path, "intermed_files")
-        os.remove(os.path.join(intermed_path, points_file))
-        os.rmdir(intermed_path)
-        os.remove(os.path.join(path, plot_file))
-        os.remove(os.path.join(path, html_file))
-    except OSError as e:
-        # Typically when files have already been removed or
-        # don't exist.  Ignore.
-        pass
-
-    # if we get here, then all elements matched in value and position
-    assert True
+    remove_files(cwd, ['CTC_ROC_summary.png', 'CTC_ROC_summary.html'])
 
 
-def test_expected_CTC_thresh_points_reversed(setup_rev_points):
+def test_expected_ctc_thresh_points_reversed(setup_rev_points, remove_files):
     '''
         For test data, verify that the points in the .points1 file
         match what is expected (within round-off tolerance/acceptable precision) when
@@ -225,45 +166,26 @@ def test_expected_CTC_thresh_points_reversed(setup_rev_points):
     expected_pody = pd.Series([1, 0.8457663, 0.7634846, 0.5093934, 0.1228585, 0])
     expected_pofd = pd.Series([1, 0.0688293, 0.0491275, 0.0247044, 0.0048342, 0])
 
-    df = pd.read_csv("./CTC_ROC_thresh.points1", sep='\t', header='infer')
+    df = pd.read_csv(f"{cwd}/CTC_ROC_thresh.points1", sep='\t', header='infer')
     pofd = df.iloc[:, 0]
     pody = df.iloc[:, 1]
 
     for index, expected in enumerate(expected_pody):
-        if ctc.round_half_up(expected) - ctc.round_half_up(pody[index]) == 0.0:
-            pass
-        else:
-            assert False
+        assert ctc.round_half_up(expected) - ctc.round_half_up(pody[index]) == 0.0
 
-        # if we get here, then all elements matched in value and position
-    assert True
+    # if we get here, then all elements matched in value and position
 
     # do the same test for pofd
     for index, expected in enumerate(expected_pofd):
-        if ctc.round_half_up(expected) - ctc.round_half_up(pofd[index]) == 0.0:
-            pass
-        else:
-            assert False
+        assert ctc.round_half_up(expected) - ctc.round_half_up(pofd[index]) == 0.0
 
-        # if we get here, then all elements matched in value and position
-    assert True
+    # if we get here, then all elements matched in value and position
 
     # different cleanup than what is provided by cleanup()
-    try:
-        path = os.getcwd()
-        plot_file = 'CTC_ROC_thresh.png'
-        points_file = 'CTC_ROC_thresh.points1'
-        html_file = '.html'
-        os.remove(os.path.join(path, points_file))
-        os.remove(os.path.join(path, plot_file))
-        os.remove(os.path.join(path, html_file))
-    except OSError as e:
-        # Typically when files have already been removed or
-        # don't exist.  Ignore.
-        pass
+    remove_files(cwd, ['CTC_ROC_thresh.png', 'CTC_ROC_thresh.points1', 'CTC_ROC_thresh.html'])
 
 
-def test_ee_returns_empty_df(capsys):
+def test_ee_returns_empty_df(capsys, remove_files):
     '''
         use CTC_ROC.data with event equalization set to True. This will
         result in an empty data frame returned from event equalization. Check for
@@ -274,7 +196,7 @@ def test_ee_returns_empty_df(capsys):
 
 
     '''
-    custom_config_filename = "./CTC_ROC_ee.yaml"
+    custom_config_filename = f"{cwd}/CTC_ROC_ee.yaml"
     roc.main(custom_config_filename)
     captured = capsys.readouterr()
     expected = '\nINFO: No resulting data after performing event equalization of axis 1\n' \
@@ -284,18 +206,11 @@ def test_ee_returns_empty_df(capsys):
     assert captured.out == expected
 
     # Clean up
-    try:
-        path = os.getcwd()
-        plot_file = 'CTC_ROC_ee.png'
-        os.remove(os.path.join(path, plot_file))
-    except OSError as e:
-        # Typically when files have already been removed or
-        # don't exist.  Ignore.
-        pass
+    remove_files(cwd, ['CTC_ROC_ee.png', 'CTC_ROC_ee.html'])
 
 
 @pytest.mark.skip("skip image comparison")
-def test_images_match(setup):
+def test_images_match(setup, remove_files):
     '''
         Compare an expected plot with the
         newly created plot to verify that the plot hasn't
@@ -305,47 +220,36 @@ def test_images_match(setup):
         can sometimes be a different size than the expected (which was generated
         using the same configuration file and data!)
     '''
-    path = os.getcwd()
-    plot_file = './CTC_ROC_thresh.png'
-    actual_file = os.path.join(path, plot_file)
-    comparison = CompareImages('./CTC_ROC_thresh.png', actual_file)
+    plot_file = 'CTC_ROC_thresh.png'
+    actual_file = os.path.join(cwd, plot_file)
+    comparison = CompareImages(f'{cwd}/CTC_ROC_thresh.png', actual_file)
     assert comparison.mssim == 1
 
     # cleanup
     # different cleanup than what is provided by cleanup()
-    try:
-        plot_file = 'CTC_ROC_thresh.png'
-        html_file = '.html'
-        os.remove(os.path.join(path, plot_file))
-        os.remove(os.path.join(path, html_file))
-    except OSError as e:
-        # Typically when files have already been removed or
-        # don't exist.  Ignore.
-        pass
+    remove_files(cwd, ['CTC_ROC_thresh.png', 'CTC_ROC_thresh.html'])
 
 
-def test_pct_plot_exists():
+def test_pct_plot_exists(remove_files):
     '''
         Verify that the ROC diagram is generated
     '''
 
-    custom_config_filename = "./PCT_ROC.yaml"
-    output_plot = "./PCT_ROC.png"
+    custom_config_filename = f"{cwd}/PCT_ROC.yaml"
+    output_plot = f"{cwd}/PCT_ROC.png"
 
     print("\n Testing for existence of PCT ROC plot...")
     roc.main(custom_config_filename)
-    assert os.path.isfile(output_plot) == True
-    os.remove(os.path.join(output_plot))
+    assert os.path.isfile(output_plot)
+    remove_files(cwd, ['PCT_ROC.png', 'PCT_ROC.html'])
 
 
-def test_pct_no_warnings():
+def test_pct_no_warnings(remove_files):
     '''
         Verify that the ROC diagram is generated without FutureWarnings
     '''
 
-    custom_config_filename = "./PCT_ROC.yaml"
-    output_plot = "./PCT_ROC.png"
-
+    custom_config_filename = f"{cwd}/PCT_ROC.yaml"
     print("\n Testing for FutureWarning..")
 
     try:
@@ -354,26 +258,25 @@ def test_pct_no_warnings():
         print("FutureWarning generated")
         # FutureWarning generated, test fails
         assert False
-    else:
-        assert True
-        os.remove(os.path.join(output_plot))
+
+    remove_files(cwd, ['PCT_ROC.png', 'PCT_ROC.html'])
 
 
-def test_ctc_reformatted():
+def test_ctc_reformatted(remove_files):
     '''
         Verify that the ROC diagram is generated successfully
         from reformatted CTC data.
     '''
 
-    custom_config_filename = "./CTC_wind_reformatted.yaml"
-    output_plot = "./CTC_wind_reformatted.png"
+    custom_config_filename = f"{cwd}/CTC_wind_reformatted.yaml"
+    output_plot = f"{cwd}/CTC_wind_reformatted.png"
 
     print("\n Testing for presence of the CTC_wind_reformatted.png plot...")
 
     roc.main(custom_config_filename)
-    assert os.path.isfile(output_plot) == True
+    assert os.path.isfile(output_plot)
     # Checking for plot size isn't reliable
     #expected_filesize = int(43239)
     #plot_filesize =  int(os.path.getsize(output_plot))
     #assert plot_filesize >= expected_filesize
-    os.remove(os.path.join(output_plot))
+    remove_files(cwd, ['CTC_wind_reformatted.png', 'CTC_wind_reformatted.html'])

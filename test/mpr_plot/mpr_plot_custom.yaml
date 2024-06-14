@@ -1,5 +1,5 @@
 wind_rose: True
-plot_filename: mpr_plots.png
+plot_filename: !ENV '${TEST_DIR}/mpr_plots.png'
 wind_rose_breaks:
   - 0.0
   - 1.0
@@ -28,7 +28,7 @@ angularaxis_ticktext:
   - 'S'
   - 'W'
 mpr_file_list:
-  - ./point_stat_mpr.txt
+  - !ENV '${TEST_DIR}/point_stat_mpr.txt'
 width: 1200
 height: 7500
 marker_color: 'rgb(194,189,251)'

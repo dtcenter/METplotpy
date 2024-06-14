@@ -1,8 +1,8 @@
 # minimal config file to use all the settings in the wind_rose_default.yaml file.
 # **NOTE**: update the stat_input and plot_filename settings with the full path to your
 # input file and output file, respectively.
-stat_input: ./point_stat_mpr.txt
-plot_filename: ./wind_rose_default.png
+stat_input: !ENV '${TEST_DIR}/point_stat_mpr.txt'
+plot_filename: !ENV '${TEST_DIR}/wind_rose_default.png'
 
 # Optional, uncomment and set to directory to store the .points1 file
 # that is used by METviewer (created when dump_points_1 is set to True)

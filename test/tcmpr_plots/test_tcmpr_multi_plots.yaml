@@ -102,7 +102,7 @@ series_symbols_size:
   - 7
 
 show_nstats: 'True'
-tcst_dir: './Data/'
+tcst_dir: !ENV '${TEST_DIR}/Data/'
 #tcst_dir: '/path/to/tcmpr_sample_data'
 tcst_files: [ ]
 title: ''
@@ -133,11 +133,11 @@ event_equal: 'True'
 skill_ref:
   - HFSA
 
-plot_dir: './output'
+plot_dir: !ENV '${TEST_DIR}/output'
 prefix: ''
 subtitle:
 log_level: INFO
-log_filename: './output/tcmpr_log.out'
+log_filename: !ENV '${TEST_DIR}/output/tcmpr_log.out'
 baseline_file: './metplotpy/plots/tcmpr_plots/hfip_baseline.dat'
 column_info_file: './metplotpy/plots/tcmpr_plots/plot_tcmpr_hdr.dat'
 hfip_bsln: 'no'

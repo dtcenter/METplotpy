@@ -29,8 +29,8 @@ angularaxis_ticktext:
   - 'E'
   - 'S'
   - 'W'
-plot_filename: ./intermed_files/wind_rose_points2.png
+plot_filename: !ENV '${TEST_DIR}/intermed_files/wind_rose_points2.png'
 dump_points: True
-points_path: ./intermed_files
+points_path: !ENV '${TEST_DIR}/intermed_files'
 # No stat_input, force creation of 'default' points file name
 show_in_browser: False

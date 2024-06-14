@@ -6,17 +6,17 @@ import re
 from metplotpy.plots.skew_t import skew_t as skew_t
 # from metcalcpy.compare_images import  CompareImages
 
+cwd = os.path.dirname(__file__)
+SOUNDING_DATA_DAT_FILE = os.path.join('output', 'sounding_data.dat')
 
 
-def test_files_exist():
+def test_files_exist(setup_env, remove_files):
     '''
         Checking that only the expected plot files are getting created and
         input files with only fill/missing data are not created.
     '''
-
-    os.environ['METPLOTPY_BASE'] = "../../"
-    cur_dir = os.getcwd()
-    custom_config_filename = os.path.join(cur_dir, "test_skew_t.yaml")
+    setup_env(cwd)
+    custom_config_filename = os.path.join(cwd, "test_skew_t.yaml")
 
     # Invoke the command to generate a skew-T  Diagram based on
     # the test_skew_tm.yaml custom config file.
@@ -24,7 +24,7 @@ def test_files_exist():
 
     # Verify that files for the ssh052023 data exists for the 0,6, 12,18,24, 30, 42,
     # 48, 54, and 60 hour data.
-    output_dir = os.path.join(cur_dir, 'output' )
+    output_dir = os.path.join(cwd, 'output')
 
     # Some of these data files have incomplete data so check for the expected hour
     # plots.
@@ -56,14 +56,14 @@ def test_files_exist():
         if base == 'ssh052023_avno_doper_2023010100_diag':
             # Working with the 2023010100 date file
             for cur_hr in expected_hours_for_2023_010100:
-               base_hr = base + '_'  + str(cur_hr) + '_hr'
-               expected_base_filenames.append(base_hr)
+                base_hr = base + '_'  + str(cur_hr) + '_hr'
+                expected_base_filenames.append(base_hr)
 
         elif base == 'ssh052023_avno_doper_2023010106_diag':
             # Working with the 2023010106 date
             for cur_hr in expected_hours_for_2023_010106:
-               base_hr = base + '_' + str(cur_hr) + '_hr'
-               expected_base_filenames.append(base_hr)
+                base_hr = base + '_' + str(cur_hr) + '_hr'
+                expected_base_filenames.append(base_hr)
 
     # Subset only the files that correspond to the sh052023 data
     subset_files_of_interest = []
@@ -78,28 +78,23 @@ def test_files_exist():
         if expected in subset_files_of_interest:
             num_found += 1
 
-    if len(subset_files_of_interest) == num_found:
-        assert True
-    else:
+    if len(subset_files_of_interest) != num_found:
         assert False
 
-
     # Clean up all png files
-    temp_datafile = os.path.join(cur_dir, 'sounding_data.dat')
-    os.remove(temp_datafile)
+    remove_files(cwd, SOUNDING_DATA_DAT_FILE)
     shutil.rmtree(output_dir)
     # If running without the ' -p no:logging' option, then uncomment to ensure that log
     # files are removed.
     # shutil.rmtree('./logs')
 
-def test_files_not_created():
+
+def test_files_not_created(setup_env, remove_files):
     '''
         Checking that input files with only fill/missing data are not created.
     '''
-
-    os.environ['METPLOTPY_BASE'] = "../../"
-    cur_dir = os.getcwd()
-    custom_config_filename = os.path.join(cur_dir, "test_skew_t.yaml")
+    setup_env(cwd)
+    custom_config_filename = os.path.join(cwd, "test_skew_t.yaml")
 
     # Invoke the command to generate a skew-T  Diagram based on
     # the test_skew_tm.yaml custom config file.
@@ -107,7 +102,7 @@ def test_files_not_created():
 
     # Verify that files for the ssh052023 data exists for the 0,6, 12,18,24, 30, 42,
     # 48, 54, and 60 hour data.
-    output_dir = os.path.join(cur_dir, 'output' )
+    output_dir = os.path.join(cwd, 'output')
 
     # Some of these data files have incomplete data so check for the expected hour
     # plots.
@@ -153,29 +148,23 @@ def test_files_not_created():
         if cur in subsetted_basenames:
             fail_counter += 1
 
-    if fail_counter == 0:
-        assert True
-    else:
+    if fail_counter != 0:
         assert False
 
-
     # Clean up all png files
-    temp_datafile = os.path.join(cur_dir, 'sounding_data.dat')
-    os.remove(temp_datafile)
+    remove_files(cwd, SOUNDING_DATA_DAT_FILE)
     shutil.rmtree(output_dir)
     # If running with the ' -p no:logging' option, then uncomment to ensure that log
     # files are removed.
     # shutil.rmtree('./logs')
 
 
-def test_empty_input():
+def test_empty_input(setup_env, remove_files):
     '''
         Checking that empty input file is not creating any plots.
     '''
-
-    os.environ['METPLOTPY_BASE'] = "../../"
-    cur_dir = os.getcwd()
-    custom_config_filename = os.path.join(cur_dir, "test_skew_t.yaml")
+    setup_env(cwd)
+    custom_config_filename = os.path.join(cwd, "test_skew_t.yaml")
 
     # Invoke the command to generate a skew-T  Diagram based on
     # the test_skew_tm.yaml custom config file.
@@ -183,7 +172,7 @@ def test_empty_input():
 
     # Verify that files for the ssh052023 data exists for the 0,6, 12,18,24, 30, 42,
     # 48, 54, and 60 hour data.
-    output_dir = os.path.join(cur_dir, 'output')
+    output_dir = os.path.join(cwd, 'output')
 
     # Some of these data files have incomplete data so check for the expected hour
     # plots.
@@ -213,17 +202,13 @@ def test_empty_input():
             subsetted_files_of_interest.append(cur)
 
     match_found = re.match(r'^sal092022_avno_doper_2022092800_diag',
-                            no_data_empty_file[0])
+                           no_data_empty_file[0])
     if match_found in subsetted_files_of_interest:
         # The output file was created when it shouldn't have been, fail.
         assert False
-    else:
-        # The output file was NOT created, as expected. Pass.
-        assert True
 
     # Clean up all png files
-    temp_datafile = os.path.join(cur_dir, 'sounding_data.dat')
-    os.remove(temp_datafile)
+    remove_files(cwd, SOUNDING_DATA_DAT_FILE)
     shutil.rmtree(output_dir)
     # If running without the ' -p no:logging' option, then uncomment to ensure that log
     # files are removed.

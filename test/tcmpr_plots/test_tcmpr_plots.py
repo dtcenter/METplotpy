@@ -1,32 +1,26 @@
 import pytest
 import os
-import re
+
 import metplotpy.plots.tcmpr_plots.tcmpr as t
+
+cwd = os.path.dirname(__file__)
 
 
 @pytest.fixture
-def setup():
-
-    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
-    # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../.."
-    custom_config_filename = "./test_tcmpr_multi_plots.yaml"
+def setup(setup_env):
+    setup_env(cwd)
+    custom_config_filename = f"{cwd}/test_tcmpr_multi_plots.yaml"
 
     # Invoke the command to generate a line plot based on
     # the custom config file
     t.main(custom_config_filename)
 
 
-
 def test_plots_created(setup):
-
-
-
     # Check for presence of fourteen plots (seven plot types, one each for the
     # ABS(X-Y) and TK_ERR columns.
     expected_num_plots = 14
-    test_dir = os.getcwd()
-    output_dir = os.path.join(test_dir, 'output')
+    output_dir = os.path.join(cwd, 'output')
     only_files = os.listdir(output_dir)
     assert len(only_files) == expected_num_plots
 
@@ -80,7 +74,6 @@ def test_plots_created(setup):
     #       expected_size = int(expected_sizes[cur_file])
     #       assert cur_file_size >= expected_size
     #
-
 
     # Clean up
     try:

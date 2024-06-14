@@ -82,7 +82,7 @@ plot_caption: ''
 plot_disp:
 - 'True'
 - 'True'
-plot_filename: ./intermed_files/revision_box.png
+plot_filename: !ENV '${TEST_DIR}/intermed_files/revision_box.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -99,7 +99,7 @@ series_val_1:
   model:
   - AFWAOCv3.5.1_d01
   - NoahMPv3.5.1_d01
-stat_input: ./revision_box.data
+stat_input: !ENV '${TEST_DIR}/revision_box.data'
 title: test title
 title_align: 0.5
 title_offset: -2
@@ -130,7 +130,7 @@ ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
 
-points_path: ./intermed_files
+points_path: !ENV '${TEST_DIR}/intermed_files'
 show_legend:
 - 'True'
 - 'True'
