@@ -7,7 +7,6 @@ from metplotpy.plots.skew_t import skew_t as skew_t
 # from metcalcpy.compare_images import  CompareImages
 
 cwd = os.path.dirname(__file__)
-SOUNDING_DATA_DAT_FILE = os.path.join('output', 'sounding_data.dat')
 
 
 def test_files_exist(setup_env, remove_files):
@@ -82,7 +81,6 @@ def test_files_exist(setup_env, remove_files):
         assert False
 
     # Clean up all png files
-    remove_files(cwd, SOUNDING_DATA_DAT_FILE)
     shutil.rmtree(output_dir)
     # If running without the ' -p no:logging' option, then uncomment to ensure that log
     # files are removed.
@@ -152,7 +150,6 @@ def test_files_not_created(setup_env, remove_files):
         assert False
 
     # Clean up all png files
-    remove_files(cwd, SOUNDING_DATA_DAT_FILE)
     shutil.rmtree(output_dir)
     # If running with the ' -p no:logging' option, then uncomment to ensure that log
     # files are removed.
@@ -208,7 +205,6 @@ def test_empty_input(setup_env, remove_files):
         assert False
 
     # Clean up all png files
-    remove_files(cwd, SOUNDING_DATA_DAT_FILE)
     shutil.rmtree(output_dir)
     # If running without the ' -p no:logging' option, then uncomment to ensure that log
     # files are removed.
