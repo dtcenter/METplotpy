@@ -22,14 +22,11 @@ __author__ = 'Minna Win'
 import warnings
 from datetime import datetime
 import matplotlib.pyplot as plt
-import numpy
-import pandas
 from matplotlib.font_manager import FontProperties
 from matplotlib.projections import PolarAxes
 import mpl_toolkits.axisartist.floating_axes as fa
 import mpl_toolkits.axisartist.grid_finder as gf
 import numpy as np
-import yaml
 import pandas as pd
 from metplotpy.plots import constants
 from metplotpy.plots.base_plot import BasePlot
@@ -192,7 +189,7 @@ class TaylorDiagram(BasePlot):
             rlocs = np.concatenate((-rlocs[:0:-1], rlocs))
 
         # Convert to polar angles
-        tick_locations: numpy.array = np.arccos(rlocs)
+        tick_locations: np.array = np.arccos(rlocs)
         # positions
         gl1 = gf.FixedLocator(tick_locations)
         tf1 = gf.DictFormatter(dict(zip(tick_locations, map(str, rlocs))))
@@ -361,25 +358,12 @@ def main(config_filename=None):
             Returns:
 
     """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    # with open("./custom_taylor_diagram.yaml", 'r') as stream:
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs: dict = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
+    params = util.get_params(config_filename)
     try:
-        TaylorDiagram(docs)
+        TaylorDiagram(params)
 
     except ValueError as value_error:
-        logger = util.get_common_logger(docs['log_level'], docs['log_filename'])
+        logger = util.get_common_logger(params['log_level'], params['log_filename'])
         logger.error(f"ValueError {value_error}")
 
 

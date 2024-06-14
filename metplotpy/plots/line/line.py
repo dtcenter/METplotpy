@@ -65,9 +65,9 @@ class Line(BasePlot):
         # config file that represents the BasePlot object (Line).
         self.config_obj = LineConfig(self.parameters)
 
-        self.line_logger = self.config_obj.logger
+        self.logger = self.config_obj.logger
 
-        self.line_logger.info(f"Begin creating the line plot: {datetime.now()}")
+        self.logger.info(f"Begin creating the line plot: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
@@ -78,7 +78,7 @@ class Line(BasePlot):
                          "the number of your configuration file's plot_ci, "
                          "plot_disp, series_order, user_legend "
                          "colors,  series_symbols, show_legend settings.")
-            self.line_logger.error(f"ValueError: {error_msg}: {datetime.now()}")
+            self.logger.error(f"ValueError: {error_msg}: {datetime.now()}")
             raise ValueError(error_msg)
 
         # Read in input data, location specified in config file
@@ -86,10 +86,10 @@ class Line(BasePlot):
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
-            self.line_logger.info(f"Begin event equalization: {datetime.now()}")
+            self.logger.info(f"Begin event equalization: {datetime.now()}")
             self.input_df = calc_util.perform_event_equalization(self.parameters,
                                                                  self.input_df)
-            self.line_logger.info(f"Finished event equalization: {datetime.now()}")
+            self.logger.info(f"Finished event equalization: {datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -147,7 +147,7 @@ class Line(BasePlot):
 
 
         """
-        self.line_logger.info(f"Begin creating the series objects: {datetime.now()}")
+        self.logger.info(f"Begin creating the series objects: {datetime.now()}")
         series_list = []
 
         # add series for y1 axis
@@ -192,14 +192,14 @@ class Line(BasePlot):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
-        self.line_logger.info(f"Finished creating the series objects: {datetime.now()}")
+        self.logger.info(f"Finished creating the series objects: {datetime.now()}")
         return series_list
 
     def _create_figure(self) -> None:
         """
         Create a line plot from defaults and custom parameters
         """
-        self.line_logger.info(f"Begin create the figure: {datetime.now()}")
+        self.logger.info(f"Begin create the figure: {datetime.now()}")
 
         # create and draw the plot
         self.figure = self._create_layout()
@@ -270,7 +270,7 @@ class Line(BasePlot):
         if self.config_obj.start_from_zero is True:
             self.figure.update_xaxes(range=[0, len(x_points_index) - 1])
 
-        self.line_logger.info(f"Finished creating the figure: {datetime.now()}")
+        self.logger.info(f"Finished creating the figure: {datetime.now()}")
 
     def _draw_series(self, series: Series, x_points_index_adj: Union[list, None] =
     None) \
@@ -281,7 +281,7 @@ class Line(BasePlot):
         :param series: Line series object with data and parameters
         :param x_points_index_adj: values for adjusting x-values position
         """
-        self.line_logger.info(f"Begin drawing the lines on the plot: {datetime.now()}")
+        self.logger.info(f"Begin drawing the lines on the plot: {datetime.now()}")
         y_points = series.series_points['dbl_med']
 
         # show or not ci
@@ -354,7 +354,7 @@ class Line(BasePlot):
                 secondary_y=series.y_axis != 1
             )
 
-        self.line_logger.info(f"Finished drawing the lines on the plot:"
+        self.logger.info(f"Finished drawing the lines on the plot:"
                               f" {datetime.now()}")
 
     def _create_layout(self) -> Figure:
@@ -440,7 +440,7 @@ class Line(BasePlot):
 
         :param x_points_index: list of indexws for the original x -axis
         """
-        self.line_logger.info(f"Begin switching x and y axis: {datetime.now()}")
+        self.logger.info(f"Begin switching x and y axis: {datetime.now()}")
         odered_indy_label = self.config_obj.create_list_by_plot_val_ordering(
             self.config_obj.indy_label)
         if self.config_obj.vert_plot is True:
@@ -460,7 +460,7 @@ class Line(BasePlot):
                 }
             )
 
-        self.line_logger.info(f"Finished switching x and y axis: {datetime.now()}")
+        self.logger.info(f"Finished switching x and y axis: {datetime.now()}")
 
     def _add_xaxis(self) -> None:
         """
@@ -703,7 +703,7 @@ class Line(BasePlot):
         files
         """
 
-        self.line_logger.info(f"Begin writing to output file: {datetime.now()}")
+        self.logger.info(f"Begin writing to output file: {datetime.now()}")
         # if points_path parameter doesn't exist,
         # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
@@ -753,7 +753,7 @@ class Line(BasePlot):
             self._save_points(all_points_1, filename + ".points1")
             self._save_points(all_points_2, filename + ".points2")
 
-            self.line_logger.info(f"Finished writing to output file: {datetime.now()}")
+            self.logger.info(f"Finished writing to output file: {datetime.now()}")
 
     @staticmethod
     def _find_min_max(series: LineSeries, yaxis_min: Union[float, None],
@@ -856,29 +856,7 @@ def main(config_filename=None):
                 @param config_filename: default is None, the name of the custom
                                         config file to apply
         """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    # with open("./custom_line_plot.yaml", 'r') as stream:
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    try:
-        plot = Line(docs)
-        plot.save_to_file()
-        #plot.show_in_browser()
-        plot.write_html()
-        plot.write_output_file()
-        plot.line_logger.info(f"Finished creating line plot: {datetime.now()}")
-    except ValueError as val_er:
-        print(val_er)
+    util.make_plot(config_filename, Line)
 
 
 if __name__ == "__main__":

@@ -19,7 +19,6 @@ from operator import add
 
 import pandas as pd
 import plotly.graph_objects as go
-import yaml
 from plotly.graph_objects import Figure
 from plotly.subplots import make_subplots
 
@@ -53,10 +52,10 @@ class Bar(BasePlot):
         # the
         # config file that represents the BasePlot object (Bar).
         self.config_obj = BarConfig(self.parameters)
-        self.bar_logger = self.config_obj.logger
-        self.bar_logger.info(f"Start bar plot: {datetime.now()}")
+        self.logger = self.config_obj.logger
+        self.logger.info(f"Start bar plot: {datetime.now()}")
         # Check that we have all the necessary settings for each series
-        self.bar_logger.info(f"Consistency checking of config settings for colors, "
+        self.logger.info(f"Consistency checking of config settings for colors, "
                         f"legends, etc.")
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
@@ -66,20 +65,19 @@ class Bar(BasePlot):
                                "check the number of your configuration file's "
                                "plot_i, plot_disp, series_order, user_legend, show_legend and "
                                "colors settings.")
-            self.bar_logger.error(value_error_msg)
+            self.logger.error(value_error_msg)
             raise ValueError(value_error_msg)
 
-
         # Read in input data, location specified in config file
-        self.bar_logger.info(f"Begin reading input data: {datetime.now()}")
+        self.logger.info(f"Begin reading input data: {datetime.now()}")
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
-            self.bar_logger.info(f"Performing event equalization: {datetime.now()}")
+            self.logger.info(f"Performing event equalization: {datetime.now()}")
             self.input_df = calc_util.perform_event_equalization(self.parameters,
                                                                  self.input_df)
-            self.bar_logger.info(f"End event equalization: {datetime.now()}")
+            self.logger.info(f"End event equalization: {datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -91,9 +89,9 @@ class Bar(BasePlot):
         # Need to have a self.figure that we can pass along to
         # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
-        self.bar_logger.info(f"Begin creating the figure: {datetime.now()}")
+        self.logger.info(f"Begin creating the figure: {datetime.now()}")
         self._create_figure()
-        self.bar_logger.info(f"End creating the figure: {datetime.now()}")
+        self.logger.info(f"End creating the figure: {datetime.now()}")
 
     def __repr__(self):
         """ Implement repr which can be useful for debugging this
@@ -114,7 +112,7 @@ class Bar(BasePlot):
             Returns:
 
         """
-        self.bar_logger.info(f"Finished reading input data: "
+        self.logger.info(f"Finished reading input data: "
                                     f"{datetime.now()}")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
                            header='infer', float_precision='round_trip')
@@ -516,28 +514,7 @@ def main(config_filename=None):
                 @param config_filename: default is None, the name of the custom
                 config file to apply
         """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    try:
-        plot = Bar(docs)
-        plot.save_to_file()
-        # plot.show_in_browser()
-        plot.write_html()
-        plot.write_output_file()
-        plot.bar_logger.info(f"Finished bar plot at {datetime.now()}")
-    except ValueError as val_er:
-        print(val_er)
+    util.make_plot(config_filename, Bar)
 
 
 if __name__ == "__main__":

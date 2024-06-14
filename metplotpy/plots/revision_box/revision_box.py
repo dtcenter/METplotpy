@@ -13,7 +13,6 @@ Class Name: revision_box.py
 import os
 import re
 from datetime import datetime
-import yaml
 import plotly.graph_objects as go
 
 from metplotpy.plots.base_plot import BasePlot
@@ -30,7 +29,7 @@ from metplotpy.plots.revision_box.revision_box_series import RevisionBoxSeries
 class RevisionBox(Box):
     """  Generates a Plotly Revision box plot for 1 or more boxes.
     """
-
+    LONG_NAME = 'revision box'
     defaults_name = 'revision_box_defaults.yaml'
 
     def __init__(self, parameters: dict) -> None:
@@ -303,29 +302,7 @@ def main(config_filename=None):
         Args:
                 @param config_filename: default is None, the name of the custom config file to apply
     """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    # with open("./custom_revision_box.yaml", 'r') as stream:
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    try:
-        plot = RevisionBox(docs)
-        plot.save_to_file()
-        # plot.show_in_browser()
-        plot.write_html()
-        plot.write_output_file()
-        plot.logger.info(f"Finished revision box plot: {datetime.now()}")
-    except ValueError as ve:
-        print(ve)
+    util.make_plot(config_filename, RevisionBox)
 
 
 if __name__ == "__main__":

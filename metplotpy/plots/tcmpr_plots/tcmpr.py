@@ -523,18 +523,7 @@ def main(config_filename=None):
         Args:
                 @param config_filename: default is None, the name of the custom config file to apply
     """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
+    docs = util.get_params(config_filename)
 
     # Determine location of the default YAML config files and then
     # read defaults stored in YAML formatted file into the dictionary
@@ -543,11 +532,7 @@ def main(config_filename=None):
     else:
         location = os.path.realpath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config'))
 
-    with open(os.path.join(location, "tcmpr_defaults.yaml"), 'r') as stream:
-        try:
-            defaults = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
+    defaults = util.get_params(os.path.join(location, "tcmpr_defaults.yaml"))
 
     # merge user defined parameters into defaults if they exist
     docs = {**defaults, **docs}

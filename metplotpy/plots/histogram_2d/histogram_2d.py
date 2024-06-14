@@ -169,9 +169,6 @@ class Histogram_2d(BasePlot):
 
         self.logger.info(f"Finished writing plot to output file: {datetime.now()}")
 
-
-
-
     def _read_input_data(self):
         """
                 Read the input data file and store as an xarray
@@ -187,32 +184,16 @@ class Histogram_2d(BasePlot):
         try:
             ds = xr.open_dataset(self.input_file)
         except IOError:
-            print("Unable to open input file")
+            print(f"Unable to open input file: {self.input_file}")
             sys.exit(1)
         self.logger.info(f"Finished reading input data: {datetime.now()}")
         return ds
 
 
 def main(config_filename=None):
-    metplotpy_base = os.getenv('METPLOTPY_BASE')
-    if not metplotpy_base:
-        metplotpy_base = ''
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
+    params = util.get_params(config_filename)
     try:
-        h = Histogram_2d(docs)
+        h = Histogram_2d(params)
         h.save_to_file()
         h.logger.info(f"Finished generating histogram 2D plot: {datetime.now()}")
     except ValueError as ve:

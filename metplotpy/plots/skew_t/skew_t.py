@@ -505,8 +505,6 @@ def create_skew_t(input_file: str, config: dict) -> None:
      Return:
            None, generate plots as png files in the specified output file directory.
     '''
-
-
     file_only = os.path.basename(input_file)
     logger.info(f" Creating skew T plots for input file {file_only} ")
 
@@ -692,59 +690,50 @@ def main(config_filename=None):
        Returns:
 
     '''
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
+    config = util.get_params(config_filename)
+
+    # Set up the logging.
+    log_dir = config['log_directory']
+    log_file = config['log_filename']
+    log_full_path = os.path.join(log_dir, log_file)
+    try:
+        os.makedirs(log_dir, exist_ok=True)
+    except FileExistsError:
+        # If directory already exists, this is OK.  Continue.
+        pass
+
+    log_level = config['log_level']
+    format_str = "'%(asctime)s||%(levelname)s||%(funcName)s||%(message)s'"
+    if log_level == 'DEBUG':
+        logging.basicConfig(filename=log_full_path, level=logging.DEBUG,
+                            format=format_str,
+                            filemode='w')
+    elif log_level == 'INFO':
+        logging.basicConfig(filename=log_full_path, level=logging.INFO,
+                            format=format_str,
+                            filemode='w')
+    elif log_level == 'WARNING':
+        logging.basicConfig(filename=log_full_path, level=logging.WARNING,
+                            format=format_str,
+                            filemode='w')
     else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            config = yaml.load(stream, Loader=yaml.FullLoader)
+        # log_level == 'ERROR'
+        logging.basicConfig(filename=log_full_path, level=logging.ERROR,
+                            format=format_str,
+                            filemode='w')
 
-            # Set up the logging.
-            log_dir = config['log_directory']
-            log_file = config['log_filename']
-            log_full_path = os.path.join(log_dir, log_file)
-            try:
-                os.makedirs(log_dir, exist_ok=True)
-            except FileExistsError:
-                # If directory already exists, this is OK.  Continue.
-                pass
+    # Get the list of input files to visualize.
+    input_dir = config['input_directory']
+    file_ext = config['input_file_extension']
+    files_of_interest = []
 
-            log_level = config['log_level']
-            format_str = "'%(asctime)s||%(levelname)s||%(funcName)s||%(message)s'"
-            if log_level == 'DEBUG':
-                logging.basicConfig(filename=log_full_path, level=logging.DEBUG,
-                                    format=format_str,
-                                    filemode='w')
-            elif log_level == 'INFO':
-                logging.basicConfig(filename=log_full_path, level=logging.INFO,
-                                    format=format_str,
-                                    filemode='w')
-            elif log_level == 'WARNING':
-                logging.basicConfig(filename=log_full_path, level=logging.WARNING,
-                                    format=format_str,
-                                    filemode='w')
-            else:
-                # log_level == 'ERROR'
-                logging.basicConfig(filename=log_full_path, level=logging.ERROR,
-                                    format=format_str,
-                                    filemode='w')
-
-            # Get the list of input files to visualize.
-            input_dir = config['input_directory']
-            file_ext = config['input_file_extension']
-            files_of_interest = []
-
-            for root, dir, files in os.walk(input_dir):
-                for item in files:
-                    if item.endswith(file_ext):
-                        files_of_interest.append(os.path.join(root, item))
-            # Create skew T diagrams for each input file.
-            for file_of_interest in files_of_interest:
-                create_skew_t(file_of_interest, config)
-
-        except yaml.YAMLError as exc:
-            logger.error(f"YAMLError: {exc}")
+    for root, dir, files in os.walk(input_dir):
+        for item in files:
+            if item.endswith(file_ext):
+                files_of_interest.append(os.path.join(root, item))
+    # Create skew T diagrams for each input file.
+    for file_of_interest in files_of_interest:
+        create_skew_t(file_of_interest, config)
 
 
 if __name__ == "__main__":
