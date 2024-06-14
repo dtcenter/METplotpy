@@ -55,10 +55,11 @@ jobs:
 
     - name: Retrieve METcalcpy repository develop branch
       run: |
-         /usr/bin/git clone https://github.com/dtcenter/METcalcpy
-         cd METcalcpy
-         /usr/bin/git checkout develop
-         python -m pip install -e .
+         metcalcpy_dir="$RUNNER_WORKSPACE/METcalcpy"
+         git clone https://github.com/dtcenter/METcalcpy ${metcalcpy_dir}
+         cd ${metcalcpy_dir}
+         git -C ${metcalcpy_dir} checkout develop
+         python -m pip install -e ${metcalcpy_dir}
 
     - name: Install dependencies
       run: |
