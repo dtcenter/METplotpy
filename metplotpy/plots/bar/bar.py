@@ -55,8 +55,8 @@ class Bar(BasePlot):
         self.logger = self.config_obj.logger
         self.logger.info(f"Start bar plot: {datetime.now()}")
         # Check that we have all the necessary settings for each series
-        self.logger.info(f"Consistency checking of config settings for colors, "
-                        f"legends, etc.")
+        self.logger.info("Consistency checking of config settings for colors, "
+                         "legends, etc.")
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
             value_error_msg = ("ValueError: The number of series defined by series_val_1 and "
