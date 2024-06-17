@@ -33,16 +33,15 @@ def setup_nones(remove_files, setup_env):
     bar.main(custom_config_filename)
 
 
-@pytest.mark.parametrize("test_input, expected",
-                         (["bar_expected.png", True],
-                          ["bar.png", True],
-                          ["bar.points1", True]))
-def test_files_exist(setup, test_input, expected, remove_files):
+def test_files_exist(setup, remove_files):
     """
         Checking that the plot and data files are getting created
     """
-    assert os.path.isfile(f"{cwd}/{test_input}") == expected
-    remove_files(cwd, CLEANUP_FILES)
+    check_files = ('bar.png', 'bar.points1')
+    for test_input in check_files:
+        print(f'Checking if {cwd}/{test_input} is found')
+        assert os.path.isfile(f"{cwd}/{test_input}")
+    remove_files(cwd, check_files)
 
 
 def test_no_nans_in_points_file(setup, remove_files):
@@ -101,13 +100,11 @@ def test_none_data_images_match(setup_nones):
         pass
 
 
-@pytest.mark.parametrize("test_input, expected",
-                         (["bar_points1.png", True],
-                          ["intermed_files/bar.points1", True]))
-def test_point_and_plot_files_exist(setup_env, test_input, expected, remove_files):
+def test_point_and_plot_files_exist(setup_env, remove_files):
     """
         Checking that the plot and (specified location) intermediate file are getting created
     """
+    check_files = ("bar_points1.png", "intermed_files/bar.points1")
     setup_env(cwd)
     custom_config_filename = f"{cwd}/custom_points1_bar.yaml"
     intermed_dir = os.path.join(cwd, 'intermed_files')
@@ -120,16 +117,16 @@ def test_point_and_plot_files_exist(setup_env, test_input, expected, remove_file
     # the custom_bar.yaml custom config file.
     bar.main(custom_config_filename)
 
-    assert os.path.isfile(f"{cwd}/{test_input}") == expected
-    remove_files(cwd, ['bar_points1.png'])
+    for test_input in check_files:
+        assert os.path.isfile(f"{cwd}/{test_input}")
+    remove_files(cwd, check_files)
 
 
-@pytest.mark.parametrize("test_input, expected",
-                         (["bar_defaultpoints1.png", True], ["bar.points1", True]))
-def test_point_and_plot_files_exist(setup_env, test_input, expected, remove_files):
+def test_point_and_plot_files_exist_default(setup_env, remove_files):
     """
         Checking that the plot and (specified location) intermediate file are getting created
     """
+    check_files = ("bar_defaultpoints1.png", "bar.points1")
     setup_env(cwd)
     custom_config_filename = f"{cwd}/custom_defaultpoints1_bar.yaml"
 
@@ -137,10 +134,11 @@ def test_point_and_plot_files_exist(setup_env, test_input, expected, remove_file
     # the custom_bar.yaml custom config file.
     bar.main(custom_config_filename)
 
-    assert os.path.isfile(f"{cwd}/{test_input}") == expected
+    for test_input in check_files:
+        assert os.path.isfile(f"{cwd}/{test_input}")
 
     # remove the .png and .points files
-    remove_files(cwd, ['bar_defaultpoints1.png', 'bar.points1'])
+    remove_files(cwd, check_files)
 
 
 @pytest.mark.skip("fails on linux host machines")
