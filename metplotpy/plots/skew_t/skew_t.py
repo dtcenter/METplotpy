@@ -727,7 +727,7 @@ def main(config_filename=None):
     file_ext = config['input_file_extension']
     files_of_interest = []
 
-    for root, dir, files in os.walk(input_dir):
+    for root, _, files in os.walk(input_dir):
         for item in files:
             if item.endswith(file_ext):
                 files_of_interest.append(os.path.join(root, item))
