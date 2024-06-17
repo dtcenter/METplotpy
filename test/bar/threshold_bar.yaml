@@ -84,7 +84,7 @@ plot_ci:
   - none
 plot_disp:
   - 'True'
-plot_filename: threshold_bar.png
+plot_filename: !ENV '${TEST_DIR}/threshold_bar.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -112,7 +112,7 @@ show_nstats: 'False'
 show_signif:
   - 'False'
 start_from_zero: 'False'
-stat_input: threshold_bar.data
+stat_input: !ENV '${TEST_DIR}/threshold_bar.data'
 sync_yaxes: 'False'
 title: MET_HYSPLIT_DUST_CSI_Verification_DAY2_12Z_202202 - G246
 title_align: 0.5

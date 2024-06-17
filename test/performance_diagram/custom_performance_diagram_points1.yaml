@@ -5,7 +5,7 @@ title: Performance Diagram ("Custom title")
 xaxis: Success Ratio
 
 dump_points_1: 'True'
-points_path: './intermed_files'
+points_path: !ENV '${TEST_DIR}/intermed_files'
 
 # support two y-axes
 yaxis_1: Probability of Detection (PODY)
@@ -99,6 +99,6 @@ series_line_style:
   - "--"
   # dotted line
   - ":"
-stat_input:  ./plot_20200317_151252.data
-plot_filename: ./performance_diagram_actual_points1.png
+stat_input: !ENV '${TEST_DIR}/plot_20200317_151252.data'
+plot_filename: !ENV '${TEST_DIR}/performance_diagram_actual_points1.png'
 event_equalize: False

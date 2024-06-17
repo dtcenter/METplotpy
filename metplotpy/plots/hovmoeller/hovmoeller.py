@@ -231,23 +231,7 @@ def main(config_filename=None):
 
 
     """
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r'):
-        try:
-            # Use the METcalcpy parser to parse config files with environment
-            # variables that
-            # look like:
-            #   input_file: !ENV '${ENV_NAME}/some_input_file.nc'
-            # This supports METplus hovmoeller use case.
-            config = metcalcpy.util.read_env_vars_in_config.parse_config(config_file)
-        except yaml.YAMLError as exc:
-            print(exc)
-
+    config = util.get_params(config_filename)
     try:
         plot = Hovmoeller(config)
         plot.save_to_file()

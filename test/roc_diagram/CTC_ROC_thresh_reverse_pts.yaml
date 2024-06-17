@@ -64,7 +64,7 @@ plot_ci:
   - none
 plot_disp:
   - 'True'
-plot_filename: ./CTC_ROC_thresh.png
+plot_filename: !ENV '${TEST_DIR}/CTC_ROC_thresh.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -90,7 +90,7 @@ series_val_2: {}
 show_nstats: 'False'
 show_signif:
   - 'False'
-stat_input: CTC_ROC_thresh.data
+stat_input: !ENV '${TEST_DIR}/CTC_ROC_thresh.data'
 sync_yaxes: 'False'
 title: test title
 title_align: 0.5

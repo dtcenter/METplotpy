@@ -74,7 +74,6 @@ class BasePlot:
         self.remove_file()
         self.config_obj = Config(self.parameters)
 
-
     def get_image_format(self):
         """Reads the image format type from user provided image name.
         Uses file extension as a type. If the file extension is not valid -
@@ -340,8 +339,6 @@ class BasePlot:
         Returns:
 
         """
-
-
         image_name = self.get_config_value('plot_filename')
 
         # Suppress deprecation warnings from third-party packages that are not in our control.
@@ -388,8 +385,8 @@ class BasePlot:
         if self.figure:
             self.figure.show()
         else:
-            self.logger.error(f" Figure not created. Nothing to show in the "
-                              f"browser. ")
+            self.logger.error(" Figure not created. Nothing to show in the "
+                              "browser. ")
             print("Oops!  The figure was not created. Can't show")
 
     def _add_lines(self, config_obj: Config, x_points_index: Union[list, None] = None) -> None:

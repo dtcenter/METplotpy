@@ -18,6 +18,9 @@ import yaml
 import pandas as pd
 from plots.base_plot import BasePlot
 
+from metplotpy.plots import util
+
+
 class Scatter(BasePlot):
     """  Generates a Plotly scatter plot,
 
@@ -126,20 +129,11 @@ def main():
         The location of the input data is defined in either the default or
         custom config file.
     """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    with open("./custom_scatter.yaml", 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-
+    params = util.get_params("./custom_scatter.yaml")
     try:
-      s = Scatter(docs)
-      s.save_to_file()
-      s.show_in_browser()
+        s = Scatter(params)
+        s.save_to_file()
+        s.show_in_browser()
     except ValueError as ve:
         print(ve)
 

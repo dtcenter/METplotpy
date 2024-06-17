@@ -20,7 +20,6 @@ from datetime import datetime
 from typing import Union
 import pandas as pd
 import numpy as np
-import yaml
 import re
 from pathlib import Path
 
@@ -410,25 +409,14 @@ def main(config_filename=None):
             The location of the input data is defined in either the default or
             custom config file.
         """
+    params = util.get_params(config_filename)
 
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    # with open("./mpr_plot_custom.yaml", 'r') as stream:
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
     # point to data file in the test dir
-    if  'stat_input' not in docs:
-        docs['stat_input'] = str(Path(__file__).parent.parent.parent.parent)  + '/test/wind_rose/point_stat_mpr.txt'
+    if 'stat_input' not in params:
+        params['stat_input'] = str(Path(__file__).parent.parent.parent.parent) + '/test/wind_rose/point_stat_mpr.txt'
 
     try:
-        plot = WindRosePlot(docs)
+        plot = WindRosePlot(params)
         plot.save_to_file()
         if plot.config_obj.show_in_browser:
             plot.show_in_browser()
