@@ -31,7 +31,7 @@ def test_files_exist(setup_env, remove_files):
     print(f"Output dir: {output_dir}")
     file_ext = '.png'
     files_of_interest = []
-    for root, dir, files in os.walk(output_dir):
+    for root, _, files in os.walk(output_dir):
         for item in files:
             if item.endswith(file_ext):
                 # print(f"Item of interest: {item}")
@@ -55,7 +55,7 @@ def test_files_exist(setup_env, remove_files):
         if base == 'ssh052023_avno_doper_2023010100_diag':
             # Working with the 2023010100 date file
             for cur_hr in expected_hours_for_2023_010100:
-                base_hr = base + '_'  + str(cur_hr) + '_hr'
+                base_hr = base + '_' + str(cur_hr) + '_hr'
                 expected_base_filenames.append(base_hr)
 
         elif base == 'ssh052023_avno_doper_2023010106_diag':
