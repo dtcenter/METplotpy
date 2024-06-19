@@ -107,7 +107,7 @@ def plot_qbo_phase_circuits(inits,periods,rean_qbo_pcs,rfcst_qbo_pcs,outfile):
 
 
 
-def plot_qbo_phase_space(rean_qbo_pcs,eofs,plot_title,outfile):
+def plot_qbo_phase_space(rean_qbo_pcs,eofs,ptitle,outfile):
 
     from mpl_toolkits.axes_grid1.inset_locator import (inset_axes, InsetPosition, mark_inset)
 
@@ -177,7 +177,19 @@ def plot_qbo_phase_space(rean_qbo_pcs,eofs,plot_title,outfile):
         axi.axvline(0, color='black')
         axi.set_facecolor('lightgrey')
 
-    ax.set_title(plot_title, fontsize=24, fontweight='semibold')
+    ax.set_title(ptitle, fontsize=24, fontweight='semibold')
     fig.set_size_inches(10,10)
 
     plt.savefig(outfile, dpi=150, facecolor='white')
+
+
+def plot_u_timeseries(obs_dt,obs_u,fcst_dt,fcst_u,plot_title,outfile):
+
+    plt.figure(figsize=(20,10))
+    plt.plot(fcst_dt,fcst_u,'r',linewidth = 2,label='model')
+    plt.plot(obs_dt,obs_u,'b',linewidth = 2,label='obs')
+    plt.title(plot_title)
+    plt.xlabel('Date')
+    plt.ylabel('Zonal Mean U (m/s)')
+    plt.legend()
+    plt.savefig(outfile,bbox_inches='tight')
