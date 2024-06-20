@@ -185,11 +185,12 @@ def plot_qbo_phase_space(rean_qbo_pcs,eofs,ptitle,outfile):
 
 def plot_u_timeseries(obs_dt,obs_u,fcst_dt,fcst_u,plot_title,outfile):
 
-    plt.figure(figsize=(20,10))
+    plt.figure(figsize=(16,8))
     plt.plot(fcst_dt,fcst_u,'r',linewidth = 2,label='model')
     plt.plot(obs_dt,obs_u,'b',linewidth = 2,label='obs')
-    plt.title(plot_title)
-    plt.xlabel('Date')
-    plt.ylabel('Zonal Mean U (m/s)')
+    plt.title(plot_title,fontsize=20)
+    plt.xlabel('Date',fontsize=14)
+    plt.ylabel('Zonal Mean U (m/s)',fontsize=14)
     plt.legend()
-    plt.savefig(outfile,bbox_inches='tight')
+    plt.savefig(outfile)
+    #plt.savefig(outfile,bbox_inches='tight')
