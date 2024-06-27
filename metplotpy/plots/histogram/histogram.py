@@ -46,7 +46,7 @@ class Histogram(BasePlot):
             ValueError: If the data array has dimension not equal 2.
         """
 
-        default_conf_filename = "histogram_defaults.yml"
+        default_conf_filename = "histogram_defaults.yaml"
         # init common layout
         super().__init__(parameters, default_conf_filename)
 
