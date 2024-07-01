@@ -34,7 +34,9 @@ METplotpy Version 3.0.0-beta5 release notes (20240630)
 
      * Consider using only .yml or only .yaml extensions   (`#417 <https://github.com/dtcenter/METplotpy/issues/417>`_).
 
+
      * METplotpy:Code coverage statistics   (`#55 <https://github.com/dtcenter/METplus-Internal/issues/55>`_).
+
 
   .. dropdown:: Bugfixes
 
