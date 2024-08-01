@@ -18,7 +18,6 @@ from datetime import datetime
 import re
 import itertools
 
-import yaml
 import numpy as np
 import pandas as pd
 
@@ -59,14 +58,14 @@ class EnsSs(BasePlot):
         # config file that represents the BasePlot object (EnsSs).
         self.config_obj = EnsSsConfig(self.parameters)
 
-        self.ens_logger = self.config_obj.logger
-        self.ens_logger.info(f"Start Ens_ss plot: {datetime.now()}")
+        self.logger = self.config_obj.logger
+        self.logger.info(f"Start Ens_ss plot: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
-        self.ens_logger.info(f"Consistency checking of config settings for colors, "
+        self.logger.info(f"Consistency checking of config settings for colors, "
                         f"legends, etc.{datetime.now()}")
         is_config_consistent = self.config_obj._config_consistency_check()
-        self.ens_logger.info(f"Finished consistency checking of config settings for colors, "
+        self.logger.info(f"Finished consistency checking of config settings for colors, "
                         f"legends, etc.{datetime.now()}")
         if not is_config_consistent:
             value_error_msg = ("ValueError: The number of series defined by "
@@ -76,18 +75,18 @@ class EnsSs(BasePlot):
                               "check the number of your configuration file's "
                               "plot_i, plot_disp, series_order, user_legend, show_legend and "
                               "colors settings.")
-            self.ens_logger.error(value_error_msg)
+            self.logger.error(value_error_msg)
             raise ValueError(value_error_msg)
 
         # Read in input data, location specified in config file
-        self.ens_logger.info(f"Begin reading input data: {datetime.now()}")
+        self.logger.info(f"Begin reading input data: {datetime.now()}")
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
-            self.ens_logger.info(f"Performing event equalization: {datetime.now()}")
+            self.logger.info(f"Performing event equalization: {datetime.now()}")
             self._perform_event_equalization()
-            self.ens_logger.info(f"Finished event equalization: {datetime.now()}")
+            self.logger.info(f"Finished event equalization: {datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -197,7 +196,7 @@ class EnsSs(BasePlot):
 
         """
 
-        self.ens_logger.info(f"Begin creating series objects: {datetime.now()}")
+        self.logger.info(f"Begin creating series objects: {datetime.now()}")
 
         series_list = []
 
@@ -211,7 +210,7 @@ class EnsSs(BasePlot):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
-        self.ens_logger.info(f"Finished creating series objects:"
+        self.logger.info(f"Finished creating series objects:"
                                     f" {datetime.now()}")
 
         return series_list
@@ -221,7 +220,7 @@ class EnsSs(BasePlot):
         Create a Ensemble spread-skill plot from defaults and custom parameters
         """
 
-        self.ens_logger.info(f"Begin creating the figure: {datetime.now()}")
+        self.logger.info(f"Begin creating the figure: {datetime.now()}")
 
         # create and draw the plot
         self.figure = self._create_layout()
@@ -253,7 +252,7 @@ class EnsSs(BasePlot):
         self._yaxis_limits()
         self._y2axis_limits()
 
-        self.ens_logger.info(f"Finished creating the figure: {datetime.now()}")
+        self.logger.info(f"Finished creating the figure: {datetime.now()}")
 
     def _add_y2axis(self) -> None:
         """
@@ -293,7 +292,7 @@ class EnsSs(BasePlot):
 
         :param series: EnsSs series object with data and parameters
         """
-        self.ens_logger.info(f"Begin drawing the series on the plot:"
+        self.logger.info(f"Begin drawing the series on the plot:"
                                     f" {datetime.now()}")
 
         # add the plot
@@ -335,7 +334,7 @@ class EnsSs(BasePlot):
                 secondary_y=True
             )
 
-            self.ens_logger.info(f"Finished drawing the series on the plot:"
+            self.logger.info(f"Finished drawing the series on the plot:"
                                         f" {datetime.now()}")
 
     def _create_layout(self) -> Figure:
@@ -557,28 +556,7 @@ def main(config_filename=None):
             Args:
                 @param config_filename: default is None, the name of the custom config file to apply
         """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    try:
-        plot = EnsSs(docs)
-        plot.save_to_file()
-        # plot.show_in_browser()
-        plot.write_html()
-        plot.write_output_file()
-        plot.ens_logger.info(f"Finished EnsSs plot: {datetime.now()}")
-    except ValueError as val_er:
-        print(val_er)
+    util.make_plot(config_filename, EnsSs)
 
 
 if __name__ == "__main__":

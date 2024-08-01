@@ -15,7 +15,7 @@ con_series:
 create_html: 'False'
 derived_series_1: []
 dump_points_1: 'True'
-points_path: './intermed_files'
+points_path: !ENV '${TEST_DIR}/intermed_files'
 eqbound_high: 0.001
 eqbound_low: -0.001
 event_equal: 'False'
@@ -129,8 +129,8 @@ ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
 
-stat_input: ./bar.data
-plot_filename: ./bar_points1.png
+stat_input: !ENV '${TEST_DIR}/bar.data'
+plot_filename: !ENV '${TEST_DIR}/bar_points1.png'
 
 show_legend:
   -True

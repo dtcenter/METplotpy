@@ -1,5 +1,5 @@
 # minimal custom config file.  Use all default settings in the histogram_2d_defaults.yaml
 # configuration file
 
-stat_input: ./grid_diag_temperature.nc
-plot_filename: ./tmp_z2_p500.png
+stat_input: !ENV '${TEST_DIR}/grid_diag_temperature.nc'
+plot_filename: !ENV '${TEST_DIR}/tmp_z2_p500.png'

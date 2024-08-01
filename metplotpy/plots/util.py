@@ -13,12 +13,12 @@
 __author__ = 'Minna Win'
 
 import argparse
-from typing import Tuple
 import sys
-import getpass
+import os
 import logging
 import gc
 import re
+from datetime import datetime
 import matplotlib
 import numpy as np
 from typing import Union
@@ -27,6 +27,7 @@ from plotly.graph_objects import Figure
 from metplotpy.plots.context_filter import ContextFilter as cf
 import metcalcpy.util.pstd_statistics as pstats
 import metcalcpy.util.ctc_statistics as cstats
+from metcalcpy.util.read_env_vars_in_config import parse_config
 
 COLORSCALES = {
     'green_red': ['#E6FFE2', '#B3FAAD', '#74F578', '#30D244', '#00A01E', '#F6A1A2',
@@ -71,6 +72,43 @@ def read_config_from_command_line():
     # Execute the parse_args() method
     args = parser.parse_args()
     return args.Path
+
+
+def get_params(config_filename):
+    """!Read config_filename or get config file from command line, then parse
+    config file and return it as a dictionary.
+
+    @param config_filename The full path to the config file or None
+    @returns dictionary containing parameters for plot
+    """
+    config_file = config_filename if config_filename else read_config_from_command_line()
+    return parse_config(config_file)
+
+
+def make_plot(config_filename, plot_class):
+    """!Get plot parameters and create the plot.
+
+    @param config_filename The full path to the config or None
+    @param plot_class class of plot to produce, e.g. Bar or Box
+    @returns plot class object or None if something went wrong
+    """
+    # Retrieve the contents of the custom config file to over-ride
+    # or augment settings defined by the default config file.
+    params = get_params(config_filename)
+    try:
+        plot = plot_class(params)
+        plot.save_to_file()
+        #if plot.config_obj.show_in_browser:
+        #    plot.show_in_browser()
+        plot.write_html()
+        plot.write_output_file()
+        name = plot_class.__name__ if not hasattr(plot_class, 'LONG_NAME') else plot_class.LONG_NAME
+        plot.logger.info(f"Finished {name} plot at {datetime.now()}")
+        return plot
+    except ValueError as val_er:
+        print(val_er)
+
+    return None
 
 
 def alpha_blending(hex_color: str, alpha: float) -> str:
@@ -316,6 +354,13 @@ def get_common_logger(log_level, log_filename):
                         currently in use by a plot type.
     '''
 
+    # If directory for logfile doesn't exist, create it
+    log_dir = os.path.dirname(log_filename)
+    try:
+       os.makedirs(log_dir, exist_ok=True)
+    except OSError:
+        pass
+
     # Supported log levels.
     log_level = log_level.upper()
     log_levels = {'DEBUG': logging.DEBUG, 'INFO': logging.INFO,
@@ -338,6 +383,7 @@ def get_common_logger(log_level, log_filename):
                             datefmt='%Y-%m-%d %H:%M:%S',
                             filename=log_filename,
                             filemode='w')
+    logging.getLogger(name='matplotlib').setLevel(logging.CRITICAL)
     common_logger = logging.getLogger(__name__)
     f = cf()
     common_logger.addFilter(f)

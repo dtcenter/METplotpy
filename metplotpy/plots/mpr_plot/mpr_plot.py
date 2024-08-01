@@ -587,22 +587,9 @@ def main(config_filename=None):
         The location of the input data is defined in either the default or
         custom config file.
         """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    # with open("./custom_line_plot.yaml", 'r') as stream:
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
+    params = util.get_params(config_filename)
     try:
-        plot = MprPlot(docs)
+        plot = MprPlot(params)
         plot.save_to_file()
         if plot.config_obj.show_in_browser:
             plot.show_in_browser()

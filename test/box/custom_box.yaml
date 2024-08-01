@@ -180,8 +180,8 @@ ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
 
-stat_input: ./box.data
-plot_filename: ./box.png
+stat_input: !ENV '${TEST_DIR}/box.data'
+plot_filename: !ENV '${TEST_DIR}/box.png'
 
 # To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
 # permissions to the directory you specify.  The default, as specified in the default config file is stdout.

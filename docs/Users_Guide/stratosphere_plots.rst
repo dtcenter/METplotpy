@@ -6,11 +6,11 @@ Description
 ===========
 
 The **stratosphere_plots.py** script contains the plotting portion for
-two Stratosphere use cases, one which creates a ME plot in latitude and pressure
-and another which creates ME and RMSE plots for lead time and pressure
-Two METplus use cases, illustrate how to use this plot.  One runs `zonal mean biases
-<https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_WeatherRegime.html#sphx-glr-generated-model-applications-s2s-userscript-fcstgfs-obsera-stratospherebias-py>`_
-and another creates bias and RMSE for `polar cap temperature and polar vortex U <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_WeatherRegime.html#sphx-glr-generated-model-applications-s2s-userscript-fcstgfs-obsera-stratospherepolar-py>`_
+three Stratosphere use cases.  One use case creates a ME plot in latitude and pressure,
+another which creates ME and RMSE plots for lead time and pressure, and a third which 
+creates two phase diagrams and a time series of U for at 50mb and 30mb.
+The three METplus use cases, illustrate how to use these plotting scripts for `zonal mean biases
+<https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratosphereBias.html#sphx-glr-generated-model-applications-s2s-stratosphere-userscript-fcstgfs-obsera-stratospherebias-py>`_ , creating bias and RMSE for `polar cap temperature and polar vortex U <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratospherePolar.html#sphx-glr-generated-model-applications-s2s-stratosphere-userscript-fcstgfs-obsera-stratospherepolar-py>`_ and creating `phase diagrams and time series for QBO <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratosphereQBO.html#sphx-glr-generated-model-applications-s2s-stratosphere-userscript-fcstgfs-obsera-stratosphereqbo-py>`_
 
 These files are used by the image comparison test:
 
@@ -32,6 +32,18 @@ These files are used by the image comparison test:
 * **RMSE_2018_02_polar_vortex_U.png**:  Run "plot_polar_rmse" in **stratosphere_plots.py**
   to create this plot.
 
+* **ERA_GFS_QBO_circuits.png**:  Run "plot_qbo_phase_circuits" in **stratosphere_plots.py**
+  to create this plot.
+
+* **ERA5_QBO_PhaseSpace.png**:  Run "plot_qbo_phase_space" in **stratosphere_plots.py**
+  to create this plot.
+
+* **ERA_GFS_timeseries_30mb_u_201710_201802.png**:  Run "plot_u_timeseries" in **stratosphere_plots.py**
+  to create this plot.
+
+* **ERA_GFS_timeseries_50mb_u_201710_201802.png**:  Run "plot_u_timeseries" in **stratosphere_plots.py**
+  to create this plot.
+
 
 Required Packages
 =================
@@ -45,6 +57,8 @@ Required Packages
 * metdataio
   
 * numpy
+
+* xarray
 
 * pandas
 
@@ -60,13 +74,13 @@ Import stratosphere_plots into the script:
 
 .. code-block:: ini
 
-   from stratosphere_plots import plot_zonal_bias,plot_polar_bias,plot_polar_rmse
+   from stratosphere_plots import plot_zonal_bias,plot_polar_bias,plot_polar_rmse, plot_qbo_phase_circuits,plot_qbo_phase_space,plot_u_timeseries
 
 For plot_zonal_bias
 -------------------
 
 In the code, generate the following as numpy
-arrays (except outfile, ptitle, and plevels).
+arrays (except outfile, ptitle, and plevs).
 
 **lats:**  A numpy array of the latitude values under consideration.
 
@@ -82,14 +96,14 @@ file, a **.png** version will be written.
 
 **ptitle:** A string containing the title of the plot.
 
-**plevels:** A list containing integers of the contour levels used in
+**plevs:** A list containing integers of the contour levels used in
 plotting the obs climatology.
 
 For plot_polar_bias
 -------------------
 
 In the code, generate the following as numpy arrays
-(except wrnum, output_plotname, and plevels).
+(except outfile, ptitle, and plevs).
 
 **leads:**  A numpy array containing the forecast lead times.
 
@@ -103,19 +117,19 @@ file, a **.png** version will be written.
 **ptitle:**  A string containing the title of the plot.
 
 **plevs:**  A list containing floats of the contour levels used in
-plotting
+plotting.
 
 For plot_polar_rmse
 -------------------
 
 In the code, generate the following as numpy arrays
-(except wrnum, output_plotname, and plevels).
+(except outfile, ptitle, and plevs).
 
 **leads:**  A numpy array containing the forecast lead times.
 
 **levels:**  A numpy array of the pressure level values under consideration.
 
-**pdata:**  A numpy array containing the bias.
+**pdata:**  A numpy array containing the RMSE.
 
 **outfile:**  The full path and filename of the output plot
 file, a **.png** version will be written.
@@ -123,7 +137,63 @@ file, a **.png** version will be written.
 **ptitle:**  A string containing the title of the plot.
 
 **plevs:**  A list containing floats of the contour levels used in
-plotting
+plotting.
+
+For plot_qbo_phase_circuits
+---------------------------
+
+In the code, generate the following as numpy arrays
+(except inits, periods, and outfile).
+
+**inits:**  A listing of datetimes that are the start date for each plot.
+
+**periods:**  An integer containing the number of days to plot from the inits.
+
+**rean_qbo_pcs:**  An xarray dataarray containing the projected daily 
+zonal winds for the observations.
+
+**rfcst_qbo_pcs:**  An xarray dataarray containing the projected 
+daily zonal winds for the model.
+
+**outfile:**  The full path and filename of the output plot
+file, a **.png** version will be written.
+
+For plot_qbo_phase_space
+------------------------
+
+In the code, generate the following as numpy arrays
+(except ptitle and outfile).
+
+**rean_qbo_pcs:**  An xarray dataarray containing the projected 
+daily zonal winds. 
+
+**eofs:**  An xarray dataarray containing the EOFs.
+
+**ptitle:**  A string containing the title of the plot.
+
+**outfile:**  The full path and filename of the output plot
+file, a **.png** version will be written.
+
+For plot_u_timeseries
+---------------------
+
+In the code, generate the following as numpy arrays
+(except ptitle and outfile).
+
+**obs_dt:**  A numpy array of datetimes for the observations.
+
+**obs_u:**  A numpy array containing U wind values for 
+the observations.
+
+**fcst_dt:**  A numpy array of datetimes for the forecasts.
+
+**fcst_u:**  A numpy array containing U wind values for 
+the forecasts.
+
+**ptitle:**  A string containing the title of the plot.
+
+**outfile:**  The full path and filename of the output plot
+file, a **.png** version will be written.
 
 Invoke the plotting functions:
 
@@ -135,7 +205,13 @@ Invoke the plotting functions:
 
    plot_polar_rmse(leads,levels,pdata,outfile,ptitle,plevs)
 
+   plot_qbo_phase_circuits(inits,periods,rean_qbo_pcs,rfcst_qbo_pcs,outfile)
+
+   plot_qbo_phase_space(rean_qbo_pcs,eofs,ptitle,outfile)
+
+   plot_u_timeseries(obs_dt,obs_u,fcst_dt,fcst_u,ptitle,outfile)
+
 The output will be **.png** version of all requested plots and will
 be located based on what was specified (path and name) in the
-**output_plotname**.
+**outfile**.
 

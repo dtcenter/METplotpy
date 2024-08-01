@@ -15,7 +15,6 @@ __author__ = 'Minna Win'
 
 import os
 from datetime import datetime
-import yaml
 import re
 import warnings
 # with warnings.catch_warnings():
@@ -108,7 +107,7 @@ class ROCDiagram(BasePlot):
         if len(self.series_list) > 0:
             self._add_lines(self.config_obj)
 
-    def _read_input_data(self):
+    def _read_input_data(self) -> pd.DataFrame:
         """
             Read the input data file (either CTC or PCT linetype)
             and store as a pandas dataframe so we can subset the
@@ -117,11 +116,60 @@ class ROCDiagram(BasePlot):
 
             Args:
 
-            Returns:
+            Returns: input_df the dataframe representation of the input data
 
         """
         self.logger.info("Reading input data.")
-        return pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
+        # If self.config_obj.lineype_ctc is True, check for the presence of the fy_oy column.
+        # If present, proceed as usual, otherwise extract the fcst_thresh, fy_oy, fy_on, fn_on, and fn_oy data
+        # from the stat_name and stat_value columns (long to wide).
+        input_df = pd.read_csv(self.config_obj.stat_input, sep='\t', header='infer')
+        if self.config_obj.linetype_ctc:
+            # Check if there is a column name 'fy_oy'.  If it is missing, then this data has been reformatted by
+            # the METdataio reformatter.
+            input_columns = input_df.columns.to_list()
+            if 'fy_oy' in input_columns:
+                # This data has been created from the METviewer database
+                return input_df
+
+            else:
+                # This data was created by the METdataio reformatter and needs to be modified from long to wide format.
+                wide_input_df = self.ctc_long_to_wide(input_df)
+                return wide_input_df
+        else:
+            # PCT data
+            return input_df
+
+    def ctc_long_to_wide(self, input_df: pd.DataFrame) -> pd.DataFrame:
+        """
+          Convert the dataframe representation of the CTC linetype data (that was reformatted by METdataio) from long
+          to wide format.  The fcst_thresh, fy_oy, fy_on, fn_oy, and fn_on will be in separate columns,
+          rather than residing under the stat_name and stat_value.
+
+          Args:
+              @param input_df:  The input dataframe that represents the CTC data reformatted by METdataio.
+
+          Returns:  ctc_df: a dataframe that has the additional columns: fy_oy, fy_on, fn_on, fn_oy, and
+                    fcst_thresh extracted from the stat_name and stat_values columns
+        """
+
+
+        # Use all the columns (except the stat_name, stat_value,stat_bcl, stat_bcu, stat_ncl, stat_ncu,
+        # and Idx column) as the pivot index
+        col_index = input_df.columns.to_list()
+        ignore_cols = ['Idx', 'stat_name', 'stat_value', 'stat_bcl', 'stat_bcu', 'stat_ncl', 'stat_ncu']
+        for cur in ignore_cols:
+            if cur in col_index:
+               col_index.remove(cur)
+        df_wide = input_df.pivot(index=col_index, columns='stat_name', values='stat_value')
+
+        # reset the index
+        reset_df_wide = df_wide.reset_index()
+
+        # Convert all the header names (column labels) to all lower case
+        reset_df_wide.columns = [x.lower() for x in reset_df_wide.columns]
+
+        return reset_df_wide
 
     def _create_series(self, input_data):
         """
@@ -515,22 +563,9 @@ def main(config_filename=None):
                 @param config_filename: default is None, the name of the custom config file to apply
             Returns:
         """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    # with open("./custom_performance_diagram.yaml", 'r') as stream:
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
+    params = util.get_params(config_filename)
     try:
-        r = ROCDiagram(docs)
+        r = ROCDiagram(params)
         r.save_to_file()
 
         r.write_html()

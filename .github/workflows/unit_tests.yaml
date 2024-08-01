@@ -39,10 +39,11 @@ jobs:
         
     - name: Retrieve METcalcpy repository develop branch
       run: |
-         /usr/bin/git clone https://github.com/dtcenter/METcalcpy
-         cd METcalcpy
-         /usr/bin/git checkout develop
-         python -m pip install -e .
+         metcalcpy_dir="$RUNNER_WORKSPACE/METcalcpy"
+         git clone https://github.com/dtcenter/METcalcpy ${metcalcpy_dir}
+         cd ${metcalcpy_dir}
+         git -C ${metcalcpy_dir} checkout develop
+         python -m pip install -e ${metcalcpy_dir}
             
     - name: Install dependencies
       run: |
@@ -55,43 +56,8 @@ jobs:
 #       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
 #       id: extract_branch
 
-
     - name: Test with pytest
-      run: |
-          cd test
-          cd bar 
-          pytest test_bar.py
-          cd ../box
-          pytest test_box.py
-          cd ../contour
-          pytest test_contour.py
-          cd ../eclv
-          pytest test_eclv.py
-          cd ../ens_ss
-          pytest test_ens_ss.py
-          cd ../equivalence_testing_bounds
-          pytest test_equivalence_testing_bounds.py
-          cd ../line
-          pytest test_line_groups_plot.py
-          pytest test_line_plot.py
-          cd ../mpr_plot
-          pytest test_mpr_plot.py
-          cd ../performance_diagram
-          pytest test_performance_diagram.py
-          cd ../reliability_diagram
-          pytest test_reliability_diagram.py
-          cd ../roc_diagram
-          pytest test_roc_diagram.py
-          cd ../taylor_diagram
-          pytest test_taylor_diagram.py
-          cd ../wind_rose
-          pytest test_wind_rose.py
-          cd ../histogram
-          pytest test_prob_hist.py
-          pytest test_rank_hist.py
-          pytest test_rel_hist.py
-          cd ../tcmpr_plots
-          pytest --capture=fd test_tcmpr_plots.py
+      run: pytest
 
           
          

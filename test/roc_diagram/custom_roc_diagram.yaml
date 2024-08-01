@@ -98,8 +98,8 @@ reverse_connection_order: False
 
 # Make the plot generated in METviewer interactive
 create_html: 'True'
-stat_input: ./plot_20200507_074426.data
-plot_filename: ./roc_diagram_custom.png
+stat_input: !ENV '${TEST_DIR}/plot_20200507_074426.data'
+plot_filename: !ENV '${TEST_DIR}/roc_diagram_custom.png'
 
 # To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
 # permissions to the directory you specify.  The default, as specified in the default config file is stdout.

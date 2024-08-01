@@ -17,13 +17,13 @@ import re
 import csv
 from operator import add
 from typing import Union
-import yaml
 import itertools
 
 import plotly.graph_objects as go
 
 from datetime import datetime
 from metcalcpy.event_equalize import event_equalize
+
 from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH
 from metplotpy.plots.eclv.eclv_config import EclvConfig
@@ -60,14 +60,14 @@ class Eclv(Line):
         # config file that represents the BasePlot object (Eclv).
         self.config_obj = EclvConfig(self.parameters)
 
-        self.eclv_logger = self.config_obj.logger
+        self.logger = self.config_obj.logger
 
-        self.eclv_logger.info(f"Start eclv plot: {datetime.now()}")
+        self.logger.info(f"Start eclv plot: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            self.line_logger.error("ValueError: The number of series defined by "
+            self.logger.error("ValueError: The number of series defined by "
                                    "series_val_1 is "
                                    "inconsistent with the number of settings "
                                    "required for"
@@ -85,12 +85,12 @@ class Eclv(Line):
                              " colors, and series_symbols settings.")
 
         # Read in input data, location specified in config file
-        self.eclv_logger.info(f"Begin reading input data: {datetime.now()}")
+        self.logger.info(f"Begin reading input data: {datetime.now()}")
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
-            self.line_logger.info(f"Performing event equalization: {datetime.now()}")
+            self.logger.info(f"Performing event equalization: {datetime.now()}")
             fix_vals_permuted_list = []
 
             for key in self.config_obj.fixed_vars_vals_input:
@@ -106,7 +106,7 @@ class Eclv(Line):
                                            self.parameters['series_val_1'],
                                            fix_vals_keys,
                                            fix_vals_permuted_list, True, True)
-        self.eclv_logger.info(f"End even equalization: {datetime.now()}")
+        self.logger.info(f"End even equalization: {datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -119,9 +119,9 @@ class Eclv(Line):
         # Need to have a self.figure that we can pass along to
         # the methods in base_plot.py (BasePlot class methods) to
         # create binary versions of the plot.
-        self.eclv_logger.info(f"Begin creating the figure: {datetime.now()}")
+        self.logger.info(f"Begin creating the figure: {datetime.now()}")
         self._create_figure()
-        self.eclv_logger.info(f"End creating the figure: {datetime.now()}")
+        self.logger.info(f"End creating the figure: {datetime.now()}")
 
     def __repr__(self):
         """ Implement repr which can be useful for debugging this
@@ -150,7 +150,7 @@ class Eclv(Line):
 
         """
 
-        self.eclv_logger.info(f"Begin creating series objects: {datetime.now()}")
+        self.logger.info(f"Begin creating series objects: {datetime.now()}")
         series_list = []
 
         # add series for y1 axis
@@ -163,7 +163,7 @@ class Eclv(Line):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
-        self.eclv_logger.info(f"Finished creating series objects:"
+        self.logger.info(f"Finished creating series objects:"
                                     f" {datetime.now()}")
         return series_list
 
@@ -171,7 +171,7 @@ class Eclv(Line):
         """
         Create a eclv plot from defaults and custom parameters
         """
-        self.eclv_logger.info(f"Begin creating the figure: {datetime.now()}")
+        self.logger.info(f"Begin creating the figure: {datetime.now()}")
         # create and draw the plot
         self.figure = self._create_layout()
         self._add_xaxis()
@@ -227,7 +227,7 @@ class Eclv(Line):
         # add x2 axis
         self._add_x2axis(n_stats)
 
-        self.eclv_logger.info(f"Finished creating the figure: {datetime.now()}")
+        self.logger.info(f"Finished creating the figure: {datetime.now()}")
 
     def _add_x2axis(self, n_stats) -> None:
         """
@@ -287,7 +287,7 @@ class Eclv(Line):
         :param series: Eclv series object with data and parameters
         :param x_points_index_adj: values for adjusting x-values position
         """
-        self.eclv_logger.info(f"Begin drawing the series : {datetime.now()}")
+        self.logger.info(f"Begin drawing the series : {datetime.now()}")
         # pct series can have mote than one line
         for ind, series_points in enumerate(series.series_points):
             y_points = series_points['dbl_med']
@@ -334,7 +334,7 @@ class Eclv(Line):
                 secondary_y=False
             )
 
-            self.eclv_logger.info(f"Finished  drawing the series :"
+            self.logger.info(f"Finished  drawing the series :"
                                         f" {datetime.now()}")
 
     def write_output_file(self) -> None:
@@ -342,7 +342,7 @@ class Eclv(Line):
         saves series points to the files
         """
 
-        self.eclv_logger.info(f"Begin writing output file: {datetime.now()}")
+        self.logger.info(f"Begin writing output file: {datetime.now()}")
 
         # Open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
@@ -381,7 +381,7 @@ class Eclv(Line):
                     file.writelines('\n')
                     file.writelines('\n')
                 file.close()
-        self.eclv_logger.info(f"Finished writing output file: {datetime.now()}")
+        self.logger.info(f"Finished writing output file: {datetime.now()}")
 
 
 def main(config_filename=None):
@@ -394,29 +394,7 @@ def main(config_filename=None):
                 @param config_filename: default is None, the name of the custom
                 config file to apply
         """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    # with open("./custom_eclv_plot.yaml", 'r') as stream:
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    try:
-        plot = Eclv(docs)
-        plot.save_to_file()
-        # plot.show_in_browser()
-        plot.write_html()
-        plot.write_output_file()
-        plot.eclv_logger.info(f"Finished ECLV plot: {datetime.now()}")
-    except ValueError as val_er:
-        print(val_er)
+    util.make_plot(config_filename, Eclv)
 
 
 if __name__ == "__main__":

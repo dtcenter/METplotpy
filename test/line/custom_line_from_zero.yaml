@@ -95,7 +95,7 @@ plot_disp:
 - 'True'
 - 'True'
 - 'True'
-plot_filename: ./line_from_zero.png
+plot_filename: !ENV '${TEST_DIR}/line_from_zero.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -155,7 +155,7 @@ show_signif:
 - 'False'
 - 'False'
 start_from_zero: 'True'
-stat_input: ./line.data
+stat_input: !ENV '${TEST_DIR}/line.data'
 sync_yaxes: 'False'
 title: test title
 title_align: 0.5

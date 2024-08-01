@@ -101,7 +101,7 @@ plot_stat: median
 plot_type: png16m
 plot_units: in
 plot_width: 11.0
-points_path: './intermed_files'
+points_path: !ENV '${TEST_DIR}/intermed_files'
 random_seed: null
 
 
@@ -173,8 +173,8 @@ ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
 
-stat_input: ./box.data
-plot_filename: ./box_points1.png
+stat_input: !ENV '${TEST_DIR}/box.data'
+plot_filename: !ENV '${TEST_DIR}/box_points1.png'
 show_legend:
   -True
   -True
