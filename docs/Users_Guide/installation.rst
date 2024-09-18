@@ -20,6 +20,28 @@ file at the top level of the repository.
 
 .. literalinclude:: ../../requirements.txt
 
+Install METplotpy
+-------------------
+
+METplotpy can be installed into a conda environment. First navigate to the
+base directory, then run the following commands.
+
+.. code-block:: ini
+
+  $ conda create -n "metplotpy" python=3.10.4 pip
+  $ conda activate metplotpy
+  (metplotpy)$ pip install -e .
+
+This will install METplotpy into the conda env, along with all the dependancies
+listed above in **requirements.txt**.
+
+If you already have an environment setup, or want to install METplotpy without
+the dependancies, add the `--no-deps` argument to pip.
+
+.. code-block:: ini
+
+  $ pip install -e . --no-deps
+
 .. _METcalcpy_conda:
 
 Install METcalcpy in the Conda Environment
