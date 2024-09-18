@@ -4,12 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "metplotpy"
-dynamic = ["version"]
+dynamic = ["version", "dependencies"]
 description = "plotting package for METplus"
 authors = [
     {name = "METplus", email = "met-help@ucar.edu"},
 ]
-dependencies = []
 requires-python = ">=3.10.4"
 readme = "README.md"
 license = {text = "MIT"}
@@ -22,6 +21,10 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/dtcenter/METplotpy"
 
+[tool.setuptools.dynamic]
+version = {attr = "metplotpy.__version__"}
+dependencies = {file = ["requirements.txt"]}
+
 [tool.setuptools]
 packages = ["metplotpy"]
 
@@ -29,4 +32,4 @@ packages = ["metplotpy"]
 testpaths = ["test"]
 
 [tool.coverage.run]
-source = ["metplotpy"]
+source = ["metplotpy/plots"]
