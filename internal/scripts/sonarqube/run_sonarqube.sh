@@ -112,7 +112,7 @@ run_command "cd ${REPO_DIR}"
 run_command "git checkout ${1}"
 
 # Define the version string
-SONAR_PROJECT_VERSION=$(cat docs/version | cut -d'=' -f2 | tr -d '" ')
+SONAR_PROJECT_VERSION=$(cat metplotpy/_version.py | cut -d'=' -f2 | tr -d '" ')
 
 SONAR_PROPERTIES=sonar-project.properties
 
