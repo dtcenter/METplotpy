@@ -7,7 +7,7 @@ name = "metplotpy"
 dynamic = ["version", "dependencies"]
 description = "plotting package for METplus"
 authors = [
-    {name = "METplus", email = "met-help@ucar.edu"},
+    {name = "METplus"},
 ]
 requires-python = ">=3.10.4"
 readme = "README.md"
