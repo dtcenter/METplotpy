@@ -25,8 +25,8 @@ Homepage = "https://github.com/dtcenter/METplotpy"
 version = {attr = "metplotpy.__version__"}
 dependencies = {file = ["requirements.txt"]}
 
-[tool.setuptools]
-packages = ["metplotpy"]
+[tool.setuptools.packages]
+find = {include = ["metplotpy*"]}
 
 [tool.pytest.ini_options]
 testpaths = ["test"]
