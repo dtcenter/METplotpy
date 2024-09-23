@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "metplotpy"
-dynamic = ["version", "dependencies"]
+dynamic = ["version"]  #, "dependencies"]
 description = "plotting package for METplus"
 authors = [
     {name = "METplus"},
@@ -23,7 +23,7 @@ Homepage = "https://github.com/dtcenter/METplotpy"
 
 [tool.setuptools.dynamic]
 version = {attr = "metplotpy.__version__"}
-dependencies = {file = ["requirements.txt"]}
+#dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.packages]
 find = {include = ["metplotpy*"]}
