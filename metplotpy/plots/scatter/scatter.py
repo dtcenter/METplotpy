@@ -14,9 +14,8 @@ Class Name: scatter.py
 __author__ = 'Hank Fisher'
 
 import plotly.graph_objects as go
-import yaml
 import pandas as pd
-from plots.base_plot import BasePlot
+from metplotpy.plots.base_plot import BasePlot
 
 from metplotpy.plots import util
 
@@ -112,7 +111,7 @@ class Scatter(BasePlot):
             scatter_x = data['x']
             scatter_y = data['y']
             fig.add_trace(go.Scatter(
-                x=scatter_x, y=scatter_y, name=name
+                x=scatter_x, y=scatter_y, name=name, connectgaps = connect_gap, mode = "markers"
             ))
 
 

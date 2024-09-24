@@ -18,3 +18,8 @@ scatters:
     color: black
     width: 1
     dash:
+
+log_filename: stdout
+log_level: ERROR
+
+line_type: N/A
