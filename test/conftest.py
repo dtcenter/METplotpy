@@ -9,8 +9,8 @@ import json
 # realative file locations can be used for each test
 # file.
 # NOTE: autouse=True means this applies to ALL tests.
-# Code that updates the cwd inside test is now redundant
-# and can be deleted.
+# Code that updates the cwd inside a test  file is now
+# redundant and can be deleted.
 @pytest.fixture(autouse=True)
 def change_test_dir(request, monkeypatch):
     monkeypatch.chdir(request.fspath.dirname)
@@ -24,7 +24,7 @@ def ordered(obj):
         return sorted(ordered(x) for x in obj)
     else:
         return obj
-    
+
 
 @pytest.fixture
 def assert_json_equal():
@@ -35,7 +35,7 @@ def assert_json_equal():
         actual = json.loads(fig.to_json(), parse_float=str, parse_int=str)
         with open(expected_json_file) as f:
             expected = json.load(f,parse_float=str, parse_int=str)
-        
+
         # Fail with a nice message
         if ordered(actual) == ordered(expected):
             return True
