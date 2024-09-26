@@ -49,7 +49,7 @@ class Scatter(BasePlot):
             class.
         """
 
-        return f'Line({self.parameters!r})'
+        return f'Scatter ({self.parameters!r})'
 
     def _get_all_scatters(self):
         """ Retrieve a list of all scatters.  Each scatters is a dictionary comprised of
