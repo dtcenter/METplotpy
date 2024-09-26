@@ -12,13 +12,13 @@ legend:
   bordercolor: # black in default config
   borderwidth: 2
 
-connect_data_gaps: true
+connect_data_gaps: false
 title: Scatter plot of point data
 xaxis:
   title: X
 yaxis:
   title: accumulated precip amounts (cm)
-lines:
+scatter:
   - name: Data1 Trace
     data_file:
       ./scatter1_plot_data.txt
@@ -33,3 +33,7 @@ lines:
     width: 4
     dash: dash
 
+log_filename: stdout
+log_level: ERROR
+
+line_type: N/A
