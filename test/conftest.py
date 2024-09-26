@@ -2,7 +2,8 @@ import pytest
 import os
 import shutil
 import json
-
+import xarray as xr
+from pandas import DatetimeIndex
 
 # This fixture temporarily sets the working directory
 # to the dir containing the test file. This means 
@@ -76,3 +77,34 @@ def remove_files():
             pass
 
     return remove_the_files
+
+
+TEST_NC_DATA = xr.Dataset(
+    {
+        "precip": xr.DataArray(
+            [
+                [[0.1, 0.2, 0.3], [0, 1.3, 4], [0, 20, 0]],
+                [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+            ],
+            coords={
+                "lat": [-1, 0, 1],
+                "lon": [112, 113, 114],
+                "time": DatetimeIndex(["2024-09-25 00:00:00", "2024-09-25 03:00:33"]),
+            },
+            dims=["time", "lat", "lon"],
+            attrs={"long_name": "variable long name"},
+        ),
+    },
+    attrs={"Conventions": "CF-99.9", "history": "History string"},
+)
+
+@pytest.fixture()
+def nc_test_file(tmp_path_factory):
+    """Create a netCDF file with a very small amount of data.
+    File is written to a temp directory and the path to the 
+    file returned as the fixture value.
+    """
+    file_name = tmp_path_factory.mktemp("data") / "test_data.nc"
+    TEST_NC_DATA.to_netcdf(file_name)
+    return file_name
+
