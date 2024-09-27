@@ -38,21 +38,21 @@ def test_pos_corr_file_exists(setup_env):
 
 
 def test_pos_corr_images_match():
-         os.environ['METPLOTPY_BASE'] = "../../metplotpy"
-         test_config_filename = "test_pos_corr.yaml"
-         td.main(test_config_filename)
+    os.environ['METPLOTPY_BASE'] = f"{cwd}/../../"
+    test_config_filename = "test_pos_corr.yaml"
+    td.main(test_config_filename)
 
-         # Verify that a plot was generated
-         plot_file = "test_pos_corr_plot.png"
-         expected_file = "expected_pos_corr_plot.png"
-         path = os.getcwd()
+    # Verify that a plot was generated
+    plot_file = "test_pos_corr_plot.png"
+    expected_file = "expected_pos_corr_plot.png"
+    path = os.getcwd()
 
-         # image comparison
-         comparison = CompareImages(plot_file, expected_file)
-         assert comparison.mssim >= .99
+    # image comparison
+    comparison = CompareImages(plot_file, expected_file)
+    assert comparison.mssim >= .99
 
-         # Clean up
-         os.remove(os.path.join(path, plot_file))
+    # Clean up
+    os.remove(os.path.join(path, plot_file))
 
 
 def test_neg_and_pos_corr_file_exists(setup_env):
