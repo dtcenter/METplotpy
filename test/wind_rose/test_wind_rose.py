@@ -1,7 +1,7 @@
 import pytest
 import os
 from metplotpy.plots.wind_rose import wind_rose
-#from metcalcpy.compare_images import CompareImages
+from metcalcpy.compare_images import CompareImages
 
 cwd = os.path.dirname(__file__)
 CLEANUP_FILES = ['wind_rose_custom.png', 'point_stat_mpr.points1']
@@ -90,7 +90,6 @@ def test_points1_files_exist(setup_env, test_input, expected, remove_files):
     remove_files(cwd, CLEANUP_FILES)
 
 
-@pytest.mark.skip("unreliable sometimes fails due to differences in machines.")
 def test_images_match(setup, remove_files):
     '''
         Compare an expected plot with the

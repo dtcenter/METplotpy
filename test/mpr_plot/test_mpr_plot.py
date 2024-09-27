@@ -1,7 +1,7 @@
 import pytest
 import os
 from metplotpy.plots.mpr_plot import mpr_plot
-#from metcalcpy.compare_images import CompareImages
+from metcalcpy.compare_images import CompareImages
 
 cwd = os.path.dirname(__file__)
 CLEANUP_FILES = ['mpr_plots.png']
@@ -29,7 +29,6 @@ def test_files_exist(setup, test_input, expected, remove_files):
     remove_files(cwd, CLEANUP_FILES)
 
 
-@pytest.mark.skip("unreliable-sometimes fails due to differences between machines.")
 def test_images_match(setup, remove_files):
     """
         Compare an expected plot with the

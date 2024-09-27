@@ -2,7 +2,7 @@ import os
 import pytest
 import metplotpy.plots.hovmoeller.hovmoeller as hov
 from metplotpy.plots import util
-#from metcalcpy.compare_images import CompareImages
+from metcalcpy.compare_images import CompareImages
 
 def dict_to_yaml(data_dict,
                 output_yaml = "test_hovmoeller.yaml"):
@@ -23,7 +23,6 @@ def cleanup(file_to_remove):
         pass
 
 
-@pytest.mark.skip()
 def test_default_plot_images_match():
     '''
         Compare an expected plot with the

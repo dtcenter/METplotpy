@@ -4,7 +4,7 @@ import pytest
 import os
 import pandas as pd
 from metplotpy.plots.roc_diagram import roc_diagram as roc
-# from metcalcpy.compare_images import CompareImages
+from metcalcpy.compare_images import CompareImages
 import metcalcpy.util.ctc_statistics as ctc
 
 cwd = os.path.dirname(__file__)
@@ -209,7 +209,6 @@ def test_ee_returns_empty_df(capsys, remove_files):
     remove_files(cwd, ['CTC_ROC_ee.png', 'CTC_ROC_ee.html'])
 
 
-@pytest.mark.skip("skip image comparison")
 def test_images_match(setup, remove_files):
     '''
         Compare an expected plot with the

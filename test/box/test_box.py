@@ -1,7 +1,7 @@
 import pytest
 import os
 from metplotpy.plots.box import box
-#from metcalcpy.compare_images import CompareImages
+from metcalcpy.compare_images import CompareImages
 
 cwd = os.path.dirname(__file__)
 CLEANUP_FILES = ['box.png', 'box.points1']
@@ -28,7 +28,6 @@ def test_files_exist(setup, test_input, expected, remove_files):
     remove_files(cwd, CLEANUP_FILES)
 
 
-@pytest.mark.skip("fails on linux hosts")
 def test_images_match(setup):
     """
         Compare an expected plot with the

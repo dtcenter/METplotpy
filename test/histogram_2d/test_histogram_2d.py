@@ -3,8 +3,6 @@ import pytest
 
 from metplotpy.plots.histogram_2d import histogram_2d as h2d
 
-# from metcalcpy.compare_images import CompareImages
-
 cwd = os.path.dirname(__file__)
 
 
