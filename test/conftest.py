@@ -35,9 +35,12 @@ def patch_CompareImages(request):
                 # this this class to generate a self.mssim value.
                 pytest.skip("CompareImages not enabled in pytest. "
                             "To enable `export METPLOTPY_COMPAREIMAGES=$true`")
-
-        with patch.object(request.module, 'CompareImages', mock_CompareImages) as mock_ci:
-            yield mock_ci
+        try:
+            with patch.object(request.module, 'CompareImages', mock_CompareImages) as mock_ci:
+                yield mock_ci
+        except AttributeError:
+            # test module doesn't import CompareImages. Do nothing.
+            yield
 
 
 def ordered(obj):

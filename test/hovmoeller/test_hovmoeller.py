@@ -22,7 +22,7 @@ def cleanup(file_to_remove):
         # don't exist.  Ignore.
         pass
 
-
+@pytest.mark.skip("Requires specific netCDF input")
 def test_default_plot_images_match():
     '''
         Compare an expected plot with the
