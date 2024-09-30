@@ -49,7 +49,8 @@ register_matplotlib_converters()
 # -------------------------------------
 # figure optimization and compression 
 # -------------------------------------
-def save_image(imagefile, **kwargs):
+def save_image(imagefile, logger,  **kwargs):
+    logger.info(f"Saving image {imagefile}")
     ram = io.BytesIO()
     plt.gcf().savefig(ram, **kwargs)
     ram.seek(0)
@@ -61,13 +62,15 @@ def save_image(imagefile, **kwargs):
 
 
 # -------------------------------------
-def ice_area(lon1, lat1, ice1):
+def ice_area(lon1, lat1, ice1, logger):
     """
     Compute the cell side dimensions (Vincenty) and the cell surface areas.
     This assumes the ice has already been masked and subsampled as needed    
     returns ice_extent, ice_area, surface_area = ice_area(lon,lat,ice)
     surface_area is the computed grid areas in km**2)
     """
+
+    logger.info("Computing cell side dimensions and cell surface areas...")
     lon = lon1.copy()
     lat = lat1.copy()
     ice = ice1.copy()
@@ -81,6 +84,7 @@ def ice_area(lon1, lat1, ice1):
     ice = ice[:-1, :-1]  # just to match the roll
     extent = xdist * ydist  # extent is surface area only
     area = xdist * ydist * ice  # ice area is actual ice cover (area * concentration)
+    logger.info("Finished computing cell side dimensions and cell surface areas")
     return extent.flatten().sum(), area.flatten().sum(), extent
 
 
@@ -88,11 +92,13 @@ def ice_area(lon1, lat1, ice1):
 def make_maps(image_dir, hemisphere,
               nlon, nlat, nice, rlon, rlat, rice,
               diff, crs, fcst_area, obs_area, model_name,
-              obstype_name, init_time):
+              obstype_name, init_time, logger):
     cmap = 'nipy_spectral'
+
+    # Get a common logger to use throughout
     logger = util.get_common_logger(config['log_level'], config['log_filename'])
     # pretty pictures
-    logger.info(f'plotting ice  {obstype_name}')
+    logger.info(f'Plotting ice  {obstype_name}')
     plt.figure(dpi=150)
     ax = plt.axes(projection=crs)
     plt.pcolormesh(rlon, rlat, rice, cmap=cmap,
@@ -108,8 +114,9 @@ def make_maps(image_dir, hemisphere,
     plt.title(
         obstype_name + ' Global sea ice concentration ' + init_time + '\n(area=' + '%10.3e' % obs_area + ' km$^2$)',
         fontsize='small')
+    logger.info(f"Plot title: {plt.title}")
     logger.info(f"Saving image to {image_dir}")
-    save_image(image_dir + '/' + init_time + '_observation_ice_' + hemisphere + '.png', dpi=150)
+    save_image(image_dir + '/' + init_time + '_observation_ice_' + hemisphere + '.png', logger, dpi=150)
     plt.close()
 
     logger.info(f"Plotting ice {model_name}")
@@ -127,7 +134,7 @@ def make_maps(image_dir, hemisphere,
     plt.title(
         model_name + ' Forecast sea ice concentration ' + init_time + '\n(area=' + '%10.3e' % fcst_area + ' km$^2$)',
         fontsize='small')
-    save_image(image_dir + '/' + init_time + '_fcst_ice_' + hemisphere + '.png', dpi=150)
+    save_image(image_dir + '/' + init_time + '_fcst_ice_' + hemisphere + '.png', logger,  dpi=150)
     plt.close()
 
     logger.info("Plotting difference")
@@ -142,7 +149,7 @@ def make_maps(image_dir, hemisphere,
     cb.ax.tick_params(labelsize='x-small')
     plt.title('FCST minus OBS sea ice concentration for ' + init_time, fontsize='small')
 
-    save_image(image_dir + '/' + init_time + '_ice_diff_' + hemisphere + '.png', dpi=150)
+    save_image(image_dir + '/' + init_time + '_ice_diff_' + hemisphere + '.png', logger,  dpi=150)
 
     return 0
 
@@ -197,7 +204,7 @@ def process_one_day(config, hemisphere, logger):
         obs_ice = obs_ice.where((obs_ice.lat <= bounding_lat), drop=True)
         fcst_ice = fcst_ice.where((fcst_ice.lat <= bounding_lat), drop=True)
 
-        # now it's back to masked arrays
+    # now it's back to masked arrays
     rlon = obs_ice.lon.values % 360
     rlat = obs_ice.lat.values
     rlon, rlat = np.meshgrid(rlon, rlat)  # shift from 1-d to 2-d arrays
@@ -214,8 +221,8 @@ def process_one_day(config, hemisphere, logger):
 
     # compute ice area on original grids
     logger.info("Computing ice area")
-    _, fcst_area, _ = ice_area(nlon, nlat, nice)
-    _, obs_area, _ = ice_area(rlon, rlat, rice)
+    _, fcst_area, _ = ice_area(nlon, nlat, nice, logger)
+    _, obs_area, _ = ice_area(rlon, rlat, rice, logger)
 
     # interpolate obs_ice to ncep grid
     logger.info("Interpolating obs_ice to NCEP grid")
@@ -256,7 +263,7 @@ def process_one_day(config, hemisphere, logger):
     make_maps(image_dir, hemisphere,
               nlon1, nlat1, nice2, nlon1, nlat1, rice2,
               diff, crs, fcst_area, obs_area, model_name,
-              obtype_name, init_time)
+              obtype_name, init_time, logger)
 
     return 0
 
@@ -275,12 +282,15 @@ if __name__ == '__main__':
     """
     Read YAML configuration file
     """
-    yaml_file_name = "polar_ice.yaml"
+
+    # YAML config file resides in the same directory as this script
+    config_file_dir = os.path.dirname(os.path.realpath(__file__))
+    yaml_file_name =  os.path.join (config_file_dir, "polar_ice.yaml")
     try:
         config = yaml.load(
             open(yaml_file_name), Loader=yaml.FullLoader)
     except yaml.YAMLError as exc:
-        sys.exi.t(exc)
+        sys.exit(exc)
 
     polar_logger = util.get_common_logger(config['log_level'], config['log_filename'])
     start = datetime.now()
@@ -288,7 +298,7 @@ if __name__ == '__main__':
     os.environ['INPUT_FILE_NAME'] = config['input_file']
 
     polar_logger.info(f'Starting Ice Concentration V&V at {datetime.now()}')
-    # logging.captureWarnings(True)
+    logging.captureWarnings(True)
     process_one_day(config, "north", polar_logger)
     total_time = datetime.now() - start
-    polar_logger.info(f'Completed polar ice in {total_time} seconds')
+    polar_logger.info(f'Completed polar ice calculations and plotting in {total_time} seconds')
