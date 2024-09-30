@@ -18,7 +18,7 @@ xaxis:
   title: X
 yaxis:
   title: accumulated precip amounts (cm)
-lines:
+scatter:
   - name: Data1 Trace
     data_file:
       ./scatter1_plot_data.txt
@@ -39,3 +39,5 @@ lines:
 
 log_level: info
 log_filename: ./scatter_log.txt
+
+line_type: N/A

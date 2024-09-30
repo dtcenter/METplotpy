@@ -15,7 +15,6 @@ __author__ = 'Hank Fisher'
 
 from datetime import datetime
 import plotly.graph_objects as go
-import yaml
 import pandas as pd
 from plots.base_plot import BasePlot
 from metplotpy.plots import util
@@ -53,7 +52,7 @@ class Scatter(BasePlot):
             class.
         """
 
-        return f'Line({self.parameters!r})'
+        return f'Scatter ({self.parameters!r})'
 
     def _get_all_scatters(self):
         """ Retrieve a list of all scatters.  Each scatters is a dictionary comprised of
@@ -117,7 +116,7 @@ class Scatter(BasePlot):
             scatter_x = data['x']
             scatter_y = data['y']
             fig.add_trace(go.Scatter(
-                x=scatter_x, y=scatter_y, name=name
+                x=scatter_x, y=scatter_y, name=name, connectgaps = connect_gap, mode = "markers"
             ))
 
 

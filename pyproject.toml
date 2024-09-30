@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "metplotpy"
+dynamic = ["version"]  #, "dependencies"]
+description = "plotting package for METplus"
+authors = [
+    {name = "METplus"},
+]
+requires-python = ">=3.10.4"
+readme = "README.md"
+license = {text = "MIT"}
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+]
+
+[project.urls]
+Homepage = "https://github.com/dtcenter/METplotpy"
+
+[tool.setuptools.dynamic]
+version = {attr = "metplotpy.__version__"}
+#dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages]
+find = {include = ["metplotpy*"]}
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+
+[tool.coverage.run]
+source = ["metplotpy/plots"]
+
+[tool.coverage.report]
+exclude_also = [
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    ]
