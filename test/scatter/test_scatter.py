@@ -10,4 +10,3 @@ def test_scatter(assert_json_equal):
 def test_main():
     # check that main can execute without error.
     scatter.main()
-    

@@ -1,5 +1,6 @@
 import pytest
 import os
+from unittest.mock import patch
 import shutil
 import json
 import xarray as xr
@@ -10,11 +11,36 @@ from pandas import DatetimeIndex
 # realative file locations can be used for each test
 # file.
 # NOTE: autouse=True means this applies to ALL tests.
-# Code that updates the cwd inside a test  file is now
-# redundant and can be deleted.
+# Code that updates the cwd inside test is now redundant
+# and can be deleted.
 @pytest.fixture(autouse=True)
 def change_test_dir(request, monkeypatch):
     monkeypatch.chdir(request.fspath.dirname)
+
+
+@pytest.fixture(autouse=True)
+def patch_CompareImages(request):
+    """This fixture controls the use of CompareImages in the
+    test suite. By default, all calls to CompareImages will
+    result in the test skipping. To change this behaviour set
+    an env var METPLOTPY_COMPAREIMAGES
+    """
+    if bool(os.getenv("METPLOTPY_COMPAREIMAGES")):
+        yield
+    else:
+        class mock_CompareImages:
+            def __init__(self, img1, img2):
+                # TODO: rather than skip we could inject an alternative
+                # comparison that is more relaxed. To do this, extend
+                # this this class to generate a self.mssim value.
+                pytest.skip("CompareImages not enabled in pytest. "
+                            "To enable `export METPLOTPY_COMPAREIMAGES=$true`")
+        try:
+            with patch.object(request.module, 'CompareImages', mock_CompareImages) as mock_ci:
+                yield mock_ci
+        except AttributeError:
+            # test module doesn't import CompareImages. Do nothing.
+            yield
 
 
 def ordered(obj):
@@ -26,7 +52,6 @@ def ordered(obj):
     else:
         return obj
 
-
 @pytest.fixture
 def assert_json_equal():
     def compare_json(fig, expected_json_file):
@@ -36,7 +61,6 @@ def assert_json_equal():
         actual = json.loads(fig.to_json(), parse_float=str, parse_int=str)
         with open(expected_json_file) as f:
             expected = json.load(f,parse_float=str, parse_int=str)
-
         # Fail with a nice message
         if ordered(actual) == ordered(expected):
             return True
@@ -79,6 +103,7 @@ def remove_files():
     return remove_the_files
 
 
+# data for netCDF file
 TEST_NC_DATA = xr.Dataset(
     {
         "precip": xr.DataArray(

@@ -2,7 +2,7 @@ import os
 import pytest
 
 from metplotpy.plots.performance_diagram import performance_diagram as pd
-#from metcalcpy.compare_images import CompareImages
+from metcalcpy.compare_images import CompareImages
 
 cwd = os.path.dirname(__file__)
 
@@ -89,7 +89,6 @@ def test_files_exist(setup_env, test_input, expected_bool, remove_files):
         pass
 
 
-@pytest.mark.skip()
 def test_images_match(setup, remove_files):
     '''
         Compare an expected plot with the

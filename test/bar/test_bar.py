@@ -3,7 +3,7 @@ import os
 import pytest
 
 from metplotpy.plots.bar import bar
-# from metcalcpy.compare_images import CompareImages
+from metcalcpy.compare_images import CompareImages
 
 cwd = os.path.dirname(__file__)
 CLEANUP_FILES = ['bar.png', 'bar.points1']
@@ -71,7 +71,6 @@ def test_no_nans_in_points_file(setup, remove_files):
     remove_files(cwd, CLEANUP_FILES)
 
 
-@pytest.mark.skip("fails on linux host machines")
 def test_images_match(setup, remove_files):
     """
         Compare an expected plot with the
@@ -83,7 +82,6 @@ def test_images_match(setup, remove_files):
     remove_files(cwd, CLEANUP_FILES)
 
 
-@pytest.mark.skip("fails on linux host machines")
 def test_none_data_images_match(setup_nones):
     """
         Compare an expected plot with the
@@ -141,7 +139,6 @@ def test_point_and_plot_files_exist_default(setup_env, remove_files):
     remove_files(cwd, check_files)
 
 
-@pytest.mark.skip("fails on linux host machines")
 def test_threshold_plotting(setup_env, remove_files):
     """
       Verify that the bar plot using data with thresholds is correct.

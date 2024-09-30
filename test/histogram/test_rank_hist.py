@@ -1,7 +1,7 @@
 import pytest
 import os
 from metplotpy.plots.histogram import rank_hist
-#from metcalcpy.compare_images import CompareImages
+from metcalcpy.compare_images import CompareImages
 
 cwd = os.path.dirname(__file__)
 
@@ -36,7 +36,6 @@ def test_files_exist(setup, test_input, expected):
     cleanup()
 
 
-@pytest.mark.skip("Image comparisons fail during Github Actions checks.")
 def test_images_match(setup):
     """
         Compare an expected plot with the

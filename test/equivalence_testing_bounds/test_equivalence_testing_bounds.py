@@ -1,7 +1,7 @@
 import pytest
 import os
 from metplotpy.plots.equivalence_testing_bounds import equivalence_testing_bounds as etb
-#from metcalcpy.compare_images import CompareImages
+from metcalcpy.compare_images import CompareImages
 
 cwd = os.path.dirname(__file__)
 CLEANUP_FILES = ['equivalence_testing_bounds.png', 'equivalence_testing_bounds.points1']
@@ -29,7 +29,6 @@ def test_files_exist(setup, test_input, expected, remove_files):
     remove_files(cwd, CLEANUP_FILES)
 
 
-@pytest.mark.skip("skimage differences causing failure")
 def test_images_match(setup, remove_files):
     '''
         Compare an expected plot with the

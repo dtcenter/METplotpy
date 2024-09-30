@@ -1,7 +1,7 @@
 import pytest
 import os
 from metplotpy.plots.eclv import eclv
-#from metcalcpy.compare_images import CompareImages
+from metcalcpy.compare_images import CompareImages
 
 cwd = os.path.dirname(__file__)
 
@@ -49,7 +49,6 @@ def test_files_exist(setup, test_input, expected):
     assert os.path.isfile(test_input) == expected
     cleanup()
 
-@pytest.mark.skip("fails on linux hosts")
 def test_images_match(setup):
     """
         Compare an expected plots with the

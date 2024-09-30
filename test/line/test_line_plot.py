@@ -5,7 +5,7 @@ from metplotpy.plots.line import line as l
 
 cwd = os.path.dirname(__file__)
 
-# from metcalcpy.compare_images import CompareImages
+from metcalcpy.compare_images import CompareImages
 
 
 @pytest.fixture
@@ -147,7 +147,6 @@ def test_no_nans_in_points_files():
         pass
 
 
-@pytest.mark.skip()
 def test_images_match(setup):
     '''
         Compare an expected plot with the
@@ -164,7 +163,6 @@ def test_images_match(setup):
     cleanup()
 
 
-@pytest.mark.skip()
 def test_new_images_match():
     '''
         Compare an expected plot with the start_at_zero option, with the
@@ -323,21 +321,20 @@ def test_fixed_var_val():
         pass
 
 
-@pytest.mark.skip("Image comparison for development only due to differences in hosts")
+@pytest.mark.skip("This test currently raises an error on line 81 of line.py. This can"
+                  " probably be fixed be revisiting fbias_fixed_vars_vals.yaml")
 def test_fixed_var_val_image_compare():
     """
         Verify that the fixed_vars_vals_input setting reproduces the
         expected plot.
 
     """
-    from metcalcpy.compare_images import CompareImages
 
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
     os.environ['METPLOTPY_BASE'] = f"{cwd}/../../"
     os.environ['TEST_DIR'] = cwd
     custom_config_filename = f"{cwd}/fbias_fixed_vars_vals.yaml"
-
     # Invoke the command to generate a line plot based on
     # the custom config file.
     l.main(custom_config_filename)
@@ -349,10 +346,7 @@ def test_fixed_var_val_image_compare():
         created_file = os.path.join(cwd, plot_file)
 
         # first verify that the output plot was created
-        if os.path.exists(created_file):
-            assert True
-        else:
-            assert False
+        assert os.path.exists(created_file)
 
         comparison = CompareImages(expected_plot, created_file)
 
