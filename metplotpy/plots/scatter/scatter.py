@@ -17,7 +17,6 @@ from datetime import datetime
 import plotly.graph_objects as go
 import pandas as pd
 from plots.base_plot import BasePlot
-from metplotpy.plots import util
 
 from metplotpy.plots import util
 
@@ -26,20 +25,20 @@ class Scatter(BasePlot):
     """  Generates a Plotly scatter plot,
 
     """
-    def __init__(self, parameters, logger):
+    def __init__(self, parameters, default_conf):
         """ Creates a scatter plot, based on
             settings indicated by parameters.
 
             Args:
             @param parameters: dictionary containing user defined parameters
-            logger: A logging object
+
 
         """
 
-        default_conf_filename = "scatter_defaults.yaml"
+        default_conf_filename = default_conf
         # init common layout
         super().__init__(parameters, default_conf_filename)
-        self.logger = logger
+        self.logger = util.get_common_logger("info", "log.txt")
         # create figure
         # pylint:disable=assignment-from-no-return
         # Need to have a self.figure that we can pass along to
@@ -139,8 +138,9 @@ def main():
     """
 
     params = util.get_params("./custom_scatter.yaml")
+    default_conf_filename = "scatter_defaults.yaml"
     try:
-        s = Scatter(params)
+        s = Scatter(params, default_conf_filename)
         s.save_to_file()
         s.show_in_browser()
     except ValueError as ve:
