@@ -95,8 +95,6 @@ def make_maps(image_dir, hemisphere,
               obstype_name, init_time, logger):
     cmap = 'nipy_spectral'
 
-    # Get a common logger to use throughout
-    logger = util.get_common_logger(config['log_level'], config['log_filename'])
     # pretty pictures
     logger.info(f'Plotting ice  {obstype_name}')
     plt.figure(dpi=150)
