@@ -13,10 +13,12 @@ Class Name: scatter.py
  """
 __author__ = 'Hank Fisher'
 
+from datetime import datetime
 import plotly.graph_objects as go
 import pandas as pd
-from metplotpy.plots.base_plot import BasePlot
+from xarray.util.generate_ops import render
 
+from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots import util
 
 
@@ -24,19 +26,20 @@ class Scatter(BasePlot):
     """  Generates a Plotly scatter plot,
 
     """
-    def __init__(self, parameters):
+    def __init__(self, parameters, default_conf):
         """ Creates a scatter plot, based on
             settings indicated by parameters.
 
             Args:
             @param parameters: dictionary containing user defined parameters
 
+
         """
 
-        default_conf_filename = "scatter_defaults.yaml"
+        default_conf_filename = default_conf
         # init common layout
         super().__init__(parameters, default_conf_filename)
-
+        self.logger = util.get_common_logger("info", "log.txt")
         # create figure
         # pylint:disable=assignment-from-no-return
         # Need to have a self.figure that we can pass along to
@@ -82,6 +85,8 @@ class Scatter(BasePlot):
     def _create_figure(self):
         """ Create a scatter plot from default and custom parameters"""
 
+        self.logger.info("Creating the scatter plots")
+        start = datetime.now()
         # pylint:disable=too-many-locals
         # Need to have all these local variables input
         # to Plotly to generate a scatter plot.
@@ -116,8 +121,10 @@ class Scatter(BasePlot):
 
 
         # Edit the final layout, set the plot title and axis labels
-        fig.update_layout(legend=self.get_legend(), title=self.get_title(), xaxis_title=self.get_xaxis_title(), yaxis_title=self.get_yaxis_title())
-
+        fig.update_layout(legend=self.get_legend(), title=self.get_title(), xaxis_title=self.get_xaxis_title(),
+                          yaxis_title=self.get_yaxis_title())
+        end = datetime.now()
+        self.logger.info(f"Finished creating scatter plots in {end - start} seconds ")
         return fig
 
 
@@ -128,9 +135,11 @@ def main():
         The location of the input data is defined in either the default or
         custom config file.
     """
+
     params = util.get_params("./custom_scatter.yaml")
+    default_conf_filename = "scatter_defaults.yaml"
     try:
-        s = Scatter(params)
+        s = Scatter(params, default_conf_filename)
         s.save_to_file()
         s.show_in_browser()
     except ValueError as ve:
