@@ -3,4 +3,4 @@ forecast_netcdf_var_name: "FCST_ice_coverage_SURFACE_FULL"
 obs_netcdf_var_name: "OBS_ice_coverage_SURFACE_FULL"
 diff_netcdf_var_name: "DIFF_ice_coverage_SURFACE_ice_coverage_SURFACE_FULL"
 log_level: info
-log_filename: "path-to-log/log.txt"
+log_filename: ./polar_ice_log.txt
