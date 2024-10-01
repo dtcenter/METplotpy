@@ -16,8 +16,9 @@ __author__ = 'Hank Fisher'
 from datetime import datetime
 import plotly.graph_objects as go
 import pandas as pd
-from plots.base_plot import BasePlot
+from xarray.util.generate_ops import render
 
+from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots import util
 
 
@@ -122,10 +123,8 @@ class Scatter(BasePlot):
         # Edit the final layout, set the plot title and axis labels
         fig.update_layout(legend=self.get_legend(), title=self.get_title(), xaxis_title=self.get_xaxis_title(),
                           yaxis_title=self.get_yaxis_title())
-
         end = datetime.now()
         self.logger.info(f"Finished creating scatter plots in {end - start} seconds ")
-
         return fig
 
 
