@@ -15,6 +15,8 @@ METplotpy Version 3.0.0-beta6 release notes (20241017)
 
   .. dropdown:: New Plots
 
+     None
+     
   .. dropdown:: Enhancements
 		
      * Improve logging for STIGS on remaining plots (`METplus-Internal#57 <https://github.com/dtcenter/METplus-internal/issues/57>`_)
@@ -26,6 +28,7 @@ METplotpy Version 3.0.0-beta6 release notes (20241017)
        
   .. dropdown:: Bugfixes
 
+     None
 
 METplotpy Version 3.0.0-beta5 release notes (20240630)
 ------------------------------------------------------
