@@ -10,6 +10,25 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Release Notes
 =======================
 
+METplotpy Version 3.0.0-beta6 release notes (20241017)
+------------------------------------------------------
+
+  .. dropdown:: New Plots
+
+     None
+     
+  .. dropdown:: Enhancements
+		
+     * Improve logging for STIGS on remaining plots (`METplus-Internal#57 <https://github.com/dtcenter/METplus-internal/issues/57>`_)
+     * Plot new TC-Diagnostics output from TC-Pairs (`#233 <https://github.com/dtcenter/METplotpy/issues/233>`_)
+       
+  .. dropdown:: Internal
+
+     * Improve unit test infrastructure and coverage (`#461 <https://github.com/dtcenter/METplotpy/issues/461>`_)
+       
+  .. dropdown:: Bugfixes
+
+     None
 
 METplotpy Version 3.0.0-beta5 release notes (20240630)
 ------------------------------------------------------
@@ -34,25 +53,16 @@ METplotpy Version 3.0.0-beta5 release notes (20240630)
 
      * Consider using only .yml or only .yaml extensions   (`#417 <https://github.com/dtcenter/METplotpy/issues/417>`_).
 
-
      * METplotpy:Code coverage statistics   (`#55 <https://github.com/dtcenter/METplus-Internal/issues/55>`_).
 
 
   .. dropdown:: Bugfixes
 
 
-
-
-
-
-
-
 METplotpy Version 3.0.0-beta4 release notes (20240417)
 ------------------------------------------------------
 
-
   .. dropdown:: New Plots
-
 
 
   .. dropdown:: Enhancements
