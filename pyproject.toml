@@ -33,6 +33,11 @@ testpaths = ["test"]
 
 [tool.coverage.run]
 source = ["metplotpy/plots"]
+omit = [
+    "config.py",
+    "config-3.py",
+    ]
+relative_files = true
 
 [tool.coverage.report]
 exclude_also = [
