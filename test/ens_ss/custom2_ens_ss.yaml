@@ -112,9 +112,9 @@ y2tlab_orient: 1
 y2tlab_perp: 1
 y2tlab_size: 1.0
 
-stat_input: ./ens_ss.data
-plot_filename: ./intermed_files/ens_ss.png
-points_path: ./intermed_files
+stat_input: !ENV '${TEST_DIR}/ens_ss.data'
+plot_filename: !ENV '${TEST_DIR}/intermed_files/ens_ss.png'
+points_path: !ENV '${TEST_DIR}/intermed_files'
 show_legend:
   -True
   -True

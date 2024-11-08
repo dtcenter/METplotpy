@@ -18,7 +18,6 @@ from datetime import datetime
 import re
 import csv
 
-import yaml
 import pandas as pd
 
 import plotly.graph_objects as go
@@ -59,15 +58,14 @@ class Contour(BasePlot):
         # config file that represents the BasePlot object (Line).
         self.config_obj = ContourConfig(self.parameters)
 
-
-        self.contour_logger = self.config_obj.logger
-        self.contour_logger.info(f"Start contour plot: {datetime.now()}")
+        self.logger = self.config_obj.logger
+        self.logger.info(f"Start contour plot: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
-        self.contour_logger.info("Consistency checking of config settings for colors,legends, etc.")
+        self.logger.info("Consistency checking of config settings for colors,legends, etc.")
         is_config_consistent = self.config_obj._config_consistency_check()
         if not is_config_consistent:
-            self.contour_logger.error("ValueError: The number of series defined by "
+            self.logger.error("ValueError: The number of series defined by "
                                  "series_val_1 is inconsistent with the number of "
                                  "settings required for describing each series. "
                                  "Please check  the number of your configuration"
@@ -81,15 +79,15 @@ class Contour(BasePlot):
                              " colors settings.")
 
         # Read in input data, location specified in config file
-        self.contour_logger.info(f"Begin reading input data: {datetime.now()}")
+        self.logger.info(f"Begin reading input data: {datetime.now()}")
         self.input_df = self._read_input_data()
 
         # Apply event equalization, if requested
 
         if self.config_obj.use_ee is True:
-            self.contour_logger.info(f"Begin event equalization: {datetime.now()} ")
+            self.logger.info(f"Begin event equalization: {datetime.now()} ")
             self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
-            self.contour_logger.info(f"Event equalization complete: {datetime.now()}")
+            self.logger.info(f"Event equalization complete: {datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -140,7 +138,7 @@ class Contour(BasePlot):
         """
         series_list = []
 
-        self.contour_logger.info(f"Generating series objects: {datetime.now()}")
+        self.logger.info(f"Generating series objects: {datetime.now()}")
         # add series for y1 axis
         num_series_y1 = len(self.config_obj.get_series_y())
         for i, name in enumerate(self.config_obj.get_series_y()):
@@ -150,7 +148,7 @@ class Contour(BasePlot):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
-        self.contour_logger.info(f"Finished creating series objects: {datetime.now()}")
+        self.logger.info(f"Finished creating series objects: {datetime.now()}")
         return series_list
 
     def _create_figure(self):
@@ -158,7 +156,7 @@ class Contour(BasePlot):
         Create a Contour plot from defaults and custom parameters
         """
 
-        self.contour_logger.info(f"Creating the figure: {datetime.now()}")
+        self.logger.info(f"Creating the figure: {datetime.now()}")
         # create and draw the plot
         self.figure = self._create_layout()
         self._add_xaxis()
@@ -201,7 +199,7 @@ class Contour(BasePlot):
                 'ticks': "outside"
             }
         )
-        self.contour_logger.info(f"Figure creating complete: {datetime.now()}")
+        self.logger.info(f"Figure creating complete: {datetime.now()}")
 
     def _draw_series(self, series: Series) -> None:
         """
@@ -209,7 +207,7 @@ class Contour(BasePlot):
 
         :param series: Contour series object with data and parameters
         """
-        self.contour_logger.info(f"Drawing the data: {datetime.now()}")
+        self.logger.info(f"Drawing the data: {datetime.now()}")
         line_width = self.config_obj.linewidth_list[series.idx]
         if self.config_obj.add_contour_overlay is False:
             line_width = 0
@@ -249,7 +247,7 @@ class Contour(BasePlot):
                 zauto=zauto
             )
         )
-        self.contour_logger.info(f"Finished drawing data: {datetime.now()}")
+        self.logger.info(f"Finished drawing data: {datetime.now()}")
 
     def _create_layout(self) -> Figure:
         """
@@ -390,7 +388,7 @@ class Contour(BasePlot):
         """
         saves series points to the files
         """
-        self.contour_logger.info(f"Writing output file: {datetime.now()}")
+        self.logger.info(f"Writing output file: {datetime.now()}")
 
         # Open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
@@ -425,7 +423,7 @@ class Contour(BasePlot):
                     file.writelines('\n')
                     file.writelines('\n')
                 file.close()
-        self.contour_logger.info(f"Finished writing output file: {datetime.now()}")
+        self.logger.info(f"Finished writing output file: {datetime.now()}")
 
 
 def main(config_filename=None):
@@ -437,29 +435,7 @@ def main(config_filename=None):
             Args:
                 @param config_filename: default is None, the name of the custom config file to apply
         """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    # with open("./custom_line_plot.yaml", 'r') as stream:
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    try:
-        plot = Contour(docs)
-        plot.save_to_file()
-        # plot.show_in_browser()
-        plot.write_html()
-        plot.write_output_file()
-        plot.contour_logger.info(f"Finished contour plot at {datetime.now()}")
-    except ValueError as val_er:
-        print(val_er)
+    util.make_plot(config_filename, Contour)
 
 
 if __name__ == "__main__":

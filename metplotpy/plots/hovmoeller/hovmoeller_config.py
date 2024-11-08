@@ -48,3 +48,4 @@ class HovmoellerConfig(Config):
         self.colorscale = self.get_config_value('colorscale')
         self.xaxis = self.get_config_value('xaxis')
         self.yaxis = self.get_config_value('yaxis')
+        self.create_html = self.get_config_value('create_html')

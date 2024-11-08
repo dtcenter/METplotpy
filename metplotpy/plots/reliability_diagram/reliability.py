@@ -19,7 +19,6 @@ import csv
 from datetime import datetime
 from typing import Union
 
-import yaml
 import numpy as np
 import pandas as pd
 
@@ -731,29 +730,7 @@ def main(config_filename=None):
             Args:
                 @param config_filename: default is None, the name of the custom config file to apply
         """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    # with open("./custom_line_plot.yaml", 'r') as stream:
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    try:
-        plot = Reliability(docs)
-        plot.save_to_file()
-        #plot.show_in_browser()
-        plot.write_html()
-        plot.write_output_file()
-        plot.logger.info(f"Finished generating reliability diagram: {datetime.now()}")
-    except ValueError as val_er:
-        print(val_er)
+    util.make_plot(config_filename, Reliability)
 
 
 if __name__ == "__main__":

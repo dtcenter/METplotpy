@@ -21,7 +21,6 @@ from matplotlib.colors import BoundaryNorm
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.font_manager import FontProperties
 import numpy as np
-import yaml
 import pandas as pd
 from metplotpy.plots.base_plot import BasePlot
 import metcalcpy.util.utils as calc_util
@@ -471,23 +470,10 @@ def main(config_filename=None):
             Returns:
 
     """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    # with open("./custom_performance_diagram.yaml", 'r') as stream:
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
+    params = util.get_params(config_filename)
     try:
         # create a performance diagram
-        PerformanceDiagram(docs)
+        PerformanceDiagram(params)
 
     except ValueError as value_error:
         print(value_error)

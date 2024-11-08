@@ -29,7 +29,7 @@ if [ -z ${SONAR_TOKEN+x} ]; then
 fi
 
 # Define the version string
-SONAR_PROJECT_VERSION=$(cat docs/version | cut -d'=' -f2 | tr -d '" ')
+SONAR_PROJECT_VERSION=$(cat metplotpy/_version.py | cut -d'=' -f2 | tr -d '" ')
 
 #
 # Define the $SONAR_REFERENCE_BRANCH as the

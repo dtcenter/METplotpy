@@ -1,5 +1,5 @@
-plot_filename: ./rel_hist.png
-stat_input: ./rel_hist.data
+plot_filename: !ENV '${TEST_DIR}/rel_hist.png'
+stat_input: !ENV '${TEST_DIR}/rel_hist.data'
 
 
 caption_align: 0.0

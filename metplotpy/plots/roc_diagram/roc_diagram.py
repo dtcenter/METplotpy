@@ -15,7 +15,6 @@ __author__ = 'Minna Win'
 
 import os
 from datetime import datetime
-import yaml
 import re
 import warnings
 # with warnings.catch_warnings():
@@ -564,22 +563,9 @@ def main(config_filename=None):
                 @param config_filename: default is None, the name of the custom config file to apply
             Returns:
         """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    # with open("./custom_performance_diagram.yaml", 'r') as stream:
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
+    params = util.get_params(config_filename)
     try:
-        r = ROCDiagram(docs)
+        r = ROCDiagram(params)
         r.save_to_file()
 
         r.write_html()

@@ -77,7 +77,7 @@ plot_disp:
 - 'True'
 - 'True'
 - 'True'
-plot_filename: ./CTC_ROC_summary.png
+plot_filename: !ENV '${TEST_DIR}/CTC_ROC_summary.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -123,7 +123,7 @@ show_signif:
 - 'False'
 - 'False'
 start_from_zero: 'False'
-stat_input: CTC_ROC_summary.data
+stat_input: !ENV '${TEST_DIR}/CTC_ROC_summary.data'
 summary_curve: median
 sync_yaxes: 'False'
 title: test title
@@ -174,5 +174,5 @@ ytlab_horiz: 0.5
 ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
-points_path: './intermed_files'
+points_path: !ENV '${TEST_DIR}/intermed_files'
 

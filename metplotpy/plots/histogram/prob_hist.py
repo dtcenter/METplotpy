@@ -15,7 +15,6 @@ __author__ = 'Tatiana Burek'
 
 from typing import Union
 from datetime import datetime
-import yaml
 
 from metplotpy.plots.histogram.hist import Hist
 from metplotpy.plots.histogram.hist_series import HistSeries
@@ -26,11 +25,9 @@ class ProbHist(Hist):
     """  Generates a Plotly  Probability Histogram
         or Histograms of probability integral transform plot for 1 or more traces
     """
-
+    LONG_NAME = 'probability histogram'
     config_obj_name = 'ProbHistogramConfig'
     series_obj = 'ProbHistSeries'
-
-
 
     def _get_x_points(self, series: HistSeries) -> list:
         x_points = []
@@ -66,30 +63,17 @@ def main(config_filename=None):
             Args:
                 @param config_filename: default is None, the name of the custom config file to apply
         """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
+    params = util.get_params(config_filename)
     try:
-
-        plot = ProbHist(docs)
+        plot = ProbHist(params)
         plot.save_to_file()
         # plot.show_in_browser()
         plot.write_html()
         plot.write_output_file()
         log_level = plot.get_config_value('log_level')
         log_filename = plot.get_config_value('log_filename')
-        prob_logger = util.get_common_logger(log_level, log_filename)
-        prob_logger.info(f"Finished probability histogram: {datetime.now()}")
+        logger = util.get_common_logger(log_level, log_filename)
+        logger.info(f"Finished probability histogram: {datetime.now()}")
     except ValueError as val_er:
         print(val_er)
 

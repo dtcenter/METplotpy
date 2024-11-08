@@ -14,7 +14,9 @@ plot_cross_section
 __author__ = 'David Fillmore'
 
 import os
+import sys
 import argparse
+import datetime
 import yaml
 import matplotlib
 import matplotlib.pyplot as plt
@@ -22,7 +24,7 @@ import numpy as np
 import xarray as xr
 
 matplotlib.use('Agg')
-
+from metplotpy.plots import util
 
 def plot_cross_section(config, data_set, args):
     """
@@ -44,7 +46,24 @@ def plot_cross_section(config, data_set, args):
     # Keep the use of 'ax' as this is commonly used
     # pylint: disable=invalid-name
 
+    # Use default log level of INFO if unspecified
+    if args.loglevel is not None:
+        log_level = args.loglevel
+    else:
+        log_level = "INFO"
 
+    plot_outdir = args.plotdir
+    start = datetime.datetime.now()
+    # Create the log file using the same name as the plot name with '_log' and in the
+    # same location.
+    try:
+       os.makedirs(plot_outdir, exist_ok=True)
+    except FileExistsError:
+        pass
+    log_filename = os.path.join(plot_outdir, config['plot_filename'] + '_log' + '.txt')
+    logger = util.get_common_logger(log_level, log_filename)
+
+    logger.info("Begin plotting the cross-section")
     plot_width = config['plot_size_width']
     plot_height = config['plot_size_height']
     fig, ax = plt.subplots(figsize=(plot_width, plot_height))
@@ -55,7 +74,6 @@ def plot_cross_section(config, data_set, args):
     # originally, axis=1 but the order of dimensions was modified
     # (Github issue:https://github.com/dtcenter/METcalcpy/issues/308)
     field_azi_mean = np.mean(field, axis=0)[:, :, itime]
-
 
     # originally, the transpose of the field_azi_mean was used, but this is no
     # longer necessary.  If the transpose is used, the dimensions are incorrect
@@ -80,9 +98,12 @@ def plot_cross_section(config, data_set, args):
                             config['y_tick_stepsize']))
     ax.set_yscale(config['y_scale'])
     ax.set_ylim(config['y_lim_start'], config['y_lim_end'])
-    plot_outdir = args.plotdir
+
+    logger.info("Saving cross-section plot")
     fig.savefig(os.path.join(plot_outdir, config['plot_filename'] + '.png'), dpi=config['plot_res'])
     fig.savefig(os.path.join(plot_outdir, config['plot_filename'] + '.pdf'))
+
+    logger.info(f"Finished generating cross-section plot in {datetime.datetime.now() - start} seconds")
 
 
 if __name__ == '__main__':
@@ -101,17 +122,26 @@ if __name__ == '__main__':
     parser.add_argument('--config', type=str,
                         required=True,
                         help='configuration file')
+    parser.add_argument('--loglevel', type=str,
+                        required=False)
 
     input_args = parser.parse_args()
 
     """
     Read YAML configuration file
     """
-    plotting_config = yaml.load(
-        open(input_args.config), Loader=yaml.FullLoader)
+    try:
+        plotting_config = yaml.load(
+            open(input_args.config), Loader=yaml.FullLoader)
+    except yaml.YAMLError as exc:
+        sys.exit(1)
 
     """
     Read dataset and call for plotting
     """
-    input_data = xr.open_dataset(os.path.join(input_args.datadir, input_args.filename))
+    try:
+        input_data = xr.open_dataset(os.path.join(input_args.datadir, input_args.filename))
+    except (ValueError, FileNotFoundError, PermissionError):
+        sys.exit(1)
     plot_cross_section(plotting_config, input_data, input_args)
+

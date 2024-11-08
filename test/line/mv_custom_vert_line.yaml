@@ -102,7 +102,7 @@ plot_ci:
 plot_disp:
 - 'True'
 - 'True'
-plot_filename: ./vert_line_plot.png
+plot_filename: !ENV '${TEST_DIR}/vert_line_plot.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -114,7 +114,7 @@ plot_width: 11.0
 # that is used by METviewer (created when dump_points_1 is set to True)
 # if dump_points_1 is True and this is uncommented, the points1 file
 # will be saved in the default location (i.e. where the input data file is stored).
-points_path: ./intermed_files
+points_path: !ENV '${TEST_DIR}/intermed_files'
 random_seed: null
 series_line_style:
 - '-'
@@ -140,7 +140,7 @@ show_nstats: 'True'
 show_signif:
 - 'True'
 - 'True'
-stat_input: ./vert_line_plot_data.txt
+stat_input: !ENV '${TEST_DIR}/vert_line_plot_data.txt'
 sync_yaxes: 'False'
 title: test title
 title_align: 0.5

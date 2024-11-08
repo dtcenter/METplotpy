@@ -69,7 +69,7 @@ plot_caption: ''
 plot_disp:
 - 'True'
 - 'True'
-plot_filename: ./revision_series.png
+plot_filename: !ENV '${TEST_DIR}/revision_series.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -95,7 +95,7 @@ series_val_1:
   - NoahMPv3.5.1_d01
 
 start_from_zero: 'False'
-stat_input: ./revision_series.data
+stat_input: !ENV '${TEST_DIR}/revision_series.data'
 title: Revision series
 title_align: 0.5
 title_offset: -2

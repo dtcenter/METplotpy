@@ -20,7 +20,6 @@ import os
 from typing import Union
 from operator import add
 from itertools import chain
-import yaml
 import pandas as pd
 
 import plotly.graph_objects as go
@@ -57,13 +56,13 @@ class Box(BasePlot):
         # config file that represents the BasePlot object (Box).
         self.config_obj = BoxConfig(self.parameters)
 
-        self.box_logger = self.config_obj.logger
+        self.logger = self.config_obj.logger
 
-        self.box_logger.info(f"Start bar plot at {datetime.now()}")
+        self.logger.info(f"Start bar plot at {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
         is_config_consistent = self.config_obj._config_consistency_check()
-        self.box_logger.info("Checking consistency of user_legends, colors, etc...")
+        self.logger.info("Checking consistency of user_legends, colors, etc...")
         if not is_config_consistent:
             raise ValueError("The number of series defined by series_val_1/2 and derived curves is"
                              " inconsistent with the number of settings"
@@ -77,9 +76,9 @@ class Box(BasePlot):
 
         # Apply event equalization, if requested
         if self.config_obj.use_ee is True:
-            self.box_logger.info(f"Start event equalization: {datetime.now()}")
+            self.logger.info(f"Start event equalization: {datetime.now()}")
             self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
-            self.box_logger.info(f"Finish event equalization: {datetime.now()}")
+            self.logger.info(f"Finish event equalization: {datetime.now()}")
 
         # Create a list of series objects.
         # Each series object contains all the necessary information for plotting,
@@ -129,7 +128,7 @@ class Box(BasePlot):
 
 
         """
-        self.box_logger.info(f"Begin generating series objects: "
+        self.logger.info(f"Begin generating series objects: "
                                     f"{datetime.now()}")
         series_list = []
 
@@ -173,14 +172,14 @@ class Box(BasePlot):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
-        self.box_logger.info(f"End generating series objects: "
+        self.logger.info(f"End generating series objects: "
                                     f"{datetime.now()}")
 
         return series_list
 
     def _create_figure(self):
         """ Create a box plot from default and custom parameters"""
-        self.box_logger.info(f"Begin creating the figure: "
+        self.logger.info(f"Begin creating the figure: "
                                     f"{datetime.now()}")
         self.figure = self._create_layout()
         self._add_xaxis()
@@ -230,7 +229,7 @@ class Box(BasePlot):
 
         self.figure.update_layout(boxmode='group')
 
-        self.box_logger.info(f"End creating the figure: "
+        self.logger.info(f"End creating the figure: "
                                     f"{datetime.now()}")
 
     def _draw_series(self, series: BoxSeries) -> None:
@@ -240,7 +239,7 @@ class Box(BasePlot):
         :param series: Line series object with data and parameters
         """
 
-        self.box_logger.info(f"Begin drawing the boxes on the plot for "
+        self.logger.info(f"Begin drawing the boxes on the plot for "
                                     f"{series.series_name}: "
                                     f"{datetime.now()}")
         # defaults markers and colors for the regular box plot
@@ -284,7 +283,7 @@ class Box(BasePlot):
             secondary_y=series.y_axis != 1
         )
 
-        self.box_logger.info(f"End drawing the boxes on the plot: "
+        self.logger.info(f"End drawing the boxes on the plot: "
                                     f"{datetime.now()}")
 
     @staticmethod
@@ -299,7 +298,7 @@ class Box(BasePlot):
         :param yaxis_max: previously calculated max value
         :return: a tuple with calculated min/max
         """
-        self.box_logger.info(f"Begin finding min and max CI values: "
+        self.logger.info(f"Begin finding min and max CI values: "
                                     f"{datetime.now()}")
         # calculate series upper and lower limits of CIs
         indexes = range(len(series.series_points['dbl_med']))
@@ -311,7 +310,7 @@ class Box(BasePlot):
         if yaxis_min is None or yaxis_max is None:
             return min(low_range), max(upper_range)
 
-        self.box_logger.info(f"End finding min and max CI values: "
+        self.logger.info(f"End finding min and max CI values: "
                                     f"{datetime.now()}")
 
         return min(chain([yaxis_min], low_range)), max(chain([yaxis_max], upper_range))
@@ -577,7 +576,7 @@ class Box(BasePlot):
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
 
-            self.box_logger.info(f"End writing HTML file: "
+            self.logger.info(f"End writing HTML file: "
                                         f"{datetime.now()}")
 
     def write_output_file(self) -> None:
@@ -637,29 +636,7 @@ def main(config_filename=None):
         Args:
                 @param config_filename: default is None, the name of the custom config file to apply
     """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    # with open("./custom_box.yaml", 'r') as stream:
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    try:
-        plot = Box(docs)
-        plot.save_to_file()
-        #plot.show_in_browser()
-        plot.write_html()
-        plot.write_output_file()
-        plot.box_logger.info(f"Finished box plot at {datetime.now()}")
-    except ValueError as ve:
-        print(ve)
+    util.make_plot(config_filename, Box)
 
 
 if __name__ == "__main__":

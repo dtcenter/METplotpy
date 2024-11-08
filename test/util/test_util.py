@@ -1,7 +1,10 @@
+import os
 import pandas as pd
 
 import metplotpy.plots.util as util
 import gc
+
+cwd = os.path.dirname(__file__)
 
 
 def test_is_threshold():
@@ -14,20 +17,14 @@ def test_is_threshold():
     not_thresholds = [1.0, 11, 77]
     mixed_thresholds = ['==0.0', '> 11', 21, '>= .5', '== 3']
 
-    if not util.is_threshold_value(not_thresholds):
-        assert True
-
-    if util.is_threshold_value(mixed_thresholds):
-        assert True
+    assert not any(util.is_threshold_value(not_thresholds))
+    assert any(util.is_threshold_value(mixed_thresholds))
 
     # test series
     series_not_thresholds = pd.Series(not_thresholds, range(len(not_thresholds)))
     series_mixed_thresholds = pd.Series(mixed_thresholds, range(len(mixed_thresholds)))
-    if not util.is_threshold_value(series_not_thresholds):
-        assert True
-
-    if util.is_threshold_value(series_mixed_thresholds):
-        assert True
+    assert not any(util.is_threshold_value(series_not_thresholds))
+    assert any(util.is_threshold_value(series_mixed_thresholds))
 
 
 def test_sort_threshold_values():
@@ -41,8 +38,8 @@ def test_sort_threshold_values():
 
     sorted_list = util.sort_threshold_values(threshold_list)
 
-    for idx, sorted in enumerate(sorted_list):
-        if sorted != expected_list[idx]:
+    for idx, sorted_val in enumerate(sorted_list):
+        if sorted_val != expected_list[idx]:
             assert False
 
 
@@ -57,8 +54,8 @@ def test_sort_threshold_values_whitespace():
 
     sorted_list = util.sort_threshold_values(threshold_list)
 
-    for idx, sorted in enumerate(sorted_list):
-        if sorted != expected_list[idx]:
+    for idx, sorted_val in enumerate(sorted_list):
+        if sorted_val != expected_list[idx]:
             assert False
 
 
@@ -73,9 +70,10 @@ def test_sort_threshold_values_floats():
 
     sorted_list = util.sort_threshold_values(threshold_list)
 
-    for idx, sorted in enumerate(sorted_list):
-        if sorted != expected_list[idx]:
+    for idx, sorted_val in enumerate(sorted_list):
+        if sorted_val != expected_list[idx]:
             assert False
+
 
 def test_is_thresh():
     """ Verify that the regular expression used to test
@@ -90,21 +88,17 @@ def test_is_thresh():
     counter = 0
     expected_none = len(no_thresh_cols)
     for cur_col in no_thresh_cols:
-       if not util.is_thresh_column(cur_col):
-           counter += 1
+        if not util.is_thresh_column(cur_col):
+            counter += 1
 
-    if counter == expected_none:
-        assert True
+    assert counter == expected_none
 
     counter = 0
     expected_all = len(thresh_cols)
     for cur_col in thresh_cols:
         if util.is_thresh_column(cur_col):
             counter +=1
-    if counter == expected_all:
-        assert True
-    else:
-        assert False
+    assert counter == expected_all
 
     expected_found = 2
     counter = 0
@@ -112,10 +106,7 @@ def test_is_thresh():
         if util.is_thresh_column(cur_col):
             counter +=1
 
-    if counter == expected_found:
-        assert True
-    else:
-        assert False
+    assert counter == expected_found
 
 
 def test_filter_by_fixed_vars():
@@ -125,7 +116,6 @@ def test_filter_by_fixed_vars():
 
 
     """
-
     settings_dict = {'fcst_thresh': ['NA', '>0.0', '>=0.254'], 'obtype': ['CCPA'],
                  'vx_mask': ['CONUS'], 'fcst_init_beg': ['2023-06-24 12:00:00']}
 
@@ -135,7 +125,7 @@ def test_filter_by_fixed_vars():
                   "vx_mask in ('CONUS')",
                   "fcst_init_beg in ('2023-06-24 12:00:00')"]
 
-    input_df = pd.read_csv("./full_thresh_data.txt", sep='\t')
+    input_df = pd.read_csv(f"{cwd}/full_thresh_data.txt", sep='\t')
     filtered_df = util.filter_by_fixed_vars(input_df, settings_dict)
     expected_df = input_df.copy(deep=True)
 
@@ -146,19 +136,16 @@ def test_filter_by_fixed_vars():
     # Verify that the expected and filtered dataframes have the same dimensions
     assert filtered_df.shape == expected_df.shape
 
-
     filtered_list = filtered_df['fcst_thresh'].to_list()
     expected_list = expected_df['fcst_thresh'].to_list()
 
     for filtered in filtered_list:
        assert filtered in expected_list
 
-
     # Clean up previous dataframes
     del intermed_df
     del expected_df
     gc.collect()
-
 
     # Now test when there is only one value in fcst_thresh and it is NA
     settings_dict2 = {'fcst_thresh': ['NA'], 'obtype': ['CCPA'],
@@ -177,7 +164,6 @@ def test_filter_by_fixed_vars():
         expected_df = intermed_df.copy(deep=True)
 
     assert filtered_df.shape == expected_df.shape
-
 
     filtered_list = filtered_df['fcst_thresh'].to_list()
     expected_list = expected_df['fcst_thresh'].to_list()

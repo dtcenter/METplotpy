@@ -1,5 +1,5 @@
-stat_input: ./rank_hist.data
-plot_filename: ./rank_hist.png
+stat_input: !ENV '${TEST_DIR}/rank_hist.data'
+plot_filename: !ENV '${TEST_DIR}/rank_hist.png'
 
 caption_align: 0.0
 caption_col: '#333333'

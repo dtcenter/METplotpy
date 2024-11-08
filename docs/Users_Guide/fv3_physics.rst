@@ -9,9 +9,14 @@ and spatial domain. Tendencies are partitioned into physics parameterizations an
 dynamics. Physics parameterizations include schemes like deep convection, convective 
 gravity wave drag, short wave radiation, planetary boundary layer, microphysics, 
 and others listed below. Non-physics tendencies (or dynamics) are due to horizontal
-and vertical motion. The residual (which should be zero) is the difference between
+and vertical motion (advection). 
+
+residual = all tendencies - actual tendency
+
+The residual (which should be close to zero) is the 
+difference between
 the actual change in the state variable over the requested time window and the
-expected change due to physics parameterizations and dynamics tendencies. One can plot
+combined change due to all physics parameterizations and dynamics tendencies. One can plot
 a single tendency component at multiple pressure levels or plot all tendency components
 at a single pressure level. Plan views (horizontal cross sections), vertical profiles,
 and difference plots are also available. 
@@ -19,7 +24,7 @@ and difference plots are also available.
 Required Packages:
 ==================
 
-* cartopy (0.20.3 only)
+* cartopy
 
 * matplotlib
 
@@ -47,80 +52,81 @@ Save this file in a directory where you have read and write permissions, such as
 $WORKING_DIR/data/fv3_physics_tend, where $WORKING_DIR is the path to the directory where you will save
 input data.
 
-For additional details see `grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
+For additional details see 
+`grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
 
 
-Available Tendency Variables
-----------------------------
+Default tendency variable names
+-------------------------------
 
-A small description of each tendency variable and their nicknames are shown below. Some  
-tendencies do not apply to all four state variables, so these cells are blank. 
-
-+----------------------------+-------------+-------------------+-------------+-------------+
-|           tendency         | temperature | specific humidity |   u-wind    |   v-wind    |
-+============================+=============+===================+=============+=============+
-|convective gravity wave drag|       congwd|                   |      congwd |      congwd |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|       deep convection      |      deepcnv|         deepcnv   |      deepcnv|      deepcnv|
-+----------------------------+-------------+-------------------+-------------+-------------+
-|     long wave radiation    |        lw   |                   |             |             |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|        microphysics        |        mp   |           mp      |        mp   |         mp  |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|orographic gravity wave drag|       orogwd|                   |      orogwd |      orogwd |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|  planetary boundary layer  |        pbl  |           pbl     |        pbl  |        pbl  |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|      Rayleigh damping      |       rdamp |                   |       rdamp |       rdamp |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|     shallow convection     |      shalcnv|         shalcnv   |      shalcnv|      shalcnv|
-+----------------------------+-------------+-------------------+-------------+-------------+
-|    short wave radiation    |        sw   |                   |             |             |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|  total physics (all above) |       phys  |           phys    |      phys   |        phys |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|           dynamics         |       nophys|          nophys   |       nophys|       nophys|
-+----------------------------+-------------+-------------------+-------------+-------------+
-| state variable at validtime|     tmp     |        spfh       |    ugrd     |    vgrd     |
-+----------------------------+-------------+-------------------+-------------+-------------+
-| actual change in state var |    dtmp     |       dspfh       |   dugrd     |   dvgrd     |
-+----------------------------+-------------+-------------------+-------------+-------------+
-
-
-
-
-The expected names of the netCDF variables in the history file are shown below. If your history 
-file is different, one can change them in YAML config file 
-*$METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
+Default tendency variable names are below. The tendencies that are available depend on the 
+physics suite that the user selects when running FV3; more specifically, its contents are 
+determined by the diag_table file that the user sets up. The history file that we
+use our example is for a specific diag_table and so may change with different FV3 configurations. 
+The user must make sure the names in the configuration file 
+*$METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml*
+match the names used in fv3_history.nc for their case.
+Some tendencies do not apply to all four state variables, so these cells are left blank.
 
 **NOTE**: *$METPLOTPY_BASE* is the directory where the METplotpy code is saved (e.g. */path/to/user/dir/METplotpy*).
 
-+----------------------------+-------------+-------------------+-------------+-------------+
-|           tendency         | temperature | specific humidity |   u-wind    |   v-wind    |
-+============================+=============+===================+=============+=============+
-|convective gravity wave drag| dt3dt_congwd|                   |du3dt_congwd |dv3dt_congwd |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|       deep convection      |dt3dt_deepcnv|   dq3dt_deepcnv   |du3dt_deepcnv|dv3dt_deepcnv|
-+----------------------------+-------------+-------------------+-------------+-------------+
-|     long wave radiation    |  dt3dt_lw   |                   |             |             |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|        microphysics        |  dt3dt_mp   |     dq3dt_mp      |  du3dt_mp   |   dv3dt_mp  |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|orographic gravity wave drag| dt3dt_orogwd|                   |du3dt_orogwd |dv3dt_orogwd |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|  planetary boundary layer  |  dt3dt_pbl  |     dq3dt_pbl     |  du3dt_pbl  |  dv3dt_pbl  |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|      Rayleigh damping      | dt3dt_rdamp |                   | du3dt_rdamp | dv3dt_rdamp |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|     shallow convection     |dt3dt_shalcnv|   dq3dt_shalcnv   |du3dt_shalcnv|dv3dt_shalcnv|
-+----------------------------+-------------+-------------------+-------------+-------------+
-|    short wave radiation    |  dt3dt_sw   |                   |             |             |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|  total physics (all above) | dt3dt_phys  |     dq3dt_phys    |du3dt_phys   |  dv3dt_phys |
-+----------------------------+-------------+-------------------+-------------+-------------+
-|           dynamics         | dt3dt_nophys|    dq3dt_nophys   | du3dt_nophys| dv3dt_nophys|
-+----------------------------+-------------+-------------------+-------------+-------------+
 
++-----------------------------+-------------+-------------------+-------------+-------------+
+|      State Variable         | temperature | specific humidity |   u-wind    |   v-wind    |
++=============================+=============+===================+=============+=============+
+|       expected name         |     tmp     |        spfh       |    ugrd     |    vgrd     |
++-----------------------------+-------------+-------------------+-------------+-------------+
+
+Tendency variables:
+
++-----------------------------+-------------------+-------------------+----------------+----------------+
+|     Tendency  Variable      |    temperature    | specific humidity |     u-wind     |     v-wind     |
++=============================+===================+===================+================+================+
+| convective gravity wave drag| dtend_temp_cnvgwd |                   | dtend_u_cnvgwd | dtend_v_cnvgwd |
++-----------------------------+-------------------+-------------------+----------------+----------------+
+|        deep convection      | dtend_temp_deepcnv| dtend_qv_deepcnv  | dtend_u_deepcnv| dtend_v_deepcnv|
++-----------------------------+-------------------+-------------------+----------------+----------------+
+|      long wave radiation    |   dtend_temp_lw   |                   |                |                |
++-----------------------------+-------------------+-------------------+----------------+----------------+
+|         microphysics        |   dtend_temp_mp   |   dtend_qv_mp     |                |                |
++-----------------------------+-------------------+-------------------+----------------+----------------+
+| orographic gravity wave drag| dtend_temp_orogwd |                   | dtend_u_orogwd | dtend_v_orogwd |
++-----------------------------+-------------------+-------------------+----------------+----------------+
+|   planetary boundary layer  |   dtend_temp_pbl  |   dtend_qv_pbl    |  dtend_u_pbl   |  dtend_v_pbl   |
++-----------------------------+-------------------+-------------------+----------------+----------------+
+|       Rayleigh damping      |  dtend_temp_rdamp |                   | dtend_u_rdamp  | dtend_v_rdamp  |
++-----------------------------+-------------------+-------------------+----------------+----------------+
+|      shallow convection     | dtend_temp_shalcnv| dtend_qv_shalcnv  | dtend_u_shalcnv| dtend_v_shalcnv|
++-----------------------------+-------------------+-------------------+----------------+----------------+
+|     short wave radiation    |   dtend_temp_sw   |                   |                |                |
++-----------------------------+-------------------+-------------------+----------------+----------------+
+|   all physics tendencies    |  dtend_temp_phys  |   dtend_qv_phys   |  dtend_u_phys  |  dtend_v_phys  |
++-----------------------------+-------------------+-------------------+----------------+----------------+
+|     dynamics (advection)    | dtend_temp_nophys |  dtend_qv_nophys  | dtend_u_nophys | dtend_v_nophys |
++-----------------------------+-------------------+-------------------+----------------+----------------+
+
+
+Derived tendency variables that show up in plots:
+
++-----------------------------+-------------------+-------------------+----------------+----------------+
+|      Derived Variable       |    temperature    | specific humidity |     u-wind     |     v-wind     |
++=============================+===================+===================+================+================+
+|     all phys and nophys     |        all        |        all        |       all      |      all       |
++-----------------------------+-------------------+-------------------+----------------+----------------+
+|       actual tendency       |      actual       |       actual      |     actual     |     actual     |
++-----------------------------+-------------------+-------------------+----------------+----------------+
+| residual tend. (all-actual) |      resid        |       resid       |     resid      |     resid      |
++-----------------------------+-------------------+-------------------+----------------+----------------+
+
+If time window overlaps initialization time
+-------------------------------------------
+
+The history file does not necessarily have the temperature, moisture, or wind at the exact
+time of model initialization. It is usally the next timestep (e.g. 180 seconds later). 
+This means you cannot derive the actual change in temperature starting at the model initialization
+time. You must choose a later valid time and/or a shorter time window that does not overlap
+the initialization time. In other words, it is a problem if your model initialization time is 0z, your
+valid time is 1z and your time window is one hour.
 
 Example
 =======
@@ -149,7 +155,8 @@ There is a YAML config file located in
 Run from the Command Line
 =========================
 
-To generate example tendency plots using settings in the **fv3_physics_defaults.yaml** configuration file, perform the following:
+To generate example tendency plots using settings in the **fv3_physics_defaults.yaml** 
+configuration file, perform the following:
 
 .. code-block:: bash
 
@@ -164,8 +171,9 @@ Plan View
 ::
 
     usage: planview_fv3.py [-h] [-d] [--method {nearest,linear,loglinear}] [--ncols NCOLS]
-                           [--nofineprint] [-o OFILE] [-p PFULL [PFULL ...]] [-s SHP]
-                           [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+                           [--nofineprint] [--norobust] [-o OFILE] [-p PFULL [PFULL ...]]
+                           [-s SHP] [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+                           [--vmin VMIN] [--vmax VMAX]
                            config historyfile gridfile statevariable fill
 
     Plan view of FV3 diagnostic tendency
@@ -185,6 +193,8 @@ Plan View
       --ncols NCOLS         number of columns (default: None)
       --nofineprint         Don't add metadata and created by date (for comparing images)
                             (default: False)
+      --norobust            compute colormap range with extremes, not 2nd and 98th
+                            percentiles (default: False)
       -o OFILE, --ofile OFILE
                             name of output image file (default: None)
       -p PFULL [PFULL ...], --pfull PFULL [PFULL ...]
@@ -198,13 +208,16 @@ Plan View
                             time window in hours (default: 3)
       -v VALIDTIME, --validtime VALIDTIME
                             valid time (default: None)
+      --vmin VMIN           color bar minimum (overrides robust=True) (default: None)
+      --vmax VMAX           color bar maximum (overrides robust=True) (default: None)
 
                         
-Generate a plan view of all tendencies at 500 hPa:
+Generate a plan view of all tendencies at 500 hPa for the 1-hour time window ending 20190615 20z:
 
 .. code-block:: bash
 
-   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -p 500 -t 1 -v 20190504T14 --nofineprint
+   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl \
+   -p 500 -t 1 -v 20190615T20 --nofineprint
 
 .. image:: figure/tmp_500hPa.png
 
@@ -212,7 +225,8 @@ Generate a plan view of PBL tendency at default pressure levels:
 
 .. code-block:: bash
 
-   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl -t 1 -v 20190504T13 --nofineprint
+   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl \
+   -t 1 -v 20190615T20 --nofineprint
 
 .. image:: figure/tmp_pbl.png
 
@@ -227,6 +241,7 @@ Vertical Profile
 
     usage: vert_profile_fv3.py [-h] [-d] [--nofineprint] [-o OFILE] [--resid] [-s SHP]
                                [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+                               [--xmin XMIN] [--xmax XMAX]
                                config historyfile gridfile statevariable
 
     Vertical profile of FV3 diagnostic tendencies
@@ -251,12 +266,16 @@ Vertical Profile
                             time window in hours (default: 3)
       -v VALIDTIME, --validtime VALIDTIME
                             valid time (default: None)
-   
-Generate vertical profile of temperature tendencies averaged over the mid-CONUS region:
+      --xmin XMIN           x-axis minimum (default: None)
+      --xmax XMAX           x-axis maximum (default: None)
+       
+Generate vertical profile of temperature tendencies averaged over the central US. Plot residual
+tendency and its components. Limit the x-axis range with --xmin and --xmax.
 
 .. code-block:: bash
 
-   python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 2 -v 20190504T14 -s $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend/shapefiles/MID_CONUS --nofineprint
+    python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp \
+    -t 1 -v 20190615T20 -s shapefiles/MID_CONUS --resid --xmin -0.0005 --xmax 0.0004 --nofineprint
 
 .. image:: figure/tmp.vert_profile.MID_CONUS.png
 
@@ -267,14 +286,14 @@ Vertical Cross Section
 
    python cross_section_vert.py -h 
    
-Usage::
+::
 
-    usage: cross_section_vert.py [-h] [-d] [--dindex DINDEX] [--ncols NCOLS] [--nofineprint]
-                                 [-o OFILE] [-s START START] [-e END END]
-                                 [--subtract SUBTRACT] [-t TWINDOW] [-v VALIDTIME]
+    usage: cross_section_vert.py [-h] [-d] [--ncols NCOLS] [--nofineprint] [--norobust] [-o OFILE]
+                                 [-s START START] [-e END END] [--subtract SUBTRACT] [-t TWINDOW]
+                                 [-v VALIDTIME] [--vmin VMIN] [--vmax VMAX]
                                  config historyfile gridfile statevariable
 
-    Vertical cross section of FV3 diagnostic tendency
+    Vertical cross section of FV3 diagnostic tendencies
 
     positional arguments:
       config                yaml configuration file
@@ -285,29 +304,33 @@ Usage::
     optional arguments:
       -h, --help            show this help message and exit
       -d, --debug
-      --dindex DINDEX       tick and gridline interval along cross section (default: 20)
       --ncols NCOLS         number of columns (default: None)
-      --nofineprint         Don't add metadata and created by date (for comparing images)
-                            (default: False)
+      --nofineprint         Don't add metadata and created by date (for comparing images) (default: False)
+      --norobust            compute colormap range with extremes, not 2nd and 98th percentiles (default:
+                            False)
       -o OFILE, --ofile OFILE
                             name of output image file (default: None)
       -s START START, --start START START
-                            start point (default: (28, -115))
+                            start point lat lon (default: (28, -115))
       -e END END, --end END END
-                            end point (default: (30, -82))
+                            end point lat lon (default: (30, -82))
       --subtract SUBTRACT   FV3 history file to subtract (default: None)
       -t TWINDOW, --twindow TWINDOW
                             time window in hours (default: 3)
       -v VALIDTIME, --validtime VALIDTIME
                             valid time (default: None)
-                         
-Generate vertical cross section from 32°N 115°W to 34°N 82°W:
+      --vmin VMIN           color bar minimum (overrides robust=True) (default: None)
+      --vmax VMAX           color bar maximum (overrides robust=True) (default: None)
+
+Generate vertical cross section of u-wind tendencies from 28°N 120°W to 26°N 75°W over one-hour
+time window ending 20z June 15, 2019.
 
 .. code-block:: bash
 
-   python cross_section_vert.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 2 -v 20190504T14 -s 32 -115 -e 34 -82 --nofineprint
+    python cross_section_vert.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc ugrd \
+    -t 1 -v "2019-06-15 20" -s 28 -120 -e 26 -75 --nofineprint
 
-.. image:: figure/tmp_32.0N-115.0E-34.0N-82.0E.png
+.. image:: figure/ugrd_28.0N-120.0E-26.0N-75.0E.png
 
 Difference Plot
 ---------------
@@ -317,7 +340,8 @@ Put file you want to subtract after the --subtract argument:
 
 .. code-block:: bash
 
-   python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp -t 1 --subtract $WORKING_DIR/fv3_history.nc --nofineprint
+   python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp \
+   -t 1 --subtract $WORKING_DIR/fv3_history.nc --resid --nofineprint
 
 .. image:: figure/tmp.vert_profile.png
 

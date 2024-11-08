@@ -87,7 +87,7 @@ plot_disp:
 - 'True'
 - 'True'
 - 'True'
-plot_filename: ./line_groups.png
+plot_filename: !ENV '${TEST_DIR}/line_groups.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -125,7 +125,7 @@ show_signif:
 - 'False'
 - 'False'
 - 'False'
-stat_input: ./line_groups.data
+stat_input: !ENV '${TEST_DIR}/line_groups.data'
 sync_yaxes: 'False'
 title: test title
 title_align: 0.5

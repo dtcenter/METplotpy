@@ -10,12 +10,59 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Release Notes
 =======================
 
-METplotpy Version 3.0.0-beta4 release notes (20240417)
+METplotpy Version 3.0.0-beta6 release notes (20241018)
+------------------------------------------------------
+
+  .. dropdown:: New Plots
+
+     None
+     
+  .. dropdown:: Enhancements
+		
+     * Improve logging for STIGS on remaining plots (`METplus-Internal#57 <https://github.com/dtcenter/METplus-internal/issues/57>`_)
+     * Plot new TC-Diagnostics output from TC-Pairs (`#233 <https://github.com/dtcenter/METplotpy/issues/233>`_)
+       
+  .. dropdown:: Internal
+
+     * Improve unit test infrastructure and coverage (`#461 <https://github.com/dtcenter/METplotpy/issues/461>`_)
+       
+  .. dropdown:: Bugfixes
+
+     None
+
+METplotpy Version 3.0.0-beta5 release notes (20240630)
 ------------------------------------------------------
 
 
   .. dropdown:: New Plots
 
+
+  .. dropdown:: Enhancements
+
+
+     * **Enhance TCMPR plotter to read TCDiag lines and filter by one column and plot another column**  (`#342 <https://github.com/dtcenter/METplotpy/issues/342>`_).
+
+     * Create documentation and testing for TCMPR plotting code  (`#383 <https://github.com/dtcenter/METplotpy/issues/383>`_).
+
+     * Update fv3_physics_tend for new FV3 output format  (`#380 <https://github.com/dtcenter/METplotpy/issues/380>`_).
+
+  .. dropdown:: Internal
+
+
+     * Update GitHub issue and pull request templates to reflect the current development workflow details  (`#388 <https://github.com/dtcenter/METplotpy/issues/388>`_).
+
+     * Consider using only .yml or only .yaml extensions   (`#417 <https://github.com/dtcenter/METplotpy/issues/417>`_).
+
+     * METplotpy:Code coverage statistics   (`#55 <https://github.com/dtcenter/METplus-Internal/issues/55>`_).
+
+
+  .. dropdown:: Bugfixes
+
+
+METplotpy Version 3.0.0-beta4 release notes (20240417)
+------------------------------------------------------
+
+  .. dropdown:: New Plots
 
 
   .. dropdown:: Enhancements

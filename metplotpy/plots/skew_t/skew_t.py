@@ -11,20 +11,15 @@ import os
 import re
 import logging
 import warnings
-import shutil
+from datetime import datetime
 
 import pandas
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from metpy.plots import SkewT
-import yaml
 
 from metplotpy.plots import util
-
-logger = logging.getLogger(__name__)
-# Suppress debug messages from Matplotlib
-logging.getLogger(name='matplotlib').setLevel(logging.ERROR)
 
 """
   Generate a skew T-log P diagram from TC Diag output
@@ -37,7 +32,7 @@ logging.getLogger(name='matplotlib').setLevel(logging.ERROR)
 warnings.filterwarnings(action='ignore', category=UserWarning)
 
 
-def extract_sounding_data(input_file):
+def extract_sounding_data(input_file, output_directory):
     with open(input_file) as infile:
         data = infile.readlines()
 
@@ -64,12 +59,14 @@ def extract_sounding_data(input_file):
 
     # Save the sounding data into a text file, which will then be converted into a
     # pandas dataframe.
-    with open("sounding_data.dat", "w") as txt_file:
+    sounding_data_file = os.path.join(output_directory, 'sounding_data.dat')
+    os.makedirs(output_directory, exist_ok=True)
+    with open(sounding_data_file, "w") as txt_file:
         for line in sounding_data:
             txt_file.write("".join(line) + "\n")
 
     # Read in the current sounding data file, replacing any 9999 values with NaN.
-    df_raw: pandas.DataFrame = pd.read_csv("sounding_data.dat", delim_whitespace=True,
+    df_raw: pandas.DataFrame = pd.read_csv(sounding_data_file, delim_whitespace=True,
                                            skiprows=1,
                                            na_values=['9999'])
 
@@ -442,7 +439,7 @@ def retrieve_height(sounding_data: pd.DataFrame, hour_of_interest: str,
     return hgt_by_hour
 
 
-def check_for_all_na(soundings_df: pandas.DataFrame) -> bool:
+def check_for_all_na(soundings_df: pandas.DataFrame, logger) -> bool:
     ''' Checks if the file consists entirely of the fill/missing data value of 9999.
 
         Args:
@@ -486,7 +483,7 @@ def check_list_for_all_nan(input_list: list) -> bool:
         return False
 
 
-def create_skew_t(input_file: str, config: dict) -> None:
+def create_skew_t(input_file: str, config: dict, logger: logging) -> None:
     '''
 
       Create a skew T diagram from the TC Diag output. Check for a file that is
@@ -499,12 +496,11 @@ def create_skew_t(input_file: str, config: dict) -> None:
                       indicated in the configuration file.
           config:  A dictionary representation of the settings and their values
                    in the configuration file.
+          logger:  A common logger
 
      Return:
            None, generate plots as png files in the specified output file directory.
     '''
-
-
     file_only = os.path.basename(input_file)
     logger.info(f" Creating skew T plots for input file {file_only} ")
 
@@ -515,10 +511,10 @@ def create_skew_t(input_file: str, config: dict) -> None:
                        f"GENERATED.")
         return
 
-    sounding_df, plevs = extract_sounding_data(input_file)
+    sounding_df, plevs = extract_sounding_data(input_file, config['output_directory'])
 
     # Check if sounding data consists entirely of na-values.
-    all_na = check_for_all_na(sounding_df)
+    all_na = check_for_all_na(sounding_df, logger)
     if all_na:
         logger.warning(f"NO DATA to plot for {file_only}. NO PLOT GENERATED.")
         return
@@ -671,7 +667,6 @@ def create_skew_t(input_file: str, config: dict) -> None:
         filename_only = os.path.basename(full_filename_only)
         renamed = filename_only + "_" + cur_time + "_hr.png"
         plot_file = os.path.join(output_dir, renamed)
-        logging.info(f"Saving file {plot_file}")
 
         plt.savefig(plot_file)
         # Close any open figures to prevent having too many open figures.
@@ -690,60 +685,39 @@ def main(config_filename=None):
        Returns:
 
     '''
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            config = yaml.load(stream, Loader=yaml.FullLoader)
+    config = util.get_params(config_filename)
 
-            # Set up the logging.
-            log_dir = config['log_directory']
-            log_file = config['log_filename']
-            log_full_path = os.path.join(log_dir, log_file)
-            try:
-                os.makedirs(log_dir, exist_ok=True)
-            except FileExistsError:
-                # If directory already exists, this is OK.  Continue.
-                pass
+    # Set up the logging.
+    start = datetime.now()
+    log_dir = config['log_directory']
+    log_file = config['log_filename']
+    log_level = config['log_level']
+    log_full_path = os.path.join(log_dir, log_file)
+    logger = util.get_common_logger( log_level, log_full_path)
 
-            log_level = config['log_level']
-            format_str = "'%(asctime)s||%(levelname)s||%(funcName)s||%(message)s'"
-            if log_level == 'DEBUG':
-                logging.basicConfig(filename=log_full_path, level=logging.DEBUG,
-                                    format=format_str,
-                                    filemode='w')
-            elif log_level == 'INFO':
-                logging.basicConfig(filename=log_full_path, level=logging.INFO,
-                                    format=format_str,
-                                    filemode='w')
-            elif log_level == 'WARNING':
-                logging.basicConfig(filename=log_full_path, level=logging.WARNING,
-                                    format=format_str,
-                                    filemode='w')
-            else:
-                # log_level == 'ERROR'
-                logging.basicConfig(filename=log_full_path, level=logging.ERROR,
-                                    format=format_str,
-                                    filemode='w')
+    try:
+        os.makedirs(log_dir, exist_ok=True)
+    except FileExistsError:
+        # If directory already exists, this is OK.  Continue.
+        pass
 
-            # Get the list of input files to visualize.
-            input_dir = config['input_directory']
-            file_ext = config['input_file_extension']
-            files_of_interest = []
+    # Get the list of input files to visualize.
+    input_dir = config['input_directory']
+    file_ext = config['input_file_extension']
+    logger.info("Skew-T log-P plotting")
+    files_of_interest = []
 
-            for root, dir, files in os.walk(input_dir):
-                for item in files:
-                    if item.endswith(file_ext):
-                        files_of_interest.append(os.path.join(root, item))
-            # Create skew T diagrams for each input file.
-            for file_of_interest in files_of_interest:
-                create_skew_t(file_of_interest, config)
+    for root, _, files in os.walk(input_dir):
+        for item in files:
+            if item.endswith(file_ext):
+                files_of_interest.append(os.path.join(root, item))
+    # Create skew T diagrams for each input file.
+    for file_of_interest in files_of_interest:
+        logger.info(f"Creating a skew T diagram for {file_of_interest}")
+        create_skew_t(file_of_interest, config, logger)
 
-        except yaml.YAMLError as exc:
-            logger.error(f"YAMLError: {exc}")
-
+    total_time = datetime.now() - start
+    logger.info(f"All skew T- log P plotting completed in {total_time} seconds ")
 
 if __name__ == "__main__":
     main()

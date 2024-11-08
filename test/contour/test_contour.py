@@ -3,6 +3,7 @@ import os
 from metplotpy.plots.contour import contour
 #from metcalcpy.compare_images import CompareImages
 
+cwd = os.path.dirname(__file__)
 
 @pytest.fixture
 def setup():
@@ -10,23 +11,21 @@ def setup():
     cleanup()
     # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
     # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../"
+    os.environ['METPLOTPY_BASE'] = f"{cwd}/../../"
+    os.environ['TEST_DIR'] = cwd
 
     # Invoke the command to generate a contour plot based on
     # the  config yaml files.
 
-    contour.main("custom_contour.yaml")
+    contour.main(f"{cwd}/custom_contour.yaml")
 
 
 
 def cleanup():
     # remove the previously created files
     try:
-        path = os.getcwd()
         plot_file = 'contour.png'
-        os.remove(os.path.join(path, plot_file))
-
-
+        os.remove(os.path.join(cwd, plot_file))
     except OSError as e:
         # Typically, when files have already been removed or
         # don't exist.  Ignore.
@@ -34,7 +33,7 @@ def cleanup():
 
 
 @pytest.mark.parametrize("test_input, expected",
-                         (["./contour_expected.png", True], ["./contour.png", True]
+                         ([f"{cwd}/contour_expected.png", True], [f"{cwd}/contour.png", True]
                         ))
 def test_files_exist(setup, test_input, expected):
     """
@@ -50,6 +49,6 @@ def test_images_match(setup):
         newly created plots to verify that the plot hasn't
         changed in appearance.
     """
-    comparison = CompareImages('./contour_expected.png', './contour.png')
+    comparison = CompareImages(f'{cwd}/contour_expected.png', f'{cwd}/contour.png')
     assert comparison.mssim == 1
     cleanup()

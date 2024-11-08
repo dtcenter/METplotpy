@@ -33,9 +33,9 @@ angularaxis_ticktext:
 # !!!!!!!! IMPORTANT !!!!!!
 # Uncomment the stat_input setting and specify the full path to the
 # point_stat_mpr.txt file
-stat_input: ./point_stat_mpr.txt
+stat_input: !ENV '${TEST_DIR}/point_stat_mpr.txt'
 
-plot_filename: ./wind_rose_custom.png
+plot_filename: !ENV '${TEST_DIR}/wind_rose_custom.png'
 dump_points: True
 
 # Optional, uncomment and set to directory to store the .points1 file

@@ -160,14 +160,22 @@ class EquivalenceTestingBoundsSeries(LineSeries):
             # calculate stat values
             for index, row in series_data_1.iterrows():
                 row_array = np.expand_dims(row.to_numpy(), axis=0)
-                stat_value = calculate_statistic(row_array, series_data_1.columns,
+                stat_value = calculate_statistic( row_array, series_data_1.columns,
                                                  series_data_1["stat_name"][0].lower())
                 # save the value to the 'stat_value' column
                 series_data_1.at[index, 'stat_value'] = stat_value
+
             for index, row in series_data_2.iterrows():
                 row_array = np.expand_dims(row.to_numpy(), axis=0)
-                stat_value = calculate_statistic(row_array, series_data_2.columns,
-                                                 series_data_2["stat_name"][0].lower())
+                statistic_name = series_data_2["stat_name"][0].lower()
+                try:
+                    logger.info(f"Calculating the '{statistic_name}' statistic using METcalcpy's sum_stat.py module, "
+                                f"for data row: {index}.")
+                    stat_value = calculate_statistic(row_array, series_data_2.columns,
+                                                statistic_name)
+                except RuntimeError:
+                    logger.error(f"An error occurred while calculating the statistic '{statistic_name}'")
+
                 # save the value to the 'stat_value' column
                 series_data_2.at[index, 'stat_value'] = stat_value
 

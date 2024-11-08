@@ -39,10 +39,11 @@ jobs:
         
     - name: Retrieve METcalcpy repository develop branch
       run: |
-         /usr/bin/git clone https://github.com/dtcenter/METcalcpy
-         cd METcalcpy
-         /usr/bin/git checkout develop
-         python -m pip install -e .
+         metcalcpy_dir="$RUNNER_WORKSPACE/METcalcpy"
+         git clone https://github.com/dtcenter/METcalcpy ${metcalcpy_dir}
+         cd ${metcalcpy_dir}
+         git -C ${metcalcpy_dir} checkout develop
+         python -m pip install -e ${metcalcpy_dir}
             
     - name: Install dependencies
       run: |
@@ -54,7 +55,6 @@ jobs:
 #       shell: bash
 #       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
 #       id: extract_branch
-
 
     - name: Test with pytest
       run: |
@@ -94,7 +94,5 @@ jobs:
           pytest test_rel_hist.py
           cd ../tcmpr_plots
           pytest --capture=fd test_tcmpr_plots.py
-          
-
           
          

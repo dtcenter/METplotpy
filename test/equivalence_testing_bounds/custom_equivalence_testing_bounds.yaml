@@ -163,8 +163,8 @@ ytlab_horiz: 0.5
 ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
-plot_filename: ./equivalence_testing_bounds.png
-stat_input: ./equivalence_testing_bounds.data
+plot_filename: !ENV '${TEST_DIR}/equivalence_testing_bounds.png'
+stat_input: !ENV '${TEST_DIR}/equivalence_testing_bounds.data'
 show_legend:
 - 'True'
 - 'True'

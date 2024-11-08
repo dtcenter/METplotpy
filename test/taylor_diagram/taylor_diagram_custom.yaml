@@ -1,8 +1,8 @@
 ---
 # custom config file to override some of the settings in the
 # default config file taylor_diagram_defaults.yaml
-stat_input: ./plot_dlwr_sample.data
-plot_filename: ./taylor_diagram_custom.png
+stat_input: !ENV '${TEST_DIR}/plot_dlwr_sample.data'
+plot_filename: !ENV '${TEST_DIR}/taylor_diagram_custom.png'
 
 # change the caption text
 plot_caption: "Custom caption"

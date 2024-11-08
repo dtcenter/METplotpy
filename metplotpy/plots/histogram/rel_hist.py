@@ -25,13 +25,12 @@ class RelHist(Hist):
     """  Generates a Plotly  Relative Histogram or Histograms of relative position plot
         for 1 or more traces
     """
-
+    LONG_NAME = 'relative frequency histogram'
     config_obj_name='RelHistogramConfig'
     series_obj='RelHistSeries'
 
     def _get_x_points(self, series: HistSeries) -> list:
-        self.hist_logger.info(f"Retrieving x points for relative frequency histogram: "
-                              f"{datetime.now()}")
+        self.logger.info(f"Retrieving x points for {self.LONG_NAME}: {datetime.now()}")
         return sorted(series.series_data['i_value'].unique())
 
 
@@ -45,29 +44,7 @@ def main(config_filename=None):
             Args:
                 @param config_filename: default is None, the name of the custom config file to apply
         """
-
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    try:
-        plot = RelHist(docs)
-        plot.save_to_file()
-        # plot.show_in_browser()
-        plot.write_html()
-        plot.write_output_file()
-        plot.hist_logger.info(f"Finished creating the relative frequency histogram: "
-                              f"{datetime.now()}")
-    except ValueError as val_er:
-        print(val_er)
+    util.make_plot(config_filename, RelHist)
 
 
 if __name__ == "__main__":

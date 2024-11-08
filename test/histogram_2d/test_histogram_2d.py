@@ -1,20 +1,19 @@
 import os
-import sys
 import pytest
 
 from metplotpy.plots.histogram_2d import histogram_2d as h2d
 
-
 # from metcalcpy.compare_images import CompareImages
 
+cwd = os.path.dirname(__file__)
+
+
 @pytest.fixture
-def setup():
+def setup(setup_env):
     # Cleanup the plotfile and point1 output file from any previous run
     # cleanup()
-    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
-    # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = "../../"
-    custom_config_filename = "./minimal_histogram_2d.yaml"
+    setup_env(cwd)
+    custom_config_filename = f"{cwd}/minimal_histogram_2d.yaml"
     # print("\n current directory: ", os.getcwd())
     # print("\ncustom config file: ", custom_config_filename, '\n')
 
@@ -29,26 +28,11 @@ def setup():
 # change the stat_input and plot_filename to explicitly point to this directory before
 # running the test below because xarray cannot handle relative paths when reading in
 # filenames
-def test_plot_exists(setup):
+def test_plot_exists(setup, remove_files):
     '''
         Checking that only the "defaults" plot file is getting created
 
     '''
     test_input = "tmp_z2_p500.png"
-    from os.path import exists
-    file_exists = exists(test_input)
-    if file_exists:
-        assert os.path.exists(test_input)
-    else:
-        print("File doesn't exist")
-        assert False
-
-    # cleanup
-    try:
-        path = os.getcwd()
-        plot_file = 'tmp_z2_p500.png'
-        # os.remove(os.path.join(path, plot_file))
-    except OSError:
-        # Typically when files have already been removed or
-        # don't exist.  Ignore.
-        pass
+    assert os.path.exists(f"{cwd}/{test_input}")
+    remove_files(cwd, ['tmp_z2_p500.png'])

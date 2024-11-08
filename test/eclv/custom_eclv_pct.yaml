@@ -102,7 +102,7 @@ ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
 
-stat_input: ./eclv_pct.data
-plot_filename: ./eclv_pct.png
+stat_input: !ENV '${TEST_DIR}/eclv_pct.data'
+plot_filename: !ENV '${TEST_DIR}/eclv_pct.png'
 show_legend:
   -True
