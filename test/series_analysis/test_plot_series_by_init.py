@@ -10,7 +10,7 @@ import matplotlib
 
 # ignore the MatplotlibFutureDeprecation warning which does not affect this code
 # since changes must be made to Cartopy
-warnings.simplefilter(action='ignore', category=matplotlib.cbook.mplDeprecation)
+warnings.simplefilter(action='ignore', category=matplotlib.MatplotlibDeprecationWarning)
 
 @pytest.mark.skip('Requires large dataset to run and special packages, uncomment import to run')
 def test_expected_files_created():
