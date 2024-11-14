@@ -10,6 +10,31 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Release Notes
 =======================
 
+METplotpy Version 3.0.0-rc1 release notes (20241114)
+------------------------------------------------------
+
+  .. dropdown:: New Plots
+
+     None
+
+
+  .. dropdown:: Enhancements
+ 
+     None
+
+
+
+  .. dropdown:: Internal
+
+     None
+
+
+  .. dropdown:: Bugfixes
+
+     None
+
+
+
 METplotpy Version 3.0.0-beta6 release notes (20241018)
 ------------------------------------------------------
 
