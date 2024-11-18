@@ -13,8 +13,11 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                os.pardir)))
 print(sys.path)
 
+from metplotpy import __version__ as version
 
 # -- Project information -----------------------------------------------------
 
@@ -22,7 +25,7 @@ project = 'METplotpy'
 copyright = '2024, NSF NCAR'
 author = 'UCAR/NSF NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Fisher, H., D. Adriaansen, C. Kalb, D. Fillmore, T. Jensen, L. Goodrich, M. Win-Gildenmeister and T. Burek'
-version = 'v3.0.0-rc1'
+
 verinfo = version
 release = f'{version}'
 release_year = '2024'
