@@ -28,6 +28,11 @@ version = {attr = "metplotpy.__version__"}
 [tool.setuptools.packages]
 find = {include = ["metplotpy*"]}
 
+[tool.setuptools.package-data]
+metplotpy = [
+  "plots/config/**",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["test"]
 
