@@ -21,11 +21,14 @@ import numpy as np
 import yaml
 from typing import Union
 
+import plotly.io as pio
+
 import metplotpy.plots.util
 from .config import Config
 from metplotpy.plots.context_filter import ContextFilter
 
-
+# set kaleido to use single process to prevent GPU errors in containers
+pio.kaleido.scope.chromium_args += ("--single-process",)
 
 class BasePlot:
     """A class that provides methods for building Plotly plot's common features
