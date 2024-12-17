@@ -24,7 +24,7 @@ METplotpy Version 3.0.0 release notes (20241218)
      * Plot new TC-Diagnostics output from TC-Pairs (`#233 <https://github.com/dtcenter/METplotpy/issues/233>`_)
      * **Enhance TCMPR plotter to read TCDiag lines and filter by one column and plot another column**  (`#342 <https://github.com/dtcenter/METplotpy/issues/342>`_).
      * Create documentation and testing for TCMPR plotting code  (`#383 <https://github.com/dtcenter/METplotpy/issues/383>`_).
-     * Update fv3_physics_tend for new FV3 output format  (`#380 <https://github.com/dtcenter/METplotpy/issues/380>`_).
+     * Update fv3_physics_tend for new FV3 output format (`#380 <https://github.com/dtcenter/METplotpy/issues/380>`_).
      * Update GitHub actions workflows to switch from node 16 to node 20 (`#414 <https://github.com/dtcenter/METplotpy/issues/414>`_).
      * **Add GitHub action to run SonarQube for METplotpy pull requests and feature branches** (`#429 <https://github.com/dtcenter/METplotpy/issues/429>`_).
      * **Add a summary curve to the ROC diagram** (`#399 <https://github.com/dtcenter/METplotpy/issues/399>`_).
@@ -37,19 +37,18 @@ METplotpy Version 3.0.0 release notes (20241218)
 
      * Improve unit test infrastructure and coverage (`#461 <https://github.com/dtcenter/METplotpy/issues/461>`_)
      * Update GitHub issue and pull request templates to reflect the current development workflow details  (`#388 <https://github.com/dtcenter/METplotpy/issues/388>`_).
-     * Consider using only .yml or only .yaml extensions   (`#417 <https://github.com/dtcenter/METplotpy/issues/417>`_).
-     * METplotpy:Code coverage statistics   (`#55 <https://github.com/dtcenter/METplus-Internal/issues/55>`_).
+     * Consider using only .yml or only .yaml extensions (`#417 <https://github.com/dtcenter/METplotpy/issues/417>`_).
+     * METplotpy:Code coverage statistics (`#55 <https://github.com/dtcenter/METplus-Internal/issues/55>`_).
 
 
 
   .. dropdown:: Bugfixes
 
-     * **TC-RMW plot needs updating to support changes to input** (`#425 <https://github.com/dtcenter/METplotpy/issues/425>`_).
      * TC-RMW plot needs updating to support changes to input (`#425 <https://github.com/dtcenter/METplotpy/issues/425>`_).
      * **Documentation-Fix METviewer link in line plot** (`#385 <https://github.com/dtcenter/METplotpy/issues/385>`_).
      * **Inconsistency with generating plot in METviewer vs command line** (`#391 <https://github.com/dtcenter/METplotpy/issues/391>`_).
      * **Bugfix for ROC plot image saving to file** (`#394 <https://github.com/dtcenter/METplotpy/issues/394>`_).
-     * Bugfix for erros in line and revision_series tests (`#401 <https://github.com/dtcenter/METplotpy/issues/401>`_).
+     * Bugfix for errors in line and revision_series tests (`#401 <https://github.com/dtcenter/METplotpy/issues/401>`_).
 
 
 METplotpy Upgrade Instructions
