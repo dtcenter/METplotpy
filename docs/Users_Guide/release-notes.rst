@@ -28,8 +28,8 @@ METplotpy Version 3.0.0 release notes (20241218)
      * Update GitHub actions workflows to switch from node 16 to node 20 (`#414 <https://github.com/dtcenter/METplotpy/issues/414>`_).
      * **Add GitHub action to run SonarQube for METplotpy pull requests and feature branches** (`#429 <https://github.com/dtcenter/METplotpy/issues/429>`_).
      * **Add a summary curve to the ROC diagram** (`#399 <https://github.com/dtcenter/METplotpy/issues/399>`_).
-     * **hide/show the legend entries line-by-line** (`#355 <https://github.com/dtcenter/METplotpy/issues/355>`_).
-     * **specify the color of the no resolution and no skill lines for the reliability diagram** (`#329 <https://github.com/dtcenter/METplotpy/issues/329>`_).
+     * **Hide/show the legend entries line-by-line** (`#355 <https://github.com/dtcenter/METplotpy/issues/355>`_).
+     * **Specify the color of the no resolution and no skill lines for the reliability diagram** (`#329 <https://github.com/dtcenter/METplotpy/issues/329>`_).
 
 
 
@@ -45,7 +45,7 @@ METplotpy Version 3.0.0 release notes (20241218)
   .. dropdown:: Bugfixes
 
      * TC-RMW plot needs updating to support changes to input (`#425 <https://github.com/dtcenter/METplotpy/issues/425>`_).
-     * **Documentation-Fix METviewer link in line plot** (`#385 <https://github.com/dtcenter/METplotpy/issues/385>`_).
+     * **Documentation - Fix METviewer link in line plot** (`#385 <https://github.com/dtcenter/METplotpy/issues/385>`_).
      * **Inconsistency with generating plot in METviewer vs command line** (`#391 <https://github.com/dtcenter/METplotpy/issues/391>`_).
      * **Bugfix for ROC plot image saving to file** (`#394 <https://github.com/dtcenter/METplotpy/issues/394>`_).
      * Bugfix for errors in line and revision_series tests (`#401 <https://github.com/dtcenter/METplotpy/issues/401>`_).
