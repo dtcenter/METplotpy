@@ -38,7 +38,7 @@ METplotpy Version 3.0.0 release notes (20241218)
      * Improve unit test infrastructure and coverage (`#461 <https://github.com/dtcenter/METplotpy/issues/461>`_)
      * Update GitHub issue and pull request templates to reflect the current development workflow details  (`#388 <https://github.com/dtcenter/METplotpy/issues/388>`_).
      * Consider using only .yml or only .yaml extensions (`#417 <https://github.com/dtcenter/METplotpy/issues/417>`_).
-     * METplotpy:Code coverage statistics (`#55 <https://github.com/dtcenter/METplus-Internal/issues/55>`_).
+     * METplotpy: Code coverage statistics (`#55 <https://github.com/dtcenter/METplus-Internal/issues/55>`_).
 
 
 
