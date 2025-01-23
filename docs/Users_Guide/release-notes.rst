@@ -12,6 +12,7 @@ METplotpy Release Notes
 
 
 METplotpy Version 3.1.0-beta1 release notes (20250122)
+------------------------------------------------------
 
 
   .. dropdown:: New Plots
@@ -35,8 +36,8 @@ METplotpy Version 3.1.0-beta1 release notes (20250122)
   .. dropdown:: Bugfixes
 
 
-     * make default configs available in package (`#476 <https://github.com/dtcenter/METdataio/issues/476>`_)
-     * import from metplotpy.contributed instead of relative import (`#478 <https://github.com/dtcenter/METdataio/issues/478>`_)
+     * Make default configs available in package (`#476 <https://github.com/dtcenter/METdataio/issues/476>`_)
+     * Import from metplotpy.contributed instead of relative import (`#478 <https://github.com/dtcenter/METdataio/issues/478>`_)
 
 
 
