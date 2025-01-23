@@ -11,7 +11,7 @@ METplotpy Release Notes
 =======================
 
 
-METplotpy Version 3.1.0-beta1 release notes (20250122)
+METplotpy Version 3.1.0-beta1 release notes (20250123)
 ------------------------------------------------------
 
 
