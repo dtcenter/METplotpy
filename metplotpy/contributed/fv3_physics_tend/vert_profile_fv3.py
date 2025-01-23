@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from metpy.units import units
 import pandas as pd
-import metplotpy.contributed.fv3_physics_tend.physics_tend
+from metplotpy.contributed.fv3_physics_tend import physics_tend
 import xarray
 import yaml
 
