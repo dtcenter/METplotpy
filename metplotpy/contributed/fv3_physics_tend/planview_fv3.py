@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from metpy.units import units
 import numpy as np
 import pandas as pd
-import metplotpy.contributed.fv3_physics_tend.physics_tend
+from metplotpy.contributed.fv3_physics_tend import physics_tend
 import xarray
 import yaml
 
