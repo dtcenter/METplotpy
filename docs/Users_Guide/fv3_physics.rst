@@ -249,10 +249,15 @@ Vertical Profile
 Generate vertical profile of temperature tendencies averaged over the central US. Plot residual
 tendency and its components. Limit the x-axis range with xmin and xmax.
 
+.. code-block:: yaml
+
+    shapefile : "shapefiles/MID_CONUS"
+    xmin : -0.0005
+    xmax : 0.0004
+
 .. code-block:: bash
 
-    python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp \
-      -s shapefiles/MID_CONUS --xmin -0.0005 --xmax 0.0004
+    python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp
 
 .. image:: figure/tmp.vert_profile.MID_CONUS.png
 
