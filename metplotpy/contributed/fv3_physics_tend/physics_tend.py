@@ -1,14 +1,16 @@
 """Common functions for fv3_physics_tend"""
 import logging
 import os
+from pathlib import Path
+
 import cartopy.io.shapereader as shpreader
 import cartopy.feature as cfeature
 import matplotlib.path
 import numpy as np
 from shapely.geometry import multipolygon
 # from tqdm import tqdm # progress bar
-import xarray
 
+TMPDIR = Path(os.getenv("TMPDIR", Path(os.getenv("SCRATCH"))/"temp"))
 
 def add_conus_features(ax):
     """ add borders """

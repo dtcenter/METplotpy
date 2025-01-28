@@ -52,20 +52,21 @@ def main():
     historyfile = args.historyfile
     statevarname = args.statevarname
     config = args.config
-    # Reload fv3 in case user specifies a custom --config file
     fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
 
-    pcm = cross_section_vert(fv3, historyfile, gridfile, statevarname, args=args)
+    pcm = cross_section_vert(fv3, historyfile, gridfile, statevarname)
 
     startpt = fv3["startpt"]
     endpt = fv3["endpt"]
-    ofile = f"{statevarname}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
+    ofile = physics_tend.TMPDIR / f"{statevarname}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
     pcm.fig.savefig(ofile, dpi=fv3["dpi"])
     logging.info("created %s", os.path.realpath(ofile))
 
 
 # Don't name `cross_section` metpy already has this method.
-def cross_section_vert(fv3, historyfile, gridfile, statevarname, args=None):
+def cross_section_vert(fv3, historyfile, gridfile, statevarname, **kwargs):
+    # Override config file with keyword args
+    fv3.update(kwargs)
     fineprint = fv3["fineprint"]
     ncols = fv3["ncols"]
     startpt = fv3["startpt"]
@@ -83,7 +84,6 @@ def cross_section_vert(fv3, historyfile, gridfile, statevarname, args=None):
         level = logging.DEBUG
     # prepend log message with time
     logging.basicConfig(format="%(asctime)s - %(message)s", level=level)
-    logging.debug(args)
 
     # Read lat/lon from gfile
     logging.debug(f"read lat/lon from {gridfile}")

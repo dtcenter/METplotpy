@@ -50,13 +50,12 @@ def main():
     historyfile = args.historyfile
     statevarname = args.statevarname
     config = args.config
-    # Reload fv3 in case user specifies a custom --config file
     fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
 
-    fig = vert_profile(fv3, historyfile, gridfile, statevarname, args=args)
+    fig = vert_profile(fv3, historyfile, gridfile, statevarname)
 
     # Output filename.
-    ofile = f"{statevarname}.vert_profile.png"
+    ofile = physics_tend.TMPDIR / f"{statevarname}.vert_profile.png"
     if fv3["shp"]:
         shp = fv3["shp"].rstrip("/")
         # Add shapefile name to output filename
@@ -67,7 +66,9 @@ def main():
     logging.info("created %s", os.path.realpath(ofile))
 
 
-def vert_profile(fv3, historyfile, gridfile, statevarname, args=None):
+def vert_profile(fv3, historyfile, gridfile, statevarname, **kwargs):
+    # Override config file with keyword args
+    fv3.update(kwargs)
     fineprint = fv3["fineprint"]
     shp = fv3["shp"]
     subtract = fv3["subtract"]
@@ -82,7 +83,6 @@ def vert_profile(fv3, historyfile, gridfile, statevarname, args=None):
         level = logging.DEBUG
     # prepend log message with time
     logging.basicConfig(format="%(asctime)s - %(message)s", level=level)
-    logging.debug(args)
 
     # Read lat/lon/area from gfile
     logging.debug(f"read lat/lon/area from {gridfile}")

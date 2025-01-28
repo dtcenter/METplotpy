@@ -54,17 +54,18 @@ def main():
     statevarname = args.statevarname
     tendencytype = args.tendencytype
     config = args.config
-    # Reload fv3 in case user specifies a custom --config file
     fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
 
-    pcm = planview(fv3, historyfile, gridfile, statevarname, tendencytype, args=args)
+    pcm = planview(fv3, historyfile, gridfile, statevarname, tendencytype)
 
     ofile = default_ofile(args, fv3["pfull"] * units.hPa, fv3["shp"])
     pcm.fig.savefig(ofile, dpi=fv3["dpi"])
     logging.info("created %s", os.path.realpath(ofile))
 
 
-def planview(fv3, historyfile, gridfile, statevarname, tendencytype, args=None):
+def planview(fv3, historyfile, gridfile, statevarname, tendencytype, **kwargs):
+    # Override config file with keyword args
+    fv3.update(kwargs)
     fineprint = fv3["fineprint"]
     ncols = fv3["ncols"]
     pfull = fv3["pfull"] * units.hPa
@@ -83,7 +84,6 @@ def planview(fv3, historyfile, gridfile, statevarname, tendencytype, args=None):
         level = logging.DEBUG
     # prepend log message with time
     logging.basicConfig(format="%(asctime)s - %(message)s", level=level)
-    logging.debug(args)
 
     # Read lat/lon/area from gfile
     logging.debug(f"read lat/lon/area from {gridfile}")
@@ -327,6 +327,7 @@ def default_ofile(args, pfull, shp):
         shapename = os.path.basename(shp)
         root, ext = os.path.splitext(ofile)
         ofile = root + f".{shapename}" + ext
+    ofile = physics_tend.TMPDIR / ofile
     return ofile
 
 
