@@ -288,6 +288,8 @@ time window ending 20z June 15, 2019.
 
 .. code-block:: yaml
 
+   # color map
+   cmap : "RdBu_r"
    startpt :
       - 28
       - -120
