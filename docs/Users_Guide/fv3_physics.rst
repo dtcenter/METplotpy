@@ -131,17 +131,6 @@ valid time is 1z and your time window is one hour.
 Example
 =======
 
-Sample Data
------------
-
-Sample data to plot physics tendencies are available in the `METplus data tar file
-<https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/vX.y/sample_data-xxx-x.y.tgz>`_  in the directory
-*xxx/fv3_physics_tend*.
-
-Save this file in a directory where you have read and write permissions, such as
-$WORKING_DIR/data/fv3_physics_tend, where $WORKING_DIR is the path to the directory where you will save
-input data.
-
 Configuration File
 ------------------
 
