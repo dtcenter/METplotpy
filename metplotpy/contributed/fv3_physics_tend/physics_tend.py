@@ -21,6 +21,25 @@ def add_conus_features(ax):
         '50m'), edgecolor='k', linewidth=0.25, facecolor='k', alpha=0.1)
     return ax
 
+
+def get_datetimeindex(ds):
+    datetimeindex = ds.indexes["time"]
+    if hasattr(datetimeindex, "to_datetimeindex"):
+        # Convert from CFTime to pandas datetime or get warning
+        # CFTimeIndex from non-standard calendar 'julian'.
+        # Maybe history file should be saved with standard calendar.
+        # To turn off warning, set unsafe=True.
+        datetimeindex = datetimeindex.to_datetimeindex(unsafe=True)
+    ragged_times = datetimeindex != datetimeindex.round("1ms")
+    if any(ragged_times):
+        logging.info(
+            f"round times to nearest millisec. before: {datetimeindex[ragged_times].values}"
+        )
+        datetimeindex = datetimeindex.round("1ms")
+        logging.info(f"after: {datetimeindex[ragged_times].values}")
+    return datetimeindex
+
+
 def pts_in_shp(lats, lons, shp):
     # Map longitude to -180 to +180 range
     lons = np.where(lons > 180, lons-360, lons)

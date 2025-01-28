@@ -90,7 +90,6 @@ def planview(fv3, historyfile, gridfile, statevarname, tendencytype, **kwargs):
     gds = xarray.open_dataset(gridfile)
     lont = gds[fv3["lon_name"]]
     latt = gds[fv3["lat_name"]]
-    area = gds["area"]
 
     # Open input file
     logging.debug("open %s", historyfile)
@@ -101,21 +100,7 @@ def planview(fv3, historyfile, gridfile, statevarname, tendencytype, **kwargs):
         with xarray.set_options(keep_attrs=True):
             fv3ds -= xarray.open_dataset(subtract)
 
-    datetimeindex = fv3ds.indexes["time"]
-    if hasattr(datetimeindex, "to_datetimeindex"):
-        # Convert from CFTime to pandas datetime or get warning
-        # CFTimeIndex from non-standard calendar 'julian'.
-        # Maybe history file should be saved with standard calendar.
-        # To turn off warning, set unsafe=True.
-        datetimeindex = datetimeindex.to_datetimeindex(unsafe=True)
-    ragged_times = datetimeindex != datetimeindex.round("1ms")
-    if any(ragged_times):
-        logging.info(
-            f"round times to nearest millisec. before: {datetimeindex[ragged_times].values}"
-        )
-        datetimeindex = datetimeindex.round("1ms")
-        logging.info(f"after: {datetimeindex[ragged_times].values}")
-    fv3ds["time"] = datetimeindex
+    fv3ds["time"] = physics_tend.get_datetimeindex(fv3ds)
 
     # lont and latt used by pcolorfill()
     fv3ds = fv3ds.assign_coords(lont=lont, latt=latt)
