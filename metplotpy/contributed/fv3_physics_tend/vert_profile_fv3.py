@@ -92,8 +92,11 @@ def vert_profile(fv3, historyfile, gridfile, statevarname, **kwargs):
     area = gds["area"]
 
     # Open input file
-    logging.debug("open %s", historyfile)
-    fv3ds = xarray.open_dataset(historyfile)
+    if historyfile.endswith("fv3_history2d.tile6.nc"):
+        fv3ds = physics_tend.get_fv3ds(historyfile, fv3)
+    else:
+        logging.debug("open %s", historyfile)
+        fv3ds = xarray.open_dataset(historyfile)
 
     if subtract:
         logging.info("subtracting %s", subtract)
@@ -108,53 +111,56 @@ def vert_profile(fv3, historyfile, gridfile, statevarname, **kwargs):
     if not validtime:
         validtime = fv3ds.time.values[-1]
         logging.info(
-            "validtime not provided on command line. Using last time in history file %s.",
+            "validtime not configured. Using last time in history %s.",
             validtime,
         )
     validtime = pd.to_datetime(validtime)
     time0 = validtime - twindow
-    assert time0 in fv3ds.time, (
-        f"time0 {time0} not in history file. Closest is "
-        f"{fv3ds.time.sel(time=time0, method='nearest').time.data}"
-    )
+    logging.debug(f"time0 {time0} twindow {twindow} validtime {validtime}")
 
     # list of tendency variable names for requested state variable
     tendency_vars = fv3["tendency_varnames"][statevarname]
     tendencies = fv3ds[tendency_vars]  # subset of original Dataset
+    tendencies = tendencies.load()
     # convert DataArrays to Quantities to protect units. DataArray.mean drops units attribute.
     tendencies = tendencies.metpy.quantify()
+    logging.info(tendencies.max())
 
-    # Define time slice starting with time-after-time0 and ending with validtime.
-    # We use the time *after* time0 because the time range corresponding to the tendency
-    # output is the period immediately prior to the tendency timestamp.
-    # That way, slice(time_after_time0, validtime) has a time range of [time0,validtime].
-    idx_first_time_after_time0 = (fv3ds.time > time0).argmax()
-    time_after_time0 = fv3ds.time[idx_first_time_after_time0]
-    tindex = {"time": slice(time_after_time0, validtime)}
-    logging.debug("Time-weighted mean tendencies for time index slice %s", tindex)
-    timeweights = fv3ds.time.diff("time").sel(tindex)
-    time_weighted_tendencies = tendencies.sel(tindex) * timeweights
-    tendencies_avg = time_weighted_tendencies.sum(dim="time") / timeweights.sum(
-        dim="time"
-    )
+    if fv3["tendencies_were_zeroed_and_averaged_after_every_output"]:
+        assert time0 in fv3ds.time, (
+            f"time0 {time0} not in history file. Closest is "
+            f"{fv3ds.time.sel(time=time0, method='nearest').time.data}"
+        )
+        # Define time slice starting with time-after-time0 and ending with validtime.
+        # We use the time *after* time0 because the time range corresponding to the tendency
+        # output is the period immediately prior to the tendency timestamp.
+        # That way, slice(time_after_time0, validtime) has a time range of [time0,validtime].
+        idx_first_time_after_time0 = (fv3ds.time > time0).argmax()
+        time_after_time0 = fv3ds.time[idx_first_time_after_time0]
+        tindex = {"time": slice(time_after_time0, validtime)}
+        logging.debug("Time-weighted mean tendencies for time index slice %s", tindex)
+        timeweights = fv3ds.time.diff("time").sel(tindex)
+        time_weighted_tendencies = tendencies.sel(tindex) * timeweights
+        tendencies_avg = time_weighted_tendencies.sum(dim="time") / timeweights.sum(
+            dim="time"
+        )
+        tendencies = tendencies_avg
 
     # Make list of long_names before .to_array() loses them.
-    long_names = [fv3ds[da].attrs["long_name"] for da in tendencies_avg]
+    long_names = [fv3ds[da].attrs["long_name"] for da in tendencies]
 
     # Keep characters after final underscore. The first part is redundant.
     # for example dtend_u_pbl -> pbl
-    name_dict = {da: "_".join(da.split("_")[-1:]) for da in tendencies_avg.data_vars}
+    name_dict = {da: "_".join(da.split("_")[-1:]) for da in tendencies.data_vars}
     logging.debug("rename %s", name_dict)
-    tendencies_avg = tendencies_avg.rename(name_dict)
+    tendencies = tendencies.rename(name_dict)
 
     # Stack variables along new tendency dimension of new DataArray.
     tendency_dim = f"{statevarname} tendency"
-    tendencies_avg = tendencies_avg.to_array(dim=tendency_dim, name=tendency_dim)
+    tendencies = tendencies.to_array(dim=tendency_dim, name=tendency_dim)
     # Assign long_names to a new DataArray coordinate.
     # It will have the same shape as tendency dimension.
-    tendencies_avg = tendencies_avg.assign_coords(
-        {"long_name": (tendency_dim, long_names)}
-    )
+    tendencies = tendencies.assign_coords({"long_name": (tendency_dim, long_names)})
 
     logging.info("calculate actual change in %s", statevarname)
     # Tried metpy.quantify() with open_dataset, but
@@ -169,7 +175,7 @@ def vert_profile(fv3, historyfile, gridfile, statevarname, **kwargs):
     )
 
     # Sum all tendencies (physics and non-physics)
-    all_tendencies = tendencies_avg.sum(dim=tendency_dim)
+    all_tendencies = tendencies.sum(dim=tendency_dim)
 
     # Subtract physics tendency variable if it was in tendency_vars. Don't want to double-count.
     phys_var = [x for x in tendency_vars if x.endswith("_phys")]
@@ -179,16 +185,14 @@ def vert_profile(fv3, historyfile, gridfile, statevarname, **kwargs):
             "from all_tendencies to avoid double-counting"
         )
         # use .data to avoid re-introducing tendency coordinate
-        all_tendencies = (
-            all_tendencies - tendencies_avg.sel({tendency_dim: "phys"}).data
-        )
+        all_tendencies = all_tendencies - tendencies.sel({tendency_dim: "phys"}).data
 
     # Calculate actual tendency of state variable.
     actual_tendency = actual_change / twindow_quantity
     logging.info("subtract actual tendency from all_tendencies to get residual")
     resid = all_tendencies - actual_tendency
 
-    da2plot = tendencies_avg
+    da2plot = tendencies
     if fv3["resid"]:
         # Concatenate all_tendencies, actual_tendency, and resid DataArrays.
         # Give them a name and long_name along tendency_dim.
