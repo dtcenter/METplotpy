@@ -4,6 +4,7 @@ import argparse
 import datetime
 import logging
 import os
+import re
 
 import cartopy
 import matplotlib.pyplot as plt
@@ -58,7 +59,10 @@ def main():
 
     startpt = fv3["startpt"]
     endpt = fv3["endpt"]
-    ofile = physics_tend.TMPDIR / f"{statevarname}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
+    ofile = (
+        physics_tend.TMPDIR
+        / f"{statevarname}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
+    )
     pcm.fig.savefig(ofile, dpi=fv3["dpi"])
     logging.info("created %s", os.path.realpath(ofile))
 
@@ -92,11 +96,16 @@ def cross_section_vert(fv3, historyfile, gridfile, statevarname, **kwargs):
     latt = gds[fv3["lat_name"]]
 
     # Open input file
-    if historyfile.endswith("fv3_history2d.tile6.nc"):
+    pattern = r".*tile\d.nc$"
+    if re.match(pattern, historyfile):
+        logging.warning("FV3-style historyfile")
         fv3ds = physics_tend.get_fv3ds(historyfile, fv3)
     else:
         logging.debug("open %s", historyfile)
         fv3ds = xarray.open_dataset(historyfile)
+
+    assert fv3ds.grid_xt.equals(gds.grid_xt), f"history grid_xt {fv3ds.grid_xt.size} no match {gridfile}"
+    assert fv3ds.grid_yt.equals(gds.grid_yt), f"history grid_yt {fv3ds.grid_yt.size} no match {gridfile}"
 
     if subtract:
         logging.info("subtracting %s", subtract)
@@ -225,12 +234,18 @@ def cross_section_vert(fv3, historyfile, gridfile, statevarname, **kwargs):
     )
     # fv3 uses Extended Schmidt Gnomomic grid for regional applications. This is not in cartopy.
     # Found similar Lambert Conformal projection by trial and error.
-    da2plot = da2plot.metpy.assign_crs(
+    crs = dict(
         grid_mapping_name="lambert_conformal_conic",
         standard_parallel=fv3["standard_parallel"],
         longitude_of_central_meridian=-97.5,
         latitude_of_projection_origin=fv3["standard_parallel"],
-    ).metpy.assign_y_x(force=True, tolerance=55000 * units.m)
+    )
+    if fv3["crs"]:
+        logging.warning(f"use crs from config {crs}")
+        crs = fv3["crs"]
+    da2plot = da2plot.metpy.assign_crs(crs).metpy.assign_y_x(
+        force=True, tolerance=5e7 * units.m
+    )
 
     # dequantify moves units from DataArray to attributes. Now they show up in colorbar.
     # and avoid NotImplementedError: Don't yet support nd fancy indexing from cross_section()

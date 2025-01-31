@@ -70,7 +70,7 @@ def get_datetimeindex(ds):
 
 
 def get_fv3ds(historyfile, fv3):
-    logging.warning(f"Opening {historyfile}")
+    logging.info(f"Opening {historyfile}")
     ds = xarray.open_dataset(historyfile, chunks={})
     twindow = datetime.timedelta(hours=fv3["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds

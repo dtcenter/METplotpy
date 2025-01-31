@@ -4,6 +4,7 @@ import argparse
 import datetime
 import logging
 import os
+import re
 
 import cartopy
 import matplotlib.pyplot as plt
@@ -92,11 +93,16 @@ def planview(fv3, historyfile, gridfile, statevarname, tendencytype, **kwargs):
     latt = gds[fv3["lat_name"]]
 
     # Open input file
-    if historyfile.endswith("fv3_history2d.tile6.nc"):
+    pattern = r".*tile\d.nc$"
+    if re.match(pattern, historyfile):
+        logging.warning("FV3-style historyfile")
         fv3ds = physics_tend.get_fv3ds(historyfile, fv3)
     else:
         logging.debug("open %s", historyfile)
         fv3ds = xarray.open_dataset(historyfile)
+
+    assert fv3ds.grid_xt.equals(gds.grid_xt), f"history grid_xt {fv3ds.grid_xt.size} no match {gridfile}"
+    assert fv3ds.grid_yt.equals(gds.grid_yt), f"history grid_yt {fv3ds.grid_yt.size} no match {gridfile}"
 
     if subtract:
         logging.info("subtracting %s", subtract)

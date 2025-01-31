@@ -54,6 +54,9 @@ standard_parallel : 38.139
 # color map
 cmap : "RdBu_r"
 
+# coordinate reference system used in cross_section_vert .metpy.assign_crs(crs).metpy.assign_y_x
+crs : null
+
 # True : more logging messages
 debug : False
 
