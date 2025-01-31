@@ -97,7 +97,7 @@ def cross_section_vert(fv3, historyfile, gridfile, statevarname, **kwargs):
 
     # Open input file
     pattern = r".*tile\d.nc$"
-    if re.match(pattern, historyfile):
+    if re.match(pattern, str(historyfile)):
         logging.warning("FV3-style historyfile")
         fv3ds = physics_tend.get_fv3ds(historyfile, fv3)
     else:

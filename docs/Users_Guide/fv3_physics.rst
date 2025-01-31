@@ -241,8 +241,8 @@ tendency and its components. Limit the x-axis range with xmin and xmax.
 .. code-block:: yaml
 
     shapefile : "shapefiles/MID_CONUS"
-    xmin : -0.0005
-    xmax : 0.0004
+    xmin : -0.0002
+    xmax : 0.0002
 
 .. code-block:: bash
 
