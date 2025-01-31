@@ -101,8 +101,12 @@ def vert_profile(fv3, historyfile, gridfile, statevarname, **kwargs):
         logging.debug("open %s", historyfile)
         fv3ds = xarray.open_dataset(historyfile)
 
-    assert fv3ds.grid_xt.equals(gds.grid_xt), f"history grid_xt {fv3ds.grid_xt.size} no match {gridfile}"
-    assert fv3ds.grid_yt.equals(gds.grid_yt), f"history grid_yt {fv3ds.grid_yt.size} no match {gridfile}"
+    assert fv3ds.grid_xt.equals(
+        gds.grid_xt
+    ), f"history grid_xt {fv3ds.grid_xt.size} no match {gridfile}"
+    assert fv3ds.grid_yt.equals(
+        gds.grid_yt
+    ), f"history grid_yt {fv3ds.grid_yt.size} no match {gridfile}"
 
     if subtract:
         logging.info("subtracting %s", subtract)
@@ -133,6 +137,7 @@ def vert_profile(fv3, historyfile, gridfile, statevarname, **kwargs):
     logging.info(tendencies.max())
 
     if fv3["tendencies_were_zeroed_and_averaged_after_every_output"]:
+        logging.warning("assume tendencies_were_zeroed_and_averaged_after_every_output")
         assert time0 in fv3ds.time, (
             f"time0 {time0} not in history file. Closest is "
             f"{fv3ds.time.sel(time=time0, method='nearest').time.data}"

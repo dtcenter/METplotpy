@@ -94,15 +94,19 @@ def planview(fv3, historyfile, gridfile, statevarname, tendencytype, **kwargs):
 
     # Open input file
     pattern = r".*tile\d.nc$"
-    if re.match(pattern, historyfile):
+    if re.match(pattern, str(historyfile)): # str handles pathlib.Path
         logging.warning("FV3-style historyfile")
         fv3ds = physics_tend.get_fv3ds(historyfile, fv3)
     else:
         logging.debug("open %s", historyfile)
         fv3ds = xarray.open_dataset(historyfile)
 
-    assert fv3ds.grid_xt.equals(gds.grid_xt), f"history grid_xt {fv3ds.grid_xt.size} no match {gridfile}"
-    assert fv3ds.grid_yt.equals(gds.grid_yt), f"history grid_yt {fv3ds.grid_yt.size} no match {gridfile}"
+    assert fv3ds.grid_xt.equals(
+        gds.grid_xt
+    ), f"history grid_xt {fv3ds.grid_xt.size} no match {gridfile}"
+    assert fv3ds.grid_yt.equals(
+        gds.grid_yt
+    ), f"history grid_yt {fv3ds.grid_yt.size} no match {gridfile}"
 
     if subtract:
         logging.info("subtracting %s", subtract)
@@ -133,6 +137,7 @@ def planview(fv3, historyfile, gridfile, statevarname, tendencytype, **kwargs):
     logging.info(tendencies.max())
 
     if fv3["tendencies_were_zeroed_and_averaged_after_every_output"]:
+        logging.warning("assume tendencies_were_zeroed_and_averaged_after_every_output")
         assert time0 in fv3ds.time, (
             f"time0 {time0} not in history file. Closest is "
             f"{fv3ds.time.sel(time=time0, method='nearest').time.data}"
@@ -253,8 +258,12 @@ def planview(fv3, historyfile, gridfile, statevarname, tendencytype, **kwargs):
         # Default # of cols is square root of # of panels
         ncols = int(np.ceil(np.sqrt(len(da2plot))))
 
-    da2plot = da2plot.load()  # avoid UserWarning: Sending large graph of size 324.02 MiB.
-    da2plot = da2plot.squeeze(dim="pfull")  # Avoid ValueError in pcolormesh().
+    da2plot = (
+        da2plot.load()
+    )  # avoid multiple UserWarning: Sending large graph of size 324.02 MiB.
+    # pfull is size-1 or ValueError: cannot select a dimension to squeeze out which has length greater than one
+    if da2plot.pfull.size == 1:
+        da2plot = da2plot.squeeze(dim="pfull")  # Avoid ValueError in pcolormesh().
 
     # central lon/lat from https://github.com/NOAA-EMC/regional_workflow/blob/
     # release/public-v1/ush/Python/plot_allvars.py
