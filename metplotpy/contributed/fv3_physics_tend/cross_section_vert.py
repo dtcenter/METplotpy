@@ -33,9 +33,6 @@ def parse_args():
     parser.add_argument("config", help="yaml configuration file")
     parser.add_argument("historyfile", help="FV3 history file")
     parser.add_argument("gridfile", help="FV3 grid spec file")
-    parser.add_argument(
-        "statevarname", help="moisture, temperature, or wind component variable name"
-    )
 
     args = parser.parse_args()
     return args
@@ -51,24 +48,23 @@ def main():
     args = parse_args()
     gridfile = args.gridfile
     historyfile = args.historyfile
-    statevarname = args.statevarname
     config = args.config
     fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
 
-    pcm = cross_section_vert(fv3, historyfile, gridfile, statevarname)
+    pcm = cross_section_vert(fv3, historyfile, gridfile)
 
     startpt = fv3["startpt"]
     endpt = fv3["endpt"]
     ofile = (
         physics_tend.TMPDIR
-        / f"{statevarname}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
+        / f"{fv3["statevarname"]}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
     )
     pcm.fig.savefig(ofile, dpi=fv3["dpi"])
     logging.info("created %s", os.path.realpath(ofile))
 
 
 # Don't name `cross_section` metpy already has this method.
-def cross_section_vert(fv3, historyfile, gridfile, statevarname, **kwargs):
+def cross_section_vert(fv3, historyfile, gridfile, **kwargs):
     # Override config file with keyword args
     fv3.update(kwargs)
     fineprint = fv3["fineprint"]
@@ -76,6 +72,7 @@ def cross_section_vert(fv3, historyfile, gridfile, statevarname, **kwargs):
     startpt = fv3["startpt"]
     endpt = fv3["endpt"]
     robust = fv3["robust"]
+    statevarname = fv3["statevarname"]
     subtract = fv3["subtract"]
     twindow = datetime.timedelta(hours=fv3["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
@@ -97,7 +94,7 @@ def cross_section_vert(fv3, historyfile, gridfile, statevarname, **kwargs):
 
     # Open input file
     pattern = r".*tile\d.nc$"
-    if re.match(pattern, str(historyfile)):
+    if re.match(pattern, str(historyfile)): # str handles pathlib.Path
         logging.warning("FV3-style historyfile")
         fv3ds = physics_tend.get_fv3ds(historyfile, fv3)
     else:

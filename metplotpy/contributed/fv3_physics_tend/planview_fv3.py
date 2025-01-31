@@ -31,12 +31,6 @@ def parse_args():
     parser.add_argument("config", help="yaml configuration file")
     parser.add_argument("historyfile", help="FV3 history file")
     parser.add_argument("gridfile", help="FV3 grid spec file")
-    parser.add_argument(
-        "statevarname", help="moisture, temperature, or wind component variable name"
-    )
-    parser.add_argument(
-        "tendencytype", help="type of tendency. ignored if pfull is a single level"
-    )
 
     args = parser.parse_args()
     return args
@@ -52,19 +46,17 @@ def main():
     args = parse_args()
     gridfile = args.gridfile
     historyfile = args.historyfile
-    statevarname = args.statevarname
-    tendencytype = args.tendencytype
     config = args.config
     fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
 
-    pcm = planview(fv3, historyfile, gridfile, statevarname, tendencytype)
+    pcm = planview(fv3, historyfile, gridfile)
 
-    ofile = default_ofile(args, fv3["pfull"] * units.hPa, fv3["shp"])
+    ofile = default_ofile(fv3)
     pcm.fig.savefig(ofile, dpi=fv3["dpi"])
     logging.info("created %s", os.path.realpath(ofile))
 
 
-def planview(fv3, historyfile, gridfile, statevarname, tendencytype, **kwargs):
+def planview(fv3, historyfile, gridfile, **kwargs):
     # Override config file with keyword args
     fv3.update(kwargs)
     fineprint = fv3["fineprint"]
@@ -73,6 +65,8 @@ def planview(fv3, historyfile, gridfile, statevarname, tendencytype, **kwargs):
     robust = fv3["robust"]
     sel_method = fv3["sel_method"]
     shp = fv3["shp"]
+    statevarname = fv3["statevarname"]
+    tendencytype = fv3["tendencytype"]
     subtract = fv3["subtract"]
     twindow = datetime.timedelta(hours=fv3["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
@@ -316,17 +310,18 @@ def planview(fv3, historyfile, gridfile, statevarname, tendencytype, **kwargs):
     return pcm
 
 
-def default_ofile(args, pfull, shp):
+def default_ofile(fv3):
     """
     Return default output filename.
     """
+    pfull = fv3["pfull"] * units.hPa
     if len(pfull) == 1:
         pfull_str = f"{pfull[0]:~.0f}".replace(" ", "")
-        ofile = f"{args.statevarname}_{pfull_str}.png"
+        ofile = f"{fv3["statevarname"]}_{pfull_str}.png"
     else:
-        ofile = f"{args.statevarname}_{args.tendencytype}.png"
-    if shp:
-        shp = shp.rstrip("/")
+        ofile = f"{fv3["statevarname"]}_{fv3["tendencytype"]}.png"
+    if fv3["shp"]:
+        shp = fv3["shp"].rstrip("/")
         # Add shapefile name to output filename
         shapename = os.path.basename(shp)
         root, ext = os.path.splitext(ofile)

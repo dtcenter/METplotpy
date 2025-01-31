@@ -86,65 +86,64 @@ def get_fv3ds(historyfile, fv3):
     validtime = pd.to_datetime(validtime)
     time0 = validtime - twindow
 
-    STATEVARS = fv3["tendency_varnames"]
+    statevarname = fv3["statevarname"]
 
-    for statevar in STATEVARS:
-        for tendvarname in STATEVARS[statevar]:
-            prefix, tendencytype = tendvarname.split("_")
-            suffix = f"_{tendencytype}"
+    for tendvarname in fv3["tendency_varnames"][statevarname]:
+        prefix, tendencytype = tendvarname.split("_")
+        suffix = f"_{tendencytype}"
 
-            # Filter variables by prefix and suffix
-            stack_vars = [
-                var
-                for var in ds.variables
-                if var.startswith(prefix) and var.endswith(suffix)
-            ]
-            if not stack_vars:
-                raise ValueError(
-                    f"No stack_vars start with {prefix} and end with {suffix}"
-                )
-
-            plevs = [int(var[len(prefix) : -len(suffix)]) for var in stack_vars]
-
-            # Concatenate along 'pfull' dimension
-            ds[tendvarname] = (
-                ds[stack_vars]
-                .metpy.quantify()
-                .to_dataarray(dim="pfull")
-                .assign_coords(pfull=plevs)
-            )
-            # Cancel the extra "per second" in units.
-            ds[tendvarname] = ds[tendvarname] * units.s
-            ds[tendvarname] = (
-                ds[tendvarname].sel(time=validtime) - ds[tendvarname].sel(time=time0)
-            ) / twindow_quantity
-            logging.debug(f"{tendvarname} units {ds[tendvarname].metpy.units}")
-
-            ds[tendvarname].attrs["long_name"] = tendvarname
-            ds = ds.drop_vars(stack_vars)
-            logging.info(tendvarname)
-
-        # Pre-compile regex for matching statevar variables
-        statevar_pattern = re.compile(f"^{statevar}\\d+$")
-        stack_vars = [var for var in ds.variables if statevar_pattern.match(var)]
+        # Filter variables by prefix and suffix
+        stack_vars = [
+            var
+            for var in ds.variables
+            if var.startswith(prefix) and var.endswith(suffix)
+        ]
         if not stack_vars:
-            raise ValueError(f"No stack_vars match pattern for {statevar}")
+            raise ValueError(
+                f"No stack_vars start with {prefix} and end with {suffix}"
+            )
 
-        plevs = [int(var[len(statevar) :]) for var in stack_vars]
+        plevs = [int(var[len(prefix) : -len(suffix)]) for var in stack_vars]
 
         # Concatenate along 'pfull' dimension
-        ds[statevar] = (
+        ds[tendvarname] = (
             ds[stack_vars]
-            .metpy.quantify()  # don't lose units
+            .metpy.quantify()
             .to_dataarray(dim="pfull")
             .assign_coords(pfull=plevs)
         )
-        ds[statevar].attrs["long_name"] = statevar
-        ds = ds.drop_vars(stack_vars)
+        # Cancel the extra "per second" in units.
+        ds[tendvarname] = ds[tendvarname] * units.s
+        ds[tendvarname] = (
+            ds[tendvarname].sel(time=validtime) - ds[tendvarname].sel(time=time0)
+        ) / twindow_quantity
+        logging.debug(f"{tendvarname} units {ds[tendvarname].metpy.units}")
 
-        ds["pfull"].attrs["units"] = "hPa"
-        ds["pfull"].attrs["positive"] = "down"
-        logging.info(statevar)
+        ds[tendvarname].attrs["long_name"] = tendvarname
+        ds = ds.drop_vars(stack_vars)
+        logging.info(tendvarname)
+
+    # Pre-compile regex for matching statevar variables
+    statevar_pattern = re.compile(f"^{statevarname}\\d+$")
+    stack_vars = [var for var in ds.variables if statevar_pattern.match(var)]
+    if not stack_vars:
+        raise ValueError(f"No stack_vars match pattern for {statevarname}")
+
+    plevs = [int(var[len(statevarname) :]) for var in stack_vars]
+
+    # Concatenate along 'pfull' dimension
+    ds[statevarname] = (
+        ds[stack_vars]
+        .metpy.quantify()  # don't lose units
+        .to_dataarray(dim="pfull")
+        .assign_coords(pfull=plevs)
+    )
+    ds[statevarname].attrs["long_name"] = statevarname
+    ds = ds.drop_vars(stack_vars)
+
+    ds["pfull"].attrs["units"] = "hPa"
+    ds["pfull"].attrs["positive"] = "down"
+    logging.info(statevarname)
 
     return ds.metpy.dequantify()
 
