@@ -97,11 +97,15 @@ endpt :
     - 30
     - -82
 
+statevarname : "t"
+
 # FV3 history file to subtract
 subtract : null
 
 # Accumulated tendencies were zeroed and divided by time since last output.
 tendencies_were_zeroed_and_averaged_after_every_output : False
+
+tendencytype : null
 
 # time window in hours
 twindow : 1
