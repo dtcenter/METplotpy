@@ -35,7 +35,7 @@ def add_conus_features(ax):
     return ax
 
 
-def get_datetimeindex(ds):
+def get_datetimeindex(datetimeindex):
     """
     Convert the time index of an xarray dataset to a pandas DateTimeIndex.
 
@@ -52,13 +52,14 @@ def get_datetimeindex(ds):
     Returns:
     pandas.DatetimeIndex: The converted and possibly rounded pandas DateTimeIndex.
     """
-    datetimeindex = ds.indexes["time"]
     if hasattr(datetimeindex, "to_datetimeindex"):
         # Convert from CFTime to pandas datetime or get warning
         # CFTimeIndex from non-standard calendar 'julian'.
         # Maybe history file should be saved with standard calendar.
         # To turn off warning, set unsafe=True.
+        logging.debug(f"convert {datetimeindex} to datetimeindex")
         datetimeindex = datetimeindex.to_datetimeindex(unsafe=True)
+        logging.debug(f"converted to {datetimeindex}")
     ragged_times = datetimeindex != datetimeindex.round("1ms")
     if any(ragged_times):
         logging.info(
@@ -69,20 +70,14 @@ def get_datetimeindex(ds):
     return datetimeindex
 
 
-def get_fv3ds(historyfile, fv3):
+def get_fv3ds(fv3, historyfile):
     logging.info(f"Opening {historyfile}")
     ds = xarray.open_dataset(historyfile, chunks={})
     twindow = datetime.timedelta(hours=fv3["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
     validtime = fv3["validtime"]
-    subtract = fv3["subtract"]
 
-    if subtract:
-        logging.warning("subtracting %s", subtract)
-        with xarray.set_options(keep_attrs=True):
-            ds -= xarray.open_dataset(subtract, chunks={})
-
-    ds["time"] = get_datetimeindex(ds)
+    ds["time"] = get_datetimeindex(ds.indexes["time"])
 
     if not validtime:
         validtime = ds.time.data[-1]  # last time
@@ -153,6 +148,42 @@ def get_fv3ds(historyfile, fv3):
     logging.info(statevarname)
 
     return ds.metpy.dequantify()
+
+def prepare_ds(fv3, historyfile, gridfile):
+    """
+    open (and maybe preprocess) historyfile
+    Add lat and lon coords to history Dataset
+    """
+
+    # Open input file
+    pattern = r".*tile\d.nc$"
+    if re.match(pattern, str(historyfile)): # str handles pathlib.Path
+        logging.warning("FV3-style historyfile")
+        ds = get_fv3ds(fv3, historyfile)
+    else:
+        logging.debug("open %s", historyfile)
+        ds = xarray.open_dataset(historyfile)
+
+    ds["time"] = get_datetimeindex(ds.indexes["time"])
+
+    # Read lat/lon from gfile
+    logging.debug(f"read lat/lon from {gridfile}")
+    gds = xarray.open_dataset(gridfile)
+    lont = gds[fv3["lon_name"]]
+    latt = gds[fv3["lat_name"]]
+    assert ds.grid_xt.equals(
+        gds.grid_xt
+    ), f"history grid_xt {ds.grid_xt.size} no match {gridfile}"
+    assert ds.grid_yt.equals(
+        gds.grid_yt
+    ), f"history grid_yt {ds.grid_yt.size} no match {gridfile}"
+
+    # lont and latt used by pcolorfill()
+    ds = ds.assign_coords(lont=lont, latt=latt)
+
+    ds["area"] = gds["area"]
+
+    return ds
 
 
 def pts_in_shp(lats, lons, shp):

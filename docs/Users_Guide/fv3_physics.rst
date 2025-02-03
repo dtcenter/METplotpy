@@ -293,19 +293,4 @@ time window ending 20z June 15, 2019.
 
 .. image:: figure/ugrd_28.0N-120.0E-26.0N-75.0E.png
 
-Difference Plot
----------------
-
-
-In the configuration file, set `subtract` to the file you want to subtract:
-
-.. code-block:: yaml
-
-   subtract : "fv3_history.nc"
-
-.. code-block:: bash
-
-   python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp
-
-.. image:: figure/tmp.vert_profile.png
 

@@ -51,7 +51,9 @@ def main():
     config = args.config
     fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
 
-    pcm = cross_section_vert(fv3, historyfile, gridfile)
+    ds = physics_tend.prepare_ds(fv3, historyfile, gridfile)
+
+    pcm = cross_section_vert(fv3, ds)
 
     startpt = fv3["startpt"]
     endpt = fv3["endpt"]
@@ -64,7 +66,7 @@ def main():
 
 
 # Don't name `cross_section` metpy already has this method.
-def cross_section_vert(fv3, historyfile, gridfile, **kwargs):
+def cross_section_vert(fv3, fv3ds, **kwargs):
     # Override config file with keyword args
     fv3.update(kwargs)
     fineprint = fv3["fineprint"]
@@ -85,38 +87,6 @@ def cross_section_vert(fv3, historyfile, gridfile, **kwargs):
         level = logging.DEBUG
     # prepend log message with time
     logging.basicConfig(format="%(asctime)s - %(message)s", level=level)
-
-    # Read lat/lon from gfile
-    logging.debug(f"read lat/lon from {gridfile}")
-    gds = xarray.open_dataset(gridfile)
-    lont = gds[fv3["lon_name"]]
-    latt = gds[fv3["lat_name"]]
-
-    # Open input file
-    pattern = r".*tile\d.nc$"
-    if re.match(pattern, str(historyfile)): # str handles pathlib.Path
-        logging.warning("FV3-style historyfile")
-        fv3ds = physics_tend.get_fv3ds(historyfile, fv3)
-    else:
-        logging.debug("open %s", historyfile)
-        fv3ds = xarray.open_dataset(historyfile)
-        if subtract:
-            logging.info("subtracting %s", subtract)
-            with xarray.set_options(keep_attrs=True):
-                fv3ds -= xarray.open_dataset(subtract)
-
-    assert fv3ds.grid_xt.equals(
-        gds.grid_xt
-    ), f"history grid_xt {fv3ds.grid_xt.size} no match {gridfile}"
-    assert fv3ds.grid_yt.equals(
-        gds.grid_yt
-    ), f"history grid_yt {fv3ds.grid_yt.size} no match {gridfile}"
-
-
-    fv3ds["time"] = physics_tend.get_datetimeindex(fv3ds)
-
-    # lont and latt used by pcolorfill()
-    fv3ds = fv3ds.assign_coords(lont=lont, latt=latt)
 
     if not validtime:
         validtime = fv3ds.time.values[-1]

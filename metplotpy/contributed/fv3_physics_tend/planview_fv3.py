@@ -49,14 +49,16 @@ def main():
     config = args.config
     fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
 
-    pcm = planview(fv3, historyfile, gridfile)
+    ds = physics_tend.prepare_ds(fv3, historyfile, gridfile)
+
+    pcm = planview(fv3, ds)
 
     ofile = default_ofile(fv3)
     pcm.fig.savefig(ofile, dpi=fv3["dpi"])
     logging.info("created %s", os.path.realpath(ofile))
 
 
-def planview(fv3, historyfile, gridfile, **kwargs):
+def planview(fv3, fv3ds, **kwargs):
     # Override config file with keyword args
     fv3.update(kwargs)
     fineprint = fv3["fineprint"]
@@ -67,7 +69,6 @@ def planview(fv3, historyfile, gridfile, **kwargs):
     shp = fv3["shp"]
     statevarname = fv3["statevarname"]
     tendencytype = fv3["tendencytype"]
-    subtract = fv3["subtract"]
     twindow = datetime.timedelta(hours=fv3["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
     validtime = fv3["validtime"]
@@ -80,50 +81,21 @@ def planview(fv3, historyfile, gridfile, **kwargs):
     # prepend log message with time
     logging.basicConfig(format="%(asctime)s - %(message)s", level=level)
 
-    # Read lat/lon from gfile
-    logging.debug(f"read lat/lon from {gridfile}")
-    gds = xarray.open_dataset(gridfile)
-    lont = gds[fv3["lon_name"]]
-    latt = gds[fv3["lat_name"]]
-
-    # Open input file
-    pattern = r".*tile\d.nc$"
-    if re.match(pattern, str(historyfile)): # str handles pathlib.Path
-        logging.warning("FV3-style historyfile")
-        fv3ds = physics_tend.get_fv3ds(historyfile, fv3)
-    else:
-        logging.debug("open %s", historyfile)
-        fv3ds = xarray.open_dataset(historyfile)
-        if subtract:
-            logging.info("subtracting %s", subtract)
-            with xarray.set_options(keep_attrs=True):
-                fv3ds -= xarray.open_dataset(subtract)
-
-    assert fv3ds.grid_xt.equals(
-        gds.grid_xt
-    ), f"history grid_xt {fv3ds.grid_xt.size} no match {gridfile}"
-    assert fv3ds.grid_yt.equals(
-        gds.grid_yt
-    ), f"history grid_yt {fv3ds.grid_yt.size} no match {gridfile}"
-
-
-    fv3ds["time"] = physics_tend.get_datetimeindex(fv3ds)
-
-    # lont and latt used by pcolorfill()
-    fv3ds = fv3ds.assign_coords(lont=lont, latt=latt)
-
     if not validtime:
         validtime = fv3ds.time.values[-1]
         logging.info(
             "validtime not configured. Using last time in history %s.",
             validtime,
         )
+    logging.debug(type(validtime))
     validtime = pd.to_datetime(validtime)
+    logging.debug(f"twindow {twindow} validtime {validtime}")
     time0 = validtime - twindow
-    logging.debug(f"time0 {time0} twindow {twindow} validtime {validtime}")
+    logging.debug(f"time0 {time0}")
 
     # list of tendency variable names for requested state variable
     tendency_vars = fv3["tendency_varnames"][statevarname]
+    logging.debug(f"tendency_vars {tendency_vars}")
     tendencies = fv3ds[tendency_vars]  # subset of original Dataset
     tendencies = tendencies.load()
     # convert DataArrays to Quantities to protect units. DataArray.mean drops units attribute.

@@ -50,7 +50,9 @@ def main():
     fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
     statevarname = fv3["statevarname"]
 
-    fig = vert_profile(fv3, historyfile, gridfile)
+    ds = physics_tend.prepare_ds(fv3, historyfile, gridfile)
+
+    fig = vert_profile(fv3, ds)
 
     # Output filename.
     ofile = physics_tend.TMPDIR / f"{statevarname}.vert_profile.png"
@@ -64,7 +66,7 @@ def main():
     logging.info("created %s", os.path.realpath(ofile))
 
 
-def vert_profile(fv3, historyfile, gridfile, **kwargs):
+def vert_profile(fv3, fv3ds, **kwargs):
     # Override config file with keyword args
     fv3.update(kwargs)
     fineprint = fv3["fineprint"]
@@ -82,39 +84,6 @@ def vert_profile(fv3, historyfile, gridfile, **kwargs):
         level = logging.DEBUG
     # prepend log message with time
     logging.basicConfig(format="%(asctime)s - %(message)s", level=level)
-
-    # Read lat/lon/area from gfile
-    logging.debug(f"read lat/lon/area from {gridfile}")
-    gds = xarray.open_dataset(gridfile)
-    lont = gds[fv3["lon_name"]]
-    latt = gds[fv3["lat_name"]]
-    area = gds["area"]
-
-    # Open input file
-    pattern = r".*tile\d.nc$"
-    if re.match(pattern, str(historyfile)): # str handles pathlib.Path
-        logging.warning("FV3-style historyfile")
-        fv3ds = physics_tend.get_fv3ds(historyfile, fv3)
-    else:
-        logging.debug("open %s", historyfile)
-        fv3ds = xarray.open_dataset(historyfile)
-        if subtract:
-            logging.info("subtracting %s", subtract)
-            with xarray.set_options(keep_attrs=True):
-                fv3ds -= xarray.open_dataset(subtract)
-
-    assert fv3ds.grid_xt.equals(
-        gds.grid_xt
-    ), f"history grid_xt {fv3ds.grid_xt.size} no match {gridfile}"
-    assert fv3ds.grid_yt.equals(
-        gds.grid_yt
-    ), f"history grid_yt {fv3ds.grid_yt.size} no match {gridfile}"
-
-
-    fv3ds["time"] = physics_tend.get_datetimeindex(fv3ds)
-
-    # lont and latt used by pcolorfill()
-    fv3ds = fv3ds.assign_coords(lont=lont, latt=latt)
 
     if not validtime:
         validtime = fv3ds.time.values[-1]
@@ -221,12 +190,12 @@ def vert_profile(fv3, historyfile, gridfile, **kwargs):
     # Mask points outside shape.
     if shp:
         # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
-        mask = physics_tend.pts_in_shp(latt.values, lont.values, shp)
+        mask = physics_tend.pts_in_shp(fv3ds.latt.values, fv3ds.lont.values, shp)
         mask = xarray.DataArray(mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
         da2plot = da2plot.where(mask)
 
     logging.info("area-weighted spatial average")
-    da2plot = da2plot.weighted(area).mean(area.dims)
+    da2plot = da2plot.weighted(fv3ds.area).mean(fv3ds.area.dims)
     # Put units in attributes so they show up in xlabel.
     # dequantify after area-weighted mean to preserve units.
     da2plot = da2plot.metpy.dequantify()
@@ -272,7 +241,7 @@ def vert_profile(fv3, historyfile, gridfile, **kwargs):
         # astype(int) to avoid TypeError: numpy boolean subtract
         cbar_kwargs = {"ticks": [0.25, 0.75], "shrink": 0.6}
         pcm = (
-            mask.assign_coords(lont=lont, latt=latt)
+            mask.assign_coords(lont=fv3ds.lont, latt=fv3ds.latt)
             .astype(int)
             .plot.pcolormesh(
                 ax=ax_inset,
