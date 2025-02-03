@@ -100,6 +100,10 @@ def cross_section_vert(fv3, historyfile, gridfile, **kwargs):
     else:
         logging.debug("open %s", historyfile)
         fv3ds = xarray.open_dataset(historyfile)
+        if subtract:
+            logging.info("subtracting %s", subtract)
+            with xarray.set_options(keep_attrs=True):
+                fv3ds -= xarray.open_dataset(subtract)
 
     assert fv3ds.grid_xt.equals(
         gds.grid_xt
@@ -108,10 +112,6 @@ def cross_section_vert(fv3, historyfile, gridfile, **kwargs):
         gds.grid_yt
     ), f"history grid_yt {fv3ds.grid_yt.size} no match {gridfile}"
 
-    if subtract:
-        logging.info("subtracting %s", subtract)
-        with xarray.set_options(keep_attrs=True):
-            fv3ds -= xarray.open_dataset(subtract)
 
     fv3ds["time"] = physics_tend.get_datetimeindex(fv3ds)
 

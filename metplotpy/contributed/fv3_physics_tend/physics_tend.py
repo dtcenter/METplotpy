@@ -75,6 +75,13 @@ def get_fv3ds(historyfile, fv3):
     twindow = datetime.timedelta(hours=fv3["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
     validtime = fv3["validtime"]
+    subtract = fv3["subtract"]
+
+    if subtract:
+        logging.warning("subtracting %s", subtract)
+        with xarray.set_options(keep_attrs=True):
+            ds -= xarray.open_dataset(subtract, chunks={})
+
     ds["time"] = get_datetimeindex(ds)
 
     if not validtime:
@@ -112,7 +119,7 @@ def get_fv3ds(historyfile, fv3):
             .to_dataarray(dim="pfull")
             .assign_coords(pfull=plevs)
         )
-        # Cancel the extra "per second" in units.
+        # Cancel the extra "per second" in tendency units.
         ds[tendvarname] = ds[tendvarname] * units.s
         ds[tendvarname] = (
             ds[tendvarname].sel(time=validtime) - ds[tendvarname].sel(time=time0)
