@@ -200,7 +200,7 @@ def planview(fv3, fv3ds, **kwargs):
     # And they aren't lost in xarray.DataArray.interp.
     da2plot = da2plot.metpy.dequantify()
 
-    logging.info(f"Select vertical levels with '{sel_method}' method")
+    logging.debug(f"Select vertical levels with '{sel_method}' method")
     if sel_method == "nearest":
         da2plot = da2plot.metpy.sel(
             vertical=pfull, method=sel_method, tolerance=10.0 * units.hPa
@@ -215,7 +215,7 @@ def planview(fv3, fv3ds, **kwargs):
     # Mask points outside shape.
     if shp:
         # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
-        mask = physics_tend.pts_in_shp(latt.values, lont.values, shp)
+        mask = physics_tend.pts_in_shp(fv3ds.latt.values, fv3ds.lont.values, shp)
         mask = xarray.DataArray(mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
         da2plot = da2plot.where(mask)
 
@@ -243,7 +243,7 @@ def planview(fv3, fv3ds, **kwargs):
 
     logging.debug("plot pcolormesh")
     if robust:
-        logging.warning("compute colormap range with 2nd and 98th percentiles")
+        logging.debug("compute colormap range with 2nd and 98th percentiles")
     pcm = da2plot.plot.pcolormesh(
         x="lont",
         y="latt",

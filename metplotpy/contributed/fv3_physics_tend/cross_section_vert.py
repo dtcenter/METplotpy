@@ -75,7 +75,6 @@ def cross_section_vert(fv3, fv3ds, **kwargs):
     endpt = fv3["endpt"]
     robust = fv3["robust"]
     statevarname = fv3["statevarname"]
-    subtract = fv3["subtract"]
     twindow = datetime.timedelta(hours=fv3["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
     validtime = fv3["validtime"]
@@ -94,12 +93,15 @@ def cross_section_vert(fv3, fv3ds, **kwargs):
             "validtime not configured. Using last time in history %s.",
             validtime,
         )
+    logging.debug(type(validtime))
     validtime = pd.to_datetime(validtime)
+    logging.debug(f"twindow {twindow} validtime {validtime}")
     time0 = validtime - twindow
-    logging.debug(f"time0 {time0} twindow {twindow} validtime {validtime}")
+    logging.debug(f"time0 {time0}")
 
     # list of tendency variable names for requested state variable
     tendency_vars = fv3["tendency_varnames"][statevarname]
+    logging.debug(f"tendency_vars {tendency_vars}")
     tendencies = fv3ds[tendency_vars]  # subset of original Dataset
     tendencies = tendencies.load()
     # convert DataArrays to Quantities to protect units. DataArray.mean drops units attribute.
@@ -228,7 +230,7 @@ def cross_section_vert(fv3, fv3ds, **kwargs):
 
     logging.debug("plot pcolormesh")
     if robust:
-        logging.warning("compute colormap range with 2nd and 98th percentiles")
+        logging.debug("compute colormap range with 2nd and 98th percentiles")
     # normalized width and height of inset. Shrink colorbar to provide space.
     wid_inset, hgt_inset = 0.18, 0.18
     pcm = cross.squeeze().plot.pcolormesh(

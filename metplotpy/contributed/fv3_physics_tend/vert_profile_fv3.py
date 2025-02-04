@@ -72,7 +72,6 @@ def vert_profile(fv3, fv3ds, **kwargs):
     fineprint = fv3["fineprint"]
     shp = fv3["shp"]
     statevarname = fv3["statevarname"]
-    subtract = fv3["subtract"]
     twindow = datetime.timedelta(hours=fv3["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
     validtime = fv3["validtime"]
@@ -91,12 +90,15 @@ def vert_profile(fv3, fv3ds, **kwargs):
             "validtime not configured. Using last time in history %s.",
             validtime,
         )
+    logging.debug(type(validtime))
     validtime = pd.to_datetime(validtime)
+    logging.debug(f"twindow {twindow} validtime {validtime}")
     time0 = validtime - twindow
-    logging.debug(f"time0 {time0} twindow {twindow} validtime {validtime}")
+    logging.debug(f"time0 {time0}")
 
     # list of tendency variable names for requested state variable
     tendency_vars = fv3["tendency_varnames"][statevarname]
+    logging.debug(f"tendency_vars {tendency_vars}")
     tendencies = fv3ds[tendency_vars]  # subset of original Dataset
     tendencies = tendencies.load()
     # convert DataArrays to Quantities to protect units. DataArray.mean drops units attribute.
@@ -200,7 +202,7 @@ def vert_profile(fv3, fv3ds, **kwargs):
     # dequantify after area-weighted mean to preserve units.
     da2plot = da2plot.metpy.dequantify()
 
-    logging.info("creating figure")
+    logging.debug("creating figure")
     fig, ax = plt.subplots()
     fig.subplots_adjust(bottom=0.18)  # add space at bottom for fine print
     ax.invert_yaxis()  # pressure increases from top to bottom
@@ -237,7 +239,8 @@ def vert_profile(fv3, fv3ds, **kwargs):
         projection = cartopy.crs.LambertConformal(
             central_longitude=-97.5, central_latitude=fv3["standard_parallel"]
         )
-        ax_inset = plt.gcf().add_axes([0.7, 0.001, 0.19, 0.13], projection=projection)
+        # bottom-left corner. was right side but covered power-of-ten of xaxis ticks.
+        ax_inset = plt.gcf().add_axes([0.001, 0.001, 0.19, 0.13], projection=projection)
         # astype(int) to avoid TypeError: numpy boolean subtract
         cbar_kwargs = {"ticks": [0.25, 0.75], "shrink": 0.6}
         pcm = (

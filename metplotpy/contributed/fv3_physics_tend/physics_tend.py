@@ -101,9 +101,7 @@ def get_fv3ds(fv3, historyfile):
             if var.startswith(prefix) and var.endswith(suffix)
         ]
         if not stack_vars:
-            raise ValueError(
-                f"No stack_vars start with {prefix} and end with {suffix}"
-            )
+            raise ValueError(f"No stack_vars start with {prefix} and end with {suffix}")
 
         plevs = [int(var[len(prefix) : -len(suffix)]) for var in stack_vars]
 
@@ -149,7 +147,8 @@ def get_fv3ds(fv3, historyfile):
 
     return ds.metpy.dequantify()
 
-def prepare_ds(fv3, historyfile, gridfile):
+
+def prepare_ds(fv3: dict, historyfile: Path, gridfile: Path) -> xarray.Dataset:
     """
     open (and maybe preprocess) historyfile
     Add lat and lon coords to history Dataset
@@ -157,14 +156,13 @@ def prepare_ds(fv3, historyfile, gridfile):
 
     # Open input file
     pattern = r".*tile\d.nc$"
-    if re.match(pattern, str(historyfile)): # str handles pathlib.Path
+    if re.match(pattern, str(historyfile)):  # str handles pathlib.Path
         logging.warning("FV3-style historyfile")
         ds = get_fv3ds(fv3, historyfile)
     else:
         logging.debug("open %s", historyfile)
         ds = xarray.open_dataset(historyfile)
-
-    ds["time"] = get_datetimeindex(ds.indexes["time"])
+        ds["time"] = get_datetimeindex(ds.indexes["time"])
 
     # Read lat/lon from gfile
     logging.debug(f"read lat/lon from {gridfile}")
