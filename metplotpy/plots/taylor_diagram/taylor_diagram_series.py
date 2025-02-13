@@ -57,7 +57,7 @@ class TaylorDiagramSeries(Series):
 
         # These columns are required for getting the statistics values to plot, add
         # these to the list of columns of interest.
-        required_columns = ['stat_name', 'fcst_var', 'stat_value']
+        required_columns = ['stat_name', 'stat_value']
         for required in required_columns:
             relevant_columns.append(required)
 
@@ -84,11 +84,8 @@ class TaylorDiagramSeries(Series):
 
         # Determine which series this corresponds to.
         cur_perm = permutations_list[self.series_order]
-
+        qstr = ""
         for i, svn in enumerate(self.series_val_names):
-            # qstr = self.series_val_names[0] + "==" + '"' + cur_perm[0] + '"' + " & " + self.series_val_names[
-            #       1] + "==" + '"' + cur_perm[1] + '"'
-
             column_name = svn
 
             # If we have more than one item in the series_val1, treat this
@@ -112,7 +109,9 @@ class TaylorDiagramSeries(Series):
         # fstdev_row = self.subsetted_df.query(fstdev_query)['stat_value'].values[0]
         # Break up the filtering/subsetting into simpler statements, as METviewer is having
         # issues with chaining pandas commands.
+
         fstdev_row: pandas.Series = self.subsetted_df.query(fstdev_query)
+
         # Don't use fstdev_row['stat_value'].values[0], as the values[0] syntax may
         # cause issues within METviewer. *Note*: This syntax works for stand-alone/command line invocation.
         fstdev_results = fstdev_row['stat_value'].values.min()
