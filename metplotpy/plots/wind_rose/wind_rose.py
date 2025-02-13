@@ -94,7 +94,7 @@ class WindRosePlot(BasePlot):
             Returns:
 
         """
-        input_df = pd.read_csv(self.config_obj.stat_input, sep="\s+", header='infer')
+        input_df = pd.read_csv(self.config_obj.stat_input, sep="/s+", header='infer')
         self.u_wind_data = input_df[input_df['FCST_VAR'] == 'UGRD']
         self.v_wind_data = input_df[input_df['FCST_VAR'] == 'VGRD']
 
