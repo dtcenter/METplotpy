@@ -100,7 +100,7 @@ def test_hovmoeller(nc_test_file,assert_json_equal):
 
     # finally check json plot values
     # to regenerate json file run:
-     plot_obj.figure.write_json('hovmoeller_test.json')
+    plot_obj.figure.write_json('hovmoeller_test.json')
     assert_json_equal(plot_obj.figure, 'hovmoeller_test.json')
 
     # Clean up
