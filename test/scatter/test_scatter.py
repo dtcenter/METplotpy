@@ -12,6 +12,7 @@ def test_scatter(assert_json_equal):
     assert_json_equal(scat.figure, "custom_scatter_expected.json")
 
 
+@pytest.mark.skip("plotly generates an html plot-this test cannot be run in a GHA")
 def test_main():
     # check that main can execute without error.
     scatter.main()
