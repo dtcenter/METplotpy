@@ -4,7 +4,7 @@
 
 
 # Input and output file information
-input_directory: !ENV '${TEST_DIR}/data/2023/'
+input_directory: !ENV '${TEST_DIR}/data/2023/sh052023'
 input_file_extension: '.dat'
 output_directory: !ENV '${TEST_DIR}/output'
 log_level: "INFO"
