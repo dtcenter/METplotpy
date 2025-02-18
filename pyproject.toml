@@ -9,7 +9,7 @@ description = "plotting package for METplus"
 authors = [
     {name = "METplus"},
 ]
-requires-python = ">=3.10.4"
+requires-python = ">=3.12"
 readme = "README.md"
 license = {text = "MIT"}
 classifiers = [
@@ -49,3 +49,5 @@ exclude_also = [
     "def __repr__",
     "if __name__ == .__main__.:",
     ]
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::RuntimeWarning"]
