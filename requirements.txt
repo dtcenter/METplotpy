@@ -4,7 +4,7 @@ kaleido>=0.2.1
 matplotlib==3.10.0
 metpy==1.6.3
 netcdf4==1.7.2
-numpy==2.2.2
+numpy==2.2.3
 opencv-python>=4.10.0
 pandas==2.2.3
 pint==0.24.4
