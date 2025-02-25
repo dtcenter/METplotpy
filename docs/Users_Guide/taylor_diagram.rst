@@ -8,8 +8,11 @@ Description
 The `Taylor diagram <https://metplotpy.readthedocs.io/en/develop/Users_Guide/references.html>`_  was invented by
 Karl E. Taylor in 1994 and is useful in quantifying the correspondence between
 models and a "reference" based on the Pearson correlation coefficient, the root-mean-square
-error (RMSE), and the standard deviation.  Taylor diagrams have been widely used for climate and other
+error (RMSE), and the standard deviation. Taylor diagrams have been widely used for climate and other
 Earth science models but can be useful in the evaluation of models from other domains.
+
+The normalized standard deviation and Pearson's Correlation coefficient are the only two values used to plot the
+point and grid lines for the RMS. 
 
 For more information on Taylor diagrams, please refer to the
 `METviewer documentation
