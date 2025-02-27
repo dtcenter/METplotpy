@@ -7,7 +7,7 @@ proc ModulesHelp { } {
      *** For help see the official MET webpage at http://www.dtcenter.org/met/users ***"
 }
 
-prereq intel
+prereq intel/2024.2.1
 
 setenv METPLOTPY_SOURCE /contrib/METplotpy/METplotpy-3.0.0
 setenv METPLOTPY_BASE /contrib/METplotpy/METplotpy-3.0.0
