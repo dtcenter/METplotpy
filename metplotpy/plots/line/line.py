@@ -152,24 +152,12 @@ class Line(BasePlot):
 
         # add series for y1 axis
         num_series_y1 = len(self.config_obj.get_series_y(1))
-
-        # Plotly only plots legends based on the underlying order of the data. Re-order the
-        # series_y data to reflect what was specified in the series_order setting in the config file.
-        series_ordering = self.config_obj.series_ordering_zb
-        reordered_series_y = []
-
-        # Store the series data in a dictionary, using the index/position of series entry as the key
-        series_y_dict = {}
-        for i, cur_series in enumerate(self.config_obj.get_series_y(1)):
-            series_y_dict[i] = cur_series
-
-        # Order the series based on the ordering specified in the config file
-        for order in series_ordering:
-            reordered_series_y.append(series_y_dict[order])
-
-        for i, name in enumerate(reordered_series_y):
+        for i, name in enumerate(self.config_obj.get_series_y(1)):
             series_obj = LineSeries(self.config_obj, i, input_data, series_list, name)
             series_list.append(series_obj)
+
+
+
 
         # add series for y2 axis
         num_series_y2 = len(self.config_obj.get_series_y(2))
@@ -204,9 +192,25 @@ class Line(BasePlot):
                                         input_data, series_list, name, 2)
                 series_list.append(series_obj)
 
+        # reorder series
+        series_list = self.config_obj.create_list_by_series_ordering(series_list)
+
+        # Plotly only plots legends based on the underlying order of the data. Re-order the
+        # series_y data to reflect what was specified in the series_order setting in the config file.
+        series_ordering = self.config_obj.series_ordering_zb
+        reordered_series_list = []
+
+        # Store the series data in a dictionary, using the index/position of series entry as the key
+        series_y_dict = {}
+        for i, cur_series in enumerate(series_list):
+            series_y_dict[i] = cur_series
+
+        # Order the series based on the ordering specified in the config file
+        for order in series_ordering:
+            reordered_series_list.append(series_y_dict[order])
 
         self.logger.info(f"Finished creating the series objects: {datetime.now()}")
-        return series_list
+        return reordered_series_list
 
     def _create_figure(self) -> None:
         """
