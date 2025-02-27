@@ -16,7 +16,7 @@ __author__ = 'Hank Fisher'
 from datetime import datetime
 import plotly.graph_objects as go
 import pandas as pd
-from xarray.util.generate_ops import render
+# from xarray.util.generate_ops import render
 
 from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots import util
