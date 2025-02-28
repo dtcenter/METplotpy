@@ -4,7 +4,6 @@ import argparse
 import datetime
 import logging
 import os
-import re
 
 import cartopy
 import matplotlib.pyplot as plt
@@ -46,40 +45,39 @@ def main():
     args = parse_args()
     gridfile = args.gridfile
     historyfile = args.historyfile
-    config = args.config
-    fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
-    statevarname = fv3["statevarname"]
+    config = yaml.load(open(args.config, encoding="utf8"), Loader=yaml.FullLoader)
+    statevarname = config["statevarname"]
 
-    ds = physics_tend.prepare_ds(fv3, historyfile, gridfile)
+    ds = physics_tend.prepare_ds(config, historyfile, gridfile)
 
-    fig = vert_profile(fv3, ds)
+    fig = vert_profile(config, ds)
 
     # Output filename.
     ofile = physics_tend.TMPDIR / f"{statevarname}.vert_profile.png"
-    if fv3["shp"]:
-        shp = fv3["shp"].rstrip("/")
+    if config["shp"]:
+        shp = config["shp"].rstrip("/")
         # Add shapefile name to output filename
         shapename = os.path.basename(shp)
         root, ext = os.path.splitext(ofile)
         ofile = root + f".{shapename}" + ext
-    fig.savefig(ofile, dpi=fv3["dpi"])
+    fig.savefig(ofile, dpi=config["dpi"])
     logging.info("created %s", os.path.realpath(ofile))
 
 
-def vert_profile(fv3, fv3ds, **kwargs):
+def vert_profile(config, fv3ds, **kwargs):
     # Override config file with keyword args
-    fv3.update(kwargs)
-    fineprint = fv3["fineprint"]
-    shp = fv3["shp"]
-    statevarname = fv3["statevarname"]
-    twindow = datetime.timedelta(hours=fv3["twindow"])
+    config.update(kwargs)
+    fineprint = config["fineprint"]
+    shp = config["shp"]
+    statevarname = config["statevarname"]
+    twindow = datetime.timedelta(hours=config["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
-    validtime = fv3["validtime"]
-    xmin = fv3["xmin"]
-    xmax = fv3["xmax"]
+    validtime = config["validtime"]
+    xmin = config["xmin"]
+    xmax = config["xmax"]
 
     level = logging.INFO
-    if fv3["debug"]:
+    if config["debug"]:
         level = logging.DEBUG
     # prepend log message with time
     logging.basicConfig(format="%(asctime)s - %(message)s", level=level)
@@ -90,14 +88,21 @@ def vert_profile(fv3, fv3ds, **kwargs):
             "validtime not configured. Using last time in history %s.",
             validtime,
         )
-    logging.debug(type(validtime))
     validtime = pd.to_datetime(validtime)
+    if "validtime" in fv3ds.attrs:
+        assert pd.to_datetime(fv3ds.attrs["validtime"]) == validtime, (
+            f"config validtime {validtime} != Dataset validtime {fv3ds.attrs['validtime']}" 
+        )
+    if "twindow" in fv3ds.attrs:
+        assert datetime.timedelta(hours=fv3ds.attrs["twindow"]) == twindow, (
+            f"config twindow {twindow} != Dataset twindow {fv3ds.attrs['twindow']}" 
+        )
     logging.debug(f"twindow {twindow} validtime {validtime}")
-    time0 = validtime - twindow
-    logging.debug(f"time0 {time0}")
+    twindow_start = validtime - twindow
+    logging.debug(f"twindow_start {twindow_start}")
 
     # list of tendency variable names for requested state variable
-    tendency_vars = fv3["tendency_varnames"][statevarname]
+    tendency_vars = config["tendency_varnames"][statevarname]
     logging.debug(f"tendency_vars {tendency_vars}")
     tendencies = fv3ds[tendency_vars]  # subset of original Dataset
     tendencies = tendencies.load()
@@ -105,19 +110,19 @@ def vert_profile(fv3, fv3ds, **kwargs):
     tendencies = tendencies.metpy.quantify()
     logging.info(tendencies.max())
 
-    if fv3["tendencies_were_zeroed_and_averaged_after_every_output"]:
+    if config["tendencies_were_zeroed_and_averaged_after_every_output"]:
         logging.warning("assume tendencies_were_zeroed_and_averaged_after_every_output")
-        assert time0 in fv3ds.time, (
-            f"time0 {time0} not in history file. Closest is "
-            f"{fv3ds.time.sel(time=time0, method='nearest').time.data}"
+        assert twindow_start in fv3ds.time, (
+            f"twindow_start {twindow_start} not in history file. Closest is "
+            f"{fv3ds.time.sel(time=twindow_start, method='nearest').time.data}"
         )
-        # Define time slice starting with time-after-time0 and ending with validtime.
-        # We use the time *after* time0 because the time range corresponding to the tendency
+        # Define time slice starting with the first time after twindow_start and ending with validtime.
+        # We use the time *after* twindow_start because the time range corresponding to the tendency
         # output is the period immediately prior to the tendency timestamp.
-        # That way, slice(time_after_time0, validtime) has a time range of [time0,validtime].
-        idx_first_time_after_time0 = (fv3ds.time > time0).argmax()
-        time_after_time0 = fv3ds.time[idx_first_time_after_time0]
-        tindex = {"time": slice(time_after_time0, validtime)}
+        # That way, slice(time_after_twindow_start, validtime) has a time range of [twindow_start,validtime].
+        idx_first_time_after_twindow_start = (fv3ds.time > twindow_start).argmax()
+        time_after_twindow_start = fv3ds.time[idx_first_time_after_twindow_start].data
+        tindex = {"time": slice(time_after_twindow_start, validtime)}
         logging.debug("Time-weighted mean tendencies for time index slice %s", tindex)
         timeweights = fv3ds.time.diff("time").sel(tindex)
         time_weighted_tendencies = tendencies.sel(tindex) * timeweights
@@ -128,6 +133,7 @@ def vert_profile(fv3, fv3ds, **kwargs):
 
     # Make list of long_names before .to_array() loses them.
     long_names = [fv3ds[da].attrs["long_name"] for da in tendencies]
+    print(long_names)
 
     # Keep characters after final underscore. The first part is redundant.
     # for example dtend_u_pbl -> pbl
@@ -146,8 +152,9 @@ def vert_profile(fv3, fv3ds, **kwargs):
     # Tried metpy.quantify() with open_dataset, but
     # pint.errors.UndefinedUnitError: 'dBz' is not defined in the unit registry
     state_variable = fv3ds[statevarname].metpy.quantify()
+    logging.info(f"from {twindow_start} to {validtime}")
     actual_change = state_variable.sel(time=validtime) - state_variable.sel(
-        time=time0, method="nearest", tolerance=datetime.timedelta(milliseconds=1)
+        time=twindow_start, method="nearest", tolerance=datetime.timedelta(milliseconds=1)
     )
     actual_change = actual_change.assign_coords(time=validtime)
     actual_change.attrs["long_name"] = (
@@ -158,11 +165,11 @@ def vert_profile(fv3, fv3ds, **kwargs):
     all_tendencies = tendencies.sum(dim=tendency_dim)
 
     # Subtract physics tendency variable if it was in tendency_vars. Don't want to double-count.
-    phys_var = [x for x in tendency_vars if x.endswith("_phys")]
+    phys_var = any(x.endswith("_phys") for x in tendency_vars)
     if phys_var:
         logging.info(
-            "subtracting 'phys' tendency variable "
-            "from all_tendencies to avoid double-counting"
+            "subtract 'phys' tendency variable from "
+            "all_tendencies to avoid double-counting"
         )
         # use .data to avoid re-introducing tendency coordinate
         all_tendencies = all_tendencies - tendencies.sel({tendency_dim: "phys"}).data
@@ -173,7 +180,7 @@ def vert_profile(fv3, fv3ds, **kwargs):
     resid = all_tendencies - actual_tendency
 
     da2plot = tendencies
-    if fv3["resid"]:
+    if config["resid"]:
         # Concatenate all_tendencies, actual_tendency, and resid DataArrays.
         # Give them a name and long_name along tendency_dim.
         all_tendencies = all_tendencies.expand_dims(
@@ -214,7 +221,7 @@ def vert_profile(fv3, fv3ds, **kwargs):
     logging.info("plot area-weighted spatial average...")
     lines = da2plot.plot.line(y="pfull", ax=ax, xlim=(xmin, xmax), hue=tendency_dim)
 
-    if fv3["resid"]:
+    if config["resid"]:
         # Add special marker to actual_change and residual lines.
         # DataArray plot legend handles differ from the plot lines, for some reason. So if you
         # change the style of a line later, it is not automatically changed in the legend.
@@ -231,13 +238,13 @@ def vert_profile(fv3, fv3ds, **kwargs):
             leghandle.set_markersize(special_marker_size)
 
     # Add time to title
-    title = f'{time0}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
+    title = f'{twindow_start}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
     ax.set_title(title, wrap=True)
 
     if shp:
         # Locate region of interest on conus map background. Put in inset.
         projection = cartopy.crs.LambertConformal(
-            central_longitude=-97.5, central_latitude=fv3["standard_parallel"]
+            central_longitude=-97.5, central_latitude=config["standard_parallel"]
         )
         # bottom-left corner. was right side but covered power-of-ten of xaxis ticks.
         ax_inset = plt.gcf().add_axes([0.001, 0.001, 0.19, 0.13], projection=projection)
@@ -260,7 +267,7 @@ def vert_profile(fv3, fv3ds, **kwargs):
         pcm.colorbar.ax.set_yticklabels(["masked", "valid"], fontsize="xx-small")
         pcm.colorbar.outline.set_visible(False)
         physics_tend.add_conus_features(ax_inset)
-        extent = fv3["extent"]
+        extent = config["extent"]
         ax_inset.set_extent(extent)
 
     # Annotate figure with timestamp

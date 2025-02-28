@@ -70,105 +70,154 @@ def get_datetimeindex(datetimeindex):
     return datetimeindex
 
 
-def get_fv3ds(fv3, historyfile):
+def get_fv3ds(config: dict, historyfile: xarray.Dataset, **kwargs) -> xarray.Dataset:
+    """
+    Retrieve and process FV3 model data from a given history file.
+    Works with UFS runs for cutoff low study.
+    2-D variables on a single pressure level are stacked along 'pfull' vertical dimension.
+
+    Parameters:
+    fv3 (dict): Configuration dictionary containing FV3 model parameters.
+    historyfile (str): Path to the history file to be opened.
+    **kwargs: Additional keyword arguments to override the configuration dictionary.
+
+    Returns:
+    xarray.Dataset: Processed dataset with concatenated state variables and change in tendencies.
+
+    Raises:
+    ValueError: If no stack variables match the specified prefix and suffix or state variable pattern.
+
+    Notes:
+    - The function updates the FV3 configuration with any additional keyword arguments.
+    - It subtracts the change in tendencies across a time window.
+    - The units of the tendencies are adjusted to cancel the extra "per second" in the tendency units.
+    - Concatenates 2-D variables along the 'pfull' vertical dimension.
+    - state variables are not subtracted across the time window. All times are returned.
+    - The dataset is returned dequantified.
+    """
+    # Override config file with keyword args
+    config.update(kwargs)
     logging.info(f"Opening {historyfile}")
     ds = xarray.open_dataset(historyfile, chunks={})
-    twindow = datetime.timedelta(hours=fv3["twindow"])
+    ds.attrs.update(config)
+    twindow = datetime.timedelta(hours=config["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
-    validtime = fv3["validtime"]
+    validtime = config["validtime"]
 
     ds["time"] = get_datetimeindex(ds.indexes["time"])
 
     if not validtime:
         validtime = ds.time.data[-1]  # last time
         logging.info(
-            "validtime not configured. Using last time in history %s.",
+            "null validtime. Using last time in history %s.",
             validtime,
         )
     validtime = pd.to_datetime(validtime)
-    time0 = validtime - twindow
+    logging.debug(f"twindow {twindow} validtime {validtime}")
+    twindow_start = validtime - twindow
+    logging.debug(f"twindow_start {twindow_start}")
 
-    statevarname = fv3["statevarname"]
+    # Loop through all state vars in the tendency_varnames dictionary. q, t, u, and v
+    # Considered restricting to statevarname if statevarname is specified, but
+    # doing all of them is fast enough.
+    statevarnames = config["tendency_varnames"]
+    for statevarname in statevarnames:
+        for tendvarname in config["tendency_varnames"][statevarname]:
+            # tendvarname is something like 'du3dt150_nonphys'
+            prefix, tendencytype = tendvarname.split("_")
+            suffix = f"_{tendencytype}"
 
-    for tendvarname in fv3["tendency_varnames"][statevarname]:
-        prefix, tendencytype = tendvarname.split("_")
-        suffix = f"_{tendencytype}"
+            # Filter variables by prefix and suffix
+            stack_vars = [
+                var
+                for var in ds.variables
+                if var.startswith(prefix) and var.endswith(suffix)
+            ]
+            if not stack_vars:
+                raise ValueError(
+                    f"No stack_vars start with {prefix} and end with {suffix}"
+                )
 
-        # Filter variables by prefix and suffix
-        stack_vars = [
-            var
-            for var in ds.variables
-            if var.startswith(prefix) and var.endswith(suffix)
-        ]
+            plevs = [int(var[len(prefix) : -len(suffix)]) for var in stack_vars]
+
+            # Concatenate along 'pfull' dimension
+            ds[tendvarname] = (
+                ds[stack_vars]
+                .metpy.quantify()
+                .to_dataarray(dim="pfull")
+                .assign_coords(pfull=plevs)
+            )
+            # Cancel the extra "per second" in tendency units.
+            ds[tendvarname] = ds[tendvarname] * units.s
+            logging.debug(
+                f"divide {tendvarname} by twindow_quantity {twindow_quantity}"
+            )
+            ds[tendvarname] = (
+                ds[tendvarname].sel(time=validtime) - ds[tendvarname].sel(time=twindow_start)
+            ) / twindow_quantity
+            logging.debug(f"{tendvarname} units {ds[tendvarname].metpy.units}")
+
+            ds[tendvarname].attrs["long_name"] = tendvarname
+            ds[tendvarname].attrs["twindow"] = twindow
+            ds[tendvarname].attrs["twindow_start"] = twindow_start
+            ds[tendvarname].attrs["twindow_end"] = validtime
+
+            ds = ds.drop_vars(stack_vars)
+            logging.info(tendvarname)
+
+        # Pre-compile regex for matching statevar variables
+        statevar_pattern = re.compile(f"^{statevarname}\\d+$")
+        stack_vars = [var for var in ds.variables if statevar_pattern.match(var)]
         if not stack_vars:
-            raise ValueError(f"No stack_vars start with {prefix} and end with {suffix}")
+            raise ValueError(f"No stack_vars match pattern for {statevarname}")
 
-        plevs = [int(var[len(prefix) : -len(suffix)]) for var in stack_vars]
+        plevs = [int(var[len(statevarname) :]) for var in stack_vars]
 
         # Concatenate along 'pfull' dimension
-        ds[tendvarname] = (
+        ds[statevarname] = (
             ds[stack_vars]
-            .metpy.quantify()
+            .metpy.quantify()  # don't lose units
             .to_dataarray(dim="pfull")
             .assign_coords(pfull=plevs)
         )
-        # Cancel the extra "per second" in tendency units.
-        ds[tendvarname] = ds[tendvarname] * units.s
-        ds[tendvarname] = (
-            ds[tendvarname].sel(time=validtime) - ds[tendvarname].sel(time=time0)
-        ) / twindow_quantity
-        logging.debug(f"{tendvarname} units {ds[tendvarname].metpy.units}")
-
-        ds[tendvarname].attrs["long_name"] = tendvarname
+        ds[statevarname].attrs["long_name"] = statevarname
         ds = ds.drop_vars(stack_vars)
-        logging.info(tendvarname)
 
-    # Pre-compile regex for matching statevar variables
-    statevar_pattern = re.compile(f"^{statevarname}\\d+$")
-    stack_vars = [var for var in ds.variables if statevar_pattern.match(var)]
-    if not stack_vars:
-        raise ValueError(f"No stack_vars match pattern for {statevarname}")
-
-    plevs = [int(var[len(statevarname) :]) for var in stack_vars]
-
-    # Concatenate along 'pfull' dimension
-    ds[statevarname] = (
-        ds[stack_vars]
-        .metpy.quantify()  # don't lose units
-        .to_dataarray(dim="pfull")
-        .assign_coords(pfull=plevs)
-    )
-    ds[statevarname].attrs["long_name"] = statevarname
-    ds = ds.drop_vars(stack_vars)
-
-    ds["pfull"].attrs["units"] = "hPa"
-    ds["pfull"].attrs["positive"] = "down"
-    logging.info(statevarname)
+        ds["pfull"].attrs["units"] = "hPa"
+        ds["pfull"].attrs["positive"] = "down"
+        logging.info(statevarname)
 
     return ds.metpy.dequantify()
 
 
-def prepare_ds(fv3: dict, historyfile: Path, gridfile: Path) -> xarray.Dataset:
+def prepare_ds(config: dict, historyfile: Path, gridfile: Path) -> xarray.Dataset:
     """
     open (and maybe preprocess) historyfile
-    Add lat and lon coords to history Dataset
     """
 
     # Open input file
     pattern = r".*tile\d.nc$"
     if re.match(pattern, str(historyfile)):  # str handles pathlib.Path
-        logging.warning("FV3-style historyfile")
-        ds = get_fv3ds(fv3, historyfile)
+        logging.warning("cubed-sphere historyfile")
+        ds = get_fv3ds(config, historyfile)
     else:
         logging.debug("open %s", historyfile)
         ds = xarray.open_dataset(historyfile)
         ds["time"] = get_datetimeindex(ds.indexes["time"])
 
+    ds = assign_latlon(config, ds, gridfile)
+    return ds
+
+
+def assign_latlon(config: dict, ds: xarray.Dataset, gridfile: Path) -> xarray.Dataset:
+    """
+    Assign T-cell lat and lon coords to history Dataset
+    """
     # Read lat/lon from gfile
     logging.debug(f"read lat/lon from {gridfile}")
     gds = xarray.open_dataset(gridfile)
-    lont = gds[fv3["lon_name"]]
-    latt = gds[fv3["lat_name"]]
+    lont = gds[config["lon_name"]]
+    latt = gds[config["lat_name"]]
     assert ds.grid_xt.equals(
         gds.grid_xt
     ), f"history grid_xt {ds.grid_xt.size} no match {gridfile}"

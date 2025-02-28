@@ -4,7 +4,6 @@ import argparse
 import datetime
 import logging
 import os
-import re
 
 import cartopy
 import matplotlib.pyplot as plt
@@ -48,41 +47,40 @@ def main():
     args = parse_args()
     gridfile = args.gridfile
     historyfile = args.historyfile
-    config = args.config
-    fv3 = yaml.load(open(config, encoding="utf8"), Loader=yaml.FullLoader)
+    config = yaml.load(open(args.config, encoding="utf8"), Loader=yaml.FullLoader)
 
-    ds = physics_tend.prepare_ds(fv3, historyfile, gridfile)
+    ds = physics_tend.prepare_ds(config, historyfile, gridfile)
 
-    pcm = cross_section_vert(fv3, ds)
+    pcm = cross_section_vert(config, ds)
 
-    startpt = fv3["startpt"]
-    endpt = fv3["endpt"]
+    startpt = config["startpt"]
+    endpt = config["endpt"]
     ofile = (
         physics_tend.TMPDIR
-        / f"{fv3["statevarname"]}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
+        / f"{config["statevarname"]}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
     )
-    pcm.fig.savefig(ofile, dpi=fv3["dpi"])
+    pcm.fig.savefig(ofile, dpi=config["dpi"])
     logging.info("created %s", os.path.realpath(ofile))
 
 
 # Don't name `cross_section` metpy already has this method.
-def cross_section_vert(fv3, fv3ds, **kwargs):
+def cross_section_vert(config, fv3ds, **kwargs):
     # Override config file with keyword args
-    fv3.update(kwargs)
-    fineprint = fv3["fineprint"]
-    ncols = fv3["ncols"]
-    startpt = fv3["startpt"]
-    endpt = fv3["endpt"]
-    robust = fv3["robust"]
-    statevarname = fv3["statevarname"]
-    twindow = datetime.timedelta(hours=fv3["twindow"])
+    config.update(kwargs)
+    fineprint = config["fineprint"]
+    ncols = config["ncols"]
+    startpt = config["startpt"]
+    endpt = config["endpt"]
+    robust = config["robust"]
+    statevarname = config["statevarname"]
+    twindow = datetime.timedelta(hours=config["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
-    validtime = fv3["validtime"]
-    vmin = fv3["vmin"]
-    vmax = fv3["vmax"]
+    validtime = config["validtime"]
+    vmin = config["vmin"]
+    vmax = config["vmax"]
 
     level = logging.INFO
-    if fv3["debug"]:
+    if config["debug"]:
         level = logging.DEBUG
     # prepend log message with time
     logging.basicConfig(format="%(asctime)s - %(message)s", level=level)
@@ -93,14 +91,21 @@ def cross_section_vert(fv3, fv3ds, **kwargs):
             "validtime not configured. Using last time in history %s.",
             validtime,
         )
-    logging.debug(type(validtime))
     validtime = pd.to_datetime(validtime)
+    if "validtime" in fv3ds.attrs:
+        assert pd.to_datetime(fv3ds.attrs["validtime"]) == validtime, (
+            f"config validtime {validtime} != Dataset validtime {fv3ds.attrs['validtime']}" 
+        )
+    if "twindow" in fv3ds.attrs:
+        assert datetime.timedelta(hours=fv3ds.attrs["twindow"]) == twindow, (
+            f"config twindow {twindow} != Dataset twindow {fv3ds.attrs['twindow']}" 
+        )
     logging.debug(f"twindow {twindow} validtime {validtime}")
-    time0 = validtime - twindow
-    logging.debug(f"time0 {time0}")
+    twindow_start = validtime - twindow
+    logging.debug(f"twindow_start {twindow_start}")
 
     # list of tendency variable names for requested state variable
-    tendency_vars = fv3["tendency_varnames"][statevarname]
+    tendency_vars = config["tendency_varnames"][statevarname]
     logging.debug(f"tendency_vars {tendency_vars}")
     tendencies = fv3ds[tendency_vars]  # subset of original Dataset
     tendencies = tendencies.load()
@@ -108,19 +113,19 @@ def cross_section_vert(fv3, fv3ds, **kwargs):
     tendencies = tendencies.metpy.quantify()
     logging.info(tendencies.max())
 
-    if fv3["tendencies_were_zeroed_and_averaged_after_every_output"]:
+    if config["tendencies_were_zeroed_and_averaged_after_every_output"]:
         logging.warning("assume tendencies_were_zeroed_and_averaged_after_every_output")
-        assert time0 in fv3ds.time, (
-            f"time0 {time0} not in history file. Closest is "
-            f"{fv3ds.time.sel(time=time0, method='nearest').time.data}"
+        assert twindow_start in fv3ds.time, (
+            f"twindow_start {twindow_start} not in history file. Closest is "
+            f"{fv3ds.time.sel(time=twindow_start, method='nearest').time.data}"
         )
-        # Define time slice starting with time-after-time0 and ending with validtime.
-        # We use the time *after* time0 because the time range corresponding to the tendency
+        # Define time slice starting with the first time after twindow_start and ending with validtime.
+        # We use the time *after* twindow_start because the time range corresponding to the tendency
         # output is the period immediately prior to the tendency timestamp.
-        # That way, slice(time_after_time0, validtime) has a time range of [time0,validtime].
-        idx_first_time_after_time0 = (fv3ds.time > time0).argmax()
-        time_after_time0 = fv3ds.time[idx_first_time_after_time0]
-        tindex = {"time": slice(time_after_time0, validtime)}
+        # That way, slice(time_after_twindow_start, validtime) has a time range of [twindow_start,validtime].
+        idx_first_time_after_twindow_start = (fv3ds.time > twindow_start).argmax()
+        time_after_twindow_start = fv3ds.time[idx_first_time_after_twindow_start].data
+        tindex = {"time": slice(time_after_twindow_start, validtime)}
         logging.debug("Time-weighted mean tendencies for time index slice %s", tindex)
         timeweights = fv3ds.time.diff("time").sel(tindex)
         time_weighted_tendencies = tendencies.sel(tindex) * timeweights
@@ -131,6 +136,7 @@ def cross_section_vert(fv3, fv3ds, **kwargs):
 
     # Make list of long_names before .to_array() loses them.
     long_names = [fv3ds[da].attrs["long_name"] for da in tendencies]
+    print(long_names)
 
     # Keep characters after final underscore. The first part is redundant.
     # for example dtend_u_pbl -> pbl
@@ -149,8 +155,9 @@ def cross_section_vert(fv3, fv3ds, **kwargs):
     # Tried metpy.quantify() with open_dataset, but
     # pint.errors.UndefinedUnitError: 'dBz' is not defined in the unit registry
     state_variable = fv3ds[statevarname].metpy.quantify()
+    logging.info(f"from {twindow_start} to {validtime}")
     actual_change = state_variable.sel(time=validtime) - state_variable.sel(
-        time=time0, method="nearest", tolerance=datetime.timedelta(milliseconds=1)
+        time=twindow_start, method="nearest", tolerance=datetime.timedelta(milliseconds=1)
     )
     actual_change = actual_change.assign_coords(time=validtime)
     actual_change.attrs["long_name"] = (
@@ -161,11 +168,11 @@ def cross_section_vert(fv3, fv3ds, **kwargs):
     all_tendencies = tendencies.sum(dim=tendency_dim)
 
     # Subtract physics tendency variable if it was in tendency_vars. Don't want to double-count.
-    phys_var = [x for x in tendency_vars if x.endswith("_phys")]
+    phys_var = any(x.endswith("_phys") for x in tendency_vars)
     if phys_var:
         logging.info(
-            "subtracting 'phys' tendency variable "
-            "from all_tendencies to avoid double-counting"
+            "subtract 'phys' tendency variable from "
+            "all_tendencies to avoid double-counting"
         )
         # use .data to avoid re-introducing tendency coordinate
         all_tendencies = all_tendencies - tendencies.sel({tendency_dim: "phys"}).data
@@ -210,13 +217,13 @@ def cross_section_vert(fv3, fv3ds, **kwargs):
     # Found similar Lambert Conformal projection by trial and error.
     crs = dict(
         grid_mapping_name="lambert_conformal_conic",
-        standard_parallel=fv3["standard_parallel"],
+        standard_parallel=config["standard_parallel"],
         longitude_of_central_meridian=-97.5,
-        latitude_of_projection_origin=fv3["standard_parallel"],
+        latitude_of_projection_origin=config["standard_parallel"],
     )
-    if fv3["crs"]:
+    if config["crs"]:
         logging.warning(f"use crs from config {crs}")
-        crs = fv3["crs"]
+        crs = config["crs"]
     da2plot = da2plot.metpy.assign_crs(crs).metpy.assign_y_x(
         force=True, tolerance=5e7 * units.m
     )
@@ -243,7 +250,7 @@ def cross_section_vert(fv3, fv3ds, **kwargs):
         infer_intervals=True,
         vmin=vmin,
         vmax=vmax,
-        cmap=fv3["cmap"],
+        cmap=config["cmap"],
         cbar_kwargs={"shrink": 1 - hgt_inset, "anchor": (0, 0.25 - hgt_inset)},
     )
 
@@ -254,7 +261,7 @@ def cross_section_vert(fv3, fv3ds, **kwargs):
         ax.grid(which="minor", alpha=0.3, lw=0.4)
 
     # Add time to title
-    title = f'{time0}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
+    title = f'{twindow_start}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
     plt.suptitle(title, wrap=True)
     # pad top and bottom for title and fineprint.
     # Unfortunately, you must redefine right pad, as xarray no longer controls it.
@@ -283,7 +290,7 @@ def cross_section_vert(fv3, fv3ds, **kwargs):
     # Plot the path of the cross section
     ax_inset.plot(cross["x"], cross["y"], c="k", zorder=2)
     physics_tend.add_conus_features(ax_inset)
-    extent = fv3["extent"]
+    extent = config["extent"]
     ax_inset.set_extent(extent)
 
     # Annotate figure with timestamp
