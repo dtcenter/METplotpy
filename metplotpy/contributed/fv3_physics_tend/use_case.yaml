@@ -1,0 +1,137 @@
+# Names of tendency variables in model output (i.e. FV3 history file)
+# Each type of tendency (moisture, temperature, wind component) has its own set of variables.
+tendency_varnames:
+    spfh:
+    - dtend_qv_pbl
+    - dtend_qv_deepcnv
+    - dtend_qv_shalcnv
+    - dtend_qv_mp
+    - dtend_qv_phys
+    - dtend_qv_nophys
+    tmp:
+    - dtend_temp_lw
+    - dtend_temp_sw
+    - dtend_temp_pbl
+    - dtend_temp_deepcnv
+    - dtend_temp_shalcnv
+    - dtend_temp_mp
+    - dtend_temp_orogwd
+    - dtend_temp_cnvgwd
+    - dtend_temp_phys
+    - dtend_temp_nophys
+    ugrd:
+    - dtend_u_pbl
+    - dtend_u_orogwd
+    - dtend_u_deepcnv
+    - dtend_u_cnvgwd
+    - dtend_u_shalcnv
+    - dtend_u_phys
+    - dtend_u_nophys
+    vgrd:
+    - dtend_v_pbl
+    - dtend_v_orogwd
+    - dtend_v_deepcnv
+    - dtend_v_cnvgwd
+    - dtend_v_shalcnv
+    - dtend_v_phys
+    - dtend_v_nophys
+
+
+
+# Name of the longitude and latitude variables in the grid specification file.
+lon_name : "grid_lont"
+lat_name : "grid_latt"
+
+
+# Geographic extent (in degrees) of 2-D plots.
+# (lonmin, lonmax, latmin, latmax)  
+extent:
+    - -122
+    - -72.7
+    - 22.1
+    - 49.5
+
+# Found FV3 standard_parallel by trial and error with smaller and smaller tolerances given to mepy.assign_y_x(). longitude is mean.
+standard_parallel : 38.139
+
+# color map
+cmap : "RdBu_r"
+
+# coordinate reference system used in cross_section_vert .metpy.assign_crs(crs).metpy.assign_y_x
+crs : null
+
+# True : more logging messages
+debug : False
+
+# resolution (dots per inch) of output
+dpi : 100
+
+# number of columns in FacetGrid
+ncols : null
+
+# Add metadata and `created by` date (for comparing images)
+fineprint : False
+
+# pressure levels in hPa to plot. Must be an array, even if only one element.
+# If only one pressure level is provided, the type-of-tendency
+# argument will be ignored and all tendencies will be plotted.
+pfull :
+    - 1000
+    - 925
+    - 850
+    - 700
+    - 500
+    - 300
+    - 200
+    - 100
+    - 0
+
+# calculate residual
+resid : True
+
+# compute colormap range with extremes, not 2nd and 98th percentiles
+robust : True
+
+# selection method for vertical pressure level
+# "nearest" : select the nearest level to the specified pressure level
+# "linear" : interpolate the two nearest levels to the specified pressure level
+# "loglinear" : interpolate the two nearest levels to the specified pressure level in log10(pressure)
+sel_method : "nearest"
+
+# shape file directory for mask
+shp : null  # "shapefiles/MID_CONUS"
+
+# start  lat lon of vertical cross section
+startpt :
+    - 28
+    - -120
+
+# end  lat lon of vertical cross section
+endpt :
+    - 26
+    - -75
+
+statevarname : "tmp"
+
+# Accumulated tendencies were zeroed and divided by time since last output.
+tendencies_were_zeroed_and_averaged_after_every_output : True
+
+tendencytype : "pbl"
+
+# time window in hours
+twindow : 1
+
+# Valid time
+validtime : "20190615T20"
+
+# color bar minimum (overrides robust=True)
+vmin : null
+
+# color bar maximum (overrides robust=True)
+vmax : null
+
+# x-axis minimum
+xmin : -0.0005
+
+# x-axis maximum
+xmax : 0.0004 
