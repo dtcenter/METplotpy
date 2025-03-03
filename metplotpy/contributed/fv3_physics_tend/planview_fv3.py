@@ -296,9 +296,9 @@ def default_ofile(fv3):
     pfull = fv3["pfull"] * units.hPa
     if len(pfull) == 1:
         pfull_str = f"{pfull[0]:~.0f}".replace(" ", "")
-        ofile = f"{fv3["statevarname"]}_{pfull_str}.png"
+        ofile = f"{fv3['statevarname']}_{pfull_str}.png"
     else:
-        ofile = f"{fv3["statevarname"]}_{fv3["tendencytype"]}.png"
+        ofile = f"{fv3['statevarname']}_{fv3['tendencytype']}.png"
     if fv3["shp"]:
         shp = fv3["shp"].rstrip("/")
         # Add shapefile name to output filename

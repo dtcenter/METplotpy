@@ -57,7 +57,7 @@ def main():
     endpt = config["endpt"]
     ofile = (
         physics_tend.TMPDIR
-        / f"{config["statevarname"]}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
+        / f"{config['statevarname']}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
     )
     pcm.fig.savefig(ofile, dpi=config["dpi"])
     logging.info("created %s", os.path.realpath(ofile))
