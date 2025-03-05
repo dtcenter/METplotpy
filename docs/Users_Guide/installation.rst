@@ -20,8 +20,23 @@ file at the top level of the repository.
 
 .. literalinclude:: ../../requirements.txt
 
-Install METplotpy
--------------------
+
+Retrieve METplotpy Code
+-----------------------
+
+The METplotpy source code can be retrieved using the web browser. Begin by entering
+https://github.com/dtcenter/METplotpy in
+the web browser's navigation bar.  On the right-hand side of the web page for the METplotpy repository, click on
+the `Releases` link.  This leads to a page where all available releases are available.  The latest release will be
+located at the top of the page.  Scroll to the release of interest and below it's title is an `Assets` link in small
+text.  Click on the inverted triangle to the left of the `Assets` text to access the menu. To download the source code,
+click on either the zip or tar.gz version of the source code and save it to a directory where the METplotpy source code
+will reside (e.g. /home/someuser/).
+
+Install METplotpy in a conda environment
+----------------------------------------
+
+**[Optional]**
 
 METplotpy can be installed into a conda environment. First navigate to the
 base directory, then run the following commands.
