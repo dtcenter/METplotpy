@@ -89,10 +89,10 @@ def get_fv3ds(config: dict, historyfile: xarray.Dataset, **kwargs) -> xarray.Dat
 
     Notes:
     - The function updates the FV3 configuration with any additional keyword arguments.
-    - It subtracts the change in tendencies across a time window.
+    - It subtracts the tendencies across a time window.
     - The units of the tendencies are adjusted to cancel the extra "per second" in the tendency units.
     - Concatenates 2-D variables along the 'pfull' vertical dimension.
-    - state variables are not subtracted across the time window. All times are returned.
+    - State variables are not subtracted across the time window. All times are returned.
     - The dataset is returned dequantified.
     """
     # Override config file with keyword args
@@ -192,7 +192,9 @@ def get_fv3ds(config: dict, historyfile: xarray.Dataset, **kwargs) -> xarray.Dat
 
 def prepare_ds(config: dict, historyfile: Path, gridfile: Path) -> xarray.Dataset:
     """
-    open (and maybe preprocess) historyfile
+    Open (and maybe preprocess) historyfile
+
+    Assign lat and lon from gridfile.
     """
 
     # Open input file
