@@ -238,8 +238,7 @@ def planview(config, fv3ds, **kwargs):
     if config["fineprint"]:
         logging.debug("add fineprint to image")
         plt.figtext(0, 0, fineprint_str, fontsize="xx-small", va="bottom", wrap=True)
-    else:
-        logging.debug(fineprint_str)
+    logging.debug(fineprint_str)
 
     return pcm
 

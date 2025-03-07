@@ -2,7 +2,6 @@ import pytest
 import os
 import runner_planview
 
-@pytest.mark.skip()
 def test_no_args():
     '''
     Run the script with just the help option and the required input files
@@ -22,7 +21,6 @@ def test_no_args():
         # Catch-all, just in case there are some other exceptions that were raised.
         assert False
 
-@pytest.mark.skip()
 def test_plot_created():
     '''
     Test if the plot file is created
