@@ -179,7 +179,7 @@ def planview(config, fv3ds, **kwargs):
     # Mask points outside shape.
     if config["shp"]:
         # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
-        mask = physics_tend.pts_in_shp(fv3ds.latt.values, fv3ds.lont.values, config["shp"])
+        mask = physics_tend.pts_in_shp(fv3ds[config["lat_name"]].values, fv3ds[config["lon_name"]].values, config["shp"])
         mask = xarray.DataArray(mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
         da2plot = da2plot.where(mask)
 
@@ -207,8 +207,8 @@ def planview(config, fv3ds, **kwargs):
 
     logging.debug("plot pcolormesh")
     pcm = da2plot.plot.pcolormesh(
-        x="lont",
-        y="latt",
+        x=config["lon_name"],
+        y=config["lat_name"],
         col=col,
         col_wrap=ncols,
         robust=config["robust"],

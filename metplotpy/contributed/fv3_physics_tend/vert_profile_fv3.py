@@ -158,7 +158,7 @@ def vert_profile(config, fv3ds, **kwargs):
     # Mask points outside shape.
     if shp:
         # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
-        mask = physics_tend.pts_in_shp(fv3ds.latt.values, fv3ds.lont.values, shp)
+        mask = physics_tend.pts_in_shp(fv3ds[config["lat_name"]].values, fv3ds[config["lon_name"]].values, shp)
         mask = xarray.DataArray(mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
         da2plot = da2plot.where(mask)
 
@@ -210,12 +210,12 @@ def vert_profile(config, fv3ds, **kwargs):
         # astype(int) to avoid TypeError: numpy boolean subtract
         cbar_kwargs = {"ticks": [0.25, 0.75], "shrink": 0.6}
         pcm = (
-            mask.assign_coords(lont=fv3ds.lont, latt=fv3ds.latt)
+            mask.assign_coords(lont=fv3ds[config["lon_name"]], latt=fv3ds[config["lat_name"]])
             .astype(int)
             .plot.pcolormesh(
                 ax=ax_inset,
-                x="lont",
-                y="latt",
+                x=config["lon_name"],
+                y=config["lat_name"],
                 infer_intervals=True,
                 transform=cartopy.crs.PlateCarree(),
                 cmap=plt.colormaps["cool"],
