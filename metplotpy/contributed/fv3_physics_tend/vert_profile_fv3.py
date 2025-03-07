@@ -49,9 +49,6 @@ def vert_profile(config, fv3ds, **kwargs):
     config.update(kwargs)
     shp = config["shp"]
     statevarname = config["statevarname"]
-    twindow = datetime.timedelta(hours=config["twindow"])
-    twindow_quantity = twindow.total_seconds() * units.seconds
-    validtime = config["validtime"]
 
     level = logging.INFO
     if config["debug"]:
@@ -59,22 +56,7 @@ def vert_profile(config, fv3ds, **kwargs):
     # prepend log message with time
     logging.basicConfig(format="%(asctime)s - %(message)s", level=level, force=True)
 
-    if not validtime:
-        validtime = fv3ds.time.values[-1]
-        logging.info(
-            "validtime not configured. Using last time in history %s.",
-            validtime,
-        )
-    validtime = pd.to_datetime(validtime)
-    if "validtime" in fv3ds.attrs:
-        assert pd.to_datetime(fv3ds.attrs["validtime"]) == validtime, (
-            f"config validtime {validtime} != Dataset validtime {fv3ds.attrs['validtime']}" 
-        )
-    if "twindow" in fv3ds.attrs:
-        assert datetime.timedelta(hours=fv3ds.attrs["twindow"]) == twindow, (
-            f"config twindow {twindow} != Dataset twindow {fv3ds.attrs['twindow']}" 
-        )
-    logging.debug(f"twindow {twindow} validtime {validtime}")
+    twindow, twindow_quantity, validtime = physics_tend.assert_times(config, fv3ds)
     twindow_start = validtime - twindow
     logging.debug(f"twindow_start {twindow_start}")
 

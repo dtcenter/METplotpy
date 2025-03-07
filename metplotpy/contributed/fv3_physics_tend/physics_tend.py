@@ -16,8 +16,6 @@ import xarray
 from metpy.units import units
 from shapely.geometry import multipolygon
 
-# from tqdm import tqdm # progress bar
-
 
 def add_conus_features(ax):
     """add borders"""
@@ -32,6 +30,35 @@ def add_conus_features(ax):
         alpha=0.1,
     )
     return ax
+
+
+def assert_times(config, ds):
+    """
+    Assert validtime and twindow match between config and Dataset
+    """
+    twindow = datetime.timedelta(hours=config["twindow"])
+    twindow_quantity = twindow.total_seconds() * units.seconds
+    validtime = config["validtime"]
+    validtime = pd.to_datetime(validtime)
+    
+    if "validtime" in ds.attrs:
+        assert pd.to_datetime(ds.attrs["validtime"]) == validtime, (
+            f"config validtime {validtime} != Dataset validtime {ds.attrs['validtime']}" 
+        )
+    if "twindow" in ds.attrs:
+        assert datetime.timedelta(hours=ds.attrs["twindow"]) == twindow, (
+            f"config twindow {twindow} != Dataset twindow {ds.attrs['twindow']}" 
+        )
+
+    if not validtime:
+        validtime = fv3ds.time.values[-1]
+        logging.info(
+            "validtime not configured. Using last time in history %s.",
+            validtime,
+        )
+
+    logging.debug(f"twindow {twindow} validtime {validtime}")
+    return twindow, twindow_quantity, validtime
 
 
 def get_datetimeindex(datetimeindex):
