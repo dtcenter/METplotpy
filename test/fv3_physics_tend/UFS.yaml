@@ -1,40 +1,41 @@
 # Names of tendency variables in model output (i.e. FV3 history file)
 # Each type of tendency (moisture, temperature, wind component) has its own set of variables.
 tendency_varnames:
-    spfh:
-    - dtend_qv_pbl
-    - dtend_qv_deepcnv
-    - dtend_qv_shalcnv
-    - dtend_qv_mp
-    - dtend_qv_phys
-    - dtend_qv_nophys
-    tmp:
-    - dtend_temp_lw
-    - dtend_temp_sw
-    - dtend_temp_pbl
-    - dtend_temp_deepcnv
-    - dtend_temp_shalcnv
-    - dtend_temp_mp
-    - dtend_temp_orogwd
-    - dtend_temp_cnvgwd
-    - dtend_temp_phys
-    - dtend_temp_nophys
-    ugrd:
-    - dtend_u_pbl
-    - dtend_u_orogwd
-    - dtend_u_deepcnv
-    - dtend_u_cnvgwd
-    - dtend_u_shalcnv
-    - dtend_u_phys
-    - dtend_u_nophys
-    vgrd:
-    - dtend_v_pbl
-    - dtend_v_orogwd
-    - dtend_v_deepcnv
-    - dtend_v_cnvgwd
-    - dtend_v_shalcnv
-    - dtend_v_phys
-    - dtend_v_nophys
+    q:
+    - dq3dt_deepcnv
+    - dq3dt_mp
+    - dq3dt_nonphys
+    - dq3dt_pbl
+    - dq3dt_shalcnv
+    t:
+    - dt3dt_deepcnv
+    - dt3dt_mp
+    - dt3dt_nonphys
+    - dt3dt_pbl
+    - dt3dt_shalcnv
+    - dt3dt_cnvgwd
+    - dt3dt_lw
+    - dt3dt_sw
+    - dt3dt_rdamp
+    - dt3dt_ogwd
+    u:
+    - du3dt_deepcnv
+    - du3dt_cnvgwd
+    - du3dt_mp
+    - du3dt_nonphys
+    - du3dt_ogwd
+    - du3dt_pbl
+    - du3dt_rdamp
+    - du3dt_shalcnv
+    v:
+    - dv3dt_deepcnv
+    - dv3dt_cnvgwd
+    - dv3dt_mp
+    - dv3dt_nonphys
+    - dv3dt_ogwd
+    - dv3dt_pbl
+    - dv3dt_rdamp
+    - dv3dt_shalcnv
 
 
 
@@ -51,7 +52,7 @@ extent:
     - 22.1
     - 49.5
 
-# Found FV3 standard_parallel by trial and error with smaller and smaller tolerances given to mepy.assign_y_x(). longitude is mean.
+# Found FV3 standard_parallel by trial and error with smaller and smaller tolerances given to metpy.assign_y_x(). longitude is mean.
 standard_parallel : 38.139
 
 # color map
@@ -72,12 +73,19 @@ ncols : null
 # Add metadata and `created by` date (for comparing images)
 fineprint : False
 
-# pressure levels in hPa to plot. Levels must be on different line
-# from pfull indicating an array, even if only one element.
+# pressure levels in hPa to plot. Must be an array, even if only one element.
 # If only one pressure level is provided, the type-of-tendency
 # argument will be ignored and all tendencies will be plotted.
 pfull :
+    - 1000
+    - 925
+    - 850
+    - 700
     - 500
+    - 300
+    - 200
+    - 100
+    - 0
 
 # calculate residual
 resid : True
@@ -92,7 +100,7 @@ robust : True
 sel_method : "nearest"
 
 # shape file directory for mask
-shp : null # "shapefiles/MID_CONUS"
+shp : null  # "shapefiles/MID_CONUS"
 
 # start  lat lon of vertical cross section
 startpt :
@@ -104,18 +112,18 @@ endpt :
     - 26
     - -75
 
-statevarname : "tmp"
+statevarname : "t"
 
 # Accumulated tendencies were zeroed and divided by time since last output.
-tendencies_were_zeroed_and_averaged_after_every_output : True
+tendencies_were_zeroed_and_averaged_after_every_output : False
 
 tendencytype : "pbl"
 
 # time window in hours
-twindow : 1
+twindow : 6
 
 # Valid time
-validtime : "20190615T20"
+validtime : "20200409T12"
 
 # color bar minimum (overrides robust=True)
 vmin : null
@@ -124,7 +132,7 @@ vmin : null
 vmax : null
 
 # x-axis minimum
-xmin : -0.0002
+xmin : -0.0005
 
 # x-axis maximum
-xmax : 0.0002
+xmax : 0.0004 

@@ -92,7 +92,7 @@ robust : True
 sel_method : "nearest"
 
 # shape file directory for mask
-shp : null # "shapefiles/MID_CONUS"
+shp : null
 
 # start  lat lon of vertical cross section
 startpt :

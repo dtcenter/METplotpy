@@ -147,7 +147,7 @@ configuration file, perform the following:
 
 .. code-block:: bash
 
-   setenv CONFIG $METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml
+   setenv CONFIG_DIR $METPLOTPY_BASE/test/fv3_physics_tend
    setenv DATA_DIR $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
    
 ::
@@ -169,7 +169,7 @@ configuration file, perform the following:
 Plan View
 ---------
 
-Generate a plan view of all temperature tendencies at 500 hPa. Settings in $CONFIG:
+Generate a plan view of all temperature tendencies at 500 hPa. Settings in config file:
 
 .. code-block:: yaml
 
@@ -180,11 +180,11 @@ Generate a plan view of all temperature tendencies at 500 hPa. Settings in $CONF
    
 .. code-block:: bash
 
-   python planview_fv3.py $CONFIG $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
+   python planview_fv3.py $CONFIG_DIR/tmp_500hPa.yaml $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
 
 .. image:: figure/tmp_500hPa.png
 
-Generate a plan view of PBL tendency at specified pressure levels. Set `pfull` to an array of levels in $CONFIG:
+Generate a plan view of PBL tendency at specified pressure levels. Set `pfull` to an array of levels in config file:
 
 .. code-block:: yaml
 
@@ -201,7 +201,7 @@ Generate a plan view of PBL tendency at specified pressure levels. Set `pfull` t
 
 .. code-block:: bash
 
-   python planview_fv3.py $CONFIG $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
+   python planview_fv3.py $CONFIG_DIR/tmp_pbl.yaml $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
 
 .. image:: figure/tmp_pbl.png
 
@@ -209,7 +209,7 @@ Vertical Profile
 ----------------
 
 Generate vertical profile of temperature tendencies averaged over the central US. Plot residual
-tendency and its components. Limit the x-axis range with xmin and xmax. Settings in $CONFIG:
+tendency and its components. Limit the x-axis range with xmin and xmax. Settings in config file:
 
 .. code-block:: yaml
 
@@ -219,7 +219,7 @@ tendency and its components. Limit the x-axis range with xmin and xmax. Settings
 
 .. code-block:: bash
 
-    python vert_profile_fv3.py $CONFIG $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
+    python vert_profile_fv3.py $CONFIG_DIR/tmp.vert_profile.MID_CONUS.yaml $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
 
 .. image:: figure/tmp.vert_profile.MID_CONUS.png
 
@@ -227,7 +227,7 @@ Vertical Cross Section
 ----------------------
 
 Generate vertical cross section of u-wind tendencies from 28°N 120°W to 26°N 75°W over one-hour
-time window ending 20z June 15, 2019. Settings in $CONFIG:
+time window ending 20z June 15, 2019. Settings in config file:
 
 .. code-block:: yaml
 
@@ -241,8 +241,6 @@ time window ending 20z June 15, 2019. Settings in $CONFIG:
 
 .. code-block:: bash
 
-   python cross_section_vert.py $CONFIG $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
+   python cross_section_vert.py $CONFIG_DIR/ugrd_cross_section.yaml $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
 
 .. image:: figure/ugrd_28.0N-120.0E-26.0N-75.0E.png
-
-

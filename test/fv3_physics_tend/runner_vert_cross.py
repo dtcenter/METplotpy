@@ -19,31 +19,12 @@ def run_help(config_file):
                   config['history_file'] + " " + config['grid_file'] + " -h"
     os.system(command_str)
 
+
 def run_example(config_file):
     '''Run the example in the user's guide'''
     config = open_config(config_file)
-    command_str = "python " + config['source_dir'] + "/cross_section_vert.py " + " ./fv3_physics_tend_defaults.yaml " + \
-                  config['history_file'] + " " + config[
-                      'grid_file'] + " tmp -t 1 -v 20190615T20 -s 32 -115 -e 34 -82 --nofineprint "
-    print("command string: ", command_str)
-    os.system(command_str)
-
-
-def run_with_novel_output_file(config_file):
-    '''Run the example in the user's guide with a novel output file name'''
-    config = open_config(config_file)
-    command_str = "python " + config['source_dir'] + "/cross_section_vert.py " + " ./fv3_physics_tend_defaults.yaml " + \
-                  config['history_file'] + " " + config[
-                      'grid_file'] + " tmp -t 1 -v 20190615T20 -s 32 -115 -e 34 -82 -o ./test_vert_cross.png --nofineprint "
-    print("command string: ", command_str)
-    os.system(command_str)
-
-def run_with_novel_output_dir(config_file):
-    '''Run the example in the user's guide with a novel output dir and file name'''
-    config = open_config(config_file)
-    command_str = "python " + config['source_dir'] + "/cross_section_vert.py " + " ./fv3_physics_tend_defaults.yaml " + \
-                  config['history_file'] + " " + config[
-                      'grid_file'] + " tmp -t 1 -v 20190615T20 -s 32 -115 -e 34 -82 -o ./output/test_vert_cross.png --nofineprint "
+    command_str = "python " + config['source_dir'] + "/cross_section_vert.py " + " ./ugrd_cross_section.yaml " + \
+                  config['history_file'] + " " + config['grid_file']
     print("command string: ", command_str)
     os.system(command_str)
 
@@ -59,7 +40,5 @@ def open_config(config_file):
 
 if __name__ == "__main__":
     config_file = sys.argv[1]
-    # run_help(config_file)
+    run_help(config_file)
     run_example(config_file)
-    run_with_novel_output_file(config_file)
-    run_with_novel_output_dir(config_file)

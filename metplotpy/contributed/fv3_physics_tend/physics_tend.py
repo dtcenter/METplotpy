@@ -18,8 +18,6 @@ from shapely.geometry import multipolygon
 
 # from tqdm import tqdm # progress bar
 
-TMPDIR = Path(os.getenv("TMPDIR", Path(os.getenv("SCRATCH")) / "temp"))
-
 
 def add_conus_features(ax):
     """add borders"""
@@ -98,7 +96,7 @@ def get_fv3ds(config: dict, historyfile: xarray.Dataset, **kwargs) -> xarray.Dat
     """
     # Override config file with keyword args
     config.update(kwargs)
-    logging.info(f"Opening {historyfile}")
+    logging.info(historyfile)
     ds = xarray.open_dataset(historyfile, chunks={})
     ds.attrs.update(config)
     twindow = datetime.timedelta(hours=config["twindow"])
@@ -118,7 +116,7 @@ def get_fv3ds(config: dict, historyfile: xarray.Dataset, **kwargs) -> xarray.Dat
     twindow_start = validtime - twindow
     logging.debug(f"twindow_start {twindow_start}")
 
-    # Loop through all state vars in the tendency_varnames dictionary. q, t, u, and v
+    # Loop through all state vars in the tendency_varnames dictionary.
     # Considered restricting to statevarname if statevarname is specified, but
     # doing all of them is fast enough.
     statevarnames = config["tendency_varnames"]
@@ -164,7 +162,7 @@ def get_fv3ds(config: dict, historyfile: xarray.Dataset, **kwargs) -> xarray.Dat
             ds[tendvarname].attrs["twindow_end"] = validtime
 
             ds = ds.drop_vars(stack_vars)
-            logging.info(tendvarname)
+            logging.debug(tendvarname)
 
         # Pre-compile regex for matching statevar variables
         statevar_pattern = re.compile(f"^{statevarname}\\d+$")
@@ -188,6 +186,7 @@ def get_fv3ds(config: dict, historyfile: xarray.Dataset, **kwargs) -> xarray.Dat
         ds["pfull"].attrs["positive"] = "down"
         logging.info(statevarname)
 
+    ds = ds.sortby("pfull")  # monotonic for .sel method=nearest later
     return ds.metpy.dequantify()
 
 

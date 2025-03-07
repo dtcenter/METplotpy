@@ -77,7 +77,15 @@ fineprint : False
 # If only one pressure level is provided, the type-of-tendency
 # argument will be ignored and all tendencies will be plotted.
 pfull :
+    - 1000
+    - 925
+    - 850
+    - 700
     - 500
+    - 300
+    - 200
+    - 100
+    - 0
 
 # calculate residual
 resid : True
@@ -92,7 +100,7 @@ robust : True
 sel_method : "nearest"
 
 # shape file directory for mask
-shp : null # "shapefiles/MID_CONUS"
+shp : null
 
 # start  lat lon of vertical cross section
 startpt :

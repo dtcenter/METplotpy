@@ -182,7 +182,7 @@ def planview(config, fv3ds, **kwargs):
     # And they aren't lost in xarray.DataArray.interp.
     da2plot = da2plot.metpy.dequantify()
 
-    logging.debug(f"Select vertical levels with '{sel_method}' method")
+    logging.debug(f"Select {len(pfull)} vertical levels with '{sel_method}' method")
     if sel_method == "nearest":
         da2plot = da2plot.metpy.sel(
             vertical=pfull, method=sel_method, tolerance=10.0 * units.hPa
@@ -280,7 +280,6 @@ def default_ofile(config):
         shapename = os.path.basename(shp)
         root, ext = os.path.splitext(ofile)
         ofile = root + f".{shapename}" + ext
-    ofile = physics_tend.TMPDIR / ofile
     return ofile
 
 

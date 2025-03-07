@@ -33,7 +33,7 @@ def main():
     fig = vert_profile(config, ds)
 
     # Output filename.
-    ofile = physics_tend.TMPDIR / f"{statevarname}.vert_profile.png"
+    ofile = f"{statevarname}.vert_profile.png"
     if config["shp"]:
         shp = config["shp"].rstrip("/")
         # Add shapefile name to output filename
