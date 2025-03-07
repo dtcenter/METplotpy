@@ -72,11 +72,20 @@ ncols : null
 # Add metadata and `created by` date (for comparing images)
 fineprint : False
 
-# pressure levels in hPa to plot. Must be an array, even if only one element.
+# pressure levels in hPa to plot. Levels must be on different line
+# from pfull indicating an array, even if only one element.
 # If only one pressure level is provided, the type-of-tendency
 # argument will be ignored and all tendencies will be plotted.
 pfull :
+    - 1000
+    - 925
+    - 850
+    - 700
     - 500
+    - 300
+    - 200
+    - 100
+    - 0
 
 # calculate residual
 resid : True
@@ -91,7 +100,7 @@ robust : True
 sel_method : "nearest"
 
 # shape file directory for mask
-shp : "shapefiles/MID_CONUS"
+shp : null # "shapefiles/MID_CONUS"
 
 # start  lat lon of vertical cross section
 startpt :
@@ -103,7 +112,7 @@ endpt :
     - 26
     - -75
 
-statevarname : "ugrd"
+statevarname : "tmp"
 
 # Accumulated tendencies were zeroed and divided by time since last output.
 tendencies_were_zeroed_and_averaged_after_every_output : True

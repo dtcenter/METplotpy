@@ -158,7 +158,7 @@ configuration file, perform the following:
 
     usage: <program> [-h] config historyfile gridfile
 
-    Plan view of FV3 diagnostic tendency
+    Plot FV3 diagnostic tendency
 
     positional arguments:
       config                yaml configuration file
@@ -173,12 +173,14 @@ configuration file, perform the following:
 Plan View
 ---------
 
-Generate a plan view of all tendencies at 500 hPa. Set `pfull` to `500` in $CONFIG:
+Generate a plan view of all temperature tendencies at 500 hPa. Settings in $CONFIG:
 
 .. code-block:: yaml
 
    pfull : 
        - 500
+   shp : null
+   statevarname : "tmp"
    
 .. code-block:: bash
 
@@ -215,7 +217,7 @@ Vertical Profile
 ----------------
 
 Generate vertical profile of temperature tendencies averaged over the central US. Plot residual
-tendency and its components. Limit the x-axis range with xmin and xmax. Set `shp`, `xmin`, and `xmax` in $CONFIG:
+tendency and its components. Limit the x-axis range with xmin and xmax. Settings in $CONFIG:
 
 .. code-block:: yaml
 
