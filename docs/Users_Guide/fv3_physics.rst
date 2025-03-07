@@ -11,7 +11,7 @@ gravity wave drag, short wave radiation, planetary boundary layer, microphysics,
 and others listed below. Non-physics tendencies (or dynamics) are due to horizontal
 and vertical motion (advection). 
 
-residual = all tendencies - actual tendency
+residual = *all tendencies - actual change*
 
 The residual (which should be close to zero) is the 
 difference between
@@ -19,7 +19,7 @@ the actual change in the state variable over the requested time window and the
 combined change due to all physics parameterizations and dynamics tendencies. One can plot
 a single tendency component at multiple pressure levels or plot all tendency components
 at a single pressure level. Plan views (horizontal cross sections), vertical profiles,
-and difference plots are also available. 
+and vertical cross sections are also available. 
 
 Required Packages:
 ==================
@@ -149,8 +149,6 @@ configuration file, perform the following:
 
    setenv CONFIG $METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml
    setenv DATA_DIR $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
-   cd $DATA_DIR
-   python planview_fv3.py -h
    
 ::
 
@@ -229,7 +227,7 @@ Vertical Cross Section
 ----------------------
 
 Generate vertical cross section of u-wind tendencies from 28°N 120°W to 26°N 75°W over one-hour
-time window ending 20z June 15, 2019.
+time window ending 20z June 15, 2019. Settings in $CONFIG:
 
 .. code-block:: yaml
 
