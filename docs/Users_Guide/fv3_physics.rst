@@ -74,10 +74,10 @@ Some tendencies do not apply to all four state variables, so these cells are lef
 +-----------------------------+-------------+-------------------+-------------+-------------+
 |      State Variable         | temperature | specific humidity |   u-wind    |   v-wind    |
 +=============================+=============+===================+=============+=============+
-|       expected name         |     tmp     |        spfh       |    ugrd     |    vgrd     |
+|       typical name          |     tmp     |        spfh       |    ugrd     |    vgrd     |
 +-----------------------------+-------------+-------------------+-------------+-------------+
 
-Tendency variables:
+Typical Tendency variable names (change in config file if your case is different)
 
 +-----------------------------+-------------------+-------------------+----------------+----------------+
 |     Tendency  Variable      |    temperature    | specific humidity |     u-wind     |     v-wind     |
@@ -113,9 +113,9 @@ Derived tendency variables that show up in plots:
 +=============================+===================+===================+================+================+
 |     all phys and nophys     |        all        |        all        |       all      |      all       |
 +-----------------------------+-------------------+-------------------+----------------+----------------+
-|       actual tendency       |      actual       |       actual      |     actual     |     actual     |
+|       actual change         |      actual       |       actual      |     actual     |     actual     |
 +-----------------------------+-------------------+-------------------+----------------+----------------+
-| residual tend. (all-actual) |      resid        |       resid       |     resid      |     resid      |
+|  residual (*all - actual*)  |      resid        |       resid       |     resid      |     resid      |
 +-----------------------------+-------------------+-------------------+----------------+----------------+
 
 If time window overlaps initialization time
@@ -209,10 +209,6 @@ Generate a plan view of PBL tendency at specified pressure levels. Set `pfull` t
 
 .. image:: figure/tmp_pbl.png
 
-.. code-block:: bash
-
-   python vert_profile_fv3.py -h 
-   
 Vertical Profile
 ----------------
 
@@ -234,18 +230,12 @@ tendency and its components. Limit the x-axis range with xmin and xmax. Settings
 Vertical Cross Section
 ----------------------
 
-.. code-block:: bash
-
-   python cross_section_vert.py -h 
-   
 Generate vertical cross section of u-wind tendencies from 28°N 120°W to 26°N 75°W over one-hour
 time window ending 20z June 15, 2019.
 
 .. code-block:: yaml
 
    statevarname : "ugrd"
-
-   # color map
    startpt :
       - 28
       - -120
