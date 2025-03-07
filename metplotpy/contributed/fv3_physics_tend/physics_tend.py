@@ -1,5 +1,6 @@
 """Common functions for fv3_physics_tend"""
 
+import argparse
 import datetime
 import logging
 import os
@@ -188,6 +189,26 @@ def get_fv3ds(config: dict, historyfile: xarray.Dataset, **kwargs) -> xarray.Dat
         logging.info(statevarname)
 
     return ds.metpy.dequantify()
+
+
+def parse_args():
+    """
+    parse command line arguments
+    """
+
+    # =============Arguments===================
+    parser = argparse.ArgumentParser(
+        description="Plot FV3 diagnostic tendencies",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    # ==========Mandatory Arguments===================
+    parser.add_argument("config", help="yaml configuration file")
+    parser.add_argument("historyfile", help="FV3 history file")
+    parser.add_argument("gridfile", help="FV3 grid spec file")
+    parser.add_argument("--debug", action="store_true", help="more log messages")
+
+    args = parser.parse_args()
+    return args
 
 
 def prepare_ds(config: dict, historyfile: Path, gridfile: Path) -> xarray.Dataset:

@@ -1,6 +1,5 @@
 """ vertcal cross section of tendencies """
 
-import argparse
 import datetime
 import logging
 import os
@@ -18,25 +17,6 @@ from metpy.units import units
 from metplotpy.contributed.fv3_physics_tend import physics_tend
 
 
-def parse_args():
-    """
-    parse command line arguments
-    """
-
-    # =============Arguments===================
-    parser = argparse.ArgumentParser(
-        description="Vertical cross section of FV3 diagnostic tendencies",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    # ==========Mandatory Arguments===================
-    parser.add_argument("config", help="yaml configuration file")
-    parser.add_argument("historyfile", help="FV3 history file")
-    parser.add_argument("gridfile", help="FV3 grid spec file")
-
-    args = parser.parse_args()
-    return args
-
-
 def main():
     """
     Vertical cross section view of tendencies of t, q, u, or v from physics parameterizations,
@@ -44,7 +24,7 @@ def main():
     the actual tendency, and the residual. Residual is the sum of all tendencies minus the
     actual tendency.
     """
-    args = parse_args()
+    args = physics_tend.parse_args()
     gridfile = args.gridfile
     historyfile = args.historyfile
     config = yaml.load(open(args.config, encoding="utf8"), Loader=yaml.FullLoader)
@@ -79,7 +59,7 @@ def cross_section_vert(config, fv3ds, **kwargs):
     if config["debug"]:
         level = logging.DEBUG
     # prepend log message with time
-    logging.basicConfig(format="%(asctime)s - %(message)s", level=level)
+    logging.basicConfig(format="%(asctime)s - %(message)s", level=level, force=True)
 
     if not validtime:
         validtime = fv3ds.time.values[-1]

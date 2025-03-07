@@ -154,12 +154,9 @@ configuration file, perform the following:
    cd $WORKING_DIR
    python planview_fv3.py -h
    
-Plan View
----------
-
 ::
 
-    usage: planview_fv3.py [-h] config historyfile gridfile statevarname tendencytype
+    usage: <program> [-h] config historyfile gridfile
 
     Plan view of FV3 diagnostic tendency
 
@@ -167,29 +164,29 @@ Plan View
       config                yaml configuration file
       historyfile           FV3 history file
       gridfile              FV3 grid spec file
-      statevarname          moisture, temperature, or wind component variable name
-      tendencytype          type of tendency. ignored if pfull is a single level
 
     optional arguments:
       -h, --help            show this help message and exit
+      --debug               more log messages (default: False)
 
                         
-Generate a plan view of all tendencies at 500 hPa for the 1-hour time window ending 20190615 20z:
+Plan View
+---------
+
+Generate a plan view of all tendencies at 500 hPa. Set `pfull` to `500` in $CONFIG:
 
 .. code-block:: yaml
 
    pfull : 
        - 500
-   twindow : 1
-   validtime : "20190615T20"
    
 .. code-block:: bash
 
-   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl
+   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc
 
 .. image:: figure/tmp_500hPa.png
 
-Generate a plan view of PBL tendency at default pressure levels:
+Generate a plan view of PBL tendency at specified pressure levels. Set `pfull` to an array of levels in $CONFIG:
 
 .. code-block:: yaml
 
@@ -204,12 +201,9 @@ Generate a plan view of PBL tendency at default pressure levels:
        - 100
        - 0
 
-   twindow : 1
-   validtime : "20190615T20"
-
 .. code-block:: bash
 
-   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp pbl
+   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc
 
 .. image:: figure/tmp_pbl.png
 
@@ -220,33 +214,18 @@ Generate a plan view of PBL tendency at default pressure levels:
 Vertical Profile
 ----------------
 
-::
-
-    usage: vert_profile_fv3.py [-h] config historyfile gridfile statevarname
-
-    Vertical profile of FV3 diagnostic tendencies
-
-    positional arguments:
-      config                yaml configuration file
-      historyfile           FV3 history file
-      gridfile              FV3 grid spec file
-      statevarname          moisture, temperature, or wind component variable name
-
-    optional arguments:
-      -h, --help            show this help message and exit
-       
 Generate vertical profile of temperature tendencies averaged over the central US. Plot residual
-tendency and its components. Limit the x-axis range with xmin and xmax.
+tendency and its components. Limit the x-axis range with xmin and xmax. Set `shp`, `xmin`, and `xmax` in $CONFIG:
 
 .. code-block:: yaml
 
-    shapefile : "shapefiles/MID_CONUS"
+    shp : "shapefiles/MID_CONUS"
     xmin : -0.0002
     xmax : 0.0002
 
 .. code-block:: bash
 
-    python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc tmp
+    python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc
 
 .. image:: figure/tmp.vert_profile.MID_CONUS.png
 
@@ -257,39 +236,24 @@ Vertical Cross Section
 
    python cross_section_vert.py -h 
    
-::
-
-    usage: cross_section_vert.py [-h] config historyfile gridfile statevarname
-
-    Vertical cross section of FV3 diagnostic tendencies
-
-    positional arguments:
-      config                yaml configuration file
-      historyfile           FV3 history file
-      gridfile              FV3 grid spec file
-      statevarname          moisture, temperature, or wind component variable name
-
-    optional arguments:
-      -h, --help            show this help message and exit
-
 Generate vertical cross section of u-wind tendencies from 28°N 120°W to 26°N 75°W over one-hour
 time window ending 20z June 15, 2019.
 
 .. code-block:: yaml
 
+   statevarname : "ugrd"
+
    # color map
-   cmap : "RdBu_r"
    startpt :
       - 28
       - -120
    endpt :
       - 26
       - -75
-   validtime : "2019-06-15 20"
 
 .. code-block:: bash
 
-   python cross_section_vert.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc ugrd
+   python cross_section_vert.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc
 
 .. image:: figure/ugrd_28.0N-120.0E-26.0N-75.0E.png
 
