@@ -59,19 +59,14 @@ def main():
 def planview(config, fv3ds, **kwargs):
     # Override config file with keyword args
     config.update(kwargs)
-    fineprint = config["fineprint"]
     ncols = config["ncols"]
     pfull = config["pfull"] * units.hPa
-    robust = config["robust"]
     sel_method = config["sel_method"]
-    shp = config["shp"]
     statevarname = config["statevarname"]
     tendencytype = config["tendencytype"]
     twindow = datetime.timedelta(hours=config["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
     validtime = config["validtime"]
-    vmin = config["vmin"]
-    vmax = config["vmax"]
 
     level = logging.INFO
     if config["debug"]:
@@ -220,9 +215,9 @@ def planview(config, fv3ds, **kwargs):
         da2plot["pfull"] = 10**da2plot.pfull
 
     # Mask points outside shape.
-    if shp:
+    if config["shp"]:
         # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
-        mask = physics_tend.pts_in_shp(fv3ds.latt.values, fv3ds.lont.values, shp)
+        mask = physics_tend.pts_in_shp(fv3ds.latt.values, fv3ds.lont.values, config["shp"])
         mask = xarray.DataArray(mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
         da2plot = da2plot.where(mask)
 
@@ -249,18 +244,18 @@ def planview(config, fv3ds, **kwargs):
     }
 
     logging.debug("plot pcolormesh")
-    if robust:
+    if config["robust"]:
         logging.debug("compute colormap range with 2nd and 98th percentiles")
     pcm = da2plot.plot.pcolormesh(
         x="lont",
         y="latt",
         col=col,
         col_wrap=ncols,
-        robust=robust,
+        robust=config["robust"],
         infer_intervals=True,
         transform=cartopy.crs.PlateCarree(),
-        vmin=vmin,
-        vmax=vmax,
+        vmin=config["vmin"],
+        vmax=config["vmax"],
         cmap=config["cmap"],
         cbar_kwargs={"shrink": 0.8},
         subplot_kws=subplot_kws,
@@ -280,7 +275,7 @@ def planview(config, fv3ds, **kwargs):
 
     # Annotate figure with timestamp
     fineprint_str = f"created {datetime.datetime.now(tz=None)}"
-    if fineprint:
+    if config["fineprint"]:
         logging.debug("add fineprint to image")
         plt.figtext(0, 0, fineprint_str, fontsize="xx-small", va="bottom", wrap=True)
     else:
@@ -289,18 +284,18 @@ def planview(config, fv3ds, **kwargs):
     return pcm
 
 
-def default_ofile(fv3):
+def default_ofile(config):
     """
     Return default output filename.
     """
-    pfull = fv3["pfull"] * units.hPa
+    pfull = config["pfull"] * units.hPa
     if len(pfull) == 1:
         pfull_str = f"{pfull[0]:~.0f}".replace(" ", "")
-        ofile = f"{fv3['statevarname']}_{pfull_str}.png"
+        ofile = f"{config['statevarname']}_{pfull_str}.png"
     else:
-        ofile = f"{fv3['statevarname']}_{fv3['tendencytype']}.png"
-    if fv3["shp"]:
-        shp = fv3["shp"].rstrip("/")
+        ofile = f"{config['statevarname']}_{config['tendencytype']}.png"
+    if config["shp"]:
+        shp = config["shp"].rstrip("/")
         # Add shapefile name to output filename
         shapename = os.path.basename(shp)
         root, ext = os.path.splitext(ofile)

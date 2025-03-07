@@ -67,14 +67,11 @@ def main():
 def vert_profile(config, fv3ds, **kwargs):
     # Override config file with keyword args
     config.update(kwargs)
-    fineprint = config["fineprint"]
     shp = config["shp"]
     statevarname = config["statevarname"]
     twindow = datetime.timedelta(hours=config["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
     validtime = config["validtime"]
-    xmin = config["xmin"]
-    xmax = config["xmax"]
 
     level = logging.INFO
     if config["debug"]:
@@ -219,7 +216,7 @@ def vert_profile(config, fv3ds, **kwargs):
     ax.grid(which="minor", alpha=0.3, lw=0.4)
 
     logging.info("plot area-weighted spatial average...")
-    lines = da2plot.plot.line(y="pfull", ax=ax, xlim=(xmin, xmax), hue=tendency_dim)
+    lines = da2plot.plot.line(y="pfull", ax=ax, xlim=(config["xmin"], config["xmax"]), hue=tendency_dim)
 
     if config["resid"]:
         # Add special marker to actual_change and residual lines.
@@ -272,7 +269,7 @@ def vert_profile(config, fv3ds, **kwargs):
 
     # Annotate figure with timestamp
     fineprint_str = f"created {datetime.datetime.now(tz=None)}"
-    if fineprint:
+    if config["fineprint"]:
         logging.debug("add fineprint to image")
         plt.figtext(0, 0, fineprint_str, fontsize="xx-small", va="bottom", wrap=True)
     else:

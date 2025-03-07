@@ -67,17 +67,13 @@ def main():
 def cross_section_vert(config, fv3ds, **kwargs):
     # Override config file with keyword args
     config.update(kwargs)
-    fineprint = config["fineprint"]
     ncols = config["ncols"]
     startpt = config["startpt"]
     endpt = config["endpt"]
-    robust = config["robust"]
     statevarname = config["statevarname"]
     twindow = datetime.timedelta(hours=config["twindow"])
     twindow_quantity = twindow.total_seconds() * units.seconds
     validtime = config["validtime"]
-    vmin = config["vmin"]
-    vmax = config["vmax"]
 
     level = logging.INFO
     if config["debug"]:
@@ -236,7 +232,7 @@ def cross_section_vert(config, fv3ds, **kwargs):
     cross = cross_section(da2plot, startpt, endpt)
 
     logging.debug("plot pcolormesh")
-    if robust:
+    if config["robust"]:
         logging.debug("compute colormap range with 2nd and 98th percentiles")
     # normalized width and height of inset. Shrink colorbar to provide space.
     wid_inset, hgt_inset = 0.18, 0.18
@@ -246,10 +242,10 @@ def cross_section_vert(config, fv3ds, **kwargs):
         yincrease=False,
         col=col,
         col_wrap=ncols,
-        robust=robust,
+        robust=config["robust"],
         infer_intervals=True,
-        vmin=vmin,
-        vmax=vmax,
+        vmin=config["vmin"],
+        vmax=config["vmax"],
         cmap=config["cmap"],
         cbar_kwargs={"shrink": 1 - hgt_inset, "anchor": (0, 0.25 - hgt_inset)},
     )
@@ -295,7 +291,7 @@ def cross_section_vert(config, fv3ds, **kwargs):
 
     # Annotate figure with timestamp
     fineprint_str = f"created {datetime.datetime.now(tz=None)}"
-    if fineprint:
+    if config["fineprint"]:
         logging.debug("add fineprint to image")
         plt.figtext(0, 0, fineprint_str, fontsize="xx-small", va="bottom", wrap=True)
     else:
