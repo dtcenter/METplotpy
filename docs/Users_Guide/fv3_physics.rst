@@ -48,9 +48,7 @@ Required input:
 **Download** the `fv3_history.nc and grid_spec.nc files
 <https://dtcenter.ucar.edu/dfiles/code/METplus/METplotpy/fv3_physics_tendency/>`_
 
-Save this file in a directory where you have read and write permissions, such as
-$WORKING_DIR/data/fv3_physics_tend, where $WORKING_DIR is the path to the directory where you will save
-input data.
+Save to $DATA_DIR directory where you have read and write permissions.
 
 For additional details see 
 `grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
@@ -150,8 +148,8 @@ configuration file, perform the following:
 .. code-block:: bash
 
    setenv CONFIG $METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml
-   setenv WORKING_DIR $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
-   cd $WORKING_DIR
+   setenv DATA_DIR $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
+   cd $DATA_DIR
    python planview_fv3.py -h
    
 ::
@@ -184,7 +182,7 @@ Generate a plan view of all temperature tendencies at 500 hPa. Settings in $CONF
    
 .. code-block:: bash
 
-   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc
+   python planview_fv3.py $CONFIG $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
 
 .. image:: figure/tmp_500hPa.png
 
@@ -205,7 +203,7 @@ Generate a plan view of PBL tendency at specified pressure levels. Set `pfull` t
 
 .. code-block:: bash
 
-   python planview_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc
+   python planview_fv3.py $CONFIG $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
 
 .. image:: figure/tmp_pbl.png
 
@@ -223,7 +221,7 @@ tendency and its components. Limit the x-axis range with xmin and xmax. Settings
 
 .. code-block:: bash
 
-    python vert_profile_fv3.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc
+    python vert_profile_fv3.py $CONFIG $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
 
 .. image:: figure/tmp.vert_profile.MID_CONUS.png
 
@@ -245,7 +243,7 @@ time window ending 20z June 15, 2019.
 
 .. code-block:: bash
 
-   python cross_section_vert.py $CONFIG $WORKING_DIR/fv3_history.nc $WORKING_DIR/grid_spec.nc
+   python cross_section_vert.py $CONFIG $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
 
 .. image:: figure/ugrd_28.0N-120.0E-26.0N-75.0E.png
 
