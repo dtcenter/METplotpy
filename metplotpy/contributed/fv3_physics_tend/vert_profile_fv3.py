@@ -48,7 +48,6 @@ def vert_profile(config, fv3ds, **kwargs):
     # Override config file with keyword args
     config.update(kwargs)
     shp = config["shp"]
-    statevarname = config["statevarname"]
 
     level = logging.INFO
     if config["debug"]:
@@ -56,109 +55,12 @@ def vert_profile(config, fv3ds, **kwargs):
     # prepend log message with time
     logging.basicConfig(format="%(asctime)s - %(message)s", level=level, force=True)
 
-    twindow, twindow_quantity, validtime = physics_tend.assert_times(config, fv3ds)
-    twindow_start = validtime - twindow
-    logging.debug(f"twindow_start {twindow_start}")
-
-    # list of tendency variable names for requested state variable
-    tendency_vars = config["tendency_varnames"][statevarname]
-    logging.debug(f"tendency_vars {tendency_vars}")
-    tendencies = fv3ds[tendency_vars]  # subset of original Dataset
-    tendencies = tendencies.load()
-    # convert DataArrays to Quantities to protect units. DataArray.mean drops units attribute.
-    tendencies = tendencies.metpy.quantify()
-    logging.info(tendencies.max())
-
-    if config["tendencies_were_zeroed_and_averaged_after_every_output"]:
-        logging.warning("assume tendencies_were_zeroed_and_averaged_after_every_output")
-        assert twindow_start in fv3ds.time, (
-            f"twindow_start {twindow_start} not in history file. Closest is "
-            f"{fv3ds.time.sel(time=twindow_start, method='nearest').time.data}"
-        )
-        # Define time slice starting with the first time after twindow_start and ending with validtime.
-        # We use the time *after* twindow_start because the time range corresponding to the tendency
-        # output is the period immediately prior to the tendency timestamp.
-        # That way, slice(time_after_twindow_start, validtime) has a time range of [twindow_start,validtime].
-        idx_first_time_after_twindow_start = (fv3ds.time > twindow_start).argmax()
-        time_after_twindow_start = fv3ds.time[idx_first_time_after_twindow_start].data
-        tindex = {"time": slice(time_after_twindow_start, validtime)}
-        logging.debug("Time-weighted mean tendencies for time index slice %s", tindex)
-        timeweights = fv3ds.time.diff("time").sel(tindex)
-        time_weighted_tendencies = tendencies.sel(tindex) * timeweights
-        tendencies_avg = time_weighted_tendencies.sum(dim="time") / timeweights.sum(
-            dim="time"
-        )
-        tendencies = tendencies_avg
-
-    # Make list of long_names before .to_array() loses them.
-    long_names = [fv3ds[da].attrs["long_name"] for da in tendencies]
-    print(long_names)
-
-    # Keep characters after final underscore. The first part is redundant.
-    # for example dtend_u_pbl -> pbl
-    name_dict = {da: "_".join(da.split("_")[-1:]) for da in tendencies.data_vars}
-    logging.debug("rename %s", name_dict)
-    tendencies = tendencies.rename(name_dict)
-
-    # Stack variables along new tendency dimension of new DataArray.
-    tendency_dim = f"{statevarname} tendency"
-    tendencies = tendencies.to_array(dim=tendency_dim, name=tendency_dim)
-    # Assign long_names to a new DataArray coordinate.
-    # It will have the same shape as tendency dimension.
-    tendencies = tendencies.assign_coords({"long_name": (tendency_dim, long_names)})
-
-    logging.info("calculate actual change in %s", statevarname)
-    # Tried metpy.quantify() with open_dataset, but
-    # pint.errors.UndefinedUnitError: 'dBz' is not defined in the unit registry
-    state_variable = fv3ds[statevarname].metpy.quantify()
-    logging.info(f"from {twindow_start} to {validtime}")
-    actual_change = state_variable.sel(time=validtime) - state_variable.sel(
-        time=twindow_start, method="nearest", tolerance=datetime.timedelta(milliseconds=1)
-    )
-    actual_change = actual_change.assign_coords(time=validtime)
-    actual_change.attrs["long_name"] = (
-        f"actual change in {state_variable.attrs['long_name']}"
-    )
-
-    # Sum all tendencies (physics and non-physics)
-    all_tendencies = tendencies.sum(dim=tendency_dim)
-
-    # Subtract physics tendency variable if it was in tendency_vars. Don't want to double-count.
-    phys_var = any(x.endswith("_phys") for x in tendency_vars)
-    if phys_var:
-        logging.info(
-            "subtract 'phys' tendency variable from "
-            "all_tendencies to avoid double-counting"
-        )
-        # use .data to avoid re-introducing tendency coordinate
-        all_tendencies = all_tendencies - tendencies.sel({tendency_dim: "phys"}).data
-
-    # Calculate actual tendency of state variable.
-    actual_tendency = actual_change / twindow_quantity
-    logging.info("subtract actual tendency from all_tendencies to get residual")
-    resid = all_tendencies - actual_tendency
-
-    da2plot = tendencies
-    if config["resid"]:
-        # Concatenate all_tendencies, actual_tendency, and resid DataArrays.
-        # Give them a name and long_name along tendency_dim.
-        all_tendencies = all_tendencies.expand_dims(
-            {tendency_dim: ["all"]}
-        ).assign_coords(long_name="sum of tendencies")
-        actual_tendency = actual_tendency.expand_dims(
-            {tendency_dim: ["actual"]}
-        ).assign_coords(long_name=f"actual rate of change of {statevarname}")
-        resid = resid.expand_dims({tendency_dim: ["resid"]}).assign_coords(
-            long_name=f"sum of tendencies - actual rate of change of {statevarname} (residual)"
-        )
-        da2plot = xarray.concat(
-            [da2plot, all_tendencies, actual_tendency, resid], dim=tendency_dim
-        )
-
+    da2plot, title = physics_tend.get_da2plot(config, fv3ds)
+    tendency_dim = f"{config['statevarname']} tendency"
     # Mask points outside shape.
     if shp:
         # Use .values to avoid AttributeError: 'DataArray' object has no attribute 'flatten'
-        mask = physics_tend.pts_in_shp(fv3ds[config["lat_name"]].values, fv3ds[config["lon_name"]].values, shp)
+        mask = physics_tend.pts_in_shp(fv3ds["latt"].values, fv3ds["lont"].values, shp)
         mask = xarray.DataArray(mask, coords=[da2plot.grid_yt, da2plot.grid_xt])
         da2plot = da2plot.where(mask)
 
@@ -180,24 +82,22 @@ def vert_profile(config, fv3ds, **kwargs):
     logging.info("plot area-weighted spatial average...")
     lines = da2plot.plot.line(y="pfull", ax=ax, xlim=(config["xmin"], config["xmax"]), hue=tendency_dim)
 
-    if config["resid"]:
-        # Add special marker to actual_change and residual lines.
-        # DataArray plot legend handles differ from the plot lines, for some reason. So if you
-        # change the style of a line later, it is not automatically changed in the legend.
-        # zip d{variable}, resid line and their respective legend handles together and change
-        # their style together.
-        # [-2:] means take last two elements of da2plot.
-        special_lines = list(zip(lines, ax.get_legend().legend_handles))[-2:]
-        special_marker = "o"
-        special_marker_size = 3
-        for line, leghandle in special_lines:
-            line.set_marker(special_marker)
-            line.set_markersize(special_marker_size)
-            leghandle.set_marker(special_marker)
-            leghandle.set_markersize(special_marker_size)
+    # Add special marker to actual_change and residual lines.
+    # DataArray plot legend handles differ from the plot lines, for some reason. So if you
+    # change the style of a line later, it is not automatically changed in the legend.
+    # zip d{variable}, resid line and their respective legend handles together and change
+    # their style together.
+    # [-2:] means take last two elements of da2plot.
+    special_lines = list(zip(lines, ax.get_legend().legend_handles))[-2:]
+    special_marker = "o"
+    special_marker_size = 3
+    for line, leghandle in special_lines:
+        line.set_marker(special_marker)
+        line.set_markersize(special_marker_size)
+        leghandle.set_marker(special_marker)
+        leghandle.set_markersize(special_marker_size)
 
-    # Add time to title
-    title = f'{twindow_start}-{validtime} ({twindow_quantity.to("hours"):~} time window)'
+    # Add title
     ax.set_title(title, wrap=True)
 
     if shp:
@@ -210,12 +110,12 @@ def vert_profile(config, fv3ds, **kwargs):
         # astype(int) to avoid TypeError: numpy boolean subtract
         cbar_kwargs = {"ticks": [0.25, 0.75], "shrink": 0.6}
         pcm = (
-            mask.assign_coords(lont=fv3ds[config["lon_name"]], latt=fv3ds[config["lat_name"]])
+            mask.assign_coords(lont=fv3ds["lont"], latt=fv3ds["latt"])
             .astype(int)
             .plot.pcolormesh(
                 ax=ax_inset,
-                x=config["lon_name"],
-                y=config["lat_name"],
+                x="lont",
+                y="latt",
                 infer_intervals=True,
                 transform=cartopy.crs.PlateCarree(),
                 cmap=plt.colormaps["cool"],
@@ -234,8 +134,7 @@ def vert_profile(config, fv3ds, **kwargs):
     if config["fineprint"]:
         logging.debug("add fineprint to image")
         plt.figtext(0, 0, fineprint_str, fontsize="xx-small", va="bottom", wrap=True)
-    else:
-        logging.debug(fineprint_str)
+    logging.debug(fineprint_str)
 
     return fig
 

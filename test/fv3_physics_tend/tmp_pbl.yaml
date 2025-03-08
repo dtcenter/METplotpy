@@ -87,9 +87,6 @@ pfull :
     - 100
     - 0
 
-# calculate residual
-resid : True
-
 # compute colormap range with extremes, not 2nd and 98th percentiles
 robust : True
 
