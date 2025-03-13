@@ -28,7 +28,7 @@ base directory, then run the following commands.
 
 .. code-block:: ini
 
-  $ conda create -n "metplotpy" python=3.10.4 pip
+  $ conda create -n "metplotpy" python=3.12 pip
   $ conda activate metplotpy
   (metplotpy)$ pip install -e .
 
