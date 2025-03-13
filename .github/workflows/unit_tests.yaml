@@ -37,7 +37,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         
-    - name: Retrieve METcalcpy repository feature_update_python  branch
+    - name: Retrieve METcalcpy repository develop  branch
       run: |
          metcalcpy_dir="$RUNNER_WORKSPACE/METcalcpy"
          git clone https://github.com/dtcenter/METcalcpy ${metcalcpy_dir}
