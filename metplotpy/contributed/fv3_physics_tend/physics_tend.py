@@ -200,7 +200,7 @@ def get_datetimeindex(datetimeindex):
         # Maybe history file should be saved with standard calendar.
         # To turn off warning, set unsafe=True.
         logging.debug(f"convert {datetimeindex} to datetimeindex")
-        datetimeindex = datetimeindex.to_datetimeindex(unsafe=True)
+        datetimeindex = datetimeindex.to_datetimeindex(unsafe=True, time_unit="ns")
         logging.debug(f"converted to {datetimeindex}")
     ragged_times = datetimeindex != datetimeindex.round("1ms")
     if any(ragged_times):
