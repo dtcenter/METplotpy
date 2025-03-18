@@ -227,6 +227,8 @@ def plot_gdf(gdf_data, outdir=None):
     else:
         plt.savefig(outfile, bbox_inches='tight', pad_inches=0.25)
 
+    plt.close()
+
     # Cleanup
     del (fig_gdf, gs_gdf)
 
@@ -390,6 +392,8 @@ def plot_gdf_ufs(gdf_data, outdir=None):
         plt.savefig(outfile)
     else:
         plt.savefig(outfile, bbox_inches='tight', pad_inches=0.25)
+
+    plt.close()
 
     # Cleanup
     del (gs_gdf, fig_gdf)
@@ -555,6 +559,8 @@ def plot_gdf_cat(gdf_data, outdir=None):
     else:
         plt.savefig(outfile, bbox_inches='tight', pad_inches=0.25)
 
+    plt.close()
+
     # Cleanup
     del (gs_gdf, fig_gdf)
 
@@ -693,6 +699,8 @@ def plot_tdf(tdf_data, outdir=None):
         plt.savefig(outfile)
     else:
         plt.savefig(outfile, bbox_inches='tight', pad_inches=0.25)
+
+    plt.close()
 
     # Cleanup
     del (gs_tdf, fig_tdf)
