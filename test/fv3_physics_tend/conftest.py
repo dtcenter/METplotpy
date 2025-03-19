@@ -8,9 +8,9 @@ cwd = os.path.dirname(__file__)
 @pytest.fixture
 def setup_physics_tendency_test(autouse=True) -> dict:
     """
-       Fixture for setting up the planview tests by
+       Fixture for setting up the planview, vertical profile, and vertical cross-section tests by
        reading in the physics_tendency_test.yaml file and creating a
-       dictionary representation of the settings.
+       dictionary representation of those settings.
     """
     # open and read the test config file
     with open(os.path.join(cwd, "physics_tendency_test.yaml"), 'r') as stream:
