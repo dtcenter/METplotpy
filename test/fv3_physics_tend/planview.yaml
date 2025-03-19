@@ -1,0 +1,5 @@
+history_file: "path-to/fv3_history.nc"
+grid_file: "path/to/grid_spec.nc"
+
+# location of other netCDF datafiles i.e. tiles
+data_dir: "path/to/data"
