@@ -17,3 +17,4 @@ xarray==2025.1.2
 eofs==2.0.0
 cartopy==0.24.0
 scikit-learn==1.6.1
+cmocean=4.0.3
