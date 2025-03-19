@@ -21,7 +21,7 @@ def cleanup(generated_plot):
 
 
 
-# @pytest.mark.skip("skip because dataset is too large")
+@pytest.mark.skip("skip because dataset is too large")
 @pytest.mark.parametrize("test_config, expected", ([f"{cwd}/tmp_500hPa.yaml", "tmp_500hPa.png"],
                                                   [f"{cwd}/tmp_pbl.yaml", "tmp_pbl.png"]))
 def test_planview_plot_created(setup_planview, test_config, expected):
@@ -43,7 +43,7 @@ def test_planview_plot_created(setup_planview, test_config, expected):
     assert os.path.exists(expected_plot)
 
 
-# @pytest.mark.skip("skip because dataset is too large")
+@pytest.mark.skip("skip because dataset is too large")
 @pytest.mark.parametrize("test_config, expected", ([f"{cwd}/tmp_500hPa.yaml", "tmp_500hPa.png"],
                                                   [f"{cwd}/tmp_pbl.yaml", "tmp_pbl.png"]))
 def test_planview_plot_not_empty(setup_planview, test_config, expected):
