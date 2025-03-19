@@ -3,7 +3,6 @@ import os
 
 import xarray
 import yaml
-import xarray as xr
 import sys
 import metplotpy.contributed.fv3_physics_tend.physics_tend as pt
 import metplotpy.contributed.fv3_physics_tend.planview_fv3 as pv
