@@ -1,0 +1,62 @@
+# Names of tendency variables in model output (i.e. FV3 history file)
+# Each type of tendency (moisture, temperature, wind component) has its own set of variables.
+tendency_varnames:
+    spfh:
+    - dtend_qv_pbl
+    - dtend_qv_deepcnv
+    - dtend_qv_shalcnv
+    - dtend_qv_mp
+    - dtend_qv_phys
+    - dtend_qv_nophys
+    tmp:
+    - dtend_temp_lw
+    - dtend_temp_sw
+    - dtend_temp_pbl
+    - dtend_temp_deepcnv
+    - dtend_temp_shalcnv
+    - dtend_temp_mp
+    - dtend_temp_orogwd
+    - dtend_temp_cnvgwd
+    - dtend_temp_phys
+    - dtend_temp_nophys
+    ugrd:
+    - dtend_u_pbl
+    - dtend_u_orogwd
+    - dtend_u_deepcnv
+    - dtend_u_cnvgwd
+    - dtend_u_shalcnv
+    - dtend_u_phys
+    - dtend_u_nophys
+    vgrd:
+    - dtend_v_pbl
+    - dtend_v_orogwd
+    - dtend_v_deepcnv
+    - dtend_v_cnvgwd
+    - dtend_v_shalcnv
+    - dtend_v_phys
+    - dtend_v_nophys
+
+
+
+# Name of the longitude and latitude variables in the grid specification file.
+lon_name : "grid_lont"
+lat_name : "grid_latt"
+
+
+# Geographic extent (in degrees) of 2-D plots.
+# (lonmin, lonmax, latmin, latmax)  
+extent:
+    - -122
+    - -72.7
+    - 22.1
+    - 49.5
+
+# Found FV3 standard_parallel by trial and error with smaller and smaller tolerances given to mepy.assign_y_x(). longitude is mean.
+standard_parallel : 38.139
+
+# color map
+cmap : "Spectral_r"
+
+# resolution (dots per inch) of output
+dpi : 100
+
