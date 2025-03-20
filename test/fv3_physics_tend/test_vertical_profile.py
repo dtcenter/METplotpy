@@ -54,7 +54,6 @@ def test_plot_different_settings(setup_physics_tendency_test, test_config, expec
 
     # Generate the vertical profile  plot based on the settings from the test config files
     plot_src_directory = setup_physics_tendency_test['plot_src_dir']
-
     # explicitly use the MID_CONUS shapefiles
     shapefile = os.path.join(plot_src_directory, "shapefiles/MID_CONUS")
 
@@ -63,20 +62,23 @@ def test_plot_different_settings(setup_physics_tendency_test, test_config, expec
     xmax_val = 0.002
     twindow_val = 1
 
-    # set ofile to a different location, the root directory
-    root_dir = os.path.dirname(os.path.abspath(__file__))
-    ofile_val = f"{root_dir}/tmp_vert_profile.MID_CONUS.png"
+    # set ofile to a different location, the plot source directory
+    ofile_val = os.path.join(plot_src_directory, "tmp_vert_profile.MID_CONUS.png")
     vert_profile_obj = vp.vert_profile(plot_config_obj, ds, shp=shapefile,twindow=twindow_val,xmin=xmin_val,
                                        xmax=xmax_val, ofile =ofile_val)
     vert_profile_obj.savefig(ofile_val, dpi=plot_config_obj["dpi"])
 
     # plots will be generated in the same directory where the tests reside
-    expected_file = os.path.join(root_dir, expected)
+    expected_file = os.path.join(plot_src_directory, expected)
     assert os.path.exists(expected_file)
 
     # Assume anything less than 5kb is an 'empty' plot
     assert os.path.getsize(expected_file) > 50000
     cleanup(expected_file)
+
+
+
+
 
 
 @pytest.mark.skip("skip because dataset is too large")
