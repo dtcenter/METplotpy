@@ -37,16 +37,9 @@ def create_config_from_filename(config_name) -> dict:
             print(exc)
             sys.exit(1)
 
-def create_physics_tendency_dataset(plot_config_file: str) -> xarray.Dataset:
+def cleanup(generated_plot):
     """
-       Generate the dataset necessary for generating the planview, vertical cross-section, or vertical profile plot
-
-       Input:
-         plot_config_file - the filename of the YAML config file used to generate a plot
-
-       Returns:
-            an xarray dataset created by the physics tendency module
+      Clean up generated plots
     """
-    plot_test_config = create_config_from_filename(plot_config_file)
-    return pt.prepare_ds(plot_test_config, plot_test_config['history_file'],
-                         plot_test_config['grid_file'])
+    if os.path.isfile(generated_plot):
+        os.remove(generated_plot)
