@@ -41,7 +41,7 @@ def test_planview_plot_not_empty(setup_physics_tendency_test, test_config, expec
     """
 
     test_config_obj = create_config_from_filename(test_config)
-    ds:xarray.Dataset = pt.prepare_ds(plot_config_obj, setup_physics_tendency_test['history_file'],
+    ds:xarray.Dataset = pt.prepare_ds(test_config_obj, setup_physics_tendency_test['history_file'],
                        setup_physics_tendency_test['grid_file'])
     # Generate the planview plot based on the settings from the test config files
     planview_obj = pv.planview(test_config_obj, ds, pfull=test_config_obj['pfull'], robust=test_config_obj['robust'],
