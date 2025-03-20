@@ -40,16 +40,15 @@ def test_planview_plot_not_empty(setup_physics_tendency_test, test_config, expec
     Test if each planview plot file is NOT empty
     """
 
-    plot_config_obj = create_config_from_filename(test_config)
-    ds = pt.prepare_ds(plot_config_obj, setup_physics_tendency_test['history_file'],
-                         setup_physics_tendency_test['grid_file'])
-
+    test_config_obj = create_config_from_filename(test_config)
+    ds:xarray.Dataset = pt.prepare_ds(plot_config_obj, setup_physics_tendency_test['history_file'],
+                       setup_physics_tendency_test['grid_file'])
     # Generate the planview plot based on the settings from the test config files
-    planview_obj = pv.planview(plot_config_obj, ds, pfull=plot_config_obj['pfull'], robust=plot_config_obj['robust'],
-                                     shp=plot_config_obj['shp'], twindow=plot_config_obj['twindow'],
-                                     validtime=plot_config_obj['validtime'])
-    ofile = pv.default_ofile(plot_config_obj)
-    planview_obj.fig.savefig(ofile, dpi=plot_config_obj["dpi"])
+    planview_obj = pv.planview(test_config_obj, ds, pfull=test_config_obj['pfull'], robust=test_config_obj['robust'],
+                                     shp=test_config_obj['shp'], twindow=test_config_obj['twindow'],
+                                     validtime=test_config_obj['validtime'])
+    ofile = pv.default_ofile(test_config_obj)
+    planview_obj.fig.savefig(ofile, dpi=test_config_obj["dpi"])
 
     expected_plot = os.path.join(f"{cwd}", expected)
     assert os.path.exists(expected_plot)
