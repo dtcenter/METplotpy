@@ -1,3 +1,4 @@
 history_file: "/Users/minnawin/Physics_Tendency_2025/data/fv3_history.nc"
 grid_file: "/Users/minnawin/Physics_Tendency_2025/data/grid_spec.nc"
 data_dir: "/Users/minnawin/Physics_Tendency_2025/data"
+plot_src_dir: "/Users/minnawin/Physics_Tendency_2025/METplotpy/metplotpy/contributed/fv3_physics_tend"
