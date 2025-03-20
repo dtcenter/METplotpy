@@ -1,0 +1,3 @@
+history_file: "/Users/minnawin/Physics_Tendency_2025/data/fv3_history.nc"
+grid_file: "/Users/minnawin/Physics_Tendency_2025/data/grid_spec.nc"
+data_dir: "/Users/minnawin/Physics_Tendency_2025/data"
