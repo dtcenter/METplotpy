@@ -6,7 +6,7 @@ import yaml
 import sys
 import metplotpy.contributed.fv3_physics_tend.physics_tend as pt
 import metplotpy.contributed.fv3_physics_tend.cross_section_vert as cs
-from conftest import create_config_from_filename
+from conftest import create_config_from_filename, cleanup
 
 cwd = os.path.dirname(__file__)
 
