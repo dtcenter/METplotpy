@@ -137,30 +137,28 @@ Configuration File
 Run from the Command Line
 =========================
 
-To generate example tendency plots using settings in the **fv3_physics_defaults.yaml** 
-configuration file, perform the following:
+The example tendency plots use the settings in the following YAML configuration files (located in the
+**$METPLOTPY_BASE/test/fv3_physics_tend** directory):
 
-.. code-block:: bash
+**tmp_500hPa.yaml**
 
-   setenv CONFIG_DIR $METPLOTPY_BASE/test/fv3_physics_tend
-   setenv DATA_DIR $METPLOTPY_BASE/metplotpy/contributed/fv3_physics_tend
-   
-::
+.. literalinclude:: ../../test/fv3_physics_tend/tmp_500hPa.yaml
 
-    usage: <program> [-h] config historyfile gridfile
 
-    Plot FV3 diagnostic tendency
+**tmp_pbl.yaml**
 
-    positional arguments:
-      config                yaml configuration file
-      historyfile           FV3 history file
-      gridfile              FV3 grid spec file
+.. literalinclude:: ../../test/fv3_physics_tend/tmp_pbl.yaml
 
-    optional arguments:
-      -h, --help            show this help message and exit
-      --debug               more log messages (default: False)
+**tmp.vert_profile.MID_CONUS.yaml**
 
-                        
+.. literalinclude:: ../../test/fv3_physics_tend/tmp.vert_profile.MID_CONUS.yaml
+
+**ugrd_cross_section.yaml**
+
+.. literalinclude:: ../../test/fv3_physics_tend/ugrd_cross_section.yaml
+
+
+
 Plan View
 ---------
 
@@ -176,6 +174,8 @@ Generate a plan view of all temperature tendencies at 500 hPa. Settings in confi
 .. code-block:: bash
 
    python planview_fv3.py $CONFIG_DIR/tmp_500hPa.yaml $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
+
+The plot **tmp_500hPa.png** will be saved in the directory where the command was issued.
 
 .. image:: figure/tmp_500hPa.png
 
@@ -198,6 +198,8 @@ Generate a plan view of PBL tendency at specified pressure levels. Set `pfull` t
 
    python planview_fv3.py $CONFIG_DIR/tmp_pbl.yaml $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
 
+The plot **tmp_pbl.png** will be saved in the directory where the command was issued.
+
 .. image:: figure/tmp_pbl.png
 
 Vertical Profile
@@ -215,6 +217,9 @@ tendency and its components. Limit the x-axis range with xmin and xmax. Settings
 .. code-block:: bash
 
     python vert_profile_fv3.py $CONFIG_DIR/tmp.vert_profile.MID_CONUS.yaml $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
+
+The plot **tmp.vert_profile.MID_CONUS.png** will be saved in the directory where the command was issued.
+
 
 .. image:: figure/tmp.vert_profile.MID_CONUS.png
 
@@ -237,5 +242,8 @@ time window ending 20z June 15, 2019. Settings in config file:
 .. code-block:: bash
 
    python cross_section_vert.py $CONFIG_DIR/ugrd_cross_section.yaml $DATA_DIR/fv3_history.nc $DATA_DIR/grid_spec.nc
+
+
+The plot **ugrd_28.0N-120.0E-26.0N-75.0E.png** will be saved in the directory where the command was issued.
 
 .. image:: figure/ugrd_28.0N-120.0E-26.0N-75.0E.png
