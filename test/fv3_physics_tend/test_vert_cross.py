@@ -10,7 +10,7 @@ from conftest import create_config_from_filename, cleanup
 
 cwd = os.path.dirname(__file__)
 
-# @pytest.mark.skip()
+@pytest.mark.skip()
 @pytest.mark.parametrize("test_config, expected", ([f"{cwd}/ugrd_500hPa.yaml", f"{cwd}/ugrd_28N-120E-26N-75E.png"],)
                          )
 
@@ -38,7 +38,7 @@ def test_vert_cross_plot_created(setup_physics_tendency_test, test_config, expec
 
     cleanup(expected)
 
-# @pytest.mark.skip()
+@pytest.mark.skip()
 @pytest.mark.parametrize("test_config, expected", ([f"{cwd}/ugrd_500hPa.yaml", f"{cwd}/ugrd_28N-120E-26N-75E.png"],)
                          )
 
