@@ -132,11 +132,6 @@ Example
 Configuration File
 ------------------
 
-There is a YAML config file located in
-*$METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml* 
-
-.. literalinclude:: ../../test/fv3_physics_tend/fv3_physics_tend_defaults.yaml
-
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved.
 
 Run from the Command Line
