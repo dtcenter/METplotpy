@@ -1,26 +1,17 @@
 import pytest
 import os
 import xarray
-from conftest import create_config_from_filename, create_physics_tendency_dataset
+from conftest import create_config_from_filename, cleanup
 import metplotpy.contributed.fv3_physics_tend.planview_fv3 as pv
 import metplotpy.contributed.fv3_physics_tend.physics_tend as pt
 
 cwd = os.path.dirname(__file__)
 
 
-def cleanup(generated_plot):
-    """
-      Clean up generated plots
-    """
-    if os.path.isfile(generated_plot):
-        os.remove(generated_plot)
-
-
-
 
 @pytest.mark.skip("skip because dataset is too large")
-@pytest.mark.parametrize("test_config, expected", ([f"{cwd}/tmp_500hPa.yaml", "tmp_500hPa.png"],
-                                                  [f"{cwd}/tmp_pbl.yaml", "tmp_pbl.png"]))
+@pytest.mark.parametrize("test_config, expected", ([f"{cwd}/tmp_500hPa.yaml", f"{cwd}/tmp_500hPa.png"],
+                                                  [f"{cwd}/tmp_pbl.yaml", f"{cwd}/tmp_pbl.png"]))
 def test_planview_plot_created(setup_physics_tendency_test, test_config, expected):
     """
     Test if each planview plot file is created
@@ -36,8 +27,9 @@ def test_planview_plot_created(setup_physics_tendency_test, test_config, expecte
     ofile = pv.default_ofile(plot_config_obj)
     planview_obj.fig.savefig(ofile, dpi=plot_config_obj["dpi"])
 
-    expected_plot = os.path.join(f"{cwd}", expected)
-    assert os.path.exists(expected_plot)
+    # plots will be generated in the same directory where the tests reside
+    assert os.path.exists(expected)
+    cleanup(expected)
 
 
 @pytest.mark.skip("skip because dataset is too large")
@@ -71,9 +63,3 @@ def test_planview_plot_not_empty(setup_physics_tendency_test, test_config, expec
 
 
 
-# def create_phys_tendency_dataset(setup_physics_tendency_test:dict, test_config:dict) -> xarray.Dataset:
-#     """
-#        Generate the dataset necessary for generating the planview, vertical cross-section, or vertical profile plot
-#     """
-#
-#     return pt.prepare_ds(test_config, setup_physics_tendency_test['history_file'], setup_physics_tendency_test['grid_file'])
