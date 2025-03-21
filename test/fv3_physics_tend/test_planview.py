@@ -9,7 +9,7 @@ cwd = os.path.dirname(__file__)
 
 
 
-# @pytest.mark.skip("skip because dataset is too large")
+@pytest.mark.skip("skip because dataset is too large")
 @pytest.mark.parametrize("test_config, expected", ([f"{cwd}/tmp_500hPa.yaml", f"{cwd}/tmp_500hPa.png"],
                                                   [f"{cwd}/tmp_pbl.yaml", f"{cwd}/tmp_pbl.png"]))
 def test_planview_plot_created(setup_physics_tendency_test, test_config, expected):
@@ -38,7 +38,7 @@ def test_planview_plot_created(setup_physics_tendency_test, test_config, expecte
     cleanup(expected)
 
 
-# @pytest.mark.skip("skip because dataset is too large")
+@pytest.mark.skip("skip because dataset is too large")
 @pytest.mark.parametrize("test_config, expected", ([f"{cwd}/tmp_500hPa.yaml", "tmp_500hPa.png"],
                                                   [f"{cwd}/tmp_pbl.yaml", "tmp_pbl.png"]))
 def test_planview_plot_not_empty(setup_physics_tendency_test, test_config, expected):
