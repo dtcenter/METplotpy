@@ -132,10 +132,16 @@ class RevisionSeriesSeries(LineSeries):
                 raise ValueError(
                     "Valid date " + valid + " for " + self.user_legends + " doesn't have unique lead times.")
 
+            # as of pandas 2.2, empty columns are by default dtype float64,
+            # explicitly set the fcst_lead column to string to avoid dtype errors.
+            data_for_valid['fcst_lead'] = data_for_valid['fcst_lead'].astype(str)
+
             for i in range(len(data_for_valid)):
                 if i < len(data_for_valid) - 1:
                     data_for_valid.loc[i, 'stat_value'] = data_for_valid.loc[i + 1, 'stat_value'] - data_for_valid.loc[
                         i, 'stat_value']
+
+
                     data_for_valid.loc[i, 'fcst_lead'] = ''
                 else:
                     data_for_valid.loc[i, 'stat_value'] = None

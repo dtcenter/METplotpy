@@ -69,7 +69,13 @@ def find_winner(x, s_v):
         :return:
     """
     values = x.tolist()
-    if sum(1 for _ in filter(None.__ne__, values)) != len(values):
+    # Replace the filter logic in the original statement:
+    #    if sum(1 for _ in filter(None.__ne__, values)) != len(values)
+    # with filter(None.__ne__, L) should be written as list([x for x in valuesL if x is not None])
+    # In Python 3.12, this generates a DeprecationWarning indicating that this should not be used in
+    # a boolean context
+    filtered = list([x for x in values if x is not None])
+    if sum(1 for _ in filtered) != len(values):
         return None
     return s_v[values.index(min(values))]
 

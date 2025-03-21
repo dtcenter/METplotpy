@@ -136,7 +136,7 @@ class RevisionBoxSeries(BoxSeries):
                 raise ValueError(
                     "Valid date " + valid + " for " + self.user_legends + " doesn't have unique lead times.")
             if len(data_for_valid) == 1:
-                # van't calculate revision for one value
+                # can't calculate revision for one value
                 data_for_valid.loc[0, 'stat_value'] = None
                 data_for_valid.loc[0, 'fcst_lead'] = None
             else:
@@ -148,6 +148,10 @@ class RevisionBoxSeries(BoxSeries):
                 data_for_valid = data_for_valid.drop(data_for_valid.index.to_list()[1:], axis=0)
 
             datetime_object = datetime.fromisoformat(data_for_valid.loc[0, 'fcst_valid_beg'])
+
+            # in pandas 2.2x, explicitly set the dtype for the fcst_lead column to string
+            # to avoid incompatibility with dtype of float64 (the expected dtype of empty columns)
+            data_for_valid['fcst_lead'] = data_for_valid['fcst_lead'].astype(str)
             data_for_valid.loc[0, 'fcst_lead'] = datetime_object.strftime('%m-%d %H')
 
             labels_for_x.extend(data_for_valid['fcst_lead'].tolist())
