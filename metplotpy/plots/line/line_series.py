@@ -326,6 +326,7 @@ class LineSeries(Series):
             if len(point_data) > 0:
                 # calculate point stat
                 point_stat = self._calc_point_stat(point_data['stat_value'].tolist())
+                logger.info(f"Calculated point statistic: {point_stat}")
 
                 # calculate CI
                 dbl_lo_ci = 0
@@ -366,8 +367,30 @@ class LineSeries(Series):
                         if stat_btcl == -9999:
                             stat_btcl = 0
 
-                    dbl_lo_ci = point_stat - stat_btcl
-                    dbl_up_ci = stat_btcu - point_stat
+                        dbl_lo_ci = point_stat - stat_btcl
+                        dbl_up_ci = stat_btcu - point_stat
+
+                        if dbl_lo_ci is None or np.isnan(dbl_lo_ci):
+                          logger.info(f"for {self.config.list_stat_1}= {point_stat} Low value CI is None/NaN, no error bar will be plotted ")
+                        if dbl_up_ci is None or  np.isnan(dbl_up_ci):
+                          logger.info(f"for {self.config.list_stat_1}= {point_stat} Upper value CI is None/NaN, no error bar will be plotted")
+
+                    elif 'stat_bcu' in point_data.head() and 'stat_bcl' in point_data.head():
+                        stat_bcu = self._calc_point_stat(point_data['stat_bcu'].tolist())
+                        stat_bcl = self._calc_point_stat(point_data['stat_bcl'].tolist())
+
+                        if stat_bcu == -9999:
+                            stat_bcu = 0
+                        if stat_bcl == -9999:
+                            stat_bcl = 0
+
+                        dbl_lo_ci = point_stat - stat_bcl
+                        dbl_up_ci = stat_bcu - point_stat
+
+                        if dbl_lo_ci is None or np.isnan(dbl_lo_ci):
+                          logger.info(f"for {self.config.list_stat_1}= {point_stat} Low value CI is None/NaN, no error bar will be plotted ")
+                        if dbl_up_ci is None or  np.isnan(dbl_up_ci):
+                          logger.info(f"for {self.config.list_stat_1}= {point_stat} Upper value CI is None/NaN, no error bar will be plotted")
 
                 elif series_ci == 'MET_BOOT':
                     stat_bcu = 0
