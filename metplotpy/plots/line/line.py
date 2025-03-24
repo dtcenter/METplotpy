@@ -787,12 +787,21 @@ class Line(BasePlot):
         """
         # calculate series upper and lower limits of CIs
         indexes = range(len(series.series_points['dbl_med']))
-        upper_range = [
-            series.series_points['dbl_med'][i] + series.series_points['dbl_up_ci'][i]
-            for i in indexes]
-        low_range = [
-            series.series_points['dbl_med'][i] - series.series_points['dbl_lo_ci'][i]
-            for i in indexes]
+
+        # Check for NA/None values when searching for upper range values and
+        # ignore them.
+        upper_range = []
+        for i in indexes:
+            if series.series_points['dbl_med'][i] is not None and series.series_points['dbl_up_ci'][i] is not None:
+                upper_range.append(series.series_points['dbl_med'][i] + series.series_points['dbl_up_ci'][i])
+
+        # Check for NA/None values when searching for lower range values and
+        # ignore them.
+        low_range = []
+        for i in indexes:
+            if series.series_points['dbl_med'][i] is not None and series.series_points['dbl_lo_ci'][i] is not None:
+                low_range.append(series.series_points['dbl_med'][i] - series.series_points['dbl_lo_ci'][i])
+
         # find min max
         if yaxis_min is None or yaxis_max is None:
             return min(low_range), max(upper_range)
