@@ -1,72 +1,76 @@
 import pytest
 import os
-import runner_planview
+import xarray
+from conftest import create_config_from_filename, cleanup
+import metplotpy.contributed.fv3_physics_tend.planview_fv3 as pv
+import metplotpy.contributed.fv3_physics_tend.physics_tend as pt
 
-@pytest.mark.skip()
-def test_no_args():
-    '''
-    Run the script with just the help option and the required input files
-    '''
-    runner_config_filename = "./runner_fv3_phys.yaml"
-    try:
-        runner_planview.run_help(runner_config_filename)
-        assert True
-    except FileNotFoundError:
-        # to verify that there aren't any hard-coded paths to the config file.
-        assert False
-    except SystemExit:
-        assert False
-    except RuntimeError:
-        assert False
-    except Exception:
-        # Catch-all, just in case there are some other exceptions that were raised.
-        assert False
-
-@pytest.mark.skip()
-def test_plot_created():
-    '''
-    Test if the plot file is created
-    '''
-    runner_config_filename = "./runner_fv3_phys.yaml"
-    try:
-        expected_file = "./tmp_500hPa.png"
-        runner_planview.run_example(runner_config_filename)
-        assert os.path.isfile(expected_file) == True
-        os.remove(expected_file)
-    except FileNotFoundError as fnfe:
-        assert False
-
-@pytest.mark.skip()
-def test_plot_created_for_output_file_name():
-    '''
-    Test if the plot file is created when the output filename is specified when
-    the specified output directory exists.
-    '''
-    runner_config_filename = "./runner_fv3_phys.yaml"
-
-    try:
-        expected_file = "./test_planview.png"
-        runner_planview.run_with_novel_output_file(runner_config_filename)
-        assert os.path.isfile(expected_file) == True
-        os.remove(expected_file)
-    except FileNotFoundError as fnfe:
-        assert False
-
-@pytest.mark.skip()
-def test_novel_output_dir():
-    '''
-    Test if the plot file is created in the non-existent output directory. Test that
-    the output directory is created if it doesn't exist.
-    '''
-    runner_config_filename = "./runner_fv3_phys.yaml"
-    try:
-        runner_planview.run_with_novel_output_dir(runner_config_filename)
-        expected_file = "./output/test_planview.png"
-        assert os.path.isfile(expected_file) == True
-        os.remove(expected_file)
-        os.removedirs("./output")
+cwd = os.path.dirname(__file__)
 
 
-    except FileNotFoundError as fnfe:
-        assert False
+
+@pytest.mark.skip("skip because dataset is too large")
+@pytest.mark.parametrize("test_config, expected", ([f"{cwd}/tmp_500hPa.yaml", f"{cwd}/tmp_500hPa.png"],
+                                                  [f"{cwd}/tmp_pbl.yaml", f"{cwd}/tmp_pbl.png"]))
+def test_planview_plot_created(setup_physics_tendency_test, test_config, expected):
+    """
+    Test if each planview plot file is created
+    """
+    plot_config_obj = create_config_from_filename(test_config)
+    ds = pt.prepare_ds(plot_config_obj, setup_physics_tendency_test['history_file'],
+                         setup_physics_tendency_test['grid_file'])
+
+    # Generate the planview plot based on the settings from the test config files
+    plot_src_dir = setup_physics_tendency_test['plot_src_dir']
+    if plot_config_obj['shp'] is not None:
+        shapefile = os.path.join(plot_src_dir, plot_config_obj['shp'])
+    else:
+        shapefile = plot_config_obj['shp']
+
+    planview_obj = pv.planview(plot_config_obj, ds, pfull=plot_config_obj['pfull'], robust=plot_config_obj['robust'],
+                                     shp=shapefile, twindow=plot_config_obj['twindow'],
+                                     validtime=plot_config_obj['validtime'])
+    ofile = pv.default_ofile(plot_config_obj)
+    planview_obj.fig.savefig(ofile, dpi=plot_config_obj["dpi"])
+
+    # plots will be generated in the same directory where the tests reside
+    assert os.path.exists(expected)
+    cleanup(expected)
+
+
+@pytest.mark.skip("skip because dataset is too large")
+@pytest.mark.parametrize("test_config, expected", ([f"{cwd}/tmp_500hPa.yaml", "tmp_500hPa.png"],
+                                                  [f"{cwd}/tmp_pbl.yaml", "tmp_pbl.png"]))
+def test_planview_plot_not_empty(setup_physics_tendency_test, test_config, expected):
+    """
+    Test if each planview plot file is NOT empty
+    """
+
+    test_config_obj = create_config_from_filename(test_config)
+    ds:xarray.Dataset = pt.prepare_ds(test_config_obj, setup_physics_tendency_test['history_file'],
+                       setup_physics_tendency_test['grid_file'])
+    # Generate the planview plot based on the settings from the test config files
+    plot_src_dir = setup_physics_tendency_test['plot_src_dir']
+    if test_config_obj['shp'] is not None:
+        shapefile = os.path.join(plot_src_dir, test_config_obj['shp'])
+    else:
+        shapefile = test_config_obj['shp']
+
+    planview_obj = pv.planview(test_config_obj, ds, pfull=test_config_obj['pfull'], robust=test_config_obj['robust'],
+                                     shp=shapefile, twindow=test_config_obj['twindow'],
+                                     validtime=test_config_obj['validtime'])
+    ofile = pv.default_ofile(test_config_obj)
+    planview_obj.fig.savefig(ofile, dpi=test_config_obj["dpi"])
+
+    expected_plot = os.path.join(f"{cwd}", expected)
+    assert os.path.exists(expected_plot)
+
+
+    # Check for "empty" plot
+    # Use a 3 kb size as lowest expected size of the plots to be generated
+    assert os.stat(expected_plot).st_size > 300000
+    cleanup(expected_plot)
+
+
+
 

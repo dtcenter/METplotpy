@@ -1,3 +1,0 @@
-history_file: "path/to/fv3_history.nc"
-grid_file: "path/to/grid_spec.nc"
-source_dir: "path/to/fv3_physics_tend"

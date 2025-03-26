@@ -1,71 +1,74 @@
 import pytest
 import os
-import runner_vert_cross
+import xarray
+import metplotpy.contributed.fv3_physics_tend.physics_tend as pt
+import metplotpy.contributed.fv3_physics_tend.cross_section_vert as cs
+from conftest import create_config_from_filename, cleanup
+
+cwd = os.path.dirname(__file__)
 
 @pytest.mark.skip()
-def test_run_help():
-    '''
-    Run the script with just the help option and the required input files
-    '''
-    runner_config_filename = "./runner_fv3_phys.yaml"
-    try:
-        runner_vert_cross.run_help(runner_config_filename)
-        assert True
-    except FileNotFoundError:
-        # to verify that there aren't any hard-coded paths to the config file.
-        assert False
-    except SystemExit:
-        assert False
-    except RuntimeError:
-        assert False
-    except Exception:
-        # Catch-all, just in case there are some other exceptions that were raised.
-        assert False
+@pytest.mark.parametrize("test_config, expected", ([f"{cwd}/ugrd_500hPa.yaml", f"{cwd}/ugrd_28N-120E-26N-75E.png"],)
+                         )
 
+def test_vert_cross_plot_created(setup_physics_tendency_test, test_config, expected):
+    """
+      Test if the vertical cross-section plot file is created
+    """
+    plot_config_obj = create_config_from_filename(test_config)
+    ds: xarray.Dataset = pt.prepare_ds(plot_config_obj, setup_physics_tendency_test['history_file'],
+                                       setup_physics_tendency_test['grid_file'])
 
-@pytest.mark.skip()
-def test_plot_created():
-    '''
-    Test if the plot file is created
-    '''
-    runner_config_filename = "./runner_fv3_phys.yaml"
-    try:
-        expected_file = "./tmp_32.0N-115.0E-34.0N-82.0E.png"
-        runner_vert_cross.run_example(runner_config_filename)
-        assert os.path.isfile(expected_file) == True
-        os.remove(expected_file)
-    except FileNotFoundError as fnfe:
-        assert False
+    # Generate the cross-section plot based on the settings from the test config files
+    plot_src_dir = setup_physics_tendency_test['plot_src_dir']
+    if plot_config_obj['shp'] is not None:
+        shapefile = os.path.join(plot_src_dir, plot_config_obj['shp'])
+    else:
+        shapefile = plot_config_obj['shp']
+
+    cross_section_obj = cs.cross_section_vert(plot_config_obj, ds, statevarname=plot_config_obj['statevarname'],
+                                         twindow=plot_config_obj['twindow'], shp=shapefile)
+    startpt = plot_config_obj["startpt"]
+    endpt = plot_config_obj["endpt"]
+    ofile = f"{plot_config_obj['statevarname']}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
+    full_outfile = os.path.join(f"{cwd}", ofile)
+    cross_section_obj.fig.savefig(full_outfile, dpi=plot_config_obj["dpi"])
+
+    # plots will be generated in the same directory where the tests reside
+    assert os.path.exists(expected)
+
+    cleanup(expected)
 
 @pytest.mark.skip()
-def test_plot_created_for_output_file_name():
-    '''
-    Test if the plot file is created when the output filename is specified when
-    the specified output directory exists.
-    '''
-    runner_config_filename = "./runner_fv3_phys.yaml"
+@pytest.mark.parametrize("test_config, expected", ([f"{cwd}/ugrd_500hPa.yaml", f"{cwd}/ugrd_28N-120E-26N-75E.png"],)
+                         )
 
-    try:
-        expected_file = "./test_vert_cross.png"
-        runner_vert_cross.run_with_novel_output_file(runner_config_filename)
-        assert os.path.isfile(expected_file) == True
-        os.remove(expected_file)
-    except FileNotFoundError as fnfe:
-        assert False
+def test_vert_cross_plot_not_empty(setup_physics_tendency_test, test_config, expected):
+    """
+      Test if the vertical cross-section plot file is not empty
+    """
+    plot_config_obj = create_config_from_filename(test_config)
+    ds: xarray.Dataset = pt.prepare_ds(plot_config_obj, setup_physics_tendency_test['history_file'],
+                                       setup_physics_tendency_test['grid_file'])
 
-@pytest.mark.skip()
-def test_novel_output_dir():
-    '''
-    Test if the plot file is created in the non-existent output directory. Test that
-    the output directory is created if it doesn't exist.
-    '''
-    runner_config_filename = "./runner_fv3_phys.yaml"
-    try:
-        runner_vert_cross.run_with_novel_output_dir(runner_config_filename)
-        expected_file = "./output/test_vert_cross.png"
-        assert os.path.isfile(expected_file) == True
-        os.remove(expected_file)
-        os.removedirs("./output")
+    # Generate the cross-section plot based on the settings from the test config files
+    plot_src_dir = setup_physics_tendency_test['plot_src_dir']
+    if plot_config_obj['shp'] is not None:
+        shapefile = os.path.join(plot_src_dir, plot_config_obj['shp'])
+    else:
+        shapefile = plot_config_obj['shp']
 
-    except FileNotFoundError as fnfe:
-        assert False
+    cross_section_obj = cs.cross_section_vert(plot_config_obj, ds, statevarname=plot_config_obj['statevarname'],
+                                         twindow=plot_config_obj['twindow'], shp=shapefile)
+    startpt = plot_config_obj["startpt"]
+    endpt = plot_config_obj["endpt"]
+    ofile = f"{plot_config_obj['statevarname']}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
+    full_outfile = os.path.join(f"{cwd}", ofile)
+    cross_section_obj.fig.savefig(full_outfile, dpi=plot_config_obj["dpi"])
+
+    # plots will be generated in the same directory where the tests reside
+    # Use 2kb as minimum size to determine if the plot is empty
+    assert os.stat(expected).st_size > 200000
+    cleanup(expected)
+
+
