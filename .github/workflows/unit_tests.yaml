@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests the specified Python version
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python tests
+name: Python 3.12 tests
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10"]
+        python-version: ["3.12"]
 
     steps:
     - uses: actions/checkout@v4
@@ -37,7 +37,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         
-    - name: Retrieve METcalcpy repository develop branch
+    - name: Retrieve METcalcpy repository develop  branch
       run: |
          metcalcpy_dir="$RUNNER_WORKSPACE/METcalcpy"
          git clone https://github.com/dtcenter/METcalcpy ${metcalcpy_dir}

@@ -107,7 +107,7 @@ class Scatter(BasePlot):
             # A list of 1..n entries, with each data file corresponding
             # to a scatter on the plot.
             input_data_file = scatter_dict['data_file']
-            data = pd.read_csv(input_data_file, delim_whitespace=True)
+            data = pd.read_csv(input_data_file, sep='/s+', engine='python')
 
             #color = line_dict['color']
             #width = line_dict['width']
