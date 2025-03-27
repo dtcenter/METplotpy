@@ -32,6 +32,10 @@ def main():
     pcm = planview(config, ds)
 
     ofile = default_ofile(config)
+    if args.out_dir:
+        ofile = os.path.join(args.out_dir, ofile)
+        os.makedirs(os.path.dirname(ofile), exist_ok=True)
+
     pcm.fig.savefig(ofile, dpi=config["dpi"])
     logging.info("created %s", os.path.realpath(ofile))
 

@@ -347,6 +347,7 @@ def parse_args():
     parser.add_argument("config", help="yaml configuration file")
     parser.add_argument("historyfile", help="FV3 history file")
     parser.add_argument("gridfile", help="FV3 grid spec file")
+    parser.add_argument("--out_dir", help="name of directory to write output image file")
     parser.add_argument("--debug", action="store_true", help="more log messages")
 
     args = parser.parse_args()

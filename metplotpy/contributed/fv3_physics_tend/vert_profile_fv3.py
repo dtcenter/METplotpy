@@ -40,6 +40,11 @@ def main():
         shapename = os.path.basename(shp)
         root, ext = os.path.splitext(ofile)
         ofile = root + f".{shapename}" + ext
+
+    if args.out_dir:
+        ofile = os.path.join(args.out_dir, ofile)
+        os.makedirs(os.path.dirname(ofile), exist_ok=True)
+
     fig.savefig(ofile, dpi=config["dpi"])
     logging.info("created %s", os.path.realpath(ofile))
 

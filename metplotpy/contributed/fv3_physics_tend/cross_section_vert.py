@@ -35,7 +35,12 @@ def main():
 
     startpt = config["startpt"]
     endpt = config["endpt"]
+
     ofile = f"{config['statevarname']}_{startpt[0]}N{startpt[1]}E-{endpt[0]}N{endpt[1]}E.png"
+    if args.out_dir:
+        ofile = os.path.join(args.out_dir, ofile)
+        os.makedirs(os.path.dirname(ofile), exist_ok=True)
+
     pcm.fig.savefig(ofile, dpi=config["dpi"])
     logging.info("created %s", os.path.realpath(ofile))
 
