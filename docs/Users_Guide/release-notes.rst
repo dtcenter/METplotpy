@@ -34,7 +34,7 @@ METplotpy Version 3.1.0-beta1 release notes (20250331)
 
 .. dropdown:: Repository, build, and test
 
-   * Update infrastructure to reflect move to developing with Python 3.12 (`#488 <https://github.com/dtcenter/METplotpy/pull/488>`_)
+   * Update infrastructure to reflect move to developing with Python 3.12 (`#496 <https://github.com/dtcenter/METplotpy/pull/496>`_)
    * Update modulefiles used on various machines (`#488 <https://github.com/dtcenter/METplotpy/issues/488>`_)
 
 METplotpy Version 3.1.0-beta1 release notes (20250123)
