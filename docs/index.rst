@@ -133,12 +133,54 @@ To cite this documentation in publications, please refer to the METplotpy User's
 
 .. toctree::
    :hidden:
-   :caption: METplotpy 
+   :caption: Training
+
+   METplus Tutorial <https://metplus-training.readthedocs.io/en/latest/Tutorial/index.html>
+   Training Series <https://metplus-training.readthedocs.io/en/latest/Training_Series/index.html>
+   Featured Topics <https://metplus-training.readthedocs.io/en/latest/Featured_Topics/index.html>
+
+.. toctree::
+   :hidden:
+   :caption: METplus
+
+   User's Guide <https://metplus.readthedocs.io/en/latest/Users_Guide/index.html>
+   Contributor's Guide <https://metplus.readthedocs.io/en/latest/Contributors_Guide/index.html>
+   Verification Datasets Guide <https://metplus.readthedocs.io/en/latest/Verification_Datasets/index.html>
+   Release Guide <https://metplus.readthedocs.io/en/latest/Release_Guide/index.html>
+
+.. toctree::
+   :hidden:
+   :caption: MET
 
    Users_Guide/index
    Contributors_Guide/index
 
+.. toctree::
+   :hidden:
+   :caption: METexpress
 
+   User's Guide <https://metplus.readthedocs.io/projects/metexpress/en/latest/index.html>
+
+.. toctree::
+   :hidden:
+   :caption: METviewer
+
+   User's Guide <https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/index.html>
+   Contributor's Guide <https://metplus.readthedocs.io/projects/metviewer/en/latest/Contributors_Guide/index.html>
+
+.. toctree::
+   :hidden:
+   :caption: METplotpy
+
+   Users_Guide/index
+   Contributors_Guide/index
+
+.. toctree::
+   :hidden:
+   :caption: METdataio
+
+   User's Guide <https://metplus.readthedocs.io/projects/metdataio/en/latest/Users_Guide/index.html>
+   Contributor's Guide <https://metplus.readthedocs.io/projects/metdataio/en/latest/Contributors_Guide/index.html>
 
 
 Indices
