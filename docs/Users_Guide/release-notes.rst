@@ -38,7 +38,7 @@ METplotpy Version 3.1.0-beta1 release notes (20250331)
    * Update modulefiles used on various machines (`#488 <https://github.com/dtcenter/METplotpy/issues/488>`_)
 
 METplotpy Version 3.1.0-beta1 release notes (20250123)
-------------------------------------------------------
+======================================================
 
 .. dropdown:: New Plots
 
