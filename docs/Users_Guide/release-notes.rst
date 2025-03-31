@@ -10,6 +10,13 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Version 3.1.0-beta1 release notes (20250331)
 ======================================================
 
+.. dropdown:: New Plots
+
+   None
+
+.. dropdown:: Enhancements
+
+   None
 
 .. dropdown:: Bugfixes
 
@@ -33,11 +40,22 @@ METplotpy Version 3.1.0-beta1 release notes (20250331)
 METplotpy Version 3.1.0-beta1 release notes (20250123)
 ------------------------------------------------------
 
+.. dropdown:: New Plots
+
+   None
+
+.. dropdown:: Enhancements
+
+   None
+
 .. dropdown:: Bugfixes
 
    * Make default configs available in package (`#476 <https://github.com/dtcenter/METplotpy/issues/476>`_)
    * Import from metplotpy.contributed instead of relative import (`#478 <https://github.com/dtcenter/METplotpy/issues/478>`_)
 
+.. dropdown:: Documentation
+
+   None
 
 
 METplotpy Upgrade Instructions
