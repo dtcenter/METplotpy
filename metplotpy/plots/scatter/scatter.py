@@ -110,12 +110,8 @@ class Scatter(BasePlot):
 
         # Save the x,y, and z-values to a file
         if self.config_obj.dump_points:
-            try:
-                self.logger.info(f"Create the {self.config_obj.points_path} directory for plot_points.txt file")
-                os.makedirs(self.config_obj.points_path, exist_ok=True)
-            except (FileExistsError, OSError):
-                # ignore error if dir already exists
-                pass
+            self.logger.info(f"Create the {self.config_obj.points_path} directory for plot_points.txt file")
+            os.makedirs(self.config_obj.points_path, exist_ok=True)
 
             points_file = os.path.join(self.config_obj.points_path, 'plot_points.txt')
             x_header = 'x=' + self.config_obj.var_val_x_axis

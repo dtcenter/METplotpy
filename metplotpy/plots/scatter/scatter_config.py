@@ -360,7 +360,6 @@ class ScatterConfig(Config):
             # associate those inner values with the outer key in a new dictionary.
             outer_keys = fixed_vars_vals_dict.keys()
             updated_fixed_vars_vals_dict = {}
-            inner_exists = False
             for key in outer_keys:
                 try:
                     inner_keys = fixed_vars_vals_dict[key].keys()
