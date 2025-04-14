@@ -355,10 +355,21 @@ class Config:
                be used for the traces
         """
         show_legend_settings = self.get_config_value('show_legend')
+
+        # Support all variations of setting the show_legend: '1', 1, "true" (any combination of cases), True (boolean)
+        updated_show_legend_settings = []
+        for legend_setting in show_legend_settings:
+            legend_setting = str(legend_setting).lower()
+            if legend_setting == '1' or legend_setting == 'true' or legend_setting == 1 or legend_setting is True:
+                updated_show_legend_settings.append(int(1))
+            else:
+                updated_show_legend_settings.append(int(0))
+
+
         if show_legend_settings is None:
             raise ValueError("ERROR: show_legend parameter is not provided.")
 
-        return self.create_list_by_series_ordering(list(show_legend_settings))
+        return self.create_list_by_series_ordering(list(updated_show_legend_settings))
 
     def _get_markers(self):
         """

@@ -1,9 +1,13 @@
 import os
 from metplotpy.plots.taylor_diagram import taylor_diagram as td
+import pytest
 #from metcalcpy.compare_images import CompareImages
 
 cwd = os.path.dirname(__file__)
 
+# Converts MatplotlibDeprecation warnings (which are DeprecationWarning) into errors as
+# any DeprecationWarnings should be fixed as soon as possible
+pytestmark = pytest.mark.filterwarnings("error::DeprecationWarning")
 
 def test_pos_corr_file_exists(setup_env):
     setup_env(cwd)

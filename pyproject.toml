@@ -28,8 +28,14 @@ version = {attr = "metplotpy.__version__"}
 [tool.setuptools.packages]
 find = {include = ["metplotpy*"]}
 
+[tool.setuptools.package-data]
+metplotpy = [
+  "plots/config/**",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["test"]
+filterwarnings = ["ignore::RuntimeWarning"]
 
 [tool.coverage.run]
 source = ["metplotpy/plots"]
@@ -44,3 +50,4 @@ exclude_also = [
     "def __repr__",
     "if __name__ == .__main__.:",
     ]
+

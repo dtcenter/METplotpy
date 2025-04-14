@@ -13,21 +13,24 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                os.pardir)))
 print(sys.path)
 
+from metplotpy import __version__ as version
 
 # -- Project information -----------------------------------------------------
 
 project = 'METplotpy'
-copyright = '2024, NSF NCAR'
+copyright = '2025, NSF NCAR'
 author = 'UCAR/NSF NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Fisher, H., D. Adriaansen, C. Kalb, D. Fillmore, T. Jensen, L. Goodrich, M. Win-Gildenmeister and T. Burek'
-version = 'v3.0.0-rc1-dev'
+version = '3.1.0-rc1-dev'
 verinfo = version
 release = f'{version}'
-release_year = '2024'
+release_year = '2025'
 
-release_date = f'{release_year}-10-18'
+release_date = f'{release_year}-03-31'
 
 copyright = f'{release_year}, {author}'
 
@@ -67,18 +70,18 @@ sphinx_gallery_conf = {
 
 # -- Options for HTML output -------------------------------------------------
 
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
+html_static_path = ['_static']
+
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = ["_themes", ]
 html_js_files = ['pop_ver.js']
-html_css_files = ['theme_override.css']
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_css_files = ['theme_override.css','custom.css']
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.

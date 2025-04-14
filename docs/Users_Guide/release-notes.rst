@@ -7,158 +7,63 @@ describes the bugfix, enhancement, or new feature:
 `METplotpy GitHub issues. <https://github.com/dtcenter/METplotpy/issues>`_
 
 
-METplotpy Release Notes
-=======================
+METplotpy Version 3.1.0-beta2 release notes (20250331)
+======================================================
 
-METplotpy Version 3.0.0-beta6 release notes (20241018)
-------------------------------------------------------
+.. dropdown:: New Plots
 
-  .. dropdown:: New Plots
+   None
 
-     None
-     
-  .. dropdown:: Enhancements
-		
-     * Improve logging for STIGS on remaining plots (`METplus-Internal#57 <https://github.com/dtcenter/METplus-internal/issues/57>`_)
-     * Plot new TC-Diagnostics output from TC-Pairs (`#233 <https://github.com/dtcenter/METplotpy/issues/233>`_)
-       
-  .. dropdown:: Internal
+.. dropdown:: Enhancements
 
-     * Improve unit test infrastructure and coverage (`#461 <https://github.com/dtcenter/METplotpy/issues/461>`_)
-       
-  .. dropdown:: Bugfixes
+   None
 
-     None
+.. dropdown:: Bugfixes
 
-METplotpy Version 3.0.0-beta5 release notes (20240630)
-------------------------------------------------------
+   * Series names in legend don't get ordered correctly  (`#347 <https://github.com/dtcenter/METplotpy/issues/347>`_)
+   * Support various formats of show_legend values (`#482 <https://github.com/dtcenter/METplotpy/issues/482>`_)
+   * Reliability Diagram show_legend setting should work with True/False rather than 1/0 values; see bugfix #482(`#455 <https://github.com/dtcenter/METplotpy/issues/455>`_)
+   * Better handling of determining min and max for confidence limits when data contains NaN values(`#494 <https://github.com/dtcenter/METplotpy/issues/494>`_)
+   * Plotly line plots are plotting confidence limit bars at zero with zero length error bars (`#495 <https://github.com/dtcenter/METplotpy/issues/495>`_)
 
+.. dropdown:: Documentation
 
-  .. dropdown:: New Plots
+   * Enhance METplotpy User's Guide Installation Instructions (`#457 <https://github.com/dtcenter/METplotpy/issues/457>`_)
+   * Provide more background information on the Taylor Diagram (`#435 <https://github.com/dtcenter/METplotpy/issues/435>`_)
+   * Enhance the Table of Contents to include all METplus components (`#499 <https://github.com/dtcenter/METplotpy/pull/499>`_)
 
+.. dropdown:: Repository, build, and test
 
-  .. dropdown:: Enhancements
+   * Update infrastructure to reflect move to developing with Python 3.12 (`#496 <https://github.com/dtcenter/METplotpy/pull/496>`_)
+   * Update modulefiles used on various machines (`#488 <https://github.com/dtcenter/METplotpy/issues/488>`_)
 
+METplotpy Version 3.1.0-beta1 release notes (20250123)
+======================================================
 
-     * **Enhance TCMPR plotter to read TCDiag lines and filter by one column and plot another column**  (`#342 <https://github.com/dtcenter/METplotpy/issues/342>`_).
+.. dropdown:: New Plots
 
-     * Create documentation and testing for TCMPR plotting code  (`#383 <https://github.com/dtcenter/METplotpy/issues/383>`_).
+   None
 
-     * Update fv3_physics_tend for new FV3 output format  (`#380 <https://github.com/dtcenter/METplotpy/issues/380>`_).
+.. dropdown:: Enhancements
 
-  .. dropdown:: Internal
+   None
 
+.. dropdown:: Bugfixes
 
-     * Update GitHub issue and pull request templates to reflect the current development workflow details  (`#388 <https://github.com/dtcenter/METplotpy/issues/388>`_).
+   * Make default configs available in package (`#476 <https://github.com/dtcenter/METplotpy/issues/476>`_)
+   * Import from metplotpy.contributed instead of relative import (`#478 <https://github.com/dtcenter/METplotpy/issues/478>`_)
 
-     * Consider using only .yml or only .yaml extensions   (`#417 <https://github.com/dtcenter/METplotpy/issues/417>`_).
+.. dropdown:: Documentation
 
-     * METplotpy:Code coverage statistics   (`#55 <https://github.com/dtcenter/METplus-Internal/issues/55>`_).
-
-
-  .. dropdown:: Bugfixes
-
-
-METplotpy Version 3.0.0-beta4 release notes (20240417)
-------------------------------------------------------
-
-  .. dropdown:: New Plots
-
-
-  .. dropdown:: Enhancements
-
-
-     * Update GitHub actions workflows to switch from node 16 to node 20 (`#414 <https://github.com/dtcenter/METplotpy/issues/414>`_).
-
-     * **Add GitHub action to run SonarQube for METplotpy pull requests and feature branches** (`#429 <https://github.com/dtcenter/METplotpy/issues/429>`_).
-
-
-  .. dropdown:: Internal
-
-
-
-  .. dropdown:: Bugfixes
-
-
-    * **TC-RMW plot needs updating to support changes to input** (`#425 <https://github.com/dtcenter/METplotpy/issues/425>`_).
-
-
-
-METplotpy Version 3.0.0-beta3 release notes (20240206)
-------------------------------------------------------
-
-
-  .. dropdown:: New Plots
-
-
-
-  .. dropdown:: Enhancements
-
-
-     * **Add a summary curve to the ROC diagram** (`#399 <https://github.com/dtcenter/METplotpy/issues/399>`_).
-
-
-  .. dropdown:: Internal
-
-
-
-  .. dropdown:: Bugfixes
-
- * TC-RMW plot needs updating to support changes to input (`#425 <https://github.com/dtcenter/METplotpy/issues/425>`_).
-
-
-
-
-METplotpy Version 3.0.0-beta2 release notes (20231108)
-------------------------------------------------------
-
-  .. dropdown:: New Plots
-
-
-  .. dropdown:: Enhancements
-
-
-     * **hide/show the legend entries line-by-line** (`#355 <https://github.com/dtcenter/METplotpy/issues/355>`_).
-
-
-     * **specify the color of the no resolution and no skill lines for the reliability diagram** (`#329 <https://github.com/dtcenter/METplotpy/issues/329>`_).
-
-  .. dropdown:: Internal
-
-
-
-  .. dropdown:: Bugfixes
-
-     * **Documentation-Fix METviewer link in line plot** (`#385 <https://github.com/dtcenter/METplotpy/issues/385>`_).
-
-     * **Inconsistency with generating plot in METviewer vs command line** (`#391 <https://github.com/dtcenter/METplotpy/issues/391>`_).
-
-     * **Bugfix for ROC plot image saving to file** (`#394 <https://github.com/dtcenter/METplotpy/issues/394>`_).
-
-     * Bugfix for erros in line and revision_series tests (`#401 <https://github.com/dtcenter/METplotpy/issues/401>`_).
-
-
-METplotpy Version 3.0.0-beta1 release notes (20230915)
-------------------------------------------------------
-
-  .. dropdown:: New Plots
-
-
-  .. dropdown:: Enhancements
-
-
-  .. dropdown:: Internal
-
-
-  .. dropdown:: Bugfixes
-
-
+   None
 
 
 METplotpy Upgrade Instructions
 ==============================
 
-Upgrade instructions will be listed here if they are
-applicable for this release.
+.. note::
 
+  In the METplotpy-3.1.0-beta2 release, METplotpy switched from development with Python 3.10.4 to
+  development with Python 3.12. View the requirements.txt/nco_requirements.txt file at the top
+  level of the repository for version numbers for the corresponding third-party packages.
 
