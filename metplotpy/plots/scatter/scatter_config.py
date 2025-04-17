@@ -11,8 +11,6 @@ Class Name: ScatterConfig
  """
 __author__ = 'Minna Win'
 
-import itertools
-
 from ..config import Config
 from .. import constants
 from .. import util
@@ -63,18 +61,6 @@ class ScatterConfig(Config):
         self.trendline_style = self.get_config_value('trendline_style')
 
         # plot parameters
-        self.grid_on = self._get_bool('grid_on')
-        self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
-        self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
-        self.plot_margins = dict(l=0,
-                                 r=self.parameters['mar'][3] + 20,
-                                 t=self.parameters['mar'][2] + 80,
-                                 b=self.parameters['mar'][0] + 80,
-                                 pad=5
-                                 )
-        self.blended_grid_col = util.alpha_blending(self.parameters['grid_col'], 0.5)
-        self.show_nstats = self._get_bool('show_nstats')
-        self.indy_stagger = self._get_bool('indy_stagger')
         self.variance_inflation_factor = self._get_bool('variance_inflation_factor')
         self.dump_points_1 = self._get_bool('dump_points_1')
         self.dump_points_2 = self._get_bool('dump_points_2')
@@ -152,53 +138,6 @@ class ScatterConfig(Config):
 
         ##############################################
         # Matplotlib specific "workarounds"
-
-        # left-right location of x-axis label/title relative to the y-axis line
-        # make adjustments between METviewer default and Matplotlib's center
-        # METviewer default value of 2 corresponds to Matplotlib value of .5
-        #
-        mv_x_title_offset = self.get_config_value('xlab_offset')
-        self.x_title_offset = float(mv_x_title_offset) - 1.5
-
-        # up-down of x-axis label/title position
-        # make adjustments between METviewer default and Matplotlib's center
-        # METviewer default is .5, Matplotlib center is 0.05, so subtract 0.55 from the
-        # METviewer setting to get the correct Matplotlib y-value (up/down)
-        # for the x-title position
-        mv_x_title_align = self.get_config_value('xlab_align')
-        self.x_title_align = float(mv_x_title_align) - .55
-
-        # Need to use a combination of Matplotlib's font weight and font style to
-        # re-create the METviewer xlab_weight. Use the
-        # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
-        # what was requested in METviewer
-        mv_xlab_weight = self.get_config_value('xlab_weight')
-        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_xlab_weight]
-
-        self.x_tickangle = self.parameters['xtlab_orient']
-        if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
-            self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
-        self.x_tickfont_size = self.parameters['xtlab_size'] * constants.MPL_FONT_SIZE_DEFAULT
-
-        # y-axis labels and y-axis ticks
-        self.y_title_font_size = self.parameters['ylab_size'] * constants.DEFAULT_CAPTION_FONTSIZE
-        self.y_tickangle = self.parameters['ytlab_orient']
-        if self.y_tickangle in constants.YAXIS_ORIENTATION.keys():
-            self.y_tickangle = constants.YAXIS_ORIENTATION[self.y_tickangle]
-        self.y_tickfont_size = self.parameters['ytlab_size'] * constants.MPL_FONT_SIZE_DEFAULT
-
-        # left-right position of y-axis label/title position
-        # make adjustments between METviewer default and Matplotlib's center
-        # METviewer default is .5, Matplotlib center is -0.05
-        mv_y_title_align = self.get_config_value('ylab_align')
-        self.y_title_align = float(mv_y_title_align) - 0.55
-
-        # up-down location of y-axis label/title relative to the x-axis line
-        # make adjustments between METviewer default and Matplotlib's center
-        # METviewer default value of -2 corresponds to Matplotlib value of 0.4
-        #
-        mv_y_title_offset = self.get_config_value('ylab_offset')
-        self.y_title_offset = float(mv_y_title_offset) + 2.4
 
         # Need to use a combination of Matplotlib's font weight and font style to
         # re-create the METviewer ylab_weight. Use the
