@@ -53,8 +53,13 @@ class Config:
         self.indy_label = self._get_indy_label()
         self.indy_var = self.get_config_value('indy_var')
         self.show_plot_in_browser = self.get_config_value('show_plot_in_browser')
-        self.plot_width = self.get_config_value('plot_width')
-        self.plot_height = self.get_config_value('plot_height')
+
+        # Plot figure dimensions can be in either inches or pixels
+        pixels = self.get_config_value('plot_units')
+        plot_width = self.get_config_value('plot_width')
+        self.plot_width = self.calculate_plot_dimension(plot_width, pixels)
+        plot_height = self.get_config_value('plot_height')
+        self.plot_height = self.calculate_plot_dimension(plot_height, pixels)
         self.plot_caption = self.get_config_value('plot_caption')
         # plain text, bold, italic, bold italic are choices in METviewer UI
         self.caption_weight = self.get_config_value('caption_weight')
@@ -99,7 +104,137 @@ class Config:
                 # Enclose legend labels in a box
                 self.draw_box = True
 
+        # some settings used by some but not all plot types
+        self.grid_on = self._get_bool('grid_on')
+        self.mar = self.get_config_value('mar')
+        if self.mar:
+           self.plot_margins = dict(l=0,
+                                 r=self.parameters['mar'][3] + 20,
+                                 t=self.parameters['mar'][2] + 80,
+                                 b=self.parameters['mar'][0] + 80,
+                                 pad=5
+                                 )
 
+        self.grid_col = self.get_config_value('grid_col')
+        if self.grid_col:
+           self.blended_grid_col =  metplotpy.plots.util.alpha_blending(self.grid_col, 0.5)
+        self.show_nstats = self._get_bool('show_nstats')
+        self.indy_stagger = self._get_bool('indy_stagger')
+
+        # Some of the plot types use Matplotlib, these settings are only relevant
+        # for plots implemented with Matplotlib.
+
+        # left-right location of x-axis label/title relative to the y-axis line
+        # make adjustments between METviewer default and Matplotlib's center
+        # METviewer default value of 2 corresponds to Matplotlib value of .5
+        #
+        mv_x_title_offset = self.get_config_value('xlab_offset')
+        if mv_x_title_offset:
+          self.x_title_offset = float(mv_x_title_offset) - 1.5
+
+
+        # up-down of x-axis label/title position
+        # make adjustments between METviewer default and Matplotlib's center
+        # METviewer default is .5, Matplotlib center is 0.05, so subtract 0.55 from the
+        # METviewer setting to get the correct Matplotlib y-value (up/down)
+        # for the x-title position
+        mv_x_title_align = self.get_config_value('xlab_align')
+        if mv_x_title_align:
+           self.x_title_align = float(mv_x_title_align) - .55
+
+        # Need to use a combination of Matplotlib's font weight and font style to
+
+        # re-create the METviewer xlab_weight. Use the
+        # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
+        # what was requested in METviewer
+        mv_xlab_weight = self.get_config_value('xlab_weight')
+        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_xlab_weight]
+
+        self.x_tickangle = self.parameters['xtlab_orient']
+        if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
+            self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
+        self.x_tickfont_size = self.parameters['xtlab_size'] * constants.MPL_FONT_SIZE_DEFAULT
+
+        # y-axis labels and y-axis ticks
+        self.y_title_font_size = self.parameters['ylab_size'] * constants.DEFAULT_CAPTION_FONTSIZE
+        self.y_tickangle = self.parameters['ytlab_orient']
+        if self.y_tickangle in constants.YAXIS_ORIENTATION.keys():
+            self.y_tickangle = constants.YAXIS_ORIENTATION[self.y_tickangle]
+        self.y_tickfont_size = self.parameters['ytlab_size'] * constants.MPL_FONT_SIZE_DEFAULT
+
+        # left-right position of y-axis label/title position
+        # make adjustments between METviewer default and Matplotlib's center
+        # METviewer default is .5, Matplotlib center is -0.05
+        mv_y_title_align = self.get_config_value('ylab_align')
+        self.y_title_align = float(mv_y_title_align) - 0.55
+
+        # up-down location of y-axis label/title relative to the x-axis line
+        # make adjustments between METviewer default and Matplotlib's center
+        # METviewer default value of -2 corresponds to Matplotlib value of 0.4
+        #
+        mv_y_title_offset = self.get_config_value('ylab_offset')
+        self.y_title_offset = float(mv_y_title_offset) + 2.4
+
+        # Need to use a combination of Matplotlib's font weight and font style to
+        # re-create the METviewer ylab_weight. Use the
+        # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
+        # what was requested in METviewer
+        mv_ylab_weight = self.get_config_value('ylab_weight')
+        self.ylab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_ylab_weight]
+
+        # Adjust the caption left/right relative to the y-axis
+        # METviewer default is set to 0, corresponds to y=0.05 in Matplotlib
+        mv_caption_align = self.get_config_value('caption_align')
+        self.caption_align = float(mv_caption_align) + 0.13
+
+        # The plot's title size, title weight, and positioning in left-right and up-down directions
+        mv_title_size = self.get_config_value('title_size')
+        self.title_size = mv_title_size * constants.MPL_FONT_SIZE_DEFAULT
+
+        mv_title_weight = self.get_config_value('title_weight')
+        # use the same constants dictionary as used for captions
+        self.title_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_title_weight]
+
+        # These values can't be used as-is, the only choice for aligning in Matplotlib
+        # are center (default), left, and right
+        mv_title_align = self.get_config_value('title_align')
+        self.title_align = float(mv_title_align)
+
+        # does nothing because the vertical position in Matplotlib is
+        # automatically chosen to avoid labels and ticks on the topmost
+        # x-axis
+        mv_title_offset = self.get_config_value('title_offset')
+        self.title_offset = float(mv_title_offset)
+
+        # legend style settings as defined in METviewer
+        user_settings = self._get_legend_style()
+
+        # list of the x, y, and loc values for the
+        # bbox_to_anchor() setting used in determining
+
+        # the location of the bounding box which defines
+        # the legend.
+        # adjust METviewer values to be consistent with the Matplotlib scale
+        # The METviewer x default is set to 0, which corresponds to a Matplotlib
+        # x-value of 0.5 (roughly centered with respect to the x-axis)
+        mv_bbox_x = float(user_settings['bbox_x'])
+        self.bbox_x = mv_bbox_x + 0.5
+
+        # METviewer legend box y-value is set to -.25 by default, which corresponds
+        # to a Matplotlib y-value of -.1
+        mv_bbox_y = float(user_settings['bbox_y'])
+        self.bbox_y = mv_bbox_y + .15
+        legend_magnification = user_settings['legend_size']
+        self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
+        self.legend_ncol = self.get_config_value('legend_ncol')
+        legend_box = self.get_config_value('legend_box').lower()
+        if legend_box == 'n':
+            # Don't draw a box around legend labels
+            self.draw_box = False
+        else:
+            # Other choice is 'o'
+            # Enclose legend labels in a box
+            self.draw_box = True
 
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
@@ -658,6 +793,7 @@ class Config:
              converted_value : converted value from in/mm to pixels or mm to inches based
                                     on input values
         '''
+
         value2convert = self.get_config_value(config_value)
         resolution = self.get_config_value('plot_res')
         units = self.get_config_value('plot_units')
