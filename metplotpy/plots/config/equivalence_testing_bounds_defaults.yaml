@@ -58,6 +58,7 @@ log_filename: stdout
 log_level: ERROR
 
 low_eqbound: -0.001
+mar_offset: True
 mar:
 - 8
 - 4
