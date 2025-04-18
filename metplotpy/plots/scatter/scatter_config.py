@@ -159,59 +159,6 @@ class ScatterConfig(Config):
         mv_caption_offset = self.get_config_value('caption_offset')
         self.caption_offset = float(mv_caption_offset) - 2.87
 
-        # Adjust the caption left/right relative to the y-axis
-        # METviewer default is set to 0, corresponds to y=0.05 in Matplotlib
-        mv_caption_align = self.get_config_value('caption_align')
-        self.caption_align = float(mv_caption_align) + 0.13
-
-        # The plot's title size, title weight, and positioning in left-right and up-down directions
-        mv_title_size = self.get_config_value('title_size')
-        self.title_size = mv_title_size * constants.MPL_FONT_SIZE_DEFAULT
-
-        mv_title_weight = self.get_config_value('title_weight')
-        # use the same constants dictionary as used for captions
-        self.title_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_title_weight]
-
-        # These values can't be used as-is, the only choice for aligning in Matplotlib
-        # are center (default), left, and right
-        mv_title_align = self.get_config_value('title_align')
-        self.title_align = float(mv_title_align)
-
-        # does nothing because the vertical position in Matplotlib is
-        # automatically chosen to avoid labels and ticks on the topmost
-        # x-axis
-        mv_title_offset = self.get_config_value('title_offset')
-        self.title_offset = float(mv_title_offset)
-
-        # legend style settings as defined in METviewer
-        user_settings = self._get_legend_style()
-
-        # list of the x, y, and loc values for the
-        # bbox_to_anchor() setting used in determining
-
-        # the location of the bounding box which defines
-        # the legend.
-        # adjust METviewer values to be consistent with the Matplotlib scale
-        # The METviewer x default is set to 0, which corresponds to a Matplotlib
-        # x-value of 0.5 (roughly centered with respect to the x-axis)
-        mv_bbox_x = float(user_settings['bbox_x'])
-        self.bbox_x = mv_bbox_x + 0.5
-
-        # METviewer legend box y-value is set to -.25 by default, which corresponds
-        # to a Matplotlib y-value of -.1
-        mv_bbox_y = float(user_settings['bbox_y'])
-        self.bbox_y = mv_bbox_y +.15
-        legend_magnification = user_settings['legend_size']
-        self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
-        self.legend_ncol = self.get_config_value('legend_ncol')
-        legend_box = self.get_config_value('legend_box').lower()
-        if legend_box == 'n':
-            # Don't draw a box around legend labels
-            self.draw_box = False
-        else:
-            # Other choice is 'o'
-            # Enclose legend labels in a box
-            self.draw_box = True
 
     def get_user_legend(self) -> list:
         """
