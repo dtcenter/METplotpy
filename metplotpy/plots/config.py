@@ -94,28 +94,26 @@ class Config:
 
         self.legend_ncol = self.get_config_value('legend_ncol')
         legend_box = self.get_config_value('legend_box')
+        self.draw_box = False
         if legend_box is not None:
             legend_box = legend_box.lower()
-            if legend_box == 'n':
+            if legend_box == 'o':
                 # Don't draw a box around legend labels
-                self.draw_box = False
-            else:
-                # Other choice is 'o'
-                # Enclose legend labels in a box
                 self.draw_box = True
 
+
         # some settings used by some but not all plot types
+
+        # Plotly plots often require offsets to the margins
+        self.plot_margins = self.get_config_value('mar')
         self.grid_on = self._get_bool('grid_on')
-        margin_offset = self.get_config_value('mar_offset')
-        if margin_offset:
+        if self.get_config_value('mar_offset'):
            self.plot_margins = dict(l=0,
                                  r=self.parameters['mar'][3] + 20,
                                  t=self.parameters['mar'][2] + 80,
                                  b=self.parameters['mar'][0] + 80,
                                  pad=5
                                  )
-        else:
-            self.plot_margins = self.get_config_value('mar')
 
         self.grid_col = self.get_config_value('grid_col')
         if self.grid_col:
@@ -229,13 +227,12 @@ class Config:
         legend_magnification = user_settings['legend_size']
         self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
         self.legend_ncol = self.get_config_value('legend_ncol')
+
+        # Don't draw a box around legend labels unless an 'o' is set
+        self.draw_box = False
         legend_box = self.get_config_value('legend_box').lower()
-        if legend_box == 'n':
-            # Don't draw a box around legend labels
-            self.draw_box = False
-        else:
-            # Other choice is 'o'
-            # Enclose legend labels in a box
+
+        if legend_box == 'o':
             self.draw_box = True
 
         # These are the inner keys to the series_val setting, and
