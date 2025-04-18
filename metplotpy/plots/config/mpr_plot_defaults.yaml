@@ -33,8 +33,9 @@ width: 1200
 height: 7500
 marker_color: 'rgb(194,189,251)'
 show_in_browser: False
+title_size: 1.4
 
-# Not used in this plot, but if incorporating into METviewer
+# not used in this plot, but needed by the base config
 plot_units: in
 xlab_align: 0.5
 xlab_offset: 2
@@ -73,7 +74,6 @@ caption_size: 0.8
 caption_weight: 1
 title_align: 0.5
 title_offset: -2
-title_size: 1.4
 title_weight: 2.0
 legend_box: o
 legend_inset:
@@ -81,3 +81,8 @@ legend_inset:
   y: -0.25
 legend_ncol: 1
 legend_size: 0.8
+mar:
+- 8.0
+- 4.0
+- 5.0
+- 4.0
