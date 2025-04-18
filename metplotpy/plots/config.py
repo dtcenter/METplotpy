@@ -106,14 +106,16 @@ class Config:
 
         # some settings used by some but not all plot types
         self.grid_on = self._get_bool('grid_on')
-        self.mar = self.get_config_value('mar')
-        if self.mar:
+        margin_offset = self.get_config_value('mar_offset')
+        if margin_offset:
            self.plot_margins = dict(l=0,
                                  r=self.parameters['mar'][3] + 20,
                                  t=self.parameters['mar'][2] + 80,
                                  b=self.parameters['mar'][0] + 80,
                                  pad=5
                                  )
+        else:
+            self.plot_margins = self.get_config_value('mar')
 
         self.grid_col = self.get_config_value('grid_col')
         if self.grid_col:
