@@ -22,13 +22,13 @@ Example
 Sample Data
 -----------
 
-The data is text output from the MET point-stat tool. The data is arranged in columnar format and reformatted by the
+The data is text output from the MET Point-Stat tool. The data is arranged in columnar format and reformatted by the
 METdataio METreformat module.
 
 The sample data for creating the example scatter plot is available in the
 `METplotpy <https://github.com/dtcenter/METplotpy>`_ repository, where the scatter plot tests are located:
 
-    *$METPLOTPY_BASE/metplotpy/test/scatter/reformatted_data_for_scatter.data*
+    *$METPLOTPY_BASE/test/scatter/reformatted_data_for_scatter.data*
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
@@ -69,9 +69,9 @@ specified when generating a plot**. In addition, the default configuration file
 **DOES NOT require any modifications**.
 
 The second required configuration file is a user-supplied “custom”
-configuration file. This file is used to customize/over ride the default
+configuration file. This file is used to customize/override the default
 settings in the **scatter_defaults.yaml** file. The custom configuration
-file can contain only those settings that will over ride the default settings in the
+file can contain only those settings that will override the default settings in the
 scatter_defaults.yaml config file.
 
 .. note::
