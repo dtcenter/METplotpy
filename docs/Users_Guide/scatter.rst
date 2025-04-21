@@ -39,7 +39,7 @@ or
 the Github repository.  The *x.y.z* is the release number.
 
 **NOTE**:
-The MPR linetype data produced by the MET point-stat tool has been reformatted via the METdataio METreformat
+The MPR linetype data produced by the MET Point-Stat tool has been reformatted via the METdataio METreformat
 module.
 
 Configuration Files
