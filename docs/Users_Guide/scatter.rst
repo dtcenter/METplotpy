@@ -6,12 +6,15 @@ Description
 ===========
 The scatter plot is useful for illustrating relationships between pairs of continuous variables.
 This plot was developed to support plotting MPR (matched pair) data from the MET point-stat tool.
-**NOTE:** This MET output data must first be reformatted into a format that can be read in by the scatter plot code.
-This reformatting was accomplished through the METdataio METreformat module. The reformatted data
-consists solely of MPR linetype data and all the column headers are labelled according to the
-MPR linetype column names specified in the MET User's Guide, Table 11.20 (Point-stat tool).
-In addition to selecting the two continuous variables to plot, the points in the scatter plot are colored based on
-their value.  These colors are determined by specifying a colormap in the user configuration file.
+
+.. note::
+
+  This MET output data must first be reformatted into a format that can be read in by the scatter plot code.
+  This reformatting was accomplished through the METdataio METreformat module. The reformatted data
+  consists solely of MPR linetype data and all the column headers are labelled according to the
+  MPR linetype column names specified in the MET User's Guide, Table 11.20 (Point-stat tool).
+  In addition to selecting the two continuous variables to plot, the points in the scatter plot are colored based on
+  their value.  These colors are determined by specifying a colormap in the user configuration file.
 
 Example
 =======
@@ -38,9 +41,11 @@ or
 */usr/path/to/METplotpy-x.y.z* if the source code was downloaded as a zip or gzip'd tar file from the Release link of
 the Github repository.  The *x.y.z* is the release number.
 
-**NOTE**:
-The MPR linetype data produced by the MET point-stat tool has been reformatted via the METdataio METreformat
-module.
+
+.. note::
+
+   The MPR linetype data produced by the MET point-stat tool has been reformatted via the METdataio METreformat
+   module.
 
 Configuration Files
 -------------------
@@ -87,8 +92,10 @@ plot.  This default config file **SHOULD NOT** be modified.
 The custom configuration file is used to over ride the settings
 of interest (i.e. marker colors, marker styles, trendline styles, etc.).
 
-**NOTE**: This default configuration file is automatically loaded by
-**scatter.py**.
+
+.. note::
+
+ This default configuration file is automatically loaded by **scatter.py**.
 
 .. literalinclude:: ../../metplotpy/plots/config/scatter_defaults.yaml
 
