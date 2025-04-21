@@ -64,7 +64,7 @@ specified when generating a plot**. In addition, the default configuration file
 **DOES NOT require any modifications**.
 
 The second required configuration file is a user-supplied “custom”
-configuration file. This file is used to customize/over ride the default
+configuration file. This file is used to customize/override the default
 settings in the **scatter_defaults.yaml** file. The custom configuration
 file can contain only those settings that will over ride the default settings in the
 scatter_defaults.yaml config file.
