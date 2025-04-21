@@ -5,7 +5,7 @@ Scatter Plot
 Description
 ===========
 The scatter plot is useful for illustrating relationships between pairs of continuous variables.
-This plot was developed to support plotting MPR (matched pair) data from the MET point-stat tool.
+This plot was developed to support plotting MPR (matched pair) data from the MET Point-Stat tool.
 **NOTE:** This MET output data must first be reformatted into a format that can be read in by the scatter plot code.
 This reformatting was accomplished through the METdataio METreformat module. The reformatted data
 consists solely of MPR linetype data and all the column headers are labelled according to the
