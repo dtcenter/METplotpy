@@ -19,7 +19,7 @@ Example
 Sample Data
 -----------
 
-The data is text output from the MET point-stat tool. The data is arranged in columnar format and reformatted by the
+The data is text output from the MET Point-Stat tool. The data is arranged in columnar format and reformatted by the
 METdataio METreformat module.
 
 The sample data for creating the example scatter plot is available in the
