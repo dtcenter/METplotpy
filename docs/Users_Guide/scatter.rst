@@ -25,7 +25,7 @@ METdataio METreformat module.
 The sample data for creating the example scatter plot is available in the
 `METplotpy <https://github.com/dtcenter/METplotpy>`_ repository, where the scatter plot tests are located:
 
-    *$METPLOTPY_BASE/metplotpy/test/scatter/reformatted_data_for_scatter.data*
+    *$METPLOTPY_BASE/test/scatter/reformatted_data_for_scatter.data*
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
