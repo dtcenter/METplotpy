@@ -93,6 +93,7 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    wind_rose
    fv3_physics
    tcmpr_plots
+   scatter
    release-notes
    references
 

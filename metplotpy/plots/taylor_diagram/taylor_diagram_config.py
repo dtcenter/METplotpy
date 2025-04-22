@@ -66,6 +66,9 @@ class TaylorDiagramConfig(Config):
         if self.plot_units.lower() != 'in':
             self.plot_width = self.calculate_plot_dimension('plot_width', 'in')
             self.plot_height = self.calculate_plot_dimension('plot_height', 'in')
+        else:
+            self.plot_width = self.get_config_value('plot_width')
+            self.plot_height = self.get_config_value('plot_height')
 
         # x-axis labels, x-axis ticks
         self.x_title_font_size = self.parameters['xlab_size'] * constants.DEFAULT_CAPTION_FONTSIZE
