@@ -45,8 +45,7 @@ Required input:
 
 #. FV3 2-D grid specification file with latititude and longitude of each grid point (grid_spec.nc)
 
-**Download** the `fv3_history.nc and grid_spec.nc files
-<https://dtcenter.ucar.edu/dfiles/code/METplus/METplotpy/fv3_physics_tendency/>`_
+**Download** input data used to run the use cases `sample_data-short_range tarball <https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/v6.1/sample_data-short_range-6.1.tgz>`.
 
 Save to $DATA_DIR directory where you have read and write permissions.
 
