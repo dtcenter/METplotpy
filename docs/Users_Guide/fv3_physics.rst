@@ -45,7 +45,7 @@ Required input:
 
 #. FV3 2-D grid specification file with latititude and longitude of each grid point (grid_spec.nc)
 
-**Download** *sample_data\-short_range* tarball from `here <https://dtcenter.ucar.edu/dfiles/code/METplus/METplus_Data/v6.1>`_.
+Click here to access the METplus releases page and download sample data for the appropriate release: https://github.com/dtcenter/METplus/releases. Links to input data directories are in the description of each release. The file to download is named *sample_data\-short_range-x.y.tgz* (where x.y represents the version).
 
 Untar and copy files in *model_applications/short_range/UserScript_fcstFV3_fcstOnly_PhysicsTendency/* to *$DATA_DIR* directory where you have read and write permissions.
 
