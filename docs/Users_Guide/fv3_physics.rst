@@ -45,10 +45,9 @@ Required input:
 
 #. FV3 2-D grid specification file with latititude and longitude of each grid point (grid_spec.nc)
 
-**Download** the `fv3_history.nc and grid_spec.nc files
-<https://dtcenter.ucar.edu/dfiles/code/METplus/METplotpy/fv3_physics_tendency/>`_
+Click here to access the METplus releases page and download sample data for the appropriate release: https://github.com/dtcenter/METplus/releases. Links to input data directories are in the description of each release. The file to download is named *sample_data\-short_range-x.y.tgz* (where x.y represents the version).
 
-Save to $DATA_DIR directory where you have read and write permissions.
+Untar and copy files in *model_applications/short_range/UserScript_fcstFV3_fcstOnly_PhysicsTendency/* to *$DATA_DIR* directory where you have read and write permissions.
 
 For additional details see 
 `grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
