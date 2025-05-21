@@ -269,7 +269,7 @@ For this example, the only settings requiring changes are: **tcst_dir**, **plot_
 
         This will read in all the .tcst files under the specified directory.
 
-    * Specify by list of .tcst files:
+  * Specify by list of .tcst files:
 
        .. code-block:: ini
 
