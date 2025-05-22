@@ -31,7 +31,7 @@ METplotpy Version 3.1.0-rc1 release notes (20250522)
 
 .. dropdown:: Repository, build, and test
 
-  None
+   None
 
 METplotpy Version 3.1.0-beta2 release notes (20250331)
 ======================================================
