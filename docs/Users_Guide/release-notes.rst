@@ -7,6 +7,33 @@ describes the bugfix, enhancement, or new feature:
 `METplotpy GitHub issues. <https://github.com/dtcenter/METplotpy/issues>`_
 
 
+METplotpy Version 3.1.0-rc1 release notes (20250522)
+======================================================
+
+.. dropdown:: New Plots
+
+   None
+
+.. dropdown:: Enhancements
+
+  * Enhance the scatter plot to support marginal distributions and generalize the inputs and plotting options (`#23 <https://github.com/dtcenter/METplotpy/issues/23>`_)
+  * Remove defunct scatter plot code from METplotpy/plots  (`#458 <https://github.com/dtcenter/METplotpy/issues/458>`_)
+  * Optimize plotting in the Physics Tendency planview, cross-section, and vertical cross-section plots (`#449 <https://github.com/dtcenter/METplotpy/issues/449>`_)
+
+
+.. dropdown:: Bugfixes
+
+
+.. dropdown:: Documentation
+
+   * Documentation: TCMPR filtering (`#507 <https://github.com/dtcenter/METplotpy/issues/507>`_)
+   * Provide more background information on the Taylor Diagram (`#435 <https://github.com/dtcenter/METplotpy/issues/435>`_)
+   * Enhance the Table of Contents to include all METplus components (`#499 <https://github.com/dtcenter/METplotpy/pull/499>`_)
+
+.. dropdown:: Repository, build, and test
+
+  None
+
 METplotpy Version 3.1.0-beta2 release notes (20250331)
 ======================================================
 
