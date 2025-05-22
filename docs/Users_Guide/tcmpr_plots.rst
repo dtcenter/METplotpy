@@ -102,8 +102,115 @@ type, statistics of interest (e.g. ABS(AMSLP-BMSLP), TK_ERR, etc.), fixed variab
 METplus Configuration
 =====================
 
+Two configuration files are required, a default configuration file and a custom configuration
+file.  The default configuration file is located in the $BASE/METplotpy/plots/config
+directory and **SHOULD NOT BE MODIFIED**.  The custom configuration file is used
+to customize the appearance of the plot and to perform simple filtering of input data.
+
+
+Simple filtering of input data:
+-------------------------------------
+
+Simple filtering of data is accomplished by the following settings:
+
+  -  .. dropdown::  fixed_vars_vals_input
+
+       To filter based on a column name and specific column value(s)
+
+       for instance, to filter  based on the 'BASIN' column for only AL (Atlantic)
+       basin and LEVEL column to  SS, SD, TS, TD, and HU storm types:
+
+      .. code-block::
+
+         fixed_vars_vals_input:
+
+            BASIN:
+            - AL
+
+            LEVEL:
+            - SS
+            - SD
+            - TS
+            - TD
+            - HU
+
+
+
+  -  .. dropdown::  indy_vals
+
+        To filter based on lead times (x-axis)
+
+
+        for instance, all lead times from 0-120 hours, every 6 hours
+
+        - 0
+        - 6
+        - 12
+        - 18
+        - 24
+        - 30
+        - 36
+        - 42
+        - 48
+        - 54
+        - 60
+        - 66
+        - 72
+        - 78
+        - 84
+        - 90
+        - 96
+        - 102
+        - 108
+        - 114
+        - 120
+
+         .. note::
+
+            Remember to specify the labels for each of these values by specifying values
+             in the **indy_label setting**
+
+
+
+  -  .. dropdown::  list_stat_1
+
+        To filter based on statistic(s) of interest
+
+        For instance, to plot the track error (TK_ERR) and the absolute difference
+        between the AMAX_WIND and BMAX_WIND:
+
+        .. code-block::
+
+           list_stat_1:
+              - "ABS(AMAX_WIND-BMAX_WIND)"
+              - "TK_ERR"
+
+
+  -  .. dropdown::  series_val_1
+
+        To filter what value to plot
+
+        For instance, to plot AMODEL values corresponding to the OFCL, GFSO, and
+        SHIP models:
+
+        .. code-block::
+
+           AMODEL:
+             - 'OFCL'
+             - 'GFSO'
+             - 'SHIP'
+
+
+More complex filtering
+----------------------------
+
+For more complex filtering, consider applying the
+`MET TC-Stat tool <https://metplus.readthedocs.io/projects/met/en/develop/Users_Guide/tc-stat.html#tc-stat-output>`_
+on MET TC-Pairs data. The output from the TC-Stat tool  can  be used as input to the TCMPR plot types.
+
+
 Default Configuration File
---------------------------
+--------------------------------
 
 A default configuration file, tcmpr_defaults.yaml has some default settings for three lines/series such as plot
 size, margins, etc. This config file **does not require any modification**.
@@ -129,7 +236,7 @@ column information file, and the HFIP baseline comparison:
 The HFIP baseline is turned off.
 
 Custom Configuration File
--------------------------
+---------------------------------
 
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to the specified TCMPR plot type(s). The settings in this custom configuration
@@ -149,269 +256,303 @@ Set up the custom configuration file:
 For this example, the only settings requiring changes are: **tcst_dir**, **plot_dir**, **log_filename**,
 **baseline_file**, and **column_info_file**.
 
-**Specify the input data in one of two ways**:
+.. dropdown:: **Specify the input data in one of two ways**:
 
-* Specify by directory (use all files under this directory):
+  * Specify by directory (use all files under this directory):
 
-.. code-block:: ini
+     .. code-block:: ini
 
-    tcst_dir: '/path/to/tcmpr_sample_data'
+        tcst_dir: '/path/to/tcmpr_sample_data'
 
-Replace the */path/to* with the full path to the sample data, $METPLOTPY_BASE/test/tcmpr_plots/Data/
-**except replace $METPLOTPY_BASE with the full path to the METplotpy source code**.
+     Replace the */path/to* with the full path to the sample data, $METPLOTPY_BASE/test/tcmpr_plots/Data/
+     **except replace $METPLOTPY_BASE with the full path to the METplotpy source code**.
 
-This will read in all the .tcst files under the specified directory.
+        This will read in all the .tcst files under the specified directory.
 
-* Specify by list of .tcst files:
+  * Specify by list of .tcst files:
 
-.. code-block:: ini
+       .. code-block:: ini
 
-   tcst_files: ['/path/to/a.tcst', '/path/to/b.tcst', '/path/to/w.tcst', '/path/to/z.tcst' ]
+         tcst_files: ['/path/to/a.tcst', '/path/to/b.tcst', '/path/to/w.tcst', '/path/to/z.tcst' ]
 
-Replace the a.tcst, b.tcst, etc. with files of interest (include full file path).
-
-
-**Specify the output directory where the plot files will be saved**:
-
-.. code-block:: ini
-
-   plot_dir: '/path/to/output_dir'
-
-Replace */path/to/output_dir* to an existing directory that has the appropriate read and write privileges.
+       Replace the a.tcst, b.tcst, etc. with files of interest (include full file path).
 
 
-**Specify the log level and log file** (optional):
+.. dropdown:: **Specify the output directory where the plot files will be saved**:
 
-.. code-block:: ini
+   .. code-block:: ini
 
-   log_level: INFO
+      plot_dir: '/path/to/output_dir'
 
-.. code-block:: ini
-
-   log_filename: /path/to/output/tcmpr_log.out
-
-Replace */path/to/output* to an existing directory with the appropriate read and write permissions.
-By default, the log level is set to ERROR (the least verbose) and logging is directed to STDOUT.  The following
-log levels are available (from most verbose to least): INFO, DEBUG, WARNING, ERROR.
-
-*Specify the baseline_file and column_info_file**:
-
-.. code-block:: ini
-
-baseline_file: '$METPLOTPY_BASE/metplotpy/plots/tcmpr_plots/hfip_baseline.dat'
-column_info_file: '$METPLOTPY_BASE/metplotpy/plots/tcmpr_plots/plot_tcmpr_hdr.dat'
-
-Replace $METPLOTPY_BASE with the full path to where the METplotpy source code was saved
-(i.e. /home/username/METplotpy).
-
-The following settings do not need to be modified to run this example.
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   Replace */path/to/output_dir* to an existing directory that has the appropriate read and write privileges.
 
 
-**Specify the series/line values of interest**:
+.. dropdown:: **Specify the log level and log file** (optional):
 
-.. code-block:: ini
+   .. code-block:: ini
 
-  series_val_1:
-    AMODEL:
-      - H221
-      - M221
+      log_level: INFO
 
-Specify a key (AMODEL) and a list of one or more values of interest (e.g. the H221 and M221 models)
-The above example will produce a plot with **two** lines/series, one for each AMODEL.  The number of series/lines
-dictates the number of required plot settings. In this case,  **two** values are needed for plot settings such as
-colors, symbols, series order, plot display (on/off), line widths, line styles, symbol appearance
-(style and size), and series confidence intervals (plot or hide). **NOTE**: If the sufficient number of settings
-is not met (that is there are fewer settings than there are series/lines requested), an error message will be
-produced.
+   .. code-block:: ini
+
+      log_filename: /path/to/output/tcmpr_log.out
+
+   Replace */path/to/output* to an existing directory with the appropriate read and write permissions.
+   By default, the log level is set to ERROR (the least verbose) and logging is directed to STDOUT.  The following
+   log levels are available (from most verbose to least): INFO, DEBUG, WARNING, ERROR.
+
+.. dropdown:: *Specify the baseline_file and column_info_file**:
+
+   .. code-block:: ini
+
+      baseline_file: '$METPLOTPY_BASE/metplotpy/plots/tcmpr_plots/hfip_baseline.dat'
+      column_info_file: '$METPLOTPY_BASE/metplotpy/plots/tcmpr_plots/plot_tcmpr_hdr.dat'
+
+   Replace $METPLOTPY_BASE with the full path to where the METplotpy source code was saved
+   (i.e. /home/username/METplotpy).
+
+.. dropdown :: *Specify the colors for each "series" (i.e. line, box in a boxplot, etc.)*
+
+   .. code-block:: ini
+
+      colors:
+       - 'blue'
+       - 'green'
+
+    .. note ::
+      Make sure the number of columns specified corresponds to the number of series
+      being generated.
+
+.. dropdown :: *Specify the appearance of the symbols, lines, etc.*
+
+   .. code-block:: ini
+
+     series_line_width:
+      - 1
+      - 1
+
+     series_line_style:
+      - '-'
+      - '-'
+
+     series_symbols:
+      - 'circle-open'
+      - 'circle-open'
+
+     series_symbols_size:
+      - 7
+      - 7
+
+
+DO NOT MODIFY THE FOLLOWING TO RUN THIS  EXAMPLE
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Below are descriptions of the settings used in this example:
+
+.. dropdown:: **Specify the series/line values of interest**:
+
+   .. code-block:: ini
+
+      series_val_1:
+          AMODEL:
+          - H221
+          - M221
+
+   Specify a key (AMODEL) and a list of one or more values of interest (e.g. the H221 and M221 models)
+   The above example will produce a plot with **two** lines/series, one for each AMODEL.  The number of series/lines
+   dictates the number of required plot settings. In this case,  **two** values are needed for plot settings such as
+   colors, symbols, series order, plot display (on/off), line widths, line styles, symbol appearance
+   (style and size), and series confidence intervals (plot or hide). **NOTE**: If the sufficient number of settings
+   is not met (that is there are fewer settings than there are series/lines requested), an error message will be
+   produced.
 
 The following settings are necessary for generating the plot types for this data set.
 The settings will override the defaults in the tcmpr_defaults.yaml
 
-**Specify the independent (i.e. x-axis) variable, series, values and labels**:
+.. dropdown:: **Specify the independent (i.e. x-axis) variable, series, values and labels**:
 
-.. code-block:: ini
+  .. code-block:: ini
 
-    indy_var: 'LEAD'
+     indy_var: 'LEAD'
 
-.. code-block:: ini
+  .. code-block:: ini
 
-   series_val_1:
-    AMODEL:
-      - H221
-      - M221
-
-
-.. code-block:: ini
-
-    indy_vals:
-     - 0
-     - 6
-     - 12
-     - 18
-     - 24
-     - 30
-     - 36
-     - 42
-     - 48
-     - 54
-     - 60
-     - 66
-     - 72
-     - 78
-     - 84
-     - 90
-     - 96
-     - 102
-     - 108
-     - 114
-     - 120
-     - 126
-
-.. code-block:: ini
-
-    indy_labels:
-      - '00'
-      - '06'
-      - '12'
-      - '18'
-      - '24'
-      - '30'
-      - '36'
-      - '42'
-      - '48'
-      - '54'
-      - '60'
-      - '66'
-      - '72'
-      - '78'
-      - '84'
-      - '90'
-      - '96'
-      - '102'
-      - '108'
-      - '114'
-      - '120'
-      - '126'
+     series_val_1:
+       AMODEL:
+         - H221
+         - M221
 
 
-The example above is requesting the forecast lead times (the 'LEAD' column in the example data set provided) for
-0, 6, 12, ..., 126 hours with the corresponding labels (surrounded by either single or double quotes).
-The indy_var is set to 'LEAD' in the tcmpr_defaults.yaml config file.  Override this to the name of the
-forecast lead column if this name differs from that in the input data.
+  .. code-block:: ini
+
+     indy_vals:
+      - 0
+      - 6
+      - 12
+      - 18
+      - 24
+      - 30
+      - 36
+      - 42
+      - 48
+      - 54
+      - 60
+      - 66
+      - 72
+      - 78
+      - 84
+      - 90
+      -  96
+      - 102
+      - 108
+      - 114
+      - 120
+      - 126
+
+  .. code-block:: ini
+
+     indy_labels:
+       - '00'
+       - '06'
+       - '12'
+       - '18'
+       - '24'
+       - '30'
+       - '36'
+       - '42'
+       - '48'
+       - '54'
+       - '60'
+       - '66'
+       - '72'
+       - '78'
+       - '84'
+       - '90'
+       - '96'
+       - '102'
+       - '108'
+       - '114'
+       - '120'
+       - '126'
 
 
-**Specify the criteria for subsetting/limiting the input data** (optional):
-
-.. code-block:: ini
-
-
-   fixed_vars_vals_input:
-     BASIN:
-      - AL
-     LEVEL:
-      - SS
-      - SD
-      - TS
-      - TD
-      - HU
+ The example above is requesting the forecast lead times (the 'LEAD' column in the example data set provided) for
+ 0, 6, 12, ..., 126 hours with the corresponding labels (surrounded by either single or double quotes).
+ The indy_var is set to 'LEAD' in the tcmpr_defaults.yaml config file.  Override this to the name of the
+ forecast lead column if this name differs from that in the input data.
 
 
-In the example above, the data of interest/focus corresponds to the Atlantic Basin and the
-five specified levels.
+.. dropdown:: **Specify the criteria for subsetting/limiting the input data** (optional):
+
+  .. code-block:: ini
 
 
-
-**Specify whether to perform event equalization**:
-
-.. code-block:: ini
-
-   event_equal: 'True'
-
-Event equalization must be set to True for generating the rank plots.
-
-**Specify the plot types to generate**:
-
-.. code-block:: ini
-
-   plot_type_list:
-     - 'boxplot'
-     - 'skill_mn'
-     - 'skill_md'
-     - 'relperf'
-     - 'mean'
-     - 'median'
-     - 'rank'
-
-The seven supported plot types are requested.
-
-**Specify the relative performance threshold** (for relative performance plots):
-
-.. code-block:: ini
-
-    rp_diff:
-      - '>=100'
-
-Enclose threshold values with single or double quotes.
-
-**Specify the model to use for the skill reference line** (for mean/median skill line plots):
-
-.. code-block:: ini
-
-    skill_ref:
-       - HFSA
-
-**Specify the columns of interest**:
-
-.. code-block:: ini
-
-   list_stat_1:
-     - "ABS(AMAX_WIND-BMAX_WIND)"
-     - "TK_ERR"
-
-The absolute difference between the AMAX_WIND and BMAX_WIND columns and the TK_ERR columns are selected. In
-addition to the absolute difference (ABS), the difference (DIFF) between columns is also supported.
-
-**Allow the code to generate the y-axis label, title, and output filenames** (leave these settings
-to empty string):
+     fixed_vars_vals_input:
+       BASIN:
+        - AL
+       LEVEL:
+        - SS
+        - SD
+        - TS
+        - TD
+        - HU
 
 
-.. code-block:: ini
-
-   yaxis_1: ''
-
-.. code-block:: ini
-
-   title: ''
-
-.. code-block:: ini
-
-   prefix: ''
+  In the example above, the data of interest/focus corresponds to the Atlantic Basin and the
+  five specified levels.
 
 
 
-When the prefix is set to something other than an empty string, that value will be prepended to the
-auto-generated name of the plot. If the auto-generated plot name is *ABS(AMAX_WIND-BMAX_WIND)_median.png*,
-and the *prefix* is set to 'Example_Data', then the plot file name becomes
-*Example_Data_ABS(AMAX_WIND-BMAX_WIND)_median.png*.
+.. dropdown:: **Specify whether to perform event equalization**:
+
+  .. code-block:: ini
+
+     event_equal: 'True'
+
+  Event equalization must be set to True for generating the rank plots.
+
+  **Specify the plot types to generate**:
+
+  .. code-block:: ini
+
+    plot_type_list:
+       - 'boxplot'
+       - 'skill_mn'
+       - 'skill_md'
+       - 'relperf'
+       - 'mean'
+       - 'median'
+       - 'rank'
+
+  The seven supported plot types are requested.
+
+.. dropdown:: **Specify the relative performance threshold** (for relative performance plots):
+
+  .. code-block:: ini
+
+      rp_diff:
+        - '>=100'
+
+  Enclose threshold values with single or double quotes.
+
+.. dropdown:: **Specify the model to use for the skill reference line** (for mean/median skill line plots):
+
+  .. code-block:: ini
+
+      skill_ref:
+         - HFSA
+
+.. dropdown:: **Specify the statistics columns of interest**:
+
+  .. code-block:: ini
+
+     list_stat_1:
+       - "ABS(AMAX_WIND-BMAX_WIND)"
+       - "TK_ERR"
+
+  The absolute difference between the AMAX_WIND and BMAX_WIND columns and the TK_ERR columns are selected. In
+  addition to the absolute difference (ABS), the difference (DIFF) between columns is also supported.
+
+.. dropdown::   **Allow the code to generate the y-axis label, title, and output filenames** (leave these settings
+  to empty string):
 
 
-**Use the xaxis setting in the default config file**:
+   .. code-block:: ini
 
-.. code-block:: ini
+      yaxis_1: ''
 
-   xaxis: 'Lead Time(h)'
+   .. code-block:: ini
 
-The *xaxis* setting is absent in the custom config file, tcmpr_multi_plots.yaml.  When a setting is absent in
-the custom config file. the default value is used.
-If a different setting is desired,  add the xaxis setting in the custom config file (anywhere in the file),
-tcmpr_multi_plots.yaml and set it to the desired text (surrounded by single or double quotes).
+      title: ''
+
+   .. code-block:: ini
+
+       prefix: ''
 
 
-The above settings define the creation of a boxplot, mean line plot, median line plot, rank plot, median skill
-plot, and mean skill plot for ABS(AMAX_WIND-BMAX_WIND) and TK_ERR.  Each plot contains the lines/boxes for
-the AMODEL M221 and H221, resulting in a total of fourteen plots. The plot titles, y-axis label,and  output
-filenames are generated by the code.
+
+  When the prefix is set to something other than an empty string, that value will be prepended to the
+  auto-generated name of the plot. If the auto-generated plot name is *ABS(AMAX_WIND-BMAX_WIND)_median.png*,
+  and the *prefix* is set to 'Example_Data', then the plot file name becomes
+  *Example_Data_ABS(AMAX_WIND-BMAX_WIND)_median.png*.
+
+
+.. dropdown:: **Use the xaxis setting in the default config file**:
+
+  .. code-block:: ini
+
+     xaxis: 'Lead Time(h)'
+
+  The *xaxis* setting is absent in the custom config file, tcmpr_multi_plots.yaml.  When a setting is absent in
+  the custom config file. the default value is used.
+  If a different setting is desired,  add the xaxis setting in the custom config file (anywhere in the file),
+  tcmpr_multi_plots.yaml and set it to the desired text (surrounded by single or double quotes).
+
+
+  The above settings define the creation of a boxplot, mean line plot, median line plot, rank plot, median skill
+  plot, and mean skill plot for ABS(AMAX_WIND-BMAX_WIND) and TK_ERR.  Each plot contains the lines/boxes for
+  the AMODEL M221 and H221, resulting in a total of fourteen plots. The plot titles, y-axis label,and  output
+  filenames are generated by the code.
 
 
 
