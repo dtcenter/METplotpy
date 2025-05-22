@@ -311,10 +311,43 @@ For this example, the only settings requiring changes are: **tcst_dir**, **plot_
    Replace $METPLOTPY_BASE with the full path to where the METplotpy source code was saved
    (i.e. /home/username/METplotpy).
 
+.. dropdown :: *Specify the colors for each "series" (i.e. line, box in a boxplot, etc.)*
+
+   .. code-block:: ini
+
+      colors:
+       - 'blue'
+       - 'green'
+
+    .. note ::
+      Make sure the number of columns specified corresponds to the number of series
+      being generated.
+
+.. dropdown :: *Specify the appearance of the symbols, lines, etc.*
+
+   .. code-block:: ini
+
+     series_line_width:
+      - 1
+      - 1
+
+     series_line_style:
+      - '-'
+      - '-'
+
+     series_symbols:
+      - 'circle-open'
+      - 'circle-open'
+
+     series_symbols_size:
+      - 7
+      - 7
+
+
 DO NOT MODIFY THE FOLLOWING TO RUN THIS  EXAMPLE
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Below are descriptions of the settings.
+Below are descriptions of the settings used in this example:
 
 .. dropdown:: **Specify the series/line values of interest**:
 
