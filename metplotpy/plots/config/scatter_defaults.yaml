@@ -1,34 +1,75 @@
----
-# Values specific to scatter plot
-title: Scatter plot of point data
-connect_data_gaps: false
-xaxis:
-  title: x-values
-yaxis:
-  title: y-values
-scatters:
-  - name: Scatter 1
-    data_file: ./scatter1_plot_data.txt
-    color: black
-    line_width: 1
-    type: horiz_line
-    position: 0
-    line_style: dash
+caption_align: 0.0
+caption_col: '#333333'
+caption_offset: 3
+caption_size: 0.8
+caption_weight: 1
 
-  - name: Scatter 2
-    data_file: ./scatter2_plot_data.txt
-    color: black
-    line_width: 1
-    type: horiz_line
-    position: 0
-    line_style: dash
-
-    log_level: ERROR
-    log_filename: ./scatter_log.txt
-    width: 1
-    dash:
-
+dump_points: 'False'
+fcst_var: TMP
+fixed_vars_vals_input: {}
+grid_col: '#f5274a'
+grid_lty: 3
+grid_lwd: 1
+grid_on: 'True'
+indy_stagger_1: 'False'
+indy_vals: []
+indy_var: ''
+legend_box: o
+legend_ncol: 3
+legend_size: 0.8
+legend_inset:
+  x: 0.0
+  y: -0.25
 log_filename: stdout
 log_level: ERROR
+mar:
+- 8
+- 4
+- 5
+- 4
+# Supported symbols: ., o, ^, d, H, or s (d=diamond, H=hexagon, s=square)
+marker_symbol: .
+# Colors for the range of values (colormap) for variable of interest (variable_val_by_color).
+marker_colormap: 'gist_ncar'
+marker_size: 5
+points_path: ./
+plot_caption: 'Caption for scatter plot'
+plot_filename: ./scatter_default.png
+plot_height: 8.5
+plot_width: 11.0
+show_legend: 'True'
+show_trend_line: 'False'
+start_from_zero: 'False'
+stat_input: ../../../test/scatter/scatter.data
+title: test title
+title_align: 0.5
+title_offset: -2
+title_size: 1.4
+title_weight: 2.0
+user_legend: []
+var_val_x_axis: FCST
+var_val_y_axis: OBS
+xaxis: test x_label
+xaxis_reverse: 'False'
+xlab_align: 0.5
+xlab_offset: 2
+xlab_size: 1
+xlab_weight: 1
+xlim: []
+xtlab_horiz: 0.5
+xtlab_orient: 1
+xtlab_size: 1
+yaxis: test y_label
+ylab_align: 0.5
+ylab_offset: -2
+ylab_size: 1
+ylab_weight: 1
+ylim: []
+ytlab_horiz: 0.5
+ytlab_orient: 1
+ytlab_size: 1
 
-line_type: N/A
+
+# Not used by the scatter plot, but needed to satisfy the base config class
+plot_units: in
+plot_res: 72

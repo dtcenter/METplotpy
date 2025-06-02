@@ -41,13 +41,6 @@ class HistogramConfig(Config):
         self.grid_on = self._get_bool('grid_on')
         self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
         self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
-        self.plot_margins = dict(l=0,
-                                 r=self.parameters['mar'][3] + 20,
-                                 t=self.parameters['mar'][2] + 80,
-                                 b=self.parameters['mar'][0] + 80,
-                                 pad=5
-                                 )
-        self.blended_grid_col = util.alpha_blending(self.parameters['grid_col'], 0.5)
         self.dump_points_1 = self._get_bool('dump_points_1')
         self.create_html = self._get_bool('create_html')
 

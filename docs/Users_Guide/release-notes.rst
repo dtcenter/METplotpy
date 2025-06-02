@@ -7,6 +7,32 @@ describes the bugfix, enhancement, or new feature:
 `METplotpy GitHub issues. <https://github.com/dtcenter/METplotpy/issues>`_
 
 
+METplotpy Version 3.1.0-rc1 release notes (20250522)
+====================================================
+
+.. dropdown:: New Plots
+
+   None
+
+.. dropdown:: Enhancements
+
+  * Enhance the scatter plot to support marginal distributions and generalize the inputs and plotting options (`#23 <https://github.com/dtcenter/METplotpy/issues/23>`_)
+  * Remove defunct scatter plot code from METplotpy/plots  (`#458 <https://github.com/dtcenter/METplotpy/issues/458>`_)
+  * Optimize plotting in the Physics Tendency planview, cross-section, and vertical cross-section plots (`#449 <https://github.com/dtcenter/METplotpy/issues/449>`_)
+
+
+.. dropdown:: Bugfixes
+
+   None
+
+.. dropdown:: Documentation
+
+   * Documentation: TCMPR filtering (`#507 <https://github.com/dtcenter/METplotpy/issues/507>`_)
+
+.. dropdown:: Repository, build, and test
+
+   None
+
 METplotpy Version 3.1.0-beta2 release notes (20250331)
 ======================================================
 
@@ -22,8 +48,8 @@ METplotpy Version 3.1.0-beta2 release notes (20250331)
 
    * Series names in legend don't get ordered correctly  (`#347 <https://github.com/dtcenter/METplotpy/issues/347>`_)
    * Support various formats of show_legend values (`#482 <https://github.com/dtcenter/METplotpy/issues/482>`_)
-   * Reliability Diagram show_legend setting should work with True/False rather than 1/0 values; see bugfix #482(`#455 <https://github.com/dtcenter/METplotpy/issues/455>`_)
-   * Better handling of determining min and max for confidence limits when data contains NaN values(`#494 <https://github.com/dtcenter/METplotpy/issues/494>`_)
+   * Reliability Diagram show_legend setting should work with True/False rather than 1/0 values; see bugfix #482 (`#455 <https://github.com/dtcenter/METplotpy/issues/455>`_)
+   * Better handling of determining min and max for confidence limits when data contains NaN values (`#494 <https://github.com/dtcenter/METplotpy/issues/494>`_)
    * Plotly line plots are plotting confidence limit bars at zero with zero length error bars (`#495 <https://github.com/dtcenter/METplotpy/issues/495>`_)
 
 .. dropdown:: Documentation
