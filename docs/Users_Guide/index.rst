@@ -65,6 +65,8 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    :titlesonly:
    :numbered: 4
 
+   overview
+   release-notes
    installation
    line
    box
@@ -94,7 +96,6 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    fv3_physics
    tcmpr_plots
    scatter
-   release-notes
    references
 
 
