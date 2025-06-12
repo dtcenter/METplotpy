@@ -24,6 +24,14 @@ contour_line_colors: 'darkblue'
 contour_label_color: 'orange'
 contour_label_fmt: '%1.0f'
 
+#
+# colormap for filled contour
+#
+#  for a list of available colormaps:
+# https://matplotlib.org/stable/users/explain/colors/colormaps.html
+#  e.g. gist_stern, jet, gist_ncar
+colormap: 'gist_rainbow'
+
 # axis labels
 # x-axis is in units of RMW
 x_label: 'units of RMW'
