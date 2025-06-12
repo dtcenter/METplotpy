@@ -86,20 +86,18 @@ Save and close the *test_plot_cross_section.sh* script.
 To generate the plot, perform the following:
 
 
-* If you are running in a conda environment, verify that you are running the conda
-environment that has the Python packages specified in the requirements.txt file
-located in the $METPLOTPY_BASE directory.
+* If  you are running in a conda environment, verify that your conda environment that has the Python packages specified in the requirements.txt file located in the $METPLOTPY_BASE directory.
 
 * cd to the $METPLOTPY_BASE/metplotpy/contributed/tc_rmw directory
 
-``cd $METPLOTPY_BASE/metplotpy/contributed/tc_rmw``
+   ``cd $METPLOTPY_BASE/metplotpy/contributed/tc_rmw``
 
 replacing the $METPLOTPY_BASE with the directory where you saved the METplotpy
 source code.
 
 * run the test_plot_cross_section.sh script:
 
-``sh test_plot_cross_section.sh``
+   ``sh test_plot_cross_section.sh``
 
 Two files will be created, *example.png* and *example.pdf* (if you used the *plot_filename* value
 of 'example' in the *plot_cross_section.yaml* configuration file).  They will be located in
