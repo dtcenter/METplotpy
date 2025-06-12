@@ -78,7 +78,8 @@ def plot_cross_section(config, data_set, args):
     # originally, the transpose of the field_azi_mean was used, but this is no
     # longer necessary.  If the transpose is used, the dimensions are incorrect
     # and a TypeError will be raised by the contour plot.
-    scalar_contour = ax.contourf(data_set['range'],
+    if config['filled_contour_on']:
+        scalar_contour = ax.contourf(data_set['range'],
                                 data_set[config['vertical_coord_name']],
                                 field_azi_mean,
                                 levels=np.arange(config['contour_level_start'],
@@ -86,6 +87,7 @@ def plot_cross_section(config, data_set, args):
                                                  config['contour_level_stepsize']),
                                  cmap=config['colormap']
                                 )
+
     scalar_contour = ax.contour(data_set['range'],
                                  data_set[config['vertical_coord_name']],
                                  field_azi_mean,
