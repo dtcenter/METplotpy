@@ -835,6 +835,9 @@ This generates the boxplot for the  TK_ERR columns for the M221 and H221 AMODELs
 
     * BOXPLOT_SAMPLE_DATA_TK_ERR_boxplot.png
 
+Additionally, any outliers are captured in text files following the same naming
+convention used in the plot name, with the .png extension replaced by .txt
+
 **Relative performance**
 
 
