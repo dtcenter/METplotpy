@@ -18,8 +18,8 @@ def setup(setup_env):
 
 def test_plots_created(setup):
     # Check for presence of fourteen plots (seven plot types, one each for the
-    # ABS(X-Y) and TK_ERR columns.
-    expected_num_plots = 14
+    # ABS(X-Y) and TK_ERR columns and two outlier .txt files from the boxplot.
+    expected_num_plots = 16
     output_dir = os.path.join(cwd, 'output')
     only_files = os.listdir(output_dir)
     assert len(only_files) == expected_num_plots
@@ -51,12 +51,16 @@ def test_plots_created(setup):
                       }
 
     # Check that filenames are what we expect
-    expected_names_list = ['ABS(AMAX_WIND-BMAX_WIND)_boxplot.png', 'ABS(AMAX_WIND-BMAX_WIND)_mean.png',
+    expected_names_list = ['ABS(AMAX_WIND-BMAX_WIND)_boxplot.png',
+                            'ABS(AMAX_WIND-BMAX_WIND)_boxplot_outliers.txt',
+                            'ABS(AMAX_WIND-BMAX_WIND)_mean.png',
                            'ABS(AMAX_WIND-BMAX_WIND)_median.png',
                            'ABS(AMAX_WIND-BMAX_WIND)_rank.png', 'ABS(AMAX_WIND-BMAX_WIND)_relperf.png',
                            'ABS(AMAX_WIND-BMAX_WIND)_skill_md.png',
                            'ABS(AMAX_WIND-BMAX_WIND)_skill_mn.png',
-                           'TK_ERR_boxplot.png', 'TK_ERR_mean.png', 'TK_ERR_median.png', 'TK_ERR_rank.png',
+                           'TK_ERR_boxplot.png', 'TK_ERR_mean.png', 'TK_ERR_median.png',
+                           'TK_ERR_boxplot_outliers.txt',
+                           'TK_ERR_rank.png',
                            'TK_ERR_relperf.png', 'TK_ERR_skill_md.png', 'TK_ERR_skill_mn.png']
 
     for cur_file in only_files:
