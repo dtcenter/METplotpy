@@ -6,6 +6,9 @@ import plotly.graph_objects as go
 from metplotpy.plots.tcmpr_plots.box.tcmpr_box_point import TcmprBoxPoint
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 import metplotpy.plots.util as util
+import pandas as pd
+from scipy import stats
+
 
 
 class TcmprBox(TcmprBoxPoint):
@@ -24,22 +27,32 @@ class TcmprBox(TcmprBoxPoint):
         self.cur_baseline_data = baseline_data['cur_baseline_data']
         self._init_hfip_baseline_for_plot()
 
+        # a list of dataframes, used for collecting outlier data
+        self.outliers:list[pd.DataFrame] = []
+
         if self.config_obj.prefix is None or len(self.config_obj.prefix) == 0:
             self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{stat_name}_boxplot.png"
+            self.outlier_filename = f"{self.config_obj.plot_dir}{os.path.sep}{stat_name}_boxplot_outliers.txt"
         else:
             self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}_{stat_name}_boxplot.png"
+            self.outlier_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}_{stat_name}_boxplot_outliers.txt"
 
         self.box_logger.info(f"Plot will be saved as {self.plot_filename}")
+        self.box_logger.info(f"Outlier file will be saved as {self.outlier_filename}")
 
         # remove the old file if it exists
         if os.path.exists(self.plot_filename):
             os.remove(self.plot_filename)
+
         self._create_figure()
+
+        # Concatenate all the outlier dataframes and save to a file
+        final_outlier:pd.DataFrame = pd.concat(self.outliers)
+        final_outlier.to_csv(self.outlier_filename, sep="\t", index=False)
+
 
     def _adjust_titles(self, stat_name):
         if self.yaxis_1 is None or len(self.yaxis_1) == 0:
-            # ToDo Remove when done DEBUGGING
-            # self.yaxis_1 = self.config_obj.list_stat_1[0] + '(' + self.col['units'] + ')'
             self.yaxis_1 = stat_name + '(' + self.col['units'] + ')'
 
         if self.title is None or len(self.title) == 0:
@@ -71,7 +84,34 @@ class TcmprBox(TcmprBoxPoint):
                 fillcolor = series.color
             marker_symbol = 'circle-open'
 
+        # Retrieve the outlier points and collect them into a list of dataframes (based
+        # on lead hour), which will then be saved into a text file (for all series and
+        # all lead hours).
+        # Employ the IQR method to identify outliers.
+        unique_lead_hrs = series.series_data['LEAD_HR'].unique()
+        working = series.series_data.copy(deep=True)
+        for cur_lead in unique_lead_hrs:
+            wip = working[['LEAD_HR', 'PLOT']]
+            df_cur_lead = wip.loc[wip['LEAD_HR'] == cur_lead]
+            data = df_cur_lead[['PLOT']]
+            q1 = data.quantile(q=0.25)
+            q3 = data.quantile(q=0.75)
+            iqr = data.apply(stats.iqr)
+            iqr_1p5 = 1.5 * iqr
+
+            # find the outliers for this lead hour
+            data_outliers:pd.DataFrame = data[((data < (q1-iqr_1p5))|(data > (q3+iqr_1p5))).any(axis=1)]
+            outlier_idx = data_outliers.index
+
+            # Get the entire row of data from the "original" data (series.series_data)
+            # and add them to a list of dataframes that will be merged after the
+            # plotting is complete.
+            outlier_df = self.input_df.iloc[outlier_idx]
+            self.outliers.append(outlier_df)
+
+
         # create a trace
+
         self.figure.add_trace(
             go.Box(x=series.series_data['LEAD_HR'],
                    y=series.series_data['PLOT'],
