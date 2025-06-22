@@ -97,8 +97,8 @@ class TcmprLineMean(TcmprLine):
                 oper = name[2]
                 name[:] = [(s + ' ' + stat_name) if ' ' not in s else s for s in name[:2]]
                 name.append(oper)
-
-                series_obj = TcmprSeriesLineMean(self.config_obj, num_series_y1 + i, input_data, series_list, name)
+                
+                series_obj = TcmprSeriesLineMean(self.config_obj, num_series_y1 + i, input_data, series_list, name, stat_name)
                 series_list.append(series_obj)
 
         # reorder series
