@@ -611,7 +611,6 @@ def create_plot(config_obj: dict) -> None:
 
         for cur_stat in config_obj.list_stat_1:
             logger.info(f"Statistic of interest: {cur_stat}")
-            print(f"statistic of interest: {cur_stat}")
             # col_to_plot = get_dep_column(config_obj.list_stat_1[0], column_info, input_df)
             col_to_plot = get_dep_column(cur_stat, column_info, input_df)
             input_df['PLOT'] = col_to_plot['val']
