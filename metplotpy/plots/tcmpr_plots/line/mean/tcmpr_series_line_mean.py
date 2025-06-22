@@ -51,7 +51,7 @@ class TcmprSeriesLineMean(TcmprSeries):
         start_time = datetime.now()
         self._init_series_data()
 
-        series_points_results = {'val': [], 'ncl': [], 'ncu': [], 'nstat': [], 'mean': []}
+        series_points_results = {'val': [], 'ncl': [], 'ncu': [], 'nstat': [], 'mean': [], 'pval':[]}
 
         # for each point calculate plot statistic
         for indy in self.config.indy_vals:
@@ -77,6 +77,7 @@ class TcmprSeriesLineMean(TcmprSeries):
             series_points_results['val'].append(ci_data['val'])
             series_points_results['ncu'].append(dbl_up_ci)
             series_points_results['nstat'].append(len(point_data))
+            series_points_results['pval'].append(ci_data['pval'])
             if series_points_results['nstat'] == 0:
                 series_points_results['mean'].append(None)
             else:
