@@ -80,7 +80,7 @@ class Tcmpr(BasePlot):
         self.baseline_lead_time = 'lead'
         self.yaxis_1 = self.config_obj.yaxis_1
 
-        self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.list_stat_1[0]}_{self.config_obj.plot_type_list}.png"
+        self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{stat_name}_{self.config_obj.plot_type_list}.png"
         # Check that we have all the necessary settings for each series
         # TODO  implement the consistency check if no series values were specified
         # is_config_consistent = self.config_obj._config_consistency_check()
@@ -585,7 +585,8 @@ def create_plot(config_obj: dict) -> None:
                               quotechar='"', skipinitialspace=True, encoding='utf-8')
 
     logger = util.get_common_logger(config_obj.log_level, config_obj.log_filename)
-\
+
+
     for plot_type in config_obj.plot_type_list:
 
         # Apply event equalization, if requested
@@ -610,6 +611,7 @@ def create_plot(config_obj: dict) -> None:
 
         for cur_stat in config_obj.list_stat_1:
             logger.info(f"Statistic of interest: {cur_stat}")
+            print(f"statistic of interest: {cur_stat}")
             # col_to_plot = get_dep_column(config_obj.list_stat_1[0], column_info, input_df)
             col_to_plot = get_dep_column(cur_stat, column_info, input_df)
             input_df['PLOT'] = col_to_plot['val']
@@ -625,6 +627,7 @@ def create_plot(config_obj: dict) -> None:
                     from metplotpy.plots.tcmpr_plots.box.tcmpr_box import TcmprBox
                     plot = TcmprBox(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data,
                                     cur_stat)
+
                 elif plot_type == 'point':
                     from metplotpy.plots.tcmpr_plots.box.tcmpr_point import TcmprPoint
                     plot = TcmprPoint(config_obj, column_info, col_to_plot, common_case_data, input_df, baseline_data,
