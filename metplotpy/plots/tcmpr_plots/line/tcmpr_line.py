@@ -1,6 +1,6 @@
 import plotly.graph_objects as go
 from datetime import datetime
-
+import pandas as pd
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 import metplotpy.plots.util as util
@@ -82,11 +82,16 @@ class TcmprLine(Tcmpr):
 
     def _draw_series(self, series: TcmprSeries, x_points_index_adj: list) -> None:
         """
-        Draws the boxes on the plot
 
-        :param series: Line series object with data and parameters
+        Input:
+
+        series: Line series object with data and parameters
+        x_points_index_adj:  the x-values, adjusted for staggering of points
+
+        Returns:
+            None, generates a plot
+
         """
-
         start_time = datetime.now()
 
         y_points = series.series_points['val']
@@ -122,6 +127,30 @@ class TcmprLine(Tcmpr):
                        ),
             secondary_y=series.y_axis != 1
         )
+
+        # plot statistically significant points with their corresponding style (size, color, marker)
+        if 'DIFF' in series.series_name:
+            # generate a dataframe identifying the x_points_index_adj and
+            # y_points where the p value <= alpha (statistically significant).
+            if self.config_obj.display_statistically_significant:
+                # create a dataframe containing the x- and y-values, and p values
+                diff_dict = {'x_vals':x_points_index_adj, 'y_vals':y_points, 'p_vals':series.series_points['pval']}
+                diff_df = pd.DataFrame(diff_dict)
+                diff_df['statistically_significant'] = False
+                diff_df.loc[diff_df['p_vals']<=self.get_config_value('alpha'), 'statistically_significant'] = True
+                ss_df = diff_df.loc[diff_df['statistically_significant'] == True]
+                ss_x = ss_df['x_vals'].to_list()
+                ss_y = ss_df['y_vals'].to_list()
+                # DEBUG
+                # ss_df.to_csv("/Users/minnawin/HAFS/TCMPR_WIP/METplotpy/metplotpy/plots/tcmpr_plots/output"
+                #              "/statistically_significant.txt", sep='\t', index=False)
+
+                # create a trace
+                self.figure.add_trace(
+                    go.Scatter(x=ss_x, y=ss_y, showlegend=True, mode='markers',
+                               name='statistically significant (p <= alpha)',
+                               marker_symbol=self.config_obj.statistically_significant_symbol_marker,
+                               marker_color=self.config_obj.statistically_significant_symbol_color))
 
         end_time = datetime.now()
         total_time = end_time - start_time
