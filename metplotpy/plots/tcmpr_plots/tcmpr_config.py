@@ -59,6 +59,15 @@ class TcmprConfig(Config):
         self.demo_yr = self.get_config_value('demo_yr')  # not used in Rscript. not sure if we need it
         self.alpha = self.get_config_value('alpha')
 
+        # statistically significant points
+        self.display_statistically_significant = self.get_config_value('display_statistically_significant')
+        self.statistically_significant_symbol_marker = self.get_config_value('statistically_significant_symbol_marker')
+        self.statistically_significant_symbol_color = self.get_config_value('statistically_significant_symbol_color')
+        # Check for consistent number of statistically significant symbol settings
+        if not self.ss_symbols_valid():
+            error_msg = 'inconsistent number of settings for the special value(s)'
+            raise ValueError(error_msg)
+
         # Check the relative scatter settings
         if len(self.scatter_x) != len(self.scatter_y):
             raise ValueError("ERROR: The number of scatter_x and scatter_y variables specified must match each other")
@@ -80,8 +89,7 @@ class TcmprConfig(Config):
 
         ##############################################
         # caption parameters
-        self.caption_size = int(constants.DEFAULT_CAPTION_FONTSIZE
-                                * self.get_config_value('caption_size'))
+        self.caption_size = int(constants.DEFAULT_CAPTION_FONTSIZE * self.get_config_value('caption_size'))
         self.caption_offset = self.parameters['caption_offset'] - 3.1
 
         ##############################################
@@ -123,6 +131,7 @@ class TcmprConfig(Config):
         self.plot_disp = self._get_plot_disp()
         self.series_ci = self._get_series_ci()
         self.colors_list = self._get_colors()
+        self.scatter_color_list = self.colors_list
         self.all_series_y1 = self._get_all_series_y(1)
         self.num_series = self.calculate_number_of_series()
         self.linewidth_list = self._get_linewidths()
@@ -233,8 +242,9 @@ class TcmprConfig(Config):
         plot_type_list = self.get_config_value('plot_type_list')
         for cur_plot_type in plot_type_list:
             if cur_plot_type not in self.SUPPORTED_PLOT_TYPES:
-                raise ValueError("Requesting an unsupported plot type. Supported types: boxplot, "
-                             "point, mean, median, relperf, rank, skill_mn, and skill_md ")
+                raise ValueError(
+                    "Requesting an unsupported plot type. Supported types: boxplot, "
+                    "point, mean, median, relperf, rank, skill_mn, and skill_md ", )
         return plot_type_list
 
     def _get_tcst_files(self) -> list:
@@ -256,7 +266,6 @@ class TcmprConfig(Config):
 
         hfip_bsln = str(self.get_config_value('hfip_bsln'))
         hfip_bsln_lower = hfip_bsln.lower()
-
 
         # Validate that hfip_bsln is one of the following; (no, 0, 5, 10 year goal)
         supported_bsln = ['no', '0', '5', '10']
@@ -301,13 +310,30 @@ class TcmprConfig(Config):
             """
 
         series_ci_config_vals = self.get_config_value('series_ci')
-        series_ci_bools = []
-        for val in series_ci_config_vals:
-            if isinstance(val, bool):
-                series_ci_bools.append(val)
 
-            if isinstance(val, str):
-                series_ci_bools.append(val.upper() == 'TRUE')
+        # Determine if there is a derived_series_1 entry/entries and if DIFF is requested
+        # then set all the series_ci values to True to turn on plotting of CI's
+        diff_flag = False
+        if  self.get_config_value('derived_series_1') is not None:
+            derived_series_list= self.get_config_value('derived_series_1')
+            if  len(self.get_config_value('derived_series_1')) > 0:
+               for cur_derived in derived_series_list:
+                   if 'DIFF' in cur_derived:
+                       diff_flag = True
+
+        series_ci_bools = []
+        # When a derived series is requested, always
+        # plot the CI
+        if diff_flag:
+            for val in series_ci_config_vals:
+                series_ci_bools.append(True)
+        else:
+           for val in series_ci_config_vals:
+               if isinstance(val, bool):
+                   series_ci_bools.append(val)
+
+               if isinstance(val, str):
+                   series_ci_bools.append(val.upper() == 'TRUE')
 
         return self.create_list_by_series_ordering(series_ci_bools)
 
@@ -356,7 +382,8 @@ class TcmprConfig(Config):
 
         if stat_to_plot not in accepted_stats:
             raise ValueError(
-                "An unsupported statistic was set for the plot_stat setting.  Supported values are sum, mean, and median.")
+                "An unsupported statistic was set for the plot_stat setting.  Supported values are sum, mean, "
+                "and median.", )
         return stat_to_plot
 
     def _config_consistency_check(self) -> bool:
@@ -385,9 +412,7 @@ class TcmprConfig(Config):
         num_legends = len(self.user_legends)
         status = False
 
-        if self.num_series == num_plot_disp == \
-                num_series_ord == num_colors \
-                == num_legends:
+        if self.num_series == num_plot_disp == num_series_ord == num_colors == num_legends:
             status = True
         return status
 
@@ -525,3 +550,23 @@ class TcmprConfig(Config):
         total = total + len(self.get_config_value('derived_series_1'))
 
         return total
+
+    def ss_symbols_valid(self) -> bool:
+        """
+           Check that the statistically significant symbol settings are consistent
+           ( i.e. all values have settings)
+
+           Args:
+               None
+           Returns:
+               Bool: True if settings are consistent, False otherwise
+        """
+        # Only check if statistically significant  symbol settings are present
+
+        if self.display_statistically_significant:
+            if ( (self.statistically_significant_symbol_marker is not None) and (
+                    self.statistically_significant_symbol_color is not None)):
+                return True
+            else:
+                # Some expected settings are not found
+                return False
