@@ -44,7 +44,7 @@ class TcmprSeriesLineMedian(TcmprSeries):
 
         self._init_series_data()
 
-        series_points_results = {'val': [], 'ncl': [], 'ncu': [], 'nstat': [], 'mean': []}
+        series_points_results = {'val': [], 'ncl': [], 'ncu': [], 'nstat': [], 'mean': [], 'pval':[]}
 
         # for each point calculate plot statistic
         for indy in self.config.indy_vals:
@@ -71,5 +71,6 @@ class TcmprSeriesLineMedian(TcmprSeries):
             series_points_results['val'].append(ci_data['val'])
             series_points_results['ncu'].append(dbl_up_ci)
             series_points_results['nstat'].append(len(point_data))
+            series_points_results['pval'].append(ci_data['pval'])
 
         return series_points_results
