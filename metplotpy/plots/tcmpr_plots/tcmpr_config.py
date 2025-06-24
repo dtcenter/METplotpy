@@ -64,9 +64,10 @@ class TcmprConfig(Config):
         self.statistically_significant_symbol_marker = self.get_config_value('statistically_significant_symbol_marker')
         self.statistically_significant_symbol_color = self.get_config_value('statistically_significant_symbol_color')
         # Check for consistent number of statistically significant symbol settings
-        if not self.ss_symbols_valid():
-            error_msg = 'inconsistent number of settings for the special value(s)'
-            raise ValueError(error_msg)
+        if self.display_statistically_significant:
+            if not  (self.ss_symbols_valid()):
+                error_msg = 'inconsistent number of settings for the special value(s)'
+                raise ValueError(error_msg)
 
         # Check the relative scatter settings
         if len(self.scatter_x) != len(self.scatter_y):
@@ -310,29 +311,12 @@ class TcmprConfig(Config):
             """
 
         series_ci_config_vals = self.get_config_value('series_ci')
-
-        # Determine if there is a derived_series_1 entry/entries and if DIFF is requested
-        # then set all the series_ci values to True to turn on plotting of CI's
-        diff_flag = False
-        if  self.get_config_value('derived_series_1') is not None:
-            derived_series_list= self.get_config_value('derived_series_1')
-            if  len(self.get_config_value('derived_series_1')) > 0:
-               for cur_derived in derived_series_list:
-                   if 'DIFF' in cur_derived:
-                       diff_flag = True
-
         series_ci_bools = []
-        # When a derived series is requested, always
-        # plot the CI
-        if diff_flag:
-            for val in series_ci_config_vals:
-                series_ci_bools.append(True)
-        else:
-           for val in series_ci_config_vals:
-               if isinstance(val, bool):
+        for val in series_ci_config_vals:
+             if isinstance(val, bool):
                    series_ci_bools.append(val)
 
-               if isinstance(val, str):
+             if isinstance(val, str):
                    series_ci_bools.append(val.upper() == 'TRUE')
 
         return self.create_list_by_series_ordering(series_ci_bools)
