@@ -1,0 +1,81 @@
+
+# Configuration file for running the gradient plot
+
+
+# Input
+# directory + filename
+input_dir: !ENV '${INPUT_DATA_DIR}'
+input_filename:  !ENV '${INPUT_FILENAME}'
+
+# Output
+output_filename: 'refactored_grid_stat_tec_gradient_diff'
+output_directory: !ENV '${OUTPUT_DIR}/'
+
+# Logging
+# log will be saved as log_<timestamp>.txt
+log_directory: !ENV '${LOG_DIR}/'
+log_level: INFO
+
+# Figure settings
+figure_width: 10
+figure_height: 6
+# annotation - use single quotes
+# set to ' ' for NO annotation
+# set to '' or nothing to use default annotation
+annotation: ''
+
+# Model plot settings
+model_colormap: 'turbo'
+model_coastline_resolution: '50m'
+model_coastline_color: gray
+model_coastline_linewidth: 1.25
+model_gridline_color: gray
+model_gridline_linestyle: '--'
+model_gridline_draw_labels: True
+model_gridline_top_labels: False
+model_gridline_right_labels: False
+model_resize_colorbar_factor: 0.7
+model_plot_title:  "WAMIPE TEC Gradient Magnitude"
+
+# Observation plot settings
+obs_colormap: 'turbo'
+obs_coastline_resolution: '50m'
+obs_coastline_color: gray
+obs_coastline_linewidth: 1.25
+obs_gridline_color: gray
+obs_gridline_linestyle: '--'
+obs_gridline_draw_labels: True
+obs_gridline_top_labels: False
+obs_gridline_right_labels: False
+obs_resize_colorbar_factor: 0.7
+obs_plot_title: 'GloTEC TEC Gradient Magnitude'
+
+# Difference plot settings
+diff_colormap: "PuOr_r"
+diff_coastline_resolution: '50m'
+diff_coastline_color: gray
+diff_coastline_linewidth: 1.25
+diff_gridline_color: gray
+diff_gridline_linestyle: '--'
+diff_gridline_draw_labels: True
+diff_gridline_top_labels: False
+diff_gridline_right_labels: False
+diff_resize_colorbar_factor: 0.7
+diff_plot_title: "Difference in TEC Gradient Magnitude"
+
+
+
+
+# Model plot configs
+
+
+# Observation plot configs
+
+
+
+# Difference plot configs
+
+
+
+
+
