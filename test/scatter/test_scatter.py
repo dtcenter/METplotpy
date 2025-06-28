@@ -23,6 +23,7 @@ def read_config(config_filename) -> dict:
                 return parms
             except yaml.YAMLError as exc:
                 print(exc)
+@pytest.mark.skip("Skipping until GHA issue with Python 3.12 and kaleido are resolved")               
 def test_files_exist():
     """
         Generate a scatter plot from reformatted MPR Usecase data and
