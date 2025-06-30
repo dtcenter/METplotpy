@@ -29,7 +29,10 @@ from metplotpy.plots.context_filter import ContextFilter
 
 # set kaleido to use single process to prevent GPU errors in containers
 # NOTE: this may result in GHA tests failing due to impending deprecations in kaleido
-pio.kaleido.scope.chromium_args += ("--single-process",)
+
+# kaleido.scope will be deprecated after September 2025
+# using plotly.io.defaults.* instead is recommended, but there is no way to add chromium args in this package.
+#pio.kaleido.scope.chromium_args += ("--single-process",)
 
 class BasePlot:
     """A class that provides methods for building Plotly plot's common features
