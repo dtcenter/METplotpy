@@ -31,7 +31,7 @@ from metplotpy.plots.context_filter import ContextFilter
 # NOTE: this may result in GHA tests failing due to impending deprecations in kaleido
 
 # kaleido.scope will be deprecated after September 2025
-# using plotly.io.defaults.* instead is recommended, but there is no way to add chromium args in this package.
+# using plotly.io.defaults.* is recommended, but there is no way to add chromium args in this package.
 #pio.kaleido.scope.chromium_args += ("--single-process",)
 
 class BasePlot:
