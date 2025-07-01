@@ -59,8 +59,8 @@ jobs:
       run: |
           chrome --version
           #${{ steps.setup-chrome.outputs.chrome-path }} --version
- env: 
-   CHROME_INSTALL: ${{ steps.setup-chrome.outputs.chrome-path }} --version
+      env: 
+         CHROME_INSTALL: ${{ steps.setup-chrome.outputs.chrome-path }} --version
    
 
                  
