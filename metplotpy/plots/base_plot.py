@@ -34,11 +34,6 @@ from metplotpy.plots.context_filter import ContextFilter
 # using plotly.io.defaults.* is recommended, but there is no way to add chromium args in this package.
 #pio.kaleido.scope.chromium_args += ("--single-process",)
 
-# this does not work
-#pio.install_chrome()
-
-from plotly.io import _kaleido as kaleido
-os.environ['CHROME_INSTALL']
 
 
 class BasePlot:
