@@ -38,8 +38,7 @@ from metplotpy.plots.context_filter import ContextFilter
 #pio.install_chrome()
 
 from plotly.io import _kaleido as kaleido
-#kaleido.get_chrome_sync()
-kaleido.get_chrome()
+os.environ['CHROME_INSTALL']
 
 
 class BasePlot:
