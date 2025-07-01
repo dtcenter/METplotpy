@@ -58,9 +58,7 @@ jobs:
     - name: Install Google Chrome for Plotly
       run: |
           chrome --version
-          #${{ steps.setup-chrome.outputs.chrome-path }} --version
-      env: 
-         CHROME_INSTALL: ${{ steps.setup-chrome.outputs.chrome-path }} --version
+          ${{ steps.setup-chrome.outputs.chrome-path }} --version
    
 
                  
