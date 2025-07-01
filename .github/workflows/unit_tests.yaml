@@ -52,8 +52,8 @@ jobs:
         if [ -f test_requirements.txt ]; then pip install -r test_requirements.txt; fi
         pip install --upgrade kaleido
       
+    - uses: browser-actions/setup-chrome@v1
     - name: Install Google Chrome for Plotly
-      - uses: browser-actions/setup-chrome@v1
       - run: chrome --version
         
 #   Checking the branch name, not necessary but useful when setting things up. 
