@@ -60,9 +60,9 @@ jobs:
       run: |
           chrome --version
           #${{ steps.setup-chrome.outputs.chrome-path }} --version
-          no-sudo  
  env: 
    CHROME_INSTALL: ${{ steps.setup-chrome.outputs.chrome-path }} --version
+   
 
                  
 #   Checking the branch name, not necessary but useful when setting things up. 
