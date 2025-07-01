@@ -54,7 +54,7 @@ jobs:
       
     - uses: browser-actions/setup-chrome@v1
     - name: Install Google Chrome for Plotly
-      - run: chrome --version
+      run: chrome --version
         
 #   Checking the branch name, not necessary but useful when setting things up. 
 #     - name: Extract branch name
