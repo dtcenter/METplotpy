@@ -37,7 +37,7 @@ from metplotpy.plots.context_filter import ContextFilter
 # this does not work
 #pio.install_chrome()
 
-import kaleido
+from plotly.io import _kaleido as kaleido
 kaleido.get_chrome_sync()
 
 
