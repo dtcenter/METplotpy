@@ -54,11 +54,11 @@ jobs:
         pip install --upgrade kaleido
       
  
-    - uses: browser-actions/setup-chrome@v1
-    - name: Install Google Chrome for Plotly
-      run: |
-          chrome --version
-          ${{ steps.setup-chrome.outputs.chrome-path }} 
+#    - uses: browser-actions/setup-chrome@v1
+#    - name: Install Google Chrome for Plotly
+#      run: |
+#          chrome --version
+#          ${{ steps.setup-chrome.outputs.chrome-path }} 
    
 
                  
