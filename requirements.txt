@@ -1,6 +1,7 @@
+
 imageio>=2.37.0
 imutils>=0.5.4
-kaleido>=0.2.1
+kaleido>=1.0.0
 matplotlib>=3.10.0
 metpy>=1.6.3
 netcdf4>=1.7.2
@@ -8,7 +9,7 @@ numpy>=2.2.2
 opencv-python>=4.10.0
 pandas>=2.2.3
 pint>=0.24.4
-plotly>=6.0.0
+plotly>=6.1.1
 pytest>=8.3.4
 pyyaml>=6.0.2
 scikit-image>=0.25.1
@@ -18,4 +19,3 @@ eofs>=2.0.0
 cartopy>=0.24.0
 scikit-learn>=1.6.1
 cmocean>=4.0.3
-
