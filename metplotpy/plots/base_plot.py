@@ -32,13 +32,24 @@ from metplotpy.plots.context_filter import ContextFilter
 import kaleido
 
 # In some instances, we do NOT want Chrome to be installed at run-time. If the 
-# PRE_LOAD_CHROME environment variable exists but undefined, or set to TRUE,
-# then Chrome will be pre-loaded and the  get_chrome_sync() invocation
-# is skipped.
-chrome_env = os.getenv("PRE_LOAD_CHROME", False) == True
-if chrome_env is False:
-       kaleido.get_chrome_sync()
+# PRE_LOAD_CHROME environment variable exists, or set to TRUE,
+# then Chrome will be assumed to have been pre-loaded. Otherwise,
+# invoke  get_chrome_sync()  to install Chrome in the
+# /path-to-python-libs/pythonx.yz/site-packages/...  directory
 
+# Check if the PRE_LOAD_CHROME env variable exists
+if 'PRE_LOAD_CHROME' not in os.environ:
+    print("Chrome ENV is  non-existent, getting Chrome via kaleido call...")
+    kaleido.get_chrome_sync()
+else:
+    # Check value of PRE_LOAD_CHROME (could be boolean or string)
+    chrome_env = os.environ.get('PRE_LOAD_CHROME')
+    if type(chrome_env) is bool and chrome_env is False:
+         kaleido.get_chrome_sync()
+    else:
+        # ENV var is a string and has been set to 'False' (case-insensitive)
+        if chrome_env.lower() == 'false':
+            kaleido.get_chrome_sync()
 
 class BasePlot:
     """A class that provides methods for building Plotly plot's common features
