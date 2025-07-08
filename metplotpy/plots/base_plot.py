@@ -39,7 +39,6 @@ import kaleido
 
 # Check if the PRE_LOAD_CHROME env variable exists
 if 'PRE_LOAD_CHROME' not in os.environ:
-    print("Chrome ENV is  non-existent, getting Chrome via kaleido call...")
     kaleido.get_chrome_sync()
 else:
     # Check value of PRE_LOAD_CHROME (could be boolean or string)
