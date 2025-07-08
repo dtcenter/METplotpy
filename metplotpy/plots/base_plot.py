@@ -27,8 +27,11 @@ import metplotpy.plots.util
 from .config import Config
 from metplotpy.plots.context_filter import ContextFilter
 
-# set kaleido to use single process to prevent GPU errors in containers
-# pio.kaleido.scope.chromium_args += ("--single-process",)
+# kaleido 0.x will be deprecated after September 2025 and Chrome will no longer
+# be included with kaleido from version 1.0.0.  Explicitly get Chrome via call to kaleido.
+import kaleido
+kaleido.get_chrome_sync()
+
 
 class BasePlot:
     """A class that provides methods for building Plotly plot's common features
