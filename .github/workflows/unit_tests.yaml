@@ -1,6 +1,5 @@
 # This workflow will install Python dependencies, run tests the specified Python version
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
 name: Python 3.12 tests
 
 on:
@@ -11,6 +10,7 @@ on:
       - feature_*
       - main_*
       - bugfix_*    
+      - test_*
     paths-ignore:
       - 'docs/**'
       - '.github/pull_request_template.md'
@@ -20,6 +20,8 @@ on:
       
   pull_request:
     types: [opened, reopened, synchronize]
+
+
 
 jobs:
   build:
@@ -49,8 +51,17 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install --upgrade kaleido
       
-        
+ 
+#    - uses: browser-actions/setup-chrome@v1
+#    - name: Install Google Chrome for Plotly
+#      run: |
+#          chrome --version
+#          ${{ steps.setup-chrome.outputs.chrome-path }} 
+   
+
+                 
 #   Checking the branch name, not necessary but useful when setting things up. 
 #     - name: Extract branch name
 #       shell: bash
