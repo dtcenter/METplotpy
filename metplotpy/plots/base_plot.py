@@ -35,7 +35,7 @@ import kaleido
 # PRE_LOAD_CHROME environment variable exists but undefined, or set to TRUE,
 # then Chrome will be pre-loaded and the  get_chrome_sync() invocation
 # is skipped.
-chrome_env = os.getenv("PRE_LOAD_CHROME", False).lower() == 'true'
+chrome_env = os.getenv("PRE_LOAD_CHROME", False) == True
 if chrome_env is False:
        kaleido.get_chrome_sync()
 
