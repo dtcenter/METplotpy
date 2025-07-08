@@ -32,6 +32,7 @@ from metplotpy.plots.context_filter import ContextFilter
 import kaleido
 kaleido.get_chrome_sync()
 
+
 class BasePlot:
     """A class that provides methods for building Plotly plot's common features
      like title, axis, legend.

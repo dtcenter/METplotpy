@@ -109,7 +109,9 @@ def plot_qbo_phase_circuits(inits,periods,rean_qbo_pcs,rfcst_qbo_pcs,outfile):
 
 def plot_qbo_phase_space(rean_qbo_pcs,eofs,ptitle,outfile):
 
-    from mpl_toolkits.axes_grid1.inset_locator import (inset_axes, mark_inset)
+
+    from mpl_toolkits.axes_grid1.inset_locator import mark_inset
+
 
     fig = plt.figure(4)
 
