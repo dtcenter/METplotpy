@@ -30,7 +30,14 @@ from metplotpy.plots.context_filter import ContextFilter
 # kaleido 0.x will be deprecated after September 2025 and Chrome will no longer
 # be included with kaleido from version 1.0.0.  Explicitly get Chrome via call to kaleido.
 import kaleido
-kaleido.get_chrome_sync()
+
+# In some instances, we do NOT want Chrome to be installed at run-time. If the 
+# PRE_LOAD_CHROME environment variable exists but undefined, or set to TRUE,
+# then Chrome will be pre-loaded and the  get_chrome_sync() invocation
+# is skipped.
+chrome_env = os.getenv("PRE_LOAD_CHROME", False).lower() == 'true'
+if chrome_env is False:
+       kaleido.get_chrome_sync()
 
 
 class BasePlot:
