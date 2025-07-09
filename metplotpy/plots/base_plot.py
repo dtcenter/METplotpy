@@ -20,8 +20,7 @@ import warnings
 import numpy as np
 import yaml
 from typing import Union
-
-import plotly.io as pio
+import kaleido
 
 import metplotpy.plots.util
 from .config import Config
@@ -29,7 +28,6 @@ from metplotpy.plots.context_filter import ContextFilter
 
 # kaleido 0.x will be deprecated after September 2025 and Chrome will no longer
 # be included with kaleido from version 1.0.0.  Explicitly get Chrome via call to kaleido.
-import kaleido
 
 # In some instances, we do NOT want Chrome to be installed at run-time. If the 
 # PRE_LOAD_CHROME environment variable exists, or set to TRUE,
