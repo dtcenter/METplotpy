@@ -560,7 +560,7 @@ def create_plot(config_obj: dict) -> None:
     tcst_files = []
     # list all .tcst files in tcst_dir
     if config_obj.tcst_dir is not None and len(config_obj.tcst_dir) > 0 and os.path.exists(config_obj.tcst_dir):
-        tcst_files = glob.glob(config_obj.tcst_dir + 'tc_pairs*.tcst')
+        tcst_files = glob.glob(config_obj.tcst_dir + 'tc_*.tcst')
     # add specific files
     for file in config_obj.tcst_files:
         if file not in tcst_files:
