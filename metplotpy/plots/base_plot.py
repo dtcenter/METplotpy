@@ -21,7 +21,7 @@ import numpy as np
 import yaml
 from typing import Union
 import kaleido
-from distutils.util  import strtobool
+from plots.util  import strtobool
 
 import metplotpy.plots.util
 from .config import Config
@@ -39,7 +39,7 @@ from metplotpy.plots.context_filter import ContextFilter
 # Check if the PRE_LOAD_CHROME env variable exists
 aquire_chrome = False
 
-turn_on_logging = strtobool(os.getenv('LOG_BASE_PLOT', 'False') )
+turn_on_logging = strtobool(os.getenv('LOG_BASE_PLOT') )
 # Log when Chrome is downloaded at runtime
 if turn_on_logging is True:
    log = logging.getLogger("base_plot")
@@ -49,7 +49,7 @@ if turn_on_logging is True:
 
    # set the WRITE_LOG env var to True to save the log message to a
    # separate log file
-   write_log = strtobool(os.getenv('WRITE_LOG', 'False'))
+   write_log = strtobool(os.getenv('WRITE_LOG'))
    if write_log is True:
       file_handler = logging.FileHandler("./base_plot.log")
       file_handler.setFormatter(formatter)
@@ -59,7 +59,7 @@ if turn_on_logging is True:
 # Some applications may not want to load Chrome at runtime and
 # will set the PRE_LOAD_CHROME to True to indicate that it is already
 # loaded/downloaded prior to runtime.
-chrome_env =strtobool (os.getenv('PRE_LOAD_CHROME', 'False'))
+chrome_env =strtobool (os.getenv('PRE_LOAD_CHROME'))
 if 'PRE_LOAD_CHROME' not in os.environ:
     aquire_chrome=True
     kaleido.get_chrome_sync()
