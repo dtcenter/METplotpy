@@ -48,7 +48,7 @@ if turn_on_logging is True:
 
    # set the WRITE_LOG env var to True to save the log message to a
    # separate log file
-   write_log = strtobool(os.getenv('WRITE_LOG'))
+   write_log = strtobool('WRITE_LOG')
    if write_log is True:
       file_handler = logging.FileHandler("./base_plot.log")
       file_handler.setFormatter(formatter)
