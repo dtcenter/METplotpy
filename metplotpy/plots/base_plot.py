@@ -21,6 +21,7 @@ import numpy as np
 import yaml
 from typing import Union
 import kaleido
+from distutils.util  import strtobool
 
 import metplotpy.plots.util
 from .config import Config
@@ -36,17 +37,39 @@ from metplotpy.plots.context_filter import ContextFilter
 # /path-to-python-libs/pythonx.yz/site-packages/...  directory
 
 # Check if the PRE_LOAD_CHROME env variable exists
+aquire_chrome = False
+
+turn_on_logging = strtobool(os.getenv('LOG_BASE_PLOT', 'False') )
+# Log when Chrome is downloaded at runtime
+if turn_on_logging is True:
+   log = logging.getLogger("base_plot")
+   log.setLevel(logging.INFO)
+
+   formatter = logging.Formatter("%(asctime)s [%(levelname)s] | %(name)s | %(message)s")
+
+   # set the WRITE_LOG env var to True to save the log message to a
+   # separate log file
+   write_log = strtobool(os.getenv('WRITE_LOG', 'False'))
+   if write_log is True:
+      file_handler = logging.FileHandler("./base_plot.log")
+      file_handler.setFormatter(formatter)
+      log.addHandler(file_handler)
+
+# Only load Chrome at run-time if PRE_LOAD_CHROME is False or not defined.
+# Some applications may not want to load Chrome at runtime and
+# will set the PRE_LOAD_CHROME to True to indicate that it is already
+# loaded/downloaded prior to runtime.
+chrome_env =strtobool (os.getenv('PRE_LOAD_CHROME', 'False'))
 if 'PRE_LOAD_CHROME' not in os.environ:
+    aquire_chrome=True
     kaleido.get_chrome_sync()
-else:
-    # Check value of PRE_LOAD_CHROME (could be boolean or string)
-    chrome_env = os.environ.get('PRE_LOAD_CHROME')
-    if type(chrome_env) is bool and chrome_env is False:
-         kaleido.get_chrome_sync()
-    else:
-        # ENV var is a string and has been set to 'False' (case-insensitive)
-        if chrome_env.lower() == 'false':
-            kaleido.get_chrome_sync()
+elif  chrome_env is False:
+    aquire_chrome = True
+    kaleido.get_chrome_sync()
+
+# Log when kaleido is downloading Chrome
+if aquire_chrome is True and turn_on_logging  is True:
+     log.info("Plotly kaleido is loading Chrome at run time")
 
 class BasePlot:
     """A class that provides methods for building Plotly plot's common features
