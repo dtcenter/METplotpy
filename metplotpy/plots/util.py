@@ -670,12 +670,3 @@ def strtobool(env_var:str)->bool:
            raise ValueError(msg)
 
 
-
-if __name__ == "__main__":
-
-    os.environ['LOG_ON'] = 't'
-    test_var = 'LOG_ON'
-    bool_val = strtobool(test_var)
-    print(bool_val)
-
-
