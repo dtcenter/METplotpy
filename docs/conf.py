@@ -30,7 +30,7 @@ verinfo = version
 release = f'{version}'
 release_year = '2025'
 
-release_date = f'{release_year}-07-01'
+release_date = f'{release_year}-07-21'
 
 copyright = f'{release_year}, {author}'
 
