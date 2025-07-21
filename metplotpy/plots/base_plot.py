@@ -20,16 +20,53 @@ import warnings
 import numpy as np
 import yaml
 from typing import Union
-
-import plotly.io as pio
-
+import kaleido
 import metplotpy.plots.util
+from metplotpy.plots.util import strtobool
 from .config import Config
 from metplotpy.plots.context_filter import ContextFilter
 
-# set kaleido to use single process to prevent GPU errors in containers
-# NOTE: this may result in GHA tests failing due to impending deprecations in kaleido
-pio.kaleido.scope.chromium_args += ("--single-process",)
+# kaleido 0.x will be deprecated after September 2025 and Chrome will no longer
+# be included with kaleido from version 1.0.0.  Explicitly get Chrome via call to kaleido.
+
+# In some instances, we do NOT want Chrome to be installed at run-time. If the 
+# PRE_LOAD_CHROME environment variable exists, or set to TRUE,
+# then Chrome will be assumed to have been pre-loaded. Otherwise,
+# invoke  get_chrome_sync()  to install Chrome in the
+# /path-to-python-libs/pythonx.yz/site-packages/...  directory
+
+# Check if the PRE_LOAD_CHROME env variable exists
+aquire_chrome = False
+
+turn_on_logging = strtobool('LOG_BASE_PLOT')
+# Log when Chrome is downloaded at runtime
+if turn_on_logging is True:
+   log = logging.getLogger("base_plot")
+   log.setLevel(logging.INFO)
+
+   formatter = logging.Formatter("%(asctime)s [%(levelname)s] | %(name)s | %(message)s")
+
+   # set the WRITE_LOG env var to True to save the log message to a
+   # separate log file
+   write_log = strtobool('WRITE_LOG')
+   if write_log is True:
+      file_handler = logging.FileHandler("./base_plot.log")
+      file_handler.setFormatter(formatter)
+      log.addHandler(file_handler)
+
+# Only load Chrome at run-time if PRE_LOAD_CHROME is False or not defined.
+# Some applications may not want to load Chrome at runtime and
+# will set the PRE_LOAD_CHROME to True to indicate that it is already
+# loaded/downloaded prior to runtime.
+chrome_env =strtobool ('PRE_LOAD_CHROME')
+if ('PRE_LOAD_CHROME' not in os.environ)or (chrome_env is False):
+    aquire_chrome=True
+    kaleido.get_chrome_sync()
+
+
+# Log when kaleido is downloading Chrome
+if aquire_chrome is True and turn_on_logging  is True:
+     log.info("Plotly kaleido is loading Chrome at run time")
 
 class BasePlot:
     """A class that provides methods for building Plotly plot's common features
