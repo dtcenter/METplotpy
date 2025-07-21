@@ -61,7 +61,7 @@ METplotpy Upgrade Instructions
   release by removing Google Chrome code.  Now, users will need to have Google Chrome
   installed in directories specified in this Plotly documentation (based on operating
   system):
-   https://plotly.com/python/static-image-export/
+  https://plotly.com/python/static-image-export/
 
 The METplotpy code downloads Chrome at runtime by invoking the kaleido.get_chrome_sync()
 method call.
