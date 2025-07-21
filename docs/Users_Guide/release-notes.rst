@@ -7,7 +7,7 @@ describes the bugfix, enhancement, or new feature:
 `METplotpy GitHub issues. <https://github.com/dtcenter/METplotpy/issues>`_
 
 
-METplotpy Version 3.1.0 release notes (20250701)
+METplotpy Version 3.1.0 release notes (20250721)
 ====================================================
 
 .. dropdown:: New Plots
