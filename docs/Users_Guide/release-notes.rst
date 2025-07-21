@@ -55,6 +55,7 @@ METplotpy Upgrade Instructions
   development with Python 3.12. View the requirements.txt/nco_requirements.txt file at the top
   level of the repository for version numbers for the corresponding third-party packages.
 
+.. note::
 
   In June 2025, Plotly made significant updates to the kaleido package with the 1.0.0
   release by removing Google Chrome code.  Now, users will need to have Google Chrome
