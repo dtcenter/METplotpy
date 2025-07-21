@@ -93,3 +93,20 @@ METplotpy Upgrade Instructions
   development with Python 3.12. View the requirements.txt/nco_requirements.txt file at the top
   level of the repository for version numbers for the corresponding third-party packages.
 
+
+  In June 2025, Plotly made significant updates to the kaleido package with the 1.0.0
+  release by removing Google Chrome code.  Now, users will need to have Google Chrome
+  installed in directories specified in this Plotly documentation (based on operating
+  system):
+
+https://plotly.com/python/static-image-export/
+
+The METplotpy code downloads Chrome at runtime by invoking the kaleido.get_chrome_sync()
+method call.
+
+If users do not wish to have Chrome downloaded at run time and already have Chrome installed
+in one of the expected locations (specified in the Plotly link above), then the PRE_LOAD_CHROME environment variable
+will need to be set to 'True' (case insensitive string).
+
+Refer to the Kaleido  README for more information on the changes:
+https://github.com/plotly/Kaleido

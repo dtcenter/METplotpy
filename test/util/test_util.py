@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-
+import pytest
 import metplotpy.plots.util as util
 import gc
 
@@ -170,3 +170,48 @@ def test_filter_by_fixed_vars():
 
     for filtered in filtered_list:
        assert filtered in expected_list
+
+
+def test_strtobool():
+   """
+     Test that strtobool is returning the corresponding bool value to an environment
+
+   """
+
+   # Non-existent env var should return boolean False
+   assert (util.strtobool('NON_EXISTENT') is  False)
+
+   # Variations of false should return boolean False
+   os.environ['FALSE_1'] = 'f'
+   os.environ['FALSE_2'] = 'FaLSE'
+   os.environ['FALSE_3'] = '0'
+   os.environ['FALSE_4'] = 'F'
+   false_1 = 'FALSE_1'
+   false_2 = 'FALSE_2'
+   false_3 = 'FALSE_3'
+   false_4 = 'FALSE_4'
+   assert(util.strtobool(false_1) is False)
+   assert(util.strtobool(false_2) is False)
+   assert(util.strtobool(false_3) is False)
+   assert(util.strtobool(false_4) is False)
+
+
+   # Variations of true should return boolean True
+   os.environ['TRUE_1'] = 't'
+   os.environ['TRUE_2'] = 'T'
+   os.environ['TRUE_3'] = 'tRuE'
+   os.environ['TRUE_4'] = '1'
+   true_1 = 'TRUE_1'
+   true_2 = 'TRUE_2'
+   true_3 = 'TRUE_3'
+   true_4 = 'TRUE_4'
+   assert (util.strtobool(true_1) is True)
+   assert (util.strtobool(true_2) is True)
+   assert (util.strtobool(true_3) is True)
+   assert (util.strtobool(true_4) is True)
+
+   # non-truth values should raise a ValueError
+   os.environ['BOGUS'] = 'Whatever'
+   var = 'BOGUS'
+   with pytest.raises(ValueError):
+       util.strtobool(var)
