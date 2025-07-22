@@ -10,7 +10,8 @@ describes the bugfix, enhancement, or new feature:
 METplotpy Release Notes
 =======================
 
-METplotpy Version 3.0.0 release notes (20241218)
+
+METplotpy Version 3.0.1 release notes (20250722)
 ------------------------------------------------------
 
   .. dropdown:: New Plots
@@ -20,40 +21,37 @@ METplotpy Version 3.0.0 release notes (20241218)
 
   .. dropdown:: Enhancements
  
-     * Improve logging for STIGS on remaining plots (`METplus-Internal#57 <https://github.com/dtcenter/METplus-internal/issues/57>`_)
-     * Plot new TC-Diagnostics output from TC-Pairs (`#233 <https://github.com/dtcenter/METplotpy/issues/233>`_)
-     * **Enhance TCMPR plotter to read TCDiag lines and filter by one column and plot another column**  (`#342 <https://github.com/dtcenter/METplotpy/issues/342>`_).
-     * Create documentation and testing for TCMPR plotting code  (`#383 <https://github.com/dtcenter/METplotpy/issues/383>`_).
-     * Update fv3_physics_tend for new FV3 output format (`#380 <https://github.com/dtcenter/METplotpy/issues/380>`_).
-     * Update GitHub actions workflows to switch from node 16 to node 20 (`#414 <https://github.com/dtcenter/METplotpy/issues/414>`_).
-     * **Add GitHub action to run SonarQube for METplotpy pull requests and feature branches** (`#429 <https://github.com/dtcenter/METplotpy/issues/429>`_).
-     * **Add a summary curve to the ROC diagram** (`#399 <https://github.com/dtcenter/METplotpy/issues/399>`_).
-     * **Hide/show the legend entries line-by-line** (`#355 <https://github.com/dtcenter/METplotpy/issues/355>`_).
-     * **Specify the color of the no resolution and no skill lines for the reliability diagram** (`#329 <https://github.com/dtcenter/METplotpy/issues/329>`_).
 
+     None
 
 
   .. dropdown:: Internal
 
-     * Improve unit test infrastructure and coverage (`#461 <https://github.com/dtcenter/METplotpy/issues/461>`_)
-     * Update GitHub issue and pull request templates to reflect the current development workflow details  (`#388 <https://github.com/dtcenter/METplotpy/issues/388>`_).
-     * Consider using only .yml or only .yaml extensions (`#417 <https://github.com/dtcenter/METplotpy/issues/417>`_).
-     * METplotpy: Code coverage statistics (`#55 <https://github.com/dtcenter/METplus-Internal/issues/55>`_).
+     None
 
 
 
   .. dropdown:: Bugfixes
 
-     * TC-RMW plot needs updating to support changes to input (`#425 <https://github.com/dtcenter/METplotpy/issues/425>`_).
-     * **Documentation - Fix METviewer link in line plot** (`#385 <https://github.com/dtcenter/METplotpy/issues/385>`_).
-     * **Inconsistency with generating plot in METviewer vs command line** (`#391 <https://github.com/dtcenter/METplotpy/issues/391>`_).
-     * **Bugfix for ROC plot image saving to file** (`#394 <https://github.com/dtcenter/METplotpy/issues/394>`_).
-     * Bugfix for errors in line and revision_series tests (`#401 <https://github.com/dtcenter/METplotpy/issues/401>`_).
+     * **Incorporate Plotly/kaleido fixes to the main_3.0 code** (`#530 <https://github.com/dtcenter/METplotpy/issues/530>`_).
 
 
 METplotpy Upgrade Instructions
 ==============================
 
-None
+.. note::
+
+  In June 2025, Plotly made significant updates to the kaleido package with the 1.0.0
+  release by removing Google Chrome code.  Now, users will need to have Google Chrome
+  installed in directories specified in this Plotly documentation (based on operating
+  system):
+  https://plotly.com/python/static-image-export/
+
+The METplotpy code downloads Chrome at runtime by invoking the kaleido.get_chrome_sync()
+method call.
+
+If users do not wish to have Chrome downloaded at run time and already have Chrome installed
+in one of the expected locations (specified in the Plotly link above), then the PRE_LOAD_CHROME environment variable
+will need to be set to 'True' (case insensitive string).
 
 

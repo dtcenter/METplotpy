@@ -483,7 +483,7 @@ def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.Data
             else:
                 updated_vals.append(val)
 
-        # Create the query string based on whether or not there is/are NA values.
+        # Create the query string based on whether NA values exist.
         if na_found:
             if len(updated_vals) == 0:
                 # NA was the only value for this column, create the query
@@ -623,3 +623,50 @@ def prepare_ctc_roc(subset_df, is_ascending):
     thresh = pd.concat([thresh, pd.Series([''])], ignore_index=True)
 
     return pody, pofd, thresh
+
+
+def strtobool(env_var:str)->bool:
+   """
+      Since distutils.util.strtobool was deprecated in Python 3.12, implement
+      our own version.
+
+      In the distutils.util.strtobool, a simple one line command was used to determine
+      whether an environment variable was set to True or False.  In this
+      example, the default value is set to False in the event that the environment
+      variable is not defined:
+
+      turn_on_logging = strtobool(os.getenv('LOG_BASE_PLOT', 'False') )
+
+      Environment variables can be set as string or bool. Evaluate whether a string
+      value for true or false (support case-insensitive text)  is True/False and
+      set the default value.
+
+      Args:
+          @parm env_vars:  string name of the environment variable to evaluate
+
+          turn_on_logging = strtobool(os.getenv('LOG_BASE_PLOT') )
+   """
+
+   true_list = ['true', 't', '1',]
+   false_list = ['false', 'f', '0' ]
+   # if the environment variable does not exist, then return False
+   try:
+      val = os.environ[env_var]
+   except KeyError:
+       return False
+
+   # If the environment variable is None, return false
+   if val is None:
+       return False
+   else:
+       # Check for variations of truth values
+       lower = val.lower()
+       if lower in true_list:
+           return True
+       elif lower in false_list:
+           return False
+       else:
+           msg = "Value does not represent a truth value (i.e. true or false)"
+           raise ValueError(msg)
+
+
