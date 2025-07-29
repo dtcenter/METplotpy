@@ -1,13 +1,12 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2025
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Science Foundation National Center for Atmospheric Research (NSF NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 plot_cross_section
 """
@@ -25,6 +24,7 @@ import xarray as xr
 
 matplotlib.use('Agg')
 from metplotpy.plots import util
+
 
 def plot_cross_section(config, data_set, args):
     """
@@ -57,7 +57,7 @@ def plot_cross_section(config, data_set, args):
     # Create the log file using the same name as the plot name with '_log' and in the
     # same location.
     try:
-       os.makedirs(plot_outdir, exist_ok=True)
+        os.makedirs(plot_outdir, exist_ok=True)
     except FileExistsError:
         pass
     log_filename = os.path.join(plot_outdir, config['plot_filename'] + '_log' + '.txt')
@@ -69,6 +69,7 @@ def plot_cross_section(config, data_set, args):
     fig, ax = plt.subplots(figsize=(plot_width, plot_height))
 
     field = data_set[config['field']]
+
     itime = config['index_time_slice']
 
     # originally, axis=1 but the order of dimensions was modified
@@ -78,34 +79,47 @@ def plot_cross_section(config, data_set, args):
     # originally, the transpose of the field_azi_mean was used, but this is no
     # longer necessary.  If the transpose is used, the dimensions are incorrect
     # and a TypeError will be raised by the contour plot.
-    if config['filled_contour_on']:
-        scalar_contour = ax.contourf(data_set['range'],
-                                data_set[config['vertical_coord_name']],
-                                field_azi_mean,
-                                levels=np.arange(config['contour_level_start'],
-                                                 config['contour_level_end'],
-                                                 config['contour_level_stepsize']),
-                                 cmap=config['colormap']
-                                )
+    if config['colormap'] != 'custom':
+        colormap = config['colormap']
+    else:
+        if config['colormap_by_rgb']:
+            methodology = "by_rgb"
+            colormap_triplet_list = config['colormap_colors_rgb']
+        else:
+            methodology = "by_hex"
+            colormap_triplet_list = config['colormap_colors_hexadecimal']
 
-    scalar_contour = ax.contour(data_set['range'],
-                                 data_set[config['vertical_coord_name']],
-                                 field_azi_mean,
-                                 levels=np.arange(config['contour_level_start'],
-                                                  config['contour_level_end'],
-                                                  config['contour_level_stepsize']),
-                                 colors=config['contour_line_colors'],
-                                 linewidths=(config['line_width'])
-                                 )
+        colormap = util.customize_colormap(colormap_triplet_list, methodology)
+
+    if config['filled_contour_on']:
+        scalar_contour = ax.contourf(data_set['range'], data_set[config['vertical_coord_name']], field_azi_mean,
+                                     levels=np.arange(config['contour_level_start'], config['contour_level_end'],
+                                                      config['contour_level_stepsize']), cmap=colormap)
+        # Add colorbar legend
+        cbar = plt.colorbar(scalar_contour, label=config['filled_contour_colorbar_label'])
+        # cbar.set_label(config['filled_contour_colorbar_label'])
+
+        # scalar_contour = ax.contour(data_set['range'], data_set[config['vertical_coord_name']], field_azi_mean,
+        #                         levels=np.arange(config['contour_level_start'], config['contour_level_end'],
+        #                                          config['contour_level_stepsize']),
+        #                         colors=config['contour_line_colors'], linewidths=(config['line_width'],),
+        #                             linestyles=[config['contour_line_style']])
+
+
+
+    if config['line_contour_on']:
+        scalar_contour = ax.contour(data_set['range'], data_set[config['vertical_coord_name']], field_azi_mean,
+                                levels=np.arange(config['contour_level_start'], config['contour_level_end'],
+                                                 config['contour_level_stepsize']),
+                                colors=config['contour_line_colors'], linewidths=(config['line_width'],),
+                                    linestyles=[config['contour_line_style']])
 
     plt.title(config['plot_title'])
     ax.clabel(scalar_contour, colors=config['contour_label_color'], fmt=config['contour_label_fmt'])
     ax.set_xlabel(config['x_label'])
     ax.set_ylabel(config['y_label'])
     ax.set_xticks(np.arange(config['x_tick_start'], config['x_tick_end']))
-    ax.set_yticks(np.arange(config['y_tick_start'],
-                            config['y_tick_end'],
-                            config['y_tick_stepsize']))
+    ax.set_yticks(np.arange(config['y_tick_start'], config['y_tick_end'], config['y_tick_stepsize']))
     ax.set_yscale(config['y_scale'])
     ax.set_ylim(config['y_lim_start'], config['y_lim_end'])
 
@@ -117,23 +131,13 @@ def plot_cross_section(config, data_set, args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description='Plot Tropical Cyclone Cross Section')
+    parser = argparse.ArgumentParser(description='Plot Tropical Cyclone Cross Section')
 
-    parser.add_argument(
-        '--datadir', type=str, dest='datadir',
-        required=True)
-    parser.add_argument(
-        '--plotdir', type=str, dest='plotdir',
-        required=True)
-    parser.add_argument(
-        '--filename', type=str, dest='filename',
-        required=True)
-    parser.add_argument('--config', type=str,
-                        required=True,
-                        help='configuration file')
-    parser.add_argument('--loglevel', type=str,
-                        required=False)
+    parser.add_argument('--datadir', type=str, dest='datadir', required=True)
+    parser.add_argument('--plotdir', type=str, dest='plotdir', required=True)
+    parser.add_argument('--filename', type=str, dest='filename', required=True)
+    parser.add_argument('--config', type=str, required=True, help='configuration file')
+    parser.add_argument('--loglevel', type=str, required=False)
 
     input_args = parser.parse_args()
 
@@ -141,8 +145,7 @@ if __name__ == '__main__':
     Read YAML configuration file
     """
     try:
-        plotting_config = yaml.load(
-            open(input_args.config), Loader=yaml.FullLoader)
+        plotting_config = yaml.load(open(input_args.config), Loader=yaml.FullLoader)
     except yaml.YAMLError as exc:
         sys.exit(1)
 
@@ -154,4 +157,3 @@ if __name__ == '__main__':
     except (ValueError, FileNotFoundError, PermissionError):
         sys.exit(1)
     plot_cross_section(plotting_config, input_data, input_args)
-
