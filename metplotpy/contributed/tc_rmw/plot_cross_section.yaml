@@ -9,8 +9,10 @@ vertical_coord_name:
 field:
     'TMP'
 
+filled_contour_colorbar_label: ' Temperature (K) '
+
 contour_level_start: 0
-contour_level_end: 500
+contour_level_end: 450
 contour_level_stepsize: 5
 
 # time slice of interest
@@ -19,10 +21,14 @@ index_time_slice: 0
 #
 # contour plot appearance customizations
 #
-line_width: 2
+line_width: 1
 contour_line_colors: 'darkblue'
-contour_label_color: 'orange'
+contour_label_color: 'darkblue'
 contour_label_fmt: '%1.0f'
+# contour line style: solid, dashed, dotted
+contour_line_style: 'dotted'
+line_contour_on:  True
+
 
 #
 # filled contour
@@ -32,7 +38,60 @@ filled_contour_on: True
 #  for a list of available colormaps:
 # https://matplotlib.org/stable/users/explain/colors/colormaps.html
 #  e.g. gist_stern, jet, gist_ncar
-colormap: 'gist_rainbow'
+
+colormap: 'custom'
+
+# for custom colormap, set value to 'custom' and then provide values for
+# rgb (red, green, blue) triplets as either
+#colormap: 'custom'
+
+# Method to define a custom colormap
+# If True, then set the colormap by a list of RGB triplets.
+# If False, then set colormap by a list of hex triplets
+colormap_by_rgb: False
+
+colormap_colors_rgb:
+    - [ 110, 28, 255 ]  # purples
+    - [ 56, 109, 249 ] # blues
+    - [ 44, 126, 247 ]
+    - [ 23, 203, 228 ]
+    - [ 36, 216, 212 ] # aqua blues
+    - [ 49, 225, 218 ]
+    - [ 74, 242, 207 ] # blue greens
+    - [ 100, 251, 195 ]
+    - [ 193, 235, 141 ] # greens
+    - [ 207, 225, 132 ]
+    - [ 219, 216, 123 ] # yellows
+    - [ 246, 190, 104 ] # oranges
+    - [ 255, 176, 84 ]
+    - [ 255, 160, 85 ]
+    - [ 255, 89, 45 ]
+    - [ 255, 68, 34 ] # reds
+    - [ 255, 50, 25 ]
+    - [ 255, 28, 14 ]
+
+
+# case-insensitive hexadecimals, enclose each value with ' ' or " "
+colormap_colors_hexadecimal:
+  - '#6e1cff' # purples
+  - '#386df9' # blues
+  - '#2c7ef7'
+  - '#17cbe4'
+  - '#24d8d4' # aqua blues
+  - '#31e1da'
+  - '#4af2cf' # blue greens
+  - '#64fbc3'
+  - '#c1eb8d' # greens
+  - '#cfe184'
+  - '#dbd87b' # yellows
+  - '#f6be68' # oranges
+  - '#ffb054'
+  - '#ffa055'
+  - '#ff592d'
+  - '#ff4422' # reds
+  - '#ff3219'
+  - '#ff1c0e'
+
 
 # axis labels
 # x-axis is in units of RMW
