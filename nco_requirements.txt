@@ -1,4 +1,4 @@
-kaleido>=0.2.1
+kaleido>=1.0.0
 matplotlib>=3.10.0
 metpy>=1.6.3
 netcdf4>=1.7.2
@@ -6,7 +6,7 @@ numpy==2.2.2
 scipy>=1.15.1
 pandas>=2.2.3
 pint>=0.24.4
-plotly>=6.0.0
+plotly>=6.1.1
 pytest>=8.3.4
 pyyaml>=6.0.2
 xarray>=2025.1.2
