@@ -43,12 +43,22 @@ class WindRoseConfig(Config):
         self.show_legend = self.get_config_value('show_legend')
         self.angularaxis_tickvals = self.get_config_value('angularaxis_tickvals')
         self.angularaxis_ticktext = self.get_config_value('angularaxis_ticktext')
+
+        # Range of radial axes (start, end). The radial axis type is the default ('-'), in
+        # which Plotly attempts to determine the axis type based on looking at the
+        # data.  The wind_rose.py sets this to '-' in the event of any future changes.
+        self.radialaxis_range = self.get_config_value('radialaxis_range')
+        self.radialaxis_step = self.get_config_value('radialaxis_step')
+
         self.stat_input = self.get_config_value('stat_input')
         self.plot_width = self.get_config_value('plot_width')
         self.plot_height = self.get_config_value('plot_height')
         self.dump_points = self.get_config_value('dump_points')
+
         # Optional setting, indicates *where* to save the dump_points_1 file
         # used by METviewer
         self.points_path = self.get_config_value('points_path')
         self.show_in_browser = self.get_config_value('show_in_browser')
+
+
 
