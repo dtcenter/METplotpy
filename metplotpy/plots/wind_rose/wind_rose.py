@@ -145,27 +145,26 @@ class WindRosePlot(BasePlot):
             automargin=True
         )
 
-        fig.update_polars(
-            bgcolor=PLOTLY_PAPER_BGCOOR,
-            hole=0.08,
-            angularaxis_thetaunit="degrees",
-            angularaxis_rotation=90,
-            angularaxis_direction='clockwise',
-            angularaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
-            angularaxis_tickvals=self.config_obj.angularaxis_tickvals,
-            angularaxis_ticktext=self.config_obj.angularaxis_ticktext,
-            angularaxis_tickmode='array',
-            radialaxis_angle=135,
-            radialaxis_tickmode='linear',
-            radialaxis_tickangle=100,
-            radialaxis_tick0=5,
-            radialaxis_dtick=5,
-            radialaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
-            radialaxis_showticklabels=True,
-            radialaxis_ticksuffix='%',
-            radialaxis_type="-",
-            radialaxis_range=self.config_obj.radialaxis_range,
-        )
+        if self.config_obj.radialaxis_range is None:
+            fig.update_polars(
+                bgcolor=PLOTLY_PAPER_BGCOOR, hole=0.08, angularaxis_thetaunit="degrees", angularaxis_rotation=90,
+                angularaxis_direction='clockwise', angularaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
+                angularaxis_tickvals=self.config_obj.angularaxis_tickvals,
+                angularaxis_ticktext=self.config_obj.angularaxis_ticktext, angularaxis_tickmode='array',
+                radialaxis_angle=135, radialaxis_tickmode='linear', radialaxis_tickangle=100, radialaxis_tick0=5,
+                radialaxis_dtick=self.config_obj.radialaxis_step, radialaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
+                radialaxis_showticklabels=True,
+                radialaxis_ticksuffix='%', radialaxis_type="-", )
+        else:
+            fig.update_polars(
+                bgcolor=PLOTLY_PAPER_BGCOOR, hole=0.08, angularaxis_thetaunit="degrees", angularaxis_rotation=90,
+                angularaxis_direction='clockwise', angularaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
+                angularaxis_tickvals=self.config_obj.angularaxis_tickvals,
+                angularaxis_ticktext=self.config_obj.angularaxis_ticktext, angularaxis_tickmode='array',
+                radialaxis_angle=135, radialaxis_tickmode='linear', radialaxis_tickangle=100, radialaxis_tick0=5,
+                radialaxis_dtick=self.config_obj.radialaxis_step, radialaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
+                radialaxis_showticklabels=True,
+                radialaxis_ticksuffix='%', radialaxis_type="-", radialaxis_range=self.config_obj.radialaxis_range, )
 
         fig.update_layout(
             showlegend=self.config_obj.show_legend,
