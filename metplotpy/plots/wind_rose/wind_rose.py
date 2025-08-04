@@ -162,7 +162,9 @@ class WindRosePlot(BasePlot):
             radialaxis_dtick=5,
             radialaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
             radialaxis_showticklabels=True,
-            radialaxis_ticksuffix='%'
+            radialaxis_ticksuffix='%',
+            radialaxis_type="-",
+            radialaxis_range=self.config_obj.radialaxis_range,
         )
 
         fig.update_layout(
