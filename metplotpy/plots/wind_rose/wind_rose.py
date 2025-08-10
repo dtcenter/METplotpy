@@ -161,7 +161,8 @@ class WindRosePlot(BasePlot):
                 angularaxis_direction='clockwise', angularaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
                 angularaxis_tickvals=self.config_obj.angularaxis_tickvals,
                 angularaxis_ticktext=self.config_obj.angularaxis_ticktext, angularaxis_tickmode='array',
-                radialaxis_angle=135, radialaxis_tickmode='linear', radialaxis_tickangle=100, radialaxis_tick0=5,
+                radialaxis_angle=135, radialaxis_tickmode='linear', radialaxis_tickangle=100,
+                radialaxis_tick0=self.config_obj.radialaxis_range[0],
                 radialaxis_dtick=self.config_obj.radialaxis_step, radialaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
                 radialaxis_showticklabels=True,
                 radialaxis_ticksuffix='%', radialaxis_type="-", radialaxis_range=self.config_obj.radialaxis_range, )
