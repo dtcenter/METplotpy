@@ -94,6 +94,7 @@ xlab_offset: 2
 xlab_size: 1
 xlab_weight: 1
 xlim: []
+xlim_step: 1
 xtlab_decim: 0
 xtlab_horiz: 0.5
 xtlab_orient: 1
