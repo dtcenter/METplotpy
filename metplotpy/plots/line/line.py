@@ -310,17 +310,39 @@ class Line(BasePlot):
             series.idx] == 'NONE'):
             error_y_visible = False
 
+
         # switch x and y values for the vertical plot
+        error_x = {}
+        error_y = {}
         if self.config_obj.vert_plot is True:
             y_points, x_points_index_adj = x_points_index_adj, y_points
+            self._xaxis_limits()
+            self.figure.update_xaxes(autorange=False)
+
+            # Error bars for vertical plot
+            error_x = {'type': 'data',
+                                    'symmetric': False,
+                                    'array': series.series_points['dbl_up_ci'],
+                                    'arrayminus': series.series_points['dbl_lo_ci'],
+                                    'visible': error_y_visible,
+                                    'thickness': self.config_obj.linewidth_list[
+                                        series.idx]}
+        else:
+            # Error bars
+            error_y = {
+                'type': 'data',
+                'symmetric': False,
+                'array': series.series_points['dbl_up_ci'],
+                'arrayminus': series.series_points['dbl_lo_ci'],
+                'visible': error_y_visible,
+                'thickness': self.config_obj.linewidth_list[series.idx]
+                }
 
         # add the plot
-
         # orient the confidence interval bars based on the vert_plot setting in
         # the yaml configuration file.
-        if self.config_obj.vert_plot:
-            self.figure.add_trace(
-                go.Scatter(x=x_points_index_adj,
+        self.figure.add_trace(
+               go.Scatter(x=x_points_index_adj,
                            y=y_points,
                            showlegend=self.config_obj.show_legend[series.idx] == 1,
                            mode=self.config_obj.mode[series.idx],
@@ -334,42 +356,12 @@ class Line(BasePlot):
                            marker_color=self.config_obj.colors_list[series.idx],
                            marker_line_color=self.config_obj.colors_list[series.idx],
                            marker_size=self.config_obj.marker_size[series.idx],
-                           error_x={'type': 'data',
-                                    'symmetric': False,
-                                    'array': series.series_points['dbl_up_ci'],
-                                    'arrayminus': series.series_points['dbl_lo_ci'],
-                                    'visible': error_y_visible,
-                                    'thickness': self.config_obj.linewidth_list[
-                                        series.idx]}
+                           error_x=error_x,
+                           error_y=error_y
                            ),
-                secondary_y=series.y_axis != 1
+              secondary_y=series.y_axis != 1
             )
-        else:
-            self.figure.add_trace(
-                go.Scatter(x=x_points_index_adj,
-                           y=y_points,
-                           showlegend=self.config_obj.show_legend[series.idx] == 1,
-                           mode=self.config_obj.mode[series.idx],
-                           textposition="top right",
-                           name=self.config_obj.user_legends[series.idx],
-                           connectgaps=self.config_obj.con_series[series.idx] == 1,
-                           line={'color': self.config_obj.colors_list[series.idx],
-                                 'width': self.config_obj.linewidth_list[series.idx],
-                                 'dash': self.config_obj.linestyles_list[series.idx]},
-                           marker_symbol=self.config_obj.marker_list[series.idx],
-                           marker_color=self.config_obj.colors_list[series.idx],
-                           marker_line_color=self.config_obj.colors_list[series.idx],
-                           marker_size=self.config_obj.marker_size[series.idx],
-                           error_y={'type': 'data',
-                                    'symmetric': False,
-                                    'array': series.series_points['dbl_up_ci'],
-                                    'arrayminus': series.series_points['dbl_lo_ci'],
-                                    'visible': error_y_visible,
-                                    'thickness': self.config_obj.linewidth_list[
-                                        series.idx]}
-                           ),
-                secondary_y=series.y_axis != 1
-            )
+
 
         self.logger.info(f"Finished drawing the lines on the plot:"
                               f" {datetime.now()}")
@@ -455,25 +447,25 @@ class Line(BasePlot):
         """
         Switches x and y axis (creates a vertical plot) if needed
 
-        :param x_points_index: list of indexws for the original x -axis
+        :param x_points_index: list of indexes for the original x -axis
         """
         self.logger.info(f"Begin switching x and y axis: {datetime.now()}")
-        odered_indy_label = self.config_obj.create_list_by_plot_val_ordering(
+        ordered_indy_label = self.config_obj.create_list_by_plot_val_ordering(
             self.config_obj.indy_label)
         if self.config_obj.vert_plot is True:
             self.figure.update_layout(
                 yaxis={
                     'tickmode': 'array',
                     'tickvals': x_points_index,
-                    'ticktext': odered_indy_label
+                    'ticktext': ordered_indy_label
                 }
-            )
+             )
         else:
             self.figure.update_layout(
                 xaxis={
                     'tickmode': 'array',
                     'tickvals': x_points_index,
-                    'ticktext': odered_indy_label
+                    'ticktext': ordered_indy_label
                 }
             )
 
@@ -573,15 +565,45 @@ class Line(BasePlot):
                                           }
                                           })
 
+    def _xaxis_limits(self) -> None:
+        """
+        Apply limits on x axis if needed
+        especially when a vertical plot is requested
+
+        step size by default is 1 if undefined /non-existent
+
+        Min and max range must be integer values
+        step size must be integer
+        """
+        if len(self.config_obj.parameters['xlim']) > 0:
+               step = self.config_obj.parameters['xlim_step']
+               if step is None:
+                   step = 1
+               # Plotly accepts integer values for range and step size.
+               # Convert string values to float then round to the nearest int
+               min_x=  round(float(self.config_obj.parameters['xlim'][0]))
+               max_x= round(float(self.config_obj.parameters['xlim'][1]))
+               step = round(float(step))
+               tick_labels = list(range(min_x , max_x + step, step))
+
+               self.figure.update_layout(
+                   xaxis={
+                        'range': [min_x, max_x],
+                        'autorange':False,
+                        'tickvals':tick_labels}
+               )
+
     def _yaxis_limits(self) -> None:
         """
-        Apply limits on y2 axis if needed
+        Apply limits on y axis if needed
         """
         if len(self.config_obj.parameters['ylim']) > 0:
             self.figure.update_layout(
                 yaxis={'range': [self.config_obj.parameters['ylim'][0],
                                  self.config_obj.parameters['ylim'][1]],
                        'autorange': False})
+
+
 
     def _y2axis_limits(self) -> None:
         """
