@@ -572,19 +572,19 @@ class Line(BasePlot):
 
         step size by default is 1 if undefined /non-existent
 
-        Min and max range must be integer values
-        step size must be integer
+
+        step size must be integer value
         """
         if len(self.config_obj.parameters['xlim']) > 0:
-               step = self.config_obj.parameters['xlim_step']
+               step = round(float(self.config_obj.parameters['xlim_step']))
                if step is None:
                    step = 1
 
                # Convert string values to float, use numpy arange to
                # generate a list of labels based on the min, max, and step values
-               min_x=  float(self.config_obj.parameters['xlim'][0])
-               max_x= float(self.config_obj.parameters['xlim'][1])
-               step = float(step)
+               # Round the min and max values to nearest integer
+               min_x=  round(float(self.config_obj.parameters['xlim'][0]))
+               max_x= round(float(self.config_obj.parameters['xlim'][1]))
                tick_labels = list(np.arange(min_x , max_x + step, step))
 
                self.figure.update_layout(
