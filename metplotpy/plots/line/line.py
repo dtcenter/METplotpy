@@ -579,12 +579,13 @@ class Line(BasePlot):
                step = self.config_obj.parameters['xlim_step']
                if step is None:
                    step = 1
-               # Plotly accepts integer values for range and step size.
-               # Convert string values to float then round to the nearest int
-               min_x=  round(float(self.config_obj.parameters['xlim'][0]))
-               max_x= round(float(self.config_obj.parameters['xlim'][1]))
-               step = round(float(step))
-               tick_labels = list(range(min_x , max_x + step, step))
+
+               # Convert string values to float, use numpy arange to
+               # generate a list of labels based on the min, max, and step values
+               min_x=  float(self.config_obj.parameters['xlim'][0])
+               max_x= float(self.config_obj.parameters['xlim'][1])
+               step = float(step)
+               tick_labels = list(np.arange(min_x , max_x + step, step))
 
                self.figure.update_layout(
                    xaxis={
