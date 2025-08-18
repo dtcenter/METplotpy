@@ -21,6 +21,8 @@ import pandas as pd
 from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.scatter.scatter_config import ScatterConfig
 from metplotpy.plots import util
+from metplotpy.plots.util import get_params
+from metcalcpy.util.read_env_vars_in_config import  parse_config
 
 class Scatter(BasePlot):
     """
@@ -199,16 +201,7 @@ def main(config_filename=None):
 
        Returns: None
     """
-
-    if not config_filename:
-        config_file = util.read_config_from_command_line()
-    else:
-        config_file = config_filename
-    with open(config_file, 'r') as stream:
-        try:
-            docs = yaml.load(stream, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
+    docs = get_params(config_filename)
 
     try:
         plot = Scatter(docs)
