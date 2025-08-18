@@ -767,8 +767,12 @@ class Line(BasePlot):
                 filename = self.config_obj.points_path + os.path.sep + filename
 
             # save points
-            self._save_points(all_points_1, filename + ".points1")
-            self._save_points(all_points_2, filename + ".points2")
+            points_path = self.config_obj.points_path
+            os.makedirs(points_path, exist_ok=True)
+            # self._save_points(all_points_1, filename + ".points1")
+            self._save_points(all_points_1, os.path.join(points_path, filename + ".points1"))
+            # self._save_points(all_points_2, filename + ".points2")
+            self._save_points(all_points_2, os.path.join(points_path, filename + ".points2"))
 
             self.logger.info(f"Finished writing to output file: {datetime.now()}")
 
