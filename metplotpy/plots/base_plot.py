@@ -59,7 +59,7 @@ if turn_on_logging is True:
 # will set the PRE_LOAD_CHROME to True to indicate that it is already
 # loaded/downloaded prior to runtime.
 chrome_env =strtobool ('PRE_LOAD_CHROME')
-if ('PRE_LOAD_CHROME' not in os.environ)or (chrome_env is False):
+if chrome_env is False:
     aquire_chrome=True
     kaleido.get_chrome_sync()
 
