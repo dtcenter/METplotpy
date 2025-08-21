@@ -477,6 +477,32 @@ def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.Data
         # Remove NA from the list of values and create a new
         # list of values containing the remaining non-NA values.
         values = settings_dict[col]
+
+        # Check for incorrectly formatted fixed_vars_vals_input that is generated
+        # by the MVBatch.java:
+        # fixed_vars_vals_input:
+        #   vx_mask: regionA
+        #
+        # the correct format:
+        #   fixed_vars_vals_input:
+        #      vx_mask: [regionA]
+        #
+        #      OR
+        #
+        #   fixed_vars_vals_input:
+        #      vx_mask: 
+        #        - regionA
+        #
+        #
+        # Check if the value to the key (i.e. vx_mask, etc) is a string and convert it to a list
+        # i.e.:
+        #  correct_value = [value]
+        #  
+        #  where value corresponds to regionA in example above
+        #
+        if type(values) is str:
+            values = [values]
+
         for val in values:
             if val == 'NA':
                 na_found = True
