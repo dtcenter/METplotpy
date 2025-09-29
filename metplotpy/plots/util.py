@@ -445,7 +445,7 @@ def filter_by_fixed_vars(input_df: pd.DataFrame, settings_dict: dict) -> pd.Data
 
     if len(valid_columns) == 0:
         print(
-            "No columns in data match what is requested.  Input dataframe will be "
+            "No columns in data match what is requested for filtering by fixed variable.  Input dataframe will be "
             "returned")
         return input_df
 
