@@ -11,6 +11,30 @@ METplotpy Release Notes
 =======================
 
 
+METplotpy Version 3.0.2 release notes (20251016)
+------------------------------------------------
+
+  .. dropdown:: New Plots
+
+     None
+
+
+  .. dropdown:: Enhancements
+ 
+
+     None
+
+
+  .. dropdown:: Internal
+
+     None
+
+
+
+  .. dropdown:: Bugfixes
+
+     * Check for incorrectly formatted fixed_vars_vals_input value that is created by METviewer's MVBatch.java (`007d385 <https://github.com/dtcenter/METplotpy/commit/007d385c496ecc5dc14ff9af22977e1d843d647a>`_).
+
 METplotpy Version 3.0.1 release notes (20250722)
 ------------------------------------------------------
 
