@@ -25,7 +25,6 @@ project = 'METplotpy'
 copyright = '2025, NSF NCAR'
 author = 'UCAR/NSF NCAR, NOAA, CSU/CIRA, and CU/CIRES'
 author_list = 'Adriaansen, D.,  C. Kalb, D. Fillmore, T. Jensen, L. Goodrich, M. Win-Gildenmeister, T. Burek, and H. Fisher'
-version = '3.2.0-rc1'
 verinfo = version
 release = f'{version}'
 release_year = '2025'
