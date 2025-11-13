@@ -37,13 +37,15 @@ metplotpy = [
 testpaths = ["test"]
 filterwarnings = ["ignore::RuntimeWarning"]
 
+[run]
+ source=.
+
 [tool.coverage.run]
 source = ["metplotpy/plots" 
     ]
 omit = [
     "config.py",
     "config-3.py", 
-    "test/histogram_2d/src/netCDF4/*",
     ]
 relative_files = true
     
