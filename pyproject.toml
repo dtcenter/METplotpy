@@ -38,14 +38,12 @@ testpaths = ["test"]
 filterwarnings = ["ignore::RuntimeWarning"]
 
 [tool.coverage.run]
-source = ["metplotpy/plots"]
+source = ["metplotpy/plots", 
+    "test/histogram_2d/src/netCDF4"
+    ]
 omit = [
     "config.py",
     "config-3.py",
-    ]
-relative_files = true
-source = ["test/histogram_2d/src/netCDF4"]
-omit = [
     "_netCDF4.pyx"
     ]
 relative_files = true
