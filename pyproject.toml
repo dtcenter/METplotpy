@@ -44,7 +44,7 @@ source = ["metplotpy/plots",
 omit = [
     "config.py",
     "config-3.py",
-    "_netCDF4.pyx"
+    "*/_netCDF4.pyx"
     ]
 relative_files = true
     
