@@ -44,7 +44,12 @@ omit = [
     "config-3.py",
     ]
 relative_files = true
-
+source = ["test/histogram_2d/src/netCDF4"]
+omit = [
+    "_netCDF4.pyx"
+    ]
+relative_files = true
+    
 [tool.coverage.report]
 exclude_also = [
     "def __repr__",
