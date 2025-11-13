@@ -42,12 +42,12 @@ source = ["metplotpy/plots"
     ]
 omit = [
     "config.py",
-    "config-3.py",
-    "test/histogram_2d/src/netCDF4/_netCDF4.pyx"
+    "config-3.py"
     ]
 relative_files = true
     
 [tool.coverage.report]
+omit = ["test/histogram_2d/src/netCDF4/*"]
 exclude_also = [
     "def __repr__",
     "if __name__ == .__main__.:",
