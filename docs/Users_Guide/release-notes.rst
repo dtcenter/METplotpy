@@ -8,8 +8,8 @@ describes the bugfix, enhancement, or new feature:
 
 
 
-METplotpy Version 3.2.0 release notes (20251113)
-====================================================
+METplotpy Version 3.2.0 Release Notes (20251113)
+================================================
 
 .. dropdown:: New Plots
 
