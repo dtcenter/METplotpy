@@ -37,7 +37,6 @@ metplotpy = [
 testpaths = ["test"]
 filterwarnings = ["ignore::RuntimeWarning"]
 
-
 [tool.coverage.run]
 source = ["metplotpy/plots" 
     ]
