@@ -37,8 +37,6 @@ metplotpy = [
 testpaths = ["test"]
 filterwarnings = ["ignore::RuntimeWarning"]
 
-[run]
- source=.
 
 [tool.coverage.run]
 source = ["metplotpy/plots" 
@@ -50,6 +48,7 @@ omit = [
 relative_files = true
     
 [tool.coverage.report]
+omit=["test/histogram_2d/src/*"]
 exclude_also = [
     "def __repr__",
     "if __name__ == .__main__.:",
