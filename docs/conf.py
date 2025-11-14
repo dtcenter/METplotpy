@@ -24,12 +24,12 @@ from metplotpy import __version__ as version
 project = 'METplotpy'
 copyright = '2025, NSF NCAR'
 author = 'UCAR/NSF NCAR, NOAA, CSU/CIRA, and CU/CIRES'
-author_list = 'Adriaansen, D.,  C. Kalb, D. Fillmore, T. Jensen, L. Goodrich, M. Win-Gildenmeister, T. Burek, and H. Fisher'
+author_list = 'Kalb, C., D. Fillmore, T. Jensen, L. Goodrich, M. Win-Gildenmeister, T. Burek, H. Fisher, D. Adriaansen'
 verinfo = version
 release = f'{version}'
 release_year = '2025'
 
-release_date = f'{release_year}-09-30'
+release_date = f'{release_year}-11-14'
 
 copyright = f'{release_year}, {author}'
 
