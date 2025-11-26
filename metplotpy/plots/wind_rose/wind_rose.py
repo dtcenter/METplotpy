@@ -252,9 +252,18 @@ class WindRosePlot(BasePlot):
         number_of_records = len(wind_speed_dir)
         speed_bins = []
 
-        # add me max wind speed as the last breaks
+        # If the last break is > max wind speed, omit the last break and
+        # use the Mean error (me) max wind speed as the last breaks value.
         breaks = self.config_obj.wind_rose_breaks.copy()
+        last_break_idx = len(breaks) - 1
         breaks.append(max(wind_speed))
+        # replace the last break with the max windspeed
+        # if max(wind_speed) > breaks[last_break_idx]:
+        #     breaks.append(max(wind_speed))
+        # else:
+        #     breaks = breaks[:-1]
+        #     breaks.append(max(wind_speed))
+
 
         # loop selecting given bins and calculate frequencies
         for i in range(len(breaks) - 1):
@@ -370,6 +379,7 @@ class WindRosePlot(BasePlot):
                     filename = path[-1]
                 else:
                     filename = '.' + os.path.sep
+                os.makedirs(self.config_obj.points_path, exist_ok=True)
                 filename = self.config_obj.points_path + os.path.sep + filename
 
             # save points
