@@ -788,6 +788,7 @@ class Line(BasePlot):
                 else:
                     filename = '.' + os.path.sep
                 filename = self.config_obj.points_path + os.path.sep + filename
+                os.makedirs(filename, exist_ok=True)
 
             # save points
             self._save_points(all_points_1, filename + ".points1")
