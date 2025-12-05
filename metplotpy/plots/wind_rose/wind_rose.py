@@ -256,13 +256,14 @@ class WindRosePlot(BasePlot):
         # use the Mean error (me) max wind speed as the last breaks value.
         breaks = self.config_obj.wind_rose_breaks.copy()
         last_break_idx = len(breaks) - 1
-        breaks.append(max(wind_speed))
-        # replace the last break with the max windspeed
-        # if max(wind_speed) > breaks[last_break_idx]:
-        #     breaks.append(max(wind_speed))
-        # else:
-        #     breaks = breaks[:-1]
-        #     breaks.append(max(wind_speed))
+
+        if max(wind_speed) > breaks[last_break_idx]:
+            # append the max wind speed to the list of break values
+            breaks.append(max(wind_speed))
+        else:
+            # replace the last break value with the max windspeed
+            breaks = breaks[:-1]
+            breaks.append(max(wind_speed))
 
 
         # loop selecting given bins and calculate frequencies
