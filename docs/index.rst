@@ -178,6 +178,13 @@ To cite this documentation in publications, please refer to the METplotpy User's
 
 .. toctree::
    :hidden:
+   :caption: METcalcpy
+
+   User's Guide <https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Users_Guide/index.html>
+   Contributor's Guide <https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Contributors_Guide/index.html>
+
+.. toctree::
+   :hidden:
    :caption: METdataio
 
    User's Guide <https://metplus.readthedocs.io/projects/metdataio/en/latest/Users_Guide/index.html>
