@@ -113,7 +113,7 @@ xaxis: FCST_LEAD
 xaxis_reverse: 'False'
 
 stat_input: !ENV '${TEST_DIR}/box.data'
-plot_filename: !ENV '${TEST_DIR}/default_box.png'
+plot_filename: !ENV '${TEST_OUTPUT}/default_box.png'
 
 show_legend:
   -True

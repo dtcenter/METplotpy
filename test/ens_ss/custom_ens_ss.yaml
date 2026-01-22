@@ -54,11 +54,7 @@ plot_type: png16m
 plot_units: in
 plot_width: 11.0
 
-# Optional, uncomment and set to directory to store the .points1 file
-# that is used by METviewer (created when dump_points_1 is set to True)
-# if dump_points_1 is True and this is uncommented, the points1 file
-# will be saved in the default location (i.e. where the input data file is stored).
-#points_path: /dir_to_save_points1_file
+points_path: !ENV '${TEST_OUTPUT}/intermed_files'
 
 series_line_style:
 - '-'
@@ -120,7 +116,7 @@ y2tlab_perp: 1
 y2tlab_size: 1.0
 
 stat_input: !ENV '${TEST_DIR}/ens_ss.data'
-plot_filename: !ENV '${TEST_DIR}/ens_ss.png'
+plot_filename: !ENV '${TEST_OUTPUT}/ens_ss.png'
 
 # To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
 # permissions to the directory you specify.  The default, as specified in the default config file is stdout.

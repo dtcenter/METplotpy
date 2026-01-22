@@ -8,7 +8,6 @@ def test_import_hovmoeller():
         import metplotpy.plots.hovmoeller.hovmoeller
     except:
         assert False
-    assert True
 
 
 # used in METplus use case: model_applications/medium_range/UserScript_fcstGEFS_Difficulty_Index
@@ -18,7 +17,6 @@ def test_import_difficulty_index():
         from metplotpy.plots.difficulty_index.plot_difficulty_index import plot_field
     except:
         assert False
-    assert True
 
 
 def test_import_all():
@@ -26,4 +24,3 @@ def test_import_all():
         import metplotpy
     except:
         assert False
-    assert True

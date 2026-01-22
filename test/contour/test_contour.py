@@ -1,54 +1,26 @@
 import pytest
 import os
 from metplotpy.plots.contour import contour
-#from metcalcpy.compare_images import CompareImages
 
 cwd = os.path.dirname(__file__)
 
 @pytest.fixture
-def setup():
+def setup(module_setup_env):
     # Cleanup the plotfile output file from any previous run
     cleanup()
-    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
-    # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = f"{cwd}/../../"
-    os.environ['TEST_DIR'] = cwd
-
-    # Invoke the command to generate a contour plot based on
-    # the  config yaml files.
 
     contour.main(f"{cwd}/custom_contour.yaml")
-
 
 
 def cleanup():
     # remove the previously created files
     try:
         plot_file = 'contour.png'
-        os.remove(os.path.join(cwd, plot_file))
-    except OSError as e:
-        # Typically, when files have already been removed or
-        # don't exist.  Ignore.
+        os.remove(os.path.join(os.environ['TEST_OUTPUT'], plot_file))
+    except OSError:
         pass
 
 
-@pytest.mark.parametrize("test_input, expected",
-                         ([f"{cwd}/contour_expected.png", True], [f"{cwd}/contour.png", True]
-                        ))
-def test_files_exist(setup, test_input, expected):
-    """
-        Checking that the plot files are getting created
-    """
-    assert os.path.isfile(test_input) == expected
-    cleanup()
-
-@pytest.mark.skip("fails on linux hosts")
-def test_images_match(setup):
-    """
-        Compare an expected plots with the
-        newly created plots to verify that the plot hasn't
-        changed in appearance.
-    """
-    comparison = CompareImages(f'{cwd}/contour_expected.png', f'{cwd}/contour.png')
-    assert comparison.mssim == 1
-    cleanup()
+def test_files_exist(setup):
+    """Checking that the plot files are getting created"""
+    assert os.path.isfile(os.path.join(os.environ['TEST_OUTPUT'], 'contour.png'))
