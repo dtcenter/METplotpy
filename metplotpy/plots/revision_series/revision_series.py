@@ -17,16 +17,15 @@ from datetime import datetime
 
 from typing import Union
 
-import yaml
 import numpy as np
 
 import plotly.graph_objects as go
 
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH
-from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH
+from metplotpy.plots.base_plot_plotly import BasePlot
 
 from metplotpy.plots.line.line import Line
-from metplotpy.plots import util
+from metplotpy.plots import util_plotly as util
 from metplotpy.plots.series import Series
 
 import metcalcpy.util.utils as calc_util

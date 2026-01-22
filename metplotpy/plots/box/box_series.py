@@ -22,7 +22,7 @@ import pandas as pd
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
-import metplotpy.plots.util
+import metplotpy.plots.util_plotly as util
 from ..series import Series
 
 
@@ -215,7 +215,7 @@ class BoxSeries(Series):
 
         log_level = self.config.log_level
         log_filename = self.config.log_filename
-        logger = metplotpy.plots.util.get_common_logger(log_level, log_filename)
+        logger = util.get_common_logger(log_level, log_filename)
 
 
         logger.info(f"Start calculating derived values: "

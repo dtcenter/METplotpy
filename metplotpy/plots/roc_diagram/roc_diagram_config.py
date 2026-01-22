@@ -15,11 +15,9 @@ Holds values set in the ROC config file(s)
 """
 __author__ = 'Minna Win'
 
-
-import sys
-from ..config import Config
-from .. import util
-from .. import constants
+from ..config_plotly import Config
+from .. import util_plotly as util
+from .. import constants_plotly as constants
 
 class ROCDiagramConfig(Config):
     def __init__(self, parameters):

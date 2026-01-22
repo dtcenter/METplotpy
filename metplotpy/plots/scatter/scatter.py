@@ -16,13 +16,11 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.font_manager import FontProperties
-import yaml
+
 import pandas as pd
 from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.scatter.scatter_config import ScatterConfig
 from metplotpy.plots import util
-from metplotpy.plots.util import get_params
-from metcalcpy.util.read_env_vars_in_config import  parse_config
 
 class Scatter(BasePlot):
     """
@@ -201,7 +199,7 @@ def main(config_filename=None):
 
        Returns: None
     """
-    docs = get_params(config_filename)
+    docs = util.get_params(config_filename)
 
     try:
         plot = Scatter(docs)

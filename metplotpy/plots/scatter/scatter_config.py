@@ -15,7 +15,6 @@ from ..config import Config
 from .. import constants
 from .. import util
 
-import metcalcpy.util.utils as utils
 class ScatterConfig(Config):
     """
        Configuration object for the scatter plot.

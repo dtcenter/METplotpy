@@ -4,7 +4,7 @@ from datetime import datetime
 from metcalcpy.util import utils
 from metplotpy.plots.tcmpr_plots.skill.median.tcmpr_series_skill_median import TcmprSeriesSkillMedian
 from metplotpy.plots.tcmpr_plots.skill.tcmpr_skill import TcmprSkill
-import metplotpy.plots.util as util
+import metplotpy.plots.util_plotly as util
 
 
 class TcmprSkillMedian(TcmprSkill):

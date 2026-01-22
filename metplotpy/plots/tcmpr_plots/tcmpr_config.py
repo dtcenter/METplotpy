@@ -17,10 +17,9 @@ import warnings
 import itertools
 
 import metcalcpy.util.utils as utils
-from .. import constants
-from .. import util
-from ..config import Config
-import metplotpy.plots.util as util
+from .. import constants_plotly as constants
+from ..config_plotly import Config
+import metplotpy.plots.util_plotly as util
 
 
 class TcmprConfig(Config):

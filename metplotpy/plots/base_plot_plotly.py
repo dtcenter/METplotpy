@@ -21,8 +21,8 @@ import numpy as np
 import yaml
 from typing import Union
 import kaleido
-import metplotpy.plots.util
-from metplotpy.plots.util import strtobool
+
+from metplotpy.plots.util_plotly import strtobool
 from .config import Config
 from metplotpy.plots.context_filter import ContextFilter
 

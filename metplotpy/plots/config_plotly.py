@@ -19,8 +19,8 @@ import itertools
 from typing import Union
 
 import metcalcpy.util.utils as utils
-import metplotpy.plots.util
-from . import constants
+import metplotpy.plots.util_plotly as util
+from . import constants_plotly as constants
 
 
 class Config:
@@ -35,8 +35,7 @@ class Config:
         # Logging
         self.log_filename = self.get_config_value('log_filename')
         self.log_level = self.get_config_value('log_level')
-        self.logger = metplotpy.plots.util.get_common_logger(self.log_level,
-                                                             self.log_filename)
+        self.logger = util.get_common_logger(self.log_level, self.log_filename)
 
         #
         # Configuration settings that apply to the plot
@@ -117,7 +116,7 @@ class Config:
 
         self.grid_col = self.get_config_value('grid_col')
         if self.grid_col:
-           self.blended_grid_col =  metplotpy.plots.util.alpha_blending(self.grid_col, 0.5)
+           self.blended_grid_col =  util.alpha_blending(self.grid_col, 0.5)
         self.show_nstats = self._get_bool('show_nstats')
         self.indy_stagger = self._get_bool('indy_stagger')
 
@@ -880,6 +879,13 @@ class Config:
                     else:
                         # convert position to string if line_type=vert_line
                         line['position'] = str(line['position'])
+
+                    # convert line_style
+                    line_style = line['line_style']
+                    if line_style in constants.LINE_STYLE_TO_PLOTLY_DASH.keys():
+                        line['line_style'] = constants.LINE_STYLE_TO_PLOTLY_DASH[line_style]
+                    else:
+                        line['line_style'] = None
 
                     # convert line_width to float
                     try:

@@ -22,15 +22,15 @@ warnings.filterwarnings('ignore')
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-import yaml
+
 from plotly.graph_objects import Figure
 from plotly.subplots import make_subplots
 
 import metcalcpy.util.utils as calc_util
 from metcalcpy.event_equalize import event_equalize
-from metplotpy.plots import util
-from metplotpy.plots.base_plot import BasePlot
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots import util_plotly as util
+from metplotpy.plots.base_plot_plotly import BasePlot
+from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 from metplotpy.plots.tcmpr_plots.tcmpr_config import TcmprConfig
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 from metplotpy.plots.tcmpr_plots.tcmpr_util import init_hfip_baseline, common_member, get_dep_column
@@ -585,7 +585,7 @@ def create_plot(config_obj: dict) -> None:
                               quotechar='"', skipinitialspace=True, encoding='utf-8')
 
     logger = util.get_common_logger(config_obj.log_level, config_obj.log_filename)
-\
+
     for plot_type in config_obj.plot_type_list:
 
         # Apply event equalization, if requested

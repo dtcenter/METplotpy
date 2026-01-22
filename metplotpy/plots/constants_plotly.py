@@ -79,10 +79,10 @@ PCH_TO_PLOTLY_MARKER = {'0': 'circle-open', '19': 'circle', '20': 'circle',
                         'o': 'circle', '^': 'triangle-up', 'd': 'diamond', 'H': 'circle-open',
                         'h': 'hexagon2', 's': 'square'}
 
-# approximated from plotly marker size to matplotlib marker size
-PCH_TO_MATPLOTLIB_MARKER_SIZE = {'.': 14, 'o': 36, 's': 20, '^': 36, 'd': 20, 'H': 28}
+PCH_TO_PLOTLY_MARKER_SIZE = {'.': 5, 'o': 8, 's': 6, '^': 8, 'd': 6, 'H': 7}
 
 TYPE_TO_PLOTLY_MODE = {'b': 'lines+markers', 'p': 'markers', 'l': 'lines'}
+LINE_STYLE_TO_PLOTLY_DASH = {'-': None, '--': 'dash', ':': 'dot', '-:': 'dashdot'}
 XAXIS_ORIENTATION = {0: 0, 1: 0, 2: 270, 3: 270}
 YAXIS_ORIENTATION = {0: -90, 1: 0, 2: 0, 3: -90}
 

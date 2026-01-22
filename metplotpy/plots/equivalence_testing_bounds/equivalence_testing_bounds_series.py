@@ -24,7 +24,7 @@ from pandas import DataFrame
 import metcalcpy.util.correlation as pg
 
 import metcalcpy.util.utils as utils
-import metplotpy.plots.util
+import metplotpy.plots.util_plotly as util
 from metcalcpy.sum_stat import calculate_statistic
 from .. import GROUP_SEPARATOR
 from ..line.line_series import LineSeries
@@ -54,8 +54,7 @@ class EquivalenceTestingBoundsSeries(LineSeries):
                dictionary with CI ,point values and number of stats as keys
         """
 
-        logger = metplotpy.plots.util.get_common_logger(self.log_level,
-                                                        self.log_filename)
+        logger = util.get_common_logger(self.log_level, self.log_filename)
         logger.info(f"Creating series points (calculating the values for "
                                 f"each point: {datetime.now()}")
 
@@ -147,8 +146,7 @@ class EquivalenceTestingBoundsSeries(LineSeries):
         :param series_data_2: 2nd data frame sorted  by fcst_init_beg
         """
 
-        logger = metplotpy.plots.util.get_common_logger(self.log_level,
-                                                        self.log_filename)
+        logger = util.get_common_logger(self.log_level, self.log_filename)
         logger.info(f"Validating dataframe fcst_valid_beg: "
                                 f"{datetime.now()}")
         all_zero_1 = all(elem is None or math.isnan(elem)

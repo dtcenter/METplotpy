@@ -3,7 +3,7 @@ from datetime import datetime
 
 from metplotpy.plots.tcmpr_plots.line.mean.tcmpr_series_line_mean import TcmprSeriesLineMean
 from metplotpy.plots.tcmpr_plots.line.tcmpr_line import TcmprLine
-import metplotpy.plots.util as util
+import metplotpy.plots.util_plotly as util
 
 
 class TcmprLineMean(TcmprLine):

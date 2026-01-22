@@ -3,7 +3,7 @@ from datetime import datetime
 
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
-import metplotpy.plots.util as util
+import metplotpy.plots.util_plotly as util
 
 class TcmprLine(Tcmpr):
     def __init__(self, config_obj, column_info, col, case_data, input_df, baseline_data, stat_name):

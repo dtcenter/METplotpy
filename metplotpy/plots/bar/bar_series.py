@@ -20,7 +20,7 @@ import numpy as np
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
-from metplotpy.plots import util
+from metplotpy.plots import util_plotly as util
 from .. import GROUP_SEPARATOR
 from ..series import Series
 

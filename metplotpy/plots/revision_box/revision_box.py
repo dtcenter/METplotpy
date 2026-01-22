@@ -15,13 +15,13 @@ import re
 from datetime import datetime
 import plotly.graph_objects as go
 
-from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots.base_plot_plotly import BasePlot
 
 from metplotpy.plots.box.box import Box
-from metplotpy.plots import util
+from metplotpy.plots import util_plotly as util
 
 import metcalcpy.util.utils as calc_util
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH
+from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH
 from metplotpy.plots.revision_box.revision_box_config import RevisionBoxConfig
 from metplotpy.plots.revision_box.revision_box_series import RevisionBoxSeries
 

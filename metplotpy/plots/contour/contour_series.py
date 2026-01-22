@@ -18,7 +18,7 @@ from datetime import datetime
 import numpy as np
 import warnings
 
-import metplotpy.plots.util
+import metplotpy.plots.util_plotly as util
 from ..series import Series
 
 
@@ -34,8 +34,7 @@ class ContourSeries(Series):
                  series_name: Union[list, tuple], y_axis: int = 1):
         self.series_list = series_list
         self.series_name = series_name
-        self.logger = metplotpy.plots.util.get_common_logger(config.log_level,
-                                                             config.log_filename)
+        self.logger = util.get_common_logger(config.log_level, config.log_filename)
         super().__init__(config, idx, input_data, y_axis)
 
 

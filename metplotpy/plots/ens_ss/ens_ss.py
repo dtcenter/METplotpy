@@ -29,8 +29,8 @@ from metcalcpy.event_equalize import event_equalize
 from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 from metplotpy.plots.ens_ss.ens_ss_config import EnsSsConfig
 from metplotpy.plots.ens_ss.ens_ss_series import EnsSsSeries
-from metplotpy.plots.base_plot import BasePlot
-import metplotpy.plots.util as util
+from metplotpy.plots.base_plot_plotly import BasePlot
+import metplotpy.plots.util_plotly as util
 import metcalcpy.util.utils as utils
 
 

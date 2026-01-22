@@ -19,7 +19,7 @@ from datetime import datetime
 import numpy as np
 
 import metcalcpy.util.utils as utils
-import metplotpy.plots.util
+import metplotpy.plots.util_plotly as util
 from .. import GROUP_SEPARATOR
 
 from ..series import Series
@@ -71,8 +71,7 @@ class EnsSsSeries(Series):
         Returns:
                dictionary with CI ,point values and number of stats as keys
         """
-        ens_logger = metplotpy.plots.util.get_common_logger(self.log_level,
-                                                            self.log_filename)
+        ens_logger = util.get_common_logger(self.log_level, self.log_filename)
         ens_logger.info(f"Begin creating the series points: {datetime.now()}")
         # different ways to subset data for normal and derived series
         # this is a normal series
