@@ -408,6 +408,7 @@ class Contour(BasePlot):
                 filename = self.config_obj.points_path + os.path.sep + filename
 
             filename = filename + '.points1'
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
 
             with open(filename, 'w') as file:
                 writer = csv.writer(file, delimiter='\t')

@@ -605,6 +605,9 @@ class Box(BasePlot):
             filename = filename + '.points1'
             if os.path.exists(filename):
                 os.remove(filename)
+            # create directory if needed
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
+
             for series in self.series_list:
                 for indy_val in self.config_obj.indy_vals:
                     if calc_util.is_string_integer(indy_val):

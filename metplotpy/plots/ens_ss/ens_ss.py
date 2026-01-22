@@ -525,6 +525,7 @@ class EnsSs(BasePlot):
             #     filename = 'points'
 
             filename = filename + '.points1'
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
 
             with open(filename, 'w') as file:
                 while i < len(self.series_list):

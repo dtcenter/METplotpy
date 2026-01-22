@@ -556,6 +556,7 @@ class EquivalenceTestingBounds(BasePlot):
                 filename = self.config_obj.points_path + os.path.sep + filename
 
             filename = filename + '.points1'
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
 
             # save points
             self._save_points(ci_tost_df.values.tolist(), filename)
