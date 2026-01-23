@@ -4,6 +4,7 @@ from unittest.mock import patch
 import sys
 from pathlib import Path
 import shutil
+import logging
 import json
 import xarray as xr
 from pandas import DatetimeIndex
@@ -113,7 +114,6 @@ def module_setup_env(request):
                                 os.path.join(test_dir, os.pardir, 'test_output'))
     # write to a subdirectory named after the plot type
     os.environ['TEST_OUTPUT'] = os.path.join(output_dir, os.path.basename(test_dir))
-    os.makedirs(os.environ['TEST_OUTPUT'], exist_ok=True)
     yield
     # Optional: cleanup after all tests in the module complete
 
@@ -132,11 +132,12 @@ def remove_files():
                 pass
 
         # also remove intermed_files directory if it exists
-        print("Removing intermed_files directory if it exists")
-        try:
-            shutil.rmtree(f"{test_dir}/intermed_files")
-        except FileNotFoundError:
-            pass
+        if os.path.isdir(f"{test_dir}/intermed_files"):
+            print("Removing intermed_files directory")
+            try:
+                shutil.rmtree(f"{test_dir}/intermed_files")
+            except FileNotFoundError:
+                pass
 
     return remove_the_files
 
@@ -171,3 +172,6 @@ def nc_test_file(tmp_path_factory):
     TEST_NC_DATA.to_netcdf(file_name)
     return file_name
 
+@pytest.fixture(autouse=True)
+def setup_logging(caplog):
+    caplog.set_level(logging.DEBUG)
