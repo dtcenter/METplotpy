@@ -109,15 +109,16 @@ class Histogram_2d(BasePlot):
         self.logger.info(f"Saving plot to file {image_name}: {datetime.now()} ")
         if self.figure:
             try:
+                os.makedirs(os.path.dirname(image_name), exist_ok=True)
                 self.figure.write_image(image_name)
 
             except FileNotFoundError:
                 self.logger.error(f"FileNotFoundError: Can't save to file {image_name}")
-            except ValueError:
+            except ValueError as err:
                 self.logger.error(f"ValueError: Some other error occurred "
-                                  f"{datetime.now()}")
+                                  f"{datetime.now()}: {err}")
         else:
-            self.logger.error(f"The figure was not created. Cannot save file.")
+            self.logger.error("The figure was not created. Cannot save file.")
 
         self.logger.info(f"Finished saving plot to file: {datetime.now()}")
 
