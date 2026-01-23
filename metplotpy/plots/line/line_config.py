@@ -383,7 +383,7 @@ class LineConfig(Config):
     def _config_consistency_check(self) -> bool:
         """
             Checks that the number of settings defined for plot_ci,
-            plot_disp, series_order, user_legend colors, and series_symbols
+            plot_disp, series_order, user_legend, colors, and series_symbols
             are consistent.
 
             Args:
@@ -399,24 +399,29 @@ class LineConfig(Config):
         # permutations from the series_var setting in the
         # config file
 
-        # Numbers of values for other settings for series
-        num_ci_settings = len(self.plot_ci)
-        num_plot_disp = len(self.plot_disp)
-        num_markers = len(self.marker_list)
-        num_series_ord = len(self.series_ordering)
-        num_colors = len(self.colors_list)
-        num_legends = len(self.user_legends)
-        num_line_widths = len(self.linewidth_list)
-        num_linestyles = len(self.linestyles_list)
-        num_show_legend = len(self.show_legend)
-        num_con_series = len(self.con_series)
-        status = False
+        lists_to_check = {
+            "plot_ci": self.plot_ci,
+            "plot_disp": self.plot_disp,
+            "marker_list": self.marker_list,
+            "series_ordering": self.series_ordering,
+            "colors_list": self.colors_list,
+            "user_legends": self.user_legends,
+            "linewidth_list": self.linewidth_list,
+            "linestyles_list": self.linestyles_list,
+            "show_legend": self.show_legend,
+            "con_series": self.con_series,
+        }
+        status = True
+        for name, list_to_check in lists_to_check.items():
 
-        if (self.num_series == num_plot_disp == \
-                num_markers == num_series_ord == num_colors \
-                == num_legends == num_line_widths == num_linestyles == num_ci_settings \
-                == num_show_legend == num_con_series):
-            status = True
+            if len(list_to_check) == self.num_series:
+                continue
+
+            self.logger.error(
+                f"number of series ({self.num_series}) does not match {name} ({len(list_to_check)})"
+            )
+            status = False
+
         return status
 
     def _get_plot_ci(self) -> list:

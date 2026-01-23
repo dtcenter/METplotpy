@@ -76,8 +76,8 @@ class Line(BasePlot):
                          "curves is inconsistent with the number of settings "
                          "required for describing each series. Please check "
                          "the number of your configuration file's plot_ci, "
-                         "plot_disp, series_order, user_legend "
-                         "colors,  series_symbols, show_legend settings.")
+                         "plot_disp, series_order, user_legend, "
+                         "colors, series_symbols, and show_legend settings.")
             self.logger.error(f"ValueError: {error_msg}: {datetime.now()}")
             raise ValueError(error_msg)
 
