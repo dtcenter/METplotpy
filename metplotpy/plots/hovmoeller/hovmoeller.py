@@ -17,15 +17,14 @@ Version  Date
 __author__ = 'David Fillmore'
 __version__ = '0.1.0'
 
-import metcalcpy.util.read_env_vars_in_config
-
 """
 Import standard modules
 """
+import os
 from datetime import datetime
 import getpass
 import sys
-import yaml
+
 import numpy as np
 import xarray as xr
 import plotly.graph_objects as go
