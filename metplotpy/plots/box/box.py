@@ -569,9 +569,8 @@ class Box(BasePlot):
         # is_create = self.config_obj.create_html
         if self.config_obj.create_html is True:
             # construct the file name from plot_filename
-            name_arr = self.get_config_value('plot_filename').split('.')
-            name_arr[-1] = 'html'
-            html_name = ".".join(name_arr)
+            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+            html_name = f"{base_name}.html"
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)

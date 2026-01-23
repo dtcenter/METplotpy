@@ -208,8 +208,8 @@ class Hovmoeller(BasePlot):
         self.logger.info(f"Begin writing html output: {datetime.now()}")
         if self.config_obj.create_html is True:
             # construct the fle name from plot_filename
-            name_arr = self.get_config_value('plot_filename').split('.')
-            html_name = name_arr[0] + ".html"
+            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+            html_name = f"{base_name}.html"
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
