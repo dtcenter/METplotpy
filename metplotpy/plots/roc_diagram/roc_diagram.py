@@ -507,35 +507,26 @@ class ROCDiagram(BasePlot):
                 filename = self.config_obj.points_path + os.path.sep + filename
 
             output_file = filename + '.points1'
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+            if os.path.exists(output_file):
+                os.remove(output_file)
 
-            # make sure this file doesn't already
-            # exit, delete it if it does
-            try:
-                if os.stat(output_file).st_size == 0:
-                    fileobj = open(output_file, 'a')
-                else:
-                    os.remove(output_file)
-            except FileNotFoundError as fnfe:
-                # OK if no file was found
-                pass
+            with open(output_file, 'a') as fileobj:
+                header_str = "pofd\t pody\n"
+                fileobj.write(header_str)
+                all_pody = []
+                all_pofd = []
+                for series in self.series_list:
+                    pody_points = series.series_points[1]
+                    pofd_points = series.series_points[0]
+                    all_pody.extend(pody_points)
+                    all_pofd.extend(pofd_points)
 
-            fileobj = open(output_file, 'a')
-            header_str = "pofd\t pody\n"
-            fileobj.write(header_str)
-            all_pody = []
-            all_pofd = []
-            for series in self.series_list:
-                pody_points = series.series_points[1]
-                pofd_points = series.series_points[0]
-                all_pody.extend(pody_points)
-                all_pofd.extend(pofd_points)
+                all_points = zip(all_pofd, all_pody)
+                for idx, pts in enumerate(all_points):
+                    data_str = str(pts[0]) + "\t" + str(pts[1]) + "\n"
+                    fileobj.write(data_str)
 
-            all_points = zip(all_pofd, all_pody)
-            for idx, pts in enumerate(all_points):
-                data_str = str(pts[0]) + "\t" + str(pts[1]) + "\n"
-                fileobj.write(data_str)
-
-            fileobj.close()
 
     def write_html(self) -> None:
         """

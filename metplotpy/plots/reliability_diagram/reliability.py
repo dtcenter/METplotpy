@@ -713,6 +713,7 @@ class Reliability(BasePlot):
                     else:
                         formatted_row.append("%.6f" % val)
                 all_points_formatted.append(formatted_row)
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
             with open(output_file, "w+") as my_csv:
                 csv_writer = csv.writer(my_csv, delimiter=' ')
                 csv_writer.writerows(all_points_formatted)
