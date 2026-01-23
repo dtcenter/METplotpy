@@ -129,46 +129,8 @@ class Histogram_2d(BasePlot):
 
         :return:
         """
-        self.logger.info(f"Begin writing plot to output file: {datetime.now()}")
-        self.logger.info(f"No intermediate points1 file created. This plot type is not "
-                "integrated into METviewer: {datetime.now()}")
-
-        # if points_path parameter doesn't exist,
-        # open file, name it based on the stat_input config setting,
-        # (the input data file) except replace the .data
-        # extension with .points1 extension
-        # otherwise use points_path path
-        match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-        if self.config_obj.dump_points_1 is True and match:
-            filename = match.group(1)
-            # replace the default path with the custom
-            if self.config_obj.points_path is not None:
-                # get the file name
-                path = filename.split(os.path.sep)
-                if len(path) > 0:
-                    filename = path[-1]
-                else:
-                    filename = '.' + os.path.sep
-                filename = self.config_obj.points_path + os.path.sep + filename
-
-            output_file = filename + '.points1'
-
-            # make sure this file doesn't already
-            # exist, delete it if it does
-            self.logger.info(f"Check if file exists, delete if it does. "
-                             f"{datetime.now()}")
-            try:
-                if os.stat(output_file).st_size == 0:
-                    open(output_file, 'a')
-                else:
-                    os.remove(output_file)
-            except FileNotFoundError:
-                # OK if no file was found
-                self.logger.info(f"FileNotFound while checking if output file exists. "
-                                 f" This is OK:{datetime.now()}")
-                pass
-
-        self.logger.info(f"Finished writing plot to output file: {datetime.now()}")
+        self.logger.info("No intermediate points1 file created. This plot type is not "
+                         f"integrated into METviewer: {datetime.now()}")
 
     def _read_input_data(self):
         """
