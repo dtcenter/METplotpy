@@ -1,3 +1,10 @@
+plot_filename: !ENV '${TEST_OUTPUT}/line_groups.png'
+points_path: !ENV '${TEST_OUTPUT}'
+dump_points_1: 'True'
+dump_points_2: 'True'
+
+stat_input: !ENV '${TEST_DIR}/line_groups.data'
+
 alpha: 0.05
 box_avg: 'False'
 box_boxwex: 0.2
@@ -25,8 +32,6 @@ derived_series_1:
   - Group_y1_2 TMP ME
   - DIFF
 derived_series_2: []
-dump_points_1: 'True'
-dump_points_2: 'True'
 eqbound_high: 0.001
 eqbound_low: -0.001
 event_equal: 'False'
@@ -87,7 +92,6 @@ plot_disp:
 - 'True'
 - 'True'
 - 'True'
-plot_filename: !ENV '${TEST_DIR}/line_groups.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -125,7 +129,6 @@ show_signif:
 - 'False'
 - 'False'
 - 'False'
-stat_input: !ENV '${TEST_DIR}/line_groups.data'
 sync_yaxes: 'False'
 title: test title
 title_align: 0.5
@@ -178,6 +181,6 @@ ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
 show_legend:
-    -True
-    -True
-    -True
+- True
+- True
+- True

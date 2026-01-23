@@ -7,7 +7,7 @@ cwd = os.path.dirname(__file__)
 
 @pytest.fixture
 def setup(module_setup_env):
-    # Cleanup the plotfile  output file from any previous run
+    # Cleanup the plotfile output file from any previous run
     cleanup()
     custom_config_filename = f"{cwd}/rel_hist.yaml"
     rel_hist.main(custom_config_filename)

@@ -1,5 +1,5 @@
 wind_rose: True
-plot_filename: !ENV '${TEST_DIR}/mpr_plots.png'
+plot_filename: !ENV '${TEST_OUTPUT}/mpr_plots.png'
 wind_rose_breaks:
   - 0.0
   - 1.0

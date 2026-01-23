@@ -30,6 +30,7 @@ derived_series_1:
 derived_series_2: []
 dump_points_1: 'False'
 dump_points_2: 'False'
+points_path: !ENV '${TEST_OUTPUT}'
 event_equal: 'True'
 fcst_var_val_1:
   RH:
@@ -94,7 +95,7 @@ plot_disp:
 - 'True'
 - 'True'
 - 'True'
-plot_filename: !ENV '${TEST_DIR}/line.png'
+plot_filename: !ENV '${TEST_OUTPUT}/line.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -102,11 +103,6 @@ plot_type: png16m
 plot_units: in
 plot_width: 11.0
 
-# Optional, uncomment and set to directory to store the .points1 file
-# that is used by METviewer (created when dump_points_1 is set to True)
-# if dump_points_1 is True and this is uncommented, the points1 file
-# will be saved in the default location (i.e. where the input data file is stored).
-#points_path: /dir_to_save_points1_file
 random_seed: null
 series_line_style:
 - '-'
