@@ -121,7 +121,7 @@ def module_setup_env(request):
 @pytest.fixture()
 def remove_files():
     def remove_the_files(test_dir, file_list):
-        print("Removing the files")
+        print("Removing files")
         # loop over list of files under test_dir and remove them
         if isinstance(file_list, str):
             file_list = [file_list]
@@ -174,4 +174,4 @@ def nc_test_file(tmp_path_factory):
 
 @pytest.fixture(autouse=True)
 def setup_logging(caplog):
-    caplog.set_level(logging.DEBUG)
+    caplog.set_level(logging.INFO)
