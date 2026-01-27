@@ -1,5 +1,5 @@
 plot_filename: !ENV '${TEST_OUTPUT}/env_fcst_var_stat_line.png'
-points_path:  !ENV '${TEST_OUTPUT}/intermed_files/env_fcst_var_stat'
+points_path:  !ENV '${TEST_OUTPUT}/env_fcst_var'
 dump_points_1: 'True'
 dump_points_2: 'True'
 

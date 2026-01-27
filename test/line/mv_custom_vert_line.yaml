@@ -1,5 +1,6 @@
-points_path: !ENV '${TEST_OUTPUT}/intermed_files'
+points_path: !ENV '${TEST_OUTPUT}/mv_custom_vert_line'
 plot_filename: !ENV '${TEST_OUTPUT}/vert_line_plot.png'
+
 stat_input: !ENV '${TEST_DIR}/vert_line_plot_data.txt'
 
 alpha: 0.05

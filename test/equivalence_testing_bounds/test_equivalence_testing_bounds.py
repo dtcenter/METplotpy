@@ -1,20 +1,20 @@
 import pytest
 import os
+
 from metplotpy.plots.equivalence_testing_bounds import equivalence_testing_bounds as etb
 
-cwd = os.path.dirname(__file__)
+@pytest.mark.parametrize("input_yaml,expected_files", [
+    ("custom_equivalence_testing_bounds.yaml", [
+        "equivalence_testing_bounds.png",
+        "intermed_files/equivalence_testing_bounds.points1",
+    ]),
+])
+def test_equivalence_testing_bounds(module_setup_env, remove_files, input_yaml, expected_files):
+    """Checking that the plot file is getting created"""
 
-@pytest.fixture
-def setup(remove_files, module_setup_env):
-    # Cleanup the plotfile and point1 output file from any previous run
-    remove_files(os.environ['TEST_OUTPUT'], 'equivalence_testing_bounds.png')
-    remove_files(os.environ['TEST_OUTPUT'], 'intermed_files/equivalence_testing_bounds.points1')
+    remove_files(os.environ['TEST_OUTPUT'], expected_files)
 
-    custom_config_filename = f"{cwd}/custom_equivalence_testing_bounds.yaml"
-    etb.main(custom_config_filename)
+    etb.main(f"{os.environ['TEST_DIR']}/{input_yaml}")
 
-
-def test_files_exist(setup):
-    """Checking that the plot and data files are getting created"""
-    assert os.path.isfile(f"{os.environ['TEST_OUTPUT']}/equivalence_testing_bounds.png")
-    assert os.path.isfile(f"{os.environ['TEST_OUTPUT']}/intermed_files/equivalence_testing_bounds.points1")
+    for expected_file in expected_files:
+        assert os.path.isfile(f"{os.environ['TEST_OUTPUT']}/{expected_file}")

@@ -1,5 +1,5 @@
 plot_filename: !ENV '${TEST_OUTPUT}/fbias_fixed_vars.png'
-points_path: !ENV '${TEST_OUTPUT}'
+points_path: !ENV '${TEST_OUTPUT}/fbias_points'
 stat_input: !ENV '${TEST_DIR}/fbias_data.txt'
 
 alpha: 0.05

@@ -1,98 +1,107 @@
-import pandas as pd
 import pytest
+
+import pandas as pd
 import os
-from metplotpy.plots.line import line as l
 
-cwd = os.path.dirname(__file__)
-
-
-def test_custom_line_without_points(module_setup_env, remove_files):
-    """Checking that the plot file is getting created but the .points1 and .points2 files are NOT"""
-    output_dir = os.environ['TEST_OUTPUT']
-    expected_files = ['line.png']
-    not_expected_files = ['line.points1', 'line.points2']
-
-    remove_files(os.environ['TEST_OUTPUT'], expected_files + not_expected_files)
-
-    l.main(f"{cwd}/custom_line.yaml")
-
-    for expected_file in expected_files:
-        assert os.path.isfile(os.path.join(output_dir, expected_file))
-
-    for not_expected_file in not_expected_files:
-        assert not os.path.isfile(os.path.join(output_dir, not_expected_file))
+from metplotpy.plots.line import line
 
 
-def test_custom_line2_with_points(module_setup_env, remove_files):
-    """Checking that the plot and point data files are getting created.
-    Checking that no NaNs are found in the pointsN files"""
-    output_dir = os.environ['TEST_OUTPUT']
-    expected_files = (
-        'line.png',
-        'intermed_files/line.points1',
-        'intermed_files/line.points2'
-    )
+@pytest.mark.parametrize("input_yaml,expected_files", [
+    ("custom_line.yaml", [
+        "line.png",
+    ]),
+    ("custom_line2.yaml", [
+        "line.png",
+        "custom_line2/line.points1",
+        "custom_line2/line.points2",
+    ]),
+    ("custom_line_from_zero.yaml", [
+        "line_from_zero.png",
+    ]),
+    ("env_fcst_var.yaml", [
+        "env_fcst_var_stat_line.png",
+        "env_fcst_var/line.points1",
+        "env_fcst_var/line.points2",
+    ]),
+    ("mv_custom_vert_line.yaml", [
+        "vert_line_plot.png",
+        "mv_custom_vert_line/vert_line_plot.points1",
+        "mv_custom_vert_line/vert_line_plot.points2",
+    ]),
+    ("fbias_fixed_vars_vals.yaml", [
+        "fbias_fixed_vars.png",
+        "fbias_points/fbias.points1",
+    ]),
+    # formerly in test_line_groups_plots.py
+    ("custom_line_groups.yaml", [
+        "line_groups.png",
+        "line_groups.points1",
+        "line_groups.points2",
+        "line_groups.html",
+    ]),
+    ("custom_line_groups2.yaml", [
+        "line_groups2.png",
+        "intermed_files/line_groups.points1",
+        "intermed_files/line_groups.points2",
+    ]),
+])
+def test_line_plot(module_setup_env, remove_files, input_yaml, expected_files):
+    """Checking that the plot file is getting created"""
 
     remove_files(os.environ['TEST_OUTPUT'], expected_files)
 
-    l.main(f"{cwd}/custom_line2.yaml")
+    # used by env_fcst_var.yaml
+    os.environ['FCST_VAR_VAL1'] = "RH"
+    os.environ['FCST_VAR_STAT1'] = 'MAE'
+    os.environ['FCST_VAR_VAL2'] = "TMP"
+    os.environ['FCST_VAR_STAT2'] = 'ME'
+
+    line.main(f"{os.environ['TEST_DIR']}/{input_yaml}")
 
     for expected_file in expected_files:
-        assert os.path.isfile(os.path.join(output_dir, expected_file))
+        assert os.path.isfile(f"{os.environ['TEST_OUTPUT']}/{expected_file}")
 
+    if input_yaml == "custom_line2.yaml":
+        check_custom_line2_nans()
+
+    if input_yaml == "mv_custom_vert_line.yaml":
+        check_vertical_plot()
+
+    if input_yaml == "env_fcst_var.yaml":
+        check_env_fcst_var()
+
+    if input_yaml == "fbias_fixed_vars_vals.yaml":
+        check_fbias_fixed_vars_vals()
+
+
+def check_custom_line2_nans():
+    """Checking that no NaNs are found in the pointsN files"""
     # Check for NaN's in the intermediate files,_line.points1 and line.points2
     # Fail if there are any NaN's-this indicates something went wrong with the
     # line_series.py module's _create_series_points() method.
-    with open(f"{output_dir}/intermed_files/line.points1", "r") as f:
+    with open(f"{os.environ['TEST_OUTPUT']}/custom_line2/line.points1", "r") as f:
         data = f.read()
     assert "NaN" not in data
 
-    with open(f"{output_dir}/intermed_files/line.points2", "r") as f:
+    with open(f"{os.environ['TEST_OUTPUT']}/custom_line2/line.points2", "r") as f:
         data = f.read()
     assert "NaN" not in data
 
     # Verify that the nan.points1 file does indeed trigger a "nans_found"
-    with open(f"{cwd}/nan.points1", "r") as f:
+    with open(f"{os.environ['TEST_DIR']}/nan.points1", "r") as f:
         data = f.read()
     assert "NaN" in data
 
 
-def test_custom_line_from_zero(module_setup_env, remove_files):
-    """Compare an expected plot with the start_at_zero option, with the
-     newly created plot to verify that the plot hasn't changed in appearance."""
-    expected_files = [
-        'line_from_zero.png'
-    ]
-
-    remove_files(os.environ['TEST_OUTPUT'], expected_files)
-
-    l.main(f"{cwd}/custom_line_from_zero.yaml")
-
-    assert(os.path.isfile(f"{os.environ['TEST_OUTPUT']}/line_from_zero.png"))
-
-
-def test_vertical_plot(module_setup_env, remove_files):
+def check_vertical_plot():
     """Test that the y1 values from the Python version of the vertical plot
      match the y1 values from the METviewer Rplot version of the vertical plot.
      Avoid relying on image comparison tests."""
-    expected_files = [
-        'vert_line_plot.png',
-        'intermed_files/vert_line_plot.points1'
-    ]
-
-    remove_files(os.environ['TEST_OUTPUT'], expected_files)
-
-    l.main(f"{cwd}/mv_custom_vert_line.yaml")
-
-    for expected_file in expected_files:
-        assert os.path.isfile(os.path.join(os.environ['TEST_OUTPUT'], expected_file))
-
-    output_dir = os.environ['TEST_OUTPUT']
 
     # Retrieve the .points1 files generated by METviewer and METplotpy respectively
-    mv_df = pd.read_csv(f'{cwd}/intermed_files/vert_plot_y1_from_metviewer.points1',
+    mv_df = pd.read_csv(f"{os.environ['TEST_DIR']}/intermed_files/vert_plot_y1_from_metviewer.points1",
                         sep=" ", header=None)
-    mpp_df = pd.read_csv(f'{output_dir}/intermed_files/vert_line_plot.points1', sep=" ",
+    mpp_df = pd.read_csv(f"{os.environ['TEST_OUTPUT']}/mv_custom_vert_line/vert_line_plot.points1", sep=" ",
                          header=None)
 
     # -----------------------
@@ -119,24 +128,13 @@ def test_vertical_plot(module_setup_env, remove_files):
         assert sum_diff < 0.00001
 
 
-def test_fbias_fixed_vars_vals(module_setup_env, remove_files):
+def check_fbias_fixed_vars_vals():
     """Verify that the fixed_vars_vals_input setting reproduces the same data points that METviewer produces."""
-    expected_files = (
-        'fbias_fixed_vars.png',
-        'fbias.points1',
-    )
-
-    remove_files(os.environ['TEST_OUTPUT'], expected_files)
-
-    l.main(f"{cwd}/fbias_fixed_vars_vals.yaml")
-
-    for expected_file in expected_files:
-        assert os.path.isfile(os.path.join(os.environ['TEST_OUTPUT'], expected_file))
 
     # Retrieve the .points1 files generated by METviewer and METplotpy respectively
-    mv_df = pd.read_csv(f'{cwd}/intermed_files/mv_fixed_var_vals.points1',
+    mv_df = pd.read_csv(f"{os.environ['TEST_DIR']}/intermed_files/mv_fixed_var_vals.points1",
                         sep="\t", header=None)
-    mpp_df = pd.read_csv(f'{os.environ['TEST_OUTPUT']}/fbias.points1', sep="\t", header=None)
+    mpp_df = pd.read_csv(f"{os.environ['TEST_OUTPUT']}/fbias_points/fbias.points1", sep="\t", header=None)
 
     # Verify that the values in the generated points1 file are identical
     # to those in the METviewer points1 file.
@@ -155,28 +153,13 @@ def test_fbias_fixed_vars_vals(module_setup_env, remove_files):
         assert mv_df.iloc[i][0] == mpp_df.iloc[i][0]
 
 
-def test_envs_fcst_var_stat(module_setup_env, remove_files):
+def check_env_fcst_var():
     """Verify that the environment vars used for fcst_var_val1/2 and stat1/2 in
      a config file creates the same data for plotting as a config file with the
      fcst_var_val1 and stat hard-coded in a config file."""
 
-    expected_files = (
-        'env_fcst_var_stat_line.png',
-        'intermed_files/env_fcst_var_stat/line.points1',
-        'intermed_files/env_fcst_var_stat/line.points2',
-    )
-
-    remove_files(os.environ['TEST_OUTPUT'], expected_files)
-
-    os.environ['FCST_VAR_VAL1'] = "RH"
-    os.environ['FCST_VAR_STAT1'] = 'MAE'
-    os.environ['FCST_VAR_VAL2'] = "TMP"
-    os.environ['FCST_VAR_STAT2'] = 'ME'
-
-    l.main(f"{cwd}/env_fcst_var.yaml")
-
-    expected_points1 = f"{cwd}/intermed_files/expected_var_stat_line.points1"
-    expected_points2 = f"{cwd}/intermed_files/expected_var_stat_line.points2"
+    expected_points1 = f"{os.environ['TEST_DIR']}/intermed_files/expected_var_stat_line.points1"
+    expected_points2 = f"{os.environ['TEST_DIR']}/intermed_files/expected_var_stat_line.points2"
     expected_df1 = pd.read_csv(f'{expected_points1}', sep="\t", header=None)
     expected_df2 = pd.read_csv(f'{expected_points2}', sep="\t", header=None)
     num_expected1_rows = expected_df1.shape[0]
@@ -185,9 +168,9 @@ def test_envs_fcst_var_stat(module_setup_env, remove_files):
     num_expected2_cols = expected_df2.shape[1]
 
     # Retrieve the .points1 files generated by METplotpy respectively
-    mpp_df1 = pd.read_csv(f'{os.environ['TEST_OUTPUT']}/intermed_files/env_fcst_var_stat/line.points1',
+    mpp_df1 = pd.read_csv(f'{os.environ['TEST_OUTPUT']}/env_fcst_var/line.points1',
                         sep="\t", header=None)
-    mpp_df2 = pd.read_csv(f'{os.environ['TEST_OUTPUT']}/intermed_files/env_fcst_var_stat/line.points2', sep="\t", header=None)
+    mpp_df2 = pd.read_csv(f'{os.environ['TEST_OUTPUT']}/env_fcst_var/line.points2', sep="\t", header=None)
 
     # Verify that the values in the generated points1/2 files are identical
     # to those in the rh_mae_tmp_me_line.points1/2 files.
