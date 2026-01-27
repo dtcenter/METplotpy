@@ -1,3 +1,12 @@
+plot_filename: !ENV '${TEST_OUTPUT}/wind_rose_custom_points.png'
+
+dump_points: True
+points_path: !ENV '${TEST_OUTPUT}/custom_points'
+
+# No stat_input, force creation of 'default' points file name
+
+show_in_browser: False
+
 type: FCST
 title: Wind Rose
 wind_rose_breaks:
@@ -29,8 +38,3 @@ angularaxis_ticktext:
   - 'E'
   - 'S'
   - 'W'
-plot_filename: !ENV '${TEST_DIR}/intermed_files/wind_rose_custom_points.png'
-dump_points: True
-points_path: !ENV '${TEST_DIR}/intermed_files'
-stat_input: !ENV '${TEST_DIR}/point_stat_mpr.txt'
-show_in_browser: False
