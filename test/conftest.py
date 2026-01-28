@@ -83,19 +83,28 @@ def assert_json_equal():
     return compare_json
 
 
-@pytest.fixture
-def setup_env():
-    def set_environ(test_dir):
-        print("Setting up environment")
-        os.environ['TEST_DIR'] = test_dir
-        # write test output under METPLOTPY_TEST_OUTPUT if set,
-        # otherwise write to test/test_output/
-        output_dir = os.environ.get('METPLOTPY_TEST_OUTPUT',
-                                    os.path.join(test_dir, os.pardir))
-        # write to a subdirectory named after the plot type
-        os.environ['TEST_OUTPUT'] = os.path.join(output_dir, 'test_output', os.path.basename(test_dir))
+@pytest.fixture(scope="module")
+def module_setup_env(request):
+    """Module-scoped fixture that sets up environment variables once per test module.
 
-    return set_environ
+    This fixture automatically determines the test directory from the test module's location.
+    """
+    test_dir = request.fspath.dirname
+    print("Setting up environment")
+    os.environ['TEST_DIR'] = test_dir
+    # write test output under METPLOTPY_TEST_OUTPUT if set, otherwise write to test/test_output
+    # write to a subdirectory named after the plot type
+    output_dir = os.environ.get('METPLOTPY_TEST_OUTPUT', os.path.join(test_dir, os.pardir))
+    output_dir = os.path.join(output_dir, 'test_output', os.path.basename(test_dir))
+
+    # remove output directory for plot type if it already exists to ensure clean test environment
+    if os.path.exists(output_dir):
+        print(f"Removing existing output directory: {output_dir}")
+        shutil.rmtree(output_dir)
+
+    os.environ['TEST_OUTPUT'] = output_dir
+    yield
+    # Optional: cleanup after all tests in the module complete
 
 
 @pytest.fixture(scope="module")
