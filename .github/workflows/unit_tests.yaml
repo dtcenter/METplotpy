@@ -70,5 +70,4 @@ jobs:
 
     - name: Test with pytest
       run: |
-        export PYTHONPATH=$PYTHONPATH:$RUNNER_WORKSPACE/METcalcpy
         pytest
