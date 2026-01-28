@@ -488,9 +488,9 @@ class EquivalenceTestingBounds(BasePlot):
         """
         Removes previously made HTML file.
         """
+        base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+        html_name = f"{base_name}.html"
 
-        name_arr = self.get_config_value('plot_filename').split('.')
-        html_name = name_arr[0] + ".html"
         # remove the old file if it exist
         if os.path.exists(html_name):
             os.remove(html_name)
@@ -504,9 +504,9 @@ class EquivalenceTestingBounds(BasePlot):
         self.logger.info(f"Write html file: {datetime.now()}")
 
         if self.config_obj.create_html is True:
-            # construct the fle name from plot_filename
-            name_arr = self.get_config_value('plot_filename').split('.')
-            html_name = name_arr[0] + ".html"
+            # construct the file name from plot_filename
+            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+            html_name = f"{base_name}.html"
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
@@ -556,6 +556,7 @@ class EquivalenceTestingBounds(BasePlot):
                 filename = self.config_obj.points_path + os.path.sep + filename
 
             filename = filename + '.points1'
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
 
             # save points
             self._save_points(ci_tost_df.values.tolist(), filename)

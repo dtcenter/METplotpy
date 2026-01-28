@@ -268,6 +268,7 @@ class RevisionBox(Box):
                 filename = self.config_obj.points_path + os.path.sep + filename
 
             filename = filename + '.points1'
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
             if os.path.exists(filename):
                 os.remove(filename)
             for series in self.series_list:

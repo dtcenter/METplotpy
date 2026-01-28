@@ -585,7 +585,7 @@ def create_plot(config_obj: dict) -> None:
                               quotechar='"', skipinitialspace=True, encoding='utf-8')
 
     logger = util.get_common_logger(config_obj.log_level, config_obj.log_filename)
-\
+
     for plot_type in config_obj.plot_type_list:
 
         # Apply event equalization, if requested

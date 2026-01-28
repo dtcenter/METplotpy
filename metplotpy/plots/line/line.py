@@ -76,8 +76,8 @@ class Line(BasePlot):
                          "curves is inconsistent with the number of settings "
                          "required for describing each series. Please check "
                          "the number of your configuration file's plot_ci, "
-                         "plot_disp, series_order, user_legend "
-                         "colors,  series_symbols, show_legend settings.")
+                         "plot_disp, series_order, user_legend, "
+                         "colors, series_symbols, and show_legend settings.")
             self.logger.error(f"ValueError: {error_msg}: {datetime.now()}")
             raise ValueError(error_msg)
 
@@ -712,8 +712,9 @@ class Line(BasePlot):
         Removes previously made HTML file.
         """
 
-        name_arr = self.get_config_value('plot_filename').split('.')
-        html_name = name_arr[0] + ".html"
+        base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+        html_name = f"{base_name}.html"
+
         # remove the old file if it exist
         if os.path.exists(html_name):
             os.remove(html_name)
@@ -728,9 +729,8 @@ class Line(BasePlot):
         logger.info(f"Begin writing to html file: {datetime.now()}")
         if self.config_obj.create_html is True:
             # construct the file name from plot_filename
-            name_arr = self.get_config_value('plot_filename').split('.')
-            name_arr[-1] = 'html'
-            html_name = ".".join(name_arr)
+            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+            html_name = f"{base_name}.html"
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)

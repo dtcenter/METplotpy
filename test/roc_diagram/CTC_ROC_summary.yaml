@@ -1,3 +1,8 @@
+plot_filename: !ENV '${TEST_OUTPUT}/CTC_ROC_summary.png'
+points_path: !ENV '${TEST_OUTPUT}/intermed_files'
+
+stat_input: !ENV '${TEST_DIR}/CTC_ROC_summary.data'
+
 add_point_thresholds: 'True'
 alpha: 0.05
 box_avg: 'False'
@@ -77,7 +82,6 @@ plot_disp:
 - 'True'
 - 'True'
 - 'True'
-plot_filename: !ENV '${TEST_DIR}/CTC_ROC_summary.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -123,7 +127,6 @@ show_signif:
 - 'False'
 - 'False'
 start_from_zero: 'False'
-stat_input: !ENV '${TEST_DIR}/CTC_ROC_summary.data'
 summary_curve: median
 sync_yaxes: 'False'
 title: test title
@@ -174,5 +177,3 @@ ytlab_horiz: 0.5
 ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
-points_path: !ENV '${TEST_DIR}/intermed_files'
-

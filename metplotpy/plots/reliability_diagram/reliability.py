@@ -600,8 +600,9 @@ class Reliability(BasePlot):
         Removes previously made HTML file.
         """
 
-        name_arr = self.get_config_value('plot_filename').split('.')
-        html_name = name_arr[0] + ".html"
+        base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+        html_name = f"{base_name}.html"
+
         # remove the old file if it exist
         if os.path.exists(html_name):
             os.remove(html_name)
@@ -613,8 +614,8 @@ class Reliability(BasePlot):
         self.logger.info("Writing html file.")
         if self.config_obj.create_html is True:
             # construct the fle name from plot_filename
-            name_arr = self.get_config_value('plot_filename').split('.')
-            html_name = name_arr[0] + ".html"
+            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+            html_name = f"{base_name}.html"
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
@@ -712,6 +713,7 @@ class Reliability(BasePlot):
                     else:
                         formatted_row.append("%.6f" % val)
                 all_points_formatted.append(formatted_row)
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
             with open(output_file, "w+") as my_csv:
                 csv_writer = csv.writer(my_csv, delimiter=' ')
                 csv_writer.writerows(all_points_formatted)

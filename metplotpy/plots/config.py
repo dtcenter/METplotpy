@@ -490,6 +490,9 @@ class Config:
         """
         show_legend_settings = self.get_config_value('show_legend')
 
+        if show_legend_settings is None:
+            raise ValueError("ERROR: show_legend parameter is not provided.")
+
         # Support all variations of setting the show_legend: '1', 1, "true" (any combination of cases), True (boolean)
         updated_show_legend_settings = []
         for legend_setting in show_legend_settings:
@@ -498,10 +501,6 @@ class Config:
                 updated_show_legend_settings.append(int(1))
             else:
                 updated_show_legend_settings.append(int(0))
-
-
-        if show_legend_settings is None:
-            raise ValueError("ERROR: show_legend parameter is not provided.")
 
         return self.create_list_by_series_ordering(list(updated_show_legend_settings))
 

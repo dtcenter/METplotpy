@@ -1,3 +1,10 @@
+plot_filename: !ENV '${TEST_OUTPUT}/wind_rose_custom.png'
+
+dump_points: True
+points_path: !ENV '${TEST_OUTPUT}/custom'
+
+stat_input: !ENV '${TEST_DIR}/point_stat_mpr.txt'
+
 type: FCST
 title: Wind Rose
 wind_rose_breaks:
@@ -30,19 +37,6 @@ angularaxis_ticktext:
   - 'S'
   - 'W'
 
-# !!!!!!!! IMPORTANT !!!!!!
-# Uncomment the stat_input setting and specify the full path to the
-# point_stat_mpr.txt file
-stat_input: !ENV '${TEST_DIR}/point_stat_mpr.txt'
-
-plot_filename: !ENV '${TEST_DIR}/wind_rose_custom.png'
-dump_points: True
-
-# Optional, uncomment and set to directory to store the .points1 file
-# that is used by METviewer (created when dump_points_1 is set to True)
-# if dump_points_1 is True and this is uncommented, the points1 file
-# will be saved in the default location (i.e. where the input data file is stored).
-# points_path: '/dir_to_save_points1_file'
 show_in_browser: False
 
 # To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
