@@ -66,7 +66,7 @@ def extract_sounding_data(input_file, output_directory):
             txt_file.write("".join(line) + "\n")
 
     # Read in the current sounding data file, replacing any 9999 values with NaN.
-    df_raw: pandas.DataFrame = pd.read_csv(sounding_data_file, sep='\s+', skiprows=1, engine='python')
+    df_raw: pandas.DataFrame = pd.read_csv(sounding_data_file, sep=r'\s+', skiprows=1, engine='python')
     df_raw.replace('9999', 'NA', inplace=True)
 
     # Rename some columns so they are more descriptive
