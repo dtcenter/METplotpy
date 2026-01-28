@@ -83,21 +83,6 @@ def assert_json_equal():
     return compare_json
 
 
-@pytest.fixture
-def setup_env():
-    def set_environ(test_dir):
-        print("Setting up environment")
-        os.environ['TEST_DIR'] = test_dir
-        # write test output under METPLOTPY_TEST_OUTPUT if set,
-        # otherwise write to test/test_output/
-        output_dir = os.environ.get('METPLOTPY_TEST_OUTPUT',
-                                    os.path.join(test_dir, os.pardir))
-        # write to a subdirectory named after the plot type
-        os.environ['TEST_OUTPUT'] = os.path.join(output_dir, 'test_output', os.path.basename(test_dir))
-
-    return set_environ
-
-
 @pytest.fixture(scope="module")
 def module_setup_env(request):
     """Module-scoped fixture that sets up environment variables once per test module.
