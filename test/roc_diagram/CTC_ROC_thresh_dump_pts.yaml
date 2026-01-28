@@ -1,4 +1,9 @@
 ---
+plot_filename: !ENV '${TEST_OUTPUT}/CTC_ROC_thresh_dump_pts.png'
+points_path: !ENV '${TEST_OUTPUT}/intermed_files'
+
+stat_input: !ENV '${TEST_DIR}/CTC_ROC_thresh.data'
+
 add_point_thresholds: 'True'
 alpha: 0.05
 box_avg: 'False'
@@ -64,14 +69,12 @@ plot_ci:
   - none
 plot_disp:
   - 'True'
-plot_filename: !ENV '${TEST_DIR}/CTC_ROC_thresh_dump_pts.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
 plot_type: png16m
 plot_units: in
 plot_width: 11.0
-points_path: !ENV '${TEST_DIR}/intermed_files'
 random_seed: null
 reverse_connection_order: 'True'
 roc_ctc: true
@@ -91,7 +94,6 @@ series_val_2: {}
 show_nstats: 'False'
 show_signif:
   - 'False'
-stat_input: !ENV '${TEST_DIR}/CTC_ROC_thresh.data'
 sync_yaxes: 'False'
 title: test title
 title_align: 0.5

@@ -317,14 +317,15 @@ class WindRosePlot(BasePlot):
         image_name = self.get_config_value('plot_filename')
         if self.figure:
             try:
+                os.makedirs(os.path.dirname(image_name), exist_ok=True)
                 self.figure.write_image(image_name)
 
             except FileNotFoundError:
-                print("Can't save to file " + image_name)
+                self.logger.error("Can't save to file " + image_name)
             except ValueError as ex:
-                print(ex)
+                self.logger.error(ex)
         else:
-            print("Oops!  The figure was not created. Can't save.")
+            self.logger.error("Oops!  The figure was not created. Can't save.")
 
     @staticmethod
     def _boundary_filter(boundary_lower_speed: float,

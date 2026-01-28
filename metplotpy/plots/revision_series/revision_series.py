@@ -279,6 +279,7 @@ class RevisionSeries(Line):
                 filename = 'points'
 
             filename = filename + '.points1'
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
             with open(filename, 'w') as file:
                 for series in self.series_list:
                     file.writelines(

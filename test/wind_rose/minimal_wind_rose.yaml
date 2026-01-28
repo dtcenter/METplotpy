@@ -2,10 +2,6 @@
 # **NOTE**: update the stat_input and plot_filename settings with the full path to your
 # input file and output file, respectively.
 stat_input: !ENV '${TEST_DIR}/point_stat_mpr.txt'
-plot_filename: !ENV '${TEST_DIR}/wind_rose_default.png'
+plot_filename: !ENV '${TEST_OUTPUT}/wind_rose_minimal.png'
 
-# Optional, uncomment and set to directory to store the .points1 file
-# that is used by METviewer (created when dump_points_1 is set to True)
-# if dump_points_1 is True and this is uncommented, the points1 file
-# will be saved in the default location (i.e. where the input data file is stored).
-#points_path: '/dir_to_save_points1_file'
+points_path: !ENV '${TEST_OUTPUT}/minimal'

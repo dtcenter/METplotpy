@@ -365,8 +365,9 @@ class Contour(BasePlot):
         Removes previously made HTML file.
         """
 
-        name_arr = self.get_config_value('plot_filename').split('.')
-        html_name = name_arr[0] + ".html"
+        base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+        html_name = f"{base_name}.html"
+
         # remove the old file if it exist
         if os.path.exists(html_name):
             os.remove(html_name)
@@ -377,9 +378,8 @@ class Contour(BasePlot):
         """
         if self.config_obj.create_html is True:
             # construct the file name from plot_filename
-            name_arr = self.get_config_value('plot_filename').split('.')
-            name_arr[-1] = 'html'
-            html_name = ".".join(name_arr)
+            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+            html_name = f"{base_name}.html"
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
@@ -408,6 +408,7 @@ class Contour(BasePlot):
                 filename = self.config_obj.points_path + os.path.sep + filename
 
             filename = filename + '.points1'
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
 
             with open(filename, 'w') as file:
                 writer = csv.writer(file, delimiter='\t')

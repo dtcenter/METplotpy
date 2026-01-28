@@ -1,8 +1,14 @@
+plot_filename: !ENV '${TEST_OUTPUT}/scatter_mpr_tmp_obs_lat.png'
+points_path:  !ENV '${TEST_OUTPUT}'
+log_filename: !ENV '${TEST_OUTPUT}/scatter_log.txt'
+
+stat_input: !ENV '${TEST_DIR}/reformatted_data_for_scatter.data'
+
+
 caption_align: 0.4
 caption_offset: 2.88
 caption_size: 6
 dump_points: True
-points_path:  ./output/
 var_val_x_axis: fcst
 var_val_y_axis: obs
 fcst_var: TMP
@@ -18,7 +24,6 @@ indy_stagger: False
 legend_box: o
 legend_ncol: 3
 legend_size: 0.8
-log_filename: './output/scatter_log.txt'
 log_level: INFO
 # Supported symbols: ., o, ^, d, H, or s (^= triangle, d=diamond, H=hexagon, s=square)
 marker_symbol: .
@@ -26,13 +31,11 @@ marker_symbol: .
 marker_colormap: 'nipy_spectral'
 marker_size: 6
 plot_caption: 'optional caption'
-plot_filename: ./output/scatter_mpr_tmp_obs_lat.png
 plot_height: 8.5
 plot_width: 11.0
 show_legend: True
 show_trendline: True
 start_from_zero: False
-stat_input: ./reformatted_data_for_scatter.data
 title: "MPR usecase data for TMP, P900-750"
 title_align: 0.5
 title_offset: -2

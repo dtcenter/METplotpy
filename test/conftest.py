@@ -1,14 +1,24 @@
 import pytest
 import os
 from unittest.mock import patch
+import sys
+from pathlib import Path
 import shutil
+import logging
 import json
 import xarray as xr
 from pandas import DatetimeIndex
 
+# add METplotpy directory to path so the package can be found
+metplotpy_dir = str(Path(__file__).parents[1])
+sys.path.insert(0, os.path.abspath(metplotpy_dir))
+
+# set METPLOTPY_BASE to the root of the repo as well
+os.environ['METPLOTPY_BASE'] = metplotpy_dir
+
 # This fixture temporarily sets the working directory
 # to the dir containing the test file. This means 
-# realative file locations can be used for each test
+# relative file locations can be used for each test
 # file.
 # NOTE: autouse=True means this applies to ALL tests.
 # Code that updates the cwd inside test is now redundant
@@ -73,20 +83,61 @@ def assert_json_equal():
     return compare_json
 
 
-@pytest.fixture
-def setup_env():
-    def set_environ(test_dir):
-        print("Setting up environment")
-        os.environ['METPLOTPY_BASE'] = f"{test_dir}/../../"
-        os.environ['TEST_DIR'] = test_dir
-    return set_environ
+@pytest.fixture(scope="module")
+def module_setup_env(request):
+    """Module-scoped fixture that sets up environment variables once per test module.
+
+    This fixture automatically determines the test directory from the test module's location.
+    """
+    test_dir = request.fspath.dirname
+    print("Setting up environment")
+    os.environ['TEST_DIR'] = test_dir
+    # write test output under METPLOTPY_TEST_OUTPUT if set, otherwise write to test/test_output
+    # write to a subdirectory named after the plot type
+    output_dir = os.environ.get('METPLOTPY_TEST_OUTPUT', os.path.join(test_dir, os.pardir))
+    output_dir = os.path.join(output_dir, 'test_output', os.path.basename(test_dir))
+
+    # remove output directory for plot type if it already exists to ensure clean test environment
+    if os.path.exists(output_dir):
+        print(f"Removing existing output directory: {output_dir}")
+        shutil.rmtree(output_dir)
+
+    os.environ['TEST_OUTPUT'] = output_dir
+    yield
+    # Optional: cleanup after all tests in the module complete
+
+
+@pytest.fixture(scope="module")
+def module_setup_env(request):
+    """Module-scoped fixture that sets up environment variables once per test module.
+
+    This fixture automatically determines the test directory from the test module's location.
+    """
+    test_dir = request.fspath.dirname
+    print("Setting up environment")
+    os.environ['TEST_DIR'] = test_dir
+    # write test output under METPLOTPY_TEST_OUTPUT if set, otherwise write to test/test_output
+    # write to a subdirectory named after the plot type
+    output_dir = os.environ.get('METPLOTPY_TEST_OUTPUT', os.path.join(test_dir, os.pardir))
+    output_dir = os.path.join(output_dir, 'test_output', os.path.basename(test_dir))
+
+    # remove output directory for plot type if it already exists to ensure clean test environment
+    if os.path.exists(output_dir):
+        print(f"Removing existing output directory: {output_dir}")
+        shutil.rmtree(output_dir)
+
+    os.environ['TEST_OUTPUT'] = output_dir
+    yield
+    # Optional: cleanup after all tests in the module complete
 
 
 @pytest.fixture()
 def remove_files():
     def remove_the_files(test_dir, file_list):
-        print("Removing the files")
+        print("Removing files")
         # loop over list of files under test_dir and remove them
+        if isinstance(file_list, str):
+            file_list = [file_list]
         for file in file_list:
             try:
                 os.remove(os.path.join(test_dir, file))
@@ -94,11 +145,12 @@ def remove_files():
                 pass
 
         # also remove intermed_files directory if it exists
-        print("Removing intermed_files directory if it exists")
-        try:
-            shutil.rmtree(f"{test_dir}/intermed_files")
-        except FileNotFoundError:
-            pass
+        if os.path.isdir(f"{test_dir}/intermed_files"):
+            print("Removing intermed_files directory")
+            try:
+                shutil.rmtree(f"{test_dir}/intermed_files")
+            except FileNotFoundError:
+                pass
 
     return remove_the_files
 
@@ -133,3 +185,6 @@ def nc_test_file(tmp_path_factory):
     TEST_NC_DATA.to_netcdf(file_name)
     return file_name
 
+@pytest.fixture(autouse=True)
+def setup_logging(caplog):
+    caplog.set_level(logging.INFO)

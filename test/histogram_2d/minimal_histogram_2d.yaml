@@ -2,4 +2,4 @@
 # configuration file
 
 stat_input: !ENV '${TEST_DIR}/grid_diag_temperature.nc'
-plot_filename: !ENV '${TEST_DIR}/tmp_z2_p500.png'
+plot_filename: !ENV '${TEST_OUTPUT}/tmp_z2_p500.png'

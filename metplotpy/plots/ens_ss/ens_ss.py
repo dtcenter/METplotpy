@@ -475,8 +475,9 @@ class EnsSs(BasePlot):
         Removes previously made HTML file.
         """
 
-        name_arr = self.get_config_value('plot_filename').split('.')
-        html_name = name_arr[0] + ".html"
+        base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+        html_name = f"{base_name}.html"
+
         # remove the old file if it exist
         if os.path.exists(html_name):
             os.remove(html_name)
@@ -487,9 +488,8 @@ class EnsSs(BasePlot):
         """
         if self.config_obj.create_html is True:
             # construct the file name from plot_filename
-            name_arr = self.get_config_value('plot_filename').split('.')
-            name_arr[-1] = 'html'
-            html_name = ".".join(name_arr)
+            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+            html_name = f"{base_name}.html"
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
@@ -525,6 +525,7 @@ class EnsSs(BasePlot):
             #     filename = 'points'
 
             filename = filename + '.points1'
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
 
             with open(filename, 'w') as file:
                 while i < len(self.series_list):

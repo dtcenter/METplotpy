@@ -1,3 +1,7 @@
+plot_filename: !ENV '${TEST_OUTPUT}/custom_reliability_diagram.png'
+
+stat_input: !ENV '${TEST_DIR}/plot_20210311_145053.data'
+
 add_noskill_line: 'True'
 add_reference_line: 'True'
 add_skill_line: 'True'
@@ -81,7 +85,6 @@ plot_ci:
 - none
 plot_disp:
 - 'True'
-plot_filename: !ENV '${TEST_DIR}/custom_reliability_diagram.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -111,7 +114,6 @@ series_val_2: {}
 show_nstats: 'False'
 show_signif:
 - 'False'
-stat_input: !ENV '${TEST_DIR}/plot_20210311_145053.data'
 summary_curves: []
 sync_yaxes: 'False'
 title: test title

@@ -84,7 +84,7 @@ plot_ci:
   - none
 plot_disp:
   - 'True'
-plot_filename: !ENV '${TEST_DIR}/threshold_bar.png'
+plot_filename: !ENV '${TEST_OUTPUT}/threshold_bar.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -165,3 +165,5 @@ ytlab_horiz: 0.65
 ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 3
+show_legend:
+  -True

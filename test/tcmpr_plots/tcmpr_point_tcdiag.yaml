@@ -1,3 +1,11 @@
+plot_dir: !ENV '${TEST_OUTPUT}/point_tcdiag'
+log_filename: !ENV '${TEST_OUTPUT}/point_tcdiag/tcmpr.log'
+
+baseline_file: !ENV '${METPLOTPY_BASE}/metplotpy/plots/tcmpr_plots/hfip_baseline.dat'
+column_info_file: !ENV '${METPLOTPY_BASE}/metplotpy/plots/tcmpr_plots/plot_tcmpr_hdr.dat'
+
+tcst_dir: !ENV '${TEST_DIR}/Data/TCDiag/'
+
 colors:
   #  - 'green'
   - 'blue'
@@ -72,9 +80,6 @@ series_symbols_size:
   - 7
   - 7
 
-
-
-tcst_dir: './Data/TCDiag/'
 tcst_files: [ ]
 title: ''
 title_size: 1.
@@ -88,10 +93,7 @@ plot_type_list:
 
 event_equal: 'False'
 
-
-plot_dir: './output/'
 prefix: ''
-
 
 indy_vals:
   - 0
@@ -159,4 +161,3 @@ line_type: '-'
 connect_points: True
 
 log_level: INFO
-log_filename: './output/tcmpr.log'
