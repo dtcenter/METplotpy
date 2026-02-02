@@ -1,25 +1,17 @@
-import os
 import pytest
-import shutil
+
+import os
 import re
 
 from metplotpy.plots.skew_t import skew_t as skew_t
-# from metcalcpy.compare_images import  CompareImages
 
-cwd = os.path.dirname(__file__)
-
-
-def test_skew_t(setup_env):
-    setup_env(cwd)
-    custom_config_filename = os.path.join(cwd, "test_skew_t.yaml")
-
-    # Invoke the command to generate a skew-T  Diagram based on
-    # the test_skew_tm.yaml custom config file.
+def test_skew_t(module_setup_env):
+    custom_config_filename = os.path.join(os.environ['TEST_DIR'], "test_skew_t.yaml")
     skew_t.main(custom_config_filename)
 
     # Verify that files for the ssh052023 data exists for the 0,6, 12,18,24, 30, 42,
     # 48, 54, and 60 hour data.
-    output_dir = os.path.join(cwd, 'output')
+    output_dir = os.environ['TEST_OUTPUT']
 
     # Some of these data files have incomplete data so check for the expected hour
     # plots.
@@ -38,12 +30,6 @@ def test_skew_t(setup_env):
     _check_files_exist(files_of_interest)
     _check_files_not_created(files_of_interest)
     _check_empty_input(files_of_interest)
-
-    # Clean up all png files
-    shutil.rmtree(output_dir)
-    # If running without the ' -p no:logging' option, then uncomment to ensure that log
-    # files are removed.
-    # shutil.rmtree('./logs')
 
 
 def _check_files_exist(files_of_interest):
@@ -80,7 +66,7 @@ def _check_files_exist(files_of_interest):
         if expected in subset_files_of_interest:
             num_found += 1
 
-    assert len(subset_files_of_interest) == num_found
+    assert len(expected_base_filenames) == num_found
 
 
 def _check_files_not_created(files_of_interest):

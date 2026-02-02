@@ -1,3 +1,7 @@
+plot_filename: !ENV '${TEST_OUTPUT}/fbias_fixed_vars.png'
+points_path: !ENV '${TEST_OUTPUT}/fbias_points'
+stat_input: !ENV '${TEST_DIR}/fbias_data.txt'
+
 alpha: 0.05
 box_avg: 'False'
 box_boxwex: 0.2
@@ -166,7 +170,6 @@ plot_ci:
 plot_disp:
 - 'True'
 - 'True'
-plot_filename: !ENV '${TEST_DIR}/fbias_fixed_vars.png'
 plot_height: 8.5
 plot_res: 72
 plot_stat: mean
@@ -174,13 +177,6 @@ plot_type: png16m
 plot_units: in
 plot_width: 11.0
 start_from_zero: True
-
-
-#Optional, uncomment and set to directory to store the .points1 file
-# that is used by METviewer (created when dump_points_1 is set to True)
-# if dump_points_1 is True and this is uncommented, the points1 file
-# will be saved in the default location (i.e. where the input data file is stored).
-points_path: !ENV '${TEST_DIR}/'
 
 random_seed: null
 series_line_style:
@@ -207,7 +203,6 @@ show_nstats: 'False'
 show_signif:
 - 'False'
 - 'False'
-stat_input: !ENV '${TEST_DIR}/fbias_data.txt'
 sync_yaxes: 'False'
 title: "Fixed variable fcst_thresh >0.0 for FBIAS"
 title_align: 0.5
@@ -258,5 +253,5 @@ ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
 show_legend:
-    -True
-    -True
+- True
+- True

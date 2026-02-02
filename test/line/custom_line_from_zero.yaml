@@ -1,3 +1,7 @@
+plot_filename: !ENV '${TEST_OUTPUT}/line_from_zero.png'
+
+stat_input: !ENV '${TEST_DIR}/line.data'
+
 alpha: 0.05
 box_avg: 'False'
 box_boxwex: 0.2
@@ -95,7 +99,7 @@ plot_disp:
 - 'True'
 - 'True'
 - 'True'
-plot_filename: !ENV '${TEST_DIR}/line_from_zero.png'
+
 plot_height: 8.5
 plot_res: 72
 plot_stat: median
@@ -155,7 +159,6 @@ show_signif:
 - 'False'
 - 'False'
 start_from_zero: 'True'
-stat_input: !ENV '${TEST_DIR}/line.data'
 sync_yaxes: 'False'
 title: test title
 title_align: 0.5
@@ -219,8 +222,8 @@ lines:
   type: vert_line
 
 show_legend:
-    -True
-    -True
-    -True
-    -True
-    -True
+- True
+- True
+- True
+- True
+- True

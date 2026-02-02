@@ -1,3 +1,8 @@
+plot_filename: !ENV '${TEST_OUTPUT}/reliability_points1.png'
+points_path: !ENV '${TEST_OUTPUT}/intermed_files'
+
+stat_input: !ENV '${TEST_DIR}/reliability.data'
+
 add_noskill_line: 'True'
 add_reference_line: 'True'
 add_skill_line: 'True'
@@ -96,7 +101,6 @@ plot_stat: median
 plot_type: png16m
 plot_units: in
 plot_width: 11.0
-points_path: !ENV '${TEST_DIR}/intermed_files'
 random_seed: null
 rely_event_hist: 'True'
 series_line_style:
@@ -180,8 +184,6 @@ ytlab_horiz: 0.5
 ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 1
-plot_filename: !ENV '${TEST_DIR}/intermed_files/reliability.png'
-stat_input: !ENV '${TEST_DIR}/reliability.data'
 noskill_line_col: 'green'
 reference_line_col: 'blue'
 show_legend:

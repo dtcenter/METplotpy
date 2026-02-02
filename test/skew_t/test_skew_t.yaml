@@ -6,9 +6,9 @@
 # Input and output file information
 input_directory: !ENV '${TEST_DIR}/data/2023/sh052023'
 input_file_extension: '.dat'
-output_directory: !ENV '${TEST_DIR}/output'
+output_directory: !ENV '${TEST_OUTPUT}'
 log_level: "INFO"
-log_directory: !ENV '${TEST_DIR}/logs'
+log_directory: !ENV '${TEST_OUTPUT}/logs'
 log_filename: 'tc_diags_skewt.log'
 
 # Sounding hours of interest. If all_sounding_hours is set to False, then the

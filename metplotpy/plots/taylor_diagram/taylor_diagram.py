@@ -19,6 +19,7 @@ METviewer.
  """
 __author__ = 'Minna Win'
 
+import os
 import warnings
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -333,6 +334,7 @@ class TaylorDiagram(BasePlot):
         # Save the figure, based on whether we are displaying only positive
         # correlations or all
         # correlations.
+        os.makedirs(os.path.dirname(self.config_obj.output_image), exist_ok=True)
         if pos_correlation_only:
             # Setting the bbox_inches keeps the legend box always within the plot
             # boundaries.  This *may* result

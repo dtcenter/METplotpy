@@ -1,29 +1,14 @@
 import os
 import math
-import shutil
 import pandas as pd
-import yaml
-from metplotpy.plots.scatter import scatter as sc
+
+from metplotpy.plots.scatter import scatter as scatter
 
 """
    Test for the scatter plot 
 """
 
-def read_config(config_filename) -> dict:
-    """
-        Args:
-           @param config_filename: The name of the YAML config file
-
-        Returns:
-           parms: a dictionary representation of the YAML config file
-    """
-    with open(config_filename, 'r') as stream:
-            try:
-                parms = yaml.load(stream, Loader=yaml.FullLoader)
-                return parms
-            except yaml.YAMLError as exc:
-                print(exc)
-def test_files_exist():
+def test_scatter(module_setup_env, remove_files):
     """
         Generate a scatter plot from reformatted MPR Usecase data and
         check that the plot file is created, the dump points file is created
@@ -31,19 +16,20 @@ def test_files_exist():
         first row of data).  Clean up the output directory when finished.
 
     """
-    os.environ['METPLOTPY_BASE'] = "../../"
-    test_config_filename = os.path.join(os.getcwd(), "test_scatter_mpr.yaml")
-    sc.main(test_config_filename)
+    # note: scatter_log.txt does not appear to be created
+    expected_files = [
+        "scatter_mpr_tmp_obs_lat.png",
+        "plot_points.txt",
+    ]
+    remove_files(os.environ['TEST_OUTPUT'], expected_files)
 
-    # Verify that the plot was generated
-    plot_file = "scatter_mpr_tmp_obs_lat.png"
-    path = os.path.join(os.getcwd(), 'output')
-    fullpath = os.path.join(path, plot_file)
-    assert os.path.isfile(fullpath) == True
+    scatter.main(f"{os.environ['TEST_DIR']}/test_scatter_mpr.yaml")
 
-    # Verify that the dump point file, plot_points.txt was generated and has expected points
-    dump_points_file = os.path.join(path, 'plot_points.txt')
-    assert os.path.isfile(dump_points_file) == True
+    for expected_file in expected_files:
+        assert os.path.isfile(f"{os.environ['TEST_OUTPUT']}/{expected_file}")
+
+    # Verify that the dump point file, plot_points.txt has expected points
+    dump_points_file = os.path.join(os.environ['TEST_OUTPUT'], 'plot_points.txt')
 
     df = pd.read_csv(dump_points_file, sep='\t', skiprows=0)
     # expected x, y, and z values for the first row
@@ -53,7 +39,3 @@ def test_files_exist():
     assert math.isclose( df.iloc[0,0], expected_x )
     assert math.isclose(df.iloc[0,1], expected_y)
     assert math.isclose(df.iloc[0,2], expected_z)
-
-    # clean up files in the output directory and
-    # the output directory
-    shutil.rmtree(os.path.join(os.getcwd(), 'output'))

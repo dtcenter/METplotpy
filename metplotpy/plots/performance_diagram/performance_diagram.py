@@ -425,36 +425,26 @@ class PerformanceDiagram(BasePlot):
                 filename = self.config_obj.points_path + os.path.sep + filename
 
             output_file = filename + '.points1'
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+            if os.path.exists(output_file):
+                os.remove(output_file)
 
-            # make sure this file doesn't already
-            # exist, delete it if it does
-            try:
-                if os.stat(output_file).st_size == 0:
-                    fileobj = open(output_file, 'a')
-                else:
-                    os.remove(output_file)
-            except FileNotFoundError:
-                # OK if no file was found
-                self.logger.error("FileNotFoundError: OK to ignore, deleting files "
-                                  "and the file to delete is not found")
+            with open(output_file, 'a') as fileobj:
+                header_str = "1-far\t pody\n"
+                fileobj.write(header_str)
+                all_pody = []
+                all_sr = []
+                for series in self.series_list:
+                    pody_points = series.series_points[1]
+                    sr_points = series.series_points[0]
+                    all_pody.extend(pody_points)
+                    all_sr.extend(sr_points)
 
-            fileobj = open(output_file, 'a')
-            header_str = "1-far\t pody\n"
-            fileobj.write(header_str)
-            all_pody = []
-            all_sr = []
-            for series in self.series_list:
-                pody_points = series.series_points[1]
-                sr_points = series.series_points[0]
-                all_pody.extend(pody_points)
-                all_sr.extend(sr_points)
+                all_points = zip(all_sr, all_pody)
+                for idx, pts in enumerate(all_points):
+                    data_str = str(pts[0]) + "\t" + str(pts[1]) + "\n"
+                    fileobj.write(data_str)
 
-            all_points = zip(all_sr, all_pody)
-            for idx, pts in enumerate(all_points):
-                data_str = str(pts[0]) + "\t" + str(pts[1]) + "\n"
-                fileobj.write(data_str)
-
-            fileobj.close()
             self.logger.info(f"Finished writing output file: {datetime.now()}")
 
 

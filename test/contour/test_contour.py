@@ -1,54 +1,17 @@
 import pytest
 import os
 from metplotpy.plots.contour import contour
-#from metcalcpy.compare_images import CompareImages
-
-cwd = os.path.dirname(__file__)
-
-@pytest.fixture
-def setup():
-    # Cleanup the plotfile output file from any previous run
-    cleanup()
-    # Set up the METPLOTPY_BASE so that met_plot.py will correctly find
-    # the config directory containing all the default config files.
-    os.environ['METPLOTPY_BASE'] = f"{cwd}/../../"
-    os.environ['TEST_DIR'] = cwd
-
-    # Invoke the command to generate a contour plot based on
-    # the  config yaml files.
-
-    contour.main(f"{cwd}/custom_contour.yaml")
 
 
+@pytest.mark.parametrize("input_yaml,expected_files", [
+    ("custom_contour.yaml", ["contour.png"]),
+])
+def test_contour(module_setup_env, remove_files, input_yaml, expected_files):
+    """Checking that the plot file is getting created"""
 
-def cleanup():
-    # remove the previously created files
-    try:
-        plot_file = 'contour.png'
-        os.remove(os.path.join(cwd, plot_file))
-    except OSError as e:
-        # Typically, when files have already been removed or
-        # don't exist.  Ignore.
-        pass
+    remove_files(os.environ['TEST_OUTPUT'], expected_files)
 
+    contour.main(f"{os.environ['TEST_DIR']}/{input_yaml}")
 
-@pytest.mark.parametrize("test_input, expected",
-                         ([f"{cwd}/contour_expected.png", True], [f"{cwd}/contour.png", True]
-                        ))
-def test_files_exist(setup, test_input, expected):
-    """
-        Checking that the plot files are getting created
-    """
-    assert os.path.isfile(test_input) == expected
-    cleanup()
-
-@pytest.mark.skip("fails on linux hosts")
-def test_images_match(setup):
-    """
-        Compare an expected plots with the
-        newly created plots to verify that the plot hasn't
-        changed in appearance.
-    """
-    comparison = CompareImages(f'{cwd}/contour_expected.png', f'{cwd}/contour.png')
-    assert comparison.mssim == 1
-    cleanup()
+    for expected_file in expected_files:
+        assert os.path.isfile(f"{os.environ['TEST_OUTPUT']}/{expected_file}")

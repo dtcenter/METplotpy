@@ -1,3 +1,11 @@
+plot_dir: !ENV '${TEST_OUTPUT}/multi'
+log_filename: !ENV '${TEST_OUTPUT}/multi/tcmpr_log.out'
+
+tcst_dir: !ENV '${TEST_DIR}/Data/'
+
+baseline_file: !ENV '${METPLOTPY_BASE}/metplotpy/plots/tcmpr_plots/hfip_baseline.dat'
+column_info_file: !ENV '${METPLOTPY_BASE}/metplotpy/plots/tcmpr_plots/plot_tcmpr_hdr.dat'
+
 colors:
   - 'blue'
   - 'green'
@@ -102,7 +110,7 @@ series_symbols_size:
   - 7
 
 show_nstats: 'True'
-tcst_dir: '/path/to/tcmpr_sample_data'
+
 tcst_files: [ ]
 title: ''
 
@@ -132,16 +140,10 @@ event_equal: 'True'
 skill_ref:
   - HFSA
 
-plot_dir: '/path/to/output'
 prefix: ''
 subtitle:
 log_level: INFO
-log_filename: '/path/to/log/output/tcmpr_log.out'
-baseline_file: 'path/to/metplotpy/plots/tcmpr_plots/hfip_baseline.dat'
-column_info_file: 'path/to/metplotpy/plots/tcmpr_plots/plot_tcmpr_hdr.dat'
 hfip_bsln: 'no'
-
-
 
 
 

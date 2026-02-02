@@ -17,15 +17,14 @@ Version  Date
 __author__ = 'David Fillmore'
 __version__ = '0.1.0'
 
-import metcalcpy.util.read_env_vars_in_config
-
 """
 Import standard modules
 """
+import os
 from datetime import datetime
 import getpass
 import sys
-import yaml
+
 import numpy as np
 import xarray as xr
 import plotly.graph_objects as go
@@ -208,8 +207,8 @@ class Hovmoeller(BasePlot):
         self.logger.info(f"Begin writing html output: {datetime.now()}")
         if self.config_obj.create_html is True:
             # construct the fle name from plot_filename
-            name_arr = self.get_config_value('plot_filename').split('.')
-            html_name = name_arr[0] + ".html"
+            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+            html_name = f"{base_name}.html"
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)

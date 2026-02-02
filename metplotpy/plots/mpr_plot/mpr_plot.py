@@ -13,7 +13,7 @@ Class Name: mpr_plot.py
  """
 __author__ = 'Tatiana Burek'
 
-
+import os
 from datetime import datetime
 import pandas as pd
 import numpy as np
@@ -562,13 +562,14 @@ class MprPlot(BasePlot):
         Returns:
 
         """
-        self.logger.info(f"Saving to file")
+        self.logger.info("Saving to file")
         image_name = self.get_config_value('plot_filename')
         pio.kaleido.scope.default_format = "png"
         pio.kaleido.scope.default_height = self.config_obj.height
         pio.kaleido.scope.default_width = self.config_obj.width
         if self.figure:
             try:
+                os.makedirs(os.path.dirname(image_name), exist_ok=True)
                 self.figure.write_image(image_name)
             except FileNotFoundError:
                 self.logger.error(f"FileNotFoundError: {image_name}")

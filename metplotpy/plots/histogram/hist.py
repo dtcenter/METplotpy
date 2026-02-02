@@ -437,9 +437,8 @@ class Hist(BasePlot):
 
         if self.config_obj.create_html is True:
             # construct the file name from plot_filename
-            name_arr = self.get_config_value('plot_filename').split('.')
-            name_arr[-1] = 'html'
-            html_name = ".".join(name_arr)
+            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
+            html_name = f"{base_name}.html"
 
             # save html
             self.figure.write_html(html_name, include_plotlyjs=False)
@@ -472,6 +471,7 @@ class Hist(BasePlot):
                 filename = self.config_obj.points_path + os.path.sep + filename
 
             filename = filename + '.points1'
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
 
             with open(filename, 'w') as file:
                 for series in self.series_list:

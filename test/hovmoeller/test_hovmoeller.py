@@ -2,10 +2,11 @@ import os
 import pytest
 import metplotpy.plots.hovmoeller.hovmoeller as hov
 from metplotpy.plots import util
-#from metcalcpy.compare_images import CompareImages
 
-def dict_to_yaml(data_dict,
-                output_yaml = "test_hovmoeller.yaml"):
+
+cwd = os.path.dirname(__file__)
+
+def dict_to_yaml(data_dict, output_yaml):
     """Write dict as yaml config file."""
     content = "\n".join(["{k}: {v}".format(k=k,v=v) for k,v in data_dict.items()])
     with open(output_yaml, 'w') as f:
@@ -13,18 +14,8 @@ def dict_to_yaml(data_dict,
     return output_yaml
 
 
-def cleanup(file_to_remove):
-    try:
-        path = os.getcwd()
-        os.remove(os.path.join(path, file_to_remove))
-    except OSError as e:
-        # Typically when files have already been removed or
-        # don't exist.  Ignore.
-        pass
-
-
 @pytest.mark.skip()
-def test_default_plot_images_match():
+def test_default_plot_images_match(module_setup_env, remove_files):
     '''
         Compare an expected plot with the
         newly created plot to verify that the plot hasn't
@@ -34,33 +25,35 @@ def test_default_plot_images_match():
         can sometimes be a different size than the expected (which was generated
         using the same configuration file and data!)
     '''
-    config_file = os.path.join(os.path.dirname(__file__), "minimal_hovmoeller.yaml")
-    hov.main(config_file)
-    default_plot = "./hovmoeller_default_plot.png"
-    path = os.getcwd()
-    plot_file = './hovmoeller_expected_default.png'
-    actual_file = os.path.join(path, plot_file)
-    comparison = CompareImages(default_plot, actual_file)
-    assert comparison.mssim == 1
+    default_plot = "hovmoeller_default_plot.png"
+    remove_files(os.environ['TEST_OUTPUT'], [default_plot])
 
-    # Clean up
-    cleanup(default_plot)
+    config_file = os.path.join(cwd, "minimal_hovmoeller.yaml")
+    hov.main(config_file)
+
+    # default_plot = os.path.join(os.environ['TEST_OUTPUT'], default_plot)
+    # expected_file = 'hovmoeller_expected_default.png'
+    # actual_file = os.path.join(cwd, expected_file)
+    # comparison = CompareImages(default_plot, actual_file)
+    # assert comparison.mssim == 1
+
 
 @pytest.mark.skip("needs large netCDF file to run")
-def test_custom_plot_created():
-    config_file = os.path.join(os.path.dirname(__file__), "custom_hovmoeller.yaml")
+def test_custom_plot_created(module_setup_env, remove_files):
+    expected_file = "hovmoeller_custom_plot.png"
+
+    remove_files(os.environ['TEST_OUTPUT'], [expected_file])
+
+    config_file = os.path.join(cwd, "custom_hovmoeller.yaml")
     hov.main(config_file)
-    custom_plot = "./hovmoeller_custom_plot.png"
-    assert os.path.isfile(custom_plot) == True
+
+    assert os.path.isfile(os.path.join(os.environ['TEST_OUTPUT'], expected_file))
 
     # This plot should be different from the default-it has different dimensions
     # so the comparison should raise a ValueError
-    default_plot = './hovmoeller_expected_default.png'
-    with pytest.raises(ValueError):
-        CompareImages(default_plot, custom_plot)
-
-    # Clean up
-    cleanup(custom_plot)
+    # default_plot = os.path.join(cwd, 'hovmoeller_expected_default.png')
+    # with pytest.raises(ValueError):
+    #     CompareImages(default_plot, expected_file)
 
 
 def make_config(nc_file, out_file):
@@ -80,12 +73,19 @@ def make_config(nc_file, out_file):
     }
     return config
 
-def test_hovmoeller(nc_test_file,assert_json_equal):
-    out_file = "hovmoeller_test.png"
+
+def test_hovmoeller(module_setup_env, remove_files, nc_test_file, assert_json_equal, tmp_path_factory):
+    output_dir = os.environ['TEST_OUTPUT']
+    out_file = os.path.join(output_dir, "hovmoeller_test.png")
+
+    remove_files(output_dir, [os.path.basename(out_file)])
+
     config = make_config(nc_test_file, out_file)
 
     # basic test to see if output writes
-    min_yaml = dict_to_yaml(config)
+    output_yaml = tmp_path_factory.mktemp("data") / "test_hovmoeller.yaml"
+    min_yaml = dict_to_yaml(config, output_yaml=str(output_yaml))
+
     hov.main(min_yaml)
 
     assert os.path.isfile(out_file)
@@ -93,22 +93,27 @@ def test_hovmoeller(nc_test_file,assert_json_equal):
     # test actual functions from plot object
     plot_obj = hov.Hovmoeller(util.get_params(min_yaml))
 
+    # note: initializing Hovmoeller removes out_file that was previously written
+
+    plot_obj.save_to_file()
+    assert os.path.isfile(out_file)
+
     # check html write out
     plot_obj.write_html()
-    out_html = config['plot_filename'].split('.')[0] + '.html'
+    base_name, _ = os.path.splitext(config['plot_filename'])
+    out_html = f"{base_name}.html"
     assert os.path.isfile(out_html)
 
     # finally check json plot values
     # to regenerate json file run:
-    plot_obj.figure.write_json('hovmoeller_test.json')
-    assert_json_equal(plot_obj.figure, 'hovmoeller_test.json')
+    json_output = os.path.join(output_dir, "hovmoeller_test.json")
+    plot_obj.figure.write_json(json_output)
+    assert_json_equal(plot_obj.figure, json_output)
 
-    # Clean up
-    cleanup(out_file)
-    cleanup(out_html)
 
-def test_get_lat_str(nc_test_file):
-    min_yaml = dict_to_yaml(make_config(nc_test_file, "test.png"))
+def test_get_lat_str(module_setup_env, nc_test_file, tmp_path_factory):
+    output_yaml = tmp_path_factory.mktemp("data") / "test_hovmoeller.yaml"
+    min_yaml = dict_to_yaml(make_config(nc_test_file, "test.png"), output_yaml)
     plot_obj = hov.Hovmoeller(util.get_params(min_yaml))
 
     actual = plot_obj.get_lat_str(-4,-2)
