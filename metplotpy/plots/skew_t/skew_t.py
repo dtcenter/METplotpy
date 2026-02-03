@@ -590,14 +590,14 @@ def create_skew_t(input_file: str, config: dict, logger: logging) -> None:
         temp_linewidth = config['temp_line_thickness']
         temp_linestyle = config['temp_line_style']
         temp_linecolor = config['temp_line_color']
-        skew.plot(pressure, temperature, 'r', linewidth=temp_linewidth,
+        skew.plot(pressure, temperature, linewidth=temp_linewidth,
                   linestyle=temp_linestyle, color=temp_linecolor)
 
         dewpt_linewidth = config['dewpt_line_thickness']
         dewpt_linestyle = config['dewpt_line_style']
         dewpt_linecolor = config['dewpt_line_color']
         logger.info(f"Generate the dew point line for  {cur_time} hour")
-        skew.plot(pressure, dew_pt, 'g', linewidth=dewpt_linewidth,
+        skew.plot(pressure, dew_pt, linewidth=dewpt_linewidth,
                   linestyle=dewpt_linestyle, color=dewpt_linecolor)
 
         # Adiabat and mixing lines.
