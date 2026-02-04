@@ -21,7 +21,11 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
-
+  workflow_dispatch:
+    inputs:
+      version_to_compare:
+        description: 'Name of branch to diff against current branch (default: develop)'
+        default: 'develop'
 
 jobs:
   build:
