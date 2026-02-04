@@ -22,6 +22,20 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
+  # New job to determine which branches to test
+  setup-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      branches: ${{ steps.set-branches.outputs.branches }}
+    steps:
+      - id: set-branches
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "branches=[\"${{ github.head_ref }}\", \"develop\"]" >> $GITHUB_OUTPUT
+          else
+            echo "branches=[\"${{ github.ref_name }}\"]" >> $GITHUB_OUTPUT
+          fi
+
   build:
 
     runs-on: ubuntu-latest
@@ -29,10 +43,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.12"]
-        # Define the branches to run.
-        # For PRs, we include both the PR branch and 'develop'.
-        # For push events, we just use the branch that triggered the workflow.
-        branch: ${{ github.event_name == 'pull_request' && fromJSON('["' + github.head_ref + '", "develop"]') || fromJSON('["' + github.ref_name + '"]') }}
+        branch: ${{ fromJSON(needs.setup-matrix.outputs.branches) }}
 
     steps:
     # checkout METplotpy
