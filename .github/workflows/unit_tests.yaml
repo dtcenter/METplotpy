@@ -21,6 +21,12 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+  workflow_dispatch:
+    inputs:
+      version_to_compare:
+        description: 'Name of branch to diff against current branch (default: develop)'
+        default: 'develop'
+
 jobs:
   # New job to determine which branches to test
   setup-matrix:
@@ -32,6 +38,8 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             echo "branches=[\"${{ github.head_ref }}\", \"develop\"]" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "branches=[\"${{ github.ref_name }}\", \"${{ github.event.inputs.version_to_compare }}\"]" >> $GITHUB_OUTPUT
           else
             echo "branches=[\"${{ github.ref_name }}\"]" >> $GITHUB_OUTPUT
           fi
@@ -81,3 +89,51 @@ jobs:
       with:
         name: test_output_${{ matrix.branch }}
         path: ${{ runner.workspace }}/output/${{ matrix.branch }}/test_output
+
+  compare-output:
+    needs: [setup-matrix, build]
+    runs-on: ubuntu-latest
+    # Only run if there are exactly 2 branches to compare
+    if: fromJSON(needs.setup-matrix.outputs.branches)[1] != null
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.workspace }}/artifacts
+
+      - name: Checkout diff_util.py from METplus
+        uses: actions/checkout@v4
+        with:
+          repository: dtcenter/METplus
+          sparse-checkout: |
+            metplus/util/diff_util.py
+          sparse-checkout-cone-mode: false
+          path: METplus
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run diff_util.py
+        run: |
+          # Extract branch names from the setup-matrix output
+          # assumes 1st branch is the current branch and the 2nd branch is the truth data
+          OUTPUT_BRANCH=$(echo '${{ needs.setup-matrix.outputs.branches }}' | jq -r '.[0]')
+          TRUTH_BRANCH=$(echo '${{ needs.setup-matrix.outputs.branches }}' | jq -r '.[1]')
+
+          # Define paths to the downloaded data
+          # Note: upload-artifact v4 nested paths differently, usually named by 'name' provided in upload
+          OUTPUT_DIR="${{ runner.workspace }}/artifacts/test_output_${OUTPUT_BRANCH}"
+          TRUTH_DIR="${{ runner.workspace }}/artifacts/test_output_${TRUTH_BRANCH}"
+
+          echo "Comparing $OUTPUT_DIR and $TRUTH_DIR"
+
+          # Ensure directories exist before running script
+          if [ -d "$OUTPUT_DIR" ] && [ -d "$TRUTH_DIR" ]; then
+            python METplus/metplus/util/diff_util.py "$TRUTH_DIR" "$OUTPUT_DIR"
+          else
+            echo "One or both data directories are missing."
+            ls ${{ runner.workspace }}/artifacts
+            exit 1
+          fi
