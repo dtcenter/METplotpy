@@ -8,7 +8,7 @@ describes the bugfix, enhancement, or new feature:
 
 
 METplotpy Version 4.0.0-beta1 release notes (20260205)
-=====================================================
+======================================================
 
 
 .. dropdown:: New Plots
