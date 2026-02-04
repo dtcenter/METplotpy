@@ -73,11 +73,11 @@ jobs:
 
     - name: Test with pytest
       run: |
-        export METPLOTPY_TEST_OUTPUT=/data/${{ matrix.branch }}
+        export METPLOTPY_TEST_OUTPUT=${{ runner.workspace }}/output/${{ matrix.branch }}
         pytest
 
     - name: Upload output data artifact
       uses: actions/upload-artifact@v4
       with:
         name: test_output_${{ matrix.branch }}
-        path: /data/${{ matrix.branch }}
+        path: ${{ runner.workspace }}/output/${{ matrix.branch }}/test_output
