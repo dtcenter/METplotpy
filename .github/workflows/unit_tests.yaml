@@ -115,6 +115,10 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install dependencies for diff
+        run: |
+          pip install pillow pandas numpy netCDF4
+
       - name: Run diff_util.py
         run: |
           # Extract branch names from the setup-matrix output
