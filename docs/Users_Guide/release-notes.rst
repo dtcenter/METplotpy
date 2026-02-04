@@ -34,7 +34,7 @@ METplotpy Version 4.0.0-beta1 release notes (20260205)
 
 
 METplotpy Upgrade Instructions
-===============================
+==============================
 
 This section summarizes and highlights important changes to METplotpy since version 3.1.0, including:
 
