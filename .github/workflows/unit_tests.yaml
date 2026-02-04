@@ -17,11 +17,9 @@ on:
       - '.github/ISSUE_TEMPLATE/**'
       - '**/README.md'
       - '**/LICENSE.md'
-      
+
   pull_request:
     types: [opened, reopened, synchronize]
-
-
 
 jobs:
   build:
@@ -31,43 +29,43 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.12"]
+        # Define the branches to run.
+        # For PRs, we include both the PR branch and 'develop'.
+        # For push events, we just use the branch that triggered the workflow.
+        branch: ${{ github.event_name == 'pull_request' && fromJSON('["' + github.head_ref + '", "develop"]') || fromJSON('["' + github.ref_name + '"]') }}
 
     steps:
+    # checkout METplotpy
     - uses: actions/checkout@v4
+      with:
+        ref: ${{ matrix.branch }}
+
+    # checkout METcalcpy
+    - uses: actions/checkout@v4
+      with:
+        repository: dtcenter/METcalcpy
+        path: METcalcpy
+        ref: develop
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-        
-    - name: Retrieve METcalcpy repository develop  branch
-      run: |
-         metcalcpy_dir="$RUNNER_WORKSPACE/METcalcpy"
-         git clone https://github.com/dtcenter/METcalcpy ${metcalcpy_dir}
-         cd ${metcalcpy_dir}
-         git -C ${metcalcpy_dir} checkout develop
-         python -m pip install -e ${metcalcpy_dir}
-            
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        python -m pip install -e METcalcpy
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         pip install --upgrade kaleido
-      
- 
-#    - uses: browser-actions/setup-chrome@v1
-#    - name: Install Google Chrome for Plotly
-#      run: |
-#          chrome --version
-#          ${{ steps.setup-chrome.outputs.chrome-path }} 
-   
-
-                 
-#   Checking the branch name, not necessary but useful when setting things up. 
-#     - name: Extract branch name
-#       shell: bash
-#       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-#       id: extract_branch
 
     - name: Test with pytest
       run: |
+        export METPLOTPY_TEST_OUTPUT=/data/${{ matrix.branch }}
         pytest
+
+    - name: Upload output data artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: test_output_${{ matrix.branch }}
+        path: /data/${{ matrix.branch }}
