@@ -17,57 +17,129 @@ on:
       - '.github/ISSUE_TEMPLATE/**'
       - '**/README.md'
       - '**/LICENSE.md'
-      
+
   pull_request:
     types: [opened, reopened, synchronize]
 
-
+  workflow_dispatch:
+    inputs:
+      version_to_compare:
+        description: 'Name of branch to diff against current branch (default: develop)'
+        default: 'develop'
 
 jobs:
+  # New job to determine which branches to test
+  setup-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      branches: ${{ steps.set-branches.outputs.branches }}
+    steps:
+      - id: set-branches
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "branches=[\"${{ github.head_ref }}\", \"${{ github.base_ref }}\"]" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "branches=[\"${{ github.ref_name }}\", \"${{ github.event.inputs.version_to_compare }}\"]" >> $GITHUB_OUTPUT
+          else
+            echo "branches=[\"${{ github.ref_name }}\"]" >> $GITHUB_OUTPUT
+          fi
+
   build:
 
+    needs: setup-matrix
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.12"]
+        branch: ${{ fromJSON(needs.setup-matrix.outputs.branches) }}
 
     steps:
+    # checkout METplotpy
     - uses: actions/checkout@v4
+      with:
+        ref: ${{ matrix.branch }}
+
+    # checkout METcalcpy
+    - uses: actions/checkout@v4
+      with:
+        repository: dtcenter/METcalcpy
+        path: METcalcpy
+        ref: develop
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-        
-    - name: Retrieve METcalcpy repository develop  branch
-      run: |
-         metcalcpy_dir="$RUNNER_WORKSPACE/METcalcpy"
-         git clone https://github.com/dtcenter/METcalcpy ${metcalcpy_dir}
-         cd ${metcalcpy_dir}
-         git -C ${metcalcpy_dir} checkout develop
-         python -m pip install -e ${metcalcpy_dir}
-            
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        python -m pip install -e METcalcpy
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         pip install --upgrade kaleido
-      
- 
-#    - uses: browser-actions/setup-chrome@v1
-#    - name: Install Google Chrome for Plotly
-#      run: |
-#          chrome --version
-#          ${{ steps.setup-chrome.outputs.chrome-path }} 
-   
-
-                 
-#   Checking the branch name, not necessary but useful when setting things up. 
-#     - name: Extract branch name
-#       shell: bash
-#       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-#       id: extract_branch
 
     - name: Test with pytest
       run: |
+        export METPLOTPY_TEST_OUTPUT=${{ runner.workspace }}/output/${{ matrix.branch }}
         pytest
+
+    - name: Upload output data artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: test_output_${{ matrix.branch }}
+        path: ${{ runner.workspace }}/output/${{ matrix.branch }}/test_output
+
+  compare-output:
+    needs: [setup-matrix, build]
+    runs-on: ubuntu-latest
+    # Only run if there are exactly 2 branches to compare
+    if: fromJSON(needs.setup-matrix.outputs.branches)[1] != null
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.workspace }}/artifacts
+
+      - name: Checkout diff_util.py from METplus
+        uses: actions/checkout@v4
+        with:
+          repository: dtcenter/METplus
+          ref: develop
+          sparse-checkout: |
+            metplus/util/diff_util.py
+          sparse-checkout-cone-mode: false
+          path: METplus
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies for diff
+        run: |
+          pip install pillow pandas numpy netCDF4
+
+      - name: Run diff_util.py
+        run: |
+          # Extract branch names from the setup-matrix output
+          # assumes 1st branch is the current branch and the 2nd branch is the truth data
+          OUTPUT_BRANCH=$(echo '${{ needs.setup-matrix.outputs.branches }}' | jq -r '.[0]')
+          TRUTH_BRANCH=$(echo '${{ needs.setup-matrix.outputs.branches }}' | jq -r '.[1]')
+
+          # Define paths to the downloaded data
+          # Note: upload-artifact v4 nested paths differently, usually named by 'name' provided in upload
+          OUTPUT_DIR="${{ runner.workspace }}/artifacts/test_output_${OUTPUT_BRANCH}"
+          TRUTH_DIR="${{ runner.workspace }}/artifacts/test_output_${TRUTH_BRANCH}"
+
+          echo "Comparing $OUTPUT_DIR and $TRUTH_DIR"
+
+          # Ensure directories exist before running script
+          if [ -d "$OUTPUT_DIR" ] && [ -d "$TRUTH_DIR" ]; then
+            export METPLUS_DIFF_SKIP_KEYWORDS=".html,_rank.png"
+            python METplus/metplus/util/diff_util.py "$TRUTH_DIR" "$OUTPUT_DIR" --debug --save_diff
+          else
+            echo "One or both data directories are missing."
+            ls ${{ runner.workspace }}/artifacts
+            exit 1
+          fi
