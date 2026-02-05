@@ -37,7 +37,7 @@ jobs:
       - id: set-branches
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "branches=[\"${{ github.head_ref }}\", \"develop\"]" >> $GITHUB_OUTPUT
+            echo "branches=[\"${{ github.head_ref }}\", \"${{ github.base_ref }}\"]" >> $GITHUB_OUTPUT
           elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "branches=[\"${{ github.ref_name }}\", \"${{ github.event.inputs.version_to_compare }}\"]" >> $GITHUB_OUTPUT
           else
