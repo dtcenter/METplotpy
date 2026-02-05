@@ -20,27 +20,15 @@ import warnings
 import numpy as np
 import yaml
 from typing import Union
-import kaleido
+
 import metplotpy.plots.util
 from metplotpy.plots.util import strtobool
 from .config import Config
 from metplotpy.plots.context_filter import ContextFilter
 
-# kaleido 0.x will be deprecated after September 2025 and Chrome will no longer
-# be included with kaleido from version 1.0.0.  Explicitly get Chrome via call to kaleido.
-
-# In some instances, we do NOT want Chrome to be installed at run-time. If the 
-# PRE_LOAD_CHROME environment variable exists, or set to TRUE,
-# then Chrome will be assumed to have been pre-loaded. Otherwise,
-# invoke  get_chrome_sync()  to install Chrome in the
-# /path-to-python-libs/pythonx.yz/site-packages/...  directory
-
-# Check if the PRE_LOAD_CHROME env variable exists
-aquire_chrome = False
-
 turn_on_logging = strtobool('LOG_BASE_PLOT')
 # Log when Chrome is downloaded at runtime
-if turn_on_logging is True:
+if turn_on_logging:
    log = logging.getLogger("base_plot")
    log.setLevel(logging.INFO)
 
@@ -49,24 +37,11 @@ if turn_on_logging is True:
    # set the WRITE_LOG env var to True to save the log message to a
    # separate log file
    write_log = strtobool('WRITE_LOG')
-   if write_log is True:
+   if write_log:
       file_handler = logging.FileHandler("./base_plot.log")
       file_handler.setFormatter(formatter)
       log.addHandler(file_handler)
 
-# Only load Chrome at run-time if PRE_LOAD_CHROME is False or not defined.
-# Some applications may not want to load Chrome at runtime and
-# will set the PRE_LOAD_CHROME to True to indicate that it is already
-# loaded/downloaded prior to runtime.
-chrome_env =strtobool ('PRE_LOAD_CHROME')
-if chrome_env is False:
-    aquire_chrome=True
-    kaleido.get_chrome_sync()
-
-
-# Log when kaleido is downloading Chrome
-if aquire_chrome is True and turn_on_logging  is True:
-     log.info("Plotly kaleido is loading Chrome at run time")
 
 class BasePlot:
     """A class that provides methods for building Plotly plot's common features
@@ -413,21 +388,6 @@ class BasePlot:
         # remove the old file if it exist
         if image_name is not None and os.path.exists(image_name):
             os.remove(image_name)
-
-    def show_in_browser(self):
-        """Creates a plot and opens it in the browser.
-
-         Args:
-
-         Returns:
-
-         """
-        if self.figure:
-            self.figure.show()
-        else:
-            self.logger.error(" Figure not created. Nothing to show in the "
-                              "browser. ")
-            print("Oops!  The figure was not created. Can't show")
 
     def _add_lines(self, config_obj: Config, x_points_index: Union[list, None] = None) -> None:
         """ Adds custom horizontal and/or vertical line to the plot.
