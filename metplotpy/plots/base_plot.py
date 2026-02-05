@@ -1,14 +1,13 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
+ # ** Copyright UCAR (c) 2026
  # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
+ # ** National Science Foundation National Center for Atmospheric Research (NSF NCAR)
  # ** Research Applications Lab (RAL)
  # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
  # ============================*
  
  
  
-# !/usr/bin/env conda run -n blenny_363 python
 """
 Class Name: base_plot.py
  """
@@ -20,11 +19,8 @@ import warnings
 import numpy as np
 import yaml
 from typing import Union
-
-import metplotpy.plots.util
 from metplotpy.plots.util import strtobool
 from .config import Config
-from metplotpy.plots.context_filter import ContextFilter
 
 turn_on_logging = strtobool('LOG_BASE_PLOT')
 # Log when Chrome is downloaded at runtime
@@ -114,31 +110,7 @@ class BasePlot:
         print('Unrecognised image format. png will be used')
         return self.DEFAULT_IMAGE_FORMAT
 
-    def get_legend(self):
-        """Creates a Plotly legend dictionary with values from users and default parameters
-        If users parameters dictionary doesn't have needed values - use defaults
 
-        Args:
-
-        Returns:
-            - dictionary used by Plotly to build the legend
-        """
-
-        current_legend = dict(
-            x=self.get_config_value('legend', 'x'),  # x-position
-            y=self.get_config_value('legend', 'y'),  # y-position
-            font=dict(
-                family=self.get_config_value('legend', 'font', 'family'),  # font family
-                size=self.get_config_value('legend', 'font', 'size'),  # font size
-                color=self.get_config_value('legend', 'font', 'color'),  # font color
-            ),
-            bgcolor=self.get_config_value('legend', 'bgcolor'),  # background color
-            bordercolor=self.get_config_value('legend', 'bordercolor'),  # border color
-            borderwidth=self.get_config_value('legend', 'borderwidth'),  # border width
-            xanchor=self.get_config_value('legend', 'xanchor'),  # horizontal position anchor
-            yanchor=self.get_config_value('legend', 'yanchor')  # vertical position anchor
-        )
-        return current_legend
 
     def get_legend_style(self):
         """
@@ -174,121 +146,6 @@ class BasePlot:
 
         return legend_settings
 
-    def get_title(self):
-        """Creates a Plotly title dictionary with values from users and default parameters
-        If users parameters dictionary doesn't have needed values - use defaults
-
-        Args:
-
-        Returns:
-            - dictionary used by Plotly to build the title
-        """
-        current_title = dict(
-            text=self.get_config_value('title'),  # plot's title
-            # Sets the container `x` refers to. "container" spans the entire `width` of the plot.
-            # "paper" refers to the width of the plotting area only.
-            xref="paper",
-            x=0.5  # x position with respect to `xref`
-        )
-        return current_title
-
-    def get_xaxis(self):
-        """Creates a Plotly x-axis dictionary with values from users and default parameters
-        If users parameters dictionary doesn't have needed values - use defaults
-
-        Args:
-
-        Returns:
-            - dictionary used by Plotly to build the x-axis
-        """
-        current_xaxis = dict(
-            linecolor=self.get_config_value('xaxis', 'linecolor'),  # x-axis line color
-            # whether or not a line bounding x-axis is drawn
-            showline=self.get_config_value('xaxis', 'showline'),
-            linewidth=self.get_config_value('xaxis', 'linewidth')  # width (in px) of x-axis line
-        )
-        return current_xaxis
-
-    def get_yaxis(self):
-        """Creates a Plotly y-axis dictionary with values from users and default parameters
-        If users parameters dictionary doesn't have needed values - use defaults
-
-        Args:
-
-        Returns:
-            - dictionary used by Plotly to build the y-axis
-        """
-        current_yaxis = dict(
-            linecolor=self.get_config_value('yaxis', 'linecolor'),  # y-axis line color
-            linewidth=self.get_config_value('yaxis', 'linewidth'),  # width (in px) of y-axis line
-            # whether or not a line bounding y-axis is drawn
-            showline=self.get_config_value('yaxis', 'showline'),
-            # whether or not grid lines are drawn
-            showgrid=self.get_config_value('yaxis', 'showgrid'),
-            ticks=self.get_config_value('yaxis', 'ticks'),  # whether ticks are drawn or not.
-            tickwidth=self.get_config_value('yaxis', 'tickwidth'),  # Sets the tick width (in px).
-            tickcolor=self.get_config_value('yaxis', 'tickcolor'),  # Sets the tick color.
-            # the width (in px) of the grid lines
-            gridwidth=self.get_config_value('yaxis', 'gridwidth'),
-            gridcolor=self.get_config_value('yaxis', 'gridcolor')  # the color of the grid lines
-        )
-
-        # Sets the range of the range slider. defaults to the full y-axis range
-        y_range = self.get_config_value('yaxis', 'range')
-        if y_range is not None:
-            current_yaxis['range'] = y_range
-        return current_yaxis
-
-    def get_xaxis_title(self):
-        """Creates a Plotly x-axis label title dictionary with values
-        from users and default parameters.
-        If users parameters dictionary doesn't have needed values - use defaults
-
-        Args:
-
-        Returns:
-            - dictionary used by Plotly to build the x-axis label title as annotation
-        """
-        x_axis_label = dict(
-            x=self.get_config_value('xaxis', 'x'),  # x-position of label
-            y=self.get_config_value('xaxis', 'y'),  # y-position of label
-            showarrow=False,
-            text=self.get_config_value('xaxis', 'title', 'text'),
-            xref="paper",  # the annotation's x coordinate axis
-            yref="paper",  # the annotation's y coordinate axis
-            font=dict(
-                family=self.get_config_value('xaxis', 'title', 'font', 'family'),
-                size=self.get_config_value('xaxis', 'title', 'font', 'size'),
-                color=self.get_config_value('xaxis', 'title', 'font', 'color'),
-            )
-        )
-        return x_axis_label
-
-    def get_yaxis_title(self):
-        """Creates a Plotly y-axis label title dictionary with values
-         from users and default parameters
-        If users parameters dictionary doesn't have needed values - use defaults
-
-        Args:
-
-        Returns:
-            - dictionary used by Plotly to build the y-axis label title as annotation
-        """
-        y_axis_label = dict(
-            x=self.get_config_value('yaxis', 'x'),  # x-position of label
-            y=self.get_config_value('yaxis', 'y'),  # y-position of label
-            showarrow=False,
-            text=self.get_config_value('yaxis', 'title', 'text'),
-            textangle=-90,  # the angle at which the `text` is drawn with respect to the horizontal
-            xref="paper",  # the annotation's x coordinate axis
-            yref="paper",  # the annotation's y coordinate axis
-            font=dict(
-                family=self.get_config_value('xaxis', 'title', 'font', 'family'),
-                size=self.get_config_value('xaxis', 'title', 'font', 'size'),
-                color=self.get_config_value('xaxis', 'title', 'font', 'color'),
-            )
-        )
-        return y_axis_label
 
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
