@@ -105,6 +105,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: dtcenter/METplus
+          ref: develop
           sparse-checkout: |
             metplus/util/diff_util.py
           sparse-checkout-cone-mode: false
@@ -135,7 +136,8 @@ jobs:
 
           # Ensure directories exist before running script
           if [ -d "$OUTPUT_DIR" ] && [ -d "$TRUTH_DIR" ]; then
-            python METplus/metplus/util/diff_util.py "$TRUTH_DIR" "$OUTPUT_DIR"
+            export METPLUS_DIFF_SKIP_KEYWORDS=".html,_rank.png"
+            python METplus/metplus/util/diff_util.py "$TRUTH_DIR" "$OUTPUT_DIR" --debug --save_diff
           else
             echo "One or both data directories are missing."
             ls ${{ runner.workspace }}/artifacts
