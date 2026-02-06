@@ -668,7 +668,7 @@ class Config:
         if units_lower == 'mm':
             return value * constants.MM_TO_INCHES
         if units_lower == 'cm':
-            return value * 0.1 * constants.MM_TO_INCHES
+            return value * constants.CM_TO_INCHES
 
         # if unsupported units are specified, log a warning but assume inches
         if units_lower != 'in':

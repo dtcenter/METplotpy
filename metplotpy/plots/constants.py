@@ -22,6 +22,7 @@ __author__ = 'Minna Win'
 # used to convert plot units in mm to
 # inches, so we can pass in dpi to matplotlib
 MM_TO_INCHES = 0.03937008
+CM_TO_INCHES = MM_TO_INCHES * 0.1
 
 # Available Matplotlib Line styles
 # ':'  ...

@@ -107,7 +107,7 @@ class BasePlot:
                 return strings[-1]
 
         # print the message if invalid and return default
-        print('Unrecognised image format. png will be used')
+        print(f'Unrecognised image format. {self.DEFAULT_IMAGE_FORMAT} will be used')
         return self.DEFAULT_IMAGE_FORMAT
 
 
@@ -124,12 +124,10 @@ class BasePlot:
                   are set in METviewer
         """
         legend_box = self.get_config_value('legend_box').lower()
+        borderwidth = 0
         if legend_box == 'o':
             # Draws a box around the legend
             borderwidth = 1
-        elif legend_box == 'n':
-            # Do not draw border around the legend labels.
-            borderwidth = 0
 
         legend_ncol = self.get_config_value('legend_ncol')
         if legend_ncol > 1:
@@ -138,11 +136,15 @@ class BasePlot:
             legend_orientation = "v"
         legend_inset = self.get_config_value('legend_inset')
         legend_size = self.get_config_value('legend_size')
-        legend_settings = dict(border_width=borderwidth,
-                               orientation=legend_orientation,
-                               legend_inset=dict(x=legend_inset['x'],
-                                                 y=legend_inset['y']),
-                               legend_size=legend_size)
+        legend_settings = {
+            "border_width": borderwidth,
+            "orientation": legend_orientation,
+            "legend_inset": {
+                'x': legend_inset['x'],
+                'y': legend_inset['y'],
+            },
+            'legend_size': legend_size,
+        }
 
         return legend_settings
 
@@ -224,17 +226,11 @@ class BasePlot:
             try:
                 self.figure.write_image(image_name)
             except FileNotFoundError:
-                self.logger.error(f"FileNotFoundError: Cannot save to file"
-                                  f" {image_name}")
-                # print("Can't save to file " + image_name)
-            except ResourceWarning:
-                self.logger.warning(f"ResourceWarning: in _kaleido"
-                                  f" {image_name}")
-
+                self.logger.error(f"FileNotFoundError: Cannot save to file {image_name}")
             except ValueError as ex:
-                self.logger.error(f"ValueError: Could not save output file.")
+                self.logger.error(f"ValueError: Could not save output file. {ex}")
         else:
-            self.logger.error(f"The figure {dirname} cannot be saved.")
+            self.logger.error(f"The figure {image_name} cannot be saved.")
             print("Oops!  The figure was not created. Can't save.")
 
     def remove_file(self):
@@ -254,46 +250,51 @@ class BasePlot:
                 @x_points_index - list of x-values that are used to create a plot
             Returns:
         """
-        if hasattr(config_obj, 'lines') and config_obj.lines is not None:
-            shapes = []
-            for line in config_obj.lines:
-                # draw horizontal line
-                if line['type'] == 'horiz_line':
-                    shapes.append(dict(
-                        type='line',
-                        yref='y', y0=line['position'], y1=line['position'],
-                        xref='paper', x0=0, x1=0.95,
-                        line={'color': line['color'],
-                              'dash': line['line_style'],
-                              'width': line['line_width']},
-                    ))
-                elif line['type'] == 'vert_line':
-                    # draw vertical line
-                    try:
-                        if x_points_index is None:
-                            val = line['position']
-                        else:
-                            ordered_indy_label = config_obj.create_list_by_plot_val_ordering(config_obj.indy_label)
-                            index = ordered_indy_label.index(line['position'])
-                            val = x_points_index[index]
-                        shapes.append(dict(
-                            type='line',
-                            yref='paper', y0=0, y1=1,
-                            xref='x', x0=val, x1=val,
-                            line={'color': line['color'],
-                                  'dash': line['line_style'],
-                                  'width': line['line_width']},
-                        ))
-                    except ValueError:
-                        line_position = line["position"]
-                        self.logger.warning(f" Vertical line with position "
-                                            f"{line_position} cannot be created.")
-                        print(f'WARNING: vertical line with position '
-                              f'{line_position} can\'t be created')
-                # ignore everything else
+        if not hasattr(config_obj, 'lines') or config_obj.lines is None:
+            return
 
-            # draw lines
-            self.figure.update_layout(shapes=shapes)
+        shapes = []
+        for line in config_obj.lines:
+            # draw horizontal line
+            if line['type'] == 'horiz_line':
+                shapes.append({
+                    'type': 'line',
+                    'yref': 'y', 'y0': line['position'], 'y1': line['position'],
+                    'xref': 'paper', 'x0': 0, 'x1': 0.95,
+                    'line': {
+                        'color': line['color'],
+                        'dash': line['line_style'],
+                        'width': line['line_width'],
+                    },
+                })
+            elif line['type'] == 'vert_line':
+                # draw vertical line
+                try:
+                    if x_points_index is None:
+                        val = line['position']
+                    else:
+                        ordered_indy_label = config_obj.create_list_by_plot_val_ordering(config_obj.indy_label)
+                        index = ordered_indy_label.index(line['position'])
+                        val = x_points_index[index]
+                    shapes.append({
+                        'type': 'line',
+                        'yref': 'paper', 'y0': 0, 'y1': 1,
+                        'xref': 'x', 'x0': val, 'x1': val,
+                        'line': {
+                            'color': line['color'],
+                            'dash': line['line_style'],
+                            'width': line['line_width'],
+                        }
+                    })
+                except ValueError:
+                    line_position = line["position"]
+                    msg = f"Vertical line with position {line_position} cannot be created."
+                    self.logger.warning(msg)
+                    print(msg)
+            # ignore everything else
+
+        # draw lines
+        self.figure.update_layout(shapes=shapes)
 
     @staticmethod
     def get_array_dimensions(data):
