@@ -62,33 +62,17 @@ DEFAULT_TITLE_OFFSET = (-0.48)
 
 
 AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", ".", "h"]
-AVAILABLE_PLOTLY_MARKERS_LIST = ["circle-open", "circle",
-                                 "square", "diamond",
-                                 "hexagon", "triangle-up", "asterisk-open"]
 
 PCH_TO_MATPLOTLIB_MARKER = {'20': '.', '19': 'o', '17': '^', '1': 'H',
                             '18': 'd', '15': 's', 'small circle': '.',
                             'circle': 'o', 'square': 's',
                             'triangle': '^', 'rhombus': 'd', 'ring': 'h'}
 
-PCH_TO_PLOTLY_MARKER = {'0': 'circle-open', '19': 'circle', '20': 'circle',
-                        '17': 'triangle-up', '15': 'square', '18': 'diamond',
-                        '1': 'hexagon2', 'small circle': 'circle-open',
-                        'circle': 'circle', 'square': 'square', 'triangle': 'triangle-up',
-                        'rhombus': 'diamond', 'ring': 'hexagon2', '.': 'circle',
-                        'o': 'circle', '^': 'triangle-up', 'd': 'diamond', 'H': 'circle-open',
-                        'h': 'hexagon2', 's': 'square'}
-
 # approximated from plotly marker size to matplotlib marker size
 PCH_TO_MATPLOTLIB_MARKER_SIZE = {'.': 14, 'o': 36, 's': 20, '^': 36, 'd': 20, 'H': 28}
 
-TYPE_TO_PLOTLY_MODE = {'b': 'lines+markers', 'p': 'markers', 'l': 'lines'}
 XAXIS_ORIENTATION = {0: 0, 1: 0, 2: 270, 3: 270}
 YAXIS_ORIENTATION = {0: -90, 1: 0, 2: 0, 3: -90}
-
-PLOTLY_PAPER_BGCOOR = "white"
-PLOTLY_AXIS_LINE_COLOR = "#c2c2c2"
-PLOTLY_AXIS_LINE_WIDTH = 2
 
 # Caption weights supported in Matplotlib are normal, italic and oblique.
 # Map these onto the MetViewer requested values of 1 (normal), 2 (bold),
