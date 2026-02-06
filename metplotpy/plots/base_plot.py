@@ -17,10 +17,12 @@ import os
 import logging
 import warnings
 import numpy as np
+from matplotlib.font_manager import FontProperties
 import yaml
 from typing import Union
 from metplotpy.plots.util import strtobool
 from .config import Config
+
 
 turn_on_logging = strtobool('LOG_BASE_PLOT')
 # Log when Chrome is downloaded at runtime
@@ -146,6 +148,57 @@ class BasePlot:
 
         return legend_settings
 
+    def get_weights_size_styles(self):
+        """
+           Set up the font properties for the plot title: style (regular, italic), size,  and
+           weight (normal, bold) for the title, captions, x-axis label, and y-axis label.
+
+           Returns:
+              weights_size_styles: A dictionary  containing the font property information
+                                             for the title, captions, x-axis label, and y-axis label
+        """
+        weights_size_styles = {}
+
+        # For title
+        title_property= FontProperties()
+        title_property.set_size(self.config_obj.title_size)
+        style = self.config_obj.title_weight[0]
+        wt = self.config_obj.title_weight[1]
+        title_property.set_style(style)
+        title_property.set_weight(wt)
+        weights_size_styles['title'] = title_property
+
+        # For caption
+        caption_property = FontProperties()
+        caption_property.set_size(self.config_obj.caption_size)
+        cap_style = self.config_obj.caption_weight[0]
+        cap_wt = self.config_obj.caption_weight[1]
+        caption_property.set_style(cap_style)
+        caption_property.set_weight(cap_wt)
+        weights_size_styles['caption'] = caption_property
+
+        # For xaxis label
+        xlab_property= FontProperties()
+
+        xlab_property.set_size(self.config_obj.x_title_font_size)
+        xlab_style = self.config_obj.xlab_weight[0]
+        xlab_wt = self.config_obj.xlab_weight[1]
+        xlab_property.set_style(xlab_style)
+        xlab_property.set_weight(xlab_wt)
+        weights_size_styles['xlab'] = xlab_property
+
+        # For yaxis label
+        ylab_property = FontProperties()
+        ylab_property.set_size(self.config_obj.y_title_font_size)
+        ylab_style = self.config_obj.ylab_weight[0]
+        ylab_wt = self.config_obj.ylab_weight[1]
+        ylab_property.set_style(ylab_style)
+        ylab_property.set_weight(ylab_wt)
+        weights_size_styles['ylab'] = ylab_property
+
+        return weights_size_styles
+
+
 
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
@@ -203,6 +256,7 @@ class BasePlot:
 
         return None
 
+    # TODO  Plotly-specific method, NOT needed for Matplotlib
     def save_to_file(self):
         """Saves the image to a file specified in the config file.
          Prints a message if fails
@@ -214,8 +268,9 @@ class BasePlot:
         """
         image_name = self.get_config_value('plot_filename')
 
-        # Suppress deprecation warnings from third-party packages that are not in our control.
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
+        # Catch deprecation warnings from third-party packages as
+        # errors and log the message.
+        warnings.filterwarnings("error", category=DeprecationWarning)
 
         # Create the directory for the output plot if it doesn't already exist
         dirname = os.path.dirname(os.path.abspath(image_name))
@@ -227,9 +282,11 @@ class BasePlot:
                 self.logger.error(f"FileNotFoundError: Cannot save to file"
                                   f" {image_name}")
                 # print("Can't save to file " + image_name)
-            except ResourceWarning:
-                self.logger.warning(f"ResourceWarning: in _kaleido"
+            except ResourceWarning as rw:
+                self.logger.warning(f"ResourceWarning {rw}: in "
                                   f" {image_name}")
+            except DeprecationWarning as dw:
+                self.logger.warning(f"DeprecationWarning {dw} in: {image_name}")
 
             except ValueError as ex:
                 self.logger.error(f"ValueError: Could not save output file.")
@@ -246,6 +303,8 @@ class BasePlot:
         if image_name is not None and os.path.exists(image_name):
             os.remove(image_name)
 
+# TODO Remove Plotly specific,  use add_horizontal_line() and  add_vertical_line() below
+# Plotly-specific,
     def _add_lines(self, config_obj: Config, x_points_index: Union[list, None] = None) -> None:
         """ Adds custom horizontal and/or vertical line to the plot.
             All line's metadata is in the config_obj.lines
@@ -294,6 +353,26 @@ class BasePlot:
 
             # draw lines
             self.figure.update_layout(shapes=shapes)
+
+    def add_horizontal_line(plt,y: float, line_properties: dict) -> None:
+        """Adds a horizontal line to the matplotlib plot
+
+        @param plt: Matplotlib pyplot object
+        @param y y value for the line
+        @param line_properties dictionary with line properties like color, width, dash
+        @returns None
+        """
+        plt.axhline(y=y, xmin=0, xmax=1, **line_properties)
+
+    def add_vertical_line(plt, x: float, line_properties: dict) -> None:
+        """Adds a vertical line to the matplotlib plot
+
+        @param plt: Matplotlib pyplot object
+        @param x x value for the line
+        @param line_properties dictionary with line properties like color, width, dash
+        @returns None
+        """
+        plt.axvline(x=x, ymin=0, ymax=1, **line_properties)
 
     @staticmethod
     def get_array_dimensions(data):
