@@ -1,6 +1,7 @@
 # This workflow will install Python dependencies, run tests the specified Python version
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-name: Python 3.12 tests
+name: Python Tests
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('{0} vs. {1}', github.ref_name, github.event.inputs.version_to_compare) || github.event.head_commit.message || github.event.pull_request.title }}
 
 on:
   push:
@@ -33,7 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       branches: ${{ steps.set-branches.outputs.branches }}
+      python-versions: ${{ steps.set-py-versions.outputs.versions }}
     steps:
+      - id: set-py-versions
+        run: echo "versions=[\"3.12\", \"3.13\"]" >> $GITHUB_OUTPUT
       - id: set-branches
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
@@ -51,7 +55,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12"]
+        python-version: ${{ fromJSON(needs.setup-matrix.outputs.python-versions) }}
         branch: ${{ fromJSON(needs.setup-matrix.outputs.branches) }}
 
     steps:
@@ -75,6 +79,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+
+        # force pandas to be less than 3.0.0 for Python 3.12 to test for backward compatibility
+        if [ ${{ matrix.python-version }} == "3.12" ]; then pip install "pandas<3"; fi
+
         python -m pip install -e METcalcpy
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         pip install --upgrade kaleido
@@ -87,12 +95,17 @@ jobs:
     - name: Upload output data artifact
       uses: actions/upload-artifact@v4
       with:
-        name: test_output_${{ matrix.branch }}
+        name: test_output_${{ matrix.branch }}_${{ matrix.python-version }}
         path: ${{ runner.workspace }}/output/${{ matrix.branch }}/test_output
 
   compare-output:
     needs: [setup-matrix, build]
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ${{ fromJSON(needs.setup-matrix.outputs.python-versions) }}
+
     # Only run if there are exactly 2 branches to compare
     if: fromJSON(needs.setup-matrix.outputs.branches)[1] != null
     steps:
@@ -111,7 +124,7 @@ jobs:
           sparse-checkout-cone-mode: false
           path: METplus
 
-      - name: Set up Python
+      - name: Set up Python for diff_util.py
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -129,8 +142,8 @@ jobs:
 
           # Define paths to the downloaded data
           # Note: upload-artifact v4 nested paths differently, usually named by 'name' provided in upload
-          OUTPUT_DIR="${{ runner.workspace }}/artifacts/test_output_${OUTPUT_BRANCH}"
-          TRUTH_DIR="${{ runner.workspace }}/artifacts/test_output_${TRUTH_BRANCH}"
+          OUTPUT_DIR="${{ runner.workspace }}/artifacts/test_output_${OUTPUT_BRANCH}_${{ matrix.python-version }}"
+          TRUTH_DIR="${{ runner.workspace }}/artifacts/test_output_${TRUTH_BRANCH}_${{ matrix.python-version }}"
 
           echo "Comparing $OUTPUT_DIR and $TRUTH_DIR"
 
