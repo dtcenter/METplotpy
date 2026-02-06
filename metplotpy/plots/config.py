@@ -105,16 +105,17 @@ class Config:
         self.plot_margins = self.get_config_value('mar')
         self.grid_on = self._get_bool('grid_on')
         if self.get_config_value('mar_offset'):
-           self.plot_margins = dict(l=0,
-                                 r=self.parameters['mar'][3] + 20,
-                                 t=self.parameters['mar'][2] + 80,
-                                 b=self.parameters['mar'][0] + 80,
-                                 pad=5
-                                 )
+            self.plot_margins = {
+                'l': 0,
+                'r': self.parameters['mar'][3] + 20,
+                't': self.parameters['mar'][2] + 80,
+                'b': self.parameters['mar'][0] + 80,
+                'pad': 5,
+            }
 
         self.grid_col = self.get_config_value('grid_col')
         if self.grid_col:
-           self.blended_grid_col =  metplotpy.plots.util.alpha_blending(self.grid_col, 0.5)
+            self.blended_grid_col = metplotpy.plots.util.alpha_blending(self.grid_col, 0.5)
         self.show_nstats = self._get_bool('show_nstats')
         self.indy_stagger = self._get_bool('indy_stagger')
 
@@ -322,13 +323,15 @@ class Config:
             legend_bbox_x = legend_inset['x']
             legend_bbox_y = legend_inset['y']
             legend_size = self.get_config_value('legend_size')
-            legend_settings = dict(bbox_x=legend_bbox_x,
-                               bbox_y=legend_bbox_y,
-                               legend_size=legend_size,
-                               legend_ncol=legend_ncol,
-                               legend_box=legend_box)
+            legend_settings = {
+                'bbox_x': legend_bbox_x,
+                'bbox_y': legend_bbox_y,
+                'legend_size': legend_size,
+                'legend_ncol': legend_ncol,
+                'legend_box': legend_box,
+            }
         else:
-            legend_settings = dict()
+            legend_settings = {}
 
         return legend_settings
 
@@ -443,7 +446,7 @@ class Config:
         # Utilize itertools' product() to create the cartesian product of all elements
         # in the lists to produce all permutations of the series_val values and the
         # fcst_var_val values.
-        permutations = [p for p in itertools.product(*series_vals_list)]
+        permutations = list(itertools.product(*series_vals_list))
 
         return len(permutations)
 
@@ -557,6 +560,16 @@ class Config:
            Retrieve the text that is to be displayed in the legend at the bottom of the plot.
            Each entry corresponds to a series.
 
+         For legend labels that aren't set (ie in conf file they are set to '')
+         create a legend label based on the permutation of the series names
+         appended by 'user_legend label'.  For example, for:
+             series_val_1:
+                model:
+                  - NoahMPv3.5.1_d01
+                vx_mask:
+                  - CONUS
+         The constructed legend label will be "NoahMPv3.5.1_d01 CONUS Performance"
+
            Args:
                @parm legend_label_type:  The legend label, such as 'Performance',
                                          used when the user hasn't indicated a legend in the
@@ -566,41 +579,7 @@ class Config:
                a list consisting of the series label to be displayed in the plot legend.
 
         """
-        all_legends = self.get_config_value('user_legend')
-
-        # for legend labels that aren't set (ie in conf file they are set to '')
-        # create a legend label based on the permutation of the series names
-        # appended by 'user_legend label'.  For example, for:
-        #     series_val_1:
-        #        model:
-        #          - NoahMPv3.5.1_d01
-        #        vx_mask:
-        #          - CONUS
-        # The constructed legend label will be "NoahMPv3.5.1_d01 CONUS Performance"
-
-
-        # Check for empty list as setting in the config file
-        legends_list = []
-
-        # set a flag indicating when a legend label is specified
-        legend_label_unspecified = True
-
-        # Check if a stat curve was requested, if so, then the number
-        # of series_val_1 values will be inconsistent with the number of
-        # legend labels 'specified' (either with actual labels or whitespace)
-
-        num_series = self.calculate_number_of_series()
-        if len(all_legends) == 0:
-            for i in range(num_series):
-                legends_list.append(' ')
-        else:
-            for legend in all_legends:
-                if len(legend) == 0:
-                    legend = ' '
-                    legends_list.append(legend)
-                else:
-                    legend_label_unspecified = False
-                    legends_list.append(legend)
+        legends_list, legend_label_unspecified = self._get_legends_list()
 
         ll_list = []
         series_list = self.all_series_vals
@@ -612,8 +591,7 @@ class Config:
             # check if summary_curve is present
             if 'summary_curve' in self.parameters.keys() and self.parameters['summary_curve'] != 'none':
                 return [legend_label_type, self.parameters['summary_curve'] + ' ' + legend_label_type]
-            else:
-                return [legend_label_type]
+            return [legend_label_type]
 
         perms = utils.create_permutations(series_list)
         for idx,ll in enumerate(legends_list):
@@ -631,6 +609,35 @@ class Config:
 
         legends_list_ordered = self.create_list_by_series_ordering(ll_list)
         return legends_list_ordered
+
+    def _get_legends_list(self):
+        all_legends = self.get_config_value('user_legend')
+
+        # Check for empty list as setting in the config file
+        legends_list = []
+
+        # set a flag indicating when a legend label is specified
+        legend_label_unspecified = True
+
+        # Check if a stat curve was requested, if so, then the number
+        # of series_val_1 values will be inconsistent with the number of
+        # legend labels 'specified' (either with actual labels or whitespace)
+
+        num_series = self.calculate_number_of_series()
+        if len(all_legends) == 0:
+            for _ in range(num_series):
+                legends_list.append(' ')
+        else:
+            for legend in all_legends:
+                if len(legend) == 0:
+                    legend = ' '
+                    legends_list.append(legend)
+                else:
+                    legend_label_unspecified = False
+                    legends_list.append(legend)
+
+        return legends_list, legend_label_unspecified
+
 
     def _get_plot_resolution(self) -> int:
         """
@@ -829,34 +836,35 @@ class Config:
 
         # get property value from the parameters
         lines = self.get_config_value('lines')
+        if lines is None:
+            return None
 
         # if the property exists - proceed
-        if lines is not None:
-            # validate data and replace the values
-            for line in lines:
+        # validate data and replace the values
+        for line in lines:
 
-                # validate line_type
-                line_type = line['type']
-                if line_type not in ('horiz_line', 'vert_line') :
-                    print(f'WARNING: custom line type {line["type"]} is not supported')
+            # validate line_type
+            if line['type'] not in ('horiz_line', 'vert_line') :
+                print(f'WARNING: custom line type {line["type"]} is not supported')
+                line['type'] = None
+                continue
+
+            # convert position to float if line_type=horiz_line
+            if line['type'] == 'horiz_line':
+                try:
+                    line['position'] = float(line['position'])
+                except ValueError:
+                    print(f'WARNING: custom line position {line["position"]} is invalid')
                     line['type'] = None
-                else:
-                    # convert position to float if line_type=horiz_line
-                    if line['type'] == 'horiz_line':
-                        try:
-                            line['position'] = float(line['position'])
-                        except ValueError:
-                            print(f'WARNING: custom line position {line["position"]} is invalid')
-                            line['type'] = None
-                    else:
-                        # convert position to string if line_type=vert_line
-                        line['position'] = str(line['position'])
+            else:
+                # convert position to string if line_type=vert_line
+                line['position'] = str(line['position'])
 
-                    # convert line_width to float
-                    try:
-                        line['line_width'] = float(line['line_width'])
-                    except ValueError:
-                        print(f'WARNING: custom line width {line["line_width"]} is invalid')
-                        line['type'] = None
+            # convert line_width to float
+            try:
+                line['line_width'] = float(line['line_width'])
+            except ValueError:
+                print(f'WARNING: custom line width {line["line_width"]} is invalid')
+                line['type'] = None
 
         return lines
