@@ -54,12 +54,9 @@ class Config:
         self.indy_var = self.get_config_value('indy_var')
         self.show_plot_in_browser = self.get_config_value('show_plot_in_browser')
 
-        # Plot figure dimensions can be in either inches or pixels
-        pixels = self.get_config_value('plot_units')
-        plot_width = self.get_config_value('plot_width')
-        self.plot_width = self.calculate_plot_dimension(plot_width, pixels)
-        plot_height = self.get_config_value('plot_height')
-        self.plot_height = self.calculate_plot_dimension(plot_height, pixels)
+        # Plot figure dimensions should be in inches
+        self.plot_width = self.calculate_plot_dimension('plot_width')
+        self.plot_height = self.calculate_plot_dimension('plot_height')
         self.plot_caption = self.get_config_value('plot_caption')
         # plain text, bold, italic, bold italic are choices in METviewer UI
         self.caption_weight = self.get_config_value('caption_weight')
@@ -656,17 +653,7 @@ class Config:
 
             # check if the units value has been set in the config file
             if self.get_config_value('plot_units'):
-                units = self.get_config_value('plot_units').lower()
-                if units == 'in':
-                    return resolution
-
-                if units == 'mm':
-                    # convert mm to inches so we can
-                    # set dpi value
-                    return resolution * constants.MM_TO_INCHES
-
-                # units not supported, assume inches
-                return resolution
+                return self._convert_units_to_inches(resolution, self.get_config_value('plot_units'))
 
             # units not indicated, assume
             # we are dealing with inches
@@ -675,6 +662,19 @@ class Config:
         # no plot_res value is set, return the default
         # dpi used by matplotlib
         return dpi
+
+    def _convert_units_to_inches(self, value, units):
+        units_lower = units.lower()
+        if units_lower == 'mm':
+            return value * constants.MM_TO_INCHES
+        if units_lower == 'cm':
+            return value * 0.1 * constants.MM_TO_INCHES
+
+        # if unsupported units are specified, log a warning but assume inches
+        if units_lower != 'in':
+            self.logger.warning(f"Invalid units specified: {units}. Expected in, mm, or cm. Assuming inches.")
+
+        return value
 
     def create_list_by_series_ordering(self, setting_to_order) -> list:
         """
@@ -773,55 +773,27 @@ class Config:
         return ordered_settings_list
 
 
-    def calculate_plot_dimension(self, config_value: str , output_units: str) -> int:
+    def calculate_plot_dimension(self, config_value: str) -> int:
         '''
            To calculate the width or height that defines the size of the plot.
-           Matplotlib defines these values in inches, Python plotly defines these
-           in terms of pixels.  METviewer accepts units of inches or mm for width and
+           Matplotlib defines these values in inches.  METviewer accepts units of inches or mm for width and
            height, so conversion from mm to inches or mm to pixels is necessary, depending
            on the requested output units, output_units.
 
            Args:
               @param config_value:  The plot dimension to convert, either a width or height,
                     in inches or mm
-              @param output_units: pixels or in (inches) to indicate which
-                                   units to use to define plot size. Python plotly uses pixels and
-                                   Matplotlib uses inches.
            Returns:
              converted_value : converted value from in/mm to pixels or mm to inches based
                                     on input values
         '''
 
         value2convert = self.get_config_value(config_value)
-        resolution = self.get_config_value('plot_res')
         units = self.get_config_value('plot_units')
 
-        # initialize converted_value to some small value
-        converted_value = 0
-
-        # convert to pixels
-        # plotly uses pixels for setting plot size (width and height)
-        if output_units.lower() == 'pixels':
-            if units.lower() == 'in':
-                # value in pixels
-                converted_value = int(resolution * value2convert)
-            elif units.lower() == 'mm':
-                # Convert mm to pixels
-                converted_value = int(resolution * value2convert * constants.MM_TO_INCHES)
-
         # Matplotlib uses inches (in) for setting plot size (width and height)
-        elif output_units.lower() == 'in':
-            if units.lower() == 'mm':
-                # Convert mm to inches
-                converted_value = value2convert * constants.MM_TO_INCHES
-            else:
-                converted_value = value2convert
+        return self._convert_units_to_inches(value2convert, units)
 
-        # plotly does not allow any value smaller than 10 pixels
-        if output_units.lower() == 'pixels' and converted_value < 10:
-            converted_value = 10
-
-        return converted_value
 
     def _get_bool(self, param: str) -> Union[bool, None]:
         """
