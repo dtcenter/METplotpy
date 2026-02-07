@@ -27,7 +27,7 @@ from metplotpy.plots import util_plotly as util
 from metplotpy.plots.bar.bar_config import BarConfig
 from metplotpy.plots.bar.bar_series import BarSeries
 from metplotpy.plots.base_plot_plotly import BasePlot
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
+from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
     PLOTLY_PAPER_BGCOOR
 
 

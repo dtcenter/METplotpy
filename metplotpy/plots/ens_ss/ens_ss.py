@@ -26,7 +26,7 @@ from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
 from metcalcpy.event_equalize import event_equalize
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 from metplotpy.plots.ens_ss.ens_ss_config import EnsSsConfig
 from metplotpy.plots.ens_ss.ens_ss_series import EnsSsSeries
 from metplotpy.plots.base_plot_plotly import BasePlot

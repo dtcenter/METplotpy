@@ -24,7 +24,7 @@ from plotly.subplots import make_subplots
 import plotly.io as pio
 
 from metplotpy.plots.base_plot_plotly import BasePlot
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 
 from metplotpy.plots.mpr_plot.mpr_plot_config import MprPlotConfig
 from metplotpy.plots.wind_rose.wind_rose import WindRosePlot
