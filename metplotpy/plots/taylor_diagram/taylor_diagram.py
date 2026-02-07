@@ -279,34 +279,26 @@ class TaylorDiagram(BasePlot):
                 self.ax.plot(np.arccos(correlation), stdev, marker=marker, ms=10, ls='',
                              color=marker_colors, label=legend)
 
-        # use FontProperties to re-create the weights used in METviewer
-        fontobj = FontProperties()
-        font_title = fontobj.copy()
-        font_title.set_size(self.config_obj.title_size)
-        style = self.config_obj.title_weight[0]
-        wt = self.config_obj.title_weight[1]
-        font_title.set_style(style)
-        font_title.set_weight(wt)
+        # get the weights, sizes, and style for the title, caption, x-axis label, and
+        # y-axis label
+        wts_size_styles = self.get_weights_size_styles()
 
-        plt.title(self.config_obj.title,
-                  fontproperties=font_title,
-                  color=constants.DEFAULT_TITLE_COLOR,
-                  pad=28)
+        # Plot the title
+        plt.title(
+            self.config_obj.title,
+            fontproperties=wts_size_styles['title'],
+            color=constants.DEFAULT_TITLE_COLOR,
+            pad=28
+            )
 
-        # Plot the caption, leverage FontProperties to re-create the 'weights' menu in
-        # METviewer (i.e. use a combination of style and weight to create the bold
-        # italic
-        # caption weight in METviewer)
-        fontobj = FontProperties()
-        font = fontobj.copy()
-        font.set_size(self.config_obj.caption_size)
-        style = self.config_obj.caption_weight[0]
-        wt = self.config_obj.caption_weight[1]
-        font.set_style(style)
-        font.set_weight(wt)
-        plt.figtext(self.config_obj.caption_align, self.config_obj.caption_offset,
-                    self.config_obj.plot_caption,
-                    fontproperties=font, color=self.config_obj.caption_color)
+        # Plot the caption
+        caption = wts_size_styles['caption']
+
+        plt.figtext(
+            self.config_obj.caption_align, self.config_obj.caption_offset,
+            self.config_obj.plot_caption,
+            fontproperties=caption, color=self.config_obj.caption_color
+            )
 
         # Add a figure legend
 
@@ -330,6 +322,7 @@ class TaylorDiagram(BasePlot):
 
         plt.tight_layout()
         plt.plot()
+
 
         # Save the figure, based on whether we are displaying only positive
         # correlations or all
