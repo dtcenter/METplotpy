@@ -24,6 +24,7 @@ import numpy as np
 from typing import Union
 import pandas as pd
 import matplotlib.pyplot as plt
+from jinja2.lexer import TOKEN_DOT
 
 from metplotpy.plots.context_filter import ContextFilter as cf
 import metcalcpy.util.pstd_statistics as pstats
@@ -86,6 +87,10 @@ def get_params(config_filename):
     return parse_config(config_file)
 
 
+
+# TODO Remove, Plotly specific
+#  Matplotlib only needs to do a  plt.savefig()
+# command
 def make_plot(config_filename, plot_class):
     """!Get plot parameters and create the plot.
 
@@ -99,7 +104,7 @@ def make_plot(config_filename, plot_class):
     try:
         plot = plot_class(params)
         plot.save_to_file()
-        plot.write_html()
+        # plot.write_html()
         plot.write_output_file()
         name = plot_class.__name__ if not hasattr(plot_class, 'LONG_NAME') else plot_class.LONG_NAME
         plot.logger.info(f"Finished {name} plot at {datetime.now()}")
@@ -198,6 +203,7 @@ def pretty(low, high, number_of_intervals) -> Union[np.ndarray, list]:
     return np.arange(miny, maxy + 0.5 * d, d)
 
 
+# TODO remove, moved to base_plot.py
 def add_horizontal_line(y: float, line_properties: dict) -> None:
     """Adds a horizontal line to the matplotlib plot
 
@@ -208,6 +214,7 @@ def add_horizontal_line(y: float, line_properties: dict) -> None:
     plt.axhline(y=y, xmin=0, xmax=1, **line_properties)
 
 
+# TODO remove, moved to base_plot.py
 def add_vertical_line(x: float, line_properties: dict) -> None:
     """Adds a vertical line to the matplotlib plot
 
