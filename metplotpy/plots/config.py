@@ -56,7 +56,7 @@ class Config:
 
         # Plot figure dimensions should be in inches
         self.plot_width = self.calculate_plot_dimension('plot_width')
-        self.plot_height = self.calculate_plot_dimension('plot_height')
+        self.plot_height = self.calculate_plot_dimension('plot_height' )
         self.plot_caption = self.get_config_value('plot_caption')
         # plain text, bold, italic, bold italic are choices in METviewer UI
         self.caption_weight = self.get_config_value('caption_weight')
@@ -780,7 +780,7 @@ class Config:
         return ordered_settings_list
 
 
-    def calculate_plot_dimension(self, config_value: str, output_units:str) -> int:
+    def calculate_plot_dimension(self, config_value: str) -> int:
         '''
            To calculate the width or height that defines the size of the plot.
            Matplotlib defines these values in inches.  METviewer accepts units of inches or mm for width and
@@ -798,20 +798,7 @@ class Config:
         '''
    
         value2convert = self.get_config_value(config_value)
-        resolution = self.get_config_value('plot_res')
         units = self.get_config_value('plot_units')
-
-        # initialize converted_value to some small value
-        converted_value = 0
-
-        # convert to pixels
-        if output_units.lower() == 'pixels':
-            if units.lower() == 'in':
-                # value in pixels
-                converted_value = int(resolution * value2convert)
-            elif units.lower() == 'mm':
-                # Convert mm to pixels
-                converted_value = int(resolution * value2convert * constants.MM_TO_INCHES)
 
         # Matplotlib uses inches (in) for setting plot size (width and height)
         return self._convert_units_to_inches(value2convert, units)
