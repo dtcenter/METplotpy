@@ -88,33 +88,6 @@ def get_params(config_filename):
 
 
 
-# TODO Remove, Plotly specific
-#  Matplotlib only needs to do a  plt.savefig()
-# command
-def make_plot(config_filename, plot_class):
-    """!Get plot parameters and create the plot.
-
-    @param config_filename The full path to the config or None
-    @param plot_class class of plot to produce, e.g. Bar or Box
-    @returns plot class object or None if something went wrong
-    """
-    # Retrieve the contents of the custom config file to over-ride
-    # or augment settings defined by the default config file.
-    params = get_params(config_filename)
-    try:
-        plot = plot_class(params)
-        plot.save_to_file()
-        # plot.write_html()
-        plot.write_output_file()
-        name = plot_class.__name__ if not hasattr(plot_class, 'LONG_NAME') else plot_class.LONG_NAME
-        plot.logger.info(f"Finished {name} plot at {datetime.now()}")
-        return plot
-    except ValueError as val_er:
-        print(val_er)
-
-    return None
-
-
 def alpha_blending(hex_color: str, alpha: float) -> str:
     """ Alpha color blending as if on the white background.
         Useful for gridlines
@@ -201,28 +174,6 @@ def pretty(low, high, number_of_intervals) -> Union[np.ndarray, list]:
     miny = np.floor(low / d) * d
     maxy = np.ceil(high / d) * d
     return np.arange(miny, maxy + 0.5 * d, d)
-
-
-# TODO remove, moved to base_plot.py
-def add_horizontal_line(y: float, line_properties: dict) -> None:
-    """Adds a horizontal line to the matplotlib plot
-
-    @param y y value for the line
-    @param line_properties dictionary with line properties like color, width, dash
-    @returns None
-    """
-    plt.axhline(y=y, xmin=0, xmax=1, **line_properties)
-
-
-# TODO remove, moved to base_plot.py
-def add_vertical_line(x: float, line_properties: dict) -> None:
-    """Adds a vertical line to the matplotlib plot
-
-    @param x x value for the line
-    @param line_properties dictionary with line properties like color, width, dash
-    @returns None
-    """
-    plt.axvline(x=x, ymin=0, ymax=1, **line_properties)
 
 
 def abline(x_value: float, intercept: float, slope: float) -> float:
