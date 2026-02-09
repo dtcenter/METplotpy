@@ -61,6 +61,7 @@ DEFAULT_CAPTION_Y_OFFSET = -3.1
 DEFAULT_TITLE_FONT_SIZE = 11
 DEFAULT_TITLE_OFFSET = (-0.48)
 
+
 AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", ".", "h"]
 
 PCH_TO_MATPLOTLIB_MARKER = {'20': '.', '19': 'o', '17': '^', '1': 'H',
@@ -80,7 +81,6 @@ PCH_TO_MATPLOTLIB_MARKER_SIZE = {'.': 14, 'o': 36, 's': 20, '^': 36, 'd': 20, 'H
 # used for tick angles
 XAXIS_ORIENTATION = {0: 0, 1: 0, 2: 270, 3: 270}
 YAXIS_ORIENTATION = {0: -90, 1: 0, 2: 0, 3: -90}
-
 
 # Caption weights supported in Matplotlib are normal, italic and oblique.
 # Map these onto the MetViewer requested values of 1 (normal), 2 (bold),

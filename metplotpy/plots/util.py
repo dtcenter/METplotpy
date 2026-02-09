@@ -24,7 +24,6 @@ import numpy as np
 from typing import Union
 import pandas as pd
 import matplotlib.pyplot as plt
-from jinja2.lexer import TOKEN_DOT
 
 from metplotpy.plots.context_filter import ContextFilter as cf
 import metcalcpy.util.pstd_statistics as pstats
