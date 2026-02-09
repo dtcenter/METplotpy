@@ -292,12 +292,11 @@ class TaylorDiagram(BasePlot):
             )
 
         # Plot the caption
-        caption = wts_size_styles['caption']
 
         plt.figtext(
             self.config_obj.caption_align, self.config_obj.caption_offset,
             self.config_obj.plot_caption,
-            fontproperties=caption, color=self.config_obj.caption_color
+            fontproperties=wts_size_styles['caption'], color=self.config_obj.caption_color
             )
 
         # Add a figure legend
