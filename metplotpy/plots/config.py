@@ -145,8 +145,10 @@ class Config:
         # re-create the METviewer xlab_weight. Use the
         # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
         # what was requested in METviewer
-        mv_xlab_weight = self.get_config_value('xlab_weight')
-        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_xlab_weight]
+        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.get_config_value('xlab_weight')]
+        self.x2lab_weight = self.get_config_value('x2lab_weight')
+        if self.x2lab_weight:
+            self.x2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.x2lab_weight]
 
         self.x_tickangle = self.parameters['xtlab_orient']
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
@@ -245,8 +247,8 @@ class Config:
 
         # Represent the names of the forecast variables (inner keys) to the fcst_var_val setting.
         # These are the names of the columns in the input dataframe.
-        self.fcst_var_val_1 = self._get_fcst_vars(1)
-        self.fcst_var_val_2 = self._get_fcst_vars(2)
+        self.fcst_var_val_1 = self.get_fcst_vars(1)
+        self.fcst_var_val_2 = self.get_fcst_vars(2)
 
         # Get the list of the statistics of interest
         self.list_stat_1 = self.get_config_value('list_stat_1')
@@ -374,7 +376,7 @@ class Config:
     def _get_series_columns(self, index):
         ''' Retrieve the column name that corresponds to this '''
 
-    def _get_fcst_vars(self, index: int) -> list:
+    def get_fcst_vars(self, index: int) -> list:
         """
            Retrieve a list of the inner keys (fcst_vars) to the fcst_var_val dictionary.
 

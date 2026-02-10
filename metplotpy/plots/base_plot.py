@@ -22,6 +22,7 @@ import yaml
 from typing import Union
 from metplotpy.plots.util import strtobool
 from .config import Config
+from . import constants
 
 turn_on_logging = strtobool('LOG_BASE_PLOT')
 # Log when Chrome is downloaded at runtime
@@ -183,7 +184,6 @@ class BasePlot:
 
         # For xaxis label
         xlab_property= FontProperties()
-
         xlab_property.set_size(self.config_obj.x_title_font_size)
         xlab_style = self.config_obj.xlab_weight[0]
         xlab_wt = self.config_obj.xlab_weight[1]
@@ -199,6 +199,16 @@ class BasePlot:
         ylab_property.set_style(ylab_style)
         ylab_property.set_weight(ylab_wt)
         weights_size_styles['ylab'] = ylab_property
+
+
+        # For x2axis label if set
+        if self.config_obj.x2lab_weight:
+            x2lab_property= FontProperties()
+            x2lab_property.set_size(self.config_obj.x2_title_font_size)
+            x2lab_style, x2lab_wt = self.config_obj.x2lab_weight
+            x2lab_property.set_style(x2lab_style)
+            x2lab_property.set_weight(x2lab_wt)
+            weights_size_styles['x2lab'] = x2lab_property
 
         return weights_size_styles
 
@@ -393,3 +403,22 @@ class BasePlot:
 
         np_array = np.array(data)
         return len(np_array.shape)
+
+    def _add_title(self, ax, font_properties):
+        ax.set_title(
+            self.config_obj.title,
+            fontproperties=font_properties,
+            color=constants.DEFAULT_TITLE_COLOR,
+            pad=28,
+            x=self.config_obj.parameters['title_align'],
+            y=self.config_obj.title_offset,
+        )
+
+    def _add_caption(self, plt, font_properties):
+        y_pos = max(0.01, self.config_obj.caption_offset)
+        plt.figtext(
+            self.config_obj.caption_align, y_pos,
+            self.config_obj.plot_caption,
+            fontproperties=font_properties,
+            color=self.config_obj.parameters['caption_col'],
+        )

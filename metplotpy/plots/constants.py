@@ -24,6 +24,8 @@ __author__ = 'Minna Win'
 MM_TO_INCHES = 0.03937008
 CM_TO_INCHES = MM_TO_INCHES * 0.1
 
+PIXELS_TO_POINTS = 0.72
+
 # Available Matplotlib Line styles
 # ':'  ...
 # '-.'  _._.
@@ -57,9 +59,9 @@ DEFAULT_TITLE_FONTSIZE = 10
 # Default size used in plotly legend text
 DEFAULT_LEGEND_FONTSIZE = 12
 DEFAULT_CAPTION_FONTSIZE = 14
-DEFAULT_CAPTION_Y_OFFSET = -3.1
+DEFAULT_CAPTION_Y_OFFSET = 0.01
 DEFAULT_TITLE_FONT_SIZE = 11
-DEFAULT_TITLE_OFFSET = (-0.48)
+DEFAULT_TITLE_OFFSET = 0.02
 
 
 AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", ".", "h"]
