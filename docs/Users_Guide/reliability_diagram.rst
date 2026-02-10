@@ -160,7 +160,7 @@ corresponding to the *plot_filename* setting in the default
 configuration file. Otherwise, this will need to be specified in
 *plot_filename* in the **minimal_box.yaml** file):
 
-.. literalinclude:: ../../test/reliability_diagram/custom_reliability_use_defaults.yaml
+.. literalinclude:: ../../test/reliability_diagram/minimal_reliability.yaml
 
 Copy this file to the working directory:
 
