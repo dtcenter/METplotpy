@@ -92,3 +92,6 @@ MV_TO_MPL_CAPTION_STYLE = {1:('normal', 'normal'), 2:('normal','bold'), 3:('ital
 
 # Matplotlib constants
 MPL_FONT_SIZE_DEFAULT = 11
+
+MPL_DEFAULT_BAR_WIDTH = 0.8
+MPL_DEFAULT_BOX_WIDTH = 0.5
