@@ -54,8 +54,8 @@ class BarSeries(Series):
         for x in reversed(list(all_fields_values_orig.keys())):
             all_fields_values[x] = all_fields_values_orig.get(x)
 
-        if self.config.get_fcst_vars(1):
-            all_fields_values['fcst_var'] = self.config.get_fcst_vars(1)
+        if self.config._get_fcst_vars(1):
+            all_fields_values['fcst_var'] = list(self.config._get_fcst_vars(1).keys())
         all_fields_values['stat_name'] = self.config.get_config_value('list_stat_1')
         all_fields_values_no_indy[1] = all_fields_values
 

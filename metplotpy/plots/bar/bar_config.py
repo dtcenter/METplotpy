@@ -138,6 +138,24 @@ class BarConfig(Config):
 
         return self.create_list_by_series_ordering(plot_display_bools)
 
+    def _get_fcst_vars(self, index):
+        """
+           Retrieve a list of the inner keys (fcst_vars) to the fcst_var_val dictionary.
+           Args:
+              index: identifier used to differentiate between fcst_var_val_1 and
+                     fcst_var_val_2 config settings
+           Returns:
+               a list containing all the fcst variables requested in the
+               fcst_var_val setting in the config file.  This will be
+               used to subset the input data that corresponds to a particular series.
+        """
+
+        fcst_var_val_dict = self.get_config_value('fcst_var_val_1')
+        if not fcst_var_val_dict:
+            fcst_var_val_dict = {}
+
+        return fcst_var_val_dict
+
     def _get_plot_stat(self) -> str:
         """
             Retrieves the plot_stat setting from the config file.
@@ -249,8 +267,8 @@ class BarConfig(Config):
         for x in reversed(list(all_fields_values_orig.keys())):
             all_fields_values[x] = all_fields_values_orig.get(x)
 
-        if self.get_fcst_vars(1):
-            all_fields_values['fcst_var'] = self.get_fcst_vars(1)
+        if self.get_fcst_vars_keys(1):
+            all_fields_values['fcst_var'] = self.get_fcst_vars_keys(1)
 
         all_fields_values['stat_name'] = self.get_config_value('list_stat_1')
         return utils.create_permutations_mv(all_fields_values, 0)
@@ -283,10 +301,8 @@ class BarConfig(Config):
         """
         # Retrieve the lists from the series_val_1 dictionary
         series_vals_list = self.series_vals_1.copy()
-        if isinstance(self.fcst_var_val_1, list):
-            fcst_vals = self.fcst_var_val_1
-        elif isinstance(self.fcst_var_val_1, dict):
-            fcst_vals = list(self.fcst_var_val_1.values())
+        fcst_vals = list(self.fcst_var_val_1.values())
+        fcst_vals = [item for sublist in fcst_vals for item in sublist]
         series_vals_list.append(fcst_vals)
 
         # Utilize itertools' product() to create the cartesian product of all elements
