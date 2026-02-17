@@ -113,13 +113,20 @@ def module_setup_env(request):
 
     This fixture automatically determines the test directory from the test module's location.
     """
-    test_dir = request.fspath.dirname
+    test_dir = str(request.node.path.parent)
     print("Setting up environment")
     os.environ['TEST_DIR'] = test_dir
+
+    # handle multiple test_*.py files in a single directory
+    # create a subdirectory named after the test file if it doesn't match the test directory
+    test_name = str(request.node.name).replace('test_', '').replace('.py', '')
+    if test_name != os.path.basename(test_dir):
+        test_name = os.path.join(os.path.basename(test_dir), test_name)
+
     # write test output under METPLOTPY_TEST_OUTPUT if set, otherwise write to test/test_output
     # write to a subdirectory named after the plot type
     output_dir = os.environ.get('METPLOTPY_TEST_OUTPUT', os.path.join(test_dir, os.pardir))
-    output_dir = os.path.join(output_dir, 'test_output', os.path.basename(test_dir))
+    output_dir = os.path.join(output_dir, 'test_output', test_name)
 
     # remove output directory for plot type if it already exists to ensure clean test environment
     if os.path.exists(output_dir):
