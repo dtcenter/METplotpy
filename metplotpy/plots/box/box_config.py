@@ -17,9 +17,9 @@ __author__ = 'Tatiana Burek'
 
 import itertools
 
-from ..config_plotly import Config
-from .. import constants_plotly as constants
-from .. import util_plotly as util
+from ..config import Config
+from .. import constants as constants
+from .. import util as util
 
 import metcalcpy.util.utils as utils
 
@@ -57,12 +57,13 @@ class BoxConfig(Config):
         # caption parameters
         self.caption_size = int(constants.DEFAULT_CAPTION_FONTSIZE
                                 * self.get_config_value('caption_size'))
-        self.caption_offset = self.parameters['caption_offset'] - 3.1
+        self.caption_offset = self.parameters['caption_offset'] * constants.DEFAULT_CAPTION_Y_OFFSET
+        self.caption_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.get_config_value('caption_weight')]
 
         ##############################################
         # title parameters
         self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
-        self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
+        self.title_offset = 1.0 + abs(self.parameters['title_offset']) * constants.DEFAULT_TITLE_OFFSET
         self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
@@ -87,7 +88,6 @@ class BoxConfig(Config):
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
         self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         ##############################################
         # x2-axis parameters

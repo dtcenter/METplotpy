@@ -21,19 +21,17 @@ from typing import Union
 from operator import add
 from itertools import chain
 import pandas as pd
+import numpy as np
 
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from plotly.graph_objects import Figure
+from matplotlib import pyplot as plt
 
 import metcalcpy.util.utils as calc_util
 
-from metplotpy.plots.base_plot_plotly import BasePlot
+from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.box.box_config import BoxConfig
 from metplotpy.plots.box.box_series import BoxSeries
-from metplotpy.plots import util_plotly as util
-from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-
+from metplotpy.plots import util
+from metplotpy.plots import constants
 
 class Box(BasePlot):
     """  Generates a Plotly box plot for 1 or more traces
@@ -128,8 +126,7 @@ class Box(BasePlot):
 
 
         """
-        self.logger.info(f"Begin generating series objects: "
-                                    f"{datetime.now()}")
+        self.logger.info(f"Begin generating series objects: {datetime.now()}")
         series_list = []
 
         # add series for y1 axis
@@ -172,76 +169,93 @@ class Box(BasePlot):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
-        self.logger.info(f"End generating series objects: "
-                                    f"{datetime.now()}")
+        if self.config_obj.xaxis_reverse:
+            series_list.reverse()
+
+        self.logger.info(f"End generating series objects: {datetime.now()}")
 
         return series_list
 
     def _create_figure(self):
         """ Create a box plot from default and custom parameters"""
-        self.logger.info(f"Begin creating the figure: "
-                                    f"{datetime.now()}")
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_y2axis()
-        self._add_legend()
+        self.logger.info(f"Begin creating the figure: {datetime.now()}")
 
-        # placeholder for the number of stats
-        n_stats = [0] * len(self.config_obj.indy_vals)
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
-        # placeholder for the min and max values for y-axis
-        yaxis_min = None
-        yaxis_max = None
+        wts_size_styles = self.get_weights_size_styles()
 
-        if self.config_obj.xaxis_reverse is True:
-            self.series_list.reverse()
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
 
-        for series in self.series_list:
-            # Don't generate the plot for this series if
-            # it isn't requested (as set in the config file)
-            if series.plot_disp:
-                # collect min-max if we need to sync axis
-                if self.config_obj.sync_yaxes is True:
-                    yaxis_min, yaxis_max = self._find_min_max(series, yaxis_min, yaxis_max)
+        ax_y2 = self._add_y2axis(ax, wts_size_styles['y2lab'])
 
-                self._draw_series(series)
+        n_stats, handles_and_labels, yaxis_min, yaxis_max = self._add_series(ax, ax_y2)
 
-                # aggregate number of stats
-                n_stats = list(map(add, n_stats, series.series_points['nstat']))
+        self._add_xaxis(ax, wts_size_styles['xlab'])
+        self._add_yaxis(ax, wts_size_styles['ylab'])
 
         # add custom lines
-        if len(self.series_list) > 0:
-            self._add_lines(
-                self.config_obj,
-                sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique())
-                )
-
-        # apply y axis limits
-        self._yaxis_limits()
-        self._y2axis_limits()
-
-        # sync axis
-        self._sync_yaxis(yaxis_min, yaxis_max)
+        # if len(self.series_list) > 0:
+        #     self._add_lines(
+        #         self.config_obj,
+        #         sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique())
+        #         )
 
         # add x2 axis
-        self._add_x2axis(n_stats)
+        self._add_x2axis(ax, n_stats, wts_size_styles['x2lab'])
 
-        self.figure.update_layout(boxmode='group')
+        self._sync_yaxes(ax, ax_y2, yaxis_min, yaxis_max)
+        self._add_legend(ax, handles_and_labels)
 
-        self.logger.info(f"End creating the figure: "
-                                    f"{datetime.now()}")
 
-    def _draw_series(self, series: BoxSeries) -> None:
+        #plt.tight_layout()
+        #self.figure.update_layout(boxmode='group')
+
+        self.logger.info(f"End creating the figure: {datetime.now()}")
+
+    def _sync_yaxes(self, ax, ax2, yaxis_min: Union[float, None], yaxis_max: Union[float, None]):
+        if not self.config_obj.sync_yaxes:
+            return
+
+        # set y limits if defined in config or if min/max are provided
+        if len(self.config_obj.parameters['ylim']) > 0:
+            yaxis_min = self.config_obj.parameters['ylim'][0]
+            yaxis_max = self.config_obj.parameters['ylim'][1]
+
+        if yaxis_min is not None and yaxis_max is not None:
+            ax.set_ylim(yaxis_min, yaxis_max)
+            ax2.set_ylim(yaxis_min, yaxis_max)
+
+    def _draw_series(self, ax: plt.Axes, ax2, series: BoxSeries, idx: int):
         """
         Draws the boxes on the plot
 
         :param series: Line series object with data and parameters
         """
 
-        self.logger.info(f"Begin drawing the boxes on the plot for "
-                                    f"{series.series_name}: "
-                                    f"{datetime.now()}")
+        self.logger.info(f"Begin drawing the boxes on the plot for {series.series_name}: {datetime.now()}")
+
+        base = np.arange(len(self.config_obj.indy_vals))
+        n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
+        n = max(n_visible_series, 1)
+        width = constants.MPL_DEFAULT_BOX_WIDTH / n
+        offset = (idx - (n - 1) / 2.0) * width
+        x_locs = base + offset
+
+        # Group your 'stat_value' data by 'indy_var' categories first
+        data_to_plot = [group_data for name, group_data in
+                        series.series_data.groupby(self.config_obj.indy_var)['stat_value']]
+
+        plot_ax = ax
+        if ax2 and ax2.get_ylabel() in series.series_data.stat_name.values:
+            plot_ax = ax2
+
+        boxplot = plot_ax.boxplot(data_to_plot, positions=x_locs, patch_artist=True, widths=width,
+                                  label=self.config_obj.user_legends[series.idx])
+        for box in boxplot['boxes']:
+            box.set_facecolor(series.color)
+
+        return boxplot['boxes'][0]
         # defaults markers and colors for the regular box plot
         line_color = dict(color='rgb(0,0,0)')
         fillcolor = series.color
@@ -283,11 +297,31 @@ class Box(BasePlot):
             secondary_y=series.y_axis != 1
         )
 
-        self.logger.info(f"End drawing the boxes on the plot: "
-                                    f"{datetime.now()}")
+        self.logger.info(f"End drawing the boxes on the plot: {datetime.now()}")
 
-    @staticmethod
-    def _find_min_max(series: BoxSeries, yaxis_min: Union[float, None],
+    def _add_series(self, ax, ax2):
+        handles_and_labels = []
+        n_stats = [0] * len(self.config_obj.indy_vals)
+        yaxis_min = None
+        yaxis_max = None
+
+        for idx, series in enumerate(self.series_list):
+            # Don't generate the plot for this series if
+            # it isn't requested (as set in the config file)
+            if series.plot_disp:
+                # collect min-max if we need to sync axis
+                if self.config_obj.sync_yaxes:
+                    yaxis_min, yaxis_max = self._find_min_max(series, yaxis_min, yaxis_max)
+
+                handle = self._draw_series(ax, ax2, series, idx)
+                handles_and_labels.append((handle, handle.get_label()))
+
+                # aggregate number of stats
+                n_stats = list(map(add, n_stats, series.series_points['nstat']))
+
+        return n_stats, handles_and_labels, yaxis_min, yaxis_max
+
+    def _find_min_max(self, series: BoxSeries, yaxis_min: Union[float, None],
                       yaxis_max: Union[float, None]) -> tuple:
         """
         Finds min and max value between provided min and max and y-axis CI values of this series
@@ -298,8 +332,7 @@ class Box(BasePlot):
         :param yaxis_max: previously calculated max value
         :return: a tuple with calculated min/max
         """
-        self.logger.info(f"Begin finding min and max CI values: "
-                                    f"{datetime.now()}")
+        self.logger.info(f"Begin finding min and max CI values: {datetime.now()}")
         # calculate series upper and lower limits of CIs
         indexes = range(len(series.series_points['dbl_med']))
         upper_range = [series.series_points['dbl_med'][i] + series.series_points['dbl_up_ci'][i]
@@ -310,273 +343,9 @@ class Box(BasePlot):
         if yaxis_min is None or yaxis_max is None:
             return min(low_range), max(upper_range)
 
-        self.logger.info(f"End finding min and max CI values: "
-                                    f"{datetime.now()}")
+        self.logger.info(f"End finding min and max CI values: {datetime.now()}")
 
         return min(chain([yaxis_min], low_range)), max(chain([yaxis_max], upper_range))
-
-    def _yaxis_limits(self) -> None:
-        """
-        Apply limits on y2 axis if needed
-        """
-        if len(self.config_obj.parameters['ylim']) > 0:
-            self.figure.update_layout(yaxis={'range': [self.config_obj.parameters['ylim'][0],
-                                                       self.config_obj.parameters['ylim'][1]],
-                                             'autorange': False})
-
-    def _y2axis_limits(self) -> None:
-        """
-        Apply limits on y2 axis if needed
-        """
-        if len(self.config_obj.parameters['y2lim']) > 0:
-            self.figure.update_layout(yaxis2={'range': [self.config_obj.parameters['y2lim'][0],
-                                                        self.config_obj.parameters['y2lim'][1]],
-                                              'autorange': False})
-
-    def _create_layout(self) -> Figure:
-        """
-        Creates a new layout based on the properties from the config file
-        including plots size, annotation and title
-
-        :return: Figure object
-        """
-        # create annotation
-        annotation = [
-            {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-                                             self.config_obj.parameters['caption_weight']),
-             'align': 'left',
-             'showarrow': False,
-             'xref': 'paper',
-             'yref': 'paper',
-             'x': self.config_obj.parameters['caption_align'],
-             'y': self.config_obj.caption_offset,
-             'font': {
-                 'size': self.config_obj.caption_size,
-                 'color': self.config_obj.parameters['caption_col']
-             }
-             }]
-        # create title
-        title = {'text': util.apply_weight_style(self.config_obj.title,
-                                                 self.config_obj.parameters['title_weight']),
-                 'font': {
-                     'size': self.config_obj.title_font_size,
-                 },
-                 'y': self.config_obj.title_offset,
-                 'x': self.config_obj.parameters['title_align'],
-                 'xanchor': 'center',
-                 'xref': 'paper'
-                 }
-
-        # create a layout and allow y2 axis
-        fig = make_subplots(specs=[[{"secondary_y": True}]])
-
-        # add size, annotation, title
-        fig.update_layout(
-            width=self.config_obj.plot_width,
-            height=self.config_obj.plot_height,
-            margin=self.config_obj.plot_margins,
-            paper_bgcolor=PLOTLY_PAPER_BGCOOR,
-            annotations=annotation,
-            title=title,
-            plot_bgcolor=PLOTLY_PAPER_BGCOOR
-        )
-
-        fig.update_layout(
-            xaxis={
-                'tickmode': 'array',
-                'tickvals': self.config_obj.indy_vals,
-                'ticktext': self.config_obj.indy_label
-            }
-        )
-
-        return fig
-
-    def _add_xaxis(self) -> None:
-        """
-        Configures and adds x-axis to the plot
-        """
-        self.figure.update_xaxes(title_text=self.config_obj.xaxis,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 ticks="inside",
-                                 zeroline=False,
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.x_title_font_size
-                                 },
-                                 title_standoff=abs(self.config_obj.parameters['xlab_offset']),
-                                 tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size}
-                                 )
-        # reverse xaxis if needed
-        if hasattr( self.config_obj, 'xaxis_reverse' ) and self.config_obj.xaxis_reverse is True:
-            self.figure.update_xaxes(autorange="reversed")
-
-    def _add_yaxis(self) -> None:
-        """
-        Configures and adds y-axis to the plot
-        """
-        self.figure.update_yaxes(title_text=
-                                 util.apply_weight_style(self.config_obj.yaxis_1,
-                                                         self.config_obj.parameters['ylab_weight']),
-                                 secondary_y=False,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 zeroline=False,
-                                 ticks="inside",
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.y_title_font_size
-                                 },
-                                 title_standoff=abs(self.config_obj.parameters['ylab_offset']),
-                                 tickangle=self.config_obj.y_tickangle,
-                                 tickfont={'size': self.config_obj.y_tickfont_size},
-                                 exponentformat='none'
-                                 )
-
-    def _add_y2axis(self) -> None:
-        """
-        Adds y2-axis if needed
-        """
-        if self.config_obj.parameters['list_stat_2']:
-            self.figure.update_yaxes(title_text=
-                                     util.apply_weight_style(self.config_obj.yaxis_2,
-                                                             self.config_obj.parameters['y2lab_weight']),
-                                     secondary_y=True,
-                                     linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                     linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                     showgrid=False,
-                                     zeroline=False,
-                                     ticks="inside",
-                                     title_font={
-                                         'size': self.config_obj.y2_title_font_size
-                                     },
-                                     title_standoff=abs(self.config_obj.parameters['y2lab_offset']),
-                                     tickangle=self.config_obj.y2_tickangle,
-                                     tickfont={'size': self.config_obj.y2_tickfont_size},
-                                     exponentformat='none'
-                                     )
-
-    def _sync_yaxis(self, yaxis_min: Union[float, None], yaxis_max: Union[float, None]) -> None:
-        """
-        Forces y1 and y2 axes sync if needed by specifying the same limits on both axis.
-        Use ylim property to determine the limits. If this value is not provided -
-        use method parameters
-
-        :param yaxis_min: min value or None
-        :param yaxis_max: max value or None
-        """
-        if self.config_obj.sync_yaxes is True:
-            if len(self.config_obj.parameters['ylim']) > 0:
-                # use plot config parameter
-                range_min = self.config_obj.parameters['ylim'][0]
-                range_max = self.config_obj.parameters['ylim'][1]
-            else:
-                # use method parameter
-                range_min = yaxis_min
-                range_max = yaxis_max
-
-            if range_min is not None and range_max is not None:
-                # update y axis
-                self.figure.update_layout(yaxis={'range': [range_min,
-                                                           range_max],
-                                                 'autorange': False})
-
-                # update y2 axis
-                self.figure.update_layout(yaxis2={'range': [range_min,
-                                                            range_max],
-                                                  'autorange': False})
-
-    def _add_x2axis(self, n_stats) -> None:
-        """
-        Creates x2axis based on the properties from the config file
-        and attaches it to the initial Figure
-
-        :param n_stats: - labels for the axis
-        """
-        if self.config_obj.show_nstats:
-            self.figure.update_layout(xaxis2={'title_text':
-                                                  util.apply_weight_style('NStats',
-                                                                          self.config_obj.parameters['x2lab_weight']
-                                                                          ),
-                                              'linecolor': PLOTLY_AXIS_LINE_COLOR,
-                                              'linewidth': PLOTLY_AXIS_LINE_WIDTH,
-                                              'overlaying': 'x',
-                                              'side': 'top',
-                                              'showgrid': False,
-                                              'zeroline': False,
-                                              'ticks': "inside",
-                                              'title_font': {
-                                                  'size': self.config_obj.x2_title_font_size
-                                              },
-                                              'title_standoff': abs(
-                                                  self.config_obj.parameters['x2lab_offset']
-                                              ),
-                                              'tickmode': 'array',
-                                              'tickvals': self.config_obj.indy_vals,
-                                              'ticktext': n_stats,
-                                              'tickangle': self.config_obj.x2_tickangle,
-                                              'tickfont': {
-                                                  'size': self.config_obj.x2_tickfont_size
-                                              },
-                                              'scaleanchor': 'x'
-                                              }
-                                      )
-            # reverse x2axis if needed
-            if self.config_obj.xaxis_reverse is True:
-                self.figure.update_layout(xaxis2={'autorange':"reversed"})
-
-            # need to add an invisible line with all values = None
-            self.figure.add_trace(
-                go.Scatter(y=[None] * len(self.config_obj.indy_vals), x=self.config_obj.indy_vals,
-                           xaxis='x2', showlegend=False)
-            )
-
-    def _add_legend(self) -> None:
-        """
-        Creates a plot legend based on the properties from the config file
-        and attaches it to the initial Figure
-        """
-        self.figure.update_layout(legend={'x': self.config_obj.bbox_x,
-                                          'y': self.config_obj.bbox_y,
-                                          'xanchor': 'center',
-                                          'yanchor': 'top',
-                                          'bordercolor': self.config_obj.legend_border_color,
-                                          'borderwidth': self.config_obj.legend_border_width,
-                                          'orientation': self.config_obj.legend_orientation,
-                                          'font': {
-                                              'size': self.config_obj.legend_size,
-                                              'color': "black"
-                                          },
-                                          'traceorder': 'normal'
-                                          })
-        if hasattr( self.config_obj, 'xaxis_reverse' ) and self.config_obj.xaxis_reverse is True:
-            self.figure.update_layout(legend={'traceorder':'reversed'})
-
-    def write_html(self) -> None:
-        """
-        Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
-        """
-        self.config_obj.logger.info(f"Begin writing HTML file: "
-                                    f"{datetime.now()}")
-
-        # is_create = self.config_obj.create_html
-        if self.config_obj.create_html is True:
-            # construct the file name from plot_filename
-            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-            html_name = f"{base_name}.html"
-
-            # save html
-            self.figure.write_html(html_name, include_plotlyjs=False)
-
-            self.logger.info(f"End writing HTML file: "
-                                        f"{datetime.now()}")
 
     def write_output_file(self) -> None:
         """
@@ -589,44 +358,39 @@ class Box(BasePlot):
         # otherwise use points_path path
 
         match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-        if self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is True and match:
-            filename = match.group(1)
-            # replace the default path with the custom
-            if self.config_obj.points_path is not None:
-                # get the file name
-                path = filename.split(os.path.sep)
-                if len(path) > 0:
-                    filename = path[-1]
+        if not self.config_obj.dump_points_1 and not self.config_obj.dump_points_2 or not match:
+            return
+
+        filename = match.group(1)
+        # replace the default path with the custom
+        if self.config_obj.points_path is not None:
+            filename = os.path.join(self.config_obj.points_path, os.path.basename(filename))
+
+        filename = f"{filename}.points1"
+        if os.path.exists(filename):
+            os.remove(filename)
+        # create directory if needed
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+        for series in self.series_list:
+            for indy_val in self.config_obj.indy_vals:
+                if calc_util.is_string_integer(indy_val):
+                    data_for_indy = series.series_data[
+                        series.series_data[self.config_obj.indy_var] == int(indy_val)]
+                elif calc_util.is_string_strictly_float(indy_val):
+                    data_for_indy = series.series_data[
+                        series.series_data[self.config_obj.indy_var] == float(indy_val)]
                 else:
-                    filename = '.' + os.path.sep
-                filename = self.config_obj.points_path + os.path.sep + filename
+                    data_for_indy = series.series_data[
+                        series.series_data[self.config_obj.indy_var] == indy_val]
 
-            filename = filename + '.points1'
-            if os.path.exists(filename):
-                os.remove(filename)
-            # create directory if needed
-            os.makedirs(os.path.dirname(filename), exist_ok=True)
-
-            for series in self.series_list:
-                for indy_val in self.config_obj.indy_vals:
-                    if calc_util.is_string_integer(indy_val):
-                        data_for_indy = series.series_data[
-                            series.series_data[self.config_obj.indy_var] == int(indy_val)]
-                    elif calc_util.is_string_strictly_float(indy_val):
-                        data_for_indy = series.series_data[
-                            series.series_data[self.config_obj.indy_var] == float(indy_val)]
-                    else:
-                        data_for_indy = series.series_data[
-                            series.series_data[self.config_obj.indy_var] == indy_val]
-
-                    file_object = open(filename, 'a')
+                with open(filename, 'a') as file_object:
                     file_object.write('\n')
                     file_object.write(' '.join([str(elem) for elem in series.series_name]) + ' ' + indy_val)
                     file_object.write('\n')
-                    file_object.close()
-                    quantile_data = data_for_indy['stat_value'].quantile([0, 0.25, 0.5, 0.75, 1]).iloc[::-1]
-                    quantile_data.to_csv(filename, header=False, index=None, sep=' ', mode='a')
-                    file_object.close()
+
+                quantile_data = data_for_indy['stat_value'].quantile([0, 0.25, 0.5, 0.75, 1]).iloc[::-1]
+                quantile_data.to_csv(filename, header=False, index=None, sep=' ', mode='a')
 
 
 def main(config_filename=None):

@@ -479,8 +479,11 @@ class BasePlot:
 
     def _add_x2axis(self, ax, n_stats, fontproperties: FontProperties) -> None:
         """
-        Creates x2axis based on the properties from the config file
-        and attaches it to the initial Figure
+        Creates x2axis based on the properties from the config file.
+
+        Note: this function may need to be called after adding the series, because some
+        plots add ticks that will conflict with the explicit x ticks set in this function.
+        Calliing this after will override the ticks and prevent a conflict.
 
         :param n_stats: - labels for the axis
         """
