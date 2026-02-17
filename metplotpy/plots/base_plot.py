@@ -18,6 +18,7 @@ import logging
 import warnings
 import numpy as np
 from matplotlib.font_manager import FontProperties
+from matplotlib import pyplot as plt
 import yaml
 from typing import Union
 from metplotpy.plots.util import strtobool
@@ -200,15 +201,24 @@ class BasePlot:
         ylab_property.set_weight(ylab_wt)
         weights_size_styles['ylab'] = ylab_property
 
-
         # For x2axis label if set
-        if self.config_obj.x2lab_weight:
+        if hasattr(self.config_obj, 'x2lab_weight') and hasattr(self.config_obj, 'x2_title_font_size'):
             x2lab_property= FontProperties()
             x2lab_property.set_size(self.config_obj.x2_title_font_size)
             x2lab_style, x2lab_wt = self.config_obj.x2lab_weight
             x2lab_property.set_style(x2lab_style)
             x2lab_property.set_weight(x2lab_wt)
             weights_size_styles['x2lab'] = x2lab_property
+
+
+        # For y2axis label if set
+        if hasattr(self.config_obj, 'y2lab_weight') and hasattr(self.config_obj, 'y2_title_font_size'):
+            y2lab_property= FontProperties()
+            y2lab_property.set_size(self.config_obj.y2_title_font_size)
+            y2lab_style, y2lab_wt = self.config_obj.y2lab_weight
+            y2lab_property.set_style(y2lab_style)
+            y2lab_property.set_weight(y2lab_wt)
+            weights_size_styles['y2lab'] = y2lab_property
 
         return weights_size_styles
 
@@ -270,39 +280,13 @@ class BasePlot:
 
         return None
 
-    def save_to_file(self):
-        """Saves the image to a file specified in the config file.
-         Prints a message if fails
-
-        Args:
-
-        Returns:
-
-        """
+    def save_to_file(self) -> None:
         image_name = self.get_config_value('plot_filename')
-
-        # Suppress deprecation warnings from third-party packages that are not in our control.
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-        # Create the directory for the output plot if it doesn't already exist
-        dirname = os.path.dirname(os.path.abspath(image_name))
-        os.makedirs(dirname, exist_ok=True)
-        if self.figure:
-            try:
-                self.figure.write_image(image_name)
-            except FileNotFoundError:
-                self.logger.error(f"FileNotFoundError: Cannot save to file"
-                                  f" {image_name}")
-                # print("Can't save to file " + image_name)
-            except ResourceWarning:
-                self.logger.warning(f"ResourceWarning: in _kaleido"
-                                  f" {image_name}")
-
-            except ValueError as ex:
-                self.logger.error(f"ValueError: Could not save output file.")
-        else:
-            self.logger.error(f"The figure {dirname} cannot be saved.")
-            print("Oops!  The figure was not created. Can't save.")
+        os.makedirs(os.path.dirname(image_name), exist_ok=True)
+        try:
+            plt.savefig(image_name, dpi=self.get_config_value('plot_res'))
+        except Exception as ex:
+            self.logger.error(f"Failed to save plot to file: {ex}")
 
     def remove_file(self):
         """Removes previously made image file .
@@ -369,7 +353,8 @@ class BasePlot:
             # draw lines
             self.figure.update_layout(shapes=shapes)
 
-    def add_horizontal_line(plt,y: float, line_properties: dict) -> None:
+    @staticmethod
+    def add_horizontal_line(plt, y: float, line_properties: dict) -> None:
         """Adds a horizontal line to the matplotlib plot
 
         @param plt: Matplotlib pyplot object
@@ -379,6 +364,7 @@ class BasePlot:
         """
         plt.axhline(y=y, xmin=0, xmax=1, **line_properties)
 
+    @staticmethod
     def add_vertical_line(plt, x: float, line_properties: dict) -> None:
         """Adds a vertical line to the matplotlib plot
 
@@ -422,3 +408,106 @@ class BasePlot:
             fontproperties=font_properties,
             color=self.config_obj.parameters['caption_col'],
         )
+
+    def _add_legend(self, ax: plt.Axes, handles_and_labels=None) -> None:
+        """
+        Creates a plot legend based on the properties from the config file
+        and attaches it to the initial Figure
+        """
+        orientation = "horizontal" if self.config_obj.legend_orientation == 'h' else "vertical"
+
+        handles, labels = ax.get_legend_handles_labels()
+        if handles_and_labels:
+            handles = [item[0] for item in handles_and_labels]
+            labels = [item[1] for item in handles_and_labels]
+
+        if not handles:
+            print("Warning: No labels found. Use ax.plot(..., label='name')")
+
+        # only show legend entries that have show_legend set to True
+        filtered_handles = [h for h, show in zip(handles, self.config_obj.show_legend) if show == 1]
+        filtered_labels = [l for l, show in zip(labels, self.config_obj.show_legend) if show == 1]
+
+        legend = ax.legend(
+            handles=filtered_handles,
+            labels=filtered_labels,
+            bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y),
+            loc='upper center',
+            edgecolor=self.config_obj.legend_border_color,
+            frameon=True,
+            ncol=max(1, len(handles)) if orientation == "horizontal" else 1,
+            fontsize=self.config_obj.legend_size,
+            labelcolor="black"
+        )
+        if legend:
+            frame = legend.get_frame()
+            frame.set_linewidth(self.config_obj.legend_border_width)
+
+    def _add_xaxis(self, ax: plt.Axes, fontproperties: FontProperties) -> None:
+        """
+        Configures and adds x-axis to the plot
+        """
+        ax.set_xlabel(self.config_obj.xaxis, fontproperties=fontproperties,
+                      labelpad=abs(self.config_obj.parameters['xlab_offset']) * constants.PIXELS_TO_POINTS)
+        xtick_locs = np.arange(len(self.config_obj.indy_label))
+        ax.set_xticks(xtick_locs, self.config_obj.indy_label)
+        ax.tick_params(axis="x", direction="in", which="both", labelrotation=self.config_obj.x_tickangle)
+        if self.config_obj.grid_on:
+            ax.grid(True, which='major', axis='x', color=self.config_obj.blended_grid_col,
+                    linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
+            ax.set_axisbelow(True)
+
+        if self.config_obj.xaxis_reverse is True:
+            ax.invert_xaxis()
+
+    def _add_yaxis(self, ax: plt.Axes, fontproperties: FontProperties) -> None:
+        """
+        Configures and adds y-axis to the plot
+        """
+        ax.set_ylabel(self.config_obj.yaxis_1, fontproperties=fontproperties,
+                      labelpad=abs(self.config_obj.parameters['ylab_offset']) * constants.PIXELS_TO_POINTS)
+        ax.tick_params(axis="y", direction="in", which="both", labelrotation=self.config_obj.y_tickangle)
+
+        # set y limits if defined in config or if min/max are provided
+        if len(self.config_obj.parameters['ylim']) > 0:
+            ax.set_ylim(self.config_obj.parameters['ylim'])
+
+        # add grid lines if requested
+        if self.config_obj.grid_on:
+            ax.grid(True, which='major', axis='y', color=self.config_obj.blended_grid_col, linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
+            ax.set_axisbelow(True)
+
+    def _add_x2axis(self, ax, n_stats, fontproperties: FontProperties) -> None:
+        """
+        Creates x2axis based on the properties from the config file
+        and attaches it to the initial Figure
+
+        :param n_stats: - labels for the axis
+        """
+        if not self.config_obj.show_nstats:
+            return
+
+        ax_top = ax.secondary_xaxis('top')
+        ax_top.set_xlabel('NStats', fontproperties=fontproperties,
+                          labelpad=abs(self.config_obj.parameters['x2lab_offset']) * constants.PIXELS_TO_POINTS)
+        current_locs = ax.get_xticks()
+        ax_top.set_xticks(current_locs, n_stats, size=self.config_obj.x2_tickfont_size)
+        # this doesn't appear to be working to add ticks at the top
+        ax_top.tick_params(axis="x", direction="in", labelrotation=self.config_obj.x2_tickangle)
+
+    def _add_y2axis(self, ax: plt.Axes, fontproperties: FontProperties):
+        """
+        Adds y2-axis if needed
+        """
+        if not self.config_obj.parameters['list_stat_2']:
+            return None
+
+        ax_right = ax.twinx()
+        ax_right.set_ylabel(self.config_obj.yaxis_2, fontproperties=fontproperties,
+                            labelpad=abs(self.config_obj.parameters['y2lab_offset']) * constants.PIXELS_TO_POINTS)
+
+        # set y2 limits if defined in config
+        if len(self.config_obj.parameters['y2lim']) > 0:
+            ax_right.set_ylim(self.config_obj.parameters['y2lim'])
+
+        return ax_right

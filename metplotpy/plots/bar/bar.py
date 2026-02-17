@@ -21,9 +21,8 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from matplotlib.font_manager import FontProperties
-
 import metcalcpy.util.utils as calc_util
+
 from metplotpy.plots import util
 from metplotpy.plots import constants
 from metplotpy.plots.bar.bar_config import BarConfig
@@ -168,9 +167,6 @@ class Bar(BasePlot):
         """
         Create a bar plot from defaults and custom parameters
         """
-        self._n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
-        self._group_width = 0.8  # matplotlib default
-
         # create and draw the plot
         _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
@@ -240,92 +236,15 @@ class Bar(BasePlot):
             x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
 
         base = np.arange(len(x_points))
-        n = max(self._n_visible_series, 1)
-        width = self._group_width / n
+        n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
+        n = max(n_visible_series, 1)
+        width = constants.MPL_DEFAULT_BAR_WIDTH / n
         offset = (idx - (n - 1) / 2.0) * width
         x_locs = base + offset
 
         # add the plot
         ax.bar(x=x_locs, height=y_points, width=width, align='center', color=self.config_obj.colors_list[series.idx],
                label=self.config_obj.user_legends[series.idx])
-
-    def _add_xaxis(self, ax: plt.Axes, fontproperties: FontProperties) -> None:
-        """
-        Configures and adds x-axis to the plot
-        """
-        ax.set_xlabel(self.config_obj.xaxis, fontproperties=fontproperties,
-                      labelpad=abs(self.config_obj.parameters['xlab_offset']) * constants.PIXELS_TO_POINTS)
-        xtick_locs = np.arange(len(self.config_obj.indy_label))
-        ax.set_xticks(xtick_locs, self.config_obj.indy_label)
-        ax.tick_params(axis="x", direction="in", which="both", labelrotation=self.config_obj.x_tickangle)
-        if self.config_obj.grid_on:
-            ax.grid(True, which='major', axis='x', color=self.config_obj.blended_grid_col,
-                    linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
-            ax.set_axisbelow(True)
-
-        if self.config_obj.xaxis_reverse is True:
-            ax.invert_xaxis()
-
-    def _add_yaxis(self, ax: plt.Axes, fontproperties: FontProperties) -> None:
-        """
-        Configures and adds y-axis to the plot
-        """
-        ax.set_ylabel(self.config_obj.yaxis_1, fontproperties=fontproperties,
-                      labelpad=abs(self.config_obj.parameters['ylab_offset']) * constants.PIXELS_TO_POINTS)
-        ax.tick_params(axis="y", direction="in", which="both", labelrotation=self.config_obj.y_tickangle)
-
-        # set y limits if defined
-        if len(self.config_obj.parameters['ylim']) > 0:
-            ax.set_ylim(self.config_obj.parameters['ylim'])
-
-        # add grid lines if requested
-        if self.config_obj.grid_on:
-            ax.grid(True, which='major', axis='y', color=self.config_obj.blended_grid_col, linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
-            ax.set_axisbelow(True)
-
-    def _add_legend(self, ax: plt.Axes) -> None:
-        """
-        Creates a plot legend based on the properties from the config file
-        and attaches it to the initial Figure
-        """
-        orientation = "horizontal" if self.config_obj.legend_orientation == 'h' else "vertical"
-
-        handles, labels = ax.get_legend_handles_labels()
-        if not handles:
-            print("Warning: No labels found. Use ax.plot(..., label='name')")
-
-        legend = ax.legend(
-            handles=handles,
-            labels=labels,
-            bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y),
-            loc='upper center',
-            edgecolor=self.config_obj.legend_border_color,
-            frameon=True,
-            ncol=max(1, len(handles)) if orientation == "horizontal" else 1,
-            fontsize=self.config_obj.legend_size,
-            labelcolor="black"
-        )
-        if legend:
-            frame = legend.get_frame()
-            frame.set_linewidth(self.config_obj.legend_border_width)
-
-
-    def _add_x2axis(self, ax, n_stats, fontproperties: FontProperties) -> None:
-        """
-        Creates x2axis based on the properties from the config file
-        and attaches it to the initial Figure
-
-        :param n_stats: - labels for the axis
-        """
-        if self.config_obj.show_nstats:
-            ax_top = ax.secondary_xaxis('top')
-            ax_top.set_xlabel('NStats', fontproperties=fontproperties,
-                              labelpad=abs(self.config_obj.parameters['x2lab_offset']) * constants.PIXELS_TO_POINTS)
-            current_locs = ax.get_xticks()
-            ax_top.set_xticks(current_locs, n_stats, size=self.config_obj.x2_tickfont_size)
-            # this doesn't appear to be working to add ticks at the top
-            ax_top.tick_params(axis="x", direction="in", labelrotation=self.config_obj.x2_tickangle)
-
 
     def write_output_file(self) -> None:
         """
@@ -359,10 +278,6 @@ class Bar(BasePlot):
                 for series in self.series_list:
                     f.write(f"{series.series_points['dbl_med']}\n")
 
-    def save_to_file(self) -> None:
-        image_name = self.get_config_value('plot_filename')
-        os.makedirs(os.path.dirname(image_name), exist_ok=True)
-        plt.savefig(image_name, dpi=self.get_config_value('plot_res'))
 
 def main(config_filename=None):
     """
