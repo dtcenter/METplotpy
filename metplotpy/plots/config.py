@@ -181,6 +181,9 @@ class Config:
         # what was requested in METviewer
         mv_ylab_weight = self.get_config_value('ylab_weight')
         self.ylab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_ylab_weight]
+        self.y2lab_weight = self.get_config_value('y2lab_weight')
+        if self.y2lab_weight:
+            self.y2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.y2lab_weight]
 
         # Adjust the caption left/right relative to the y-axis
         # METviewer default is set to 0, corresponds to y=0.05 in Matplotlib
@@ -229,11 +232,8 @@ class Config:
         self.legend_ncol = self.get_config_value('legend_ncol')
 
         # Don't draw a box around legend labels unless an 'o' is set
-        self.draw_box = False
         legend_box = self.get_config_value('legend_box').lower()
-
-        if legend_box == 'o':
-            self.draw_box = True
+        self.draw_box = legend_box == 'o'
 
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
@@ -247,8 +247,8 @@ class Config:
 
         # Represent the names of the forecast variables (inner keys) to the fcst_var_val setting.
         # These are the names of the columns in the input dataframe.
-        self.fcst_var_val_1 = self.get_fcst_vars(1)
-        self.fcst_var_val_2 = self.get_fcst_vars(2)
+        self.fcst_var_val_1 = self._get_fcst_vars(1)
+        self.fcst_var_val_2 = self._get_fcst_vars(2)
 
         # Get the list of the statistics of interest
         self.list_stat_1 = self.get_config_value('list_stat_1')
@@ -376,7 +376,7 @@ class Config:
     def _get_series_columns(self, index):
         ''' Retrieve the column name that corresponds to this '''
 
-    def get_fcst_vars(self, index: int) -> list:
+    def _get_fcst_vars(self, index: int) -> list:
         """
            Retrieve a list of the inner keys (fcst_vars) to the fcst_var_val dictionary.
 
@@ -405,6 +405,37 @@ class Config:
             all_fcst_vars = []
 
         return all_fcst_vars
+
+    def get_fcst_vars_dict(self, index: int) -> dict:
+        """Retrieve a dictionary of the fcst_var_val_{index} variable from the config.
+
+           Args:
+              index: identifier used to differentiate between fcst_var_val_1 and
+                     fcst_var_val_2 config settings
+           Returns:
+               a list containing all the fcst variables requested in the
+               fcst_var_val setting in the config file.  This will be
+               used to subset the input data that corresponds to a particular series.
+
+        """
+        if index not in (1, 2):
+            return {}
+
+        return self.get_config_value(f'fcst_var_val_{index}')
+
+    def get_fcst_vars_keys(self, index: int) -> list:
+        """Retrieve a list of keys from the fcst_var_val_{index} variable from the config.
+
+           Args:
+              index: identifier used to differentiate between fcst_var_val_1 and
+                     fcst_var_val_2 config settings
+           Returns:
+               a list containing all the fcst variables requested in the
+               fcst_var_val setting in the config file.  This will be
+               used to subset the input data that corresponds to a particular series.
+
+        """
+        return list(self.get_fcst_vars_dict(index).keys())
 
     def _get_series_val_names(self) -> list:
         """
