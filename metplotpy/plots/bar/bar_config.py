@@ -37,8 +37,6 @@ class BarConfig(Config):
         """
         super().__init__(parameters)
 
-        self.caption_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.get_config_value('caption_weight')]
-
         # Optional setting, indicates *where* to save the dump_points_1 file
         # used by METviewer
         self.points_path = self.get_config_value('points_path')

@@ -59,7 +59,7 @@ class Config:
         self.plot_height = self.calculate_plot_dimension('plot_height' )
         self.plot_caption = self.get_config_value('plot_caption')
         # plain text, bold, italic, bold italic are choices in METviewer UI
-        self.caption_weight = self.get_config_value('caption_weight')
+        self.caption_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.get_config_value('caption_weight')]
         self.caption_color = self.get_config_value('caption_col')
         # relative magnification
         self.caption_size = self.get_config_value('caption_size')

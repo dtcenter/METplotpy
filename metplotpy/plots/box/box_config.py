@@ -58,7 +58,6 @@ class BoxConfig(Config):
         self.caption_size = int(constants.DEFAULT_CAPTION_FONTSIZE
                                 * self.get_config_value('caption_size'))
         self.caption_offset = self.parameters['caption_offset'] * constants.DEFAULT_CAPTION_Y_OFFSET
-        self.caption_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.get_config_value('caption_weight')]
 
         ##############################################
         # title parameters
