@@ -14,9 +14,9 @@ Holds values set in the RevisionBox plot config file(s)
 """
 import itertools
 
-from ..config_plotly import Config
-from .. import constants_plotly as constants
-from .. import util_plotly as util
+from ..config import Config
+from .. import constants as constants
+from .. import util
 
 import metcalcpy.util.utils as utils
 
@@ -40,6 +40,8 @@ class RevisionBoxConfig(Config):
         # plot parameters
         self.dump_points_1 = self._get_bool('dump_points_1')
         self.create_html = self._get_bool('create_html')
+        self.sync_yaxes = False
+        self.xaxis_reverse = False
 
         ##############################################
         # caption parameters
@@ -67,7 +69,6 @@ class RevisionBoxConfig(Config):
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
         self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         ##############################################
         # series parameters

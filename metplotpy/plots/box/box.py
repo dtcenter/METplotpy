@@ -31,7 +31,7 @@ from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.box.box_config import BoxConfig
 from metplotpy.plots.box.box_series import BoxSeries
 from metplotpy.plots import util
-from metplotpy.plots import constants
+from metplotpy.plots.constants import MPL_DEFAULT_BOX_WIDTH
 
 class Box(BasePlot):
     """  Generates a Plotly box plot for 1 or more traces
@@ -187,7 +187,9 @@ class Box(BasePlot):
         self._add_title(ax, wts_size_styles['title'])
         self._add_caption(plt, wts_size_styles['caption'])
 
-        ax_y2 = self._add_y2axis(ax, wts_size_styles['y2lab'])
+        ax_y2 = None
+        if wts_size_styles.get('y2lab'):
+            ax_y2 = self._add_y2axis(ax, wts_size_styles['y2lab'])
 
         n_stats, handles_and_labels, yaxis_min, yaxis_max = self._add_series(ax, ax_y2)
 
@@ -202,14 +204,13 @@ class Box(BasePlot):
         #         )
 
         # add x2 axis
-        self._add_x2axis(ax, n_stats, wts_size_styles['x2lab'])
+        if wts_size_styles.get('x2lab'):
+            self._add_x2axis(ax, n_stats, wts_size_styles['x2lab'])
 
         self._sync_yaxes(ax, ax_y2, yaxis_min, yaxis_max)
         self._add_legend(ax, handles_and_labels)
 
-
-        #plt.tight_layout()
-        #self.figure.update_layout(boxmode='group')
+        plt.tight_layout()
 
         self.logger.info(f"End creating the figure: {datetime.now()}")
 
@@ -235,16 +236,11 @@ class Box(BasePlot):
 
         self.logger.info(f"Begin drawing the boxes on the plot for {series.series_name}: {datetime.now()}")
 
-        base = np.arange(len(self.config_obj.indy_vals))
-        n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
-        n = max(n_visible_series, 1)
-        width = constants.MPL_DEFAULT_BOX_WIDTH / n
-        offset = (idx - (n - 1) / 2.0) * width
-        x_locs = base + offset
-
         # Group your 'stat_value' data by 'indy_var' categories first
-        data_to_plot = [group_data for name, group_data in
-                        series.series_data.groupby(self.config_obj.indy_var)['stat_value']]
+        data_to_plot, x_locs, width = self._get_data_to_plot_and_x_locs(series, idx)
+
+        # data_to_plot = [group_data for name, group_data in
+        #                 series.series_data.groupby(self.config_obj.indy_var)['stat_value']]
 
         plot_ax = ax
         if ax2 and ax2.get_ylabel() in series.series_data.stat_name.values:
@@ -299,6 +295,18 @@ class Box(BasePlot):
 
         self.logger.info(f"End drawing the boxes on the plot: {datetime.now()}")
 
+    def _get_data_to_plot_and_x_locs(self, series, idx):
+        base = np.arange(len(self.config_obj.indy_vals))
+        n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
+        n = max(n_visible_series, 1)
+        width = MPL_DEFAULT_BOX_WIDTH / n
+        offset = (idx - (n - 1) / 2.0) * width
+        x_locs = base + offset
+
+        data_to_plot =  [group_data for name, group_data in
+                         series.series_data.groupby(self.config_obj.indy_var)['stat_value']]
+        return data_to_plot, x_locs, width
+
     def _add_series(self, ax, ax2):
         handles_and_labels = []
         n_stats = [0] * len(self.config_obj.indy_vals)
@@ -317,7 +325,9 @@ class Box(BasePlot):
                 handles_and_labels.append((handle, handle.get_label()))
 
                 # aggregate number of stats
-                n_stats = list(map(add, n_stats, series.series_points['nstat']))
+                # do not increment n_stats if it is not set, e.g. for revision_box
+                if series.series_points.get('nstat'):
+                    n_stats = list(map(add, n_stats, series.series_points['nstat']))
 
         return n_stats, handles_and_labels, yaxis_min, yaxis_max
 
