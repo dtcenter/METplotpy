@@ -67,8 +67,8 @@ class PerformanceDiagramConfig(Config):
         self.linewidth_list = self._get_linewidths()
         self.linestyles_list = self._get_linestyles()
         self.user_legends = self._get_user_legends("Performance")
-        self.plot_width = self.calculate_plot_dimension('plot_width', 'in')
-        self.plot_height = self.calculate_plot_dimension('plot_height', 'in')
+        self.plot_width = self.calculate_plot_dimension('plot_width')
+        self.plot_height = self.calculate_plot_dimension('plot_height')
 
         # x-axis labels and x-axis ticks
         self.x_title_font_size = self.parameters['xlab_size'] * constants.DEFAULT_CAPTION_FONTSIZE

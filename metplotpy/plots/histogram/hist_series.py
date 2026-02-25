@@ -17,7 +17,7 @@ from datetime import datetime
 import numpy as np
 
 import metcalcpy.util.utils as utils
-import metplotpy.plots.util
+import metplotpy.plots.util_plotly as util
 from ..series import Series
 
 
@@ -68,8 +68,7 @@ class HistSeries(Series):
 
         Returns:
         """
-        logger = metplotpy.plots.util.get_common_logger(self.log_level,
-                                                        self.log_filename)
+        logger = util.get_common_logger(self.log_level, self.log_filename)
         logger.info(f"Begin creating the series points: {datetime.now()}")
         all_filters = []
 

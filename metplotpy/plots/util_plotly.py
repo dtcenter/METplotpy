@@ -23,8 +23,7 @@ import matplotlib
 import numpy as np
 from typing import Union
 import pandas as pd
-import matplotlib.pyplot as plt
-
+from plotly.graph_objects import Figure
 from metplotpy.plots.context_filter import ContextFilter as cf
 import metcalcpy.util.pstd_statistics as pstats
 import metcalcpy.util.ctc_statistics as cstats
@@ -86,6 +85,31 @@ def get_params(config_filename):
     return parse_config(config_file)
 
 
+def make_plot(config_filename, plot_class):
+    """!Get plot parameters and create the plot.
+
+    @param config_filename The full path to the config or None
+    @param plot_class class of plot to produce, e.g. Bar or Box
+    @returns plot class object or None if something went wrong
+    """
+    # Retrieve the contents of the custom config file to over-ride
+    # or augment settings defined by the default config file.
+    params = get_params(config_filename)
+    try:
+        plot = plot_class(params)
+        plot.save_to_file()
+        #if plot.config_obj.show_in_browser:
+        #    plot.show_in_browser()
+        plot.write_html()
+        plot.write_output_file()
+        name = plot_class.__name__ if not hasattr(plot_class, 'LONG_NAME') else plot_class.LONG_NAME
+        plot.logger.info(f"Finished {name} plot at {datetime.now()}")
+        return plot
+    except ValueError as val_er:
+        print(val_er)
+
+    return None
+
 
 def alpha_blending(hex_color: str, alpha: float) -> str:
     """ Alpha color blending as if on the white background.
@@ -102,25 +126,26 @@ def alpha_blending(hex_color: str, alpha: float) -> str:
     return matplotlib.colors.rgb2hex(final)
 
 
-def get_font_params(weight: int) -> dict:
-    """Convert integer font style/weight value to a dictionary of
-     font properties, fontweight for bold and fontstyle for italic.
-    1=plain text, 2=bold, 3=italic, 4=bold italic
-    REMOVE: Replaces apply_weight_style function used for plotly.
-
-    @param weight integer representation of the style/weight
-    @returns dictionary containing font properties like fontweight and fontstyle
+def apply_weight_style(text: str, weight: int) -> str:
     """
-    font_params = {
-        'fontweight': 'normal',
-        'fontstyle': 'normal',
-    }
-    if weight in (2, 4):
-        font_params['fontweight'] = 'bold'
-    if weight in (3, 4):
-        font_params['fontstyle'] = 'italic'
+    Applied HTML style weight to text:
+    1 - none
+    2 - bold
+    3 - italic
+    4 - bold italic
 
-    return font_params
+    :param text: text to style
+    :param weight: - int representation of the style
+    :return: styled text
+    """
+    if len(text) > 0:
+        if weight == 2:
+            return '<b>' + text + '</b>'
+        if weight == 3:
+            return '<i>' + text + '</b>'
+        if weight == 4:
+            return '<b><i>' + text + '</i></b>'
+    return text
 
 
 def nicenumber(x, to_round):
@@ -173,6 +198,38 @@ def pretty(low, high, number_of_intervals) -> Union[np.ndarray, list]:
     miny = np.floor(low / d) * d
     maxy = np.ceil(high / d) * d
     return np.arange(miny, maxy + 0.5 * d, d)
+
+
+def add_horizontal_line(figure: Figure, y: float, line_properties: dict) -> None:
+    """
+    Adds a horizontal line to the Plotly Figure
+    :param figure: Plotly plot to add a line to
+    :param y: y value for the line
+    :param line_properties: dictionary with line properties like color, width, dash
+    :return:
+    """
+    figure.add_shape(
+        type='line',
+        yref='y', y0=y, y1=y,
+        xref='paper', x0=0, x1=1,
+        line=line_properties,
+    )
+
+
+def add_vertical_line(figure: Figure, x: float, line_properties: dict) -> None:
+    """
+    Adds a vertical line to the Plotly Figure
+    :param figure: Plotly plot to add a line to
+    :param x: x value for the line
+    :param line_properties: dictionary with line properties like color, width, dash
+    :return:
+    """
+    figure.add_shape(
+        type='line',
+        yref='paper', y0=0, y1=1,
+        xref='x', x0=x, x1=x,
+        line=line_properties,
+    )
 
 
 def abline(x_value: float, intercept: float, slope: float) -> float:

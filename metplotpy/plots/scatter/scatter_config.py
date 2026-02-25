@@ -15,7 +15,6 @@ from ..config import Config
 from .. import constants
 from .. import util
 
-import metcalcpy.util.utils as utils
 class ScatterConfig(Config):
     """
        Configuration object for the scatter plot.
@@ -99,8 +98,8 @@ class ScatterConfig(Config):
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
         self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
-
+        xlab_weight = self.parameters['xlab_weight']
+        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[xlab_weight]
 
         ##############################################
         self.marker_symbol = self._get_marker()

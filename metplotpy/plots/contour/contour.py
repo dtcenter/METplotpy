@@ -24,9 +24,9 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
-from metplotpy.plots.constants import PLOTLY_PAPER_BGCOOR
-from metplotpy.plots.base_plot import BasePlot
-from metplotpy.plots import util
+from metplotpy.plots.constants_plotly import PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.base_plot_plotly import BasePlot
+from metplotpy.plots import util_plotly as util
 from metplotpy.plots.contour.contour_config import ContourConfig
 from metplotpy.plots.contour.contour_series import ContourSeries
 from metplotpy.plots.series import Series

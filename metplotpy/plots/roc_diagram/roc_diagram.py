@@ -17,20 +17,18 @@ import os
 from datetime import datetime
 import re
 import warnings
-# with warnings.catch_warnings():
-#     warnings.simplefilter("ignore", category="DeprecationWarning")
-#     warnings.simplefilter("ignore", category="ResourceWarning")
 
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from metplotpy.plots import util
-from metplotpy.plots import constants
-from metplotpy.plots.base_plot import BasePlot
+
+from metplotpy.plots import util_plotly as util
+from metplotpy.plots import constants_plotly as constants
+from metplotpy.plots.base_plot_plotly import BasePlot
 from metplotpy.plots.roc_diagram.roc_diagram_config import ROCDiagramConfig
 from metplotpy.plots.roc_diagram.roc_diagram_series import ROCDiagramSeries
+
 import metcalcpy.util.utils as calc_util
-from metplotpy.plots.util import prepare_pct_roc, prepare_ctc_roc
 
 
 class ROCDiagram(BasePlot):
@@ -236,7 +234,7 @@ class ROCDiagram(BasePlot):
                                                                    'fn_on': group_stats_fn_on,
                                                                    }
                 df_summary_curve.reset_index()
-                pody, pofd, thresh = prepare_ctc_roc(df_summary_curve,self.config_obj.ctc_ascending)
+                pody, pofd, thresh = util.prepare_ctc_roc(df_summary_curve,self.config_obj.ctc_ascending)
             else:
                 df_summary_curve = pd.DataFrame(columns=['thresh_i', 'on_i', 'oy_i'])
                 thresh_i_list = df_sum_main['thresh_i'].unique()
@@ -250,7 +248,7 @@ class ROCDiagram(BasePlot):
                     df_summary_curve.loc[len(df_summary_curve)] = {'thresh_i': thresh, 'on_i': on_i_sum,
                                                                    'oy_i': oy_i_sum, }
                 df_summary_curve.reset_index()
-                pody, pofd, thresh = prepare_pct_roc(df_summary_curve)
+                pody, pofd, thresh = util.prepare_pct_roc(df_summary_curve)
 
             series_obj = ROCDiagramSeries(self.config_obj, num_series -1, None)
             series_obj.series_points = (pofd, pody, thresh, None)

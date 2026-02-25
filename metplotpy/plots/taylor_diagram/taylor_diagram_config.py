@@ -64,8 +64,8 @@ class TaylorDiagramConfig(Config):
         # Convert the plot height and width to inches if units aren't in
         # inches.
         if self.plot_units.lower() != 'in':
-            self.plot_width = self.calculate_plot_dimension('plot_width', 'in')
-            self.plot_height = self.calculate_plot_dimension('plot_height', 'in')
+            self.plot_width = self.calculate_plot_dimension('plot_width')
+            self.plot_height = self.calculate_plot_dimension('plot_height')
         else:
             self.plot_width = self.get_config_value('plot_width')
             self.plot_height = self.get_config_value('plot_height')

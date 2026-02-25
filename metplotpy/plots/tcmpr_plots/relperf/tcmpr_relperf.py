@@ -1,17 +1,14 @@
 import os
-from typing import Union
 from datetime import datetime
 import numpy as np
-from pandas import DataFrame
 import plotly.graph_objects as go
 
 
 from metcalcpy.util import utils
-from metplotpy.plots.series import Series
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 from metplotpy.plots.tcmpr_plots.tcmpr_util import get_case_data
-import metplotpy.plots.util as util
+import metplotpy.plots.util_plotly as util
 
 
 

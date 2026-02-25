@@ -41,9 +41,7 @@ register_matplotlib_converters()
 """
 Import BasePlot class
 """
-from plots.base_plot import BasePlot
-#from ..base_plot import BasePlot
-
+from metplotpy.plots.base_plot import BasePlot
 
 class PolarPlot(BasePlot):
 

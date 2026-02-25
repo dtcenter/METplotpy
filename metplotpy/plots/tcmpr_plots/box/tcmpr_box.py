@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 
 from metplotpy.plots.tcmpr_plots.box.tcmpr_box_point import TcmprBoxPoint
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
-import metplotpy.plots.util as util
+import metplotpy.plots.util_plotly as util
 
 
 class TcmprBox(TcmprBoxPoint):

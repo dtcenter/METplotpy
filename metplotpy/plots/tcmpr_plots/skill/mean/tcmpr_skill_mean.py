@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 from metcalcpy.util import utils
 from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_series_skill_mean import TcmprSeriesSkillMean
 from metplotpy.plots.tcmpr_plots.skill.tcmpr_skill import TcmprSkill
-import metplotpy.plots.util as util
+import metplotpy.plots.util_plotly as util
 
 
 class TcmprSkillMean(TcmprSkill):

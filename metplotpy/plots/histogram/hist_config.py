@@ -16,9 +16,9 @@ Holds values set in the histograms plot config file(s)
 
 import itertools
 
-from ..config import Config
-from .. import constants
-from .. import util
+from ..config_plotly import Config
+from .. import constants_plotly as constants
+from .. import util_plotly as util
 
 import metcalcpy.util.utils as utils
 

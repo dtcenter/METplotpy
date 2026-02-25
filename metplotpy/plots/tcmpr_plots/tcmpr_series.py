@@ -22,7 +22,7 @@ from pandas import DataFrame
 import metcalcpy.util.utils as utils
 from .tcmpr_util import get_prop_ci
 from ..series import Series
-import metplotpy.plots.util as util
+import metplotpy.plots.util_plotly as util
 
 
 class TcmprSeries(Series):

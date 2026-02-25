@@ -23,11 +23,11 @@ from plotly.graph_objects import Figure
 from plotly.subplots import make_subplots
 
 import metcalcpy.util.utils as calc_util
-from metplotpy.plots import util
+from metplotpy.plots import util_plotly as util
 from metplotpy.plots.bar.bar_config import BarConfig
 from metplotpy.plots.bar.bar_series import BarSeries
-from metplotpy.plots.base_plot import BasePlot
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
+from metplotpy.plots.base_plot_plotly import BasePlot
+from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
     PLOTLY_PAPER_BGCOOR
 
 

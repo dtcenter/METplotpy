@@ -29,12 +29,12 @@ import yaml
 import xarray as xr
 import plotly.graph_objects as go
 
-import metplotpy.plots.util as util
+import metplotpy.plots.util_plotly as util
 
 """
 Import BasePlot class
 """
-from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots.base_plot_plotly import BasePlot
 
 
 class Histogram_2d(BasePlot):

@@ -13,13 +13,12 @@ Class Name: histogram.py
  """
 __author__ = 'Tatiana Burek'
 
-import os
 import plotly.graph_objects as go
 import yaml
 import pandas as pd
 import numpy as np
 
-from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots.base_plot_plotly import BasePlot
 
 
 class Histogram(BasePlot):

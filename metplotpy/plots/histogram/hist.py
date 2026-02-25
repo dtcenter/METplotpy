@@ -27,11 +27,11 @@ from plotly.subplots import make_subplots
 from plotly.graph_objects import Figure
 
 from metplotpy.plots.histogram import hist_config
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
+from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
     PLOTLY_PAPER_BGCOOR
 from metplotpy.plots.histogram.hist_series import HistSeries
-from metplotpy.plots.base_plot import BasePlot
-from metplotpy.plots import util
+from metplotpy.plots.base_plot_plotly import BasePlot
+from metplotpy.plots import util_plotly as util
 
 import metcalcpy.util.utils as utils
 from metcalcpy.event_equalize import event_equalize

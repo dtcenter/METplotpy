@@ -13,10 +13,9 @@ Class Name: rel_hist.py
  """
 __author__ = 'Tatiana Burek'
 
-import yaml
 from datetime import datetime
 
-from metplotpy.plots import util
+from metplotpy.plots import util_plotly as util
 from metplotpy.plots.histogram.hist import Hist
 from metplotpy.plots.histogram.hist_series import HistSeries
 

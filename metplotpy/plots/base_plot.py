@@ -1,14 +1,13 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
+ # ** Copyright UCAR (c) 2026
  # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
+ # ** National Science Foundation National Center for Atmospheric Research (NSF NCAR)
  # ** Research Applications Lab (RAL)
  # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
  # ============================*
  
  
  
-# !/usr/bin/env conda run -n blenny_363 python
 """
 Class Name: base_plot.py
  """
@@ -18,29 +17,15 @@ import os
 import logging
 import warnings
 import numpy as np
+from matplotlib.font_manager import FontProperties
 import yaml
 from typing import Union
-import kaleido
-import metplotpy.plots.util
 from metplotpy.plots.util import strtobool
 from .config import Config
-from metplotpy.plots.context_filter import ContextFilter
-
-# kaleido 0.x will be deprecated after September 2025 and Chrome will no longer
-# be included with kaleido from version 1.0.0.  Explicitly get Chrome via call to kaleido.
-
-# In some instances, we do NOT want Chrome to be installed at run-time. If the 
-# PRE_LOAD_CHROME environment variable exists, or set to TRUE,
-# then Chrome will be assumed to have been pre-loaded. Otherwise,
-# invoke  get_chrome_sync()  to install Chrome in the
-# /path-to-python-libs/pythonx.yz/site-packages/...  directory
-
-# Check if the PRE_LOAD_CHROME env variable exists
-aquire_chrome = False
 
 turn_on_logging = strtobool('LOG_BASE_PLOT')
 # Log when Chrome is downloaded at runtime
-if turn_on_logging is True:
+if turn_on_logging:
    log = logging.getLogger("base_plot")
    log.setLevel(logging.INFO)
 
@@ -49,24 +34,11 @@ if turn_on_logging is True:
    # set the WRITE_LOG env var to True to save the log message to a
    # separate log file
    write_log = strtobool('WRITE_LOG')
-   if write_log is True:
+   if write_log:
       file_handler = logging.FileHandler("./base_plot.log")
       file_handler.setFormatter(formatter)
       log.addHandler(file_handler)
 
-# Only load Chrome at run-time if PRE_LOAD_CHROME is False or not defined.
-# Some applications may not want to load Chrome at runtime and
-# will set the PRE_LOAD_CHROME to True to indicate that it is already
-# loaded/downloaded prior to runtime.
-chrome_env =strtobool ('PRE_LOAD_CHROME')
-if chrome_env is False:
-    aquire_chrome=True
-    kaleido.get_chrome_sync()
-
-
-# Log when kaleido is downloading Chrome
-if aquire_chrome is True and turn_on_logging  is True:
-     log.info("Plotly kaleido is loading Chrome at run time")
 
 class BasePlot:
     """A class that provides methods for building Plotly plot's common features
@@ -139,31 +111,7 @@ class BasePlot:
         print('Unrecognised image format. png will be used')
         return self.DEFAULT_IMAGE_FORMAT
 
-    def get_legend(self):
-        """Creates a Plotly legend dictionary with values from users and default parameters
-        If users parameters dictionary doesn't have needed values - use defaults
 
-        Args:
-
-        Returns:
-            - dictionary used by Plotly to build the legend
-        """
-
-        current_legend = dict(
-            x=self.get_config_value('legend', 'x'),  # x-position
-            y=self.get_config_value('legend', 'y'),  # y-position
-            font=dict(
-                family=self.get_config_value('legend', 'font', 'family'),  # font family
-                size=self.get_config_value('legend', 'font', 'size'),  # font size
-                color=self.get_config_value('legend', 'font', 'color'),  # font color
-            ),
-            bgcolor=self.get_config_value('legend', 'bgcolor'),  # background color
-            bordercolor=self.get_config_value('legend', 'bordercolor'),  # border color
-            borderwidth=self.get_config_value('legend', 'borderwidth'),  # border width
-            xanchor=self.get_config_value('legend', 'xanchor'),  # horizontal position anchor
-            yanchor=self.get_config_value('legend', 'yanchor')  # vertical position anchor
-        )
-        return current_legend
 
     def get_legend_style(self):
         """
@@ -177,6 +125,7 @@ class BasePlot:
                   are set in METviewer
         """
         legend_box = self.get_config_value('legend_box').lower()
+        borderwidth = 0
         if legend_box == 'o':
             # Draws a box around the legend
             borderwidth = 1
@@ -191,129 +140,69 @@ class BasePlot:
             legend_orientation = "v"
         legend_inset = self.get_config_value('legend_inset')
         legend_size = self.get_config_value('legend_size')
-        legend_settings = dict(border_width=borderwidth,
-                               orientation=legend_orientation,
-                               legend_inset=dict(x=legend_inset['x'],
-                                                 y=legend_inset['y']),
-                               legend_size=legend_size)
+        legend_settings = {
+            "border_width": borderwidth,
+            "orientation": legend_orientation,
+            "legend_inset": {
+                'x': legend_inset['x'],
+                'y': legend_inset['y'],
+            },
+            'legend_size': legend_size,
+        }
 
         return legend_settings
 
-    def get_title(self):
-        """Creates a Plotly title dictionary with values from users and default parameters
-        If users parameters dictionary doesn't have needed values - use defaults
-
-        Args:
-
-        Returns:
-            - dictionary used by Plotly to build the title
+    def get_weights_size_styles(self):
         """
-        current_title = dict(
-            text=self.get_config_value('title'),  # plot's title
-            # Sets the container `x` refers to. "container" spans the entire `width` of the plot.
-            # "paper" refers to the width of the plotting area only.
-            xref="paper",
-            x=0.5  # x position with respect to `xref`
-        )
-        return current_title
+           Set up the font properties for the plot title: style (regular, italic), size,  and
+           weight (normal, bold) for the title, captions, x-axis label, and y-axis label.
 
-    def get_xaxis(self):
-        """Creates a Plotly x-axis dictionary with values from users and default parameters
-        If users parameters dictionary doesn't have needed values - use defaults
-
-        Args:
-
-        Returns:
-            - dictionary used by Plotly to build the x-axis
+           Returns:
+              weights_size_styles: A dictionary  containing the font property information
+                                             for the title, captions, x-axis label, and y-axis label
         """
-        current_xaxis = dict(
-            linecolor=self.get_config_value('xaxis', 'linecolor'),  # x-axis line color
-            # whether or not a line bounding x-axis is drawn
-            showline=self.get_config_value('xaxis', 'showline'),
-            linewidth=self.get_config_value('xaxis', 'linewidth')  # width (in px) of x-axis line
-        )
-        return current_xaxis
+        weights_size_styles = {}
 
-    def get_yaxis(self):
-        """Creates a Plotly y-axis dictionary with values from users and default parameters
-        If users parameters dictionary doesn't have needed values - use defaults
+        # For title
+        title_property= FontProperties()
+        title_property.set_size(self.config_obj.title_size)
+        style = self.config_obj.title_weight[0]
+        wt = self.config_obj.title_weight[1]
+        title_property.set_style(style)
+        title_property.set_weight(wt)
+        weights_size_styles['title'] = title_property
 
-        Args:
+        # For caption
+        caption_property = FontProperties()
+        caption_property.set_size(self.config_obj.caption_size)
+        cap_style = self.config_obj.caption_weight[0]
+        cap_wt = self.config_obj.caption_weight[1]
+        caption_property.set_style(cap_style)
+        caption_property.set_weight(cap_wt)
+        weights_size_styles['caption'] = caption_property
 
-        Returns:
-            - dictionary used by Plotly to build the y-axis
-        """
-        current_yaxis = dict(
-            linecolor=self.get_config_value('yaxis', 'linecolor'),  # y-axis line color
-            linewidth=self.get_config_value('yaxis', 'linewidth'),  # width (in px) of y-axis line
-            # whether or not a line bounding y-axis is drawn
-            showline=self.get_config_value('yaxis', 'showline'),
-            # whether or not grid lines are drawn
-            showgrid=self.get_config_value('yaxis', 'showgrid'),
-            ticks=self.get_config_value('yaxis', 'ticks'),  # whether ticks are drawn or not.
-            tickwidth=self.get_config_value('yaxis', 'tickwidth'),  # Sets the tick width (in px).
-            tickcolor=self.get_config_value('yaxis', 'tickcolor'),  # Sets the tick color.
-            # the width (in px) of the grid lines
-            gridwidth=self.get_config_value('yaxis', 'gridwidth'),
-            gridcolor=self.get_config_value('yaxis', 'gridcolor')  # the color of the grid lines
-        )
+        # For xaxis label
+        xlab_property= FontProperties()
 
-        # Sets the range of the range slider. defaults to the full y-axis range
-        y_range = self.get_config_value('yaxis', 'range')
-        if y_range is not None:
-            current_yaxis['range'] = y_range
-        return current_yaxis
+        xlab_property.set_size(self.config_obj.x_title_font_size)
+        xlab_style = self.config_obj.xlab_weight[0]
+        xlab_wt = self.config_obj.xlab_weight[1]
+        xlab_property.set_style(xlab_style)
+        xlab_property.set_weight(xlab_wt)
+        weights_size_styles['xlab'] = xlab_property
 
-    def get_xaxis_title(self):
-        """Creates a Plotly x-axis label title dictionary with values
-        from users and default parameters.
-        If users parameters dictionary doesn't have needed values - use defaults
+        # For yaxis label
+        ylab_property = FontProperties()
+        ylab_property.set_size(self.config_obj.y_title_font_size)
+        ylab_style = self.config_obj.ylab_weight[0]
+        ylab_wt = self.config_obj.ylab_weight[1]
+        ylab_property.set_style(ylab_style)
+        ylab_property.set_weight(ylab_wt)
+        weights_size_styles['ylab'] = ylab_property
 
-        Args:
+        return weights_size_styles
 
-        Returns:
-            - dictionary used by Plotly to build the x-axis label title as annotation
-        """
-        x_axis_label = dict(
-            x=self.get_config_value('xaxis', 'x'),  # x-position of label
-            y=self.get_config_value('xaxis', 'y'),  # y-position of label
-            showarrow=False,
-            text=self.get_config_value('xaxis', 'title', 'text'),
-            xref="paper",  # the annotation's x coordinate axis
-            yref="paper",  # the annotation's y coordinate axis
-            font=dict(
-                family=self.get_config_value('xaxis', 'title', 'font', 'family'),
-                size=self.get_config_value('xaxis', 'title', 'font', 'size'),
-                color=self.get_config_value('xaxis', 'title', 'font', 'color'),
-            )
-        )
-        return x_axis_label
 
-    def get_yaxis_title(self):
-        """Creates a Plotly y-axis label title dictionary with values
-         from users and default parameters
-        If users parameters dictionary doesn't have needed values - use defaults
-
-        Args:
-
-        Returns:
-            - dictionary used by Plotly to build the y-axis label title as annotation
-        """
-        y_axis_label = dict(
-            x=self.get_config_value('yaxis', 'x'),  # x-position of label
-            y=self.get_config_value('yaxis', 'y'),  # y-position of label
-            showarrow=False,
-            text=self.get_config_value('yaxis', 'title', 'text'),
-            textangle=-90,  # the angle at which the `text` is drawn with respect to the horizontal
-            xref="paper",  # the annotation's x coordinate axis
-            yref="paper",  # the annotation's y coordinate axis
-            font=dict(
-                family=self.get_config_value('xaxis', 'title', 'font', 'family'),
-                size=self.get_config_value('xaxis', 'title', 'font', 'size'),
-                color=self.get_config_value('xaxis', 'title', 'font', 'color'),
-            )
-        )
-        return y_axis_label
 
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
@@ -414,69 +303,28 @@ class BasePlot:
         if image_name is not None and os.path.exists(image_name):
             os.remove(image_name)
 
-    def show_in_browser(self):
-        """Creates a plot and opens it in the browser.
 
-         Args:
+    @staticmethod
+    def add_horizontal_line(plt,y: float, line_properties: dict) -> None:
+        """Adds a horizontal line to the matplotlib plot
 
-         Returns:
-
-         """
-        if self.figure:
-            self.figure.show()
-        else:
-            self.logger.error(" Figure not created. Nothing to show in the "
-                              "browser. ")
-            print("Oops!  The figure was not created. Can't show")
-
-    def _add_lines(self, config_obj: Config, x_points_index: Union[list, None] = None) -> None:
-        """ Adds custom horizontal and/or vertical line to the plot.
-            All line's metadata is in the config_obj.lines
-            Args:
-                @config_obj - plot's configurations
-                @x_points_index - list of x-values that are used to create a plot
-            Returns:
+        @param plt: Matplotlib pyplot object
+        @param y y value for the line
+        @param line_properties dictionary with line properties like color, width, dash
+        @returns None
         """
-        if hasattr(config_obj, 'lines') and config_obj.lines is not None:
-            shapes = []
-            for line in config_obj.lines:
-                # draw horizontal line
-                if line['type'] == 'horiz_line':
-                    shapes.append(dict(
-                        type='line',
-                        yref='y', y0=line['position'], y1=line['position'],
-                        xref='paper', x0=0, x1=0.95,
-                        line={'color': line['color'],
-                              'dash': line['line_style'],
-                              'width': line['line_width']},
-                    ))
-                elif line['type'] == 'vert_line':
-                    # draw vertical line
-                    try:
-                        if x_points_index is None:
-                            val = line['position']
-                        else:
-                            ordered_indy_label = config_obj.create_list_by_plot_val_ordering(config_obj.indy_label)
-                            index = ordered_indy_label.index(line['position'])
-                            val = x_points_index[index]
-                        shapes.append(dict(
-                            type='line',
-                            yref='paper', y0=0, y1=1,
-                            xref='x', x0=val, x1=val,
-                            line={'color': line['color'],
-                                  'dash': line['line_style'],
-                                  'width': line['line_width']},
-                        ))
-                    except ValueError:
-                        line_position = line["position"]
-                        self.logger.warning(f" Vertical line with position "
-                                            f"{line_position} cannot be created.")
-                        print(f'WARNING: vertical line with position '
-                              f'{line_position} can\'t be created')
-                # ignore everything else
+        plt.axhline(y=y, xmin=0, xmax=1, **line_properties)
 
-            # draw lines
-            self.figure.update_layout(shapes=shapes)
+    @staticmethod
+    def add_vertical_line(plt, x: float, line_properties: dict) -> None:
+        """Adds a vertical line to the matplotlib plot
+
+        @param plt: Matplotlib pyplot object
+        @param x x value for the line
+        @param line_properties dictionary with line properties like color, width, dash
+        @returns None
+        """
+        plt.axvline(x=x, ymin=0, ymax=1, **line_properties)
 
     @staticmethod
     def get_array_dimensions(data):
