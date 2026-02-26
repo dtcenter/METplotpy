@@ -18,12 +18,15 @@ import logging
 import warnings
 import numpy as np
 from matplotlib.font_manager import FontProperties
+
 from matplotlib import pyplot as plt
+
 import yaml
 from typing import Union
 from metplotpy.plots.util import strtobool
 from .config import Config
 from . import constants
+
 
 turn_on_logging = strtobool('LOG_BASE_PLOT')
 # Log when Chrome is downloaded at runtime
@@ -223,7 +226,6 @@ class BasePlot:
         return weights_size_styles
 
 
-
     def get_config_value(self, *args):
         """Gets the value of a configuration parameter.
         Looks for parameter in the user parameter dictionary
@@ -297,61 +299,27 @@ class BasePlot:
         if image_name is not None and os.path.exists(image_name):
             os.remove(image_name)
 
-# TODO Remove Plotly specific,  use add_horizontal_line() and  add_vertical_line() below
-# Plotly-specific,
-    def _add_lines(self, config_obj: Config, x_points_index: Union[list, None] = None) -> None:
-        """ Adds custom horizontal and/or vertical line to the plot.
-            All line's metadata is in the config_obj.lines
-            Args:
-                @config_obj - plot's configurations
-                @x_points_index - list of x-values that are used to create a plot
-            Returns:
+    @staticmethod
+    def add_horizontal_line(plt,y: float, line_properties: dict) -> None:
+        """Adds a horizontal line to the matplotlib plot
+
+        @param plt: Matplotlib pyplot object
+        @param y y value for the line
+        @param line_properties dictionary with line properties like color, width, dash
+        @returns None
         """
-        if not hasattr(config_obj, 'lines') or config_obj.lines is None:
-            return
+        plt.axhline(y=y, xmin=0, xmax=1, **line_properties)
 
-        shapes = []
-        for line in config_obj.lines:
-            # draw horizontal line
-            if line['type'] == 'horiz_line':
-                shapes.append({
-                    'type': 'line',
-                    'yref': 'y', 'y0': line['position'], 'y1': line['position'],
-                    'xref': 'paper', 'x0': 0, 'x1': 0.95,
-                    'line': {
-                        'color': line['color'],
-                        'dash': line['line_style'],
-                        'width': line['line_width'],
-                    },
-                })
-            elif line['type'] == 'vert_line':
-                # draw vertical line
-                try:
-                    if x_points_index is None:
-                        val = line['position']
-                    else:
-                        ordered_indy_label = config_obj.create_list_by_plot_val_ordering(config_obj.indy_label)
-                        index = ordered_indy_label.index(line['position'])
-                        val = x_points_index[index]
-                    shapes.append({
-                        'type': 'line',
-                        'yref': 'paper', 'y0': 0, 'y1': 1,
-                        'xref': 'x', 'x0': val, 'x1': val,
-                        'line': {
-                            'color': line['color'],
-                            'dash': line['line_style'],
-                            'width': line['line_width'],
-                        }
-                    })
-                except ValueError:
-                    line_position = line["position"]
-                    msg = f"Vertical line with position {line_position} cannot be created."
-                    self.logger.warning(msg)
-                    print(msg)
-            # ignore everything else
+    @staticmethod
+    def add_vertical_line(plt, x: float, line_properties: dict) -> None:
+        """Adds a vertical line to the matplotlib plot
 
-            # draw lines
-            self.figure.update_layout(shapes=shapes)
+        @param plt: Matplotlib pyplot object
+        @param x x value for the line
+        @param line_properties dictionary with line properties like color, width, dash
+        @returns None
+        """
+        plt.axvline(x=x, ymin=0, ymax=1, **line_properties)
 
     @staticmethod
     def add_horizontal_line(plt, y: float, line_properties: dict) -> None:

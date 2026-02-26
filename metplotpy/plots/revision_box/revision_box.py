@@ -20,6 +20,7 @@ from metplotpy.plots.box.box import Box
 from metplotpy.plots import util
 
 import metcalcpy.util.utils as calc_util
+
 from metplotpy.plots.revision_box.revision_box_config import RevisionBoxConfig
 from metplotpy.plots.revision_box.revision_box_series import RevisionBoxSeries
 from metplotpy.plots.constants import MPL_DEFAULT_BOX_WIDTH

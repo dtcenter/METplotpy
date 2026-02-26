@@ -33,6 +33,7 @@ from metplotpy.plots.box.box_series import BoxSeries
 from metplotpy.plots import util
 from metplotpy.plots.constants import MPL_DEFAULT_BOX_WIDTH
 
+
 class Box(BasePlot):
     """  Generates a Plotly box plot for 1 or more traces
          where each box is represented by a text point data file.

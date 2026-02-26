@@ -20,7 +20,7 @@ yaxis_2:
 plot_width: 11
 plot_height: 8.5
 plot_res: 72
-plot_units: cm
+plot_units: in
 plot_ci:
   - none
   - met_prm

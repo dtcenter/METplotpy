@@ -86,10 +86,6 @@ def get_params(config_filename):
     return parse_config(config_file)
 
 
-
-# TODO Remove, Plotly specific
-#  Matplotlib only needs to do a  plt.savefig()
-# command
 def make_plot(config_filename, plot_class):
     """!Get plot parameters and create the plot.
 
@@ -200,28 +196,6 @@ def pretty(low, high, number_of_intervals) -> Union[np.ndarray, list]:
     miny = np.floor(low / d) * d
     maxy = np.ceil(high / d) * d
     return np.arange(miny, maxy + 0.5 * d, d)
-
-
-# TODO remove, moved to base_plot.py
-def add_horizontal_line(y: float, line_properties: dict) -> None:
-    """Adds a horizontal line to the matplotlib plot
-
-    @param y y value for the line
-    @param line_properties dictionary with line properties like color, width, dash
-    @returns None
-    """
-    plt.axhline(y=y, xmin=0, xmax=1, **line_properties)
-
-
-# TODO remove, moved to base_plot.py
-def add_vertical_line(x: float, line_properties: dict) -> None:
-    """Adds a vertical line to the matplotlib plot
-
-    @param x x value for the line
-    @param line_properties dictionary with line properties like color, width, dash
-    @returns None
-    """
-    plt.axvline(x=x, ymin=0, ymax=1, **line_properties)
 
 
 def abline(x_value: float, intercept: float, slope: float) -> float:

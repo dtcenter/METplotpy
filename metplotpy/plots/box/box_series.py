@@ -22,7 +22,9 @@ import pandas as pd
 from pandas import DataFrame
 
 import metcalcpy.util.utils as utils
+
 import metplotpy.plots.util as util
+
 from ..series import Series
 
 
