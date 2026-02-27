@@ -179,40 +179,6 @@ class BarConfig(Config):
                              " Supported values are sum, mean, and median.")
         return stat_to_plot
 
-    def config_consistency_check(self) -> bool:
-        """
-            Checks that the number of settings defined for plot_ci,
-            plot_disp, series_order, user_legend colors, and series_symbols
-            are consistent.
-
-            Args:
-
-            Returns:
-                True if the number of settings for each of the above
-                settings is consistent with the number of
-                series (as defined by the cross product of the model
-                and vx_mask defined in the series_val_1 setting)
-
-        """
-        lists_to_check = {
-            "plot_disp": self.plot_disp,
-            "series_ordering": self.series_ordering,
-            "colors_list": self.colors_list,
-            "user_legends": self.user_legends,
-        }
-        status = True
-        for name, list_to_check in lists_to_check.items():
-
-            if len(list_to_check) == self.num_series:
-                continue
-
-            self.logger.error(
-                f"{name} ({len(list_to_check)}) does not match number of series ({self.num_series})"
-            )
-            status = False
-
-        return status
-
     def _get_user_legends(self, legend_label_type: str = '') -> list:
         """
         Retrieve the text that is to be displayed in the legend at the bottom of the plot.

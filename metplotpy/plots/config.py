@@ -17,6 +17,7 @@ __author__ = 'Minna Win'
 
 import itertools
 from typing import Union
+from datetime import datetime
 
 import metcalcpy.util.utils as utils
 import metplotpy.plots.util
@@ -909,3 +910,55 @@ class Config:
                 line['line_style'] = constants.LINESTYLE_BY_NAMES[line['line_style']]
 
         return lines
+
+    def config_consistency_check(self) -> None:
+        """Checks that the number of settings defined for
+            plot_disp, series_ordering, colors_list, user_legends, and show_legend
+           are consistent with number of series.
+
+           @raises ValueError if any of settings are inconsistent with the
+            number of series (as defined by the cross product of the model
+            and vx_mask defined in the series_val_1 setting)
+        """
+        lists_to_check = {
+            "plot_disp": self.plot_disp,
+            "series_ordering": self.series_ordering,
+            "colors_list": self.colors_list,
+            "user_legends": self.user_legends,
+            "show_legend": self.show_legend,
+        }
+        self._config_compare_lists_to_num_series(lists_to_check)
+
+    def _config_compare_lists_to_num_series(self, lists_to_check: dict) -> list:
+        """
+            Checks that the number of settings defined for lists are consistent
+            with the number of series to plot.
+
+            Args:
+                @param lists_to_check: dictionary with name of list as key and
+                actual list to check as value.
+
+            @raises ValueError if any settings are inconsistent with the number of series
+        """
+        self.logger.info(f"Checking consistency of config settings relative to number of series {datetime.now()}")
+
+        # Determine the number of series based on the number of
+        # permutations from the series_var setting in the config file
+        error_messages = []
+        for name, list_to_check in lists_to_check.items():
+
+            if len(list_to_check) == self.num_series:
+                continue
+
+            error_messages.append(f"{name} ({len(list_to_check)}) does not match number of series ({self.num_series})")
+
+        if error_messages:
+            msg = (
+                "The number of series defined by series_val_1/2 and derived curves is "
+                "inconsistent with the number of settings required for describing each series."
+            )
+            msg += "\n" + "\n".join(error_messages)
+            self.logger.error(msg)
+            raise ValueError(msg)
+
+        self.logger.info(f"Config consistency check completed successfully: {datetime.now()}")

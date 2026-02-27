@@ -66,19 +66,8 @@ class Hist(BasePlot):
                               f" {datetime.now()}")
 
         # Check that we have all the necessary settings for each ser
-        self.logger.info(f"Performing consistency check for settings in config "
-                              f"file: {datetime.now()}")
-        is_config_consistent = self.config_obj._config_consistency_check()
-        self.logger.info(f"Finished with consistency check:  {datetime.now()}")
-        if not is_config_consistent:
-            error_msg = ("The number of ser defined by series_val_1 is"
-                        " inconsistent with the number of settings"
-                        " required for describing each ser. Please check"
-                        " the number of your configuration file's "
-                        " plot_disp, series_order, user_legend, show_legend"
-                        " colors settings.")
-            self.logger.error(f"ValueError: {error_msg}")
-            raise ValueError(error_msg)
+        self.config_obj.config_consistency_check()
+
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()

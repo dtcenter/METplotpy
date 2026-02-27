@@ -127,38 +127,6 @@ class HistogramConfig(Config):
 
         return self.create_list_by_series_ordering(plot_display_bools)
 
-    def _config_consistency_check(self) -> bool:
-        """
-            Checks that the number of settings defined for plot_ci,
-            plot_disp, series_order, user_legend colors, and series_symbols
-            are consistent.
-
-            Args:
-
-            Returns:
-                True if the number of settings for each of the above
-                settings is consistent with the number of
-                ser (as defined by the cross product of the model
-                and vx_mask defined in the series_val_1 setting)
-
-        """
-        # Determine the number of ser based on the number of
-        # permutations from the series_var setting in the
-        # config file
-
-        # Numbers of values for other settings for ser
-        num_plot_disp = len(self.plot_disp)
-        num_series_ord = len(self.series_ordering)
-        num_colors = len(self.colors_list)
-        num_legends = len(self.user_legends)
-        status = False
-
-        if self.num_series == num_plot_disp == \
-                num_series_ord == num_colors \
-                == num_legends:
-            status = True
-        return status
-
     def get_series_y(self) -> list:
         """
         Creates an array of ser components (excluding derived) tuples for the specified y-axis

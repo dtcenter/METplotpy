@@ -54,18 +54,7 @@ class Bar(BasePlot):
         self.logger = self.config_obj.logger
         self.logger.info(f"Start bar plot: {datetime.now()}")
         # Check that we have all the necessary settings for each series
-        self.logger.info("Consistency checking of config settings for colors, "
-                         "legends, etc.")
-        is_config_consistent = self.config_obj.config_consistency_check()
-        if not is_config_consistent:
-            value_error_msg = ("ValueError: The number of series defined by series_val_1 and "
-                               "derived curves is inconsistent with the number of "
-                               "settings required for describing each series. Please "
-                               "check the number of your configuration file's "
-                               "plot_i, plot_disp, series_order, user_legend, show_legend and "
-                               "colors settings.")
-            self.logger.error(value_error_msg)
-            raise ValueError(value_error_msg)
+        self.config_obj.config_consistency_check()
 
         # Read in input data, location specified in config file
         self.logger.info(f"Begin reading input data: {datetime.now()}")

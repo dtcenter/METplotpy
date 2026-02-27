@@ -226,35 +226,3 @@ class RevisionBoxConfig(Config):
                 legend_list.append(all_user_legends[idx])
 
         return self.create_list_by_series_ordering(legend_list)
-
-    def _config_consistency_check(self) -> bool:
-        """
-            Checks that the number of settings defined for
-            plot_disp, series_order, user_legend colors
-            are consistent.
-
-            Args:
-
-            Returns:
-                True if the number of settings for each of the above
-                settings is consistent with the number of
-                series (as defined by the cross product of the model
-                and vx_mask defined in the series_val_1 setting)
-
-        """
-        # Determine the number of series based on the number of
-        # permutations from the series_var setting in the
-        # config file
-
-        # Numbers of values for other settings for series
-        num_plot_disp = len(self.plot_disp)
-        num_series_ord = len(self.series_ordering)
-        num_colors = len(self.colors_list)
-        num_legends = len(self.user_legends)
-        status = False
-
-        if self.num_series == num_plot_disp == \
-                num_series_ord == num_colors \
-                == num_legends:
-            status = True
-        return status

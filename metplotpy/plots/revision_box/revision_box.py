@@ -51,14 +51,7 @@ class RevisionBox(Box):
         self.logger.info(f"Begin revision box plotting: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
-        is_config_consistent = self.config_obj._config_consistency_check()
-        if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val_1 is"
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check"
-                             " the number of your configuration file's plot_i,"
-                             " plot_disp, series_order, user_legend,"
-                             " colors, show_legend and series_symbols settings.")
+        self.config_obj.config_consistency_check()
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
