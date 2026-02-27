@@ -40,8 +40,6 @@ class RevisionBoxConfig(Config):
         # plot parameters
         self.dump_points_1 = self._get_bool('dump_points_1')
         self.create_html = self._get_bool('create_html')
-        self.sync_yaxes = False
-        self.xaxis_reverse = False
 
         ##############################################
         # caption parameters

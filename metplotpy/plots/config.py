@@ -45,8 +45,10 @@ class Config:
         self.title_font = constants.DEFAULT_TITLE_FONT
         self.title_color = constants.DEFAULT_TITLE_COLOR
         self.xaxis = self.get_config_value('xaxis')
+        self.xaxis_reverse = False
         self.yaxis_1 = self.get_config_value('yaxis_1')
         self.yaxis_2 = self.get_config_value('yaxis_2')
+        self.sync_yaxes = False
         self.title = self.get_config_value('title')
         self.use_ee = self._get_bool('event_equal')
         self.indy_vals = self.get_config_value('indy_vals')
