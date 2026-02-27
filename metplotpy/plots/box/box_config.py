@@ -125,17 +125,18 @@ class BoxConfig(Config):
             self.legend_orientation = 'h'
         self.legend_border_color = "black"
 
-        box_outline = self._get_bool('box_outline')
-        if box_outline is True:
-            self.boxpoints = 'outliers'
-        else:
-            self.boxpoints = False
+        # Default Matplotlib values for whiskers
+        self.whis = 1.5
+        self.showfliers = True
+
         self.box_avg = self._get_bool('box_avg')
         self.box_notch = self._get_bool('box_notch')
 
         self.box_pts = self._get_bool('box_pts')
-        if self.box_pts is True:
-            self.boxpoints = 'all'
+        if self.box_pts:
+            self.whis = [0, 100]
+        elif not self._get_bool('box_outline'):
+            self.showfliers = False
 
     def _get_plot_disp(self) -> list:
         """

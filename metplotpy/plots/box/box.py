@@ -96,11 +96,9 @@ class Box(BasePlot):
             Returns:
 
         """
-        self.config_obj.logger.info(f"Begin reading input data:"
-                                  f" {datetime.now()}")
+        self.config_obj.logger.info(f"Begin reading input data: {datetime.now()}")
         file = self.config_obj.parameters['stat_input']
-        self.config_obj.logger.info(f"Finish reading input data:"
-                                 f" {datetime.now()}")
+        self.config_obj.logger.info(f"Finish reading input data: {datetime.now()}")
         return pd.read_csv(file, sep='\t', header='infer', float_precision='round_trip')
 
     def _create_series(self, input_data):
@@ -189,13 +187,6 @@ class Box(BasePlot):
         self._add_xaxis(ax, wts_size_styles['xlab'])
         self._add_yaxis(ax, wts_size_styles['ylab'])
 
-        # add custom lines
-        # if len(self.series_list) > 0:
-        #     self._add_lines(
-        #         self.config_obj,
-        #         sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique())
-        #         )
-
         # add x2 axis
         if wts_size_styles.get('x2lab'):
             self._add_x2axis(ax, n_stats, wts_size_styles['x2lab'])
@@ -236,15 +227,33 @@ class Box(BasePlot):
         # Group your 'stat_value' data by 'indy_var' categories first
         data_to_plot, x_locs, width = self._get_data_to_plot_and_x_locs(series, idx)
 
-        # data_to_plot = [group_data for name, group_data in
-        #                 series.series_data.groupby(self.config_obj.indy_var)['stat_value']]
-
         plot_ax = ax
         if ax2 and ax2.get_ylabel() in series.series_data.stat_name.values:
             plot_ax = ax2
 
-        boxplot = plot_ax.boxplot(data_to_plot, positions=x_locs, patch_artist=True, widths=width,
-                                  label=self.config_obj.user_legends[series.idx])
+        # Define properties for median and mean lines
+        median_props = {
+            'color': 'black',
+            'linewidth': 1,
+        }
+        mean_props = {
+            'linestyle': '--',
+            'color': 'black',
+            'linewidth': 1,
+        }
+
+        boxplot = plot_ax.boxplot(data_to_plot, positions=x_locs,
+                                  patch_artist=True,
+                                  widths=width,
+                                  label=self.config_obj.user_legends[series.idx],
+                                  showmeans=self.config_obj.box_avg,
+                                  meanline=self.config_obj.box_avg,
+                                  medianprops=median_props,
+                                  meanprops=mean_props,
+                                  whis=self.config_obj.whis,
+                                  showfliers=self.config_obj.showfliers,
+                                  )
+
         for box in boxplot['boxes']:
             box.set_facecolor(series.color)
 

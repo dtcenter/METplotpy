@@ -427,11 +427,15 @@ class BasePlot:
         """
         Creates x2axis based on the properties from the config file.
 
+        Note: This function is based on logic from individual plots that show number of stats (n_stats)
+        on the top x-axis. This will need to be modified if other plots display a 2nd x-axis
+        with other information.
+
         Note: this function may need to be called after adding the series, because some
         plots add ticks that will conflict with the explicit x ticks set in this function.
         Calliing this after will override the ticks and prevent a conflict.
 
-        :param n_stats: - labels for the axis
+        :param n_stats labels for the axis
         """
         if not self.config_obj.show_nstats:
             return
@@ -441,6 +445,7 @@ class BasePlot:
                           labelpad=abs(self.config_obj.parameters['x2lab_offset']) * constants.PIXELS_TO_POINTS)
         current_locs = ax.get_xticks()
         ax_top.set_xticks(current_locs, n_stats, size=self.config_obj.x2_tickfont_size)
+
         # this doesn't appear to be working to add ticks at the top
         ax_top.tick_params(axis="x", direction="in", labelrotation=self.config_obj.x2_tickangle)
 
