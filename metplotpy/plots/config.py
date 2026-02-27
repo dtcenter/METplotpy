@@ -424,7 +424,10 @@ class Config:
         if index not in (1, 2):
             return {}
 
-        return self.get_config_value(f'fcst_var_val_{index}')
+        fcst_dict = self.get_config_value(f'fcst_var_val_{index}')
+        if fcst_dict is None:
+            return {}
+        return fcst_dict
 
     def get_fcst_vars_keys(self, index: int) -> list:
         """Retrieve a list of keys from the fcst_var_val_{index} variable from the config.
@@ -438,7 +441,10 @@ class Config:
                used to subset the input data that corresponds to a particular series.
 
         """
-        return list(self.get_fcst_vars_dict(index).keys())
+        fcst_vars_dict = self.get_fcst_vars_dict(index)
+        if fcst_vars_dict is None:
+            return []
+        return list(fcst_vars_dict.keys())
 
     def _get_series_val_names(self) -> list:
         """
