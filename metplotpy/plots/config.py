@@ -868,7 +868,7 @@ class Config:
          Args:
 
          Returns:
-             :return: list of lines properties  or None
+             :return: list of lines properties or None
          """
 
         # get property value from the parameters
@@ -903,5 +903,9 @@ class Config:
             except ValueError:
                 print(f'WARNING: custom line width {line["line_width"]} is invalid')
                 line['type'] = None
+
+            # convert line style to matplotlib format if necessary
+            if line['line_style'] in constants.LINESTYLE_BY_NAMES:
+                line['line_style'] = constants.LINESTYLE_BY_NAMES[line['line_style']]
 
         return lines

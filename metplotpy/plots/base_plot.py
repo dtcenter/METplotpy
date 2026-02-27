@@ -300,48 +300,26 @@ class BasePlot:
             os.remove(image_name)
 
     @staticmethod
-    def add_horizontal_line(plt,y: float, line_properties: dict) -> None:
+    def add_horizontal_line(ax: plt.Axes, y: float, line_properties: dict) -> None:
         """Adds a horizontal line to the matplotlib plot
 
-        @param plt: Matplotlib pyplot object
+        @param ax: Matplotlib Axes object
         @param y y value for the line
         @param line_properties dictionary with line properties like color, width, dash
         @returns None
         """
-        plt.axhline(y=y, xmin=0, xmax=1, **line_properties)
+        ax.axhline(y=y, xmin=0, xmax=1, **line_properties)
 
     @staticmethod
-    def add_vertical_line(plt, x: float, line_properties: dict) -> None:
+    def add_vertical_line(ax: plt.Axes, x: float, line_properties: dict) -> None:
         """Adds a vertical line to the matplotlib plot
 
-        @param plt: Matplotlib pyplot object
+        @param ax: Matplotlib Axes object
         @param x x value for the line
         @param line_properties dictionary with line properties like color, width, dash
         @returns None
         """
-        plt.axvline(x=x, ymin=0, ymax=1, **line_properties)
-
-    @staticmethod
-    def add_horizontal_line(plt, y: float, line_properties: dict) -> None:
-        """Adds a horizontal line to the matplotlib plot
-
-        @param plt: Matplotlib pyplot object
-        @param y y value for the line
-        @param line_properties dictionary with line properties like color, width, dash
-        @returns None
-        """
-        plt.axhline(y=y, xmin=0, xmax=1, **line_properties)
-
-    @staticmethod
-    def add_vertical_line(plt, x: float, line_properties: dict) -> None:
-        """Adds a vertical line to the matplotlib plot
-
-        @param plt: Matplotlib pyplot object
-        @param x x value for the line
-        @param line_properties dictionary with line properties like color, width, dash
-        @returns None
-        """
-        plt.axvline(x=x, ymin=0, ymax=1, **line_properties)
+        ax.axvline(x=x, ymin=0, ymax=1, **line_properties)
 
     @staticmethod
     def get_array_dimensions(data):
@@ -378,9 +356,9 @@ class BasePlot:
         )
 
     def _add_legend(self, ax: plt.Axes, handles_and_labels=None) -> None:
-        """
-        Creates a plot legend based on the properties from the config file
-        and attaches it to the initial Figure
+        """Creates a plot legend based on the properties from the config file.
+        Note: This should be called after adding the series, because the plot
+        labels need to be created before including them in the legend.
         """
         orientation = "horizontal" if self.config_obj.legend_orientation == 'h' else "vertical"
 
@@ -482,3 +460,47 @@ class BasePlot:
             ax_right.set_ylim(self.config_obj.parameters['y2lim'])
 
         return ax_right
+
+    def _add_lines(self, ax: plt.Axes, config_obj: Config, x_points_index: Union[list, None] = None) -> None:
+        """Adds custom horizontal and/or vertical line to the plot.
+           All line's metadata is in the config_obj.lines
+            Args:
+                @param ax - matplotlib Axes object
+                @param config_obj plot configuration object
+                @param x_points_index optional list of x-values that are used to create vertical line
+        """
+        if not hasattr(config_obj, 'lines') or config_obj.lines is None:
+            return
+
+        for line in config_obj.lines:
+
+            # format line properties in format that matplotlib expects
+            line_properties = {
+                'color': line['color'],
+                'linewidth': line['line_width'],
+                'linestyle': line['line_style'],
+            }
+
+            # draw horizontal line
+            if line['type'] == 'horiz_line':
+
+                y_position = line['position']
+                self.add_horizontal_line(ax, y_position, line_properties)
+
+            elif line['type'] == 'vert_line':
+
+                # draw vertical line
+                x_position = line['position']
+                try:
+                    if x_points_index is not None:
+                        ordered_indy_label = config_obj.create_list_by_plot_val_ordering(
+                            config_obj.indy_label)
+                        index = ordered_indy_label.index(line['position'])
+                        x_position = x_points_index[index]
+
+                    self.add_vertical_line(ax, x_position, line_properties)
+
+                except ValueError:
+                    msg = f"Vertical line with position {x_position} cannot be created."
+                    self.logger.warning(msg)
+                    print(f"WARNING: {msg}")

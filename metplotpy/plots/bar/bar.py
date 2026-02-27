@@ -183,6 +183,10 @@ class Bar(BasePlot):
 
         self._add_legend(ax)
 
+        # add custom lines if lines are defined in config
+        if len(self.series_list) > 0:
+            self._add_lines(ax, self.config_obj, self.config_obj.indy_vals)
+
         plt.tight_layout()
 
     def _add_series(self, ax):

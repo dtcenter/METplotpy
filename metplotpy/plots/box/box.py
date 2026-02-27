@@ -211,6 +211,10 @@ class Box(BasePlot):
         self._sync_yaxes(ax, ax_y2, yaxis_min, yaxis_max)
         self._add_legend(ax, handles_and_labels)
 
+        # add custom lines if lines are defined in config
+        if len(self.series_list) > 0:
+            self._add_lines(ax, self.config_obj, self.config_obj.indy_vals)
+
         plt.tight_layout()
 
         self.logger.info(f"End creating the figure: {datetime.now()}")
