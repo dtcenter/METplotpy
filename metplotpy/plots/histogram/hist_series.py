@@ -17,7 +17,7 @@ from datetime import datetime
 import numpy as np
 
 import metcalcpy.util.utils as utils
-import metplotpy.plots.util_plotly as util
+import metplotpy.plots.util as util
 from ..series import Series
 
 
@@ -106,8 +106,7 @@ class HistSeries(Series):
         else:
             series_points_results = self.series_data.loc[:, 'stat_value'].tolist()
 
-        logger.info(f"Finished creating the series points:"
-                                f" {datetime.now()}")
+        logger.info(f"Finished creating the series points: {datetime.now()}")
 
         return series_points_results
 

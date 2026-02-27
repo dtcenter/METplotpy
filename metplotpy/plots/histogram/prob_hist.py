@@ -18,7 +18,7 @@ from datetime import datetime
 
 from metplotpy.plots.histogram.hist import Hist
 from metplotpy.plots.histogram.hist_series import HistSeries
-from metplotpy.plots import util_plotly as util
+from metplotpy.plots import util
 
 
 class ProbHist(Hist):
@@ -37,7 +37,8 @@ class ProbHist(Hist):
             if len(ser.series_data) > 0:
                 bin_size = ser.series_data['bin_size'][0]
                 for i in range(1, int(1 / bin_size + 1)):
-                    x_points.append(i * bin_size)
+                    label = format(i * bin_size, '.2f').rstrip('0').rstrip('.')
+                    x_points.append(label)
         return x_points
 
     def _get_dtick(self) -> Union[float, str]:
@@ -63,19 +64,7 @@ def main(config_filename=None):
             Args:
                 @param config_filename: default is None, the name of the custom config file to apply
         """
-    params = util.get_params(config_filename)
-    try:
-        plot = ProbHist(params)
-        plot.save_to_file()
-        # plot.show_in_browser()
-        plot.write_html()
-        plot.write_output_file()
-        log_level = plot.get_config_value('log_level')
-        log_filename = plot.get_config_value('log_filename')
-        logger = util.get_common_logger(log_level, log_filename)
-        logger.info(f"Finished probability histogram: {datetime.now()}")
-    except ValueError as val_er:
-        print(val_er)
+    util.make_plot(config_filename, ProbHist)
 
 
 if __name__ == "__main__":
