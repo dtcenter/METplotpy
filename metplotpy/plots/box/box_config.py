@@ -134,9 +134,15 @@ class BoxConfig(Config):
 
         self.box_pts = self._get_bool('box_pts')
         if self.box_pts:
-            self.whis = [0, 100]
-        elif not self._get_bool('box_outline'):
             self.showfliers = False
+            self.boxpoints = 'all'
+        elif self._get_bool('box_outline'):
+            self.whis = 2.5
+            self.boxpoints = 'outliers'
+        else:
+            self.whis = [0, 100]
+            self.showfliers = False
+            self.boxpoints = False
 
     def _get_plot_disp(self) -> list:
         """
