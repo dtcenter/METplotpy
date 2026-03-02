@@ -14,6 +14,8 @@ import os
 import re
 from datetime import datetime
 
+import numpy as np
+
 from metplotpy.plots.base_plot import BasePlot
 
 from metplotpy.plots.box.box import Box
@@ -100,7 +102,7 @@ class RevisionBox(Box):
         series_list = []
 
         # add series for y1 axis
-        for i, name in enumerate(self.config_obj.get_series_y()):
+        for i, name in enumerate(self.config_obj.get_series_y(1)):
             series_obj = RevisionBoxSeries(self.config_obj, i, input_data, series_list, name)
             series_list.append(series_obj)
 
@@ -144,6 +146,9 @@ class RevisionBox(Box):
 
         self.config_obj.plot_caption = annotation_text_all
 
+        # set the x-axis labels to match the user legends
+        self.config_obj.indy_label = self.config_obj.user_legends
+
         super()._create_figure()
 
         # add custom lines
@@ -177,8 +182,13 @@ class RevisionBox(Box):
 
         self.logger.info(f"Finished creating figure: {datetime.now()}")
 
+    def _add_custom_lines(self, ax):
+        return
+
     def _get_data_to_plot_and_x_locs(self, series, idx):
-        return [series.series_points['points']['stat_value'].tolist()], None, MPL_DEFAULT_BOX_WIDTH
+        base = np.arange(len(self.config_obj.indy_label))
+        x_locs = [base[idx]]
+        return series.series_points['points']['stat_value'].dropna().values, x_locs, MPL_DEFAULT_BOX_WIDTH
 
     # def _draw_series(self, series: RevisionBoxSeries) -> None:
     #     """

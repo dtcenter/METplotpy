@@ -73,12 +73,18 @@ class BoxConfig(Config):
         self.y_tickfont_size = self.parameters['ytlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
-        # y2-axis parameters
-        self.y2_title_font_size = self.parameters['y2lab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.y2_tickangle = self.parameters['y2tlab_orient']
+        # y2-axis parameters (optional - not used for revision box)
+        self.y2_title_font_size = None
+        if self.parameters.get('y2lab_size'):
+            self.y2_title_font_size = self.parameters['y2lab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.y2_tickangle = self.parameters['y2tlab_orient'] if self.parameters.get('y2tlab_orient') else None
         if self.y2_tickangle in constants.YAXIS_ORIENTATION.keys():
             self.y2_tickangle = constants.YAXIS_ORIENTATION[self.y2_tickangle]
-        self.y2_tickfont_size = self.parameters['y2tlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.y2_tickfont_size = None
+        if self.parameters.get('y2tlab_size'):
+            self.y2_tickfont_size = self.parameters['y2tlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
         # x-axis parameters
@@ -89,12 +95,18 @@ class BoxConfig(Config):
         self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
-        # x2-axis parameters
-        self.x2_title_font_size = self.parameters['x2lab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.x2_tickangle = self.parameters['x2tlab_orient']
+        # x2-axis parameters (optional - not used for revision box)
+        self.x2_title_font_size = None
+        if self.parameters.get('x2lab_size'):
+            self.x2_title_font_size = self.parameters['x2lab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.x2_tickangle = self.parameters['x2tlab_orient'] if self.parameters.get('x2tlab_orient') else None
         if self.x2_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x2_tickangle = constants.XAXIS_ORIENTATION[self.x2_tickangle]
-        self.x2_tickfont_size = self.parameters['x2tlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.x2_tickfont_size = None
+        if self.parameters.get('x2tlab_size'):
+            self.x2_tickfont_size = self.parameters['x2tlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
         # series parameters
@@ -288,15 +300,18 @@ class BoxConfig(Config):
         :param axis: y-axis (1 or 2)
         :return: an array of series components tuples
         """
-        all_fields_values_orig = self.get_config_value('series_val_' + str(axis)).copy()
+        if not self.get_config_value(f'series_val_{axis}'):
+            return []
+
+        all_fields_values_orig = self.get_config_value(f'series_val_{axis}').copy()
         all_fields_values = {}
         for x in reversed(list(all_fields_values_orig.keys())):
             all_fields_values[x] = all_fields_values_orig.get(x)
 
-        if self._get_fcst_vars(axis):
-            all_fields_values['fcst_var'] = list(self._get_fcst_vars(axis).keys())
+        if self.get_fcst_vars_keys(axis):
+            all_fields_values['fcst_var'] = self.get_fcst_vars_keys(axis)
 
-        all_fields_values['stat_name'] = self.get_config_value('list_stat_' + str(axis))
+        all_fields_values['stat_name'] = self.get_config_value(f'list_stat_{axis}')
         return utils.create_permutations_mv(all_fields_values, 0)
 
     def _get_all_series_y(self, axis: int) -> list:
@@ -327,9 +342,9 @@ class BoxConfig(Config):
         """
         # Retrieve the lists from the series_val_1 dictionary
         series_vals_list = self.series_vals_1.copy()
-        if isinstance(self.fcst_var_val_1, list) is True:
+        if isinstance(self.fcst_var_val_1, list):
             fcst_vals = self.fcst_var_val_1
-        elif isinstance(self.fcst_var_val_1, dict) is True:
+        elif isinstance(self.fcst_var_val_1, dict):
             fcst_vals = list(self.fcst_var_val_1.values())
         else:
             fcst_vals = list()
@@ -343,9 +358,9 @@ class BoxConfig(Config):
 
         if self.series_vals_2:
             series_vals_list_2 = self.series_vals_2.copy()
-            if isinstance(self.fcst_var_val_2, list) is True:
+            if isinstance(self.fcst_var_val_2, list):
                 fcst_vals_2 = self.fcst_var_val_2
-            elif isinstance(self.fcst_var_val_2, dict) is True:
+            elif isinstance(self.fcst_var_val_2, dict):
                 fcst_vals_2 = list(self.fcst_var_val_2.values())
             else:
                 fcst_vals_2 = list()
@@ -356,7 +371,9 @@ class BoxConfig(Config):
 
         total = len(permutations)
         # add derived
-        total = total + len(self.get_config_value('derived_series_1'))
-        total = total + len(self.get_config_value('derived_series_2'))
+        if self.get_config_value('derived_series_1'):
+            total = total + len(self.get_config_value('derived_series_1'))
+        if self.get_config_value('derived_series_2'):
+            total = total + len(self.get_config_value('derived_series_2'))
 
         return total

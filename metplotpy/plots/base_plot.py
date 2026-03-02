@@ -205,7 +205,10 @@ class BasePlot:
         weights_size_styles['ylab'] = ylab_property
 
         # For x2axis label if set
-        if hasattr(self.config_obj, 'x2lab_weight') and hasattr(self.config_obj, 'x2_title_font_size'):
+        if (hasattr(self.config_obj, 'x2lab_weight')
+                and self.config_obj.x2lab_weight is not None
+                and hasattr(self.config_obj, 'x2_title_font_size')
+                and self.config_obj.x2_title_font_size is not None):
             x2lab_property= FontProperties()
             x2lab_property.set_size(self.config_obj.x2_title_font_size)
             x2lab_style, x2lab_wt = self.config_obj.x2lab_weight
@@ -215,7 +218,10 @@ class BasePlot:
 
 
         # For y2axis label if set
-        if hasattr(self.config_obj, 'y2lab_weight') and hasattr(self.config_obj, 'y2_title_font_size'):
+        if (hasattr(self.config_obj, 'y2lab_weight')
+                and self.config_obj.y2lab_weight is not None
+                and hasattr(self.config_obj, 'y2_title_font_size')
+                and self.config_obj.y2_title_font_size is not None):
             y2lab_property= FontProperties()
             y2lab_property.set_size(self.config_obj.y2_title_font_size)
             y2lab_style, y2lab_wt = self.config_obj.y2lab_weight
@@ -403,7 +409,7 @@ class BasePlot:
                     linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
             ax.set_axisbelow(True)
 
-        if self.config_obj.xaxis_reverse is True:
+        if self.config_obj.xaxis_reverse:
             ax.invert_xaxis()
 
     def _add_yaxis(self, ax: plt.Axes, fontproperties: FontProperties) -> None:
