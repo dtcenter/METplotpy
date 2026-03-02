@@ -77,11 +77,6 @@ class Box(BasePlot):
         # line width, and criteria needed to subset the input dataframe.
         self.series_list = self._create_series(self.input_df)
 
-        # create figure
-        # pylint:disable=assignment-from-no-return
-        # Need to have a self.figure that we can pass along to
-        # the methods in base_plot.py (BasePlot class methods) to
-        # create binary versions of the plot.
         self._create_figure()
 
     def _read_input_data(self):
@@ -261,48 +256,6 @@ class Box(BasePlot):
             box.set_facecolor(series.color)
 
         return boxplot['boxes'][0]
-        # defaults markers and colors for the regular box plot
-        line_color = dict(color='rgb(0,0,0)')
-        fillcolor = series.color
-        marker_color = 'rgb(0,0,0)'
-        marker_line_color = 'rgb(0,0,0)'
-        marker_symbol = 'circle-open'
-
-        # markers and colors for points only  plot
-        if self.config_obj.box_pts:
-            line_color = dict(color='rgba(0,0,0,0)')
-            fillcolor = 'rgba(0,0,0,0)'
-            marker_color = series.color
-            marker_symbol = 'circle'
-            marker_line_color = series.color
-
-        # create a trace
-        self.figure.add_trace(
-            go.Box(x=series.series_data[self.config_obj.indy_var],
-                   y=series.series_data['stat_value'],
-                   notched=self.config_obj.box_notch,
-                   line=line_color,
-                   fillcolor=fillcolor,
-                   name=series.user_legends,
-                   showlegend=self.config_obj.show_legend[series.idx] == 1,
-                   # quartilemethod='linear', #"exclusive", "inclusive", or "linear"
-                   boxmean=self.config_obj.box_avg,
-                   boxpoints=self.config_obj.boxpoints,  # outliers, all, False
-                   pointpos=0,
-                   marker=dict(size=4,
-                               color=marker_color,
-                               line=dict(
-                                   width=1,
-                                   color=marker_line_color
-                               ),
-                               symbol=marker_symbol,
-                               ),
-                   jitter=0
-                   ),
-            secondary_y=series.y_axis != 1
-        )
-
-        self.logger.info(f"End drawing the boxes on the plot: {datetime.now()}")
 
     def _get_data_to_plot_and_x_locs(self, series, idx):
         base = np.arange(len(self.config_obj.indy_vals))
