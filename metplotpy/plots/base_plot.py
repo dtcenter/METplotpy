@@ -295,6 +295,8 @@ class BasePlot:
             plt.savefig(image_name, dpi=self.get_config_value('plot_res'))
         except Exception as ex:
             self.logger.error(f"Failed to save plot to file: {ex}")
+        finally:
+            plt.close('all')
 
     def remove_file(self):
         """Removes previously made image file .

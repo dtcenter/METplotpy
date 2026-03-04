@@ -149,14 +149,6 @@ class PerformanceDiagram(BasePlot):
         self.logger.info(f"Finished creating series objects: {datetime.now()}")
         return series_list
 
-    def save_to_file(self):
-        """
-          This is the matplotlib-friendly implementation, which overrides the parent class'
-          version (which is a Python Plotly implementation).
-
-        """
-        plt.savefig(self.config_obj.output_image)
-
     def remove_file(self):
         """
            Removes previously made image file.  Invoked by the parent class before self.output_file

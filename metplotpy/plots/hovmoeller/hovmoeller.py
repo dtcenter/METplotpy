@@ -36,7 +36,7 @@ import metcalcpy
 """
 Import BasePlot class
 """
-from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots.base_plot_plotly import BasePlot
 
 
 class Hovmoeller(BasePlot):

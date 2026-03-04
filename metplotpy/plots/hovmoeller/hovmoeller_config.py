@@ -14,7 +14,7 @@ Holds values set in the hovmoeller config file(s)
 """
 __author__ = 'Minna Win'
 
-from ..config import Config
+from ..config_plotly import Config
 
 class HovmoellerConfig(Config):
     def __init__(self, parameters):
