@@ -118,7 +118,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: dtcenter/METplus
-          ref: feature_copy_diff_files
+          ref: develop
           sparse-checkout: |
             metplus/util/diff_util.py
           sparse-checkout-cone-mode: false
