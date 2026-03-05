@@ -288,11 +288,13 @@ class BasePlot:
 
         return None
 
-    def save_to_file(self) -> None:
+    def save_to_file(self, **kwargs) -> None:
+        """!Saves the plot to a file.
+        Add any arguments passed to the function directly to plt.savefig."""
         image_name = self.get_config_value('plot_filename')
         os.makedirs(os.path.dirname(image_name), exist_ok=True)
         try:
-            plt.savefig(image_name, dpi=self.get_config_value('plot_res'))
+            plt.savefig(image_name, dpi=self.get_config_value('plot_res'), **kwargs)
         except Exception as ex:
             self.logger.error(f"Failed to save plot to file: {ex}")
         finally:

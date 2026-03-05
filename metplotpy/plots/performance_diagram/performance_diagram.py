@@ -381,10 +381,10 @@ class PerformanceDiagram(BasePlot):
         if self.config_obj.yaxis_2:
             ax2.set_ylabel(self.config_obj.yaxis_2, fontsize=9)
 
+        self.logger.info(f"Finished drawing CSI lines: {datetime.now()}")
+
         # use plt.tight_layout() to prevent label box from scrolling off the figure
         plt.tight_layout()
-        plt.savefig(self.get_config_value('plot_filename'))
-        self.logger.info(f"Finished drawing CSI lines: {datetime.now()}")
         self.save_to_file()
         self.logger.info("Finished saving file.")
 

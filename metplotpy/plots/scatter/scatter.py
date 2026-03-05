@@ -184,7 +184,7 @@ class Scatter(BasePlot):
         # Save the plot
         plot_filename = self.config_obj.plot_filename
         self.logger.info(f"Saving scatter plot as {plot_filename}")
-        plt.savefig(plot_filename)
+        self.save_to_file()
         time_to_plot = datetime.now() - start
         self.logger.info(f"Total time for generating the scatter plot: {time_to_plot} seconds")
 
