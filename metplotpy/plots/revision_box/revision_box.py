@@ -139,18 +139,19 @@ class RevisionBox(Box):
                 continue
 
             # construct annotation text
-            annotation_text = series.user_legends + ': '
+            annotation_text = f"{series.user_legends}: "
             if self.config_obj.revision_run:
-                annotation_text = annotation_text + 'WW Runs Test:' + series.series_points['revision_run'] + ' '
+                annotation_text += f"WW Runs Test: {series.series_points['revision_run']} "
 
             if self.config_obj.revision_ac:
-                annotation_text = annotation_text + "Auto-Corr Test: p=" \
-                                  + series.series_points['auto_cor_p'] \
-                                  + ", r=" + series.series_points['auto_cor_r']
+                annotation_text += (
+                    f"Auto-Corr Test: p={series.series_points['auto_cor_p']}, "
+                    f"r={series.series_points['auto_cor_r']}"
+                )
 
-            annotation_text_all = annotation_text_all + annotation_text
+            annotation_text_all += annotation_text
             if inx < len(self.series_list) - 1:
-                annotation_text_all = annotation_text_all + '\n'
+                annotation_text_all += '\n'
 
         self.config_obj.plot_caption = annotation_text_all
 
