@@ -109,7 +109,6 @@ class BarConfig(Config):
             self.legend_orientation = 'v'
         else:
             self.legend_orientation = 'h'
-        self.legend_border_color = "black"
         self.show_legend = self._get_show_legend()
 
 

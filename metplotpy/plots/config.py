@@ -237,6 +237,7 @@ class Config:
         # Don't draw a box around legend labels unless an 'o' is set
         legend_box = self.get_config_value('legend_box').lower()
         self.draw_box = legend_box == 'o'
+        self.legend_border_color = "black"
 
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
@@ -562,11 +563,25 @@ class Config:
                 # markers is the matplotlib symbol: .,o, ^, d, H, or s
                 markers_list.append(marker)
             else:
-                # markers are indicated by name: small circle, circle, triangle,
-                # diamond, hexagon, square
+                # markers are indicated by name or PCH number
                 markers_list.append(constants.PCH_TO_MATPLOTLIB_MARKER[marker.lower()])
         markers_list_ordered = self.create_list_by_series_ordering(list(markers_list))
         return markers_list_ordered
+
+    def _get_markers_open(self) -> list:
+        """Parse info from markers to determine if they should be open or filled.
+
+           Args:
+
+           Returns:
+               a list of the boolean values to indicate if the marker should be open or filled.
+        """
+        markers = self.get_config_value('series_symbols')
+        markers_open = []
+        for marker in markers:
+            markers_open.append('open' in marker.lower() or 'small circle' in marker.lower())
+
+        return self.create_list_by_series_ordering(markers_open)
 
     def _get_linewidths(self) -> Union[list, None]:
         """ Retrieve all the linewidths from the configuration file, if not
