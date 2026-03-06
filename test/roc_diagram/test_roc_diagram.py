@@ -16,8 +16,9 @@ cwd = os.path.dirname(__file__)
     ("CTC_ROC_thresh_dump_pts.yaml", ["CTC_ROC_thresh_dump_pts.png", "intermed_files/CTC_ROC_thresh.points1"]),
     ("CTC_ROC_summary.yaml", ["CTC_ROC_summary.png", "intermed_files/CTC_ROC_summary.points1"]),
     ("CTC_ROC_thresh_reverse_pts.yaml", ["CTC_ROC_thresh_reverse_pts.png", "intermed_files_reverse_pts/CTC_ROC_thresh.points1"]),
-    ("PCT_ROC.yaml", ["PCT_ROC.png", "PCT_ROC.html"]),
-    ("CTC_wind_reformatted.yaml", ["CTC_wind_reformatted.png", "CTC_wind_reformatted.html"]),
+    ("PCT_ROC.yaml", ["PCT_ROC.png"]),
+    ("CTC_wind_reformatted.yaml", ["CTC_wind_reformatted.png"]),
+    ("custom_roc_diagram.yaml", ["roc_diagram_custom.png"]),
 ])
 def test_roc_diagram(module_setup_env, remove_files, input_yaml, expected_files):
     """Checking that the plot file is getting created but the points1 file is NOT"""
@@ -115,7 +116,7 @@ def test_ee_returns_empty_df(module_setup_env, capsys, remove_files):
         "INFO: No resulting data after performing event equalization of axis 1
          INFO: No points to plot (most likely as a result of event equalization). "
     """
-    expected_files = ['CTC_ROC_ee.png', 'CTC_ROC_ee.html']
+    expected_files = ['CTC_ROC_ee.png']
     remove_files(os.environ['TEST_OUTPUT'], expected_files)
 
     custom_config_filename = f"{cwd}/CTC_ROC_ee.yaml"
@@ -136,7 +137,7 @@ def test_pct_no_warnings(module_setup_env, remove_files):
         Verify that the ROC diagram is generated without FutureWarnings
     '''
 
-    remove_files(os.environ['TEST_OUTPUT'], ['PCT_ROC.png', 'PCT_ROC.html'])
+    remove_files(os.environ['TEST_OUTPUT'], ['PCT_ROC.png'])
 
     custom_config_filename = f"{cwd}/PCT_ROC.yaml"
     print("\n Testing for FutureWarning..")
