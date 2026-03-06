@@ -97,7 +97,6 @@ class HistogramConfig(Config):
             self.legend_orientation = 'v'
         else:
             self.legend_orientation = 'h'
-        self.legend_border_color = "black"
 
         self.normalized_histogram = self._get_bool('normalized_histogram')
         self.fixed_vars_vals_input = self.parameters['fixed_vars_vals_input']
