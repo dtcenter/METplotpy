@@ -405,8 +405,9 @@ class BasePlot:
         """
         ax.set_xlabel(self.config_obj.xaxis, fontproperties=fontproperties,
                       labelpad=abs(self.config_obj.parameters['xlab_offset']) * constants.PIXELS_TO_POINTS)
-        xtick_locs = np.arange(len(self.config_obj.indy_label))
-        ax.set_xticks(xtick_locs, self.config_obj.indy_label)
+        if self.config_obj.indy_label:
+            xtick_locs = np.arange(len(self.config_obj.indy_label))
+            ax.set_xticks(xtick_locs, self.config_obj.indy_label)
         ax.tick_params(axis="x", direction="in", which="both", labelrotation=self.config_obj.x_tickangle)
         if self.config_obj.grid_on:
             ax.grid(True, which='major', axis='x', color=self.config_obj.blended_grid_col,
