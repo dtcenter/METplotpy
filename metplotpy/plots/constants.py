@@ -66,10 +66,27 @@ DEFAULT_TITLE_OFFSET = 0.02
 
 AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", ".", "h"]
 
-PCH_TO_MATPLOTLIB_MARKER = {'20': '.', '19': 'o', '17': '^', '1': 'H',
-                            '18': 'd', '15': 's', 'small circle': '.',
-                            'circle': 'o', 'square': 's',
-                            'triangle': '^', 'rhombus': 'd', 'ring': 'h'}
+PCH_TO_MATPLOTLIB_MARKER = {
+    # R plotting characters
+    '20': '.',
+    '19': 'o',
+    '17': '^',
+    '1': 'H',
+    '18': 'd',
+    '15': 's',
+    'small circle': 'o', # changed from .
+    'circle': 'o',
+    'square': 's',
+    'triangle': '^',
+    'rhombus': 'd',
+    'ring': 'h',
+    # plotly marker strings
+    'circle-open': 'o', # H?
+    'triangle-up': '^',
+    'diamond': 'd',
+    'hexagon': 'h',
+    'asterisk-open': '*', # .?
+}
 
 # approximated from plotly marker size to matplotlib marker size
 PCH_TO_MATPLOTLIB_MARKER_SIZE = {'.': 14, 'o': 36, 's': 20, '^': 36, 'd': 20, 'H': 28}
