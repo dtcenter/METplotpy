@@ -94,18 +94,16 @@ PCH_TO_MATPLOTLIB_MARKER_SIZE = {'.': 14, 'o': 36, 's': 20, '^': 36, 'd': 20, 'H
 XAXIS_ORIENTATION = {0: 0, 1: 0, 2: 270, 3: 270}
 YAXIS_ORIENTATION = {0: -90, 1: 0, 2: 0, 3: -90}
 
-# approximated from plotly marker size to matplotlib marker size
-PCH_TO_MATPLOTLIB_MARKER_SIZE = {'.': 14, 'o': 36, 's': 20, '^': 36, 'd': 20, 'H': 28}
-
-# used for tick angles
-XAXIS_ORIENTATION = {0: 0, 1: 0, 2: 270, 3: 270}
-YAXIS_ORIENTATION = {0: -90, 1: 0, 2: 0, 3: -90}
-
 # Caption weights supported in Matplotlib are normal, italic and oblique.
 # Map these onto the MetViewer requested values of 1 (normal), 2 (bold),
 # 3 (italic), 4 (bold italic), and 5 (symbol) using a dictionary
-MV_TO_MPL_CAPTION_STYLE = {1:('normal', 'normal'), 2:('normal','bold'), 3:('italic', 'normal')
-    , 4:('italic', 'bold'),5:('oblique','normal')}
+MV_TO_MPL_CAPTION_STYLE = {
+    1: ('normal', 'normal'),
+    2: ('normal','bold'),
+    3: ('italic', 'normal'),
+    4: ('italic', 'bold'),
+    5: ('oblique','normal'),
+}
 
 # Matplotlib constants
 MPL_FONT_SIZE_DEFAULT = 11
