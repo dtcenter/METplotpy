@@ -117,29 +117,7 @@ class RevisionBox(Box):
 
         self.logger.info(f"Begin creating the figure: {datetime.now()}")
 
-        annotation_text_all = ''
-        for inx, series in enumerate(self.series_list):
-            # Don't generate the plot for this series if
-            # it isn't requested (as set in the config file)
-            if not series.plot_disp:
-                continue
-
-            #self._draw_series(series)
-            # construct annotation text
-            annotation_text = series.user_legends + ': '
-            if self.config_obj.revision_run:
-                annotation_text = annotation_text + 'WW Runs Test:' + series.series_points['revision_run'] + ' '
-
-            if self.config_obj.revision_ac:
-                annotation_text = annotation_text + "Auto-Corr Test: p=" \
-                                  + series.series_points['auto_cor_p'] \
-                                  + ", r=" + series.series_points['auto_cor_r']
-
-            annotation_text_all = annotation_text_all + annotation_text
-            if inx < len(self.series_list) - 1:
-                annotation_text_all = annotation_text_all + '<br>'
-
-        self.config_obj.plot_caption = annotation_text_all
+        self._create_annotation()
 
         # set the x-axis labels to match the user legends
         self.config_obj.indy_label = self.config_obj.user_legends
@@ -147,6 +125,46 @@ class RevisionBox(Box):
         super()._create_figure()
 
         self.logger.info(f"Finished creating figure: {datetime.now()}")
+
+    def _create_annotation(self):
+        if not self.config_obj.revision_run and not self.config_obj.revision_ac:
+            self.config_obj.plot_caption = None
+            return
+
+        annotation_text_all = ''
+        for inx, series in enumerate(self.series_list):
+            # Don't generate the plot for this series if
+            # it isn't requested (as set in the config file)
+            if not series.plot_disp:
+                continue
+
+            # construct annotation text
+            annotation_text = f"{series.user_legends}: "
+            if self.config_obj.revision_run:
+                annotation_text += f"WW Runs Test: {series.series_points['revision_run']} "
+
+            if self.config_obj.revision_ac:
+                annotation_text += (
+                    f"Auto-Corr Test: p={series.series_points['auto_cor_p']}, "
+                    f"r={series.series_points['auto_cor_r']}"
+                )
+
+            annotation_text_all += annotation_text
+            if inx < len(self.series_list) - 1:
+                annotation_text_all += '\n'
+
+        self.config_obj.plot_caption = annotation_text_all
+
+    def _add_caption(self, plt, font_properties):
+        """
+        Adds a caption to the top left of the plot, just below the title.
+        Always uses the same position regardless of the config file settings.
+        """
+        if self.config_obj.plot_caption:
+            plt.figtext(0.06, 0.90, self.config_obj.plot_caption,
+                        fontproperties=font_properties,
+                        color=self.config_obj.parameters['caption_col'],
+                        ha='left')
 
     def _add_custom_lines(self, ax):
         return
