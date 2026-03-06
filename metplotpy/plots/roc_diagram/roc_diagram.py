@@ -19,12 +19,12 @@ import re
 import warnings
 
 import pandas as pd
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
-from metplotpy.plots import util_plotly as util
-from metplotpy.plots import constants_plotly as constants
-from metplotpy.plots.base_plot_plotly import BasePlot
+from matplotlib import pyplot as plt
+
+from metplotpy.plots import util
+from metplotpy.plots import constants
+from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.roc_diagram.roc_diagram_config import ROCDiagramConfig
 from metplotpy.plots.roc_diagram.roc_diagram_series import ROCDiagramSeries
 
@@ -94,16 +94,11 @@ class ROCDiagram(BasePlot):
         # line width, and criteria needed to subset the input dataframe.
         self.series_list = self._create_series(self.input_df)
 
-        # create figure
-        # pylint:disable=assignment-from-no-return
-        # Need to have a self.figure that we can pass along to
-        # the methods in base_plot.py (BasePlot class methods) to
-        # create binary versions of the plot.
-        self.figure = self._create_figure()
+        self._create_figure()
 
         # add custom lines
-        if len(self.series_list) > 0:
-            self._add_lines(self.config_obj)
+        # if len(self.series_list) > 0:
+        #     self._add_lines(self.config_obj)
 
     def _read_input_data(self) -> pd.DataFrame:
         """
@@ -207,8 +202,7 @@ class ROCDiagram(BasePlot):
                 if self.config_obj.linetype_ctc:
                     if df_sum_main is None:
                         df_sum_main = pd.DataFrame(columns=['fcst_thresh', 'fy_oy', 'fy_on', 'fn_oy', 'fn_on'])
-                elif self.config_obj.linetype_pct:
-                    if df_sum_main is None:
+                elif self.config_obj.linetype_pct and df_sum_main is None:
                         df_sum_main = pd.DataFrame(columns=['thresh_i', 'i_value', 'on_i', 'oy_i'])
 
                 df_sum_main = pd.concat([df_sum_main, series.series_points[3]], axis=0)
@@ -257,226 +251,112 @@ class ROCDiagram(BasePlot):
 
         return series_list
 
-    def remove_file(self):
-        """
-           Removes previously made image file .  Invoked by the parent class before self.output_file
-           attribute can be created, but overridden here.
-        """
-
-        image_name = self.get_config_value('plot_filename')
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-        # remove the old file if it exist
-        if os.path.exists(image_name):
-            os.remove(image_name)
-
     def _create_figure(self):
         """
         Generate the performance diagram of varying number of series with POD and 1-FAR
         (Success Rate) values.  Hard-coding of labels for CSI lines and bias lines,
         and contour colors for the CSI curves.
 
-
         Args:
-
 
         Returns:
              ROC diagram
         """
-
         self.logger.info(f"Begin creating figure: {datetime.now()}")
-        fig = make_subplots(specs=[[{"secondary_y": True}]])
 
-        # Set plot height and width in pixel value
-        width = self.config_obj.plot_width
-        height = self.config_obj.plot_height
-        # fig.update_layout(width=width, height=height, paper_bgcolor="white")
-        fig.update_layout(width=width, height=height)
+        # create and draw the plot
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
-        # Add figure title
-        # fig.update_layout(
-        #     title={'text': self.config_obj.title,
-        #            'y': 0.95,
-        #            'x': 0.5,
-        #            'xanchor': "center",
-        #            'yanchor': "top"},
-        #     plot_bgcolor="#FFF"
-        #
-        # )
+        wts_size_styles = self.get_weights_size_styles()
 
-        # create title
-        title = {'text': util.apply_weight_style(self.config_obj.title,
-                                                 self.config_obj.parameters['title_weight']),
-                 'font': {
-                     'size': self.config_obj.title_font_size,
-                 },
-                 'y': self.config_obj.title_offset,
-                 'x': self.config_obj.parameters['title_align'],
-                 'xanchor': 'center',
-                 'yanchor': 'top',
-                 'xref': 'paper'
-                 }
-        fig.update_layout(title=title, plot_bgcolor="#FFF")
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
 
-        # fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="black", linewidth=2, showgrid=False,
-        #                  range=[0.0, 1.0], dtick=0.1)
+        self._add_series(ax)
 
-        # Set y-axes titles
-        # fig.update_yaxes(title_text="<b>primary</b> yaxis title", secondary_y=False)
-        fig.update_yaxes(title_text=self.config_obj.yaxis_1, secondary_y=False, linecolor="black", linewidth=2,
-                         showgrid=False, zeroline=False, range=[0.0, 1.0], dtick=0.1)
-        # fig.update_yaxes(title_text=self.config_obj.yaxis_2, secondary_y=True, linecolor="black", linewidth=2,
-        #                  showgrid=False, zeroline=False, range=[0.0, 1.0], dtick=0.1)
+        self._add_xaxis(ax, wts_size_styles['xlab'])
+        self._add_yaxis(ax, wts_size_styles['ylab'])
+
+        self._add_legend(ax)
+
+        # add custom lines if lines are defined in config
+        if len(self.series_list) > 0:
+            self._add_lines(ax, self.config_obj, self.config_obj.indy_vals)
+
+        plt.tight_layout()
+        self.logger.info(f"Finished creating figure: {datetime.now()}")
 
         # set the range of the x-axis and y-axis to range from 0 to 1
-        fig.update_layout(xaxis=dict(range=[0., 1.]))
-        fig.update_layout(yaxis=dict(range=[0., 1.]))
+        #fig.update_layout(xaxis=dict(range=[0., 1.]))
+        #fig.update_layout(yaxis=dict(range=[0., 1.]))
 
-        # plot the no-skill line
-        x = [0., 1.]
-        y = [0., 1.]
-        fig.add_trace(go.Scatter(x=x, y=y, line=dict(color='grey',
-                                                     width=1.2,
-                                                     dash='dash'
-                                                     ),
-                                 name='no skill line',
-                                 showlegend=False
-                                 ))
 
         # style the legend box
-        if self.config_obj.draw_box:
-            fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
-                                          y=self.config_obj.bbox_y,
-                                          bordercolor="black",
-                                          borderwidth=2
-                                          ))
-
-        else:
-            fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
-                                          y=self.config_obj.bbox_y
-                                          ))
+        # if self.config_obj.draw_box:
+        #     fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
+        #                                   y=self.config_obj.bbox_y,
+        #                                   bordercolor="black",
+        #                                   borderwidth=2
+        #                                   ))
+        #
+        # else:
+        #     fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
+        #                                   y=self.config_obj.bbox_y
+        #                                   ))
 
         # can't support number of columns in legend, can only choose
         # between horizontal or vertical alignment of legend labels
         # so only support vertical legends (ie num columns = 1)
-        fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
-                                      y=self.config_obj.bbox_y,
-                                      bordercolor="black",
-                                      borderwidth=2
-                                      ))
-
-        # caption styling
-        annotation = [
-            {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-                                             self.config_obj.parameters['caption_weight']),
-             'align': 'left',
-             'showarrow': False,
-             'xref': 'paper',
-             'yref': 'paper',
-             'x': self.config_obj.parameters['caption_align'],
-             'y': self.config_obj.caption_offset,
-             'font': {
-                 'size': self.config_obj.caption_size,
-                 'color': self.config_obj.parameters['caption_col']
-             }
-             }]
-
-        # Set x-axis title
-        # fig.update_xaxes(title_text=self.config_obj.xaxis, linecolor="black", linewidth=2, showgrid=False,
-        #                  dtick=0.1, tickmode='linear', tick0=0.0)
-        fig.update_xaxes(title_text=self.config_obj.xaxis,
-                         linecolor=constants.PLOTLY_AXIS_LINE_COLOR,
-                         linewidth=constants.PLOTLY_AXIS_LINE_WIDTH,
-                         showgrid=False,
-                         dtick=0.1,
-                         tick0=0.0,
-                         tickmode='linear',
-                         zeroline=False,
-                         title_font={
-                             'size': self.config_obj.x_title_font_size
-                         },
-                         ticks="inside",
-                         title_standoff=abs(self.config_obj.parameters['xlab_offset']),
-                         tickangle=self.config_obj.x_tickangle,
-                         tickfont={'size': self.config_obj.x_tickfont_size}
-                         )
-        fig.update_yaxes(title_text=
-                         util.apply_weight_style(self.config_obj.yaxis_1,
-                                                 self.config_obj.parameters['ylab_weight']),
-                         secondary_y=False,
-                         linecolor=constants.PLOTLY_AXIS_LINE_COLOR,
-                         linewidth=constants.PLOTLY_AXIS_LINE_WIDTH,
-                         zeroline=False,
-                         title_font={
-                             'size': self.config_obj.y_title_font_size
-                         },
-                         ticks="inside",
-                         title_standoff=abs(self.config_obj.parameters['ylab_offset']),
-                         tickangle=self.config_obj.y_tickangle,
-                         tickfont={'size': self.config_obj.y_tickfont_size}
-                         )
-
-        fig.update_layout(annotations=annotation)
-
-        thresh_list = []
+        # fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
+        #                               y=self.config_obj.bbox_y,
+        #                               bordercolor="black",
+        #                               borderwidth=2
+        #                               ))
 
 
-
-
-        # "Dump" False Detection Rate (POFD) and PODY points to an output
-        # file based on the output image filename (useful in debugging)
-        # This output file is used by METviewer and not necessary for other uses.
-        if self.config_obj.dump_points_1 == True :
-            self.write_output_file()
+    def _add_series(self, ax):
+        # plot the no-skill line
+        ax.plot([0., 1.], [0., 1.], color='grey', zorder=0, linewidth=1.2, linestyle='--')
 
         for idx, series in enumerate(self.series_list):
-            for i, thresh_val in enumerate(series.series_points[2]):
-                thresh_list.append(str(thresh_val))
-
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
-            if series.plot_disp:
-                pofd_points = series.series_points[0]
-                pody_points = series.series_points[1]
-                legend_label = self.config_obj.user_legends[idx]
+            if not series.plot_disp:
+                continue
 
-                # add the plot
-                self.logger.info("Adding traces for markers and legend.")
-                fig.add_trace(
-                    go.Scatter(mode="lines+markers", x=pofd_points, y=pody_points,
-                               showlegend=self.config_obj.show_legend[series.idx] == 1,
-                               text=thresh_list, textposition="top right", name=legend_label,
-                               line=dict(color=self.config_obj.colors_list[idx],
-                                         width=self.config_obj.linewidth_list[idx]),
-                               marker_symbol=self.config_obj.marker_list[idx]),
-                    secondary_y=False
+            pofd_points = series.series_points[0]
+            pody_points = series.series_points[1]
+
+            # set arguments for the plot
+            plot_args = {
+                'marker': self.config_obj.marker_list[idx],
+                'label': self.config_obj.user_legends[idx],
+                'color': self.config_obj.colors_list[idx],
+                'linewidth': self.config_obj.linewidth_list[idx],
+            }
+            if self.config_obj.marker_open_list[idx]:
+                plot_args['markerfacecolor'] = 'none'
+                plot_args['markeredgecolor'] = self.config_obj.colors_list[idx]
+
+            ax.plot(pofd_points, pody_points, **plot_args)
+
+            # add thresholds if defined and requested
+            if not self.config_obj.add_point_thresholds:
+                continue
+
+            for pofd_point, pody_point, thresh_val in zip(pofd_points, pody_points, series.series_points[2]):
+
+                if not thresh_val or pofd_point is None or pody_point is None:
+                    continue
+
+                ax.annotate(
+                    str(thresh_val),
+                    (pofd_point, pody_point),
+                    xytext=(-10, 2),
+                    textcoords="offset points",
+                    ha='left',
+                    va='bottom',
                 )
-
-
-            def add_trace_copy(trace):
-                """Adds separate traces for markers and a legend.
-                   This is a fix for not printing 'Aa' in the legend
-                    Args:
-                    Returns:
-                """
-
-                fig.add_traces(trace)
-                new_trace = fig.data[-1]
-                # if self.config_obj.add_point_thresholds:
-                #     new_trace.update(textfont_color=trace.marker.color, textposition='top center',
-                #                  mode="text", showlegend=False)
-                new_trace.update(textfont_color=trace.marker.color, textposition='top center',
-                                 mode="text", showlegend=False)
-                trace.update(mode="lines+markers")
-
-            if self.config_obj.add_point_thresholds:
-                fig.for_each_trace(add_trace_copy)
-
-        self.logger.info(f"Finished creating figure: {datetime.now()}")
-
-        return fig
-
-
 
     def write_output_file(self):
         """
@@ -484,61 +364,50 @@ class ROCDiagram(BasePlot):
             being plotted
 
         """
+        if not self.config_obj.dump_points_1:
+            return
 
-        self.logger.info("Writing output file")
         # if points_path parameter doesn't exist,
         # open file, name it based on the stat_input config setting,
         # (the input data file) except replace the .data
         # extension with .points1 extension
         # otherwise use points_path path
         match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-        if self.config_obj.dump_points_1 is True and match:
-            filename = match.group(1)
-            # replace the default path with the custom
-            if self.config_obj.points_path is not None:
-                # get the file name
-                path = filename.split(os.path.sep)
-                if len(path) > 0:
-                    filename = path[-1]
-                else:
-                    filename = '.' + os.path.sep
-                filename = self.config_obj.points_path + os.path.sep + filename
+        if not match:
+            return
 
-            output_file = filename + '.points1'
-            os.makedirs(os.path.dirname(output_file), exist_ok=True)
-            if os.path.exists(output_file):
-                os.remove(output_file)
+        self.logger.info("Writing output file")
+        filename = match.group(1)
+        # replace the default path with the custom
+        if self.config_obj.points_path is not None:
+            # get the file name
+            path = filename.split(os.path.sep)
+            if len(path) > 0:
+                filename = path[-1]
+            else:
+                filename = '.' + os.path.sep
+            filename = self.config_obj.points_path + os.path.sep + filename
 
-            with open(output_file, 'a') as fileobj:
-                header_str = "pofd\t pody\n"
-                fileobj.write(header_str)
-                all_pody = []
-                all_pofd = []
-                for series in self.series_list:
-                    pody_points = series.series_points[1]
-                    pofd_points = series.series_points[0]
-                    all_pody.extend(pody_points)
-                    all_pofd.extend(pofd_points)
+        output_file = filename + '.points1'
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        if os.path.exists(output_file):
+            os.remove(output_file)
 
-                all_points = zip(all_pofd, all_pody)
-                for idx, pts in enumerate(all_points):
-                    data_str = str(pts[0]) + "\t" + str(pts[1]) + "\n"
-                    fileobj.write(data_str)
+        with open(output_file, 'a') as fileobj:
+            header_str = "pofd\t pody\n"
+            fileobj.write(header_str)
+            all_pody = []
+            all_pofd = []
+            for series in self.series_list:
+                pody_points = series.series_points[1]
+                pofd_points = series.series_points[0]
+                all_pody.extend(pody_points)
+                all_pofd.extend(pofd_points)
 
-
-    def write_html(self) -> None:
-        """
-        Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
-        """
-
-        self.logger.info("Writing HTML file")
-        if self.config_obj.create_html is True:
-            # construct the fle name from plot_filename
-            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-            html_name = f"{base_name}.html"
-
-            # save html
-            self.figure.write_html(html_name, include_plotlyjs=False)
+            all_points = zip(all_pofd, all_pody)
+            for idx, pts in enumerate(all_points):
+                data_str = str(pts[0]) + "\t" + str(pts[1]) + "\n"
+                fileobj.write(data_str)
 
 
 def main(config_filename=None):
@@ -552,17 +421,7 @@ def main(config_filename=None):
                 @param config_filename: default is None, the name of the custom config file to apply
             Returns:
         """
-    params = util.get_params(config_filename)
-    try:
-        r = ROCDiagram(params)
-        r.save_to_file()
-
-        r.write_html()
-        r.logger.info(f"Finished ROC diagram: {datetime.now()}")
-
-        #r.show_in_browser()
-    except ValueError as ve:
-        print(ve)
+    util.make_plot(config_filename, ROCDiagram)
 
 
 if __name__ == "__main__":

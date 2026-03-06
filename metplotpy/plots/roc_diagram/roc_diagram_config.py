@@ -15,9 +15,9 @@ Holds values set in the ROC config file(s)
 """
 __author__ = 'Minna Win'
 
-from ..config_plotly import Config
-from .. import util_plotly as util
-from .. import constants_plotly as constants
+from ..config import Config
+from .. import util
+from .. import constants
 
 class ROCDiagramConfig(Config):
     def __init__(self, parameters):
@@ -63,8 +63,8 @@ class ROCDiagramConfig(Config):
         self.linetype_pct = self.get_config_value('roc_pct')
         # Supported values for stat_curve are none, mean, and median
         self.plot_stat = self.get_config_value('stat_curve')
-        self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
-        self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
+        self.plot_width = self.calculate_plot_dimension('plot_width')
+        self.plot_height = self.calculate_plot_dimension('plot_height')
         self.plot_resolution = self._get_plot_resolution()
         reverse_ctc_connection = str(self.get_config_value('reverse_connection_order'))
         if reverse_ctc_connection.upper() == "FALSE":
@@ -74,21 +74,21 @@ class ROCDiagramConfig(Config):
 
         # title parameters
         self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
-        self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
+        self.title_offset = 1.0 + abs(self.parameters['title_offset']) * constants.DEFAULT_TITLE_OFFSET
         self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         # Caption settings
         self.caption = self.get_config_value('plot_caption')
-        self.caption_weight = self.get_config_value('caption_weight')
         self.caption_color = self.get_config_value('caption_col')
         # caption size is a magnification value
         self.caption_size = float(self.get_config_value('caption_size')) * constants.DEFAULT_CAPTION_FONTSIZE
-        self.caption_offset = self.get_config_value('caption_offset') - 3.1
+        self.caption_offset = self.get_config_value('caption_offset') * constants.DEFAULT_CAPTION_Y_OFFSET
         self.caption_align = self.get_config_value('caption_align')
         self.caption = self.get_config_value('plot_caption')
 
         self.colors_list = self._get_colors()
         self.marker_list = self._get_markers()
+        self.marker_open_list = self._get_markers_open()
         self.linewidth_list = self._get_linewidths()
         self.linestyles_list = self._get_linestyles()
         self.user_legends = self._get_user_legends("ROC Curve")
@@ -107,14 +107,17 @@ class ROCDiagramConfig(Config):
         legend_magnification = user_settings['legend_size']
         self.legend_size = int(constants.DEFAULT_LEGEND_FONTSIZE * legend_magnification)
         self.legend_ncol = self.get_config_value('legend_ncol')
+        self.legend_orientation = 'v' # TODO: should this be always vertical?
         legend_box = self.get_config_value('legend_box').lower()
         if legend_box == 'n':
             # Don't draw a box around legend labels
             self.draw_box = False
+            self.legend_border_width = 0
         else:
             # Other choice is 'o'
             # Enclose legend labels in a box
             self.draw_box = True
+            self.legend_border_width = 2
 
         # x-axis parameters
         self.x_title_font_size = self.parameters['xlab_size'] * constants.DEFAULT_TITLE_FONT_SIZE
@@ -122,7 +125,6 @@ class ROCDiagramConfig(Config):
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
         self.x_tickfont_size = self.parameters['xtlab_size'] * constants.DEFAULT_TITLE_FONT_SIZE
-        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         # y-axis parameters
         self.y_tickangle = self.parameters['ytlab_orient']
@@ -131,8 +133,8 @@ class ROCDiagramConfig(Config):
         self.y_tickfont_size = self.parameters['ytlab_size'] * constants.DEFAULT_TITLE_FONT_SIZE
 
 
-        self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
-        self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
+        self.plot_width = self.calculate_plot_dimension('plot_width')
+        self.plot_height = self.calculate_plot_dimension('plot_height')
         self.show_legend = self._get_show_legend()
 
         if 'summary_curve' in self.parameters.keys():
@@ -278,34 +280,3 @@ class ROCDiagramConfig(Config):
                 return True
             else:
                 return False
-
-
-    def _get_markers(self):
-        """
-           Retrieve all the markers. Convert marker names from
-           the config file into plotly python's marker names.
-
-           Args:
-
-           Returns:
-               markers: a list of the plotly markers
-        """
-        markers = self.get_config_value('series_symbols')
-        markers_list = []
-        for marker in markers:
-            if marker in constants.AVAILABLE_PLOTLY_MARKERS_LIST:
-                # the recognized plotly marker names:
-                # circle-open (for small circle), circle, triangle-up,
-                # square, diamond, or hexagon
-                markers_list.append(marker)
-            else:
-                # markers are indicated by name: circle-open (for small circle),
-                # circle, triangle-up,
-                # diamond, hexagon, square
-                m = marker.lower()
-                markers_list.append(constants.PCH_TO_PLOTLY_MARKER[m])
-        markers_list_ordered = self.create_list_by_series_ordering(markers_list)
-        return markers_list_ordered
-
-
-
