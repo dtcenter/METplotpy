@@ -6,7 +6,7 @@ box_outline: 'True'
 box_pts: 'False'
 caption_align: 0.0
 caption_col: '#333333'
-caption_offset: 3.0
+caption_offset: 8.0
 caption_size: 0.8
 caption_weight: 1
 cex: 1
@@ -65,7 +65,7 @@ legend_box: o
 legend_inset:
   x: 0.0
   y: -0.25
-legend_ncol: 3
+legend_ncol: 1
 legend_size: 0.8
 line_type: None
 list_stat_1:
@@ -186,7 +186,7 @@ plot_filename: !ENV '${TEST_OUTPUT}/box.png'
 #  Debug and info log level will produce more log output.
 #log_level: WARNING
 show_legend:
-  -True
-  -True
-  -True
-  -True
+- True
+- True
+- True
+- True

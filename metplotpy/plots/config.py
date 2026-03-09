@@ -17,6 +17,7 @@ __author__ = 'Minna Win'
 
 import itertools
 from typing import Union
+from datetime import datetime
 
 import metcalcpy.util.utils as utils
 import metplotpy.plots.util
@@ -45,8 +46,10 @@ class Config:
         self.title_font = constants.DEFAULT_TITLE_FONT
         self.title_color = constants.DEFAULT_TITLE_COLOR
         self.xaxis = self.get_config_value('xaxis')
+        self.xaxis_reverse = False
         self.yaxis_1 = self.get_config_value('yaxis_1')
         self.yaxis_2 = self.get_config_value('yaxis_2')
+        self.sync_yaxes = False
         self.title = self.get_config_value('title')
         self.use_ee = self._get_bool('event_equal')
         self.indy_vals = self.get_config_value('indy_vals')
@@ -59,7 +62,7 @@ class Config:
         self.plot_height = self.calculate_plot_dimension('plot_height' )
         self.plot_caption = self.get_config_value('plot_caption')
         # plain text, bold, italic, bold italic are choices in METviewer UI
-        self.caption_weight = self.get_config_value('caption_weight')
+        self.caption_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.get_config_value('caption_weight')]
         self.caption_color = self.get_config_value('caption_col')
         # relative magnification
         self.caption_size = self.get_config_value('caption_size')
@@ -145,8 +148,10 @@ class Config:
         # re-create the METviewer xlab_weight. Use the
         # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
         # what was requested in METviewer
-        mv_xlab_weight = self.get_config_value('xlab_weight')
-        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_xlab_weight]
+        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.get_config_value('xlab_weight')]
+        self.x2lab_weight = self.get_config_value('x2lab_weight')
+        if self.x2lab_weight:
+            self.x2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.x2lab_weight]
 
         self.x_tickangle = self.parameters['xtlab_orient']
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
@@ -179,6 +184,9 @@ class Config:
         # what was requested in METviewer
         mv_ylab_weight = self.get_config_value('ylab_weight')
         self.ylab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_ylab_weight]
+        self.y2lab_weight = self.get_config_value('y2lab_weight')
+        if self.y2lab_weight:
+            self.y2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.y2lab_weight]
 
         # Adjust the caption left/right relative to the y-axis
         # METviewer default is set to 0, corresponds to y=0.05 in Matplotlib
@@ -227,11 +235,8 @@ class Config:
         self.legend_ncol = self.get_config_value('legend_ncol')
 
         # Don't draw a box around legend labels unless an 'o' is set
-        self.draw_box = False
         legend_box = self.get_config_value('legend_box').lower()
-
-        if legend_box == 'o':
-            self.draw_box = True
+        self.draw_box = legend_box == 'o'
 
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
@@ -403,6 +408,43 @@ class Config:
             all_fcst_vars = []
 
         return all_fcst_vars
+
+    def get_fcst_vars_dict(self, index: int) -> dict:
+        """Retrieve a dictionary of the fcst_var_val_{index} variable from the config.
+
+           Args:
+              index: identifier used to differentiate between fcst_var_val_1 and
+                     fcst_var_val_2 config settings
+           Returns:
+               a list containing all the fcst variables requested in the
+               fcst_var_val setting in the config file.  This will be
+               used to subset the input data that corresponds to a particular series.
+
+        """
+        if index not in (1, 2):
+            return {}
+
+        fcst_dict = self.get_config_value(f'fcst_var_val_{index}')
+        if fcst_dict is None:
+            return {}
+        return fcst_dict
+
+    def get_fcst_vars_keys(self, index: int) -> list:
+        """Retrieve a list of keys from the fcst_var_val_{index} variable from the config.
+
+           Args:
+              index: identifier used to differentiate between fcst_var_val_1 and
+                     fcst_var_val_2 config settings
+           Returns:
+               a list containing all the fcst variables requested in the
+               fcst_var_val setting in the config file.  This will be
+               used to subset the input data that corresponds to a particular series.
+
+        """
+        fcst_vars_dict = self.get_fcst_vars_dict(index)
+        if fcst_vars_dict is None:
+            return []
+        return list(fcst_vars_dict.keys())
 
     def _get_series_val_names(self) -> list:
         """
@@ -833,7 +875,7 @@ class Config:
          Args:
 
          Returns:
-             :return: list of lines properties  or None
+             :return: list of lines properties or None
          """
 
         # get property value from the parameters
@@ -869,4 +911,60 @@ class Config:
                 print(f'WARNING: custom line width {line["line_width"]} is invalid')
                 line['type'] = None
 
+            # convert line style to matplotlib format if necessary
+            if line['line_style'] in constants.LINESTYLE_BY_NAMES:
+                line['line_style'] = constants.LINESTYLE_BY_NAMES[line['line_style']]
+
         return lines
+
+    def config_consistency_check(self) -> None:
+        """Checks that the number of settings defined for
+            plot_disp, series_ordering, colors_list, user_legends, and show_legend
+           are consistent with number of series.
+
+           @raises ValueError if any of settings are inconsistent with the
+            number of series (as defined by the cross product of the model
+            and vx_mask defined in the series_val_1 setting)
+        """
+        lists_to_check = {
+            "plot_disp": self.plot_disp,
+            "series_ordering": self.series_ordering,
+            "colors_list": self.colors_list,
+            "user_legends": self.user_legends,
+            "show_legend": self.show_legend,
+        }
+        self._config_compare_lists_to_num_series(lists_to_check)
+
+    def _config_compare_lists_to_num_series(self, lists_to_check: dict) -> list:
+        """
+            Checks that the number of settings defined for lists are consistent
+            with the number of series to plot.
+
+            Args:
+                @param lists_to_check: dictionary with name of list as key and
+                actual list to check as value.
+
+            @raises ValueError if any settings are inconsistent with the number of series
+        """
+        self.logger.info(f"Checking consistency of config settings relative to number of series {datetime.now()}")
+
+        # Determine the number of series based on the number of
+        # permutations from the series_var setting in the config file
+        error_messages = []
+        for name, list_to_check in lists_to_check.items():
+
+            if len(list_to_check) == self.num_series:
+                continue
+
+            error_messages.append(f"{name} ({len(list_to_check)}) does not match number of series ({self.num_series})")
+
+        if error_messages:
+            msg = (
+                "The number of series defined by series_val_1/2 and derived curves is "
+                "inconsistent with the number of settings required for describing each series."
+            )
+            msg += "\n" + "\n".join(error_messages)
+            self.logger.error(msg)
+            raise ValueError(msg)
+
+        self.logger.info(f"Config consistency check completed successfully: {datetime.now()}")

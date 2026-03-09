@@ -16,7 +16,7 @@ fixed_vars_vals_input: {}
 grid_col: '#cccccc'
 grid_lty: 3
 grid_lwd: 1
-grid_on: 'True'
+grid_on: 'False'
 grid_x: listX
 indy_label: []
 indy_plot_val: []
@@ -96,4 +96,4 @@ ytlab_size: 1
 #  Debug and info log level will produce more log output.
 #log_level: WARNING
 show_legend:
-  -True
+- True

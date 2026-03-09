@@ -17,9 +17,9 @@ __author__ = 'Tatiana Burek'
 
 import itertools
 
-from ..config_plotly import Config
-from .. import constants_plotly as constants
-from .. import util_plotly as util
+from ..config import Config
+from .. import constants as constants
+from .. import util as util
 
 import metcalcpy.util.utils as utils
 
@@ -57,12 +57,12 @@ class BoxConfig(Config):
         # caption parameters
         self.caption_size = int(constants.DEFAULT_CAPTION_FONTSIZE
                                 * self.get_config_value('caption_size'))
-        self.caption_offset = self.parameters['caption_offset'] - 3.1
+        self.caption_offset = self.parameters['caption_offset'] * constants.DEFAULT_CAPTION_Y_OFFSET
 
         ##############################################
         # title parameters
         self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
-        self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
+        self.title_offset = 1.0 + abs(self.parameters['title_offset']) * constants.DEFAULT_TITLE_OFFSET
         self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
@@ -73,12 +73,18 @@ class BoxConfig(Config):
         self.y_tickfont_size = self.parameters['ytlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
-        # y2-axis parameters
-        self.y2_title_font_size = self.parameters['y2lab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.y2_tickangle = self.parameters['y2tlab_orient']
+        # y2-axis parameters (optional - not used for revision box)
+        self.y2_title_font_size = None
+        if self.parameters.get('y2lab_size'):
+            self.y2_title_font_size = self.parameters['y2lab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.y2_tickangle = self.parameters['y2tlab_orient'] if self.parameters.get('y2tlab_orient') else None
         if self.y2_tickangle in constants.YAXIS_ORIENTATION.keys():
             self.y2_tickangle = constants.YAXIS_ORIENTATION[self.y2_tickangle]
-        self.y2_tickfont_size = self.parameters['y2tlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.y2_tickfont_size = None
+        if self.parameters.get('y2tlab_size'):
+            self.y2_tickfont_size = self.parameters['y2tlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
         # x-axis parameters
@@ -87,15 +93,20 @@ class BoxConfig(Config):
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
         self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         ##############################################
-        # x2-axis parameters
-        self.x2_title_font_size = self.parameters['x2lab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.x2_tickangle = self.parameters['x2tlab_orient']
+        # x2-axis parameters (optional - not used for revision box)
+        self.x2_title_font_size = None
+        if self.parameters.get('x2lab_size'):
+            self.x2_title_font_size = self.parameters['x2lab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.x2_tickangle = self.parameters['x2tlab_orient'] if self.parameters.get('x2tlab_orient') else None
         if self.x2_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x2_tickangle = constants.XAXIS_ORIENTATION[self.x2_tickangle]
-        self.x2_tickfont_size = self.parameters['x2tlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
+
+        self.x2_tickfont_size = None
+        if self.parameters.get('x2tlab_size'):
+            self.x2_tickfont_size = self.parameters['x2tlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
         # series parameters
@@ -126,17 +137,24 @@ class BoxConfig(Config):
             self.legend_orientation = 'h'
         self.legend_border_color = "black"
 
-        box_outline = self._get_bool('box_outline')
-        if box_outline is True:
-            self.boxpoints = 'outliers'
-        else:
-            self.boxpoints = False
+        # Default Matplotlib values for whiskers
+        self.whis = 1.5
+        self.showfliers = True
+
         self.box_avg = self._get_bool('box_avg')
         self.box_notch = self._get_bool('box_notch')
 
         self.box_pts = self._get_bool('box_pts')
-        if self.box_pts is True:
+        if self.box_pts:
+            self.showfliers = False
             self.boxpoints = 'all'
+        elif self._get_bool('box_outline'):
+            self.whis = 2.5
+            self.boxpoints = 'outliers'
+        else:
+            self.whis = [0, 100]
+            self.showfliers = False
+            self.boxpoints = False
 
     def _get_plot_disp(self) -> list:
         """
@@ -208,38 +226,6 @@ class BoxConfig(Config):
             raise ValueError("An unsupported statistic was set for the plot_stat setting. "
                              " Supported values are sum, mean, and median.")
         return stat_to_plot
-
-    def _config_consistency_check(self) -> bool:
-        """
-            Checks that the number of settings defined for plot_ci,
-            plot_disp, series_order, user_legend colors, and series_symbols
-            are consistent.
-
-            Args:
-
-            Returns:
-                True if the number of settings for each of the above
-                settings is consistent with the number of
-                series (as defined by the cross product of the model
-                and vx_mask defined in the series_val_1 setting)
-
-        """
-        # Determine the number of series based on the number of
-        # permutations from the series_var setting in the
-        # config file
-
-        # Numbers of values for other settings for series
-        num_plot_disp = len(self.plot_disp)
-        num_series_ord = len(self.series_ordering)
-        num_colors = len(self.colors_list)
-        num_legends = len(self.user_legends)
-        status = False
-
-        if self.num_series == num_plot_disp == \
-                num_series_ord == num_colors \
-                == num_legends:
-            status = True
-        return status
 
     def _get_user_legends(self, legend_label_type: str = '') -> list:
         """
@@ -314,15 +300,18 @@ class BoxConfig(Config):
         :param axis: y-axis (1 or 2)
         :return: an array of series components tuples
         """
-        all_fields_values_orig = self.get_config_value('series_val_' + str(axis)).copy()
+        if not self.get_config_value(f'series_val_{axis}'):
+            return []
+
+        all_fields_values_orig = self.get_config_value(f'series_val_{axis}').copy()
         all_fields_values = {}
         for x in reversed(list(all_fields_values_orig.keys())):
             all_fields_values[x] = all_fields_values_orig.get(x)
 
-        if self._get_fcst_vars(axis):
-            all_fields_values['fcst_var'] = list(self._get_fcst_vars(axis).keys())
+        if self.get_fcst_vars_keys(axis):
+            all_fields_values['fcst_var'] = self.get_fcst_vars_keys(axis)
 
-        all_fields_values['stat_name'] = self.get_config_value('list_stat_' + str(axis))
+        all_fields_values['stat_name'] = self.get_config_value(f'list_stat_{axis}')
         return utils.create_permutations_mv(all_fields_values, 0)
 
     def _get_all_series_y(self, axis: int) -> list:
@@ -353,9 +342,9 @@ class BoxConfig(Config):
         """
         # Retrieve the lists from the series_val_1 dictionary
         series_vals_list = self.series_vals_1.copy()
-        if isinstance(self.fcst_var_val_1, list) is True:
+        if isinstance(self.fcst_var_val_1, list):
             fcst_vals = self.fcst_var_val_1
-        elif isinstance(self.fcst_var_val_1, dict) is True:
+        elif isinstance(self.fcst_var_val_1, dict):
             fcst_vals = list(self.fcst_var_val_1.values())
         else:
             fcst_vals = list()
@@ -369,9 +358,9 @@ class BoxConfig(Config):
 
         if self.series_vals_2:
             series_vals_list_2 = self.series_vals_2.copy()
-            if isinstance(self.fcst_var_val_2, list) is True:
+            if isinstance(self.fcst_var_val_2, list):
                 fcst_vals_2 = self.fcst_var_val_2
-            elif isinstance(self.fcst_var_val_2, dict) is True:
+            elif isinstance(self.fcst_var_val_2, dict):
                 fcst_vals_2 = list(self.fcst_var_val_2.values())
             else:
                 fcst_vals_2 = list()
@@ -382,7 +371,9 @@ class BoxConfig(Config):
 
         total = len(permutations)
         # add derived
-        total = total + len(self.get_config_value('derived_series_1'))
-        total = total + len(self.get_config_value('derived_series_2'))
+        if self.get_config_value('derived_series_1'):
+            total = total + len(self.get_config_value('derived_series_1'))
+        if self.get_config_value('derived_series_2'):
+            total = total + len(self.get_config_value('derived_series_2'))
 
         return total

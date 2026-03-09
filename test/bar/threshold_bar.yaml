@@ -166,4 +166,4 @@ ytlab_orient: 1
 ytlab_perp: 0.5
 ytlab_size: 3
 show_legend:
-  -True
+- True

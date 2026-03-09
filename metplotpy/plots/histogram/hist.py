@@ -21,17 +21,14 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from plotly.graph_objects import Figure
+from matplotlib import pyplot as plt
+from matplotlib.ticker import MultipleLocator
 
 from metplotpy.plots.histogram import hist_config
-from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
-    PLOTLY_PAPER_BGCOOR
+from metplotpy.plots.constants import MPL_DEFAULT_BAR_WIDTH
 from metplotpy.plots.histogram.hist_series import HistSeries
-from metplotpy.plots.base_plot_plotly import BasePlot
-from metplotpy.plots import util_plotly as util
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots import util
 
 import metcalcpy.util.utils as utils
 from metcalcpy.event_equalize import event_equalize
@@ -69,19 +66,8 @@ class Hist(BasePlot):
                               f" {datetime.now()}")
 
         # Check that we have all the necessary settings for each ser
-        self.logger.info(f"Performing consistency check for settings in config "
-                              f"file: {datetime.now()}")
-        is_config_consistent = self.config_obj._config_consistency_check()
-        self.logger.info(f"Finished with consistency check:  {datetime.now()}")
-        if not is_config_consistent:
-            error_msg = ("The number of ser defined by series_val_1 is"
-                        " inconsistent with the number of settings"
-                        " required for describing each ser. Please check"
-                        " the number of your configuration file's "
-                        " plot_disp, series_order, user_legend, show_legend"
-                        " colors settings.")
-            self.logger.error(f"ValueError: {error_msg}")
-            raise ValueError(error_msg)
+        self.config_obj.config_consistency_check()
+
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
@@ -256,199 +242,58 @@ class Hist(BasePlot):
         """
         self.logger.info(f"Begin creating the histogram figure: {datetime.now()}")
         # create and draw the plot
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_legend()
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
+
+        wts_size_styles = self.get_weights_size_styles()
+
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
 
         # add ser boxes
-        for series in self.series_list:
-            self._draw_series(series)
+        for idx, series in enumerate(self.series_list):
+            self._draw_series(ax, series, idx)
+
+        # use x points from first series if indy label is not set
+        if not self.config_obj.indy_label:
+            self.config_obj.indy_label = self._get_x_points(self.series_list[0])
+
+        self._add_xaxis(ax, wts_size_styles['xlab'])
+        #if self._get_dtick():
+        #    ax.xaxis.set_major_locator(MultipleLocator(self._get_dtick()))
+        self._add_yaxis(ax, wts_size_styles['ylab'])
 
         # add custom lines
         if len(self.series_list) > 0:
-            self._add_lines(
-                self.config_obj
-            )
+            self._add_lines(ax, self.config_obj)
 
-        self.logger.info(f"Finished creating the histogram figure: "
-                              f"{datetime.now()}")
+        self._add_legend(ax)
+        plt.tight_layout()
 
-    def _draw_series(self, series: HistSeries) -> None:
+        self.logger.info(f"Finished creating the histogram figure: {datetime.now()}")
+
+    def _draw_series(self, ax: plt.Axes, series: HistSeries, idx: int) -> None:
         """
         Draws the formatted Bar on the plot
         :param series: Bar ser object with data and parameters
         """
+        x_points = self._get_x_points(series)
+        y_points = series.series_points
 
-        # add the bar to plot
-        self.figure.add_trace(
-            go.Bar(
-                x=self._get_x_points(series),
-                y=series.series_points,
-                showlegend=self.config_obj.show_legend[series.idx] == 1,
-                name=self.config_obj.user_legends[series.idx],
-                marker_color=self.config_obj.colors_list[series.idx],
-                marker_line_color=self.config_obj.colors_list[series.idx]
-            )
+        base = np.arange(len(x_points))
+        n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
+        n = max(n_visible_series, 1)
+        width = MPL_DEFAULT_BAR_WIDTH / n
+        offset = (idx - (n - 1) / 2.0) * width
+        x_locs = base + offset
+
+        ax.bar(
+            x=x_locs, height=y_points, width=width, align='center',
+            color=self.config_obj.colors_list[series.idx],
+            label=self.config_obj.user_legends[series.idx],
         )
-
-    def _create_layout(self) -> Figure:
-        """
-        Creates a new layout based on the properties from the config file
-        including plots size, annotation and title
-
-        :return: Figure object
-        """
-        self.logger.info(f"Creating the layout: {datetime.now()}")
-
-        # create annotation
-        annotation = [
-            {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-                                             self.config_obj.parameters[
-                                                 'caption_weight']),
-             'align': 'left',
-             'showarrow': False,
-             'xref': 'paper',
-             'yref': 'paper',
-             'x': self.config_obj.parameters['caption_align'],
-             'y': self.config_obj.caption_offset,
-             'font': {
-                 'size': self.config_obj.caption_size,
-                 'color': self.config_obj.parameters['caption_col']
-             }
-             }]
-        # create title
-        title = {'text': util.apply_weight_style(self.config_obj.title,
-                                                 self.config_obj.parameters[
-                                                     'title_weight']),
-                 'font': {
-                     'size': self.config_obj.title_font_size,
-                 },
-                 'y': self.config_obj.title_offset,
-                 'x': self.config_obj.parameters['title_align'],
-                 'xanchor': 'center',
-                 'xref': 'paper'
-                 }
-
-        # create a layout without y2 axis
-        fig = make_subplots(specs=[[{"secondary_y": False}]])
-
-        # add size, annotation, title
-        fig.update_layout(
-            width=self.config_obj.plot_width,
-            height=self.config_obj.plot_height,
-            margin=self.config_obj.plot_margins,
-            paper_bgcolor=PLOTLY_PAPER_BGCOOR,
-            annotations=annotation,
-            title=title,
-            plot_bgcolor=PLOTLY_PAPER_BGCOOR
-        )
-
-        self.logger.info(f"Finished creating the layout: {datetime.now()}")
-        return fig
-
-    def _add_xaxis(self) -> None:
-        """
-        Configures and adds x-axis to the plot
-        """
-        self.logger.info(f"Configuring and adding the x-axis: {datetime.now()}")
-
-        self.figure.update_xaxes(title_text=self.config_obj.xaxis,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=False,
-                                 zeroline=False,
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.x_title_font_size
-                                 },
-                                 title_standoff=abs(
-                                     self.config_obj.parameters['xlab_offset']),
-                                 tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size},
-                                 dtick=self._get_dtick()
-                                 )
-        self.logger.info(f"Finished configuring and adding the x-axis:"
-                              f" {datetime.now()}")
-
-    def _add_yaxis(self) -> None:
-        """
-        Configures and adds y-axis to the plot
-        """
-
-        self.logger.info(f"Configuring and adding the y-axis: {datetime.now()}")
-        self.figure.update_yaxes(title_text=
-                                 util.apply_weight_style(self.config_obj.yaxis_1,
-                                                         self.config_obj.parameters[
-                                                             'ylab_weight']),
-                                 secondary_y=False,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 zeroline=False,
-                                 ticks="inside",
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.y_title_font_size
-                                 },
-                                 title_standoff=abs(
-                                     self.config_obj.parameters['ylab_offset']),
-                                 tickangle=self.config_obj.y_tickangle,
-                                 tickfont={'size': self.config_obj.y_tickfont_size}
-                                 )
-        self.logger.info(f"Finished configuring and adding the y-axis:"
-                              f" {datetime.now()}")
-
-    def _add_legend(self) -> None:
-        """
-        Creates a plot legend based on the properties from the config file
-        and attaches it to the initial Figure
-        """
-
-        self.logger.info(f"Adding the legend: {datetime.now()}")
-        self.figure.update_layout(legend={'x': self.config_obj.bbox_x,
-                                          'y': self.config_obj.bbox_y,
-                                          'xanchor': 'center',
-                                          'yanchor': 'top',
-                                          'bordercolor':
-                                              self.config_obj.legend_border_color,
-                                          'borderwidth':
-                                              self.config_obj.legend_border_width,
-                                          'orientation':
-                                              self.config_obj.legend_orientation,
-                                          'font': {
-                                              'size': self.config_obj.legend_size,
-                                              'color': "black"
-                                          }
-                                          })
-        self.logger.info(f"Finished adding the legend: {datetime.now()}")
-
-    def write_html(self) -> None:
-        """
-        Is needed - creates and saves the html representation of the plot WITHOUT
-        Plotly.js
-        """
-
-        self.logger.info(f"Begin writing html: {datetime.now()}")
-
-        if self.config_obj.create_html is True:
-            # construct the file name from plot_filename
-            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-            html_name = f"{base_name}.html"
-
-            # save html
-            self.figure.write_html(html_name, include_plotlyjs=False)
-
-        self.logger.info(f"Finished writing html: {datetime.now()}")
 
     def write_output_file(self) -> None:
-        """
-        saves box points to the file
-        """
+        """Saves box points to the file"""
         self.logger.info(f"Begin writing the output file: {datetime.now()}")
 
         # if points_path parameter doesn't exist,
@@ -479,6 +324,5 @@ class Hist(BasePlot):
                         map('{}\t'.format,
                             [round(num, 6) for num in series.series_points]))
                     file.writelines('\n')
-                file.close()
 
         self.logger.info(f"Finished writing the output file: {datetime.now()}")

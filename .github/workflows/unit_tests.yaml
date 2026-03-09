@@ -144,15 +144,24 @@ jobs:
           # Note: upload-artifact v4 nested paths differently, usually named by 'name' provided in upload
           OUTPUT_DIR="${{ runner.workspace }}/artifacts/test_output_${OUTPUT_BRANCH}_${{ matrix.python-version }}"
           TRUTH_DIR="${{ runner.workspace }}/artifacts/test_output_${TRUTH_BRANCH}_${{ matrix.python-version }}"
+          DIFF_DIR="${{ runner.workspace }}/diff_${{ matrix.python-version }}"
 
           echo "Comparing $OUTPUT_DIR and $TRUTH_DIR"
 
           # Ensure directories exist before running script
           if [ -d "$OUTPUT_DIR" ] && [ -d "$TRUTH_DIR" ]; then
             export METPLUS_DIFF_SKIP_KEYWORDS=".html,_rank.png"
-            python METplus/metplus/util/diff_util.py "$TRUTH_DIR" "$OUTPUT_DIR" --debug --save_diff
+            python METplus/metplus/util/diff_util.py "$TRUTH_DIR" "$OUTPUT_DIR" --debug --save_diff --diff_dir "$DIFF_DIR"
           else
             echo "One or both data directories are missing."
             ls ${{ runner.workspace }}/artifacts
             exit 1
           fi
+
+      - name: Upload diff artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diff_${{ matrix.python-version }}
+          path: ${{ runner.workspace }}/diff_${{ matrix.python-version }}
+          if-no-files-found: ignore

@@ -18,10 +18,15 @@ import logging
 import warnings
 import numpy as np
 from matplotlib.font_manager import FontProperties
+
+from matplotlib import pyplot as plt
+
 import yaml
 from typing import Union
 from metplotpy.plots.util import strtobool
 from .config import Config
+from . import constants
+
 
 turn_on_logging = strtobool('LOG_BASE_PLOT')
 # Log when Chrome is downloaded at runtime
@@ -183,7 +188,6 @@ class BasePlot:
 
         # For xaxis label
         xlab_property= FontProperties()
-
         xlab_property.set_size(self.config_obj.x_title_font_size)
         xlab_style = self.config_obj.xlab_weight[0]
         xlab_wt = self.config_obj.xlab_weight[1]
@@ -200,8 +204,32 @@ class BasePlot:
         ylab_property.set_weight(ylab_wt)
         weights_size_styles['ylab'] = ylab_property
 
-        return weights_size_styles
+        # For x2axis label if set
+        if (hasattr(self.config_obj, 'x2lab_weight')
+                and self.config_obj.x2lab_weight is not None
+                and hasattr(self.config_obj, 'x2_title_font_size')
+                and self.config_obj.x2_title_font_size is not None):
+            x2lab_property= FontProperties()
+            x2lab_property.set_size(self.config_obj.x2_title_font_size)
+            x2lab_style, x2lab_wt = self.config_obj.x2lab_weight
+            x2lab_property.set_style(x2lab_style)
+            x2lab_property.set_weight(x2lab_wt)
+            weights_size_styles['x2lab'] = x2lab_property
 
+
+        # For y2axis label if set
+        if (hasattr(self.config_obj, 'y2lab_weight')
+                and self.config_obj.y2lab_weight is not None
+                and hasattr(self.config_obj, 'y2_title_font_size')
+                and self.config_obj.y2_title_font_size is not None):
+            y2lab_property= FontProperties()
+            y2lab_property.set_size(self.config_obj.y2_title_font_size)
+            y2lab_style, y2lab_wt = self.config_obj.y2lab_weight
+            y2lab_property.set_style(y2lab_style)
+            y2lab_property.set_weight(y2lab_wt)
+            weights_size_styles['y2lab'] = y2lab_property
+
+        return weights_size_styles
 
 
     def get_config_value(self, *args):
@@ -260,39 +288,17 @@ class BasePlot:
 
         return None
 
-    def save_to_file(self):
-        """Saves the image to a file specified in the config file.
-         Prints a message if fails
-
-        Args:
-
-        Returns:
-
-        """
+    def save_to_file(self, **kwargs) -> None:
+        """!Saves the plot to a file.
+        Add any arguments passed to the function directly to plt.savefig."""
         image_name = self.get_config_value('plot_filename')
-
-        # Suppress deprecation warnings from third-party packages that are not in our control.
-        warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-        # Create the directory for the output plot if it doesn't already exist
-        dirname = os.path.dirname(os.path.abspath(image_name))
-        os.makedirs(dirname, exist_ok=True)
-        if self.figure:
-            try:
-                self.figure.write_image(image_name)
-            except FileNotFoundError:
-                self.logger.error(f"FileNotFoundError: Cannot save to file"
-                                  f" {image_name}")
-                # print("Can't save to file " + image_name)
-            except ResourceWarning:
-                self.logger.warning(f"ResourceWarning: in _kaleido"
-                                  f" {image_name}")
-
-            except ValueError as ex:
-                self.logger.error(f"ValueError: Could not save output file.")
-        else:
-            self.logger.error(f"The figure {dirname} cannot be saved.")
-            print("Oops!  The figure was not created. Can't save.")
+        os.makedirs(os.path.dirname(image_name), exist_ok=True)
+        try:
+            plt.savefig(image_name, dpi=self.get_config_value('plot_res'), **kwargs)
+        except Exception as ex:
+            self.logger.error(f"Failed to save plot to file: {ex}")
+        finally:
+            plt.close('all')
 
     def remove_file(self):
         """Removes previously made image file .
@@ -303,28 +309,27 @@ class BasePlot:
         if image_name is not None and os.path.exists(image_name):
             os.remove(image_name)
 
-
     @staticmethod
-    def add_horizontal_line(plt,y: float, line_properties: dict) -> None:
+    def add_horizontal_line(ax: plt.Axes, y: float, line_properties: dict) -> None:
         """Adds a horizontal line to the matplotlib plot
 
-        @param plt: Matplotlib pyplot object
+        @param ax: Matplotlib Axes object
         @param y y value for the line
         @param line_properties dictionary with line properties like color, width, dash
         @returns None
         """
-        plt.axhline(y=y, xmin=0, xmax=1, **line_properties)
+        ax.axhline(y=y, xmin=0, xmax=1, **line_properties)
 
     @staticmethod
-    def add_vertical_line(plt, x: float, line_properties: dict) -> None:
+    def add_vertical_line(ax: plt.Axes, x: float, line_properties: dict) -> None:
         """Adds a vertical line to the matplotlib plot
 
-        @param plt: Matplotlib pyplot object
+        @param ax: Matplotlib Axes object
         @param x x value for the line
         @param line_properties dictionary with line properties like color, width, dash
         @returns None
         """
-        plt.axvline(x=x, ymin=0, ymax=1, **line_properties)
+        ax.axvline(x=x, ymin=0, ymax=1, **line_properties)
 
     @staticmethod
     def get_array_dimensions(data):
@@ -340,3 +345,177 @@ class BasePlot:
 
         np_array = np.array(data)
         return len(np_array.shape)
+
+    def _add_title(self, ax, font_properties):
+        ax.set_title(
+            self.config_obj.title,
+            fontproperties=font_properties,
+            color=constants.DEFAULT_TITLE_COLOR,
+            pad=28,
+            x=self.config_obj.parameters['title_align'],
+            y=self.config_obj.title_offset,
+        )
+
+    def _add_caption(self, plt, font_properties):
+        y_pos = max(0.01, self.config_obj.caption_offset)
+        plt.figtext(
+            self.config_obj.caption_align, y_pos,
+            self.config_obj.plot_caption,
+            fontproperties=font_properties,
+            color=self.config_obj.parameters['caption_col'],
+        )
+
+    def _add_legend(self, ax: plt.Axes, handles_and_labels=None) -> None:
+        """Creates a plot legend based on the properties from the config file.
+        Note: This should be called after adding the series, because the plot
+        labels need to be created before including them in the legend.
+        """
+        orientation = "horizontal" if self.config_obj.legend_orientation == 'h' else "vertical"
+
+        handles, labels = ax.get_legend_handles_labels()
+        if handles_and_labels:
+            handles = [item[0] for item in handles_and_labels]
+            labels = [item[1] for item in handles_and_labels]
+
+        if not handles:
+            print("Warning: No labels found. Use ax.plot(..., label='name')")
+
+        # only show legend entries that have show_legend set to True
+        filtered_handles = [h for h, show in zip(handles, self.config_obj.show_legend) if show == 1]
+        filtered_labels = [l for l, show in zip(labels, self.config_obj.show_legend) if show == 1]
+
+        legend = ax.legend(
+            handles=filtered_handles,
+            labels=filtered_labels,
+            bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y),
+            loc='upper center',
+            edgecolor=self.config_obj.legend_border_color,
+            frameon=True,
+            ncol=max(1, len(handles)) if orientation == "horizontal" else 1,
+            fontsize=self.config_obj.legend_size,
+            labelcolor="black"
+        )
+        if legend:
+            frame = legend.get_frame()
+            frame.set_linewidth(self.config_obj.legend_border_width)
+
+    def _add_xaxis(self, ax: plt.Axes, fontproperties: FontProperties) -> None:
+        """
+        Configures and adds x-axis to the plot
+        """
+        ax.set_xlabel(self.config_obj.xaxis, fontproperties=fontproperties,
+                      labelpad=abs(self.config_obj.parameters['xlab_offset']) * constants.PIXELS_TO_POINTS)
+        xtick_locs = np.arange(len(self.config_obj.indy_label))
+        ax.set_xticks(xtick_locs, self.config_obj.indy_label)
+        ax.tick_params(axis="x", direction="in", which="both", labelrotation=self.config_obj.x_tickangle)
+        if self.config_obj.grid_on:
+            ax.grid(True, which='major', axis='x', color=self.config_obj.blended_grid_col,
+                    linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
+            ax.set_axisbelow(True)
+
+        if self.config_obj.xaxis_reverse:
+            ax.invert_xaxis()
+
+    def _add_yaxis(self, ax: plt.Axes, fontproperties: FontProperties) -> None:
+        """
+        Configures and adds y-axis to the plot
+        """
+        ax.set_ylabel(self.config_obj.yaxis_1, fontproperties=fontproperties,
+                      labelpad=abs(self.config_obj.parameters['ylab_offset']) * constants.PIXELS_TO_POINTS)
+        ax.tick_params(axis="y", direction="in", which="both", labelrotation=self.config_obj.y_tickangle)
+
+        # set y limits if defined in config or if min/max are provided
+        if len(self.config_obj.parameters['ylim']) > 0:
+            ax.set_ylim(self.config_obj.parameters['ylim'])
+
+        # add grid lines if requested
+        if self.config_obj.grid_on:
+            ax.grid(True, which='major', axis='y', color=self.config_obj.blended_grid_col, linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
+            ax.set_axisbelow(True)
+
+    def _add_x2axis(self, ax, n_stats, fontproperties: FontProperties) -> None:
+        """
+        Creates x2axis based on the properties from the config file.
+
+        Note: This function is based on logic from individual plots that show number of stats (n_stats)
+        on the top x-axis. This will need to be modified if other plots display a 2nd x-axis
+        with other information.
+
+        Note: this function may need to be called after adding the series, because some
+        plots add ticks that will conflict with the explicit x ticks set in this function.
+        Calliing this after will override the ticks and prevent a conflict.
+
+        :param n_stats labels for the axis
+        """
+        if not self.config_obj.show_nstats:
+            return
+
+        ax_top = ax.secondary_xaxis('top')
+        ax_top.set_xlabel('NStats', fontproperties=fontproperties,
+                          labelpad=abs(self.config_obj.parameters['x2lab_offset']) * constants.PIXELS_TO_POINTS)
+        current_locs = ax.get_xticks()
+        ax_top.set_xticks(current_locs, n_stats, size=self.config_obj.x2_tickfont_size)
+
+        # this doesn't appear to be working to add ticks at the top
+        ax_top.tick_params(axis="x", direction="in", labelrotation=self.config_obj.x2_tickangle)
+
+    def _add_y2axis(self, ax: plt.Axes, fontproperties: FontProperties):
+        """
+        Adds y2-axis if needed
+        """
+        if not self.config_obj.parameters['list_stat_2']:
+            return None
+
+        ax_right = ax.twinx()
+        ax_right.set_ylabel(self.config_obj.yaxis_2, fontproperties=fontproperties,
+                            labelpad=abs(self.config_obj.parameters['y2lab_offset']) * constants.PIXELS_TO_POINTS)
+
+        # set y2 limits if defined in config
+        if len(self.config_obj.parameters['y2lim']) > 0:
+            ax_right.set_ylim(self.config_obj.parameters['y2lim'])
+
+        return ax_right
+
+    def _add_lines(self, ax: plt.Axes, config_obj: Config, x_points_index: Union[list, None] = None) -> None:
+        """Adds custom horizontal and/or vertical line to the plot.
+           All line's metadata is in the config_obj.lines
+            Args:
+                @param ax - matplotlib Axes object
+                @param config_obj plot configuration object
+                @param x_points_index optional list of x-values that are used to create vertical line
+        """
+        if not hasattr(config_obj, 'lines') or config_obj.lines is None:
+            return
+
+        for line in config_obj.lines:
+
+            # format line properties in format that matplotlib expects
+            line_properties = {
+                'color': line['color'],
+                'linewidth': line['line_width'],
+                'linestyle': line['line_style'],
+            }
+
+            # draw horizontal line
+            if line['type'] == 'horiz_line':
+
+                y_position = line['position']
+                self.add_horizontal_line(ax, y_position, line_properties)
+
+            elif line['type'] == 'vert_line':
+
+                # draw vertical line
+                x_position = line['position']
+                try:
+                    if x_points_index is not None:
+                        ordered_indy_label = config_obj.create_list_by_plot_val_ordering(
+                            config_obj.indy_label)
+                        index = ordered_indy_label.index(line['position'])
+                        x_position = x_points_index[index]
+
+                    self.add_vertical_line(ax, x_position, line_properties)
+
+                except ValueError:
+                    msg = f"Vertical line with position {x_position} cannot be created."
+                    self.logger.warning(msg)
+                    print(f"WARNING: {msg}")

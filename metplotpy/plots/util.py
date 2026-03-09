@@ -86,6 +86,29 @@ def get_params(config_filename):
     return parse_config(config_file)
 
 
+def make_plot(config_filename, plot_class):
+    """!Get plot parameters and create the plot.
+
+    @param config_filename The full path to the config or None
+    @param plot_class class of plot to produce, e.g. Bar or Box
+    @returns plot class object or None if something went wrong
+    """
+    # Retrieve the contents of the custom config file to over-ride
+    # or augment settings defined by the default config file.
+    params = get_params(config_filename)
+    try:
+        plot = plot_class(params)
+        plot.save_to_file()
+       
+        plot.write_output_file()
+        name = plot_class.__name__ if not hasattr(plot_class, 'LONG_NAME') else plot_class.LONG_NAME
+        plot.logger.info(f"Finished {name} plot at {datetime.now()}")
+        return plot
+    except ValueError as val_er:
+        print(val_er)
+
+    return None
+
 
 def alpha_blending(hex_color: str, alpha: float) -> str:
     """ Alpha color blending as if on the white background.

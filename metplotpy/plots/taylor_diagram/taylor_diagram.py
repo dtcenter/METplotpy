@@ -292,11 +292,12 @@ class TaylorDiagram(BasePlot):
             )
 
         # Plot the caption
+        caption = wts_size_styles['caption']
 
         plt.figtext(
             self.config_obj.caption_align, self.config_obj.caption_offset,
             self.config_obj.plot_caption,
-            fontproperties=wts_size_styles['caption'], color=self.config_obj.caption_color
+            fontproperties=caption, color=self.config_obj.caption_color
             )
 
         # Add a figure legend
@@ -320,26 +321,21 @@ class TaylorDiagram(BasePlot):
                    frameon=self.config_obj.draw_box)
 
         plt.tight_layout()
-        plt.plot()
 
+        os.makedirs(os.path.dirname(self.config_obj.output_image), exist_ok=True)
 
         # Save the figure, based on whether we are displaying only positive
-        # correlations or all
-        # correlations.
-        os.makedirs(os.path.dirname(self.config_obj.output_image), exist_ok=True)
+        # correlations or all correlations.
+        plot_args = {}
         if pos_correlation_only:
             # Setting the bbox_inches keeps the legend box always within the plot
-            # boundaries.  This *may* result
-            # in a distorted plot.
-            plt.savefig(self.config_obj.output_image,
-                        dpi=self.config_obj.plot_resolution, bbox_inches="tight")
-        else:
+            # boundaries.  This *may* result in a distorted plot.
             # setting bbox_inches causes a loss in the title, especially when there
-            # are numerous legend
-            # items.  The legend inset 'y' value will likely need to
+            # are numerous legend items.  The legend inset 'y' value will likely need to
             # be modified to keep all legend items on the plot.
-            plt.savefig(self.config_obj.output_image,
-                        dpi=self.config_obj.plot_resolution)
+            plot_args['bbox_inches'] = "tight"
+
+        self.save_to_file(**plot_args)
 
 
 def main(config_filename=None):

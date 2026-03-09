@@ -149,14 +149,6 @@ class PerformanceDiagram(BasePlot):
         self.logger.info(f"Finished creating series objects: {datetime.now()}")
         return series_list
 
-    def save_to_file(self):
-        """
-          This is the matplotlib-friendly implementation, which overrides the parent class'
-          version (which is a Python Plotly implementation).
-
-        """
-        plt.savefig(self.config_obj.output_image)
-
     def remove_file(self):
         """
            Removes previously made image file.  Invoked by the parent class before self.output_file
@@ -389,10 +381,10 @@ class PerformanceDiagram(BasePlot):
         if self.config_obj.yaxis_2:
             ax2.set_ylabel(self.config_obj.yaxis_2, fontsize=9)
 
+        self.logger.info(f"Finished drawing CSI lines: {datetime.now()}")
+
         # use plt.tight_layout() to prevent label box from scrolling off the figure
         plt.tight_layout()
-        plt.savefig(self.get_config_value('plot_filename'))
-        self.logger.info(f"Finished drawing CSI lines: {datetime.now()}")
         self.save_to_file()
         self.logger.info("Finished saving file.")
 
