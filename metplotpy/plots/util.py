@@ -99,7 +99,7 @@ def make_plot(config_filename, plot_class):
     try:
         plot = plot_class(params)
         plot.save_to_file()
-        # plot.write_html()
+       
         plot.write_output_file()
         name = plot_class.__name__ if not hasattr(plot_class, 'LONG_NAME') else plot_class.LONG_NAME
         plot.logger.info(f"Finished {name} plot at {datetime.now()}")
