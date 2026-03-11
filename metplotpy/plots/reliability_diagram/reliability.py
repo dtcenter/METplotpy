@@ -160,10 +160,7 @@ class Reliability(BasePlot):
             # format large numbers like 3 million as 3M
             ax2.yaxis.set_major_formatter(ticker.EngFormatter())
 
-        # if self.config_obj.rely_event_hist is True and self.config_obj.inset_hist is False:
-        #     ax_y2 = self._add_y2axis(ax, None)
-
-        handles_and_labels = self._add_series(ax, ax2)
+        self._add_series(ax, ax2)
 
         self._add_xaxis(ax, wts_size_styles['xlab'])
         ax.set_xlim(0, 1)
@@ -171,7 +168,7 @@ class Reliability(BasePlot):
         ax.set_ylim(0, 1)
         ax.set_yticks(np.linspace(0, 1, 11))
 
-        self._add_legend(ax, handles_and_labels)
+        self._add_legend(ax)
 
         self._add_custom_lines(ax)
 
@@ -186,8 +183,6 @@ class Reliability(BasePlot):
             self._add_lines(ax, self.config_obj, self.config_obj.indy_vals)
 
     def _add_series(self, ax, ax2):
-        handles_and_labels = []
-
         # calculate stag adjustments
         stag_adjustments = self._calc_stag_adjustments()
 
@@ -205,8 +200,6 @@ class Reliability(BasePlot):
             # it isn't requested (as set in the config file)
             if series.plot_disp:
                 self._draw_series(ax, ax2, series, x_points_index_adj, index)
-
-        return handles_and_labels
 
     def _draw_series(self, ax, ax2, series: ReliabilitySeries, x_points_index_adj: list, idx) -> None:
         """
@@ -237,21 +230,6 @@ class Reliability(BasePlot):
                         width=width,
                         color=self.config_obj.colors_list[series.idx],
                         label="Absolute_cases")
-            # bar_trace = go.Bar(
-            #     x=x_points_index_adj,
-            #     y=series.series_points['n_i'].tolist(),
-            #     name="Absolute_cases",
-            #     marker_color=self.config_obj.colors_list[series.idx],
-            #     marker_line_color=self.config_obj.colors_list[series.idx],
-            #     opacity=1,
-            #     showlegend=False,
-            #     xaxis=x_axis,
-            #     yaxis='y2'
-            # )
-            # if self.config_obj.inset_hist is True:
-            #     self.figure.add_trace(bar_trace)
-            # else:
-            #     self.figure.add_trace(bar_trace, secondary_y=True)
 
         self._add_noskill_line(ax, series.series_points['stat_value'][0])
         self._add_perfect_reliability_line(ax)
@@ -289,47 +267,8 @@ class Reliability(BasePlot):
             yerr=y_errors if error_y_visible else None,
             elinewidth=self.config_obj.linewidth_list[series.idx],
         )
-        # line_trace = go.Scatter(x=x_points_index_adj,
-        #                         y=y_points,
-        #                         showlegend=self.config_obj.show_legend[series.idx] == 1,
-        #                         mode=self.config_obj.mode[series.idx],
-        #                         textposition="top right",
-        #                         name=self.config_obj.user_legends[series.idx],
-        #                         connectgaps=self.config_obj.con_series[series.idx] == 1,
-        #                         line={'color': self.config_obj.colors_list[series.idx],
-        #                               'width': self.config_obj.linewidth_list[series.idx],
-        #                               'dash': self.config_obj.linestyles_list[series.idx]},
-        #                         marker_symbol=self.config_obj.marker_list[series.idx],
-        #                         marker_color=self.config_obj.colors_list[series.idx],
-        #                         marker_line_color=self.config_obj.colors_list[series.idx],
-        #                         marker_size=self.config_obj.marker_size[series.idx],
-        #                         error_y={'type': 'data',
-        #                                  'symmetric': False,
-        #                                  'array': series.series_points['stat_btcu'],
-        #                                  'arrayminus': series.series_points['stat_btcl'],
-        #                                  'visible': error_y_visible,
-        #                                  'thickness': self.config_obj.linewidth_list[series.idx]}
-        #
-        #                         )
 
         self.logger.info(f"Finished with bar plot and skill lines :{datetime.now()}")
-
-    # def _add_y2axis(self) -> None:
-    #     """
-    #     Adds y2-axis if needed
-    #     """
-    #
-    #     if self.config_obj.rely_event_hist is True and self.config_obj.inset_hist is False:
-    #         self.figure.update_yaxes(title_text='',
-    #                                  secondary_y=True,
-    #                                  linecolor=PLOTLY_AXIS_LINE_COLOR,
-    #                                  linewidth=PLOTLY_AXIS_LINE_WIDTH,
-    #                                  showgrid=False,
-    #                                  zeroline=False,
-    #                                  ticks="inside",
-    #                                  tickangle=self.config_obj.y_tickangle,
-    #                                  tickfont={'size': self.config_obj.y_tickfont_size}
-    #                                  )
 
     def _add_noskill_polygon(self, ax, o_bar: Union[float, None]) -> None:
         """
@@ -353,21 +292,6 @@ class Reliability(BasePlot):
                 alpha=0.5,
                 label='_no-skill-poly_')
 
-        #ax.plot(x, y, label='No-Skill poly', color='#ededed')
-        #
-        # self.figure.add_trace(
-        #     go.Scatter(x=,
-        #                y=,
-        #                fill='toself',
-        #                fillcolor='#ededed',
-        #                line={'color': '#ededed'},
-        #                showlegend=False,
-        #                name='No-Skill poly',
-        #                hoverinfo='skip',
-        #                opacity=0.5
-        #                )
-        # )
-
     def _add_noskill_line(self, ax, o_bar: Union[float, None]) -> None:
         """
         Adds no-skill line to the graph if needed and o_bar is not None
@@ -385,17 +309,7 @@ class Reliability(BasePlot):
         x = [0, 1]
         y = [util.abline(0, intercept, 0.5), util.abline(1, intercept, 0.5)]
         ax.plot(x, y, label='_No-Skill_', color=self.config_obj.noskill_line_col, linewidth=1, linestyle='--')
-        # self.figure.add_trace(
-        #     go.Scatter(x=[0, 1],
-        #                y=[util.abline(0, intercept, 0.5), util.abline(1, intercept, 0.5)],
-        #                line={'color': self.config_obj.noskill_line_col,
-        #                      'dash': 'dash',
-        #                      'width': 1},
-        #                showlegend=False,
-        #                mode='lines',
-        #                name='No-Skill'
-        #                )
-        # )
+
         # create annotation
         ax.text(
             1, util.abline(1, intercept, 0.5),
@@ -405,23 +319,6 @@ class Reliability(BasePlot):
             rotation=270,
             transform=ax.transAxes,
         )
-
-        # self.figure.add_annotation(
-        #     x=1,
-        #     y=util.abline(1, intercept, 0.5),
-        #     xref="x",
-        #     yref="y",
-        #     text="No-Skill",
-        #     showarrow=True,
-        #     font={
-        #         'color': '#636363',
-        #         'size': self.config_obj.x_tickfont_size
-        #     },
-        #     align="left",
-        #     ax=10,
-        #     ay=0,
-        #     textangle=90
-        # )
 
     def _add_perfect_reliability_line(self, ax) -> None:
         """
@@ -434,16 +331,7 @@ class Reliability(BasePlot):
         x = [0., 1.]
         y = [util.abline(0, 0, 1), util.abline(1, 0, 1)]
         ax.plot(x, y, label='_Perfect reliability_', color='grey', zorder=0, linewidth=1)
-        # self.figure.add_trace(
-        #     go.Scatter(x=[0, 1],
-        #                y=[util.abline(0, 0, 1), util.abline(1, 0, 1)],
-        #                line={'color': 'grey',
-        #                      'width': 1},
-        #                showlegend=False,
-        #                mode='lines',
-        #                name='Perfect reliability'
-        #                )
-        # )
+
         ax.text(
             1, util.abline(1, 0, 1),
             "Perfect reliability",
@@ -452,23 +340,6 @@ class Reliability(BasePlot):
             rotation=270,
             transform=ax.transAxes,
         )
-
-        # self.figure.add_annotation(
-        #     x=1,
-        #     y=util.abline(1, 0, 1),
-        #     xref="x",
-        #     yref="y",
-        #     text="Perfect reliability",
-        #     font={
-        #         'color': '#636363',
-        #         'size': self.config_obj.x_tickfont_size
-        #     },
-        #     showarrow=True,
-        #     align="left",
-        #     ax=10,
-        #     ay=0,
-        #     textangle=90
-        # )
 
     def _add_noresolution_line(self, ax, o_bar: Union[float, None]) -> None:
         """
@@ -489,32 +360,9 @@ class Reliability(BasePlot):
         ax.plot(end_to_end, ab_line, label='_No-resolution_',
                 color=self.config_obj.reference_line_col, linestyle='--', zorder=0, linewidth=1)
 
-        # self.figure.add_trace(
-        #     go.Scatter(x=[0, 1],
-        #                y=[util.abline(0, o_bar, 0), util.abline(1, o_bar, 0)],
-        #                line={'color': self.config_obj.reference_line_col,
-        #                      'dash': 'dash',
-        #                      'width': 1},
-        #                showlegend=False,
-        #                mode='lines',
-        #                name='No-resolution'
-        #                )
-        # )
-
         ax.plot(ab_line, end_to_end, label='_No-resolution_',
                 color=self.config_obj.reference_line_col, linestyle='--', zorder=0, linewidth=1)
 
-        # self.figure.add_trace(
-        #     go.Scatter(x=[util.abline(0, o_bar, 0), util.abline(1, o_bar, 0)],
-        #                y=[0, 1],
-        #                line={'color': 'red',
-        #                      'dash': 'dash',
-        #                      'width': 1},
-        #                showlegend=False,
-        #                mode='lines',
-        #                name='No-resolution'
-        #                )
-        # )
         ax.text(
             1, util.abline(1, o_bar, 0),
             "No-resolution",
@@ -523,187 +371,6 @@ class Reliability(BasePlot):
             rotation=270,
             transform=ax.transAxes,
         )
-
-        # self.figure.add_annotation(
-        #     x=1,
-        #     y=util.abline(1, o_bar, 0),
-        #     xref="x",
-        #     yref="y",
-        #     text="No-resolution",
-        #     showarrow=True,
-        #     font={
-        #         'color': '#636363',
-        #         'size': self.config_obj.x_tickfont_size
-        #     },
-        #     align="left",
-        #     ax=10,
-        #     ay=0,
-        #     textangle=90
-        # )
-
-    # def _create_layout(self) -> Figure:
-    #     """
-    #     Creates a new layout based on the properties from the config file
-    #     including plots size, annotation and title
-    #
-    #     :return: Figure object
-    #     """
-    #     # create annotation
-    #     annotation = [
-    #         {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-    #                                          self.config_obj.parameters['caption_weight']),
-    #          'align': 'left',
-    #          'showarrow': False,
-    #          'xref': 'paper',
-    #          'yref': 'paper',
-    #          'x': self.config_obj.parameters['caption_align'],
-    #          'y': self.config_obj.caption_offset,
-    #          'font': {
-    #              'size': self.config_obj.caption_size,
-    #              'color': self.config_obj.parameters['caption_col']
-    #          }
-    #          }]
-    #     # create title
-    #     title = {'text': util.apply_weight_style(self.config_obj.title,
-    #                                              self.config_obj.parameters['title_weight']),
-    #              'font': {
-    #                  'size': self.config_obj.title_font_size,
-    #              },
-    #              'y': self.config_obj.title_offset,
-    #              'x': self.config_obj.parameters['title_align'],
-    #              'xanchor': 'center',
-    #              'xref': 'paper'
-    #              }
-    #
-    #     # create a layout and allow y2 axis
-    #     if self.config_obj.rely_event_hist is True and self.config_obj.inset_hist is True:
-    #         # us go.Layout and  go.Figure to create a figure because of the inset
-    #         layout = go.Layout(
-    #             yaxis=dict(
-    #                 range=[0, 1],
-    #                 tickvals=[x / 10.0 for x in range(0, 11, 1)],
-    #                 ticktext=[x / 10.0 for x in range(0, 11, 1)],
-    #                 showgrid=False,
-    #                 title_text=
-    #                 util.apply_weight_style(self.config_obj.yaxis_1,
-    #                                         self.config_obj.parameters['ylab_weight']),
-    #                 title_standoff=abs(self.config_obj.parameters['ylab_offset']) + 10,
-    #
-    #             ),
-    #             xaxis2=dict(
-    #                 domain=[0.08, 0.55],
-    #                 anchor='y2'
-    #             ),
-    #             yaxis2=dict(
-    #                 domain=[0.7, 0.98],
-    #                 anchor='x2',
-    #                 title_text='# Forecasts',
-    #                 showgrid=True,
-    #                 title_standoff=0
-    #             )
-    #         )
-    #         fig = go.Figure(layout=layout)
-    #     else:
-    #         fig = make_subplots(specs=[[{"secondary_y": True}]])
-    #
-    #     # add size, annotation, title
-    #     fig.update_layout(
-    #         width=self.config_obj.plot_width,
-    #         height=self.config_obj.plot_height,
-    #         margin=self.config_obj.plot_margins,
-    #         paper_bgcolor=PLOTLY_PAPER_BGCOOR,
-    #         annotations=annotation,
-    #         title=title,
-    #         plot_bgcolor=PLOTLY_PAPER_BGCOOR
-    #     )
-    #     return fig
-
-    # def _add_xaxis(self) -> None:
-    #     """
-    #     Configures and adds x-axis to the plot
-    #     """
-    #
-    #     self.figure.update_xaxes(title_text=self.config_obj.xaxis,
-    #                              linecolor=PLOTLY_AXIS_LINE_COLOR,
-    #                              linewidth=PLOTLY_AXIS_LINE_WIDTH,
-    #                              showgrid=False,
-    #                              ticks="inside",
-    #                              zeroline=False,
-    #                              gridwidth=self.config_obj.parameters['grid_lwd'],
-    #                              gridcolor=self.config_obj.blended_grid_col,
-    #                              automargin=True,
-    #                              title_font={
-    #                                  'size': self.config_obj.x_title_font_size
-    #                              },
-    #                              title_standoff=abs(self.config_obj.parameters['xlab_offset']),
-    #                              tickangle=self.config_obj.x_tickangle,
-    #                              tickfont={'size': self.config_obj.x_tickfont_size},
-    #                              tickmode='array',
-    #                              tickvals=[x / 10.0 for x in range(0, 11, 1)],
-    #                              ticktext=[x / 10.0 for x in range(0, 11, 1)],
-    #                              range=[0, 1]
-    #                              )
-
-    # def _add_yaxis(self) -> None:
-    #     """
-    #     Configures and adds y-axis to the plot
-    #     """
-    #
-    #     self.figure.update_yaxes(
-    #         linecolor=PLOTLY_AXIS_LINE_COLOR,
-    #         linewidth=PLOTLY_AXIS_LINE_WIDTH,
-    #
-    #         zeroline=False,
-    #         ticks="inside",
-    #         gridwidth=self.config_obj.parameters['grid_lwd'],
-    #         gridcolor=self.config_obj.blended_grid_col,
-    #         automargin=True,
-    #         title_font={
-    #             'size': self.config_obj.y_title_font_size
-    #         },
-    #         tickangle=self.config_obj.y_tickangle,
-    #         tickfont={'size': self.config_obj.y_tickfont_size},
-    #
-    #     )
-    #     # adjustments for the inset
-    #     if self.config_obj.rely_event_hist is False or self.config_obj.inset_hist is False:
-    #         self.figure.update_yaxes(secondary_y=False,
-    #                                  showgrid=False,
-    #                                  range=[0, 1],
-    #                                  tickvals=[x / 10.0 for x in range(0, 11, 1)],
-    #                                  ticktext=[x / 10.0 for x in range(0, 11, 1)],
-    #                                  title_standoff=
-    #                                  abs(self.config_obj.parameters['ylab_offset']) + 10,
-    #                                  title_text=
-    #                                  util.apply_weight_style(self.config_obj.yaxis_1,
-    #                                                          self.config_obj.parameters['ylab_weight'])
-    #                                  )
-
-    # def _add_legend(self) -> None:
-    #     """
-    #     Creates a plot legend based on the properties from the config file
-    #     and attaches it to the initial Figure
-    #     """
-    #     self.figure.update_layout(legend={'x': self.config_obj.bbox_x,
-    #                                       'y': self.config_obj.bbox_y,
-    #                                       'xanchor': 'center',
-    #                                       'yanchor': 'top',
-    #                                       'bordercolor': self.config_obj.legend_border_color,
-    #                                       'borderwidth': self.config_obj.legend_border_width,
-    #                                       'orientation': self.config_obj.legend_orientation,
-    #                                       'font': {
-    #                                           'size': self.config_obj.legend_size,
-    #                                           'color': "black"
-    #                                       }
-    #                                       })
-
-    def remove_file(self):
-        """
-           Removes previously made image file .  Invoked by the parent class before self.output_file
-           attribute can be created, but overridden here.
-        """
-
-        super().remove_file()
 
     def write_output_file(self) -> None:
         """
