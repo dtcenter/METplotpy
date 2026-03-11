@@ -27,6 +27,7 @@ from matplotlib import ticker
 
 from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots import util
+from metplotpy.plots.constants import MPL_DEFAULT_BAR_WIDTH
 from metplotpy.plots.reliability_diagram.reliability_config import ReliabilityConfig
 from metplotpy.plots.reliability_diagram.reliability_series import ReliabilitySeries
 
@@ -193,7 +194,7 @@ class Reliability(BasePlot):
         x_points_index = self.series_list[-1].series_points['thresh_i'].tolist()
 
         # add series lines
-        for series in self.series_list:
+        for index, series in enumerate(self.series_list):
             # apply staggering offset if applicable
             if stag_adjustments[series.idx] == 0:
                 x_points_index_adj = x_points_index
@@ -203,11 +204,11 @@ class Reliability(BasePlot):
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
             if series.plot_disp:
-                self._draw_series(ax, ax2, series, x_points_index_adj)
+                self._draw_series(ax, ax2, series, x_points_index_adj, index)
 
         return handles_and_labels
 
-    def _draw_series(self, ax, ax2, series: ReliabilitySeries, x_points_index_adj: list) -> None:
+    def _draw_series(self, ax, ax2, series: ReliabilitySeries, x_points_index_adj: list, idx) -> None:
         """
         Draws the formatted line with CIs if needed on the plot
 
@@ -226,9 +227,16 @@ class Reliability(BasePlot):
 
         if self.config_obj.rely_event_hist and 'n_i' in series.series_points:
 
-            plot_ax.bar(x=x_points_index_adj, height=series.series_points['n_i'].tolist(), align='center',
-                   color=self.config_obj.colors_list[series.idx],
-                   label="Absolute_cases")
+            n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
+            n = max(n_visible_series, 1)
+            width = MPL_DEFAULT_BAR_WIDTH / 40
+            offset = (idx - (n - 1) / 2.0) * width
+            x_locs = [item + offset for item in x_points_index_adj]
+
+            plot_ax.bar(x=x_locs, height=series.series_points['n_i'].tolist(), align='center',
+                        width=width,
+                        color=self.config_obj.colors_list[series.idx],
+                        label="Absolute_cases")
             # bar_trace = go.Bar(
             #     x=x_points_index_adj,
             #     y=series.series_points['n_i'].tolist(),
