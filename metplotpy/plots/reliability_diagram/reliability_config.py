@@ -111,6 +111,8 @@ class ReliabilityConfig(Config):
         self.con_series = self._get_con_series()
         self.num_series = self.calculate_number_of_series()
         self.show_legend = self._get_show_legend()
+        if not self.indy_label:
+            self.indy_label = self.indy_vals
 
         ##############################################
         # legend parameters

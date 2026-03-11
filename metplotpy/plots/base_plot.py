@@ -405,13 +405,24 @@ class BasePlot:
         """
         if label is None:
             label = self.config_obj.xaxis
+
         if grid_on is None:
             grid_on = self.config_obj.grid_on
+
         ax.set_xlabel(label, fontproperties=fontproperties,
                       labelpad=abs(self.config_obj.parameters['xlab_offset']) * constants.PIXELS_TO_POINTS)
 
         if self.config_obj.indy_label:
+            # use the indices as tick locations
             xtick_locs = np.arange(len(self.config_obj.indy_label))
+            if self.config_obj.indy_vals:
+                # Use the actual numeric values from indy_vals as tick locations
+                try:
+                    xtick_locs = [float(i) for i in self.config_obj.indy_vals]
+                # if they are not numeric, revert to using the indices
+                except ValueError:
+                    pass
+
             ax.set_xticks(xtick_locs, self.config_obj.indy_label)
 
         ax.tick_params(axis="x", direction="in", which="both", labelrotation=self.config_obj.x_tickangle)
