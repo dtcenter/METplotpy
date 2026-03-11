@@ -348,7 +348,7 @@ class BasePlot:
 
     def _add_title(self, ax, font_properties):
         ax.set_title(
-            self.config_obj.title,
+            self.config_obj.title.replace('<br>', '\n'),
             fontproperties=font_properties,
             color=constants.DEFAULT_TITLE_COLOR,
             pad=28,
@@ -399,17 +399,23 @@ class BasePlot:
             frame = legend.get_frame()
             frame.set_linewidth(self.config_obj.legend_border_width)
 
-    def _add_xaxis(self, ax: plt.Axes, fontproperties: FontProperties) -> None:
+    def _add_xaxis(self, ax: plt.Axes, fontproperties: FontProperties, label=None, grid_on=None) -> None:
         """
         Configures and adds x-axis to the plot
         """
-        ax.set_xlabel(self.config_obj.xaxis, fontproperties=fontproperties,
+        if label is None:
+            label = self.config_obj.xaxis
+        if grid_on is None:
+            grid_on = self.config_obj.grid_on
+        ax.set_xlabel(label, fontproperties=fontproperties,
                       labelpad=abs(self.config_obj.parameters['xlab_offset']) * constants.PIXELS_TO_POINTS)
+
         if self.config_obj.indy_label:
             xtick_locs = np.arange(len(self.config_obj.indy_label))
             ax.set_xticks(xtick_locs, self.config_obj.indy_label)
+
         ax.tick_params(axis="x", direction="in", which="both", labelrotation=self.config_obj.x_tickangle)
-        if self.config_obj.grid_on:
+        if grid_on:
             ax.grid(True, which='major', axis='x', color=self.config_obj.blended_grid_col,
                     linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
             ax.set_axisbelow(True)
@@ -417,11 +423,15 @@ class BasePlot:
         if self.config_obj.xaxis_reverse:
             ax.invert_xaxis()
 
-    def _add_yaxis(self, ax: plt.Axes, fontproperties: FontProperties) -> None:
+    def _add_yaxis(self, ax: plt.Axes, fontproperties: FontProperties, label=None, grid_on=None) -> None:
         """
         Configures and adds y-axis to the plot
         """
-        ax.set_ylabel(self.config_obj.yaxis_1, fontproperties=fontproperties,
+        if label is None:
+            label = self.config_obj.yaxis_1
+        if grid_on is None:
+            grid_on = self.config_obj.grid_on
+        ax.set_ylabel(label, fontproperties=fontproperties,
                       labelpad=abs(self.config_obj.parameters['ylab_offset']) * constants.PIXELS_TO_POINTS)
         ax.tick_params(axis="y", direction="in", which="both", labelrotation=self.config_obj.y_tickangle)
 
@@ -430,7 +440,7 @@ class BasePlot:
             ax.set_ylim(self.config_obj.parameters['ylim'])
 
         # add grid lines if requested
-        if self.config_obj.grid_on:
+        if grid_on:
             ax.grid(True, which='major', axis='y', color=self.config_obj.blended_grid_col, linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
             ax.set_axisbelow(True)
 
@@ -460,7 +470,7 @@ class BasePlot:
         # this doesn't appear to be working to add ticks at the top
         ax_top.tick_params(axis="x", direction="in", labelrotation=self.config_obj.x2_tickangle)
 
-    def _add_y2axis(self, ax: plt.Axes, fontproperties: FontProperties):
+    def _add_y2axis(self, ax: plt.Axes, fontproperties: Union[FontProperties, None]):
         """
         Adds y2-axis if needed
         """
