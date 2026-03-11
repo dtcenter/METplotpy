@@ -61,6 +61,7 @@ class ROCDiagramConfig(Config):
         self.linetype_ctc = self.get_config_value('roc_ctc')
         # Probability contingency table count line type
         self.linetype_pct = self.get_config_value('roc_pct')
+        # TODO: it looks like both roc_ctc and roc_pct cannot be set - add error check?
         # Supported values for stat_curve are none, mean, and median
         self.plot_stat = self.get_config_value('stat_curve')
         self.plot_width = self.calculate_plot_dimension('plot_width')
