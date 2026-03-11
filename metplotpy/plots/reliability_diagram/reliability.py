@@ -153,6 +153,7 @@ class Reliability(BasePlot):
                 ax2 = self._add_y2axis(ax, None)
 
             self._add_xaxis(ax2, wts_size_styles['xlab'])
+            ax2.set_xlim(0, 1)
             self._add_yaxis(ax2, wts_size_styles['ylab'], label="# Forecasts", grid_on=True)
 
             # format large numbers like 3 million as 3M
@@ -164,7 +165,10 @@ class Reliability(BasePlot):
         handles_and_labels = self._add_series(ax, ax2)
 
         self._add_xaxis(ax, wts_size_styles['xlab'])
+        ax.set_xlim(0, 1)
         self._add_yaxis(ax, wts_size_styles['ylab'])
+        ax.set_ylim(0, 1)
+        ax.set_yticks(np.linspace(0, 1, 11))
 
         self._add_legend(ax, handles_and_labels)
 
