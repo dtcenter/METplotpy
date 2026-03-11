@@ -91,6 +91,8 @@ PCH_TO_MATPLOTLIB_MARKER = {
 # approximated from plotly marker size to matplotlib marker size
 PCH_TO_MATPLOTLIB_MARKER_SIZE = {'.': 14, 'o': 36, 's': 20, '^': 36, 'd': 20, 'H': 28}
 
+SERIES_TYPE_TO_PLOT_MODE = {'b': 'lines+markers', 'p': 'markers', 'l': 'lines'}
+
 XAXIS_ORIENTATION = {0: 0, 1: 0, 2: 270, 3: 270}
 YAXIS_ORIENTATION = {0: -90, 1: 0, 2: 0, 3: -90}
 

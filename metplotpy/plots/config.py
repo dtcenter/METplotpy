@@ -983,3 +983,21 @@ class Config:
             raise ValueError(msg)
 
         self.logger.info(f"Config consistency check completed successfully: {datetime.now()}")
+
+    def _get_mode(self) -> list:
+        """Retrieve all the modes. Convert mode names from the config file into
+         strings that will determine which matplotlib settings to use.
+         'both' - use both lines and markers
+         'points' - use linestyle='None' to show only markers
+         'lines' - use marker=None to show only lines
+
+           Args:
+
+           Returns:
+               modes: a list of strings to determine matplotlib settings to use
+        """
+        modes = self.get_config_value('series_type')
+        mode_list = []
+        for mode in modes:
+            mode_list.append(constants.SERIES_TYPE_TO_PLOT_MODE.get(mode, 'lines+markers'))
+        return self.create_list_by_series_ordering(mode_list)
