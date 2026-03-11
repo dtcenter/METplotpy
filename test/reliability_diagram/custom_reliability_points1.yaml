@@ -42,7 +42,7 @@ fixed_vars_vals_input: {}
 grid_col: '#cccccc'
 grid_lty: 3
 grid_lwd: 1
-grid_on: 'True'
+grid_on: 'False'
 grid_x: listX
 indy_label: []
 indy_stagger_1: 'True'
@@ -58,6 +58,7 @@ indy_vals:
 - '0.7'
 - '0.8'
 - '0.9'
+- '1.0'
 indy_var: thresh_i
 inset_hist: 'True'
 legend_box: o
