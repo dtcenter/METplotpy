@@ -232,7 +232,7 @@ class ROCDiagramConfig(Config):
 
         """
         ordinals = self.get_config_value('series_order')
-        series_order_list = [ord for ord in ordinals]
+        series_order_list = list(ordinals)
         return series_order_list
 
 

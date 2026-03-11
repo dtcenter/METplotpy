@@ -194,62 +194,83 @@ class ROCDiagram(BasePlot):
             series_obj = ROCDiagramSeries(self.config_obj, i, input_data)
             series_list.append(series_obj)
 
-        if self.config_obj.summary_curve != 'none':
-            # add Summary Curve bassd on teh summary dataframes of each ROCDiagramSeries
-            df_sum_main = None
-            for idx, series in enumerate(series_list):
-                # create a main summary frame from series summary frames
+        if self.config_obj.summary_curve == 'none':
+            return series_list
+
+        # add Summary Curve based on teh summary dataframes of each ROCDiagramSeries
+        df_sum_main = None
+        for idx, series in enumerate(series_list):
+            # create a main summary frame from series summary frames
+            if df_sum_main is None:
                 if self.config_obj.linetype_ctc:
-                    if df_sum_main is None:
-                        df_sum_main = pd.DataFrame(columns=['fcst_thresh', 'fy_oy', 'fy_on', 'fn_oy', 'fn_on'])
-                elif self.config_obj.linetype_pct and df_sum_main is None:
-                        df_sum_main = pd.DataFrame(columns=['thresh_i', 'i_value', 'on_i', 'oy_i'])
+                    df_sum_main = pd.DataFrame(columns=['fcst_thresh', 'fy_oy', 'fy_on', 'fn_oy', 'fn_on'])
+                elif self.config_obj.linetype_pct:
+                    df_sum_main = pd.DataFrame(columns=['thresh_i', 'i_value', 'on_i', 'oy_i'])
 
-                df_sum_main = pd.concat([df_sum_main, series.series_points[3]], axis=0)
+            df_sum_main = pd.concat([df_sum_main, series.series_points[3]], axis=0)
 
-            if self.config_obj.linetype_ctc:
-                df_summary_curve = pd.DataFrame(columns=['fcst_thresh', 'fy_oy', 'fy_on', 'fn_oy', 'fn_on'])
-                fcst_thresh_list = df_sum_main['fcst_thresh'].unique()
-                for thresh in fcst_thresh_list:
-                    if self.config_obj.summary_curve == 'median':
-                        group_stats_fy_oy = df_sum_main['fy_oy'][df_sum_main['fcst_thresh'] == thresh].median()
-                        group_stats_fn_oy = df_sum_main['fn_oy'][df_sum_main['fcst_thresh'] == thresh].median()
-                        group_stats_fy_on = df_sum_main['fy_on'][df_sum_main['fcst_thresh'] == thresh].median()
-                        group_stats_fn_on = df_sum_main['fn_on'][df_sum_main['fcst_thresh'] == thresh].median()
-                    else:
-                        group_stats_fy_oy = df_sum_main['fy_oy'][df_sum_main['fcst_thresh'] == thresh].mean()
-                        group_stats_fn_oy = df_sum_main['fn_oy'][df_sum_main['fcst_thresh'] == thresh].mean()
-                        group_stats_fy_on = df_sum_main['fy_on'][df_sum_main['fcst_thresh'] == thresh].mean()
-                        group_stats_fn_on = df_sum_main['fn_on'][df_sum_main['fcst_thresh'] == thresh].mean()
-                    df_summary_curve.loc[len(df_summary_curve)] = {'fcst_thresh': thresh,
-                                                                   'fy_oy': group_stats_fy_oy,
-                                                                   'fn_oy': group_stats_fn_oy,
-                                                                   'fy_on': group_stats_fy_on,
-                                                                   'fn_on': group_stats_fn_on,
-                                                                   }
-                df_summary_curve.reset_index()
-                pody, pofd, thresh = util.prepare_ctc_roc(df_summary_curve,self.config_obj.ctc_ascending)
-            else:
-                df_summary_curve = pd.DataFrame(columns=['thresh_i', 'on_i', 'oy_i'])
-                thresh_i_list = df_sum_main['thresh_i'].unique()
-                for index, thresh in enumerate(thresh_i_list):
-                    if self.config_obj.summary_curve == 'median':
-                        on_i_sum = df_sum_main['on_i'][df_sum_main['thresh_i'] == thresh].median()
-                        oy_i_sum = df_sum_main['oy_i'][df_sum_main['thresh_i'] == thresh].median()
-                    else:
-                        on_i_sum = df_sum_main['on_i'][df_sum_main['thresh_i'] == thresh].mean()
-                        oy_i_sum = df_sum_main['oy_i'][df_sum_main['thresh_i'] == thresh].mean()
-                    df_summary_curve.loc[len(df_summary_curve)] = {'thresh_i': thresh, 'on_i': on_i_sum,
-                                                                   'oy_i': oy_i_sum, }
-                df_summary_curve.reset_index()
-                pody, pofd, thresh = util.prepare_pct_roc(df_summary_curve)
+        if self.config_obj.linetype_ctc:
+            pofd, pody, thresh = self._handle_ctc(df_sum_main)
+        else:
+            pofd, pody, thresh = self._handle_pct(df_sum_main)
 
-            series_obj = ROCDiagramSeries(self.config_obj, num_series -1, None)
-            series_obj.series_points = (pofd, pody, thresh, None)
+        series_obj = ROCDiagramSeries(self.config_obj, num_series -1, None)
+        series_obj.series_points = (pofd, pody, thresh, None)
 
-            series_list.append(series_obj)
+        series_list.append(series_obj)
 
         return series_list
+
+    def _handle_ctc(self, df_sum_main):
+        df_summary_curve = pd.DataFrame(columns=['fcst_thresh', 'fy_oy', 'fy_on', 'fn_oy', 'fn_on'])
+        fcst_thresh_list = df_sum_main['fcst_thresh'].unique()
+        for thresh in fcst_thresh_list:
+            if self.config_obj.summary_curve == 'median':
+                group_stats_fy_oy = df_sum_main['fy_oy'][
+                    df_sum_main['fcst_thresh'] == thresh].median()
+                group_stats_fn_oy = df_sum_main['fn_oy'][
+                    df_sum_main['fcst_thresh'] == thresh].median()
+                group_stats_fy_on = df_sum_main['fy_on'][
+                    df_sum_main['fcst_thresh'] == thresh].median()
+                group_stats_fn_on = df_sum_main['fn_on'][
+                    df_sum_main['fcst_thresh'] == thresh].median()
+            else:
+                group_stats_fy_oy = df_sum_main['fy_oy'][
+                    df_sum_main['fcst_thresh'] == thresh].mean()
+                group_stats_fn_oy = df_sum_main['fn_oy'][
+                    df_sum_main['fcst_thresh'] == thresh].mean()
+                group_stats_fy_on = df_sum_main['fy_on'][
+                    df_sum_main['fcst_thresh'] == thresh].mean()
+                group_stats_fn_on = df_sum_main['fn_on'][
+                    df_sum_main['fcst_thresh'] == thresh].mean()
+            df_summary_curve.loc[len(df_summary_curve)] = {'fcst_thresh': thresh,
+                                                           'fy_oy': group_stats_fy_oy,
+                                                           'fn_oy': group_stats_fn_oy,
+                                                           'fy_on': group_stats_fy_on,
+                                                           'fn_on': group_stats_fn_on,
+                                                           }
+        df_summary_curve.reset_index()
+        pody, pofd, thresh = util.prepare_ctc_roc(df_summary_curve, self.config_obj.ctc_ascending)
+        return pofd, pody, thresh
+
+    def _handle_pct(self, df_sum_main):
+        df_summary_curve = pd.DataFrame(columns=['thresh_i', 'on_i', 'oy_i'])
+        thresh_i_list = df_sum_main['thresh_i'].unique()
+        for index, thresh in enumerate(thresh_i_list):
+            if self.config_obj.summary_curve == 'median':
+                on_i_sum = df_sum_main['on_i'][df_sum_main['thresh_i'] == thresh].median()
+                oy_i_sum = df_sum_main['oy_i'][df_sum_main['thresh_i'] == thresh].median()
+            else:
+                on_i_sum = df_sum_main['on_i'][df_sum_main['thresh_i'] == thresh].mean()
+                oy_i_sum = df_sum_main['oy_i'][df_sum_main['thresh_i'] == thresh].mean()
+            df_summary_curve.loc[len(df_summary_curve)] = {
+                'thresh_i': thresh,
+                'on_i': on_i_sum,
+                'oy_i': oy_i_sum,
+            }
+        df_summary_curve.reset_index()
+        pody, pofd, thresh = util.prepare_pct_roc(df_summary_curve)
+        return pofd, pody, thresh
 
     def _create_figure(self):
         """
