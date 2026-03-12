@@ -223,7 +223,8 @@ class Box(BasePlot):
         self.logger.info(f"Begin drawing the boxes on the plot for {series.series_name}: {datetime.now()}")
 
         # Group your 'stat_value' data by 'indy_var' categories first
-        data_to_plot, x_locs, width = self._get_data_to_plot_and_x_locs(series, idx)
+        data_to_plot = self._get_data_to_plot(series)
+        x_locs, width = self._get_x_locs_and_width(self.config_obj.indy_vals, idx)
 
         plot_ax = ax
         if ax2 and ax2.get_ylabel() in series.series_data.stat_name.values:
@@ -256,6 +257,11 @@ class Box(BasePlot):
             box.set_facecolor(series.color)
 
         return boxplot['boxes'][0]
+
+    def _get_data_to_plot(self, series):
+        data_to_plot =  [group_data for name, group_data in
+                         series.series_data.groupby(self.config_obj.indy_var)['stat_value']]
+        return data_to_plot
 
     def _get_data_to_plot_and_x_locs(self, series, idx):
         x_locs, width = self._get_x_locs_and_width(self.config_obj.indy_vals, idx)

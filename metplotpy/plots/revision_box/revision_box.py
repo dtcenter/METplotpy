@@ -169,10 +169,13 @@ class RevisionBox(Box):
     def _add_custom_lines(self, ax):
         return
 
-    def _get_data_to_plot_and_x_locs(self, series, idx):
+    def _get_data_to_plot(self, series):
+        return series.series_points['points']['stat_value'].dropna().values
+
+    def _get_x_locs_and_width(self, x_points, index):
         base = np.arange(len(self.config_obj.indy_label))
-        x_locs = [base[idx]]
-        return series.series_points['points']['stat_value'].dropna().values, x_locs, MPL_DEFAULT_BOX_WIDTH
+        x_locs = [base[index]]
+        return x_locs, MPL_DEFAULT_BOX_WIDTH
 
     def write_output_file(self) -> None:
         """
