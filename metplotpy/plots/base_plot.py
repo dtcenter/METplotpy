@@ -485,9 +485,6 @@ class BasePlot:
         """
         Adds y2-axis if needed
         """
-        if not self.config_obj.parameters['list_stat_2']:
-            return None
-
         ax_right = ax.twinx()
         ax_right.set_ylabel(self.config_obj.yaxis_2, fontproperties=fontproperties,
                             labelpad=abs(self.config_obj.parameters['y2lab_offset']) * constants.PIXELS_TO_POINTS)
