@@ -258,12 +258,7 @@ class Box(BasePlot):
         return boxplot['boxes'][0]
 
     def _get_data_to_plot_and_x_locs(self, series, idx):
-        base = np.arange(len(self.config_obj.indy_vals))
-        n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
-        n = max(n_visible_series, 1)
-        width = MPL_DEFAULT_BOX_WIDTH / n
-        offset = (idx - (n - 1) / 2.0) * width
-        x_locs = base + offset
+        x_locs, width = self._get_x_locs_and_width(self.config_obj.indy_vals, idx)
 
         data_to_plot =  [group_data for name, group_data in
                          series.series_data.groupby(self.config_obj.indy_var)['stat_value']]

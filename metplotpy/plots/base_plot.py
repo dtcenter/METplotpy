@@ -538,3 +538,34 @@ class BasePlot:
                     msg = f"Vertical line with position {x_position} cannot be created."
                     self.logger.warning(msg)
                     print(f"WARNING: {msg}")
+
+    def _get_x_locs_and_width(self, x_points, index):
+        try:
+            # Attempt to convert x_points to floats (handles numeric indy_vals)
+            # Threshold values (e.g., ">5.0") will raise a ValueError/TypeError
+            base = np.array([float(x) for x in x_points])
+
+            if len(base) > 1:
+                # Calculate the minimum spacing between numeric x-points
+                # to determine an appropriate bar width.
+                sorted_base = np.sort(base)
+                spacing = np.diff(sorted_base)
+                min_spacing = np.min(spacing)
+                # Ensure spacing is positive to avoid zero-width bars
+                if min_spacing <= 0:
+                    min_spacing = 1.0
+            else:
+                min_spacing = 1.0
+        except (ValueError, TypeError):
+            # Fallback to integer indices for non-numeric data (e.g., thresholds)
+            base = np.arange(len(x_points))
+            min_spacing = 1.0
+
+        n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
+        n = max(n_visible_series, 1)
+
+        # Scale width and offset by min_spacing to ensure bars fit within the numeric gaps
+        width = (min_spacing * constants.MPL_DEFAULT_BAR_WIDTH) / n
+        offset = (index - (n - 1) / 2.0) * width
+        x_locs = base + offset
+        return x_locs, width

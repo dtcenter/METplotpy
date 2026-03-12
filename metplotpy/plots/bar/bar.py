@@ -228,12 +228,7 @@ class Bar(BasePlot):
         else:
             x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
 
-        base = np.arange(len(x_points))
-        n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
-        n = max(n_visible_series, 1)
-        width = constants.MPL_DEFAULT_BAR_WIDTH / n
-        offset = (idx - (n - 1) / 2.0) * width
-        x_locs = base + offset
+        x_locs, width = self._get_x_locs_and_width(x_points, idx)
 
         # add the plot
         ax.bar(x=x_locs, height=y_points, width=width, align='center', color=self.config_obj.colors_list[series.idx],
