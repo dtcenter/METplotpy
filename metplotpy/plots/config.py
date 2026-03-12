@@ -568,6 +568,23 @@ class Config:
         markers_list_ordered = self.create_list_by_series_ordering(list(markers_list))
         return markers_list_ordered
 
+    def _get_markers_size(self) -> list:
+        """Convert marker names from the config file into matplotlib marker sizes.
+        Use the default marker size if the marker size is not a supported value.
+
+           Args:
+
+           Returns:
+               markers_size: a list of the integers that define the size of the markers
+               or None if the marker size is not a supported value.
+        """
+        markers = self.get_config_value('series_symbols')
+        markers_size = []
+        for marker in markers:
+            markers_size.append(constants.PCH_TO_MATPLOTLIB_MARKER_SIZE.get(marker))
+
+        return self.create_list_by_series_ordering(markers_size)
+
     def _get_markers_open(self) -> list:
         """Parse info from markers to determine if they should be open or filled.
 
