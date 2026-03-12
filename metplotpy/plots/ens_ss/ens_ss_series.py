@@ -19,7 +19,7 @@ from datetime import datetime
 import numpy as np
 
 import metcalcpy.util.utils as utils
-import metplotpy.plots.util_plotly as util
+import metplotpy.plots.util as util
 from .. import GROUP_SEPARATOR
 
 from ..series import Series

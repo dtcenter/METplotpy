@@ -17,9 +17,8 @@ __author__ = 'Tatiana Burek'
 
 import itertools
 
-from ..config_plotly import Config
-from .. import constants_plotly as constants
-from .. import util_plotly as util
+from ..config import Config
+from .. import constants
 
 import metcalcpy.util.utils as utils
 
@@ -59,7 +58,7 @@ class EnsSsConfig(Config):
         ##############################################
         # title parameters
         self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
-        self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
+        self.title_offset = 1.0 + abs(self.parameters['title_offset']) * constants.DEFAULT_TITLE_OFFSET
         self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
@@ -86,7 +85,6 @@ class EnsSsConfig(Config):
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
         self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         ##############################################
         # x2-axis parameters
@@ -104,6 +102,7 @@ class EnsSsConfig(Config):
         self.plot_disp = self._get_plot_disp()
         self.colors_list = self._get_colors()
         self.marker_list = self._get_markers()
+        self.marker_open_list = self._get_markers_open()
         self.marker_size = self._get_markers_size()
         self.mode = self._get_mode()
         self.linewidth_list = self._get_linewidths()
@@ -178,104 +177,26 @@ class EnsSsConfig(Config):
 
         return self.create_list_by_series_ordering(plot_display_bools)
 
-    def _get_mode(self) -> list:
+    def config_consistency_check(self) -> None:
+        """Checks that the number of settings defined for
+            plot_disp, series_ordering, colors_list, user_legends, and show_legend
+           are consistent with number of series.
+
+           @raises ValueError if any of settings are inconsistent with the
+            number of series (as defined by the cross product of the model
+            and vx_mask defined in the series_val_1 setting)
         """
-           Retrieve all the modes. Convert mode names from
-           the config file into plotly python's mode names.
-
-           Args:
-
-           Returns:
-               markers: a list of the plotly markers
-        """
-        modes = self.get_config_value('series_type')
-        mode_list = []
-        for mode in modes:
-            if mode in constants.TYPE_TO_PLOTLY_MODE.keys():
-                # the recognized plotly marker names:
-                # circle-open (for small circle), circle, triangle-up,
-                # square, diamond, or hexagon
-                mode_list.append(constants.TYPE_TO_PLOTLY_MODE[mode])
-            else:
-                mode_list.append('ens_sss+markers')
-        return self.create_list_by_series_ordering(mode_list)
-
-    def _get_markers(self) -> list:
-        """
-           Retrieve all the markers. Convert marker names from
-           the config file into plotly python's marker names.
-
-           Args:
-
-           Returns:
-               markers: a list of the plotly markers
-        """
-        markers = self.get_config_value('series_symbols')
-        markers_list = []
-        for marker in markers:
-            if marker in constants.AVAILABLE_PLOTLY_MARKERS_LIST:
-                # the recognized plotly marker names:
-                # circle-open (for small circle), circle, triangle-up,
-                # square, diamond, or hexagon
-                markers_list.append(marker)
-            else:
-                markers_list.append(constants.PCH_TO_PLOTLY_MARKER[marker])
-        return self.create_list_by_series_ordering(markers_list)
-
-    def _get_markers_size(self) -> list:
-        """
-           Retrieve all the markers. Convert marker names from
-           the config file into plotly python's marker names.
-
-           Args:
-
-           Returns:
-               markers: a list of the plotly markers
-        """
-        markers = self.get_config_value('series_symbols')
-        markers_size = []
-        for marker in markers:
-            if marker in constants.AVAILABLE_PLOTLY_MARKERS_LIST:
-                markers_size.append(marker)
-            else:
-                markers_size.append(constants.PCH_TO_PLOTLY_MARKER_SIZE[marker])
-
-        return self.create_list_by_series_ordering(markers_size)
-
-    def _config_consistency_check(self) -> bool:
-        """
-            Checks that the number of settings defined for plot_ci,
-            plot_disp, series_order, user_legend colors, and series_symbols
-            are consistent.
-
-            Args:
-
-            Returns:
-                True if the number of settings for each of the above
-                settings is consistent with the number of
-                series (as defined by the cross product of the model
-                and vx_mask defined in the series_val_1 setting)
-
-        """
-        # Determine the number of series based on the number of
-        # permutations from the series_var setting in the
-        # config file
-
-        # Numbers of values for other settings for series
-        num_plot_disp = len(self.plot_disp)
-        num_markers = len(self.marker_list)
-        num_series_ord = len(self.series_ordering)
-        num_colors = len(self.colors_list)
-        num_legends = len(self.user_legends)
-        num_line_widths = len(self.linewidth_list)
-        num_linestyles = len(self.linestyles_list)
-        status = False
-
-        if self.num_series == num_plot_disp == \
-                num_markers == num_series_ord == num_colors \
-                == num_legends == num_line_widths == num_linestyles:
-            status = True
-        return status
+        lists_to_check = {
+            "plot_disp": self.plot_disp,
+            "marker_list": self.marker_list,
+            "series_ordering": self.series_ordering,
+            "colors_list": self.colors_list,
+            "user_legends": self.user_legends,
+            "linewidth_list": self.linewidth_list,
+            "linestyles_list": self.linestyles_list,
+            "show_legend": self.show_legend,
+        }
+        self._config_compare_lists_to_num_series(lists_to_check)
 
     def _get_user_legends(self, legend_label_type: str = '') -> list:
         """
@@ -302,7 +223,7 @@ class EnsSsConfig(Config):
                 ser_components_copy = ser_components.copy()
                 ser_components_copy.append('MSE')
                 legend_list.append(' '.join(map(str, ser_components_copy)))
-                if self.ensss_pts_disp is True:
+                if self.ensss_pts_disp:
                     ser_components.append('#PTS')
                     legend_list.append(' '.join(map(str, ser_components)))
             else:
@@ -322,8 +243,8 @@ class EnsSsConfig(Config):
         for field in reversed(list(all_fields_values_orig.keys())):
             all_fields_values[field] = all_fields_values_orig.get(field)
 
-        if self._get_fcst_vars(axis):
-            all_fields_values['fcst_var'] = list(self._get_fcst_vars(axis).keys())
+        if self.get_fcst_vars_keys(axis):
+            all_fields_values['fcst_var'] = self.get_fcst_vars_keys(axis)
 
         return utils.create_permutations_mv(all_fields_values, 0)
 
@@ -355,10 +276,7 @@ class EnsSsConfig(Config):
         """
         # Retrieve the lists from the series_val_1 dictionary
         series_vals_list = self.series_vals_1.copy()
-        if isinstance(self.fcst_var_val_1, list) is True:
-            fcst_vals = self.fcst_var_val_1
-        elif isinstance(self.fcst_var_val_1, dict) is True:
-            fcst_vals = list(self.fcst_var_val_1.values())
+        fcst_vals = list(self.fcst_var_val_1.values())
         fcst_vals_flat = [item for sublist in fcst_vals for item in sublist]
         series_vals_list.append(fcst_vals_flat)
 
@@ -367,26 +285,7 @@ class EnsSsConfig(Config):
         # fcst_var_val values.
         permutations = list(itertools.product(*series_vals_list))
         total = len(permutations)
-        if self.ensss_pts_disp is True:
+        if self.ensss_pts_disp:
             total = total * 2
 
         return total
-
-    def _get_linestyles(self) -> list:
-        """
-           Retrieve all the line styles. Convert line style names from
-           the config file into plotly python's line style names.
-
-           Args:
-
-           Returns:
-               line_styles: a list of the plotly line styles
-        """
-        line_styles = self.get_config_value('series_line_style')
-        line_style_list = []
-        for line_style in line_styles:
-            if line_style in constants.LINE_STYLE_TO_PLOTLY_DASH.keys():
-                line_style_list.append(constants.LINE_STYLE_TO_PLOTLY_DASH[line_style])
-            else:
-                line_style_list.append(None)
-        return self.create_list_by_series_ordering(line_style_list)

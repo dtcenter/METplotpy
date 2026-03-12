@@ -21,16 +21,14 @@ import itertools
 import numpy as np
 import pandas as pd
 
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from plotly.graph_objects import Figure
+from matplotlib import pyplot as plt
+from matplotlib import ticker
 
 from metcalcpy.event_equalize import event_equalize
-from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 from metplotpy.plots.ens_ss.ens_ss_config import EnsSsConfig
 from metplotpy.plots.ens_ss.ens_ss_series import EnsSsSeries
-from metplotpy.plots.base_plot_plotly import BasePlot
-import metplotpy.plots.util_plotly as util
+from metplotpy.plots.base_plot import BasePlot
+import metplotpy.plots.util as util
 import metcalcpy.util.utils as utils
 
 
@@ -62,21 +60,13 @@ class EnsSs(BasePlot):
         self.logger.info(f"Start Ens_ss plot: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
-        self.logger.info(f"Consistency checking of config settings for colors, "
-                        f"legends, etc.{datetime.now()}")
-        is_config_consistent = self.config_obj._config_consistency_check()
-        self.logger.info(f"Finished consistency checking of config settings for colors, "
-                        f"legends, etc.{datetime.now()}")
-        if not is_config_consistent:
-            value_error_msg = ("ValueError: The number of series defined by "
-                              "series_val_1 and "
-                              "derived curves is inconsistent with the number of "
-                              "settings required for describing each series. Please "
-                              "check the number of your configuration file's "
-                              "plot_i, plot_disp, series_order, user_legend, show_legend and "
-                              "colors settings.")
-            self.logger.error(value_error_msg)
-            raise ValueError(value_error_msg)
+        self.config_obj.config_consistency_check()
+
+        # if plotting points, add show_legend True in between each show legend value
+        # do this after the consistency check to ensure the number of
+        # show_legend values matches the number of series before adding to the list
+        if self.config_obj.ensss_pts_disp:
+            self.config_obj.show_legend = [val for item in self.config_obj.show_legend for val in (item, 1)]
 
         # Read in input data, location specified in config file
         self.logger.info(f"Begin reading input data: {datetime.now()}")
@@ -94,11 +84,6 @@ class EnsSs(BasePlot):
         # line width, and criteria needed to subset the input dataframe.
         self.series_list = self._create_series(self.input_df)
 
-        # create figure
-        # pylint:disable=assignment-from-no-return
-        # Need to have a self.figure that we can pass along to
-        # the methods in base_plot.py (BasePlot class methods) to
-        # create binary versions of the plot.
         self._create_figure()
 
     def _perform_event_equalization(self):
@@ -204,14 +189,13 @@ class EnsSs(BasePlot):
         for i, name in enumerate(self.config_obj.get_series_y(1)):
             series_obj = EnsSsSeries(self.config_obj, i, input_data, series_list, name)
             series_list.append(series_obj)
-            if self.config_obj.ensss_pts_disp is True:
+            if self.config_obj.ensss_pts_disp:
                 series_list.append(series_obj)
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
-        self.logger.info(f"Finished creating series objects:"
-                                    f" {datetime.now()}")
+        self.logger.info(f"Finished creating series objects: {datetime.now()}")
 
         return series_list
 
@@ -223,276 +207,104 @@ class EnsSs(BasePlot):
         self.logger.info(f"Begin creating the figure: {datetime.now()}")
 
         # create and draw the plot
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
+        fig, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
-        self._add_y2axis()
-        self._add_legend()
+        wts_size_styles = self.get_weights_size_styles()
 
-        # add series lines
-        i = 0
-        counter = 1
-        if self.config_obj.ensss_pts_disp is True:
-            counter = 2
-        # for series in self.series_list:
-        while i < len(self.series_list):
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
 
-            # Don't generate the plot for this series if
-            # it isn't requested (as set in the config file)
-            if self.series_list[i].plot_disp:
-                self._draw_series(self.series_list[i])
-            i = i + counter
+        ax_y2 = None
+        if self.config_obj.ensss_pts_disp:
+            ax_y2 = self._add_y2axis(ax, wts_size_styles['y2lab'])
 
-        # add custom lines
-        if len(self.series_list) > 0:
-            self._add_lines(self.config_obj)
+            # format large numbers like 3 million as 3M
+            ax_y2.yaxis.set_major_formatter(ticker.EngFormatter())
 
-        # apply y axis limits
-        self._yaxis_limits()
-        self._y2axis_limits()
+        handles_and_labels = self._add_series(ax, ax_y2)
+
+        self._add_xaxis(ax, wts_size_styles['xlab'])
+        self._add_yaxis(ax, wts_size_styles['ylab'])
+
+        self._add_legend(ax, handles_and_labels)
+
+        self._add_custom_lines(ax)
+
+        plt.tight_layout()
 
         self.logger.info(f"Finished creating the figure: {datetime.now()}")
 
-    def _add_y2axis(self) -> None:
-        """
-        Adds y2-axis if needed
-        """
-        if self.config_obj.ensss_pts_disp is True:
-            self.figure.update_yaxes(title_text=
-                                     util.apply_weight_style(self.config_obj.yaxis_2,
-                                                             self.config_obj.parameters['y2lab_weight']
-                                                             ),
-                                     secondary_y=True,
-                                     linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                     linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                     showgrid=False,
-                                     zeroline=False,
-                                     ticks="inside",
-                                     title_font={
-                                         'size': self.config_obj.y2_title_font_size
-                                     },
-                                     title_standoff=abs(self.config_obj.parameters['y2lab_offset']),
-                                     tickangle=self.config_obj.y2_tickangle,
-                                     tickfont={'size': self.config_obj.y2_tickfont_size}
-                                     )
+    def _add_custom_lines(self, ax):
+        # add custom lines if lines are defined in config
+        if len(self.series_list) > 0:
+            self._add_lines(ax, self.config_obj)
 
-    def _y2axis_limits(self) -> None:
-        """
-        Apply limits on y2 axis if needed
-        """
-        if len(self.config_obj.parameters['y2lim']) > 0:
-            self.figure.update_layout(yaxis2={'range': [self.config_obj.parameters['y2lim'][0],
-                                                        self.config_obj.parameters['y2lim'][1]],
-                                              'autorange': False})
+    def _add_series(self, ax, ax2):
+        handles_and_labels = []
+        i = 0
+        counter = 1
+        if self.config_obj.ensss_pts_disp:
+            counter = 2
 
-    def _draw_series(self, series: EnsSsSeries) -> None:
+        # for series in self.series_list:
+        for idx, series in enumerate(self.series_list):
+            if not series.plot_disp:
+                continue
+
+            is_points_plot = self.config_obj.ensss_pts_disp and idx % 2 == 1
+            plot_ax = ax2 if is_points_plot else ax
+            handle = self._draw_series(plot_ax, series, idx, is_points_plot)
+            handles_and_labels.append((handle, handle.get_label()))
+
+        # while i < len(self.series_list):
+        #
+        #     # Don't generate the plot for this series if
+        #     # it isn't requested (as set in the config file)
+        #     if self.series_list[i].plot_disp:
+        #         handle, handle2 = self._draw_series(ax, ax2, self.series_list[i])
+        #         handles_and_labels.append((handle, handle.get_label()))
+        #         handles_and_labels.append((handle2, handle2.get_label()))
+        #     i = i + counter
+
+        return handles_and_labels
+
+    def _draw_series(self, ax, series: EnsSsSeries, index: int, is_points_plot: bool) -> None:
         """
         Draws the formatted line on the plot
 
         :param series: EnsSs series object with data and parameters
         """
-        self.logger.info(f"Begin drawing the series on the plot:"
-                                    f" {datetime.now()}")
+        self.logger.info(f"Begin drawing the series on the plot: {datetime.now()}")
 
         # add the plot
-        self.figure.add_trace(
-            go.Scatter(x=series.series_points['spread_skill'],
-                       y=series.series_points['mse'],
-                       showlegend=self.config_obj.show_legend[series.idx] == 1,
-                       mode=self.config_obj.mode[series.idx],
-                       textposition="top right",
-                       name=self.config_obj.user_legends[series.idx],
-                       line={'color': self.config_obj.colors_list[series.idx],
-                             'width': self.config_obj.linewidth_list[series.idx],
-                             'dash': self.config_obj.linestyles_list[series.idx]},
-                       marker_symbol=self.config_obj.marker_list[series.idx],
-                       marker_color=self.config_obj.colors_list[series.idx],
-                       marker_line_color=self.config_obj.colors_list[series.idx],
-                       marker_size=self.config_obj.marker_size[series.idx]
-                       ),
-            secondary_y=series.y_axis != 1
-        )
+        x = series.series_points['spread_skill']
+        y = series.series_points['pts'] if is_points_plot else series.series_points['mse']
 
-        # add PTS
-        if self.config_obj.ensss_pts_disp is True:
-            self.figure.add_trace(
-                go.Scatter(x=series.series_points['spread_skill'],
-                           y=series.series_points['pts'],
-                           showlegend=True,
-                           mode=self.config_obj.mode[series.idx + 1],
-                           textposition="top right",
-                           name=self.config_obj.user_legends[series.idx + 1],
-                           line={'color': self.config_obj.colors_list[series.idx + 1],
-                                 'width': self.config_obj.linewidth_list[series.idx + 1],
-                                 'dash': self.config_obj.linestyles_list[series.idx + 1]},
-                           marker_symbol=self.config_obj.marker_list[series.idx + 1],
-                           marker_color=self.config_obj.colors_list[series.idx + 1],
-                           marker_line_color=self.config_obj.colors_list[series.idx + 1],
-                           marker_size=self.config_obj.marker_size[series.idx + 1]
-                           ),
-                secondary_y=True
-            )
+        # set arguments for the plot
+        plot_args = self._get_plot_args(index)
+        plot_obj = ax.plot(x, y, **plot_args)
 
-            self.logger.info(f"Finished drawing the series on the plot:"
-                                        f" {datetime.now()}")
+        self.logger.info(f"Finished drawing the series on the plot: {datetime.now()}")
+        return plot_obj[0]
 
-    def _create_layout(self) -> Figure:
-        """
-        Creates a new layout based on the properties from the config file
-        including plots size, annotation and title
+    def _get_plot_args(self, idx):
+        plot_mode = self.config_obj.mode[idx]
+        marker = self.config_obj.marker_list[idx] if 'markers' in plot_mode else None
+        line_style = self.config_obj.linestyles_list[idx] if 'lines' in plot_mode else 'None'
 
-        :return: Figure object
-        """
-        # create annotation
-        annotation = [
-            {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-                                             self.config_obj.parameters['caption_weight']),
-             'align': 'left',
-             'showarrow': False,
-             'xref': 'paper',
-             'yref': 'paper',
-             'x': self.config_obj.parameters['caption_align'],
-             'y': self.config_obj.caption_offset,
-             'font': {
-                 'size': self.config_obj.caption_size,
-                 'color': self.config_obj.parameters['caption_col']
-             }
-             }]
-        # create title
-        title = {'text': util.apply_weight_style(self.config_obj.title,
-                                                 self.config_obj.parameters['title_weight']),
-                 'font': {
-                     'size': self.config_obj.title_font_size,
-                 },
-                 'y': self.config_obj.title_offset,
-                 'x': self.config_obj.parameters['title_align'],
-                 'xanchor': 'center',
-                 'xref': 'paper'
-                 }
+        plot_args = {
+            'marker': marker,
+            'markersize': self.config_obj.marker_size[idx],
+            'label': self.config_obj.user_legends[idx],
+            'color': self.config_obj.colors_list[idx],
+            'linewidth': self.config_obj.linewidth_list[idx],
+            'linestyle': line_style,
+        }
+        if self.config_obj.marker_open_list[idx]:
+            plot_args['markerfacecolor'] = 'none'
+            plot_args['markeredgecolor'] = self.config_obj.colors_list[idx]
 
-        # create a layout and allow y2 axis
-        fig = make_subplots(specs=[[{"secondary_y": True}]])
-
-        # add size, annotation, title
-        fig.update_layout(
-            width=self.config_obj.plot_width,
-            height=self.config_obj.plot_height,
-            margin=self.config_obj.plot_margins,
-            paper_bgcolor=PLOTLY_PAPER_BGCOOR,
-            annotations=annotation,
-            title=title,
-            plot_bgcolor=PLOTLY_PAPER_BGCOOR
-        )
-        return fig
-
-    def _add_xaxis(self) -> None:
-        """
-        Configures and adds x-axis to the plot
-        """
-        self.figure.update_xaxes(title_text=self.config_obj.xaxis,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 ticks="inside",
-                                 zeroline=False,
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.x_title_font_size
-                                 },
-                                 title_standoff=abs(self.config_obj.parameters['xlab_offset']),
-                                 tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size}
-                                 )
-        # reverse xaxis if needed
-        if self.config_obj.xaxis_reverse is True:
-            self.figure.update_xaxes(autorange="reversed")
-
-    def _add_yaxis(self) -> None:
-        """
-        Configures and adds y-axis to the plot
-        """
-        self.figure.update_yaxes(title_text=
-                                 util.apply_weight_style(self.config_obj.yaxis_1,
-                                                         self.config_obj.parameters['ylab_weight']),
-                                 secondary_y=False,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 zeroline=False,
-                                 ticks="inside",
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.y_title_font_size
-                                 },
-                                 title_standoff=abs(self.config_obj.parameters['ylab_offset']),
-                                 tickangle=self.config_obj.y_tickangle,
-                                 tickfont={'size': self.config_obj.y_tickfont_size}
-                                 )
-
-    def _add_legend(self) -> None:
-        """
-        Creates a plot legend based on the properties from the config file
-        and attaches it to the initial Figure
-        """
-        self.figure.update_layout(legend={'x': self.config_obj.bbox_x,
-                                          'y': self.config_obj.bbox_y,
-                                          'xanchor': 'center',
-                                          'yanchor': 'top',
-                                          'bordercolor': self.config_obj.legend_border_color,
-                                          'borderwidth': self.config_obj.legend_border_width,
-                                          'orientation': self.config_obj.legend_orientation,
-                                          'font': {
-                                              'size': self.config_obj.legend_size,
-                                              'color': "black"
-                                          }
-                                          })
-
-    def _yaxis_limits(self) -> None:
-        """
-        Apply limits on y2 axis if needed
-        """
-        if len(self.config_obj.parameters['ylim']) > 0:
-            self.figure.update_layout(yaxis={'range': [self.config_obj.parameters['ylim'][0],
-                                                       self.config_obj.parameters['ylim'][1]],
-                                             'autorange': False})
-
-    def remove_file(self):
-        """
-           Removes previously made image file .  Invoked by the parent class before self.output_file
-           attribute can be created, but overridden here.
-        """
-
-        super().remove_file()
-        self._remove_html()
-
-    def _remove_html(self) -> None:
-        """
-        Removes previously made HTML file.
-        """
-
-        base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-        html_name = f"{base_name}.html"
-
-        # remove the old file if it exist
-        if os.path.exists(html_name):
-            os.remove(html_name)
-
-    def write_html(self) -> None:
-        """
-        Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
-        """
-        if self.config_obj.create_html is True:
-            # construct the file name from plot_filename
-            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-            html_name = f"{base_name}.html"
-
-            # save html
-            self.figure.write_html(html_name, include_plotlyjs=False)
+        return plot_args
 
     def write_output_file(self) -> None:
         """
@@ -504,48 +316,49 @@ class EnsSs(BasePlot):
         # (the input data file) except replace the .data
         # extension with .points1 extension
         # otherwise use points_path path
+        if not self.config_obj.dump_points_1:
+            return
 
         match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-        if self.config_obj.dump_points_1 is True and match:
-            i = 0
-            counter = 1
+        if not match:
+            return
+
+        i = 0
+        counter = 1
+        if self.config_obj.ensss_pts_disp is True:
+            counter = 2
+
+        filename = match.group(1)
+        if self.config_obj.points_path is not None:
+            # get the file name
+            path = filename.split(os.path.sep)
+            if len(path) > 0:
+                filename = path[-1]
+            else:
+                filename = '.' + os.path.sep
+            filename = self.config_obj.points_path + os.path.sep + filename
+
+        filename = filename + '.points1'
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+        with open(filename, 'w') as file:
+            while i < len(self.series_list):
+                file.writelines(
+                    map("{}\t{}\n".format,
+                        [round(num, 6) for num in self.series_list[i].series_points['spread_skill']],
+                        [round(num, 6) for num in self.series_list[i].series_points['mse']]))
+                i = i + counter
+            # print PTS values
             if self.config_obj.ensss_pts_disp is True:
-                counter = 2
-
-            filename = match.group(1)
-            if self.config_obj.points_path is not None:
-                # get the file name
-                path = filename.split(os.path.sep)
-                if len(path) > 0:
-                    filename = path[-1]
-                else:
-                    filename = '.' + os.path.sep
-                filename = self.config_obj.points_path + os.path.sep + filename
-            # else:
-            #     filename = 'points'
-
-            filename = filename + '.points1'
-            os.makedirs(os.path.dirname(filename), exist_ok=True)
-
-            with open(filename, 'w') as file:
+                i = 0
+                file.write('#PTS\n')
                 while i < len(self.series_list):
                     file.writelines(
                         map("{}\t{}\n".format,
                             [round(num, 6) for num in self.series_list[i].series_points['spread_skill']],
-                            [round(num, 6) for num in self.series_list[i].series_points['mse']]))
+                            [round(num, 6) for num in self.series_list[i].series_points['pts']])
+                    )
                     i = i + counter
-                # print PTS values
-                if self.config_obj.ensss_pts_disp is True:
-                    i = 0
-                    file.write('#PTS\n')
-                    while i < len(self.series_list):
-                        file.writelines(
-                            map("{}\t{}\n".format,
-                                [round(num, 6) for num in self.series_list[i].series_points['spread_skill']],
-                                [round(num, 6) for num in self.series_list[i].series_points['pts']])
-                        )
-                        i = i + counter
-                file.close()
 
 
 def main(config_filename=None):
