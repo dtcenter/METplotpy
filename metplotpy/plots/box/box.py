@@ -174,7 +174,7 @@ class Box(BasePlot):
         self._add_caption(plt, wts_size_styles['caption'])
 
         ax_y2 = None
-        if wts_size_styles.get('y2lab'):
+        if wts_size_styles.get('y2lab') and self.config_obj.parameters['list_stat_2']:
             ax_y2 = self._add_y2axis(ax, wts_size_styles['y2lab'])
 
         n_stats, handles_and_labels, yaxis_min, yaxis_max = self._add_series(ax, ax_y2)
@@ -223,7 +223,8 @@ class Box(BasePlot):
         self.logger.info(f"Begin drawing the boxes on the plot for {series.series_name}: {datetime.now()}")
 
         # Group your 'stat_value' data by 'indy_var' categories first
-        data_to_plot, x_locs, width = self._get_data_to_plot_and_x_locs(series, idx)
+        data_to_plot = self._get_data_to_plot(series)
+        x_locs, width = self._get_x_locs_and_width(self.config_obj.indy_vals, idx)
 
         plot_ax = ax
         if ax2 and ax2.get_ylabel() in series.series_data.stat_name.values:
@@ -257,13 +258,13 @@ class Box(BasePlot):
 
         return boxplot['boxes'][0]
 
+    def _get_data_to_plot(self, series):
+        data_to_plot =  [group_data for name, group_data in
+                         series.series_data.groupby(self.config_obj.indy_var)['stat_value']]
+        return data_to_plot
+
     def _get_data_to_plot_and_x_locs(self, series, idx):
-        base = np.arange(len(self.config_obj.indy_vals))
-        n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
-        n = max(n_visible_series, 1)
-        width = MPL_DEFAULT_BOX_WIDTH / n
-        offset = (idx - (n - 1) / 2.0) * width
-        x_locs = base + offset
+        x_locs, width = self._get_x_locs_and_width(self.config_obj.indy_vals, idx)
 
         data_to_plot =  [group_data for name, group_data in
                          series.series_data.groupby(self.config_obj.indy_var)['stat_value']]

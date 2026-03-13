@@ -256,6 +256,8 @@ class Hist(BasePlot):
         # use x points from first series if indy label is not set
         if not self.config_obj.indy_label:
             self.config_obj.indy_label = self._get_x_points(self.series_list[0])
+            if not self.config_obj.indy_vals:
+                self.config_obj.indy_vals = self.config_obj.indy_label
 
         self._add_xaxis(ax, wts_size_styles['xlab'])
         #if self._get_dtick():
@@ -279,12 +281,7 @@ class Hist(BasePlot):
         x_points = self._get_x_points(series)
         y_points = series.series_points
 
-        base = np.arange(len(x_points))
-        n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
-        n = max(n_visible_series, 1)
-        width = MPL_DEFAULT_BAR_WIDTH / n
-        offset = (idx - (n - 1) / 2.0) * width
-        x_locs = base + offset
+        x_locs, width = self._get_x_locs_and_width(x_points, idx)
 
         ax.bar(
             x=x_locs, height=y_points, width=width, align='center',

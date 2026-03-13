@@ -348,7 +348,7 @@ class BasePlot:
 
     def _add_title(self, ax, font_properties):
         ax.set_title(
-            self.config_obj.title,
+            self.config_obj.title.replace('<br>', '\n'),
             fontproperties=font_properties,
             color=constants.DEFAULT_TITLE_COLOR,
             pad=28,
@@ -390,7 +390,7 @@ class BasePlot:
             bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y),
             loc='upper center',
             edgecolor=self.config_obj.legend_border_color,
-            frameon=True,
+            frameon=self.config_obj.draw_box,
             ncol=max(1, len(handles)) if orientation == "horizontal" else 1,
             fontsize=self.config_obj.legend_size,
             labelcolor="black"
@@ -399,16 +399,34 @@ class BasePlot:
             frame = legend.get_frame()
             frame.set_linewidth(self.config_obj.legend_border_width)
 
-    def _add_xaxis(self, ax: plt.Axes, fontproperties: FontProperties) -> None:
+    def _add_xaxis(self, ax: plt.Axes, fontproperties: FontProperties, label=None, grid_on=None) -> None:
         """
         Configures and adds x-axis to the plot
         """
-        ax.set_xlabel(self.config_obj.xaxis, fontproperties=fontproperties,
+        if label is None:
+            label = self.config_obj.xaxis
+
+        if grid_on is None:
+            grid_on = self.config_obj.grid_on
+
+        ax.set_xlabel(label, fontproperties=fontproperties,
                       labelpad=abs(self.config_obj.parameters['xlab_offset']) * constants.PIXELS_TO_POINTS)
-        xtick_locs = np.arange(len(self.config_obj.indy_label))
-        ax.set_xticks(xtick_locs, self.config_obj.indy_label)
+
+        if self.config_obj.indy_label:
+            # use the indices as tick locations
+            xtick_locs = np.arange(len(self.config_obj.indy_label))
+            if self.config_obj.indy_vals:
+                # Use the actual numeric values from indy_vals as tick locations
+                try:
+                    xtick_locs = [float(i) for i in self.config_obj.indy_vals]
+                # if they are not numeric, revert to using the indices
+                except ValueError:
+                    pass
+
+            ax.set_xticks(xtick_locs, self.config_obj.indy_label)
+
         ax.tick_params(axis="x", direction="in", which="both", labelrotation=self.config_obj.x_tickangle)
-        if self.config_obj.grid_on:
+        if grid_on:
             ax.grid(True, which='major', axis='x', color=self.config_obj.blended_grid_col,
                     linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
             ax.set_axisbelow(True)
@@ -416,11 +434,15 @@ class BasePlot:
         if self.config_obj.xaxis_reverse:
             ax.invert_xaxis()
 
-    def _add_yaxis(self, ax: plt.Axes, fontproperties: FontProperties) -> None:
+    def _add_yaxis(self, ax: plt.Axes, fontproperties: FontProperties, label=None, grid_on=None) -> None:
         """
         Configures and adds y-axis to the plot
         """
-        ax.set_ylabel(self.config_obj.yaxis_1, fontproperties=fontproperties,
+        if label is None:
+            label = self.config_obj.yaxis_1
+        if grid_on is None:
+            grid_on = self.config_obj.grid_on
+        ax.set_ylabel(label, fontproperties=fontproperties,
                       labelpad=abs(self.config_obj.parameters['ylab_offset']) * constants.PIXELS_TO_POINTS)
         ax.tick_params(axis="y", direction="in", which="both", labelrotation=self.config_obj.y_tickangle)
 
@@ -429,7 +451,7 @@ class BasePlot:
             ax.set_ylim(self.config_obj.parameters['ylim'])
 
         # add grid lines if requested
-        if self.config_obj.grid_on:
+        if grid_on:
             ax.grid(True, which='major', axis='y', color=self.config_obj.blended_grid_col, linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
             ax.set_axisbelow(True)
 
@@ -459,13 +481,10 @@ class BasePlot:
         # this doesn't appear to be working to add ticks at the top
         ax_top.tick_params(axis="x", direction="in", labelrotation=self.config_obj.x2_tickangle)
 
-    def _add_y2axis(self, ax: plt.Axes, fontproperties: FontProperties):
+    def _add_y2axis(self, ax: plt.Axes, fontproperties: Union[FontProperties, None]):
         """
         Adds y2-axis if needed
         """
-        if not self.config_obj.parameters['list_stat_2']:
-            return None
-
         ax_right = ax.twinx()
         ax_right.set_ylabel(self.config_obj.yaxis_2, fontproperties=fontproperties,
                             labelpad=abs(self.config_obj.parameters['y2lab_offset']) * constants.PIXELS_TO_POINTS)
@@ -519,3 +538,34 @@ class BasePlot:
                     msg = f"Vertical line with position {x_position} cannot be created."
                     self.logger.warning(msg)
                     print(f"WARNING: {msg}")
+
+    def _get_x_locs_and_width(self, x_points, index):
+        try:
+            # Attempt to convert x_points to floats (handles numeric indy_vals)
+            # Threshold values (e.g., ">5.0") will raise a ValueError/TypeError
+            base = np.array([float(x) for x in x_points])
+
+            if len(base) > 1:
+                # Calculate the minimum spacing between numeric x-points
+                # to determine an appropriate bar width.
+                sorted_base = np.sort(base)
+                spacing = np.diff(sorted_base)
+                min_spacing = np.min(spacing)
+                # Ensure spacing is positive to avoid zero-width bars
+                if min_spacing <= 0:
+                    min_spacing = 1.0
+            else:
+                min_spacing = 1.0
+        except (ValueError, TypeError):
+            # Fallback to integer indices for non-numeric data (e.g., thresholds)
+            base = np.arange(len(x_points))
+            min_spacing = 1.0
+
+        n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
+        n = max(n_visible_series, 1)
+
+        # Scale width and offset by min_spacing to ensure bars fit within the numeric gaps
+        width = (min_spacing * constants.MPL_DEFAULT_BAR_WIDTH) / n
+        offset = (index - (n - 1) / 2.0) * width
+        x_locs = base + offset
+        return x_locs, width

@@ -259,28 +259,6 @@ class TaylorDiagramConfig(Config):
 
         return plot_display_bools_ordered
 
-    def _get_markers(self) -> list:
-        """
-           Retrieve all the markers.
-
-           Args:
-
-           Returns:
-               markers: a list of the markers
-        """
-        markers = self.get_config_value('series_symbols')
-        markers_list = []
-        for marker in markers:
-            if marker in constants.AVAILABLE_MARKERS_LIST:
-                # markers is the matplotlib symbol: .,o, ^, d, H, or s
-                markers_list.append(marker)
-            else:
-                # markers are indicated by name: small circle, circle, triangle,
-                # diamond, hexagon, square
-                markers_list.append(constants.PCH_TO_MATPLOTLIB_MARKER[marker.lower()])
-        markers_list_ordered = self.create_list_by_series_ordering(list(markers_list))
-        return markers_list_ordered
-
     def _config_consistency_check(self) -> bool:
         """
             Checks that the number of settings defined for

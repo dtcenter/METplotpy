@@ -17,7 +17,7 @@ import warnings
 import pandas as pd
 import metcalcpy.util.utils as utils
 from ..series import Series
-from ..util_plotly import prepare_pct_roc, prepare_ctc_roc
+from ..util import prepare_pct_roc, prepare_ctc_roc
 
 
 class ROCDiagramSeries(Series):

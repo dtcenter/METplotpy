@@ -135,7 +135,6 @@ class BoxConfig(Config):
             self.legend_orientation = 'v'
         else:
             self.legend_orientation = 'h'
-        self.legend_border_color = "black"
 
         # Default Matplotlib values for whiskers
         self.whis = 1.5

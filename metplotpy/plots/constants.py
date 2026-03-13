@@ -66,29 +66,46 @@ DEFAULT_TITLE_OFFSET = 0.02
 
 AVAILABLE_MARKERS_LIST = ["o", "^", "s", "d", "H", ".", "h"]
 
-PCH_TO_MATPLOTLIB_MARKER = {'20': '.', '19': 'o', '17': '^', '1': 'H',
-                            '18': 'd', '15': 's', 'small circle': '.',
-                            'circle': 'o', 'square': 's',
-                            'triangle': '^', 'rhombus': 'd', 'ring': 'h'}
+PCH_TO_MATPLOTLIB_MARKER = {
+    # R plotting characters
+    '20': '.',
+    '19': 'o',
+    '17': '^',
+    '1': 'H',
+    '18': 'd',
+    '15': 's',
+    'small circle': 'o', # changed from .
+    'circle': 'o',
+    'square': 's',
+    'triangle': '^',
+    'rhombus': 'd',
+    'ring': 'h',
+    # plotly marker strings
+    'circle-open': 'o', # H?
+    'triangle-up': '^',
+    'diamond': 'd',
+    'hexagon': 'h',
+    'asterisk-open': '*', # .?
+}
 
 # approximated from plotly marker size to matplotlib marker size
 PCH_TO_MATPLOTLIB_MARKER_SIZE = {'.': 14, 'o': 36, 's': 20, '^': 36, 'd': 20, 'H': 28}
 
-XAXIS_ORIENTATION = {0: 0, 1: 0, 2: 270, 3: 270}
-YAXIS_ORIENTATION = {0: -90, 1: 0, 2: 0, 3: -90}
+SERIES_TYPE_TO_PLOT_MODE = {'b': 'lines+markers', 'p': 'markers', 'l': 'lines'}
 
-# approximated from plotly marker size to matplotlib marker size
-PCH_TO_MATPLOTLIB_MARKER_SIZE = {'.': 14, 'o': 36, 's': 20, '^': 36, 'd': 20, 'H': 28}
-
-# used for tick angles
 XAXIS_ORIENTATION = {0: 0, 1: 0, 2: 270, 3: 270}
 YAXIS_ORIENTATION = {0: -90, 1: 0, 2: 0, 3: -90}
 
 # Caption weights supported in Matplotlib are normal, italic and oblique.
 # Map these onto the MetViewer requested values of 1 (normal), 2 (bold),
 # 3 (italic), 4 (bold italic), and 5 (symbol) using a dictionary
-MV_TO_MPL_CAPTION_STYLE = {1:('normal', 'normal'), 2:('normal','bold'), 3:('italic', 'normal')
-    , 4:('italic', 'bold'),5:('oblique','normal')}
+MV_TO_MPL_CAPTION_STYLE = {
+    1: ('normal', 'normal'),
+    2: ('normal','bold'),
+    3: ('italic', 'normal'),
+    4: ('italic', 'bold'),
+    5: ('oblique','normal'),
+}
 
 # Matplotlib constants
 MPL_FONT_SIZE_DEFAULT = 11
