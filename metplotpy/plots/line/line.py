@@ -10,7 +10,7 @@
 """
 Class Name: line.py
  """
-__author__ = 'Tatiana Burek'
+__author__ = 'Tatiana Burek, George McCabe'
 
 import os
 from datetime import datetime
@@ -23,16 +23,12 @@ from itertools import chain
 import numpy as np
 import pandas as pd
 
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from plotly.graph_objects import Figure
+from matplotlib import pyplot as plt
 
-from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
-    PLOTLY_PAPER_BGCOOR
 from metplotpy.plots.line.line_config import LineConfig
 from metplotpy.plots.line.line_series import LineSeries
-from metplotpy.plots.base_plot_plotly import BasePlot
-from metplotpy.plots import util_plotly as util
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots import util
 from metplotpy.plots.series import Series
 
 import metcalcpy.util.utils as calc_util
@@ -57,8 +53,6 @@ class Line(BasePlot):
         # init common layout
         super().__init__(parameters, self.defaults_name)
 
-        self.allow_secondary_y = True
-
         # instantiate a LineConfig object, which holds all the necessary settings
         # from the
         # config file that represents the BasePlot object (Line).
@@ -69,16 +63,7 @@ class Line(BasePlot):
         self.logger.info(f"Begin creating the line plot: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
-        is_config_consistent = self.config_obj._config_consistency_check()
-        if not is_config_consistent:
-            error_msg = ("The number of series defined by series_val_1/2 and derived "
-                         "curves is inconsistent with the number of settings "
-                         "required for describing each series. Please check "
-                         "the number of your configuration file's plot_ci, "
-                         "plot_disp, series_order, user_legend, "
-                         "colors, series_symbols, and show_legend settings.")
-            self.logger.error(f"ValueError: {error_msg}: {datetime.now()}")
-            raise ValueError(error_msg)
+        self.config_obj.config_consistency_check()
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
@@ -96,11 +81,6 @@ class Line(BasePlot):
         # line width, and criteria needed to subset the input dataframe.
         self.series_list = self._create_series(self.input_df)
 
-        # create figure
-        # pylint:disable=assignment-from-no-return
-        # Need to have a self.figure that we can pass along to
-        # the methods in base_plot.py (BasePlot class methods) to
-        # create binary versions of the plot.
         self._create_figure()
 
     def __repr__(self):
@@ -154,9 +134,6 @@ class Line(BasePlot):
         for i, name in enumerate(self.config_obj.get_series_y(1)):
             series_obj = LineSeries(self.config_obj, i, input_data, series_list, name)
             series_list.append(series_obj)
-
-
-
 
         # add series for y2 axis
         num_series_y2 = len(self.config_obj.get_series_y(2))
@@ -218,26 +195,44 @@ class Line(BasePlot):
         self.logger.info(f"Begin create the figure: {datetime.now()}")
 
         # create and draw the plot
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_y2axis()
-        self._add_legend()
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
-        # calculate stag adjustments
-        stag_adjustments = self._calc_stag_adjustments()
+        wts_size_styles = self.get_weights_size_styles()
 
-        x_points_index = list(range(0, len(self.config_obj.indy_vals)))
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
 
-        # create a vertical plot if needed
-        self._adjust_for_vertical(x_points_index)
+        ax_y2 = None
+        if self.config_obj.parameters['list_stat_2']:
+            ax_y2 = self._add_y2axis(ax, wts_size_styles['y2lab'])
 
-        # reverse xaxis if needed
-        if self.config_obj.xaxis_reverse is True:
-            if self.config_obj.vert_plot is True:
-                self.figure.update_yaxes(autorange="reversed")
-            else:
-                self.figure.update_xaxes(autorange="reversed")
+        n_stats, yaxis_min, yaxis_max, handles_and_labels = self._add_series(ax, ax_y2)
+
+        xlab_style = wts_size_styles['xlab'] if not self.config_obj.vert_plot else wts_size_styles['ylab']
+        ylab_style = wts_size_styles['ylab'] if not self.config_obj.vert_plot else wts_size_styles['xlab']
+        self._add_xaxis(ax, xlab_style)
+        self._add_yaxis(ax, ylab_style)
+
+        # add x2 axis
+        if wts_size_styles.get('x2lab'):
+            self._add_x2axis(ax, n_stats, wts_size_styles['x2lab'])
+
+        self._add_legend(ax, handles_and_labels)
+
+        # add custom lines
+        self._add_lines(ax, self.config_obj, self.config_obj.indy_vals)
+
+        plt.tight_layout()
+
+        #self._add_lines(self.config_obj, x_points_index)
+
+        # sync axis
+        self._sync_yaxes(ax, ax_y2, yaxis_min, yaxis_max)
+
+        self.logger.info(f"Finished creating the figure: {datetime.now()}")
+
+    def _add_series(self,ax, ax2):
+        handles_and_labels = []
 
         # placeholder for the number of stats
         n_stats = [0] * len(self.config_obj.indy_vals)
@@ -249,498 +244,97 @@ class Line(BasePlot):
         # add series lines
         for series in self.series_list:
 
-            # Don't generate the plot for this series if
-            # it isn't requested (as set in the config file)
-            if series.plot_disp:
+            # Don't generate the plot for this series if it isn't requested
+            if not series.plot_disp:
+                continue
 
-                # collect min-max if we need to sync axis
-                if self.config_obj.sync_yaxes is True:
-                    yaxis_min, yaxis_max = self._find_min_max(series, yaxis_min,
-                                                              yaxis_max)
+            # collect min-max if we need to sync axis
+            if self.config_obj.sync_yaxes:
+                yaxis_min, yaxis_max = self._find_min_max(series, yaxis_min,
+                                                          yaxis_max)
 
-                # apply staggering offset if applicable
-                if stag_adjustments[series.idx] == 0:
-                    x_points_index_adj = x_points_index
-                else:
-                    x_points_index_adj = x_points_index + stag_adjustments[series.idx]
+            handle = self._draw_series(ax, ax2, series)
+            handles_and_labels.append((handle, handle.get_label()))
 
-                self._draw_series(series, x_points_index_adj)
+            # aggregate number of stats
+            n_stats = list(map(add, n_stats, series.series_points['nstat']))
 
-                # aggregate number of stats
-                n_stats = list(map(add, n_stats, series.series_points['nstat']))
+        return n_stats, yaxis_min, yaxis_max, handles_and_labels
 
-        # add custom lines
-        self._add_lines(self.config_obj, x_points_index)
-
-        # apply y axis limits
-        self._yaxis_limits()
-        self._y2axis_limits()
-
-        # sync axis
-        self._sync_yaxis(yaxis_min, yaxis_max)
-
-        # add x2 axis
-        self._add_x2axis(n_stats)
-
-        # Allow plots to start from the y=0 line if set in the config file
-        if self.config_obj.start_from_zero is True:
-            self.figure.update_xaxes(range=[0, len(x_points_index) - 1])
-
-        self.logger.info(f"Finished creating the figure: {datetime.now()}")
-
-    def _draw_series(self, series: Series, x_points_index_adj: Union[list, None] =
-    None) \
-            -> None:
+    def _draw_series(self, ax: plt.Axes, ax2, series: Series):
         """
         Draws the formatted line with CIs if needed on the plot
 
         :param series: Line series object with data and parameters
-        :param x_points_index_adj: values for adjusting x-values position
         """
         self.logger.info(f"Begin drawing the lines on the plot: {datetime.now()}")
-        y_points = series.series_points['dbl_med']
 
-        # show or not ci
-        # see if any ci values in not 0
+        # adjust the x points to stagger them to prevent points from overlapping
+        x_points_index_adj, _ = self._get_x_locs_and_width(self.config_obj.indy_vals, series.idx,
+                                                           stagger_scale=0.1)
+
+        # convert to a numpy array to change None values to NaN
+        y_points = np.array(series.series_points['dbl_med'], dtype=float)
+
+        # show or not ci - see if any ci values in not 0
         no_ci_up = all(v == 0 for v in series.series_points['dbl_up_ci'])
         no_ci_lo = all(v == 0 for v in series.series_points['dbl_lo_ci'])
+
+        # convert to a numpy array to change None values to NaN
+        asymmetric_error = np.array([
+            series.series_points['dbl_up_ci'],
+            series.series_points['dbl_lo_ci']
+        ], dtype=float)
+
         error_y_visible = True
-        if ((no_ci_up is True and no_ci_lo is True) or self.config_obj.plot_ci[
-            series.idx] == 'NONE'):
+        if (no_ci_up and no_ci_lo) or self.config_obj.plot_ci[series.idx] == 'NONE':
             error_y_visible = False
 
+        # determine which y-axis to use for the plot
+        plot_ax = ax if series.y_axis == 1 else ax2
 
-        # switch x and y values for the vertical plot
-        error_x = {}
-        error_y = {}
-        if self.config_obj.vert_plot is True:
-            y_points, x_points_index_adj = x_points_index_adj, y_points
-            self._xaxis_limits()
-            self.figure.update_xaxes(autorange=False)
+        # plot error bar
+        plot_mode = self.config_obj.mode[series.idx]
+        marker = self.config_obj.marker_list[series.idx] if 'markers' in plot_mode else None
+        line_style = self.config_obj.linestyles_list[series.idx] if 'lines' in plot_mode else 'None'
 
-            # Error bars for vertical plot
-            error_x = {'type': 'data',
-                                    'symmetric': False,
-                                    'array': series.series_points['dbl_up_ci'],
-                                    'arrayminus': series.series_points['dbl_lo_ci'],
-                                    'visible': error_y_visible,
-                                    'thickness': self.config_obj.linewidth_list[
-                                        series.idx]}
-        else:
-            # Error bars
-            error_y = {
-                'type': 'data',
-                'symmetric': False,
-                'array': series.series_points['dbl_up_ci'],
-                'arrayminus': series.series_points['dbl_lo_ci'],
-                'visible': error_y_visible,
-                'thickness': self.config_obj.linewidth_list[series.idx]
-                }
+        # Swap x and y data if vertical plot
+        plot_x = y_points if self.config_obj.vert_plot else x_points_index_adj
+        plot_y = x_points_index_adj if self.config_obj.vert_plot else y_points
 
-        # add the plot
-        # orient the confidence interval bars based on the vert_plot setting in
-        # the yaml configuration file.
-        self.figure.add_trace(
-               go.Scatter(x=x_points_index_adj,
-                           y=y_points,
-                           showlegend=self.config_obj.show_legend[series.idx] == 1,
-                           mode=self.config_obj.mode[series.idx],
-                           textposition="top right",
-                           name=self.config_obj.user_legends[series.idx],
-                           connectgaps=self.config_obj.con_series[series.idx] == 1,
-                           line={'color': self.config_obj.colors_list[series.idx],
-                                 'width': self.config_obj.linewidth_list[series.idx],
-                                 'dash': self.config_obj.linestyles_list[series.idx]},
-                           marker_symbol=self.config_obj.marker_list[series.idx],
-                           marker_color=self.config_obj.colors_list[series.idx],
-                           marker_line_color=self.config_obj.colors_list[series.idx],
-                           marker_size=self.config_obj.marker_size[series.idx],
-                           error_x=error_x,
-                           error_y=error_y
-                           ),
-              secondary_y=series.y_axis != 1
-            )
+        # Swap error bars (yerr becomes xerr) if vertical plot
+        x_err_val = asymmetric_error if (self.config_obj.vert_plot and error_y_visible) else None
+        y_err_val = asymmetric_error if (not self.config_obj.vert_plot and error_y_visible) else None
 
-
-        self.logger.info(f"Finished drawing the lines on the plot:"
-                              f" {datetime.now()}")
-
-    def _create_layout(self) -> Figure:
-        """
-        Creates a new layout based on the properties from the config file
-        including plots size, annotation and title
-
-        :return: Figure object
-        """
-        # create annotation
-        annotation = [
-            {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-                                             self.config_obj.parameters[
-                                                 'caption_weight']),
-             'align': 'left',
-             'showarrow': False,
-             'xref': 'paper',
-             'yref': 'paper',
-             'x': self.config_obj.parameters['caption_align'],
-             'y': self.config_obj.caption_offset,
-             'font': {
-                 'size': self.config_obj.caption_size,
-                 'color': self.config_obj.parameters['caption_col']
-             }
-             }]
-        # create title
-        title = {'text': util.apply_weight_style(self.config_obj.title,
-                                                 self.config_obj.parameters[
-                                                     'title_weight']),
-                 'font': {
-                     'size': self.config_obj.title_font_size,
-                 },
-                 'y': self.config_obj.title_offset,
-                 'x': self.config_obj.parameters['title_align'],
-                 'xanchor': 'center',
-                 'xref': 'paper'
-                 }
-
-        # create a layout and allow y2 axis
-        fig = make_subplots(specs=[[{"secondary_y": self.allow_secondary_y}]])
-
-        # add size, annotation, title
-        fig.update_layout(
-            width=self.config_obj.plot_width,
-            height=self.config_obj.plot_height,
-            margin=self.config_obj.plot_margins,
-            paper_bgcolor=PLOTLY_PAPER_BGCOOR,
-            annotations=annotation,
-            title=title,
-            plot_bgcolor=PLOTLY_PAPER_BGCOOR
+        plot_obj = plot_ax.errorbar(
+            x=plot_x,
+            y=plot_y,
+            label=self.config_obj.user_legends[series.idx],
+            # line style
+            color=self.config_obj.colors_list[series.idx],
+            linestyle=line_style,
+            linewidth=self.config_obj.linewidth_list[series.idx],
+            # marker style
+            marker=marker,
+            markersize=self.config_obj.marker_size[series.idx],
+            markeredgecolor=self.config_obj.colors_list[series.idx],
+            markerfacecolor=self.config_obj.colors_list[series.idx],
+            # error bar
+            xerr=x_err_val,
+            yerr=y_err_val,
+            elinewidth=self.config_obj.linewidth_list[series.idx],
         )
-        return fig
 
-    def _calc_stag_adjustments(self) -> list:
-        """
-        Calculates the x-axis adjustment for each point if requested.
-        It needed so hte points and CIs for each x-axis values don't be placed on top
-        of each other
-
-        :return: the list of the adjustment values
-        """
-
-        # get the total number of series
-        num_stag = len(self.config_obj.all_series_y1) + len(
-            self.config_obj.all_series_y2)
-
-        # init the result with 0
-        stag_vals = [0] * num_stag
-
-        # calculate staggering values
-        if self.config_obj.indy_stagger is True:
-            dbl_adj_scale = (len(self.config_obj.indy_vals) - 1) / 150
-            stag_vals = np.linspace(-(num_stag / 2) * dbl_adj_scale,
-                                    (num_stag / 2) * dbl_adj_scale,
-                                    num_stag,
-                                    True)
-            stag_vals = stag_vals + dbl_adj_scale / 2
-        return stag_vals
-
-    def _adjust_for_vertical(self, x_points_index: list) -> None:
-        """
-        Switches x and y axis (creates a vertical plot) if needed
-
-        :param x_points_index: list of indexes for the original x -axis
-        """
-        self.logger.info(f"Begin switching x and y axis: {datetime.now()}")
-        ordered_indy_label = self.config_obj.create_list_by_plot_val_ordering(
-            self.config_obj.indy_label)
-        if self.config_obj.vert_plot is True:
-            self.figure.update_layout(
-                yaxis={
-                    'tickmode': 'array',
-                    'tickvals': x_points_index,
-                    'ticktext': ordered_indy_label
-                }
-             )
-        else:
-            self.figure.update_layout(
-                xaxis={
-                    'tickmode': 'array',
-                    'tickvals': x_points_index,
-                    'ticktext': ordered_indy_label
-                }
-            )
-
-        self.logger.info(f"Finished switching x and y axis: {datetime.now()}")
-
-    def _add_xaxis(self) -> None:
-        """
-        Configures and adds x-axis to the plot
-        """
-        self.figure.update_xaxes(title_text=self.config_obj.xaxis,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 ticks="inside",
-                                 zeroline=False,
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.x_title_font_size
-                                 },
-                                 title_standoff=abs(
-                                     self.config_obj.parameters['xlab_offset']),
-                                 tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size},
-                                 tickformat='d'
-                                 )
-
-    def _add_yaxis(self) -> None:
-        """
-        Configures and adds y-axis to the plot
-        """
-        self.figure.update_yaxes(title_text=
-                                 util.apply_weight_style(self.config_obj.yaxis_1,
-                                                         self.config_obj.parameters[
-                                                             'ylab_weight']),
-                                 secondary_y=False,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 zeroline=False,
-                                 ticks="inside",
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.y_title_font_size
-                                 },
-                                 title_standoff=abs(
-                                     self.config_obj.parameters['ylab_offset']),
-                                 tickangle=self.config_obj.y_tickangle,
-                                 tickfont={'size': self.config_obj.y_tickfont_size}
-                                 )
-
-    def _add_y2axis(self) -> None:
-        """
-        Adds y2-axis if needed
-        """
-        if self.config_obj.parameters['list_stat_2']:
-            self.figure.update_yaxes(title_text=
-                                     util.apply_weight_style(self.config_obj.yaxis_2,
-                                                             self.config_obj.parameters[
-                                                                 'y2lab_weight']),
-                                     secondary_y=True,
-                                     linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                     linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                     showgrid=False,
-                                     zeroline=False,
-                                     ticks="inside",
-                                     title_font={
-                                         'size': self.config_obj.y2_title_font_size
-                                     },
-                                     title_standoff=abs(
-                                         self.config_obj.parameters['y2lab_offset']),
-                                     tickangle=self.config_obj.y2_tickangle,
-                                     tickfont={'size': self.config_obj.y2_tickfont_size}
-                                     )
-
-    def _add_legend(self) -> None:
-        """
-        Creates a plot legend based on the properties from the config file
-        and attaches it to the initial Figure
-        """
-        self.figure.update_layout(legend={'x': self.config_obj.bbox_x,
-                                          'y': self.config_obj.bbox_y - 0.1,
-                                          'xanchor': 'center',
-                                          'yanchor': 'top',
-                                          'bordercolor':
-                                              self.config_obj.legend_border_color,
-                                          'borderwidth':
-                                              self.config_obj.legend_border_width,
-                                          'orientation':
-                                              self.config_obj.legend_orientation,
-                                          'font': {
-                                              'size': self.config_obj.legend_size,
-                                              'color': "black"
-                                          }
-                                          })
-
-    def _xaxis_limits(self) -> None:
-        """
-        Apply limits on x axis if needed
-        especially when a vertical plot is requested
-
-        step size by default is 1 if undefined /non-existent
-
-
-        step size must be integer value
-        """
-        if len(self.config_obj.parameters['xlim']) > 0:
-               step = round(float(self.config_obj.parameters['xlim_step']))
-               if step is None:
-                   step = 1
-
-               # Convert string values to float, use numpy arange to
-               # generate a list of labels based on the min, max, and step values
-               # Round the min and max values to nearest integer
-               min_x=  round(float(self.config_obj.parameters['xlim'][0]))
-               max_x= round(float(self.config_obj.parameters['xlim'][1]))
-               tick_labels = list(np.arange(min_x , max_x + step, step))
-
-               self.figure.update_layout(
-                   xaxis={
-                        'range': [min_x, max_x],
-                        'autorange':False,
-                        'tickvals':tick_labels}
-               )
-
-    def _yaxis_limits(self) -> None:
-        """
-        Apply limits on y axis if needed
-        """
-        if len(self.config_obj.parameters['ylim']) > 0:
-            self.figure.update_layout(
-                yaxis={'range': [self.config_obj.parameters['ylim'][0],
-                                 self.config_obj.parameters['ylim'][1]],
-                       'autorange': False})
-
-
-
-    def _y2axis_limits(self) -> None:
-        """
-        Apply limits on y2 axis if needed
-        """
-        if len(self.config_obj.parameters['y2lim']) > 0:
-            self.figure.update_layout(
-                yaxis2={'range': [self.config_obj.parameters['y2lim'][0],
-                                  self.config_obj.parameters['y2lim'][1]],
-                        'autorange': False})
-
-    def _sync_yaxis(self, yaxis_min: Union[float, None],
-                    yaxis_max: Union[float, None]) -> None:
-        """
-        Forces y1 and y2 axes sync if needed by specifying the same limits on both axis.
-        Use ylim property to determine the limits. If this value is not provided -
-        use method parameters
-
-        :param yaxis_min: min value or None
-        :param yaxis_max: max value or None
-        """
-        if self.config_obj.sync_yaxes is True:
-            if len(self.config_obj.parameters['ylim']) > 0:
-                # use plot config parameter
-                range_min = self.config_obj.parameters['ylim'][0]
-                range_max = self.config_obj.parameters['ylim'][1]
-            else:
-                # use method parameter
-                range_min = yaxis_min
-                range_max = yaxis_max
-
-            if range_min is not None and range_max is not None:
-                # update y axis
-                self.figure.update_layout(yaxis={'range': [range_min,
-                                                           range_max],
-                                                 'autorange': False})
-
-                # update y2 axis
-                self.figure.update_layout(yaxis2={'range': [range_min,
-                                                            range_max],
-                                                  'autorange': False})
-
-    def _add_x2axis(self, n_stats) -> None:
-        """
-        Creates x2axis based on the properties from the config file
-        and attaches it to the initial Figure
-
-        :param n_stats: - labels for the axis
-        """
-        if self.config_obj.show_nstats:
-            x_points_index = list(range(0, len(n_stats)))
-            self.figure.update_layout(xaxis2={'title_text':
-                                                  util.apply_weight_style('NStats',
-                                                                          self.config_obj.parameters[
-                                                                              'x2lab_weight']
-                                                                          ),
-                                              'linecolor': PLOTLY_AXIS_LINE_COLOR,
-                                              'linewidth': PLOTLY_AXIS_LINE_WIDTH,
-                                              'overlaying': 'x',
-                                              'side': 'top',
-                                              'showgrid': False,
-                                              'zeroline': False,
-                                              'ticks': "inside",
-                                              'title_font': {
-                                                  'size':
-                                                      self.config_obj.x2_title_font_size
-                                              },
-                                              'title_standoff': abs(
-                                                  self.config_obj.parameters[
-                                                      'x2lab_offset']
-                                              ),
-                                              'tickmode': 'array',
-                                              'tickvals': x_points_index,
-                                              'ticktext': n_stats,
-                                              'tickangle': self.config_obj.x2_tickangle,
-                                              'tickfont': {
-                                                  'size':
-                                                      self.config_obj.x2_tickfont_size
-                                              },
-                                              'scaleanchor': 'x'
-                                              }
-                                      )
-            # reverse x2axis if needed
-            if self.config_obj.xaxis_reverse is True:
-                self.figure.update_layout(xaxis2={'autorange': "reversed"})
-
-            # need to add an invisible line with all values = None
-            self.figure.add_trace(
-                go.Scatter(y=[None] * len(x_points_index), x=x_points_index,
-                           xaxis='x2', showlegend=False)
-            )
-
-    def remove_file(self):
-        """
-           Removes previously made image file .  Invoked by the parent class before
-           self.output_file
-           attribute can be created, but overridden here.
-        """
-
-        super().remove_file()
-        self._remove_html()
-
-    def _remove_html(self) -> None:
-        """
-        Removes previously made HTML file.
-        """
-
-        base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-        html_name = f"{base_name}.html"
-
-        # remove the old file if it exist
-        if os.path.exists(html_name):
-            os.remove(html_name)
-
-    def write_html(self) -> None:
-        """
-        Is needed - creates and saves the html representation of the plot WITHOUT
-        Plotly.js
-        """
-        logger = util.get_common_logger(self.config_obj.log_level,
-                                        self.config_obj.log_filename)
-        logger.info(f"Begin writing to html file: {datetime.now()}")
-        if self.config_obj.create_html is True:
-            # construct the file name from plot_filename
-            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-            html_name = f"{base_name}.html"
-
-            # save html
-            self.figure.write_html(html_name, include_plotlyjs=False)
-
-            logger.info(f"Finished writing to html file: {datetime.now()}")
+        self.logger.info(f"Finished drawing the lines on the plot: {datetime.now()}")
+        return plot_obj
 
     def write_output_file(self) -> None:
         """
         Formats y1 and y2 series point data to the 2-dim arrays and saves them to the
         files
         """
+        if not self.config_obj.dump_points_1 and not self.config_obj.dump_points_2:
+            return
 
         self.logger.info(f"Begin writing to output file: {datetime.now()}")
         # if points_path parameter doesn't exist,
@@ -749,51 +343,51 @@ class Line(BasePlot):
         # extension with .points1 extension
         # otherwise use points_path path
         match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
-        if (self.config_obj.dump_points_1 is True or self.config_obj.dump_points_2 is
-                True and match):
+        if not match:
+            return
 
-            # create 2-dim array for y1 points and fill it with 0
-            all_points_1 = [[0 for x in range(len(self.config_obj.all_series_y1) * 3)]
-                            for y in
-                            range(len(self.config_obj.indy_vals))]
-            if self.config_obj.series_vals_2:
-                # create 2-dim array for y1 points and feel it with 0
-                all_points_2 = [
-                    [0 for x in range(len(self.config_obj.all_series_y2) * 3)] for y in
-                    range(len(self.config_obj.indy_vals))]
+        # create 2-dim array for y1 points and fill it with 0
+        all_points_1 = [[0 for _ in range(len(self.config_obj.all_series_y1) * 3)]
+                        for _ in range(len(self.config_obj.indy_vals))]
+        if self.config_obj.series_vals_2:
+            # create 2-dim array for y1 points and feel it with 0
+            all_points_2 = [
+                [0 for _ in range(len(self.config_obj.all_series_y2) * 3)]
+                for _ in range(len(self.config_obj.indy_vals))
+            ]
+        else:
+            all_points_2 = []
+
+        # separate indexes for y1 and y2 series
+        series_idx_y1 = 0
+        series_idx_y2 = 0
+
+        # get points from each series
+        for series in self.series_list:
+            if series.y_axis == 1:
+                self._record_points(all_points_1, series_idx_y1, series)
+                series_idx_y1 = series_idx_y1 + 1
             else:
-                all_points_2 = []
+                self._record_points(all_points_2, series_idx_y2, series)
+                series_idx_y2 = series_idx_y2 + 1
 
-            # separate indexes for y1 and y2 series
-            series_idx_y1 = 0
-            series_idx_y2 = 0
+        # replace the default path with the custom
+        filename = match.group(1)
+        if self.config_obj.points_path is not None:
+            # get the file name
+            path = filename.split(os.path.sep)
+            if len(path) > 0:
+                filename = path[-1]
+            else:
+                filename = '.' + os.path.sep
+            filename = self.config_obj.points_path + os.path.sep + filename
+            os.makedirs(filename, exist_ok=True)
 
-            # get points from each series
-            for series in self.series_list:
-                if series.y_axis == 1:
-                    self._record_points(all_points_1, series_idx_y1, series)
-                    series_idx_y1 = series_idx_y1 + 1
-                else:
-                    self._record_points(all_points_2, series_idx_y2, series)
-                    series_idx_y2 = series_idx_y2 + 1
+        # save points
+        self._save_points(all_points_1, filename + ".points1")
+        self._save_points(all_points_2, filename + ".points2")
 
-            # replace the default path with the custom
-            filename = match.group(1)
-            if self.config_obj.points_path is not None:
-                # get the file name
-                path = filename.split(os.path.sep)
-                if len(path) > 0:
-                    filename = path[-1]
-                else:
-                    filename = '.' + os.path.sep
-                filename = self.config_obj.points_path + os.path.sep + filename
-                os.makedirs(filename, exist_ok=True)
-
-            # save points
-            self._save_points(all_points_1, filename + ".points1")
-            self._save_points(all_points_2, filename + ".points2")
-
-            self.logger.info(f"Finished writing to output file: {datetime.now()}")
+        self.logger.info(f"Finished writing to output file: {datetime.now()}")
 
     @staticmethod
     def _find_min_max(series: LineSeries, yaxis_min: Union[float, None],
@@ -849,17 +443,14 @@ class Line(BasePlot):
             all_points[indy_val_idx][series_idx * 3] = y_points[indy_val_idx]
 
             # place CI-low value or None
-            if not y_points[indy_val_idx] is None \
-                    and not dbl_lo_ci[indy_val_idx] is None:
-
+            if y_points[indy_val_idx] is not None and dbl_lo_ci[indy_val_idx] is not None:
                 all_points[indy_val_idx][series_idx * 3 + 1] = \
                     y_points[indy_val_idx] - dbl_lo_ci[indy_val_idx]
             else:
                 all_points[indy_val_idx][series_idx * 3 + 1] = None
 
             # place CI-up value or None
-            if not y_points[indy_val_idx] is None \
-                    and not dbl_up_ci[indy_val_idx] is None:
+            if y_points[indy_val_idx] is not None and dbl_up_ci[indy_val_idx] is not None:
                 all_points[indy_val_idx][series_idx * 3 + 2] = \
                     y_points[indy_val_idx] + dbl_up_ci[indy_val_idx]
             else:
@@ -890,7 +481,6 @@ class Line(BasePlot):
             with open(output_file, "w+") as my_csv:
                 csv_writer = csv.writer(my_csv, delimiter=' ')
                 csv_writer.writerows(all_points_formatted)
-            my_csv.close()
         except TypeError:
             print('Can\'t save points to a file')
 

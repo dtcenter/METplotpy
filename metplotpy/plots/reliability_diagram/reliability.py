@@ -138,7 +138,7 @@ class Reliability(BasePlot):
 
         self.logger.info(f"Begin creating the lines on the reliability plot: {datetime.now()}")
 
-        fig, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
         wts_size_styles = self.get_weights_size_styles()
 
@@ -160,7 +160,7 @@ class Reliability(BasePlot):
             # format large numbers like 3 million as 3M
             ax2.yaxis.set_major_formatter(ticker.EngFormatter())
 
-        self._add_series(ax, ax2)
+        handles_and_labels = self._add_series(ax, ax2)
 
         self._add_xaxis(ax, wts_size_styles['xlab'])
         ax.set_xlim(0, 1)
@@ -168,7 +168,7 @@ class Reliability(BasePlot):
         ax.set_ylim(0, 1)
         ax.set_yticks(np.linspace(0, 1, 11))
 
-        self._add_legend(ax)
+        self._add_legend(ax, handles_and_labels)
 
         self._add_custom_lines(ax)
 
@@ -183,6 +183,7 @@ class Reliability(BasePlot):
             self._add_lines(ax, self.config_obj, self.config_obj.indy_vals)
 
     def _add_series(self, ax, ax2):
+        handles_and_labels = []
         # calculate stag adjustments
         stag_adjustments = self._calc_stag_adjustments()
 
@@ -199,7 +200,10 @@ class Reliability(BasePlot):
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
             if series.plot_disp:
-                self._draw_series(ax, ax2, series, x_points_index_adj, index)
+                handle = self._draw_series(ax, ax2, series, x_points_index_adj, index)
+                handles_and_labels.append((handle, handle.get_label()))
+
+        return handles_and_labels
 
     def _draw_series(self, ax, ax2, series: ReliabilitySeries, x_points_index_adj: list, idx) -> None:
         """
@@ -250,7 +254,7 @@ class Reliability(BasePlot):
         marker = self.config_obj.marker_list[series.idx] if 'markers' in plot_mode else None
         line_style = self.config_obj.linestyles_list[series.idx] if 'lines' in plot_mode else 'None'
 
-        ax.errorbar(
+        plot_obj = ax.errorbar(
             x=x_points_index_adj,
             y=y_points,
             label=self.config_obj.user_legends[series.idx],
@@ -269,6 +273,7 @@ class Reliability(BasePlot):
         )
 
         self.logger.info(f"Finished with bar plot and skill lines :{datetime.now()}")
+        return plot_obj
 
     def _add_noskill_polygon(self, ax, o_bar: Union[float, None]) -> None:
         """

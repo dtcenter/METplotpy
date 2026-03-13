@@ -47,6 +47,7 @@ class Config:
         self.title_color = constants.DEFAULT_TITLE_COLOR
         self.xaxis = self.get_config_value('xaxis')
         self.xaxis_reverse = False
+        self.vert_plot = False
         self.yaxis_1 = self.get_config_value('yaxis_1')
         self.yaxis_2 = self.get_config_value('yaxis_2')
         self.sync_yaxes = False

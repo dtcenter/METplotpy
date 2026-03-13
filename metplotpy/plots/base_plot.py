@@ -401,10 +401,11 @@ class BasePlot:
 
     def _add_xaxis(self, ax: plt.Axes, fontproperties: FontProperties, label=None, grid_on=None) -> None:
         """
-        Configures and adds x-axis to the plot
+        Configures and adds x-axis to the plot. Handles vertical plot by switching x and y axis.
         """
+        is_vert = getattr(self.config_obj, 'vert_plot', False)
         if label is None:
-            label = self.config_obj.xaxis
+            label = self.config_obj.xaxis if not is_vert else self.config_obj.yaxis_1
 
         if grid_on is None:
             grid_on = self.config_obj.grid_on
@@ -412,17 +413,8 @@ class BasePlot:
         ax.set_xlabel(label, fontproperties=fontproperties,
                       labelpad=abs(self.config_obj.parameters['xlab_offset']) * constants.PIXELS_TO_POINTS)
 
-        if self.config_obj.indy_label:
-            # use the indices as tick locations
-            xtick_locs = np.arange(len(self.config_obj.indy_label))
-            if self.config_obj.indy_vals:
-                # Use the actual numeric values from indy_vals as tick locations
-                try:
-                    xtick_locs = [float(i) for i in self.config_obj.indy_vals]
-                # if they are not numeric, revert to using the indices
-                except ValueError:
-                    pass
-
+        if self.config_obj.indy_label and not is_vert:
+            xtick_locs = self._get_xtick_locs()
             ax.set_xticks(xtick_locs, self.config_obj.indy_label)
 
         ax.tick_params(axis="x", direction="in", which="both", labelrotation=self.config_obj.x_tickangle)
@@ -431,29 +423,72 @@ class BasePlot:
                     linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
             ax.set_axisbelow(True)
 
-        if self.config_obj.xaxis_reverse:
-            ax.invert_xaxis()
+        if not is_vert:
+            if len(self.config_obj.parameters['xlim']) > 0:
+                # TODO: support xlim_step? only used for line plots
+                ax.set_xlim(self.config_obj.parameters['xlim'])
+            elif getattr(self.config_obj, 'start_from_zero', False):
+                xtick_locs = self._get_xtick_locs()
+                if len(xtick_locs) > 0:
+                    ax.set_xlim(min(xtick_locs), max(xtick_locs))
+
+            if self.config_obj.xaxis_reverse:
+                ax.invert_xaxis()
+        else:
+            if len(self.config_obj.parameters['ylim']) > 0:
+                ax.set_xlim(self.config_obj.parameters['ylim'])
 
     def _add_yaxis(self, ax: plt.Axes, fontproperties: FontProperties, label=None, grid_on=None) -> None:
         """
-        Configures and adds y-axis to the plot
+        Configures and adds y-axis to the plot. Handles vertical plot by switching x and y axis.
         """
+        is_vert = getattr(self.config_obj, 'vert_plot', False)
         if label is None:
-            label = self.config_obj.yaxis_1
+            label = self.config_obj.yaxis_1 if not is_vert else self.config_obj.xaxis
+
         if grid_on is None:
             grid_on = self.config_obj.grid_on
+
         ax.set_ylabel(label, fontproperties=fontproperties,
                       labelpad=abs(self.config_obj.parameters['ylab_offset']) * constants.PIXELS_TO_POINTS)
         ax.tick_params(axis="y", direction="in", which="both", labelrotation=self.config_obj.y_tickangle)
 
         # set y limits if defined in config or if min/max are provided
-        if len(self.config_obj.parameters['ylim']) > 0:
+        if not is_vert and len(self.config_obj.parameters['ylim']) > 0:
             ax.set_ylim(self.config_obj.parameters['ylim'])
 
         # add grid lines if requested
         if grid_on:
             ax.grid(True, which='major', axis='y', color=self.config_obj.blended_grid_col, linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
             ax.set_axisbelow(True)
+
+        if not is_vert:
+            if len(self.config_obj.parameters['ylim']) > 0:
+                ax.set_ylim(self.config_obj.parameters['ylim'])
+        else:
+            if self.config_obj.indy_label:
+                xtick_locs = self._get_xtick_locs()
+                ax.set_yticks(xtick_locs, self.config_obj.indy_label)
+
+                if getattr(self.config_obj, 'start_from_zero', False):
+                    if len(xtick_locs) > 0:
+                        ax.set_ylim(min(xtick_locs), max(xtick_locs))
+
+            if self.config_obj.xaxis_reverse:
+                ax.invert_yaxis()
+
+    def _get_xtick_locs(self):
+        # use the indices as tick locations
+        xtick_locs = np.arange(len(self.config_obj.indy_label))
+        if self.config_obj.indy_vals:
+            # Use the actual numeric values from indy_vals as tick locations
+            try:
+                xtick_locs = [float(i) for i in self.config_obj.indy_vals]
+            # if they are not numeric, revert to using the indices
+            except ValueError:
+                pass
+
+        return xtick_locs
 
     def _add_x2axis(self, ax, n_stats, fontproperties: FontProperties) -> None:
         """
@@ -472,14 +507,24 @@ class BasePlot:
         if not self.config_obj.show_nstats:
             return
 
-        ax_top = ax.secondary_xaxis('top')
-        ax_top.set_xlabel('NStats', fontproperties=fontproperties,
-                          labelpad=abs(self.config_obj.parameters['x2lab_offset']) * constants.PIXELS_TO_POINTS)
-        current_locs = ax.get_xticks()
-        ax_top.set_xticks(current_locs, n_stats, size=self.config_obj.x2_tickfont_size)
+        label_args = {
+            'fontproperties': fontproperties,
+            'labelpad': abs(self.config_obj.parameters['x2lab_offset']) * constants.PIXELS_TO_POINTS,
+        }
 
-        # this doesn't appear to be working to add ticks at the top
-        ax_top.tick_params(axis="x", direction="in", labelrotation=self.config_obj.x2_tickangle)
+        if not self.config_obj.vert_plot:
+            ax_top = ax.secondary_xaxis('top')
+            ax_top.set_xlabel('NStats', **label_args)
+            current_locs = ax.get_xticks()
+            ax_top.set_xticks(current_locs, n_stats, size=self.config_obj.x2_tickfont_size)
+
+            # this doesn't appear to be working to add ticks at the top
+            ax_top.tick_params(axis="x", direction="in", labelrotation=self.config_obj.x2_tickangle)
+        else:
+            ax_right = ax.secondary_yaxis('right')
+            ax_right.set_ylabel('NStats', **label_args)
+            current_locs = ax.get_yticks()
+            ax_right.set_yticks(current_locs, n_stats, size=self.config_obj.x2_tickfont_size)
 
     def _add_y2axis(self, ax: plt.Axes, fontproperties: Union[FontProperties, None]):
         """
@@ -494,6 +539,19 @@ class BasePlot:
             ax_right.set_ylim(self.config_obj.parameters['y2lim'])
 
         return ax_right
+
+    def _sync_yaxes(self, ax, ax2, yaxis_min: Union[float, None], yaxis_max: Union[float, None]):
+        if not self.config_obj.sync_yaxes or self.config_obj.vert_plot:
+            return
+
+        # set y limits if defined in config or if min/max are provided
+        if len(self.config_obj.parameters['ylim']) > 0:
+            yaxis_min = self.config_obj.parameters['ylim'][0]
+            yaxis_max = self.config_obj.parameters['ylim'][1]
+
+        if yaxis_min is not None and yaxis_max is not None:
+            ax.set_ylim(yaxis_min, yaxis_max)
+            ax2.set_ylim(yaxis_min, yaxis_max)
 
     def _add_lines(self, ax: plt.Axes, config_obj: Config, x_points_index: Union[list, None] = None) -> None:
         """Adds custom horizontal and/or vertical line to the plot.
@@ -539,7 +597,10 @@ class BasePlot:
                     self.logger.warning(msg)
                     print(f"WARNING: {msg}")
 
-    def _get_x_locs_and_width(self, x_points, index):
+    def _get_x_locs_and_width(self, x_points, index, stagger_scale=None):
+        if stagger_scale is None:
+            stagger_scale = constants.MPL_DEFAULT_BAR_WIDTH
+
         try:
             # Attempt to convert x_points to floats (handles numeric indy_vals)
             # Threshold values (e.g., ">5.0") will raise a ValueError/TypeError
@@ -565,7 +626,7 @@ class BasePlot:
         n = max(n_visible_series, 1)
 
         # Scale width and offset by min_spacing to ensure bars fit within the numeric gaps
-        width = (min_spacing * constants.MPL_DEFAULT_BAR_WIDTH) / n
+        width = (min_spacing * stagger_scale) / n
         offset = (index - (n - 1) / 2.0) * width
         x_locs = base + offset
         return x_locs, width

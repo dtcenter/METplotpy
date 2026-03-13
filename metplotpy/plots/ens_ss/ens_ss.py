@@ -207,7 +207,7 @@ class EnsSs(BasePlot):
         self.logger.info(f"Begin creating the figure: {datetime.now()}")
 
         # create and draw the plot
-        fig, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
         wts_size_styles = self.get_weights_size_styles()
 
