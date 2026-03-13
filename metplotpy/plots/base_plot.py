@@ -390,7 +390,7 @@ class BasePlot:
             bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y),
             loc='upper center',
             edgecolor=self.config_obj.legend_border_color,
-            frameon=True,
+            frameon=self.config_obj.draw_box,
             ncol=max(1, len(handles)) if orientation == "horizontal" else 1,
             fontsize=self.config_obj.legend_size,
             labelcolor="black"
