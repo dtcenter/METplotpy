@@ -288,59 +288,22 @@ class Eclv(Line):
         :param x_points_index_adj: values for adjusting x-values position
         """
         self.logger.info(f"Begin drawing the series : {datetime.now()}")
-        # pct series can have mote than one line
+
+        # pct series can have more than one line
         for ind, series_points in enumerate(series.series_points):
             y_points = series_points['dbl_med']
             x_points = series_points['x_pnt']
 
-            # show or not ci
-            # see if any ci values in not 0
-            no_ci_up = all(v == 0 for v in series_points['dbl_up_ci'])
-            no_ci_lo = all(v == 0 for v in series_points['dbl_lo_ci'])
-            error_y_visible = True
-            if (no_ci_up is True and no_ci_lo is True) or self.config_obj.plot_ci[
-                series.idx] == 'NONE':
-                error_y_visible = False
+            self._draw_series_item(series, series_points, ax, ax2, x_points, y_points)
 
-            # add the plot
-            self.figure.add_trace(
-                go.Scatter(x=x_points,
-                           y=y_points,
-                           showlegend=ind == 0,
-                           mode=self.config_obj.mode[series.idx],
-                           textposition="top right",
-                           name=self.config_obj.user_legends[series.idx],
-                           connectgaps=self.config_obj.con_series[series.idx] == 1,
-                           line={'color': self.config_obj.colors_list[series.idx],
-                                 'width': self.config_obj.linewidth_list[series.idx],
-                                 'dash': self.config_obj.linestyles_list[series.idx]},
-                           marker_symbol=self.config_obj.marker_list[series.idx],
-                           marker_color=self.config_obj.colors_list[series.idx],
-                           marker_line_color=self.config_obj.colors_list[series.idx],
-                           marker_size=self.config_obj.marker_size[series.idx],
-                           error_y={'type': 'data',
-                                    'symmetric': False,
-                                    'array': series_points['dbl_up_ci'],
-                                    'arrayminus': series_points['dbl_lo_ci'],
-                                    'visible': error_y_visible,
-                                    'thickness': self.config_obj.linewidth_list[
-                                        series.idx]},
-                           hovertemplate="<br>".join([
-                               "Cost/Lost Ratio: %{customdata}",
-                               "Economic Value: %{y}"
-                           ]),
-                           customdata=x_points
-                           ),
-                secondary_y=False
-            )
-
-            self.logger.info(f"Finished  drawing the series :"
-                                        f" {datetime.now()}")
+            self.logger.info(f"Finished  drawing the series : {datetime.now()}")
 
     def write_output_file(self) -> None:
         """
         saves series points to the files
         """
+        if not self.config_obj.dump_points_1:
+            return
 
         self.logger.info(f"Begin writing output file: {datetime.now()}")
 
@@ -348,40 +311,35 @@ class Eclv(Line):
         # (the input data file) except replace the .data
         # extension with .points1 extension
         match = re.match(r'(.*)(.data)', self.config_obj.parameters['stat_input'])
+        if not match:
+            return
 
-        if self.config_obj.dump_points_1 is True and match:
-            filename = match.group(1)
-            # replace the default path with the custom
-            if self.config_obj.points_path is not None:
-                # get the file name
-                path = filename.split(os.path.sep)
-                if len(path) > 0:
-                    filename = path[-1]
-                else:
-                    filename = '.' + os.path.sep
-                filename = self.config_obj.points_path + os.path.sep + filename
+        filename = match.group(1)
+        # replace the default path with the custom
+        if self.config_obj.points_path is not None:
+            filename = os.path.join(self.config_obj.points_path, os.path.basename(filename))
 
-            filename = filename + '.points1'
-            os.makedirs(os.path.dirname(filename), exist_ok=True)
+        filename = filename + '.points1'
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-            with open(filename, 'w') as file:
-                writer = csv.writer(file, delimiter='\t')
-                for series in self.series_list:
-                    for vals_ind, vals in enumerate(series.series_points):
-                        keys = sorted(vals.keys())
-                        if vals_ind == 0:
-                            writer.writerow(keys)
-                        else:
-                            file.writelines('\n')
-                        for ind, dbl_med in enumerate(vals['dbl_med']):
-                            vals['dbl_lo_ci'][ind] = dbl_med - vals['dbl_lo_ci'][ind]
-                            vals['dbl_up_ci'][ind] = dbl_med + vals['dbl_up_ci'][ind]
-                        writer.writerows(
-                            zip(*[[round(num, 6) for num in vals[key]] for key in
-                                  keys]))
-                    file.writelines('\n')
-                    file.writelines('\n')
-                file.close()
+        with open(filename, 'w') as file_handle:
+            writer = csv.writer(file_handle, delimiter='\t')
+            for series in self.series_list:
+                for vals_ind, vals in enumerate(series.series_points):
+                    keys = sorted(vals.keys())
+                    if vals_ind == 0:
+                        writer.writerow(keys)
+                    else:
+                        file_handle.writelines('\n')
+                    for ind, dbl_med in enumerate(vals['dbl_med']):
+                        vals['dbl_lo_ci'][ind] = dbl_med - vals['dbl_lo_ci'][ind]
+                        vals['dbl_up_ci'][ind] = dbl_med + vals['dbl_up_ci'][ind]
+                    writer.writerows(
+                        zip(*[[round(num, 6) for num in vals[key]] for key in
+                              keys]))
+                file_handle.writelines('\n')
+                file_handle.writelines('\n')
+
         self.logger.info(f"Finished writing output file: {datetime.now()}")
 
 
