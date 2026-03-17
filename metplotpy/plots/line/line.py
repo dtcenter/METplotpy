@@ -323,6 +323,7 @@ class Line(BasePlot):
             xerr=x_err_val,
             yerr=y_err_val,
             elinewidth=self.config_obj.linewidth_list[series.idx],
+            capsize=5,
         )
 
         self.logger.info(f"Finished drawing the lines on the plot: {datetime.now()}")
