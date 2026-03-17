@@ -18,7 +18,7 @@ import numpy as np
 from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
-import metplotpy.plots.util_plotly as util
+import metplotpy.plots.util as util
 from ..line.line_series import LineSeries
 
 

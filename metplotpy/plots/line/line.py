@@ -224,8 +224,6 @@ class Line(BasePlot):
 
         plt.tight_layout()
 
-        #self._add_lines(self.config_obj, x_points_index)
-
         # sync axis
         self._sync_yaxes(ax, ax_y2, yaxis_min, yaxis_max)
 
@@ -250,8 +248,7 @@ class Line(BasePlot):
 
             # collect min-max if we need to sync axis
             if self.config_obj.sync_yaxes:
-                yaxis_min, yaxis_max = self._find_min_max(series, yaxis_min,
-                                                          yaxis_max)
+                yaxis_min, yaxis_max = self._find_min_max(series, yaxis_min, yaxis_max)
 
             handle = self._draw_series(ax, ax2, series)
             handles_and_labels.append((handle, handle.get_label()))
@@ -276,14 +273,20 @@ class Line(BasePlot):
         # convert to a numpy array to change None values to NaN
         y_points = np.array(series.series_points['dbl_med'], dtype=float)
 
+        plot_obj = self._draw_series_item(series, series.series_points, ax, ax2, x_points_index_adj, y_points)
+
+        self.logger.info(f"Finished drawing the lines on the plot: {datetime.now()}")
+        return plot_obj
+
+    def _draw_series_item(self, series, series_points, ax, ax2, x_points, y_points):
         # show or not ci - see if any ci values in not 0
-        no_ci_up = all(v == 0 for v in series.series_points['dbl_up_ci'])
-        no_ci_lo = all(v == 0 for v in series.series_points['dbl_lo_ci'])
+        no_ci_up = all(v == 0 for v in series_points['dbl_up_ci'])
+        no_ci_lo = all(v == 0 for v in series_points['dbl_lo_ci'])
 
         # convert to a numpy array to change None values to NaN
         asymmetric_error = np.array([
-            series.series_points['dbl_up_ci'],
-            series.series_points['dbl_lo_ci']
+            series_points['dbl_up_ci'],
+            series_points['dbl_lo_ci']
         ], dtype=float)
 
         error_y_visible = True
@@ -299,8 +302,8 @@ class Line(BasePlot):
         line_style = self.config_obj.linestyles_list[series.idx] if 'lines' in plot_mode else 'None'
 
         # Swap x and y data if vertical plot
-        plot_x = y_points if self.config_obj.vert_plot else x_points_index_adj
-        plot_y = x_points_index_adj if self.config_obj.vert_plot else y_points
+        plot_x = y_points if self.config_obj.vert_plot else x_points
+        plot_y = x_points if self.config_obj.vert_plot else y_points
 
         # Swap error bars (yerr becomes xerr) if vertical plot
         x_err_val = asymmetric_error if (self.config_obj.vert_plot and error_y_visible) else None
@@ -325,9 +328,8 @@ class Line(BasePlot):
             elinewidth=self.config_obj.linewidth_list[series.idx],
             capsize=5,
         )
-
-        self.logger.info(f"Finished drawing the lines on the plot: {datetime.now()}")
         return plot_obj
+
 
     def write_output_file(self) -> None:
         """

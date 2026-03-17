@@ -18,18 +18,17 @@ import csv
 from operator import add
 from typing import Union
 import itertools
-
-import plotly.graph_objects as go
-
 from datetime import datetime
+
+from matplotlib import pyplot as plt
+
 from metcalcpy.event_equalize import event_equalize
 
-from metplotpy.plots.base_plot_plotly import BasePlot
-from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH
+from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.eclv.eclv_config import EclvConfig
 from metplotpy.plots.eclv.eclv_series import EclvSeries
 from metplotpy.plots.line.line import Line
-from metplotpy.plots import util_plotly as util
+from metplotpy.plots import util
 from metplotpy.plots.series import Series
 
 
@@ -65,24 +64,7 @@ class Eclv(Line):
         self.logger.info(f"Start eclv plot: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
-        is_config_consistent = self.config_obj._config_consistency_check()
-        if not is_config_consistent:
-            self.logger.error("ValueError: The number of series defined by "
-                                   "series_val_1 is "
-                                   "inconsistent with the number of settings "
-                                   "required for"
-                                   " describing each series. Please check the number "
-                                   "of"
-                                   " your configuration file's plot_i, plot_disp, "
-                                   "series_order, user_legend, colors and "
-                                   f"series_symbols settings. {datetime.now()}")
-
-            raise ValueError("The number of series defined by series_val_1 is"
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check"
-                             " the number of your configuration file's plot_i,"
-                             " plot_disp, series_order, user_legend,"
-                             " colors, and series_symbols settings.")
+        self.config_obj.config_consistency_check()
 
         # Read in input data, location specified in config file
         self.logger.info(f"Begin reading input data: {datetime.now()}")
@@ -114,11 +96,6 @@ class Eclv(Line):
         # line width, and criteria needed to subset the input dataframe.
         self.series_list = self._create_series(self.input_df)
 
-        # create figure
-        # pylint:disable=assignment-from-no-return
-        # Need to have a self.figure that we can pass along to
-        # the methods in base_plot.py (BasePlot class methods) to
-        # create binary versions of the plot.
         self.logger.info(f"Begin creating the figure: {datetime.now()}")
         self._create_figure()
         self.logger.info(f"End creating the figure: {datetime.now()}")
@@ -172,33 +149,6 @@ class Eclv(Line):
         Create a eclv plot from defaults and custom parameters
         """
         self.logger.info(f"Begin creating the figure: {datetime.now()}")
-        # create and draw the plot
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_legend()
-
-        # placeholder for the number of stats
-        n_stats = [0] * len(self.series_list[0].series_points[0]['x_pnt'])
-
-        # add series lines
-        for series in self.series_list:
-
-            # Don't generate the plot for this series if
-            # it isn't requested (as set in the config file)
-            if series.plot_disp:
-                self._draw_series(series)
-
-                # aggregate number of stats
-                for series_points in series.series_points:
-                    n_stats = list(map(add, n_stats, series_points['nstat']))
-
-        # add custom lines
-        if len(self.series_list) > 0:
-            self._add_lines(self.config_obj)
-
-        # apply y axis limits
-        self._yaxis_limits()
 
         # some x points could be very close to each other and the x-axis  ticktext is
         # bunched up do not print the ticktext for the first points by creating the
@@ -209,77 +159,63 @@ class Eclv(Line):
                 self.x_axis_ticktext.append('')
             else:
                 self.x_axis_ticktext.append(var_round)
+        self.config_obj.indy_label = self.x_axis_ticktext
+        self.config_obj.indy_vals = self.series_list[0].series_points[0]['x_pnt']
 
-        self.figure.update_layout(
-            xaxis=dict(
-                tickmode='array',
-                tickvals=self.series_list[0].series_points[0]['x_pnt'],
-                ticktext=self.x_axis_ticktext,
-                tickangle=self.config_obj.x_tickangle
-            ),
-            yaxis=dict(
-                zeroline=True,
-                zerolinecolor=PLOTLY_AXIS_LINE_COLOR,
-                zerolinewidth=PLOTLY_AXIS_LINE_WIDTH
-            )
-        )
+        # create and draw the plot
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
+
+        wts_size_styles = self.get_weights_size_styles()
+
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
+        n_stats = self._add_series(ax)
+
+        self._add_xaxis(ax, wts_size_styles['xlab'])
+        self._add_yaxis(ax, wts_size_styles['ylab'])
 
         # add x2 axis
-        self._add_x2axis(n_stats)
+        if wts_size_styles.get('x2lab'):
+            self._add_x2axis(ax, n_stats, wts_size_styles['x2lab'])
+
+        self._add_legend(ax)
+
+        # add custom lines
+        self._add_lines(ax, self.config_obj, self.config_obj.indy_vals)
+
+        plt.tight_layout()
 
         self.logger.info(f"Finished creating the figure: {datetime.now()}")
 
-    def _add_x2axis(self, n_stats) -> None:
-        """
-        Creates x2axis based on the properties from the config file
-        and attaches it to the initial Figure
+    def _add_series(self, ax, ax2=None):
 
-        :param n_stats: - labels for the axis
-        """
+        # placeholder for the number of stats
+        n_stats = [0] * len(self.series_list[0].series_points[0]['x_pnt'])
 
-        if self.config_obj.show_nstats:
-            x_points = []
+        # add series lines
+        for series in self.series_list:
 
-            # create ticktext array simolar to x-axis ticktext
-            for idx, val in enumerate(self.x_axis_ticktext):
-                if val != '':
-                    x_points.append(n_stats[idx])
-                else:
-                    x_points.append('')
+            # Don't generate the plot for this series if
+            # it isn't requested (as set in the config file)
+            if series.plot_disp:
+                self._draw_series(ax, ax2, series)
 
-            self.figure.update_layout(xaxis2={
-                'linecolor': PLOTLY_AXIS_LINE_COLOR,
-                'linewidth': PLOTLY_AXIS_LINE_WIDTH,
-                'overlaying': 'x',
-                'side': 'top',
-                'showgrid': False,
-                'zeroline': False,
-                'ticks': "inside",
-                'title_font': {
-                    'size': self.config_obj.x2_title_font_size
-                },
-                'tickmode': 'array',
-                'tickvals': self.series_list[0].series_points[0]['x_pnt'],
-                'ticktext': x_points,
-                'tickangle': self.config_obj.x2_tickangle,
-                'tickfont': {
-                    'size': self.config_obj.x2_tickfont_size
-                },
-                'scaleanchor': 'x',
-                'automargin': False,
-                'matches': 'x',
-            }
-            )
+                # aggregate number of stats
+                for series_points in series.series_points:
+                    n_stats = list(map(add, n_stats, series_points['nstat']))
 
-            # need to add an invisible line with all values = None
-            self.figure.add_trace(
-                go.Scatter(
-                    y=[None] * len(self.series_list[0].series_points[0]['x_pnt']),
-                    x=self.series_list[0].series_points[0]['x_pnt'],
-                    xaxis='x2', showlegend=False)
-            )
+        x_points = []
 
-    def _draw_series(self, series: Series,
+        # create ticktext array similar to x-axis ticktext
+        for idx, val in enumerate(self.x_axis_ticktext):
+            if val != '':
+                x_points.append(n_stats[idx])
+            else:
+                x_points.append('')
+
+        return x_points
+
+    def _draw_series(self, ax: plt.Axes, ax2, series: Series,
                      x_points_index_adj: Union[list, None] = None) -> None:
         """
         Draws the formatted line with CIs if needed on the plot
