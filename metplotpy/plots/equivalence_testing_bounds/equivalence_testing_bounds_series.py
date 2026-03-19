@@ -24,7 +24,7 @@ from pandas import DataFrame
 import metcalcpy.util.correlation as pg
 
 import metcalcpy.util.utils as utils
-import metplotpy.plots.util_plotly as util
+import metplotpy.plots.util as util
 from metcalcpy.sum_stat import calculate_statistic
 from .. import GROUP_SEPARATOR
 from ..line.line_series import LineSeries
