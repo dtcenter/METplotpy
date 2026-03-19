@@ -123,24 +123,6 @@ class PerformanceDiagramConfig(Config):
         series_order_list = [ord for ord in ordinals]
         return series_order_list
 
-
-    def _get_plot_disp(self):
-        """
-            Retrieve the boolean values that determine whether to display a particular series
-
-            Args:
-
-            Returns:
-                A list of boolean values indicating whether or not to
-                display the corresponding series
-        """
-
-        plot_display_vals = self.get_config_value('plot_disp')
-        plot_display_bools = [pd for pd in plot_display_vals]
-        plot_display_bools_ordered = self.create_list_by_series_ordering(plot_display_bools)
-        return plot_display_bools_ordered
-
-
     def _get_plot_stat(self):
         """
             Retrieves the plot_stat setting from the config file.
