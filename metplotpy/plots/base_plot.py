@@ -27,8 +27,17 @@ from metplotpy.plots.util import strtobool
 from .config import Config
 from . import constants
 
+
+###
+# Global matplotlib default setting overrides
+###
+
 # set default for dashed lines to be longer and wider spaced
 plt.rcParams['lines.dashed_pattern'] = [10, 10]
+
+# Turn off spines globally
+plt.rcParams['axes.spines.top'] = False
+plt.rcParams['axes.spines.right'] = False
 
 turn_on_logging = strtobool('LOG_BASE_PLOT')
 # Log when Chrome is downloaded at runtime
