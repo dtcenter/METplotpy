@@ -27,6 +27,8 @@ from metplotpy.plots.util import strtobool
 from .config import Config
 from . import constants
 
+# set default for dashed lines to be longer and wider spaced
+plt.rcParams['lines.dashed_pattern'] = [10, 10]
 
 turn_on_logging = strtobool('LOG_BASE_PLOT')
 # Log when Chrome is downloaded at runtime
