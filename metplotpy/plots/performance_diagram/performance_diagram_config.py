@@ -5,11 +5,7 @@
  # ** Research Applications Lab (RAL)
  # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
  # ============================*
- 
- 
- 
 
-#!/usr/bin/env conda run -n blenny_363 python
 """
 Class Name: performance_diagram_config.py
 
