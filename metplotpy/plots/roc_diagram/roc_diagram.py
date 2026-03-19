@@ -296,7 +296,9 @@ class ROCDiagram(BasePlot):
         self._add_series(ax)
 
         self._add_xaxis(ax, wts_size_styles['xlab'])
+        ax.set_xlim(0, 1)
         self._add_yaxis(ax, wts_size_styles['ylab'])
+        ax.set_ylim(0, 1)
 
         self._add_legend(ax)
 
@@ -306,34 +308,6 @@ class ROCDiagram(BasePlot):
 
         plt.tight_layout()
         self.logger.info(f"Finished creating figure: {datetime.now()}")
-
-        # set the range of the x-axis and y-axis to range from 0 to 1
-        #fig.update_layout(xaxis=dict(range=[0., 1.]))
-        #fig.update_layout(yaxis=dict(range=[0., 1.]))
-
-
-        # style the legend box
-        # if self.config_obj.draw_box:
-        #     fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
-        #                                   y=self.config_obj.bbox_y,
-        #                                   bordercolor="black",
-        #                                   borderwidth=2
-        #                                   ))
-        #
-        # else:
-        #     fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
-        #                                   y=self.config_obj.bbox_y
-        #                                   ))
-
-        # can't support number of columns in legend, can only choose
-        # between horizontal or vertical alignment of legend labels
-        # so only support vertical legends (ie num columns = 1)
-        # fig.update_layout(legend=dict(x=self.config_obj.bbox_x,
-        #                               y=self.config_obj.bbox_y,
-        #                               bordercolor="black",
-        #                               borderwidth=2
-        #                               ))
-
 
     def _add_series(self, ax):
         # plot the no-skill line

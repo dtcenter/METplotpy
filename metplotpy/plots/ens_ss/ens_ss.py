@@ -256,16 +256,6 @@ class EnsSs(BasePlot):
             handle = self._draw_series(plot_ax, series, idx, is_points_plot)
             handles_and_labels.append((handle, handle.get_label()))
 
-        # while i < len(self.series_list):
-        #
-        #     # Don't generate the plot for this series if
-        #     # it isn't requested (as set in the config file)
-        #     if self.series_list[i].plot_disp:
-        #         handle, handle2 = self._draw_series(ax, ax2, self.series_list[i])
-        #         handles_and_labels.append((handle, handle.get_label()))
-        #         handles_and_labels.append((handle2, handle2.get_label()))
-        #     i = i + counter
-
         return handles_and_labels
 
     def _draw_series(self, ax, series: EnsSsSeries, index: int, is_points_plot: bool) -> None:
