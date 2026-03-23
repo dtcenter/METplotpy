@@ -49,7 +49,6 @@ class RevisionSeriesConfig(Config):
         ##############################################
         # title parameters
         self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
-        self.title_offset = 1.0 + abs(self.parameters['title_offset']) * constants.DEFAULT_TITLE_OFFSET
         self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################

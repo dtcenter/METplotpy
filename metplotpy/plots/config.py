@@ -214,11 +214,7 @@ class Config:
         mv_title_align = self.get_config_value('title_align')
         self.title_align = float(mv_title_align)
 
-        # does nothing because the vertical position in Matplotlib is
-        # automatically chosen to avoid labels and ticks on the topmost
-        # x-axis
-        mv_title_offset = self.get_config_value('title_offset')
-        self.title_offset = float(mv_title_offset)
+        self.title_offset = 1.0 + abs(self.parameters['title_offset']) * constants.DEFAULT_TITLE_OFFSET
 
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
