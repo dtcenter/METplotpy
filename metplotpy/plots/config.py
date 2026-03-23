@@ -18,6 +18,7 @@ __author__ = 'Minna Win'
 import itertools
 from typing import Union
 from datetime import datetime
+import re
 
 import metcalcpy.util.utils as utils
 import metplotpy.plots.util
@@ -96,12 +97,17 @@ class Config:
         self.legend_ncol = self.get_config_value('legend_ncol')
         legend_box = self.get_config_value('legend_box')
         self.draw_box = False
+        self.legend_border_width = 0
         if legend_box is not None:
             legend_box = legend_box.lower()
             if legend_box == 'o':
-                # Don't draw a box around legend labels
+                # draw a box around legend labels
                 self.draw_box = True
+                self.legend_border_width = 2
 
+        self.legend_orientation = 'h'
+        if self.parameters['legend_ncol'] == 1:
+            self.legend_orientation = 'v'
 
         # some settings used by some but not all plot types
 
@@ -154,6 +160,7 @@ class Config:
         if self.x2lab_weight:
             self.x2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.x2lab_weight]
 
+        self.x_title_font_size = self.parameters['xlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
         self.x_tickangle = self.parameters['xtlab_orient']
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
@@ -494,7 +501,7 @@ class Config:
 
         return len(permutations)
 
-    def _get_colors(self) -> list:
+    def _get_colors(self, config_name="colors") -> list:
         """
            Retrieves the colors used for lines and markers, from the
            config file (default or custom).
@@ -505,8 +512,17 @@ class Config:
                (and their corresponding marker symbols)
         """
 
-        colors_settings = self.get_config_value('colors')
+        colors_settings = self.get_config_value(config_name)
+        colors_settings = [self._format_color(color) for color in colors_settings]
         return self.create_list_by_series_ordering(list(colors_settings))
+
+    @staticmethod
+    def _format_color(input_color):
+        if not input_color.startswith('rgb('):
+            return input_color
+        numbers = re.findall(r'\d+', input_color)
+        return tuple(int(num) / 255.0 for num in numbers)
+
 
     def _get_con_series(self) -> list:
         """

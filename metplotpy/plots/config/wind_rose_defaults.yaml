@@ -19,7 +19,7 @@ wind_rose_marker_colors:
   - 'rgb(253,193,115)'
   - 'rgb(236,94,74)'
   - 'rgb(159,11,68)'
-create_figure: True
+
 show_legend: True
 angularaxis_tickvals:
   - 0
@@ -33,10 +33,10 @@ angularaxis_ticktext:
   - 'W'
 plot_filename: ./wind_rose_default.png
 stat_input: ./point_stat_mpr.txt
-plot_width: 800
-plot_height: 620
+plot_width: 11.0
+plot_height: 8.5
 dump_points: True
-show_in_browser: False
+
 # not used in this plot, but needed by the base config
 plot_units: in
 title_size: 1.4
@@ -78,9 +78,9 @@ caption_weight: 1
 title_align: 0.5
 title_offset: -2
 title_weight: 2.0
-legend_box: o
+legend_box: n
 legend_inset:
-  x: 0.0
-  y: -0.25
+  x: 0.55
+  y: 0.85
 legend_ncol: 1
 legend_size: 0.8

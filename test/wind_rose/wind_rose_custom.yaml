@@ -24,7 +24,6 @@ wind_rose_marker_colors:
   - 'rgb(253,193,115)'
   - 'rgb(236,94,74)'
   - 'rgb(159,11,68)'
-create_figure: True
 show_legend: True
 angularaxis_tickvals:
   - 0
@@ -36,8 +35,6 @@ angularaxis_ticktext:
   - 'E'
   - 'S'
   - 'W'
-
-show_in_browser: False
 
 # To save your log output to a file, specify a path and filename and uncomment the line below.  Make sure you have
 # permissions to the directory you specify.  The default, as specified in the default config file is stdout.

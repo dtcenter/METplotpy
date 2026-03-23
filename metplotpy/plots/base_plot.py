@@ -170,11 +170,11 @@ class BasePlot:
 
     def get_weights_size_styles(self):
         """
-           Set up the font properties for the plot title: style (regular, italic), size,  and
+           Set up the font properties for the plot title: style (regular, italic), size, and
            weight (normal, bold) for the title, captions, x-axis label, and y-axis label.
 
            Returns:
-              weights_size_styles: A dictionary  containing the font property information
+              weights_size_styles: A dictionary containing the font property information
                                              for the title, captions, x-axis label, and y-axis label
         """
         weights_size_styles = {}
@@ -376,7 +376,7 @@ class BasePlot:
             color=self.config_obj.parameters['caption_col'],
         )
 
-    def _add_legend(self, ax: plt.Axes, handles_and_labels=None) -> None:
+    def _add_legend(self, ax: plt.Axes, handles_and_labels=None, loc='upper center') -> None:
         """Creates a plot legend based on the properties from the config file.
         Note: This should be called after adding the series, because the plot
         labels need to be created before including them in the legend.
@@ -391,15 +391,20 @@ class BasePlot:
         if not handles:
             print("Warning: No labels found. Use ax.plot(..., label='name')")
 
+        # handle plots that only have a single boolean for show legend
+        show_legend = self.config_obj.show_legend
+        if isinstance(show_legend, bool):
+            show_legend = [show_legend] * len(handles)
+
         # only show legend entries that have show_legend set to True
-        filtered_handles = [h for h, show in zip(handles, self.config_obj.show_legend) if show == 1]
-        filtered_labels = [l for l, show in zip(labels, self.config_obj.show_legend) if show == 1]
+        filtered_handles = [h for h, show in zip(handles, show_legend) if show == 1]
+        filtered_labels = [l for l, show in zip(labels, show_legend) if show == 1]
 
         legend = ax.legend(
             handles=filtered_handles,
             labels=filtered_labels,
             bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y),
-            loc='upper center',
+            loc=loc,
             edgecolor=self.config_obj.legend_border_color,
             frameon=self.config_obj.draw_box,
             ncol=max(1, len(handles)) if orientation == "horizontal" else 1,
