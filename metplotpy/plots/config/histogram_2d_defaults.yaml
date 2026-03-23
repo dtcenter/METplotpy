@@ -1,7 +1,7 @@
 plot_filename: './tmp_z2_p500.png'
 
-height: 800
-width: 1200
+plot_height: 8.5
+plot_width: 11.0
 font_size: 20
 plot_units: in
 

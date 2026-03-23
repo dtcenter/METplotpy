@@ -21,25 +21,24 @@ __version__ = '0.1.0'
 """
 Import standard modules
 """
-import os
+
 import sys
 from datetime import datetime
-import re
-import yaml
 import xarray as xr
-import plotly.graph_objects as go
 
-import metplotpy.plots.util_plotly as util
+from matplotlib import pyplot as plt
+
+import metplotpy.plots.util as util
 
 """
 Import BasePlot class
 """
-from metplotpy.plots.base_plot_plotly import BasePlot
+from metplotpy.plots.base_plot import BasePlot
 
 
-class Histogram_2d(BasePlot):
+class Histogram2D(BasePlot):
     """
-    Class to create a Plotly Histogram_2d plot from a 2D data array
+    Class to create a Plotly Histogram2d plot from a 2D data array
     """
 
     def __init__(self, parameters):
@@ -56,7 +55,6 @@ class Histogram_2d(BasePlot):
         self.dims = self.data.dims
         self.coords = self.data.coords
 
-
         # Optional setting, indicates *where* to save the dump_points_1 file
         # used by METviewer
         self.points_path = self.get_config_value('points_path')
@@ -66,61 +64,37 @@ class Histogram_2d(BasePlot):
         # normalized probability distribution function
         self.pdf = self.data / self.data.sum()
 
-        self.figure = go.Figure()
-
         self.create_figure()
 
     def create_figure(self):
 
         self.logger.info(f"Begin creating the figure: {datetime.now()}")
-        if self.get_config_value('normalize_to_pdf'):
-            z_data = self.pdf
-        else:
-            z_data = self.data
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
-        self.figure.add_heatmap(
-            x=self.data.coords[self.dims[0]],
-            y=self.data.coords[self.dims[1]],
-            z=z_data,
-            zmin=self.get_config_value('pdf_min'),
-            zmax=self.get_config_value('pdf_max'))
+        wts_size_styles = self.get_weights_size_styles()
 
-        self.figure.update_layout(
-            height=self.get_config_value('height'),
-            width=self.get_config_value('width'),
-            font=dict(size=self.get_config_value('font_size')),
-            title=self.get_config_value('title'),
-            xaxis_title=self.get_config_value('xaxis_title'),
-            yaxis_title=self.get_config_value('yaxis_title'),
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
+
+        self.config_obj.xaxis = self.get_config_value('xaxis_title')
+        self.config_obj.yaxis_1 = self.get_config_value('yaxis_title')
+
+        self._add_xaxis(ax, wts_size_styles['xlab'])
+        self._add_yaxis(ax, wts_size_styles['ylab'])
+
+        z_data = self.pdf if self.get_config_value('normalize_to_pdf') else self.data
+
+        colormesh = ax.pcolormesh(
+            self.data.coords[self.dims[1]],
+            self.data.coords[self.dims[0]],
+            z_data,
+            vmin=self.get_config_value('pdf_min'),
+            vmax=self.get_config_value('pdf_max'),
+            shading='nearest'
         )
+        plt.colorbar(colormesh, ax=ax)
 
         self.logger.info(f"Finished creating the figure: {datetime.now()}")
-
-    def save_to_file(self):
-        """Saves the image to a file specified in the config file.
-         Prints a message if fails
-
-        Args:
-
-        Returns:
-
-        """
-        image_name = self.get_config_value('plot_filename')
-        self.logger.info(f"Saving plot to file {image_name}: {datetime.now()} ")
-        if self.figure:
-            try:
-                os.makedirs(os.path.dirname(image_name), exist_ok=True)
-                self.figure.write_image(image_name)
-
-            except FileNotFoundError:
-                self.logger.error(f"FileNotFoundError: Can't save to file {image_name}")
-            except ValueError as err:
-                self.logger.error(f"ValueError: Some other error occurred "
-                                  f"{datetime.now()}: {err}")
-        else:
-            self.logger.error("The figure was not created. Cannot save file.")
-
-        self.logger.info(f"Finished saving plot to file: {datetime.now()}")
 
     def write_output_file(self):
         """
@@ -154,14 +128,7 @@ class Histogram_2d(BasePlot):
 
 
 def main(config_filename=None):
-    params = util.get_params(config_filename)
-    try:
-        h = Histogram_2d(params)
-        h.save_to_file()
-        h.logger.info(f"Finished generating histogram 2D plot: {datetime.now()}")
-    except ValueError as ve:
-        print(ve)
-
+    util.make_plot(config_filename, Histogram2D)
 
 if __name__ == "__main__":
     main()
