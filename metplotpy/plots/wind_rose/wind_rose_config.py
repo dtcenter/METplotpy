@@ -16,7 +16,7 @@ Holds values set in the Wind Rose config file(s)
 from pathlib import Path
 
 from ..config import Config
-
+from .. import constants as constants
 
 class WindRoseConfig(Config):
     def __init__(self, parameters):
@@ -34,6 +34,8 @@ class WindRoseConfig(Config):
 
         self.type = self.get_config_value('type')
         self.title = self.get_config_value('title')
+        self.title_offset = 1.0 + abs(
+            self.parameters['title_offset']) * constants.DEFAULT_TITLE_OFFSET
         self.wind_rose_breaks = self.get_config_value('wind_rose_breaks')
         self.wind_rose_angle = self.get_config_value('wind_rose_angle')
         self.wind_rose_marker_colors = self._get_colors('wind_rose_marker_colors')

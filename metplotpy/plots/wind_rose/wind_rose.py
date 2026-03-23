@@ -101,6 +101,9 @@ class WindRosePlot(BasePlot):
         wts_size_styles = self.get_weights_size_styles()
         self._add_title(ax, wts_size_styles['title'])
 
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
+
         # create wind rose traces
         self._create_traces(ax)
 
@@ -382,15 +385,7 @@ def main(config_filename=None):
             The location of the input data is defined in either the default or
             custom config file.
         """
-    params = util.get_params(config_filename)
-    try:
-        plot = WindRosePlot(params)
-        plot.save_to_file()
-        plot.write_output_file()
-        plot.logger.info(f"Finished wind rose plot: {datetime.now()}")
-
-    except ValueError as ve:
-        print(ve)
+    util.make_plot(config_filename, WindRosePlot)
 
 
 if __name__ == "__main__":
