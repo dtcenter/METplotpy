@@ -440,7 +440,7 @@ class BasePlot:
             ax.set_axisbelow(True)
 
         if not is_vert:
-            if len(self.config_obj.parameters['xlim']) > 0:
+            if len(self.config_obj.parameters.get('xlim', [])) > 0:
                 # TODO: support xlim_step? only used for line plots
                 ax.set_xlim(self.config_obj.parameters['xlim'])
             elif getattr(self.config_obj, 'start_from_zero', False):
