@@ -26,10 +26,9 @@ from pathlib import Path
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from metplotpy.plots.base_plot_plotly import BasePlot
+from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.wind_rose.wind_rose_config import WindRoseConfig
-from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from metplotpy.plots import util_plotly as util
+from metplotpy.plots import util
 
 
 class WindRosePlot(BasePlot):
@@ -76,11 +75,6 @@ class WindRosePlot(BasePlot):
         # create wind rose traces
         self._create_traces()
 
-        # create figure if needed
-        # pylint:disable=assignment-from-no-return
-        # Need to have a self.figure that we can pass along to
-        # the methods in base_plot.py (BasePlot class methods) to
-        # create binary versions of the plot.
         if self.config_obj.create_figure:
             self.figure = self._create_figure()
 
@@ -210,18 +204,7 @@ class WindRosePlot(BasePlot):
 
         # calculate the wind dir in degrees for each row and bin it to angles
         self.logger.info("Calculating the wind direction.")
-        wind_dir_deg = []
-        for i, v_wind in enumerate(v_wind_data):
-            if wind_speed[i] == 0:
-                wind_dir_deg.append(None)
-            else:
-                # calculate the wind dir
-                wd = math.atan2(u_wind_data[i] / wind_speed[i], v_wind / wind_speed[i]) * 180 / math.pi
-                if wd < 0:
-                    wind_dir_deg.append(None)
-                else:
-                    wind_dir_deg.append(
-                        self.config_obj.wind_rose_angle * math.ceil(wd / self.config_obj.wind_rose_angle - 0.5))
+        wind_dir_deg = self._get_wind_dir_deg(u_wind_data, v_wind_data, wind_speed)
 
         # join wind_speed and wind_dir in one array
         wind_speed_dir = np.vstack((wind_speed, wind_dir_deg)).T
@@ -234,16 +217,7 @@ class WindRosePlot(BasePlot):
 
         # remove rows where wind direction is None
         # and converting data between 348.75 and 360 to negative
-        wind_speed_dir_processed = np.empty((0, 2), float)
-        for i, wspd in enumerate(wind_speed_dir):
-            if wspd[1] is not None:
-                if angles[-1] + step <= wspd[1] and wspd[1] < 360:
-                    wind_speed_dir_processed = np.append(wind_speed_dir_processed, np.array(
-                        [[wspd[0], wspd[1] - 360, ]]), axis=0)
-                else:
-                    wind_speed_dir_processed = np.append(wind_speed_dir_processed,
-                                                         np.array([[wspd[0], wspd[1], ]]),
-                                                         axis=0)
+        wind_speed_dir_processed = self._process_wind_speed_dir(wind_speed_dir, angles, step)
 
         # determining the direction bins
         bin_edges_dir = np.append(angles - step, [angles[-1] + step])
@@ -306,6 +280,37 @@ class WindRosePlot(BasePlot):
             self.traces.append(trace)
         self.logger.info(f"Finished creating traces: {datetime.now()}")
 
+    def _get_wind_dir_deg(self, u_wind_data, v_wind_data, wind_speed):
+        wind_dir_deg = []
+        for i, v_wind in enumerate(v_wind_data):
+            if wind_speed[i] == 0:
+                wind_dir_deg.append(None)
+            else:
+                # calculate the wind dir
+                wd = math.atan2(u_wind_data[i] / wind_speed[i], v_wind / wind_speed[i]) * 180 / math.pi
+                if wd < 0:
+                    wind_dir_deg.append(None)
+                else:
+                    wind_dir_deg.append(
+                        self.config_obj.wind_rose_angle * math.ceil(wd / self.config_obj.wind_rose_angle - 0.5))
+
+        return wind_dir_deg
+
+    @staticmethod
+    def _process_wind_speed_dir(wind_speed_dir, angles, step):
+        wind_speed_dir_processed = np.empty((0, 2), float)
+        for i, wspd in enumerate(wind_speed_dir):
+            if wspd[1] is not None:
+                if angles[-1] + step <= wspd[1] and wspd[1] < 360:
+                    wind_speed_dir_processed = np.append(wind_speed_dir_processed, np.array(
+                        [[wspd[0], wspd[1] - 360, ]]), axis=0)
+                else:
+                    wind_speed_dir_processed = np.append(wind_speed_dir_processed,
+                                                         np.array([[wspd[0], wspd[1], ]]),
+                                                         axis=0)
+
+        return wind_speed_dir_processed
+
     def save_to_file(self) -> None:
         """ Saves the image to a file specified in the config file.
             Prints a message if fails
@@ -366,7 +371,7 @@ class WindRosePlot(BasePlot):
         # (the input data file) except replace the .data
         # extension with .points1 extension
         # otherwise use points_path path
-        points = dict()
+        points = {}
         for trace in self.traces:
             points[trace.name] = trace.r
 
@@ -397,7 +402,7 @@ class WindRosePlot(BasePlot):
         :param output_file: the name of the output file
         """
         try:
-            all_points_formatted = dict()
+            all_points_formatted = {}
             for key, value in points.items():
                 data_formatted = ''
                 for val in value:
@@ -410,10 +415,9 @@ class WindRosePlot(BasePlot):
             with open(output_file, "w+") as f:
                 for key, value in all_points_formatted.items():
                     f.write('%s:%s\n' % (key, value))
-            f.close()
 
         except TypeError:
-            print('Can\'t save points to a file')
+            print("Can't save points to a file")
 
 
 def main(config_filename=None):
@@ -432,8 +436,6 @@ def main(config_filename=None):
     try:
         plot = WindRosePlot(params)
         plot.save_to_file()
-        if plot.config_obj.show_in_browser:
-            plot.show_in_browser()
         plot.write_output_file()
         plot.logger.info(f"Finished wind rose plot: {datetime.now()}")
 
