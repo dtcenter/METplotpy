@@ -16,6 +16,7 @@ __author__ = 'Tatiana Burek'
 import os
 import logging
 import warnings
+from datetime import datetime
 import numpy as np
 from matplotlib.font_manager import FontProperties
 
@@ -302,10 +303,13 @@ class BasePlot:
     def save_to_file(self, **kwargs) -> None:
         """!Saves the plot to a file.
         Add any arguments passed to the function directly to plt.savefig."""
+        self.logger.info(f"Saving to file: {datetime.now()}")
         image_name = self.get_config_value('plot_filename')
         os.makedirs(os.path.dirname(image_name), exist_ok=True)
+        plot_obj = plt if not self.figure else self.figure
         try:
-            plt.savefig(image_name, dpi=self.get_config_value('plot_res'), **kwargs)
+            plot_obj.savefig(image_name, dpi=self.get_config_value('plot_res'), **kwargs)
+            self.logger.info(f"Finished saving plot {datetime.now()}")
         except Exception as ex:
             self.logger.error(f"Failed to save plot to file: {ex}")
         finally:
@@ -646,3 +650,7 @@ class BasePlot:
         offset = (index - (n - 1) / 2.0) * width
         x_locs = base + offset
         return x_locs, width
+
+    def write_output_file(self) -> None:
+        """To be implemented by child class"""
+        pass
