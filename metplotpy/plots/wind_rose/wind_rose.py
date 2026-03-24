@@ -44,7 +44,7 @@ class WindRosePlot(BasePlot):
             This class works with MET v.9.1+ output
             """
     def __init__(self, parameters: dict, u_wind_data: Union[pd.DataFrame, None] = None,
-                 v_wind_data: Union[pd.DataFrame, None] = None):
+                 v_wind_data: Union[pd.DataFrame, None] = None, ax: plt.Axes = None):
 
         default_conf_filename = "wind_rose_defaults.yaml"
 
@@ -68,7 +68,7 @@ class WindRosePlot(BasePlot):
             self.u_wind_data = u_wind_data
             self.v_wind_data = v_wind_data
 
-        self._create_figure()
+        self._create_figure(ax)
 
     def _read_input_data(self):
         """
@@ -84,19 +84,23 @@ class WindRosePlot(BasePlot):
         self.u_wind_data = input_df[input_df['FCST_VAR'] == 'UGRD']
         self.v_wind_data = input_df[input_df['FCST_VAR'] == 'VGRD']
 
-    def _create_figure(self):
+    def _create_figure(self, ax: plt.Axes = None):
         """
         Initialise the figure and add Wnd roses traces
 
         Args:
-
+            ax: existing Axes object to use for the plot
 
         Returns:
-             Wind rose plot as Plotly figure
+             Wind rose plot as Matplotlib figure
         """
         self.logger.info(f"Creating figure: {datetime.now()}")
-        _, ax = plt.subplots(subplot_kw={'projection': 'polar'},
-                               figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
+        if ax is None:
+            fig, ax = plt.subplots(subplot_kw={'projection': 'polar'},
+                                   figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
+            self.figure = fig
+        else:
+            self.figure = ax.get_figure()
 
         wts_size_styles = self.get_weights_size_styles()
         self._add_title(ax, wts_size_styles['title'])
