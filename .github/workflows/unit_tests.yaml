@@ -60,19 +60,19 @@ jobs:
 
     steps:
     # checkout METplotpy
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         ref: ${{ matrix.branch }}
 
     # checkout METcalcpy
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         repository: dtcenter/METcalcpy
         path: METcalcpy
         ref: develop
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -115,7 +115,7 @@ jobs:
           path: ${{ runner.workspace }}/artifacts
 
       - name: Checkout diff_util.py from METplus
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: dtcenter/METplus
           ref: develop
@@ -125,7 +125,7 @@ jobs:
           path: METplus
 
       - name: Set up Python for diff_util.py
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
