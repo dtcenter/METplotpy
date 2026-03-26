@@ -300,11 +300,12 @@ class BasePlot:
 
         return None
 
-    def save_to_file(self, **kwargs) -> None:
+    def save_to_file(self, plot_filename=None, **kwargs) -> None:
         """!Saves the plot to a file.
         Add any arguments passed to the function directly to plt.savefig."""
-        self.logger.info(f"Saving to file: {datetime.now()}")
-        image_name = self.get_config_value('plot_filename')
+        image_name = plot_filename if plot_filename else self.get_config_value('plot_filename')
+
+        self.logger.info(f"Saving to file: {image_name} : {datetime.now()}")
         os.makedirs(os.path.dirname(image_name), exist_ok=True)
         plot_obj = plt if not self.figure else self.figure
         try:
@@ -361,9 +362,10 @@ class BasePlot:
         np_array = np.array(data)
         return len(np_array.shape)
 
-    def _add_title(self, ax, font_properties):
+    def _add_title(self, ax, font_properties, title_override=None):
+        title = title_override if title_override else self.config_obj.title
         ax.set_title(
-            self.config_obj.title.replace('<br>', '\n'),
+            title.replace('<br>', '\n'),
             fontproperties=font_properties,
             color=constants.DEFAULT_TITLE_COLOR,
             pad=28,
