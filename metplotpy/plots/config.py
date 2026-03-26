@@ -155,10 +155,14 @@ class Config:
         # re-create the METviewer xlab_weight. Use the
         # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
         # what was requested in METviewer
-        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.get_config_value('xlab_weight')]
+        xlab_weight = self.get_config_value('xlab_weight')
+        if xlab_weight is None:
+            xlab_weight = 1
+        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(xlab_weight)]
+
         self.x2lab_weight = self.get_config_value('x2lab_weight')
-        if self.x2lab_weight:
-            self.x2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.x2lab_weight]
+        if self.x2lab_weight is not None:
+            self.x2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(self.x2lab_weight)]
 
         self.x_title_font_size = self.parameters['xlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
         self.x_tickangle = self.parameters['xtlab_orient']
@@ -191,10 +195,13 @@ class Config:
         # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
         # what was requested in METviewer
         mv_ylab_weight = self.get_config_value('ylab_weight')
-        self.ylab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_ylab_weight]
+        if mv_ylab_weight is None:
+            mv_ylab_weight = 1
+        self.ylab_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(mv_ylab_weight)]
+
         self.y2lab_weight = self.get_config_value('y2lab_weight')
-        if self.y2lab_weight:
-            self.y2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.y2lab_weight]
+        if self.y2lab_weight is not None:
+            self.y2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(self.y2lab_weight)]
 
         # Adjust the caption left/right relative to the y-axis
         # METviewer default is set to 0, corresponds to y=0.05 in Matplotlib
@@ -207,7 +214,9 @@ class Config:
 
         mv_title_weight = self.get_config_value('title_weight')
         # use the same constants dictionary as used for captions
-        self.title_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_title_weight]
+        if mv_title_weight is None:
+            mv_title_weight = 1
+        self.title_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(mv_title_weight)]
 
         # These values can't be used as-is, the only choice for aligning in Matplotlib
         # are center (default), left, and right
