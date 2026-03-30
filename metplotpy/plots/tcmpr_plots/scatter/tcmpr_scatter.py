@@ -13,9 +13,6 @@ Class Name: tcmpr.py
 
 import os
 
-import plotly.graph_objects as go
-
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 from metplotpy.plots.tcmpr_plots.scatter.tcmpr_series_scatter import TcmprSeriesScatter
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
 from metplotpy.plots.tcmpr_plots.tcmpr_util import get_dep_column
@@ -26,7 +23,7 @@ class TcmprScatter(Tcmpr):
          where each box is represented by a text point data file.
     """
 
-    def __init__(self, config_obj, column_info, col, case_data, input_df):
+    def __init__(self, config_obj, column_info, col, case_data, input_df, stat_name):
         """ Creates a box plot, based on
             settings indicated by parameters.
 
@@ -35,14 +32,24 @@ class TcmprScatter(Tcmpr):
         """
 
         # init common layout
-        super().__init__(config_obj, column_info, col, case_data, input_df)
+        super().__init__(config_obj, column_info, col, case_data, input_df, stat_name)
         print("--------------------------------------------------------")
         print("Creating Scatter plot")
         print("Plot HFIP Baseline:" + self.cur_baseline)
 
+        if not self.config_obj.scatter_x:
+            raise ValueError("scatter_x values are not specified")
+
+        if not self.config_obj.scatter_y:
+            raise ValueError("scatter_y values are not specified")
+
         is_series_valid = len(self.config_obj.series_val_names) == 1 and self.config_obj.series_val_names[0] == 'LEAD'
         is_indy_valid = self.config_obj.indy_var == 'LEAD'
-        if is_series_valid is False and is_indy_valid is True:
+
+        if not is_series_valid and not is_indy_valid:
+            raise ValueError("LEAD values are not specified")
+
+        if not is_series_valid and is_indy_valid:
             self.config_obj.parameters['series_val_1'] = {}
             self.config_obj.parameters['series_val_1'][self.config_obj.indy_var] = self.config_obj.indy_vals
             self.config_obj.series_vals_1 = [self.config_obj.indy_vals]
@@ -61,22 +68,18 @@ class TcmprScatter(Tcmpr):
             if len(self.config_obj.user_legends) != len(self.config_obj.all_series_y1):
                 self.config_obj.user_legends = [str(i) for i in self.config_obj.all_series_vals[0]]
             if len(self.config_obj.colors_list) != len(self.config_obj.all_series_y1):
-                self.config_obj.colors_list = self.config_obj.scatter_color_list[0: len(self.config_obj.all_series_y1)]
-        elif is_series_valid is True:
+                self.config_obj.colors_list = self.config_obj.colors_list[0: len(self.config_obj.all_series_y1)]
+        elif is_series_valid:
             self.indy_vals = []
             self.indy_var = ''
             self.list_stat_1 = []
             self.all_series_y1 = self.config_obj._get_all_series_y(1)
-        else:
-            raise ValueError("LEAD values are not specified")
 
         out_file_x = self.config_obj.scatter_x[-1].replace(')', '').replace('(', '_')
         out_file_y = self.config_obj.scatter_y[-1].replace(')', '').replace('(', '_')
 
-        if self.config_obj.prefix is None or len(self.config_obj.prefix) == 0:
-            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{out_file_x}_vs_{out_file_y}_scatter.png"
-        else:
-            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}_scatter.png"
+        filename_prefix = self.config_obj.prefix if self.config_obj.prefix else f'{out_file_x}_vs_{out_file_y}'
+        self.plot_filename = os.path.join(self.config_obj.plot_dir, f'{filename_prefix}_scatter.png')
 
         # remove the old file if it exist
         if os.path.exists(self.plot_filename):
@@ -84,17 +87,8 @@ class TcmprScatter(Tcmpr):
 
         self._adjust_titles()
 
-        # Create a list of series objects.
-        # Each series object contains all the necessary information for plotting,
-        # such as line color, marker symbol,
-        # line width, and criteria needed to subset the input dataframe.
         self.series_list = self._create_series(self.input_df)
 
-        # create figure
-        # pylint:disable=assignment-from-no-return
-        # Need to have a self.figure that we can pass along to
-        # the methods in base_plot.py (BasePlot class methods) to
-        # create binary versions of the plot.
         self._create_figure()
 
     def _adjust_titles(self):
@@ -107,12 +101,13 @@ class TcmprScatter(Tcmpr):
             col_y = get_dep_column(self.config_obj.scatter_y[ind], self.column_info, self.input_df)
             self.input_df['SCATTER_Y'] = col_y['val']
 
-            if self.yaxis_1 is None or len(self.yaxis_1) == 0:
+            if not self.yaxis_1:
                 self.yaxis_1 = self.config_obj.scatter_y[ind] + " (" + col_y['units'] + ')'
+
             if self.config_obj.xaxis == 'test x_label':
                 self.config_obj.xaxis = scatter_x_val + " (" + col_x['units'] + ')'
 
-            if self.title is None or len(self.title) == 0:
+            if not self.title:
                 self.title = "Scatter plot of <br>" + col_x['desc'] + '<br>versus ' + col_y['desc']
 
     def _create_series(self, input_data):
@@ -152,16 +147,15 @@ class TcmprScatter(Tcmpr):
     def _create_figure(self):
         """ Create a box plot from default and custom parameters"""
 
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_legend()
+        super()._create_figure()
 
         for series in self.series_list:
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
-            if series.plot_disp:
-                self._draw_series(series)
+            if not series.plot_disp:
+                continue
+
+            self._draw_series(series)
 
         values = [*self.input_df['SCATTER_X'], *self.input_df['SCATTER_Y']]
         # Draw a 1 to 1 reference line
@@ -172,73 +166,40 @@ class TcmprScatter(Tcmpr):
 
             xrange = [min(values) - 1, max(values) + 1]
             yrange = [min(values) - 1, max(values) + 1]
-            self.figure.update_layout(yaxis={'range': yrange, 'autorange': False})
-            self.figure.update_layout(xaxis={'range': xrange, 'autorange': False})
 
-            self.figure.add_trace(
-                go.Scatter(x=xrange,
-                           y=yrange,
-                           line={'color': '#7b7d7d',
-                                 'dash': 'dash',
-                                 'width': 1},
-                           showlegend=False,
-                           mode='lines',
-                           name='No-Skill'
-                           ))
+            self.ax.scatter(xrange, yrange,
+                            color='#7b7d7d',
+                            linestyle='--',
+                            linewidth=1,
+                            label='_No-Skill_',
+                            )
+
         else:
             xrange = [min(self.input_df['SCATTER_X']) - 1, max(self.input_df['SCATTER_X']) + 1]
             yrange = [min(self.input_df['SCATTER_Y']) - 1, max(self.input_df['SCATTER_Y']) + 1]
-            self.figure.update_layout(yaxis={'range': yrange, 'autorange': False})
-            self.figure.update_layout(xaxis={'range': xrange, 'autorange': False})
+
             # Draw a reference line at 0
-            self.figure.add_hline(y=yrange[0], line_width=1, line_dash="dash", line_color="#7b7d7d")
+            self.add_horizontal_line(self.ax, yrange[0], {'line_width': 1, 'line_dash': "dash", 'line_color': "#7b7d7d"})
+
+        # set x and y limits unless they are set in the config
+        if not self.config_obj.parameters['xlim']:
+            self.ax.set_xlim(xrange)
+        if not self.config_obj.parameters['ylim']:
+            self.ax.set_ylim(yrange)
+
+        self._add_xaxis()
+        self._add_yaxis()
+        self._add_legend(self.ax)
 
     def _draw_series(self, series: TcmprSeriesScatter) -> None:
-
         # Create a point plot
-        self.figure.add_trace(
-            go.Scatter(x=series.series_data['SCATTER_X'],
-                       y=series.series_data['SCATTER_Y'],
-                       showlegend=True,
-                       mode='markers',
-                       name=self.config_obj.user_legends[series.idx],
-                       marker=dict(
-                           color=PLOTLY_PAPER_BGCOOR,
-                           size=8,
-                           line=dict(
-                               color=self.config_obj.colors_list[series.idx],
-                               width=1
-                           )
-                       ),
-                       ),
-            secondary_y=series.y_axis != 1
-        )
-
-    def _add_xaxis(self) -> None:
-        """
-        Configures and adds x-axis to the plot
-        """
-        self.figure.update_xaxes(title_text=self.config_obj.xaxis,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 ticks="outside",
-                                 zeroline=False,
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.x_title_font_size
-                                 },
-                                 title_standoff=abs(self.config_obj.parameters['xlab_offset']),
-                                 tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size},
-                                 tickformat='d',
-                                 tickmode='auto'
-                                 )
-        # reverse xaxis if needed
-        if hasattr(self.config_obj, 'xaxis_reverse') and self.config_obj.xaxis_reverse is True:
-            self.figure.update_xaxes(autorange="reversed")
+        ax = self.ax if series.y_axis == 1 else self.ax2
+        ax.scatter(series.series_data['SCATTER_X'], series.series_data['SCATTER_Y'],
+                   size=self.config_obj.marker_size,
+                   color=self.config_obj.colors_list[series.idx],
+                   colormap=self.config_obj.marker_color,
+                   label=self.config_obj.user_legends[series.idx],
+                   )
 
     @staticmethod
     def elements_with_string(list_of_str, pattern):
