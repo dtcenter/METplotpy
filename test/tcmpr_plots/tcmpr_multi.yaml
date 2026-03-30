@@ -131,6 +131,8 @@ plot_type_list:
   - 'mean'
   - 'median'
   - 'rank'
+  #- 'scatter'
+  #- 'point'
 
 
 rp_diff:
