@@ -26,7 +26,17 @@ class TcmprConfig(Config):
     """
     Prepares and organises Line plot parameters
     """
-    SUPPORTED_PLOT_TYPES = ['boxplot', 'point', 'mean', 'median', 'relperf', 'rank', 'skill_mn', 'skill_md']
+    SUPPORTED_PLOT_TYPES = [
+        'boxplot',
+        'point',
+        'mean',
+        'median',
+        'relperf',
+        'rank',
+        'skill_mn',
+        'skill_md',
+        'scatter',
+    ]
 
     def __init__(self, parameters: dict) -> None:
         """ Reads in the plot settings from a box plot config file.
