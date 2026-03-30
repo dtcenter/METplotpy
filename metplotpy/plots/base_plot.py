@@ -475,16 +475,13 @@ class BasePlot:
                       labelpad=abs(self.config_obj.parameters['ylab_offset']) * constants.PIXELS_TO_POINTS)
         ax.tick_params(axis="y", direction="in", which="both", labelrotation=self.config_obj.y_tickangle)
 
-        # set y limits if defined in config or if min/max are provided
-        if not is_vert and len(self.config_obj.parameters['ylim']) > 0:
-            ax.set_ylim(self.config_obj.parameters['ylim'])
-
         # add grid lines if requested
         if grid_on:
             ax.grid(True, which='major', axis='y', color=self.config_obj.blended_grid_col, linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
             ax.set_axisbelow(True)
 
         if not is_vert:
+            # set y limits if min/max are defined in config
             if len(self.config_obj.parameters['ylim']) > 0:
                 ax.set_ylim(self.config_obj.parameters['ylim'])
         else:
