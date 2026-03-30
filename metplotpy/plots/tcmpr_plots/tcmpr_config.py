@@ -17,9 +17,9 @@ import warnings
 import itertools
 
 import metcalcpy.util.utils as utils
-from .. import constants_plotly as constants
-from ..config_plotly import Config
-import metplotpy.plots.util_plotly as util
+from .. import constants as constants
+from ..config import Config
+import metplotpy.plots.util as util
 
 
 class TcmprConfig(Config):
@@ -67,8 +67,8 @@ class TcmprConfig(Config):
 
         # plot parameters
         self.grid_on = self._get_bool('grid_on')
-        self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
-        self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
+        self.plot_width = self.calculate_plot_dimension('plot_width')
+        self.plot_height = self.calculate_plot_dimension('plot_height')
         self.plot_margins = self.parameters['mar']
         self.blended_grid_col = util.alpha_blending(self.parameters['grid_col'], 0.5)
         self.plot_stat = self._get_plot_stat()
@@ -81,12 +81,11 @@ class TcmprConfig(Config):
         # caption parameters
         self.caption_size = int(constants.DEFAULT_CAPTION_FONTSIZE
                                 * self.get_config_value('caption_size'))
-        self.caption_offset = self.parameters['caption_offset'] - 3.1
+        self.caption_offset = self.parameters['caption_offset'] * constants.DEFAULT_CAPTION_Y_OFFSET
 
         ##############################################
         # title parameters
         self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
-        self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
         self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
@@ -104,7 +103,6 @@ class TcmprConfig(Config):
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
         self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         ##############################################
         # x2-axis parameters
@@ -120,10 +118,11 @@ class TcmprConfig(Config):
         # Make the series ordering zero-based
         self.series_ordering_zb = [sorder - 1 for sorder in self.series_ordering]
         self.plot_disp = self._get_plot_disp()
+        self.num_series = self.calculate_number_of_series()
+        self.show_legend = self._get_show_legend()
         self.series_ci = self._get_series_ci()
         self.colors_list = self._get_colors()
         self.all_series_y1 = self._get_all_series_y(1)
-        self.num_series = self.calculate_number_of_series()
         self.linewidth_list = self._get_linewidths()
         self.linestyles_list = self._get_linestyles()
         self.marker_list = self._get_markers()
@@ -174,66 +173,32 @@ class TcmprConfig(Config):
     def _get_tcst_dir(self):
         return self.get_config_value('tcst_dir')
 
-    def _get_linestyles(self) -> list:
-        """
-           Retrieve all the line styles. Convert line style names from
-           the config file into plotly python's line style names.
 
+    def _get_show_legend(self) -> list:
+        """
+           Retrieves the 'show_legend' values used for displaying or
+           not the legend of a trace in the legend box, from the
+           config file. If 'show_legend' is not provided - uses True for all series
            Args:
 
            Returns:
-               line_styles: a list of the plotly line styles
+               show_legend_list or show_legend_from_config: a list of 1 and/or 0 to
+               be used for the traces
         """
-        line_styles = self.get_config_value('series_line_style')
-        line_style_list = []
-        for line_style in line_styles:
-            if line_style in constants.LINE_STYLE_TO_PLOTLY_DASH.keys():
-                line_style_list.append(constants.LINE_STYLE_TO_PLOTLY_DASH[line_style])
-            else:
-                line_style_list.append(None)
-        return self.create_list_by_series_ordering(line_style_list)
+        show_legend_settings = self.get_config_value('show_legend')
 
-    def _get_markers(self) -> list:
-        """
-           Retrieve all the markers. Convert marker names from
-           the config file into plotly python's marker names.
+        if show_legend_settings is None:
+            return [True] * self.num_series
 
-           Args:
-
-           Returns:
-               markers: a list of the plotly markers
-        """
-        markers = self.get_config_value('series_symbols')
-        markers_list = []
-        for marker in markers:
-            if marker in constants.AVAILABLE_PLOTLY_MARKERS_LIST:
-                # the recognized plotly marker names:
-                # circle-open (for small circle), circle, triangle-up,
-                # square, diamond, or hexagon
-                markers_list.append(marker)
-            else:
-                markers_list.append(constants.PCH_TO_PLOTLY_MARKER[marker])
-        return self.create_list_by_series_ordering(markers_list)
-
-    def _get_markers_size(self) -> list:
-        """
-           Retrieve all the markers. Convert marker names from
-           the config file into plotly python's marker names.
-
-           Args:
-
-           Returns:
-               markers: a list of the plotly markers
-        """
-        markers_size = self.get_config_value('series_symbols_size')
-        return self.create_list_by_series_ordering(markers_size)
+        return super()._get_show_legend()
 
     def _get_plot(self) -> list:
         plot_type_list = self.get_config_value('plot_type_list')
         for cur_plot_type in plot_type_list:
             if cur_plot_type not in self.SUPPORTED_PLOT_TYPES:
-                raise ValueError("Requesting an unsupported plot type. Supported types: boxplot, "
-                             "point, mean, median, relperf, rank, skill_mn, and skill_md ")
+                raise ValueError(
+                    f"Requesting an unsupported plot type ({cur_plot_type})."
+                    f" Supported types: {', '.join(self.SUPPORTED_PLOT_TYPES)}")
         return plot_type_list
 
     def _get_tcst_files(self) -> list:

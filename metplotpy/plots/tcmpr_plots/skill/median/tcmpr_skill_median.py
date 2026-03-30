@@ -1,15 +1,17 @@
 import os
 from datetime import datetime
 
+import matplotlib.pyplot as plt
+
 from metcalcpy.util import utils
 from metplotpy.plots.tcmpr_plots.skill.median.tcmpr_series_skill_median import TcmprSeriesSkillMedian
 from metplotpy.plots.tcmpr_plots.skill.tcmpr_skill import TcmprSkill
-import metplotpy.plots.util_plotly as util
+from metplotpy.plots import util as util
 
 
 class TcmprSkillMedian(TcmprSkill):
-    def __init__(self, config_obj, column_info, col, case_data, input_df, stat_name):
-        super().__init__(config_obj, column_info, col, case_data, input_df, stat_name, None)
+    def __init__(self, config_obj, column_info, col, case_data, input_df, stat_name, baseline_data=None):
+        super().__init__(config_obj, column_info, col, case_data, input_df, baseline_data, stat_name)
 
         # Set up Logging
         self.skillmd_logger = util.get_common_logger(self.config_obj.log_level, self.config_obj.log_filename)

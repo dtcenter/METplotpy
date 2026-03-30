@@ -1,9 +1,10 @@
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 from datetime import datetime
+import numpy as np
 
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
-import metplotpy.plots.util_plotly as util
+from metplotpy.plots import util as util
 
 class TcmprLine(Tcmpr):
     def __init__(self, config_obj, column_info, col, case_data, input_df, baseline_data, stat_name):
@@ -14,13 +15,10 @@ class TcmprLine(Tcmpr):
 
     def _create_figure(self, stat_name):
         """ Create a box plot from default and custom parameters"""
-
         start_time = datetime.now()
+        handles_and_labels = []
 
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_legend()
+        super()._create_figure()
 
         # placeholder for the min and max values for y-axis
         yaxis_min = None
@@ -28,19 +26,6 @@ class TcmprLine(Tcmpr):
 
         if self.config_obj.xaxis_reverse is True:
             self.series_list.reverse()
-        # calculate stag adjustments
-        stag_adjustments = self._calc_stag_adjustments()
-
-        x_points_index = list(range(0, len(self.config_obj.indy_vals)))
-        # add x ticks for line plots
-        odered_indy_label = self.config_obj.create_list_by_plot_val_ordering(self.config_obj.indy_label)
-        self.figure.update_layout(
-            xaxis={
-                'tickmode': 'array',
-                'tickvals': x_points_index,
-                'ticktext': odered_indy_label
-            }
-        )
 
         for series in self.series_list:
             # Don't generate the plot for this series if
@@ -48,39 +33,38 @@ class TcmprLine(Tcmpr):
             if series.plot_disp:
                 # collect min-max if we need to sync axis
                 yaxis_min, yaxis_max = self.find_min_max(series, yaxis_min, yaxis_max)
-                x_points_index_adj = x_points_index + stag_adjustments[series.idx]
-                self._draw_series(series, x_points_index_adj)
+                x_points_index_adj, _ = self._get_x_locs_and_width(self.config_obj.indy_vals,
+                                                                   series.idx,
+                                                                   stagger_scale=0.1)
+                handle = self._draw_series(series, x_points_index_adj)
+                handles_and_labels.append((handle, handle.get_label()))
 
         self.line_logger.info(f'Range of {stat_name}: {yaxis_min}, {yaxis_max}')
 
-        self._add_hfip_baseline()
+        self._add_hfip_baseline(self.ax)
 
-        self.figure.update_layout(shapes=[dict(
-            type='line',
-            yref='y', y0=0, y1=0,
-            xref='paper', x0=0, x1=0.95,
-            line={'color': '#727273',
-                  'dash': 'dot',
-                  'width': 1},
-        )])
+        self.ax.axhline(0, color='#727273', linestyle=':', linewidth=1)
 
         # add custom lines
         if len(self.series_list) > 0:
             self._add_lines(
+                self.ax,
                 self.config_obj,
                 sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique())
             )
-        # apply y axis limits
-        self._yaxis_limits()
+
+        self._add_xaxis()
+        self._add_yaxis()
+        self._add_legend(self.ax, handles_and_labels)
 
         # add x2 axis
-        self._add_x2axis(list(range(0, len(self.config_obj.indy_vals))))
+        self._add_x2axis()
 
         end_time = datetime.now()
         total_time = end_time - start_time
         self.line_logger.info(f"Took {total_time} milliseconds to create figure for {stat_name}")
 
-    def _draw_series(self, series: TcmprSeries, x_points_index_adj: list) -> None:
+    def _draw_series(self, series: TcmprSeries, x_points_index_adj: list):
         """
         Draws the boxes on the plot
 
@@ -98,32 +82,23 @@ class TcmprLine(Tcmpr):
         if (no_ci_up is True and no_ci_lo is True) or self.config_obj.series_ci[series.idx] == 'NONE' or \
                 self.config_obj.series_ci[series.idx] is False:
             error_y_visible = False
-        # create a trace
-        self.figure.add_trace(
-            go.Scatter(x=x_points_index_adj,
-                       y=y_points,
-                       showlegend=True,
-                       mode='lines+markers',
-                       textposition="top right",
-                       name=self.config_obj.user_legends[series.idx],
-                       line={'color': self.config_obj.colors_list[series.idx],
-                             'width': self.config_obj.linewidth_list[series.idx],
-                             'dash': self.config_obj.linestyles_list[series.idx]},
-                       marker_symbol=self.config_obj.marker_list[series.idx],
-                       marker_color=self.config_obj.colors_list[series.idx],
-                       marker_line_color=self.config_obj.colors_list[series.idx],
-                       marker_size=self.config_obj.marker_size[series.idx],
-                       error_y={'type': 'data',
-                                'symmetric': False,
-                                'array': series.series_points['ncu'],
-                                'arrayminus': series.series_points['ncl'],
-                                'visible': error_y_visible,
-                                'thickness': self.config_obj.linewidth_list[series.idx]}
-                       ),
-            secondary_y=series.y_axis != 1
-        )
+
+        ax = self.ax if series.y_axis == 1 else self.ax2
+
+        yerr = None
+        if error_y_visible:
+            yerr = [series.series_points['ncl'], series.series_points['ncu']]
+
+        plot = ax.errorbar(x_points_index_adj, y_points, yerr=yerr,
+                           label=self.config_obj.user_legends[series.idx],
+                           color=self.config_obj.colors_list[series.idx],
+                           linewidth=self.config_obj.linewidth_list[series.idx],
+                           linestyle=self.config_obj.linestyles_list[series.idx],
+                           marker=self.config_obj.marker_list[series.idx],
+                           markersize=self.config_obj.marker_size[series.idx])
 
         end_time = datetime.now()
         total_time = end_time - start_time
         self.line_logger.info(
             f"Took {total_time} milliseconds to draw the series for one of the series values in: {series.series_vals_1}")
+        return plot[0]

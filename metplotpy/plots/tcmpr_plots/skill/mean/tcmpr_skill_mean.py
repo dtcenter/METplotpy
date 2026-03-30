@@ -2,12 +2,12 @@ import os
 from datetime import datetime
 
 import numpy as np
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 
 from metcalcpy.util import utils
 from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_series_skill_mean import TcmprSeriesSkillMean
 from metplotpy.plots.tcmpr_plots.skill.tcmpr_skill import TcmprSkill
-import metplotpy.plots.util_plotly as util
+from metplotpy.plots import util as util
 
 
 class TcmprSkillMean(TcmprSkill):
@@ -47,13 +47,13 @@ class TcmprSkillMean(TcmprSkill):
 
     def _init_hfip_baseline_for_plot(self):
         if 'Water Only' in self.title:
-            self.skill_logge.info(f"Plot HFIP Baseline: {self.cur_baseline}")
+            self.skill_logger.info(f"Plot HFIP Baseline: {self.cur_baseline}")
         else:
             self.cur_baseline = self.cur_baseline.replace('Error', 'Skill')
             self.cur_baseline = self.cur_baseline.replace('HFIP Baseline ', 'HFIP Skill Baseline')
         self.skill_logger.info(f"Plot HFIP Baseline:  {self.cur_baseline.replace('Error ', '')}")
 
-    def _add_hfip_baseline(self):
+    def _add_hfip_baseline(self, ax):
         # Add HFIP baseline for each lead time
         if self.cur_baseline_data is not None:
             self.skill_logger.info(f"Adding HFIP baseline: {datetime.now()}")
@@ -79,23 +79,7 @@ class TcmprSkillMean(TcmprSkill):
                     baseline_x_values.append(ind)
                     baseline_y_values.append(baseline_lead)
 
-            self.figure.add_trace(
-                go.Scatter(x=baseline_x_values,
-                           y=baseline_y_values,
-                           showlegend=True,
-                           mode='markers',
-                           textposition="top right",
-                           name=self.cur_baseline,
-                           marker=dict(size=8,
-                                       color='rgb(0,0,255)',
-                                       line=dict(
-                                           width=1,
-                                           color='rgb(0,0,255)'
-                                       ),
-                                       symbol='diamond-cross-open',
-                                       )
-                           )
-            )
+            ax.scatter(baseline_x_values, baseline_y_values, marker='d', facecolors='none', edgecolors='blue', s=30, label=self.cur_baseline)
 
     def _create_series(self, input_data, stat_name):
         """

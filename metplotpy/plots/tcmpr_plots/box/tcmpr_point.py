@@ -1,9 +1,7 @@
 import os
 from datetime import datetime
 
-import plotly.graph_objects as go
-
-from metplotpy.plots import util_plotly as util
+from metplotpy.plots import util as util
 from metplotpy.plots.tcmpr_plots.box.tcmpr_box_point import TcmprBoxPoint
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 
@@ -53,90 +51,21 @@ class TcmprPoint(TcmprBoxPoint):
         :param series: Line series object with data and parameters
         """
 
-        # defaults markers and colors for the regular box plot
-        marker_color = series.color
-        marker_line_color = series.color
-
         # Point plot
-
-        line_color = dict(color='rgba(0,0,0,0)')
-        fillcolor = 'rgba(0,0,0,0)'
-        marker_symbol = 'circle'
-        boxpoints = 'all'
-
-        # create a trace
+        ax = self.ax if series.y_axis == 1 else self.ax2
 
         # line plot, when connect_points is False in config file
-        if 'point' in self.config_obj.plot_type_list:
-            if self.config_obj.connect_points:
-                # line plot
-                mode = 'lines+markers'
-            else:
-                # points only
-                mode = 'markers'
-            # Create a point plot
+        if 'point' not in self.config_obj.plot_type_list:
+            return None
 
-            # Ensure that the size of the list of x and y values
-            # are the same, or the resulting plot will be incorrect.
-            # This mismatch occurs when the x_list represents the
-            # available lead hours in the series data and the
-            # series_points has None where there isn't data corresponding
-            # to lead hours in the series_points dataframe.
-            #
-            y_list = series.series_points['mean']
-            x_list = series.series_data['LEAD_HR']
-            if len(x_list) != len(y_list):
-                # Clean up None values in the series.series_points['mean'] list
-                # The None values are assigned by the _create_series_points() method.
-                y_list = [y_values for y_values in y_list if y_values is not None]
+        y_list = series.series_points['mean']
+        x_list = series.series_data['LEAD_HR']
+        if len(x_list) != len(y_list):
+            # Clean up None values in the series.series_points['mean'] list
+            y_list = [y_values for y_values in y_list if y_values is not None]
 
-            self.figure.add_trace(
-                go.Scatter(x=x_list,
-                           y=y_list,
-                           showlegend=True,
-                           mode=mode,
-                           name=self.config_obj.user_legends[series.idx],
-                           marker=dict(
-                               color=marker_line_color,
-                               size=8,
-                               opacity=0.7,
-                               line=dict(
-                                   color=self.config_obj.colors_list[series.idx],
-                                   width=1
-                               )
-                           ),
-                           ),
-                secondary_y=series.y_axis != 1
-            )
-
-            # When a line plot is requested, connect any gaps
-            if self.config_obj.connect_points:
-                self.figure.update_traces(connectgaps=True)
-
-        else:
-            # Boxplot
-            self.figure.add_trace(
-                go.Box(x=series.series_data['LEAD_HR'],
-                       y=series.series_data['PLOT'],
-                       mean=series.series_points['mean'],
-                       notched=self.config_obj.box_notch,
-                       line=line_color,
-                       fillcolor=fillcolor,
-                       name=series.user_legends,
-                       showlegend=True,
-                       boxmean=self.config_obj.box_avg,
-                       boxpoints=boxpoints,  # outliers, all, False
-                       pointpos=0,
-                       marker=dict(size=4,
-                                   color=marker_color,
-                                   line=dict(
-                                       width=1,
-                                       color=marker_line_color
-                                   ),
-                                   symbol=marker_symbol,
-                                   ),
-                       jitter=0
-                       ),
-                secondary_y=series.y_axis != 1
-            )
-
+        plot_obj = ax.plot(x_list, y_list, marker='o', label=series.user_legends,
+                           linestyle='-' if self.config_obj.connect_points else 'None',
+                           color=series.color,
+                           )
+        return plot_obj[0]

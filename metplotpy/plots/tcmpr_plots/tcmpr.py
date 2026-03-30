@@ -21,16 +21,13 @@ import warnings
 warnings.filterwarnings('ignore')
 import numpy as np
 import pandas as pd
-import plotly.graph_objects as go
-
-from plotly.graph_objects import Figure
-from plotly.subplots import make_subplots
-
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
 import metcalcpy.util.utils as calc_util
 from metcalcpy.event_equalize import event_equalize
-from metplotpy.plots import util_plotly as util
-from metplotpy.plots.base_plot_plotly import BasePlot
-from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
+from metplotpy.plots import util as util
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots.constants import DEFAULT_TITLE_FONT_SIZE, DEFAULT_TITLE_OFFSET
 from metplotpy.plots.tcmpr_plots.tcmpr_config import TcmprConfig
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 from metplotpy.plots.tcmpr_plots.tcmpr_util import init_hfip_baseline, common_member, get_dep_column
@@ -39,7 +36,7 @@ PLOTS_WITH_BASELINE = ['boxplot', 'point', 'mean', 'skill_mn']
 
 
 class Tcmpr(BasePlot):
-    """  Generates a Plotly  plot for 1 or more traces
+    """  Generates a Matplotlib plot for 1 or more traces
          where each box is represented by a text point data file.
     """
 
@@ -53,7 +50,7 @@ class Tcmpr(BasePlot):
         """
 
         # init common layout
-        super().__init__(None, "tcmpr_defaults.yaml")
+        super().__init__(config_obj.parameters, "tcmpr_defaults.yaml")
 
         # Set up Logging
         self.logger = util.get_common_logger(config_obj.log_level, config_obj.log_filename)
@@ -76,6 +73,7 @@ class Tcmpr(BasePlot):
         self.case_data = case_data
 
         self.col = col
+        self.stat_name = stat_name
         self.title = self.config_obj.title
         self.baseline_lead_time = 'lead'
         self.yaxis_1 = self.config_obj.yaxis_1
@@ -130,7 +128,6 @@ class Tcmpr(BasePlot):
         for i, name in enumerate(series_by_stat):
              if not isinstance(name, list):
                  name = [name]
-             # cur_plot_type = self.config_obj.get_config_value('plot_type_list')
              series_obj = TcmprSeries(self.config_obj, i, input_data, series_list,
                                       name, stat_name)
              series_list.append(series_obj)
@@ -154,28 +151,7 @@ class Tcmpr(BasePlot):
         self.logger.info(f"Series list created: {datetime.now()}")
         return series_list
 
-    def _calc_stag_adjustments(self) -> list:
-        """
-        Calculates the x-axis adjustment for each point if requested.
-        It needed so the points and CIs for each x-axis values don't be placed on top of each other
-
-        :return: the list of the adjustment values
-        """
-
-        # get the total number of series
-        num_stag = len(self.config_obj.all_series_y1)
-
-        # calculate staggering values
-
-        dbl_adj_scale = (len(self.config_obj.indy_vals) - 1) / 100
-        stag_vals = np.linspace(-(num_stag / 2) * dbl_adj_scale,
-                                (num_stag / 2) * dbl_adj_scale,
-                                num_stag,
-                                True)
-        stag_vals = stag_vals + dbl_adj_scale / 2
-        return stag_vals
-
-    def _add_hfip_baseline(self):
+    def _add_hfip_baseline(self, ax):
 
         self.logger.info(f"Adding the hfip baseline: {datetime.now()}")
         # Add  baseline for each lead time
@@ -196,219 +172,84 @@ class Tcmpr(BasePlot):
                 baseline_x_values.extend(current_leads)
                 baseline_y_values.extend(baseline_lead)
 
-            self.figure.add_trace(
-                go.Scatter(x=baseline_x_values,
-                           y=baseline_y_values,
-                           showlegend=True,
-                           mode='markers',
-                           textposition="top right",
-                           name=self.cur_baseline,
-                           marker=dict(size=8,
-                                       color='rgb(0,0,255)',
-                                       line=dict(
-                                           width=1,
-                                           color='rgb(0,0,255)'
-                                       ),
-                                       symbol='diamond-cross-open',
-                                       )
-                           )
-            )
+            ax.scatter(baseline_x_values, baseline_y_values,
+                       marker='d',
+                       facecolors='none',
+                       edgecolors='blue',
+                       s=30,
+                       label=self.cur_baseline)
 
-    def _yaxis_limits(self) -> None:
+    def _create_figure(self):
         """
-        Apply limits on y2 axis if needed
+        Create a box plot from defaults and custom parameters
         """
-        if len(self.config_obj.parameters['ylim']) > 0:
-            self.figure.update_layout(yaxis={'range': [self.config_obj.parameters['ylim'][0],
-                                                       self.config_obj.parameters['ylim'][1]],
-                                             'autorange': False})
+        # create and draw the plot
+        self.fig, self.ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height),
+                                         )#layout="constrained")
 
-    def _create_layout(self) -> Figure:
-        """
-        Creates a new layout based on the properties from the config file
-        including plots size, annotation and title
+        # for secondary y axis
+        self.ax2 = self.ax.twinx() if any(s.y_axis != 1 for s in self.series_list) else None
 
-        :return: Figure object
-        """
-        # create annotation
-        annotation_caption = {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-                                                              self.config_obj.parameters['caption_weight']),
-                              'align': 'left',
-                              'showarrow': False,
-                              'xref': 'paper',
-                              'yref': 'paper',
-                              'x': self.config_obj.parameters['caption_align'],
-                              'y': self.config_obj.caption_offset,
-                              'font': {
-                                  'size': self.config_obj.caption_size,
-                                  'color': self.config_obj.parameters['caption_col']
-                              }
-                              }
-        annotation_subtitle = {'text': util.apply_weight_style(self.config_obj.subtitle,
-                                                               1),
-                               'align': 'center',
-                               'showarrow': False,
-                               'xref': 'paper',
-                               'yref': 'paper',
-                               'x': 0.5,
-                               'y': -0.26,
-                               'font': {
-                                   'size': self.config_obj.caption_size,
-                                   'color': self.config_obj.parameters['caption_col']
-                               }
-                               }
+        wts_size_styles = self.get_weights_size_styles()
 
-        # create title
-        title = {'text': util.apply_weight_style(self.title,
-                                                 self.config_obj.parameters['title_weight']),
-                 'font': {
-                     'size': self.config_obj.title_font_size,
-                 },
-                 'y': self.config_obj.title_offset,
-                 'x': self.config_obj.parameters['title_align'],
-                 'xanchor': 'center',
-                 'yanchor': 'top',
-                 'xref': 'paper'
-                 }
+        self._add_title(self.ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
 
-        # create a layout and allow y2 axis
-        fig = make_subplots(specs=[[{"secondary_y": True}]])
+    def _add_title(self, ax, fontproperties, title_override=None):
+        super()._add_title(ax, fontproperties, title_override=self.title)
 
-        # add size, annotation, title
-        fig.update_layout(
-            width=self.config_obj.plot_width,
-            height=self.config_obj.plot_height,
-            margin=self.config_obj.plot_margins,
-            paper_bgcolor=PLOTLY_PAPER_BGCOOR,
-            annotations=[annotation_caption, annotation_subtitle],
-            title=title,
-            plot_bgcolor=PLOTLY_PAPER_BGCOOR
-        )
-
-        return fig
-
-    def _add_xaxis(self) -> None:
+    def _add_xaxis(self, ax=None, fontproperties=None, label=None, grid_on=None) -> None:
         """
         Configures and adds x-axis to the plot
         """
-        self.figure.update_xaxes(title_text=self.config_obj.xaxis,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 ticks="outside",
-                                 zeroline=False,
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.x_title_font_size
-                                 },
-                                 title_standoff=abs(self.config_obj.parameters['xlab_offset']),
-                                 tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size},
-                                 tickformat='d'
-                                 )
-        # reverse xaxis if needed
-        if hasattr(self.config_obj, 'xaxis_reverse') and self.config_obj.xaxis_reverse is True:
-            self.figure.update_xaxes(autorange="reversed")
+        if ax is None:
+            ax = self.ax
+        wts_size_styles = self.get_weights_size_styles()
+        super()._add_xaxis(ax, wts_size_styles['xlab'])
 
-    def _add_yaxis(self) -> None:
+    def _add_yaxis(self, ax=None, fontproperties=None, label=None, grid_on=None) -> None:
         """
         Configures and adds y-axis to the plot
         """
-        self.figure.update_yaxes(title_text=
-                                 util.apply_weight_style(self.yaxis_1,
-                                                         self.config_obj.parameters['ylab_weight']),
-                                 secondary_y=False,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 zeroline=False,
-                                 ticks="inside",
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.y_title_font_size
-                                 },
-                                 title_standoff=self.config_obj.parameters['ylab_offset'],
-                                 tickangle=self.config_obj.y_tickangle,
-                                 tickfont={'size': self.config_obj.y_tickfont_size},
-                                 exponentformat='none'
-                                 )
+        if ax is None:
+            ax = self.ax
+        wts_size_styles = self.get_weights_size_styles()
+        super()._add_yaxis(ax, wts_size_styles['ylab'], label=self.yaxis_1)
 
-    def _add_x2axis(self, vals) -> None:
+    def _add_x2axis(self, ax=None, n_stats=None, fontproperties=None) -> None:
         """
         Creates x2axis based on the properties from the config file
         and attaches it to the initial Figure
 
         """
-        if self.config_obj.show_nstats:
-            # new_list = ['<span style="color:blue;">' +str(x) +'</span>'+'<br>AAA' for x in n_stats
+        if not self.config_obj.show_nstats:
+            return
 
+        if n_stats is None:
             n_stats = [''] * len(self.config_obj.indy_vals)
 
             for ind, val_for_indy in enumerate(n_stats):
-                if self.config_obj.use_ee is True and len(self.series_list) > 0:
-                    n_stats[ind] = n_stats[ind] + '<span style="color:black;">' + str(
-                        self.series_list[0].series_points['nstat'][ind]) + '</span><br>'
+                if self.config_obj.use_ee and len(self.series_list) > 0:
+                    n_stats[ind] = str(self.series_list[0].series_points['nstat'][ind])
                 else:
+                    ns = []
                     for series in self.series_list:
-                        n_stats[ind] = n_stats[ind] + '<span style="color:' + series.color + ';">' + str(
-                            series.series_points['nstat'][ind]) + '</span><br>'
+                        ns.append(str(series.series_points['nstat'][ind]))
+                    n_stats[ind] = "\n".join(ns)
 
-            self.figure.update_layout(xaxis2={'title_text': util.apply_weight_style('',
-                                                                                    self.config_obj.parameters[
-                                                                                        'x2lab_weight']
-                                                                                    ),
-                                              'linecolor': PLOTLY_AXIS_LINE_COLOR,
-                                              'linewidth': PLOTLY_AXIS_LINE_WIDTH,
-                                              'overlaying': 'x',
-                                              'side': 'top',
-                                              'showgrid': False,
-                                              'zeroline': False,
-                                              'title_font': {'size': self.config_obj.x2_title_font_size},
-                                              'title_standoff': abs(self.config_obj.parameters['x2lab_offset']),
-                                              'tickmode': 'array',
-                                              'tickvals': vals,
-                                              'ticktext': n_stats,
-                                              'tickangle': self.config_obj.x2_tickangle,
-                                              'tickfont': {'size': self.config_obj.x2_tickfont_size},
-                                              'scaleanchor': 'x'
-                                              }
-                                      )
-            # reverse x2axis if needed
-            if self.config_obj.xaxis_reverse is True:
-                self.figure.update_layout(xaxis2={'autorange': "reversed"})
+        wts_size_styles = self.get_weights_size_styles()
+        super()._add_x2axis(self.ax, n_stats, wts_size_styles['x2lab'])
 
-            # need to add an invisible line with all values = None
-            self.figure.add_trace(
-                go.Scatter(y=[None] * len(vals), x=vals,
-                           xaxis='x2', showlegend=False)
-            )
-
-    def _add_legend(self) -> None:
+    def _add_legend(self, ax=None, handles_and_labels=None) -> None:
         """
         Creates a plot legend based on the properties from the config file
         and attaches it to the initial Figure
         """
-        self.figure.update_layout(legend={'x': self.config_obj.bbox_x,
-                                          'y': self.config_obj.bbox_y,
-                                          'xanchor': 'center',
-                                          'yanchor': 'top',
-                                          'bordercolor': self.config_obj.legend_border_color,
-                                          'borderwidth': self.config_obj.legend_border_width,
-                                          'orientation': self.config_obj.legend_orientation,
-                                          'font': {
-                                              'size': self.config_obj.legend_size,
-                                              'color': "black"
-                                          },
-                                          'traceorder': 'normal'
-                                          })
-        if hasattr(self.config_obj, 'xaxis_reverse') and self.config_obj.xaxis_reverse is True:
-            self.figure.update_layout(legend={'traceorder': 'reversed'})
+        if ax is None:
+            ax = self.ax
+        super()._add_legend(ax)
 
-    def save_to_file(self):
+    def save_to_file(self, plot_filename: str = None, **kwargs):
         """Saves the image to a file specified in the config file.
          Prints a message if fails
 
@@ -417,27 +258,8 @@ class Tcmpr(BasePlot):
         Returns:
 
         """
-
-        # Create the directory for the output plot if it doesn't already exist
-        dirname = os.path.dirname(os.path.abspath(self.plot_filename))
-        try:
-           os.makedirs(dirname, exist_ok=True)
-        except FileExistsError:
-            pass
-
-        self.logger.info(f'Saving the image file: {self.plot_filename}')
-        if self.figure:
-            try:
-                self.figure.write_image(file=self.plot_filename, format='png',
-                                        width=self.config_obj.plot_width,
-                                        height=self.config_obj.plot_height,
-                                        scale=2)
-            except FileNotFoundError:
-                self.logger.error(f"Cannot save to file {self.plot_filename}")
-            except ValueError as ex:
-                print(ex)
-        else:
-            self.logger.error(f"The figure wasn't created.  Nothing to save")
+        # TODO: consider setting bbox_inches='tight' for all plots to ensure nothing is cut off
+        super().save_to_file(self.plot_filename, bbox_inches='tight', **kwargs)
 
     @staticmethod
     def find_min_max(series: TcmprSeries, yaxis_min: Union[float, None],
@@ -458,18 +280,23 @@ class Tcmpr(BasePlot):
             return yaxis_min, yaxis_max
 
         # Get the values to be plotted for this lead times
-        all_values = series.series_points['val']
+        if 'val' in series.series_points and len(series.series_points['val']) > 0:
+            all_values = series.series_points['val']
+            if 'ncl' in series.series_points:
+                all_values = all_values + series.series_points['ncl']
+            if 'ncu' in series.series_points:
+                all_values = all_values + series.series_points['ncu']
+        else:
+            all_values = series.series_data['PLOT'].tolist()
 
-        if 'ncl' in series.series_points:
-            all_values = all_values + series.series_points['ncl']
-        if 'ncu' in series.series_points:
-            all_values = all_values + series.series_points['ncu']
+        # remove None/NaN
+        all_values = [v for v in all_values if v is not None and not np.isnan(v)]
 
         if len(all_values) == 0:
             return yaxis_min, yaxis_max
 
-        low_range = min([v for v in all_values if v is not None])
-        upper_range = max([v for v in all_values if v is not None])
+        low_range = min(all_values)
+        upper_range = max(all_values)
 
         # find min max
         if yaxis_min is None or yaxis_max is None:
@@ -543,7 +370,7 @@ def main(config_filename=None):
     create_plot(config_obj)
 
 
-def create_plot(config_obj: dict) -> None:
+def create_plot(config_obj) -> None:
     """
         One or more TCMPR plots is generated. Event equalization is performed if
         it was requested by a setting in the yaml configuration file.
@@ -590,18 +417,11 @@ def create_plot(config_obj: dict) -> None:
 
         # Apply event equalization, if requested
         # Event equalization is different for the skill_mn and skill_md
-        is_skill = False
         if config_obj.use_ee:
-            if plot_type == 'skill_mn' or plot_type == 'skill_md':
-                is_skill = True
-                # perform event equalization on the skill_mn|skill_md plot type
-                logger.info(f"Perform event equalization for {plot_type}: {datetime.now()}")
-                output_result = perform_event_equalization(orig_input_df, is_skill, config_obj)
-                input_df = output_result
-            else:
-                logger.info(f"Perform event equalization for {plot_type}: {datetime.now()}")
-                output_result = perform_event_equalization(orig_input_df, is_skill, config_obj)
-                input_df = output_result
+            is_skill = plot_type == 'skill_mn' or plot_type == 'skill_md'
+            logger.info(f"Perform event equalization for {plot_type}: {datetime.now()}")
+            output_result = perform_event_equalization(orig_input_df, is_skill, config_obj)
+            input_df = output_result
 
         input_df.rename({'equalize': 'CASE'}, axis=1, inplace=True)
         # Sort the data by the CASE column
@@ -610,7 +430,6 @@ def create_plot(config_obj: dict) -> None:
 
         for cur_stat in config_obj.list_stat_1:
             logger.info(f"Statistic of interest: {cur_stat}")
-            # col_to_plot = get_dep_column(config_obj.list_stat_1[0], column_info, input_df)
             col_to_plot = get_dep_column(cur_stat, column_info, input_df)
             input_df['PLOT'] = col_to_plot['val']
 
@@ -654,11 +473,10 @@ def create_plot(config_obj: dict) -> None:
                     plot = TcmprSkillMedian(config_obj, column_info, col_to_plot, common_case_data, input_df, cur_stat)
 
                 plot.save_to_file()
-                # plot.show_in_browser()
                 if common_case_data is None:
                     common_case_data = plot.case_data
 
-            except (ValueError, Exception) as ve:
+            except ValueError as ve:
                 print(ve)
 
 
