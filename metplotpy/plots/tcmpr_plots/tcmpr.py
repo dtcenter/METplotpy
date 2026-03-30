@@ -148,6 +148,11 @@ class Tcmpr(BasePlot):
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
+
+        # reverse series list if config is set to reverse x-axis
+        if self.config_obj.xaxis_reverse:
+            series_list.reverse()
+
         self.logger.info(f"Series list created: {datetime.now()}")
         return series_list
 

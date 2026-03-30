@@ -1,6 +1,4 @@
-import matplotlib.pyplot as plt
 from datetime import datetime
-import numpy as np
 
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
@@ -24,19 +22,19 @@ class TcmprLine(Tcmpr):
         yaxis_min = None
         yaxis_max = None
 
-        if self.config_obj.xaxis_reverse is True:
-            self.series_list.reverse()
-
         for series in self.series_list:
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
-            if series.plot_disp:
-                # collect min-max if we need to sync axis
-                yaxis_min, yaxis_max = self.find_min_max(series, yaxis_min, yaxis_max)
-                x_points_index_adj, _ = self._get_x_locs_and_width(self.config_obj.indy_vals,
-                                                                   series.idx,
-                                                                   stagger_scale=0.1)
-                handle = self._draw_series(series, x_points_index_adj)
+            if not series.plot_disp:
+                continue
+
+            # collect min-max if we need to sync axis
+            yaxis_min, yaxis_max = self.find_min_max(series, yaxis_min, yaxis_max)
+            x_points_index_adj, _ = self._get_x_locs_and_width(self.config_obj.indy_vals,
+                                                               series.idx,
+                                                               stagger_scale=0.1)
+            handle = self._draw_series(series, x_points_index_adj)
+            if handle is not None:
                 handles_and_labels.append((handle, handle.get_label()))
 
         self.line_logger.info(f'Range of {stat_name}: {yaxis_min}, {yaxis_max}')
@@ -79,8 +77,9 @@ class TcmprLine(Tcmpr):
         no_ci_up = all(v == 0 for v in series.series_points['ncu'])
         no_ci_lo = all(v == 0 for v in series.series_points['ncl'])
         error_y_visible = True
-        if (no_ci_up is True and no_ci_lo is True) or self.config_obj.series_ci[series.idx] == 'NONE' or \
-                self.config_obj.series_ci[series.idx] is False:
+        if ((no_ci_up and no_ci_lo)
+                or self.config_obj.series_ci[series.idx] == 'NONE'
+                or not self.config_obj.series_ci[series.idx]):
             error_y_visible = False
 
         ax = self.ax if series.y_axis == 1 else self.ax2

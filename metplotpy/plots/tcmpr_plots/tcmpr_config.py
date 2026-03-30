@@ -137,6 +137,7 @@ class TcmprConfig(Config):
         self.linestyles_list = self._get_linestyles()
         self.marker_list = self._get_markers()
         self.marker_size = self._get_markers_size()
+        self.marker_open_list = self._get_markers_open()
 
         ##############################################
         # legend parameters

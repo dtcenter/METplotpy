@@ -30,9 +30,6 @@ class TcmprBoxPoint(Tcmpr):
         yaxis_min = None
         yaxis_max = None
 
-        if self.config_obj.xaxis_reverse is True:
-            self.series_list.reverse()
-
         for series in self.series_list:
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
@@ -46,10 +43,6 @@ class TcmprBoxPoint(Tcmpr):
         self._add_xaxis()
         self._add_yaxis()
         self._add_legend(self.ax, handles_and_labels)
-
-        # add x ticks for line plots
-        self.ax.set_xticks(self.config_obj.indy_vals)
-        self.ax.set_xticklabels(self.config_obj.indy_label)
 
         self.box_point_logger.info(f'Range of {self.stat_name}: {yaxis_min}, {yaxis_max}')
         self._add_hfip_baseline(self.ax)

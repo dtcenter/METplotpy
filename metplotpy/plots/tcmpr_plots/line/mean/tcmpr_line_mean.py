@@ -13,7 +13,7 @@ class TcmprLineMean(TcmprLine):
         # Set up Logging
         self.line_logger = util.get_common_logger(self.config_obj.log_level, self.config_obj.log_filename)
 
-        self.line_logger.info(f"--------------------------------------------------------")
+        self.line_logger.info("--------------------------------------------------------")
         self.line_logger.info(f"Plotting MEAN time series by {self.config_obj.series_val_names[0]}")
 
         self._adjust_titles(stat_name)
@@ -34,7 +34,6 @@ class TcmprLineMean(TcmprLine):
 
     def _adjust_titles(self, stat_name):
         if self.yaxis_1 is None or len(self.yaxis_1) == 0:
-            # self.yaxis_1 = self.config_obj.list_stat_1[0] + '(' + self.col['units'] + ')'
             self.yaxis_1 = stat_name + '(' + self.col['units'] + ')'
 
         if self.title is None or len(self.title) == 0:
@@ -103,6 +102,10 @@ class TcmprLineMean(TcmprLine):
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
+
+        # reverse series list if config is set to reverse x-axis
+        if self.config_obj.xaxis_reverse:
+            series_list.reverse()
 
         end_time = datetime.now()
         total_time = end_time - start_time

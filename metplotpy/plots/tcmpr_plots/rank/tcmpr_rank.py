@@ -93,9 +93,6 @@ class TcmprRank(Tcmpr):
         start_time = datetime.datetime.now()
         super()._create_figure()
 
-        if self.config_obj.xaxis_reverse is True:
-            self.series_list.reverse()
-
         rank_str = ["Best", "2nd", "3rd", "Worst"]
         n_series = len(self.config_obj.get_series_y(1))
         rank_str_index = min(3, n_series - 1)
@@ -122,7 +119,8 @@ class TcmprRank(Tcmpr):
             yaxis_min, yaxis_max = self.find_min_max(series, yaxis_min, yaxis_max)
             self.rank_logger.info(f"Drawing series for {stat_name}")
             handle = self._draw_series(series, x_points_index_adj)
-            handles_and_labels.append((handle, handle.get_label()))
+            if handle is not None:
+                handles_and_labels.append((handle, handle.get_label()))
 
         # Draw a reference line at 100/n_series
         self.ax.axhline(y=100 / len(self.series_list), color="#e5e7e9", linestyle="-", linewidth=1)
@@ -170,7 +168,7 @@ class TcmprRank(Tcmpr):
         no_ci_up = all(v is None or v == 0 for v in series.series_points['ncu'])
         no_ci_lo = all(v is None or v == 0 for v in series.series_points['ncl'])
         error_y_visible = True
-        if (no_ci_up is True and no_ci_lo is True) or series_ci is False:
+        if (no_ci_up and no_ci_lo) or not series_ci:
             error_y_visible = False
 
         ax = self.ax if series.y_axis == 1 else self.ax2

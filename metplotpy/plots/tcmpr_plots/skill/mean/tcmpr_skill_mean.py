@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 from metcalcpy.util import utils
 from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_series_skill_mean import TcmprSeriesSkillMean
@@ -54,32 +53,36 @@ class TcmprSkillMean(TcmprSkill):
         self.skill_logger.info(f"Plot HFIP Baseline:  {self.cur_baseline.replace('Error ', '')}")
 
     def _add_hfip_baseline(self, ax):
+        if self.cur_baseline_data is None:
+            return
+
         # Add HFIP baseline for each lead time
-        if self.cur_baseline_data is not None:
-            self.skill_logger.info(f"Adding HFIP baseline: {datetime.now()}")
-            baseline_x_values = []
-            baseline_y_values = []
-            lead_times = np.unique(self.series_list[0].series_data[self.config_obj.indy_var].tolist())
-            lead_times.sort()
-            for ind, lead in enumerate(lead_times):
-                if lead != 0:
-                    ocd5_data = self.cur_baseline_data.loc[
-                        (self.cur_baseline_data['LEAD'] == lead) & (self.cur_baseline_data['TYPE'] == "OCD5")][
-                        'VALUE'].tolist()
-                    ocd5_data = ocd5_data[0]
-                    cons_data = self.cur_baseline_data.loc[
-                        (self.cur_baseline_data['LEAD'] == lead) & (self.cur_baseline_data['TYPE'] == "CONS")][
-                        'VALUE'].tolist()
-                    if len(cons_data) > 1:
-                        raise ValueError(
-                            f"ERROR: Can't create HFIP baseline for lead time {lead} : too many values of CONS in .dat file")
-                    cons_data = cons_data[0]
+        self.skill_logger.info(f"Adding HFIP baseline: {datetime.now()}")
+        baseline_x_values = []
+        baseline_y_values = []
+        lead_times = np.unique(self.series_list[0].series_data[self.config_obj.indy_var].tolist())
+        lead_times.sort()
+        for ind, lead in enumerate(lead_times):
+            if not lead:
+                continue
 
-                    baseline_lead = utils.round_half_up(100 * (ocd5_data - cons_data) / ocd5_data, 1)
-                    baseline_x_values.append(ind)
-                    baseline_y_values.append(baseline_lead)
+            ocd5_data = self.cur_baseline_data.loc[
+                (self.cur_baseline_data['LEAD'] == lead) & (self.cur_baseline_data['TYPE'] == "OCD5")][
+                'VALUE'].tolist()
+            ocd5_data = ocd5_data[0]
+            cons_data = self.cur_baseline_data.loc[
+                (self.cur_baseline_data['LEAD'] == lead) & (self.cur_baseline_data['TYPE'] == "CONS")][
+                'VALUE'].tolist()
+            if len(cons_data) > 1:
+                raise ValueError(
+                    f"ERROR: Can't create HFIP baseline for lead time {lead} : too many values of CONS in .dat file")
+            cons_data = cons_data[0]
 
-            ax.scatter(baseline_x_values, baseline_y_values, marker='d', facecolors='none', edgecolors='blue', s=30, label=self.cur_baseline)
+            baseline_lead = utils.round_half_up(100 * (ocd5_data - cons_data) / ocd5_data, 1)
+            baseline_x_values.append(ind)
+            baseline_y_values.append(baseline_lead)
+
+        ax.scatter(baseline_x_values, baseline_y_values, marker='d', facecolors='none', edgecolors='blue', s=30, label=self.cur_baseline)
 
     def _create_series(self, input_data, stat_name):
         """
@@ -138,6 +141,10 @@ class TcmprSkillMean(TcmprSkill):
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
+
+        # reverse series list if config is set to reverse x-axis
+        if self.config_obj.xaxis_reverse:
+            series_list.reverse()
 
         end_time = datetime.now()
         total_time = end_time - start_time

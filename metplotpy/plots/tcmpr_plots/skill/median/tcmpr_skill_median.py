@@ -101,6 +101,11 @@ class TcmprSkillMedian(TcmprSkill):
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
+
+        # reverse series list if config is set to reverse x-axis
+        if self.config_obj.xaxis_reverse:
+            series_list.reverse()
+
         end_time = datetime.now()
         total_time = end_time - start_time
         self.skillmd_logger.info(f"Took {total_time} milliseconds to create series for {stat_name}")

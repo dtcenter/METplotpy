@@ -13,7 +13,7 @@ class TcmprLineMedian(TcmprLine):
         # Set up Logging
         self.linemd_logger = util.get_common_logger(self.config_obj.log_level, self.config_obj.log_filename)
 
-        self.linemd_logger.info(f"--------------------------------------------------------")
+        self.linemd_logger.info("--------------------------------------------------------")
         self.linemd_logger.info(f"Plotting MEDIAN time series by {self.config_obj.series_val_names[0]}")
 
         self.linemd_logger.info(f"Plot HFIP Baseline: {self.cur_baseline}")
@@ -89,6 +89,10 @@ class TcmprLineMedian(TcmprLine):
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
+
+        # reverse series list if config is set to reverse x-axis
+        if self.config_obj.xaxis_reverse:
+            series_list.reverse()
 
         end_time = datetime.now()
         total_time = end_time - start_time

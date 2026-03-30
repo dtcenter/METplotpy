@@ -32,9 +32,6 @@ class TcmprSkill(Tcmpr):
         yaxis_min = None
         yaxis_max = None
 
-        if self.config_obj.xaxis_reverse is True:
-            self.series_list.reverse()
-
         for series in self.series_list:
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)

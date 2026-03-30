@@ -1,8 +1,6 @@
 import os
 from datetime import datetime
 import numpy as np
-import matplotlib.pyplot as plt
-
 
 from metcalcpy.util import utils
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
@@ -17,7 +15,7 @@ class TcmprRelPerf(Tcmpr):
 
         # Set up Logging
         self.relperf_logger = util.get_common_logger(self.config_obj.log_level, self.config_obj.log_filename)
-        self.relperf_logger.info(f"--------------------------------------------------------")
+        self.relperf_logger.info("--------------------------------------------------------")
 
         if not self.config_obj.use_ee:
             self.relperf_logger.error(f"Plotting RELPERF time series by {self.config_obj.series_val_names[0]}")
@@ -81,11 +79,6 @@ class TcmprRelPerf(Tcmpr):
         handles_and_labels = []
         super()._create_figure()
 
-        if self.config_obj.xaxis_reverse is True:
-            self.series_list.reverse()
-
-        x_points_index = list(range(0, len(self.config_obj.indy_vals)))
-
         yaxis_min = None
         yaxis_max = None
 
@@ -95,7 +88,10 @@ class TcmprRelPerf(Tcmpr):
             if series.plot_disp:
                 # collect min-max if we need to sync axis
                 yaxis_min, yaxis_max = self.find_min_max(series, yaxis_min, yaxis_max)
-                handle = self._draw_series(series, x_points_index)
+                x_points_index_adj, _ = self._get_x_locs_and_width(self.config_obj.indy_vals,
+                                                                   series.idx,
+                                                                   stagger_scale=0.1)
+                handle = self._draw_series(series, x_points_index_adj)
                 handles_and_labels.append((handle, handle.get_label()))
 
         series = TcmprSeries(self.config_obj, len(self.series_list), self.input_df, [], ['TIE'], stat_name)
@@ -113,7 +109,10 @@ class TcmprRelPerf(Tcmpr):
             'marker_size': self.config_obj.marker_size[-1],
             'series_ci': True
         }
-        handle = self._draw_series(series, x_points_index, tie_conf)
+        x_points_index_adj, _ = self._get_x_locs_and_width(self.config_obj.indy_vals,
+                                                           series.idx,
+                                                           stagger_scale=0.1)
+        handle = self._draw_series(series, x_points_index_adj, tie_conf)
         handles_and_labels.append((handle, handle.get_label()))
         self.ax.axhline(y=0, color='#e5e7e9', linestyle='-', linewidth=1)
 
@@ -131,9 +130,6 @@ class TcmprRelPerf(Tcmpr):
         self._add_xaxis()
         self._add_yaxis()
         self._add_legend(self.ax, handles_and_labels)
-        # add x ticks for line plots
-        self.ax.set_xticks(x_points_index)
-        self.ax.set_xticklabels(self.config_obj.indy_label)
 
         # add x2 axis
         self._add_x2axis()
@@ -142,7 +138,7 @@ class TcmprRelPerf(Tcmpr):
         total_time = end_time - start_time
         self.relperf_logger.info(f"Took {total_time} milliseconds to create the relative performance figure")
 
-    def _draw_series(self, series: TcmprSeries, x_points_index_adj: list, tie_conf=None) -> None:
+    def _draw_series(self, series: TcmprSeries, x_points_index_adj: list, tie_conf=None):
         """
         Draws the boxes on the plot
 
@@ -166,13 +162,28 @@ class TcmprRelPerf(Tcmpr):
             marker_size = tie_conf['marker_size']
             name = tie_conf['name']
 
+        markerfacecolor = color
+        markeredgecolor = color
+        if tie_conf is None and self.config_obj.marker_open_list[series.idx]:
+            markerfacecolor = 'none'
+            markeredgecolor = self.config_obj.colors_list[series.idx]
+
         y_points = series.series_points['val']
 
         ax = self.ax if series.y_axis == 1 else self.ax2
 
-        plot_obj = ax.plot(x_points_index_adj, y_points, label=name,
-                           color=color, linewidth=width, linestyle=dash,
-                           marker=marker_symbol, markersize=marker_size)
+        plot_obj = ax.plot(x_points_index_adj, y_points,
+                           label=name,
+                           # line style
+                           color=color,
+                           linewidth=width,
+                           linestyle=dash,
+                           # marker style
+                           marker=marker_symbol,
+                           markersize=marker_size,
+                           markeredgecolor=markeredgecolor,
+                           markerfacecolor=markerfacecolor,
+                           )
 
         # Plot relative performance confidence intervals
         if series.idx >= series.series_len:
@@ -193,8 +204,6 @@ class TcmprRelPerf(Tcmpr):
             self.yaxis_1 = 'Percent of Cases'
 
         if self.title is None or len(self.title) == 0:
-            #            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}.png"
-
             self.title = f"Relative Performance of {self.col['desc']}"
             if len(np.unique(self.config_obj.rp_diff)) == 1:
                 self.title = f"{self.title} Difference {self.config_obj.rp_diff[0]}{self.col['units']}"
