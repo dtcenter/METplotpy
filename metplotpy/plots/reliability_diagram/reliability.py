@@ -150,11 +150,11 @@ class Reliability(BasePlot):
             # create inset or create 2nd y-axis
             if self.config_obj.inset_hist:
                 ax2 = ax.inset_axes((0.08, 0.7, 0.47, 0.28))
+                self._add_xaxis(ax2, wts_size_styles['xlab'])
+                ax2.set_xlim(0, 1)
             else:
                 ax2 = self._add_y2axis(ax, None)
 
-            self._add_xaxis(ax2, wts_size_styles['xlab'])
-            ax2.set_xlim(0, 1)
             self._add_yaxis(ax2, wts_size_styles['ylab'], label="# Forecasts", grid_on=True)
 
             # format large numbers like 3 million as 3M
@@ -217,11 +217,6 @@ class Reliability(BasePlot):
         if series.idx == 0:
             self._add_noskill_polygon(ax, series.series_points['stat_value'][0])
 
-        # determine whether to add to the inset plot or the main plot
-        plot_ax = ax
-        if self.config_obj.inset_hist:
-            plot_ax = ax2
-
         if self.config_obj.rely_event_hist and 'n_i' in series.series_points:
 
             n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
@@ -230,7 +225,7 @@ class Reliability(BasePlot):
             offset = (idx - (n - 1) / 2.0) * width
             x_locs = [item + offset for item in x_points_index_adj]
 
-            plot_ax.bar(x=x_locs, height=series.series_points['n_i'].tolist(), align='center',
+            ax2.bar(x=x_locs, height=series.series_points['n_i'].tolist(), align='center',
                         width=width,
                         color=self.config_obj.colors_list[series.idx],
                         label="Absolute_cases")
