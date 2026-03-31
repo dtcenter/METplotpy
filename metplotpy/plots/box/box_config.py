@@ -148,7 +148,6 @@ class BoxConfig(Config):
             self.showfliers = False
             self.boxpoints = 'all'
         elif self._get_bool('box_outline'):
-            self.whis = 2.5
             self.boxpoints = 'outliers'
         else:
             self.whis = [0, 100]
