@@ -103,11 +103,11 @@ def make_plot(config_filename, plot_class):
         name = plot_class.__name__ if not hasattr(plot_class, 'LONG_NAME') else plot_class.LONG_NAME
         plot.logger.info(f"Finished {name} plot at {datetime.now()}")
         return plot
-    except ValueError as val_er:
-        print(val_er)
+    except Exception as err:
+        plot.logger.error("Exception occurred in plot: %s", err)
+        plot.logger.debug("Exception details:", exc_info=True)
 
     return None
-
 
 def alpha_blending(hex_color: str, alpha: float) -> str:
     """ Alpha color blending as if on the white background.
