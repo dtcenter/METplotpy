@@ -1,0 +1,125 @@
+
+
+#
+#  OUTPUT and LOG DIRECTORIES
+#
+
+# All output will reside in this specified output directory
+output_dir:  '/Users/minnawin/Python_Scorecard_Dev/output'
+
+# A single log file will be generated, capturing logging information from
+# all intermediate steps
+log_dir :  '/Users/minnawin/Python_Scorecard_Dev/logs/'
+log_filename:  hrrr_rrfs_full.log
+log_level: 'DEBUG'
+
+
+#
+# REFORMAT
+#
+# if data has unlabelled columns (i.e. a MET .stat file from MET point-stat or
+# MET grid-stat tool) . Set to True to reformat, False otherwise.
+# otherwise.
+reformat_needed: False
+met_stat_input: '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_stat_HRRR_RRFS/sample_data/all_dates'
+
+
+# If MET .stat file is aggregated using the MET stat-analysis tool, or if line type is CNT
+# (which already has CI stats calculated, e.g.  ntcl, ntcu, btcl, and btcu), then set to
+# True, False if data doesn't have CI stats.
+has_confidence_stats: True
+linetype: 'CNT'
+
+#
+# SUBSETTING
+#
+# Filtering data based on model, masking regions, stat names, levels, variable of
+# interest (and its values), and times
+# (i.e. fcst_lead, fcst_init_beg, etc)
+subset_params:
+
+   # Column names in the MET output file
+   'fcst_lead':
+     - '0'
+     - '60000'
+     - '120000'
+     - '240000'
+
+   'fcst_lev':
+     - 'Z2'
+
+   'model':
+       - 'HRRR_verification_mem000'
+       - 'RRFS_verification_mem000'
+
+   'fcst_init_beg':
+     - "2023-07-02 00:00:00"
+     - "2023-07-04 00:00:00"
+
+
+   # independent variable name and corresponding value(s)
+   indep_variable: 'vx_mask'
+
+   indep_values:
+      - 'CONUS'
+
+  # a list of one or more statistics of interest (line type specific)
+   stats_list:
+      - 'ME'
+      - 'RMSE'
+
+
+#
+#  CONFIDENCE INTERVALS via agg_stat.py
+#
+# TO BE DONE
+# Python code will generate the necessary config information to pass to
+# the METcalcpy agg_stat.py module.  Some line types do not require this step.
+
+
+#
+# SCORECARD STATISTICS  (p-values)
+#
+
+# Append to the scorecard output file with successive runs
+append_subsequent: False
+
+# a list of lists (note the first '-'  in line above each block of
+# information)
+derived_series:
+       -
+         - 'Z2 HRRR_verification_mem000 0 TMP ME'
+         - 'Z2 RRFS_verification_mem000 0 TMP ME'
+         - 'DIFF_SIG'
+
+       -
+         - 'Z2 HRRR_verification_mem000 60000 TMP ME'
+         - 'Z2 RRFS_verification_mem000 60000 TMP ME'
+         - 'DIFF_SIG'
+
+       -
+         - 'Z2 HRRR_verification_mem000 120000 TMP ME'
+         - 'Z2 RRFS_verification_mem000 120000 TMP ME'
+         - 'DIFF_SIG'
+
+       -
+         - 'Z2 HRRR_verification_mem000 240000 TMP ME'
+         - 'Z2 RRFS_verification_mem000 240000 TMP ME'
+         - 'DIFF_SIG'
+
+
+# Method to calculate p-values: 'EMC' or 'NCAR' (code currently uses NCAR)
+pval_method: 'NCAR'
+
+# Used in the  EMC method of calculating p-values
+ndays: 10
+
+
+#
+# SCORECARD PLOT
+#
+
+# Title for scorecard (this can be automatically generated in the code if
+# this is left unspecified)
+scorecard_title: 'Scorecard HRRR and RRFS'
+
