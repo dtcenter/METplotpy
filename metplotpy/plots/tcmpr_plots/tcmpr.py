@@ -19,15 +19,15 @@ from typing import Union
 # Ignore DeprecationWarning for pyarrow in Pandas3 for now
 import warnings
 warnings.filterwarnings('ignore')
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.font_manager import FontProperties
+
 import metcalcpy.util.utils as calc_util
 from metcalcpy.event_equalize import event_equalize
 from metplotpy.plots import util as util
 from metplotpy.plots.base_plot import BasePlot
-from metplotpy.plots.constants import DEFAULT_TITLE_FONT_SIZE, DEFAULT_TITLE_OFFSET
 from metplotpy.plots.tcmpr_plots.tcmpr_config import TcmprConfig
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 from metplotpy.plots.tcmpr_plots.tcmpr_util import init_hfip_baseline, common_member, get_dep_column
