@@ -346,7 +346,7 @@ def perform_event_equalization(input_df:pd.DataFrame, is_skill:bool, config_obj:
     return output_data
 
 
-def main(config_filename=None):
+def main(config_filename=None) -> bool:
     """
         Generates a sample, default, TCMPR plot using a combination of
         default and custom config files on sample data found in this directory.
@@ -372,10 +372,10 @@ def main(config_filename=None):
     config_obj = TcmprConfig(docs)
 
     # Create the requested plot(s)
-    create_plot(config_obj)
+    return create_plot(config_obj)
 
 
-def create_plot(config_obj) -> None:
+def create_plot(config_obj) -> bool:
     """
         One or more TCMPR plots is generated. Event equalization is performed if
         it was requested by a setting in the yaml configuration file.
@@ -418,7 +418,9 @@ def create_plot(config_obj) -> None:
 
     logger = util.get_common_logger(config_obj.log_level, config_obj.log_filename)
 
+    success = True
     for plot_type in config_obj.plot_type_list:
+        logger.info("Plot type: %s", plot_type)
 
         # Apply event equalization, if requested
         # Event equalization is different for the skill_mn and skill_md
@@ -486,6 +488,7 @@ def create_plot(config_obj) -> None:
                 logger.debug("Exception details:", exc_info=True)
                 success = False
 
+    return success
 
 def print_data_info(input_df, series):
     # Print information about the dataset.
@@ -557,4 +560,5 @@ def read_tcst_files(config_obj, tcst_files):
 
 
 if __name__ == "__main__":
-    main()
+    if not main():
+        sys.exit(1)
