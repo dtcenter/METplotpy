@@ -73,7 +73,7 @@ def make_config(nc_file, out_file):
     return config
 
 
-def test_hovmoeller(module_setup_env, remove_files, nc_test_file, assert_json_equal, tmp_path_factory):
+def test_hovmoeller(module_setup_env, remove_files, nc_test_file, tmp_path_factory):
     output_dir = os.environ['TEST_OUTPUT']
     out_file = os.path.join(output_dir, "hovmoeller_test.png")
 
