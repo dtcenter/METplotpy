@@ -481,8 +481,10 @@ def create_plot(config_obj) -> None:
                 if common_case_data is None:
                     common_case_data = plot.case_data
 
-            except ValueError as ve:
-                print(ve)
+            except Exception as err:
+                logger.error("Exception occurred in %s plot: %s", plot_type, err)
+                logger.debug("Exception details:", exc_info=True)
+                success = False
 
 
 def print_data_info(input_df, series):
