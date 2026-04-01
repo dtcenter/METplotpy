@@ -38,8 +38,11 @@ def test_default_plot_images_match(module_setup_env, remove_files):
     # assert comparison.mssim == 1
 
 
-@pytest.mark.skip("needs large netCDF file to run")
 def test_custom_plot_created(module_setup_env, remove_files):
+    if not os.environ.get('METPLOTPY_TEST_INPUT_DIR'):
+        pytest.skip("METPLOTPY_TEST_INPUT_DIR not set."
+                    " This is needed to get large input data file")
+
     expected_file = "hovmoeller_custom_plot.png"
 
     remove_files(os.environ['TEST_OUTPUT'], [expected_file])
