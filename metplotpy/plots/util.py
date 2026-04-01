@@ -318,36 +318,39 @@ def get_common_logger(log_level, log_filename):
          common_logger: the logger common to all the METplotpy modules that are
                         currently in use by a plot type.
     '''
-
     # If directory for logfile doesn't exist, create it
     log_dir = os.path.dirname(log_filename)
-    try:
-       os.makedirs(log_dir, exist_ok=True)
-    except OSError:
-        pass
+    if log_dir:
+        os.makedirs(log_dir, exist_ok=True)
 
     # Supported log levels.
     log_level = log_level.upper()
-    log_levels = {'DEBUG': logging.DEBUG, 'INFO': logging.INFO,
-                  'WARNING': logging.WARNING, 'ERROR': logging.ERROR,
-                  'CRITICAL': logging.CRITICAL}
+    log_levels = {
+        'DEBUG': logging.DEBUG,
+        'INFO': logging.INFO,
+        'WARNING': logging.WARNING,
+        'ERROR': logging.ERROR,
+        'CRITICAL': logging.CRITICAL,
+    }
+    log_level = log_levels.get(log_level)
+    if log_level is None:
+        print(f'WARNING: Invalid log level: {log_level}. Using INFO')
+        log_level = logging.INFO
 
+    log_args = {
+        'level': log_level,
+        'format': '%(asctime)s||User:%(user)s||%(funcName)s|| [%(levelname)s]: %(message)s',
+        'datefmt': '%Y-%m-%d %H:%M:%S',
+    }
     if log_filename.lower() == 'stdout':
-        logging.basicConfig(level=log_levels[log_level],
-                            format='%(asctime)s||User:%('
-                                   'user)s||%(funcName)s|| [%(levelname)s]: %('
-                                   'message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S',
-                            stream=sys.stdout)
+        log_args['stream'] = sys.stdout
     else:
+        log_args['filename'] = log_filename
+        log_args['filemode'] = 'w'
 
-        logging.basicConfig(level=log_levels[log_level],
-                            format='%(asctime)s||User:%('
-                                   'user)s||%(funcName)s|| [%(levelname)s]: %('
-                                   'message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S',
-                            filename=log_filename,
-                            filemode='w')
+    # Note: the log level is ignored if logging has already been initialized
+    logging.basicConfig(**log_args)
+
     logging.getLogger(name='matplotlib').setLevel(logging.CRITICAL)
     common_logger = logging.getLogger(__name__)
     f = cf()
