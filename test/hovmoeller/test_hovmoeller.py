@@ -67,9 +67,8 @@ def make_config(nc_file, out_file):
         "date_end": "2024-09-26",
         "contour_min": 0.1,
         "contour_max": 10,
-        "unit_converion": 1,
+        "unit_conversion": 250,
         "title": "test plot",
-        "create_html": "true",
     }
     return config
 
