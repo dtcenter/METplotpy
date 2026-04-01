@@ -201,4 +201,4 @@ def nc_test_file(tmp_path_factory):
 
 @pytest.fixture(autouse=True)
 def setup_logging(caplog):
-    caplog.set_level(logging.INFO)
+    caplog.set_level(logging.DEBUG)
