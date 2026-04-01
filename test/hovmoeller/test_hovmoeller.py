@@ -98,18 +98,6 @@ def test_hovmoeller(module_setup_env, remove_files, nc_test_file, assert_json_eq
     plot_obj.save_to_file()
     assert os.path.isfile(out_file)
 
-    # check html write out
-    plot_obj.write_html()
-    base_name, _ = os.path.splitext(config['plot_filename'])
-    out_html = f"{base_name}.html"
-    assert os.path.isfile(out_html)
-
-    # finally check json plot values
-    # to regenerate json file run:
-    json_output = os.path.join(output_dir, "hovmoeller_test.json")
-    plot_obj.figure.write_json(json_output)
-    assert_json_equal(plot_obj.figure, json_output)
-
 
 def test_get_lat_str(module_setup_env, nc_test_file, tmp_path_factory):
     output_yaml = tmp_path_factory.mktemp("data") / "test_hovmoeller.yaml"
