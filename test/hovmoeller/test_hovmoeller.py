@@ -14,7 +14,7 @@ def dict_to_yaml(data_dict, output_yaml):
     return output_yaml
 
 
-@pytest.mark.skip()
+@pytest.mark.skip("Test data unavailable")
 def test_default_plot_images_match(module_setup_env, remove_files):
     '''
         Compare an expected plot with the
