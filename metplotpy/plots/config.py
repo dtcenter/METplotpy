@@ -746,20 +746,18 @@ class Config:
                 plot resolution in units of dpi (dots per inch)
 
         """
-        # Initialize to the default resolution
-        # set by matplotlib
+        # Initialize to the default resolution set by matplotlib
         dpi = 100
 
         # first check if plot_res is set in config file
         if self.get_config_value('plot_res'):
             resolution = self.get_config_value('plot_res')
 
-            # check if the units value has been set in the config file
-            if self.get_config_value('plot_units'):
-                return self._convert_units_to_inches(resolution, self.get_config_value('plot_units'))
+            # convert mm to inches
+            if self.get_config_value('plot_units') and self.get_config_value('plot_units').lower() == 'mm':
+                return resolution * constants.MM_TO_INCHES
 
-            # units not indicated, assume
-            # we are dealing with inches
+            # units not indicated, assume we are dealing with inches or pixels
             return resolution
 
         # no plot_res value is set, return the default
@@ -795,10 +793,17 @@ class Config:
             return value * constants.MM_TO_INCHES
         if units_lower == 'cm':
             return value * constants.CM_TO_INCHES
+        if units_lower == 'pixels':
+            # convert pixels to inches if resolution is available
+            if self.get_config_value('plot_res'):
+                return value / self.get_config_value('plot_res')
+
+            return value
+
 
         # if unsupported units are specified, log a warning but assume inches
         if units_lower != 'in':
-            self.logger.warning(f"Invalid units specified: {units}. Expected in, mm, or cm. Assuming inches.")
+            self.logger.warning(f"Invalid units specified: {units}. Expected in, mm, cm, or pixels. Assuming inches.")
 
         return value
 
