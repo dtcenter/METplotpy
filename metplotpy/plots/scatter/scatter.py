@@ -126,7 +126,7 @@ class Scatter(BasePlot):
         self.logger.debug(
             f"Using the '{colormap}' colormap to color scatter points by {self.config_obj.variable_val_by_color} value")
         marker_size = self.config_obj.marker_size
-        plt.scatter(x_values, y_values, size=marker_size, color=z_values, colormap=colormap, label=column_to_color_by_value)
+        plt.scatter(x_values, y_values, s=marker_size, c=z_values, cmap=colormap, label=column_to_color_by_value)
 
         # Add the title, x-label, y-label, and legend
         x_label = self.config_obj.xaxis
