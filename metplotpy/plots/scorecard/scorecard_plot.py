@@ -137,34 +137,46 @@ class ScorecardPlot():
         working_df = pd.read_csv(df_filename, sep='\t+', engine='python')
         working_df.to_csv(os.path.join(self.output_dir, "working.txt"), header=True, index_label=None, sep=',',
                           index=False)
-        # print(f" subset_params: {self.subset_params}")
 
-        # Retrieve all the column names in the data frame:
-        all_cols = working_df.columns.to_list()
-
+        # Exit if there are any requested columns that don't exist in the data
         self.check_for_invalid_columns(working_df)
 
+        # Replace the 'indep_variable' key with its value,
+        # replace the 'indep_values' key with its values, and
+        # replace stats_list keyname with stat_name
         filter_keys = self.subset_params
+        indep_variable = filter_keys['indep_variable']
+        indep_var_vals = filter_keys['indep_values']
+        filter_keys[indep_variable] = indep_var_vals
+        filter_keys['stat_name'] = filter_keys['stats_list']
+        del filter_keys['indep_variable']
+        del filter_keys['indep_values']
+        del filter_keys['stats_list']
+
+
+
 
         # Create queries for column names specified in the subset_params settings.
         # 'OR' all the values corresponding to each key, and 'AND' all of the
         # key "segments" to create a final query.
-
         query = []
         idx_last_key = len(filter_keys) - 1
         query.append("' ")
-
         for idx, filter_key in enumerate(filter_keys):
             # Get the values for the current filter key
             values = self.subset_params[filter_key]
             idx_last_value = len(values) - 1
+            print(f"current idx for key: {idx}")
 
             for idx_val, cur_value in enumerate(values):
                 # Group the 'OR' appropriately with external parens
                 if idx_val == 0:
                     # Add the outermost left parens to separate this key's values
                     # from other keys' values
-                    query_str = "((" + f"{filter_key} == {cur_value}  )"
+                    if len(values) >1:
+                        query_str = "((" + f"{filter_key} == {cur_value}  )"
+                    else:
+                        query_str = "(" + f"{filter_key} == {cur_value}  )"
                 elif idx_val == idx_last_value:
                     query_str = "(" + f"{filter_key} == {cur_value}  ))"
                 else:
@@ -174,6 +186,7 @@ class ScorecardPlot():
                 if idx_val != idx_last_value:
                     query_str = query_str + "  |  "
                 elif idx != idx_last_key:
+                    print(f"appending & for index: {idx}")
                     # Append the 'AND' between this last value for this key and
                     # the next key's values
                     query_str = query_str + " & "
