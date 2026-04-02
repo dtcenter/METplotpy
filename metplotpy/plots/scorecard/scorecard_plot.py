@@ -136,7 +136,7 @@ class ScorecardPlot():
         safe_log(self.logger, 'debug', 'Filter data based on subset_params in the config file.')
         working_df = pd.read_csv(df_filename, sep='\t+', engine='python')
         working_df.to_csv(os.path.join(self.output_dir, "working.txt"), header=True, index_label=None, sep=',',
-                          index=False)
+                          index=False, date_format="%Y-%m-%d %H:%M:%S")
 
         # Exit if there are any requested columns that don't exist in the data
         self.check_for_invalid_columns(working_df)
@@ -154,61 +154,93 @@ class ScorecardPlot():
         del filter_keys['stats_list']
 
 
-
-
         # Create queries for column names specified in the subset_params settings.
         # 'OR' all the values corresponding to each key, and 'AND' all of the
         # key "segments" to create a final query.
-        query = []
-        idx_last_key = len(filter_keys) - 1
-        query.append("' ")
-        for idx, filter_key in enumerate(filter_keys):
+
+        all_queries_by_cols = {}
+        # Generate all the query tokens for each
+        # column name.  A query token is a combination of
+        # the column with each value with form
+        # df[column_name] == val
+        for idx, column_name in enumerate(filter_keys):
+            queries_by_column = []
+
             # Get the values for the current filter key
-            values = self.subset_params[filter_key]
+            values = self.subset_params[column_name]
             idx_last_value = len(values) - 1
-            print(f"current idx for key: {idx}")
 
             for idx_val, cur_value in enumerate(values):
-                # Group the 'OR' appropriately with external parens
-                if idx_val == 0:
-                    # Add the outermost left parens to separate this key's values
-                    # from other keys' values
-                    if len(values) >1:
-                        query_str = "((" + f"{filter_key} == {cur_value}  )"
-                    else:
-                        query_str = "(" + f"{filter_key} == {cur_value}  )"
-                elif idx_val == idx_last_value:
-                    query_str = "(" + f"{filter_key} == {cur_value}  ))"
+                cur_value = cur_value.strip()
+                if column_name == 'fcst_lead' :
+                    query_token = f' ({column_name} == {cur_value} )'
                 else:
-                    query_str = "(" + f"{filter_key} == {cur_value}  )"
+                    query_token =  f' ({column_name} == "{cur_value}" )'
 
-                # Apply the 'OR' in between each key-value statement
-                if idx_val != idx_last_value:
-                    query_str = query_str + "  |  "
-                elif idx != idx_last_key:
-                    print(f"appending & for index: {idx}")
-                    # Append the 'AND' between this last value for this key and
-                    # the next key's values
-                    query_str = query_str + " & "
+                # Add the 'OR' logic operator
+                # between each value corresponding to this column
+                if len(values) > 1 and idx_val != idx_last_value:
+                    query_token =  query_token + ' | '
+                queries_by_column.append(query_token)
+            all_queries_for_this_column = ''.join(queries_by_column)
+            all_queries_by_cols[column_name] = all_queries_for_this_column
 
-                query.append(query_str)
+        # Add the appropriate parens and the 'AND'
+        # logical operator to group the token queries by
+        # columns
+        all_columns = all_queries_by_cols.keys()
+        last_column = len(all_columns) -1
+        for idx, cur_col in enumerate(all_columns):
+            values_for_col = all_queries_by_cols[cur_col]
+            # print(f"values for col: {values_for_col}")
+            # Add the left paren at the start of the string,
+            # append a right paren and the 'AND' logical
+            # operator at the end of the string
+            if idx != last_column:
+                values_for_col_updated = "(" + values_for_col + " ) & "
+            else:
+                values_for_col_updated = "(" + values_for_col + " ) "
 
-            if idx == idx_last_key:
-                # Add the terminating right single quote to the query
-                query.append("'")
+            # Update the query for this column
+            all_queries_by_cols[cur_col] = values_for_col_updated
 
-        final_query_str = ''.join(query)
-        msg = "Query string: " + final_query_str
-        safe_log(self.logger, 'debug', msg)
-        print(f"final query: {final_query_str}")
-        # result_df = working_df.query('((fcst_lead== 0) | ( fcst_lead == 60000) | ( fcst_lead== 120000) | ( fcst_lead == 240000)) & (fcst_lev== "Z2") & (model=="HRRR_verification_mem000") & (fcst_init_beg=="2023-07-02 00:00:00")')
-        # print(f"result: {result_df.shape}")
-        # result_df.to_csv("/Users/minnawin/Python_Scorecard_Dev/output/query_result.txt", header=True, index_label=False, sep=",")
 
-        # Create queries for the independent variable and its
-        # corresponding value(s), and requested statistics
+        # Create the full query string
+        full_query_str_list = []
+        for k,v in all_queries_by_cols.items():
+             # only collect the values into a list to be joined later to create the full query
+             full_query_str_list.append(v)
 
-        # return working_df
+        full_query =  "".join(full_query_str_list)
+
+        #DEBUG
+        result: pd.DataFrame  = working_df.query(full_query)
+
+        # result.to_csv("/Users/minnawin/Python_Scorecard_Dev/filtered.csv", header=True, index_label=False)
+
+
+        return result
+
+
+
+    def insert_char(self, input_string:str, char_to_insert:str, location:int) -> str:
+        """
+             Insert a character into a string at a specified index
+
+             Args:
+                 input_str (str): the string to add a character to
+                 char_to_insert (str): the character to add to the string
+                 location (int): the location (index) indicating where to
+                 insert the character r
+
+             Returns:
+                  a new string with the inserted char
+
+        """
+
+        return f"{input_string[:location]}{char_to_insert}{input_string[location:]}"
+
+
 
 
 def main(config_filename=None):
@@ -247,12 +279,14 @@ def main(config_filename=None):
     #
     subset_df = sc.subset_data(sc.reformat_params['output_filename'])
 
-    # Subset the reformatted data based on the subset_params
 
     # Calculate the aggregation statistics via METcalcpy agg_stat.py
     # module
+    if sc.linetype != 'CNT':
+        print(f"Calculate CI's with agg_stat for {sc.linetype} ")
 
     # Calculate the p-values
+
 
     # Categorize the p-values
 
