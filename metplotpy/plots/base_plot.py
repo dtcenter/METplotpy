@@ -65,10 +65,6 @@ class BasePlot:
         use as an abstract class for the common plot types
     """
 
-    # image formats supported by plotly
-    IMAGE_FORMATS = ("png", "jpeg", "webp", "svg", "pdf", "eps")
-    DEFAULT_IMAGE_FORMAT = 'png'
-
     def __init__(self, parameters, default_conf_filename):
         """Inits BasePlot with user defined and default dictionaries.
            Removes the old image if it exists
@@ -103,32 +99,6 @@ class BasePlot:
         self.figure = None
         self.remove_file()
         self.config_obj = Config(self.parameters)
-
-    def get_image_format(self):
-        """Reads the image format type from user provided image name.
-        Uses file extension as a type. If the file extension is not valid -
-        returns 'png' as a default
-
-        Args:
-
-        Returns:
-            - image format
-        """
-
-        # get image name from properties
-        image_name = self.get_config_value('image_name')
-        if image_name:
-
-            # extract and validate the file extension
-            strings = image_name.split('.')
-            if strings and strings[-1] in self.IMAGE_FORMATS:
-                return strings[-1]
-
-        # print the message if invalid and return default
-        print('Unrecognised image format. png will be used')
-        return self.DEFAULT_IMAGE_FORMAT
-
-
 
     def get_legend_style(self):
         """

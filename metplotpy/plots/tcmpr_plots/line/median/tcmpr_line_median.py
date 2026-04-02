@@ -3,7 +3,7 @@ from datetime import datetime
 
 from metplotpy.plots.tcmpr_plots.line.median.tcmpr_series_line_median import TcmprSeriesLineMedian
 from metplotpy.plots.tcmpr_plots.line.tcmpr_line import TcmprLine
-import metplotpy.plots.util_plotly as util
+import metplotpy.plots.util as util
 
 
 class TcmprLineMedian(TcmprLine):

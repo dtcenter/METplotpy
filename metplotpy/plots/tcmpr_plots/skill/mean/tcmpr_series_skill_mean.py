@@ -16,7 +16,7 @@ from typing import Union
 import numpy as np
 from pandas import DataFrame
 from datetime import datetime
-import metplotpy.plots.util_plotly as util
+import metplotpy.plots.util as util
 
 import metcalcpy.util.utils as utils
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries

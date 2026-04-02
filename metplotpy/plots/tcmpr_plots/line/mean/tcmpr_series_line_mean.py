@@ -19,7 +19,7 @@ import numpy as np
 import metcalcpy.util.utils as utils
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 from metplotpy.plots.tcmpr_plots.tcmpr_util import get_mean_ci
-import metplotpy.plots.util_plotly as util
+import metplotpy.plots.util as util
 
 
 class TcmprSeriesLineMean(TcmprSeries):

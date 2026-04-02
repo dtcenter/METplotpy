@@ -123,28 +123,6 @@ def alpha_blending(hex_color: str, alpha: float) -> str:
     final = tuple((1. - alpha) + foreground_arr * alpha)
     return matplotlib.colors.rgb2hex(final)
 
-
-def get_font_params(weight: int) -> dict:
-    """Convert integer font style/weight value to a dictionary of
-     font properties, fontweight for bold and fontstyle for italic.
-    1=plain text, 2=bold, 3=italic, 4=bold italic
-    REMOVE: Replaces apply_weight_style function used for plotly.
-
-    @param weight integer representation of the style/weight
-    @returns dictionary containing font properties like fontweight and fontstyle
-    """
-    font_params = {
-        'fontweight': 'normal',
-        'fontstyle': 'normal',
-    }
-    if weight in (2, 4):
-        font_params['fontweight'] = 'bold'
-    if weight in (3, 4):
-        font_params['fontstyle'] = 'italic'
-
-    return font_params
-
-
 def nicenumber(x, to_round):
     """
     Calculates a close nice number, i. e. a number with simple decimals.
