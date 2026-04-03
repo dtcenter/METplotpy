@@ -232,7 +232,7 @@ class Contour(BasePlot):
 
         # add color bar
         if self.config_obj.add_color_bar:
-            plt.colorbar(contour_filled, ax=ax)
+            plt.colorbar(contour_filled, ax=ax, ticks=contour_filled.levels)
 
         self.logger.info(f"Finished drawing data: {datetime.now()}")
 
