@@ -100,12 +100,8 @@ class ContourSeries(Series):
 
         self.logger.info(f"Creating the series points: {datetime.now()}")
         y_real = self.config.indy_vals.copy()
-        if self.config.xaxis_reverse:
-            y_real.reverse()
 
         x_real = self.config.series_vals_1[0].copy()
-        if self.config.yaxis_reverse:
-            x_real.reverse()
 
         z = [[None for i in range(len(y_real))] for j in range(len(x_real))]
         for ind_y, y in enumerate(y_real):

@@ -430,6 +430,9 @@ class BasePlot:
             if len(self.config_obj.parameters['ylim']) > 0:
                 ax.set_xlim(self.config_obj.parameters['ylim'])
 
+            if self.config_obj.yaxis_reverse:
+                ax.invert_xaxis()
+
     def _add_yaxis(self, ax: plt.Axes, fontproperties: FontProperties, label=None, grid_on=None) -> None:
         """
         Configures and adds y-axis to the plot. Handles vertical plot by switching x and y axis.
@@ -454,6 +457,9 @@ class BasePlot:
             # set y limits if min/max are defined in config
             if len(self.config_obj.parameters['ylim']) > 0:
                 ax.set_ylim(self.config_obj.parameters['ylim'])
+
+            if self.config_obj.yaxis_reverse:
+                ax.invert_yaxis()
         else:
             if self.config_obj.indy_label:
                 xtick_locs = self._get_xtick_locs()
