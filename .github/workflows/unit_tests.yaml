@@ -37,7 +37,7 @@ jobs:
       python-versions: ${{ steps.set-py-versions.outputs.versions }}
     steps:
       - id: set-py-versions
-        run: echo "versions=[\"3.12\", \"3.14\", \"3.15\"]" >> $GITHUB_OUTPUT
+        run: echo "versions=[\"3.12\", \"3.14\"]" >> $GITHUB_OUTPUT
       - id: set-branches
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
