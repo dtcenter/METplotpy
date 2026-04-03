@@ -118,6 +118,11 @@ class ContourConfig(Config):
         ##############################################
         self.contour_intervals = self.get_config_value('contour_intervals')
         self.color_palette = self._get_colorscale()
+        if self.contour_intervals != len(self.color_palette) - 1:
+            print(f"WARNING: Number of contour intervals ({self.contour_intervals}) "
+                  f"doesn't match the number of colors in the color palette ({len(self.color_palette)})."
+                  f" Setting contour intervals to {len(self.color_palette) - 1}")
+            self.contour_intervals = len(self.color_palette) - 1
         self.add_color_bar = self._get_bool('add_color_bar')
         self.xaxis_reverse = self._get_bool('reverse_x') or self._get_bool('xaxis_reverse')
         self.yaxis_reverse = self._get_bool('reverse_y') or self._get_bool('yaxis_reverse')
