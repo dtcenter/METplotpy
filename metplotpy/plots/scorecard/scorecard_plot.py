@@ -12,6 +12,7 @@ from metplotpy.plots import config as mp_config
 import METdataio.METreformat.write_stat_ascii as reformat
 from METcalcpy.metcalcpy.util.safe_log import safe_log
 from METcalcpy.metcalcpy import logging_config
+from METcalcpy.metcalcpy import scorecard
 from write_stat_ascii import WriteStatAscii
 
 
@@ -20,8 +21,10 @@ class ScorecardPlot():
         # Assign the instance attributes based on config file settings
         self.configs = configs
 
+        #
         # Logging and output location contain information for
         # all steps
+        #
         self.output_dir = configs['output_dir']
         os.makedirs(self.output_dir, exist_ok=True)
         self.log_dir = configs['log_dir']
@@ -33,7 +36,9 @@ class ScorecardPlot():
         logger = self.logger
         safe_log(logger, "debug", "Initializing ScorecardPlot with parameters")
 
+        #
         # For reformatter
+        #
         self.linetype = str(configs['linetype'])
         self.reformat_flag = configs['reformat_needed']
         self.reformat_params = {}
@@ -49,14 +54,34 @@ class ScorecardPlot():
         self.reformat_params['log_level'] = self.log_level
         self.reformat_params['line_type'] = self.linetype
 
+        #
         # For subsetting
-        # self.indep_values: list = configs['indep_values']
-        # self.indep_variable: str = configs['indep_variable']
-        # self.statistics: list = configs['stats_list']
+        #
         self.subset_params: dict = configs['subset_params']
+        subsetted_fname = "filtered.txt"
+        self.subsetted_filename: str = os.path.join(self.output_dir, subsetted_fname)
 
+        #
+        #  For calculating CI's
+        #
+
+        # ToDo
+
+        #
+        # For p-values via METcalcpy scorecard module
+        #
         self.append_sc_runs: bool = configs['append_subsequent']
         self.derived_series: list[list] = configs['derived_series']
+        self.agg_filename = "agg_stat_output.txt"
+
+        sc_stat_fname = "scorecard_stats.txt"
+        self.scorecard_stats_output_filename = os.path.join(self.output_dir, sc_stat_fname)
+
+        self.scorecard_stats_indy_var = self.subset_params['indep_variable']
+        self.scorecard_stats_indy_vals = self.subset_params['indep_values']
+        self.scorecard_stats_series_val = self.subset_params
+        self.scorecards_stats_statslist = self.subset_params['stats_list']
+
         # num of days, used in bootstrapping
         self.ndays = int(configs['ndays'])
         self.pval_method: str = configs['pval_method']
@@ -67,8 +92,7 @@ class ScorecardPlot():
     def __repr__(self):
 
         class_name = type(self).__name__
-        return (f"{class_name}(config={self.configs!r},)"
-                )
+        return (f"{class_name}(config={self.configs!r},)" )
 
 
     def __str__(self):
@@ -129,7 +153,7 @@ class ScorecardPlot():
                                         all columns labelled
 
            Returns:
-               a dataframe that contains only the relevant information as specified in
+               saves a file that contains only the relevant information as specified in
                the YAML config file
 
         """
@@ -153,7 +177,6 @@ class ScorecardPlot():
         del filter_keys['indep_values']
         del filter_keys['stats_list']
 
-
         # Create queries for column names specified in the subset_params settings.
         # 'OR' all the values corresponding to each key, and 'AND' all of the
         # key "segments" to create a final query.
@@ -174,15 +197,15 @@ class ScorecardPlot():
 
             for idx_val, cur_value in enumerate(values):
                 cur_value = cur_value.strip()
-                if column_name == 'fcst_lead' :
+                if column_name == 'fcst_lead':
                     query_token = f' ({column_name} == {cur_value} )'
                 else:
-                    query_token =  f' ({column_name} == "{cur_value}" )'
+                    query_token = f' ({column_name} == "{cur_value}" )'
 
                 # Add the 'OR' logic operator
                 # between each value corresponding to this column
                 if len(values) > 1 and idx_val != idx_last_value:
-                    query_token =  query_token + ' | '
+                    query_token = query_token + ' | '
                 queries_by_column.append(query_token)
             all_queries_for_this_column = ''.join(queries_by_column)
             all_queries_by_cols[column_name] = all_queries_for_this_column
@@ -190,7 +213,7 @@ class ScorecardPlot():
         # Add the appropriate parens and the 'AND'
         # logical operator between the query tokens based on column
         all_columns = all_queries_by_cols.keys()
-        last_column = len(all_columns) -1
+        last_column = len(all_columns) - 1
         for idx, cur_col in enumerate(all_columns):
             values_for_col = all_queries_by_cols[cur_col]
 
@@ -199,30 +222,25 @@ class ScorecardPlot():
             else:
                 values_for_col_updated = "(" + values_for_col + " ) "
 
-            # Add this to the "all queries" dictionary
+            # Add this to the "all queries" dictionary to keep the value query
+            # tokens grouped by the column name (key)
             all_queries_by_cols[cur_col] = values_for_col_updated
 
-
-        # Create the full query string
+        # Create the finished query string
         full_query_str_list = []
         for v in all_queries_by_cols.values():
-             # only collect the values into a list to be joined later to create the full query
-             full_query_str_list.append(v)
+            # only collect the values into a list to be joined later to create the full query
+            full_query_str_list.append(v)
 
-        full_query =  "".join(full_query_str_list)
+        full_query = "".join(full_query_str_list)
 
-        result: pd.DataFrame  = working_df.query(full_query)
+        result: pd.DataFrame = working_df.query(full_query)
 
-        # ToDo
-        # Remove only to DEBUG
-        result.to_csv("/Users/minnawin/Python_Scorecard_Dev/filtered.csv", header=True, index_label=False)
-
-
-        return result
+        result.to_csv(self.subsetted_filename, header=True, index_label=False)
 
 
 
-    def insert_char(self, input_string:str, char_to_insert:str, location:int) -> str:
+    def insert_char(self, input_string: str, char_to_insert: str, location: int) -> str:
         """
              Insert a character into a string at a specified index
 
@@ -238,6 +256,101 @@ class ScorecardPlot():
         """
 
         return f"{input_string[:location]}{char_to_insert}{input_string[location:]}"
+
+
+    def reformat_met_stat(self) -> None:
+        """
+             Invoke the METdataio METreformatter's write_stat_ascii module to
+             label all the headers in the MET .stat file based on linetype (specified in
+             the YAML config file).
+
+             Args:
+
+             Returns:
+                 Saves the reformatted data  to the output
+                 directory specified in the YAML config file.
+
+        """
+
+        if self.reformat_flag:
+            r_df = reformat.read_input(self.reformat_params, self.logger)
+
+
+            r_df.to_csv( self.reformat_params['output_filename'],
+                        date_format='%Y-%m-%d %H:%M:%S')
+            if r_df.size == 0:
+                safe_log(self.logger, 'ERROR', "ERROR:  Input dataframe is empty.  Exiting")
+                sys.exit()
+            if os.path.exists(self.reformat_params['output_filename']):
+                safe_log(self.logger, self.log_level, "Output file already exists, removing this file.")
+                os.remove(self.reformat_params['output_filename'])
+
+            stat_lines_obj: WriteStatAscii = WriteStatAscii(self.reformat_params, self.logger)
+            stat_lines_obj.write_stat_ascii(r_df, self.reformat_params)
+
+
+
+    def get_scorecard_stats(self) -> pd.DataFrame:
+        """
+              Invoke the METcalcpy scorecard module to calculate the p-values.
+              Categorize the p-values into one of the following categories:
+                  Model A better than Model B at 99.9% confidence
+                  Model A better than Model B at 99% confidence
+                  Model A better than Model B at 95% confidence
+
+                  Model A worse than Model B at 95% confidence
+                  Model A worse than Model B at 99% confidence
+                  Model A worse than Model B at 99.9% confidence
+
+                  No statistically significant difference between Model A and Model B
+                  Not statistically relevant
+
+
+              Args:
+
+              Returns:
+                 a dataframe that will be used to generate the
+                 scorecard plot.
+
+        """
+
+        # Create the params expected by METcalcpy scorecard.py
+        params = {}
+        params['append_subsequent'] = self.append_sc_runs
+        params['derived_series'] = self.derived_series
+        params['ndays'] = self.ndays
+        params['pval_method'] = self.pval_method
+        params['log_dir'] = self.log_dir
+        params['log_filename'] = self.log_filename
+        params['log_level'] = self.log_level
+        params['scorecard_input'] = self.scorecard_stats_input_filename
+        params['scorecard_output'] = self.scorecard_stats_output_filename
+        params['series_val'] = self.scorecard_stats_series_val
+        params['indy_var'] = self.scorecard_stats_indy_var
+        params['indy_vals'] = self.scorecard_stats_indy_vals
+        params['stats_list'] = self.scorecards_stats_statslist
+
+
+        #
+        # self.scorecard_stats_input_filename = os.path.join(self.output_dir, self.agg_filename)
+        #
+        # self.scorecard_stats_input_filename = os.path.join(self.output_dir, reformat_output_fname)
+
+
+        calcpy_sc = scorecard.Scorecard(params)
+        calcpy_sc.calculate_scorecard_data()
+
+        # Open the scorecard output from METcalcpy scorecard.py and
+        # assign the categories (based on the categories used in METviewer)
+
+
+        categories = {}
+        categories['A_better_999'] = [0.999, 1.]
+        categories['A_better_99'] = [0.99, 0.999]
+        categories['A_better_95'] = [0.95, 0.99]
+        categories['A_worse_999'] = [-1, -0.999]
+        categories['A_worse_99'] = [-.999, -.99]
+        categories['A_worse_95'] = [-.99, -.95]
 
 
 
@@ -257,35 +370,35 @@ def main(config_filename=None):
     sc = ScorecardPlot(confs)
 
     #
-    # Reformat the MET stat data
+    #  Reformat the MET .stat file(s)
     #
-    if sc.reformat_flag:
-        r_df = reformat.read_input(sc.reformat_params, sc.logger)
-        r_df.to_csv('/Users/minnawin/Python_Scorecard_Dev/output/before_reformatter.txt',
-                    date_format='%Y-%m-%d %H:%M:%S')
-        if r_df.size == 0:
-            safe_log(sc.logger, 'ERROR', "ERROR:  Input dataframe is empty.  Exiting")
-            sys.exit()
-        if os.path.exists(sc.reformat_params['output_filename']):
-            safe_log(sc.logger, sc.log_level, "Output file already exists, removing this file.")
-            os.remove(sc.reformat_params['output_filename'])
-
-        stat_lines_obj: WriteStatAscii = WriteStatAscii(sc.reformat_params, sc.logger)
-        stat_lines_obj.write_stat_ascii(r_df, sc.reformat_params)
-
+    sc.reformat_met_stat()
     #
     #  Filter the data based on settings in the YAML config file
     #
     subset_df = sc.subset_data(sc.reformat_params['output_filename'])
-
-
+    #
     # Calculate the aggregation statistics via METcalcpy agg_stat.py
-    # module
+    # module if needed
+    # ToDo implement support for invoking this
+    if sc.linetype == 'CNT':
+        print(f"Skip running agg_stat.py {sc.linetype} already has CI's calculated  ")
+    else:
+        print(f"ToDo: Invoke  METcalcpy agg_stat.py to calculate the CI's for {sc.linetype} ")
+        # ToDo for now set aggstat_df to subset_df
+        aggstat_df = subset_df.copy(deep=True)
+
+    #
+    # Get the p-values and scorecard categories
+    #
+
+    # input is dependent on whether agg_stat.py was used to calculate the CI's
+    # CNT line type already has CI's
+
     if sc.linetype != 'CNT':
-        print(f"Calculate CI's with agg_stat for {sc.linetype} ")
-
-    # Calculate the p-values
-
+       sc_df: pd.DataFrame = sc.get_scorecard_stats(subset_df)
+    else:
+        sc_df: pd.DataFrame = sc.get_scorecard_stats(aggstat_df)
 
     # Categorize the p-values
 
