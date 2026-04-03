@@ -33,8 +33,9 @@ from . import constants
 # Global matplotlib default setting overrides
 ###
 
-# set default for dashed lines to be longer and wider spaced
+# set default for dashed and dotted lines to be longer and wider spaced
 plt.rcParams['lines.dashed_pattern'] = [10, 10]
+plt.rcParams['lines.dotted_pattern'] = [5, 5]
 
 # Turn off spines globally
 plt.rcParams['axes.spines.top'] = False

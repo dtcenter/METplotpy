@@ -30,13 +30,16 @@ class TcmprLineMedian(TcmprLine):
         self._create_figure(stat_name)
 
     def _adjust_titles(self, stat_name):
-        if self.yaxis_1 is None or len(self.yaxis_1) == 0:
+        if not self.yaxis_1:
             self.yaxis_1 = stat_name + '(' + self.col['units'] + ')'
 
-        if self.title is None or len(self.title) == 0:
-            self.title = 'Median of ' + self.col['desc'] + ' by ' \
-                         + self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]][
-                             "DESCRIPTION"].tolist()[0]
+        if self.title:
+            return
+
+        self.title = (
+            f"Median of\n{self.col['desc']}\nby "
+            f"{self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]]['DESCRIPTION'].tolist()[0]}"
+        )
 
     def _create_series(self, input_data, stat_name):
         """

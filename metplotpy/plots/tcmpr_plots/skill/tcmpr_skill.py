@@ -85,12 +85,20 @@ class TcmprSkill(Tcmpr):
 
         ax = self.ax if series.y_axis == 1 else self.ax2
 
-        plot = ax.plot(x_points_index_adj, y_points, label=self.config_obj.user_legends[series.idx],
-                       color=self.config_obj.colors_list[series.idx],
-                       linewidth=self.config_obj.linewidth_list[series.idx],
-                       linestyle=self.config_obj.linestyles_list[series.idx],
-                       marker=self.config_obj.marker_list[series.idx],
-                       markersize=self.config_obj.marker_size[series.idx])
+        markerfacecolor = self.config_obj.colors_list[series.idx]
+        if self.config_obj.marker_open_list[series.idx]:
+            markerfacecolor = 'none'
+
+        plot = ax.plot(
+            x_points_index_adj, y_points,
+            label=self.config_obj.user_legends[series.idx],
+            color=self.config_obj.colors_list[series.idx],
+            linewidth=self.config_obj.linewidth_list[series.idx],
+            linestyle=self.config_obj.linestyles_list[series.idx],
+            marker=self.config_obj.marker_list[series.idx],
+            markersize=self.config_obj.marker_size[series.idx],
+            markerfacecolor=markerfacecolor,
+        )
         return plot[0]
 
     def _find_min_max(self, series: TcmprSeries, yaxis_min: Union[float, None],

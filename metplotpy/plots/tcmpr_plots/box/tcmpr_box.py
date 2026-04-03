@@ -36,17 +36,16 @@ class TcmprBox(TcmprBoxPoint):
         self._create_figure()
 
     def _adjust_titles(self, stat_name):
-        if self.yaxis_1 is None or len(self.yaxis_1) == 0:
-            # ToDo Remove when done DEBUGGING
-            # self.yaxis_1 = self.config_obj.list_stat_1[0] + '(' + self.col['units'] + ')'
+        if not self.yaxis_1:
             self.yaxis_1 = stat_name + '(' + self.col['units'] + ')'
 
-        if not self.title:
-            self.title = (
-                    'Boxplots of ' + self.col['desc'] + ' by '
-                    + self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]][
-                             "DESCRIPTION"].tolist()[0]
-            )
+        if self.title:
+            return
+
+        self.title = (
+            f"Boxplots of\n{self.col['desc']}\nby "
+            f"{self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]]["DESCRIPTION"].tolist()[0]}"
+        )
 
     def _draw_series(self, series: TcmprSeries):
         """
@@ -80,7 +79,7 @@ class TcmprBox(TcmprBoxPoint):
             'linewidth': 1,
         }
         mean_props = {
-            'linestyle': '--',
+            'linestyle': ':',
             'color': 'black',
             'linewidth': 1,
         }

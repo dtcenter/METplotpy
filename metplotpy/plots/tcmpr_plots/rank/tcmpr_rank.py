@@ -61,10 +61,10 @@ class TcmprRank(Tcmpr):
             self.case_data = get_case_data(self.input_df, self.config_obj.series_vals_1, self.config_obj.indy_vals,
                                            self.config_obj.rp_diff, len(self.series_list))
 
-        if self.config_obj.prefix is None or len(self.config_obj.prefix) == 0:
-            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{stat_name}_rank.png"
-        else:
-            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}_{stat_name}_rank.png"
+        self.plot_filename = f"{stat_name}_rank.png"
+        if self.config_obj.prefix:
+            self.plot_filename = f"{self.config_obj.prefix}_{self.plot_filename}"
+        self.plot_filename = os.path.join(self.config_obj.plot_dir, self.plot_filename)
         self.rank_logger.info(f"Plot will be saved as {self.plot_filename}" )
 
         # remove the old file if it exists
@@ -76,15 +76,17 @@ class TcmprRank(Tcmpr):
 
 
     def _adjust_titles(self, stat_name):
-        if self.yaxis_1 is None or len(self.yaxis_1) == 0:
+        if not self.yaxis_1:
             self.yaxis_1 = f'Percent of Cases for  {stat_name}'
 
-        if self.title is None or len(self.title) == 0:
-            self.title = self.config_obj.series_vals_1[0][0] + ' ' + \
-                         self.column_info[
-                             self.column_info['COLUMN'] == self.config_obj.series_val_names[0]][
-                             "DESCRIPTION"].tolist()[0] + ' ' \
-                         + self.col['desc'] + 'Rank Frequency'
+        if self.title:
+            return
+
+        self.title = (
+                f"{self.config_obj.series_vals_1[0][0]} "
+                f"{self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]]['DESCRIPTION'].tolist()[0]}"
+                f"\n{self.col['desc']}\nRank Frequency"
+        )
 
     def _create_figure(self, stat_name):
         """ Create a box plot from default and custom parameters"""

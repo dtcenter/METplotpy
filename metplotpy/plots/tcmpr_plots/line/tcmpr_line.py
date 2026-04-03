@@ -88,13 +88,28 @@ class TcmprLine(Tcmpr):
         if error_y_visible:
             yerr = [series.series_points['ncl'], series.series_points['ncu']]
 
-        plot = ax.errorbar(x_points_index_adj, y_points, yerr=yerr,
-                           label=self.config_obj.user_legends[series.idx],
-                           color=self.config_obj.colors_list[series.idx],
-                           linewidth=self.config_obj.linewidth_list[series.idx],
-                           linestyle=self.config_obj.linestyles_list[series.idx],
-                           marker=self.config_obj.marker_list[series.idx],
-                           markersize=self.config_obj.marker_size[series.idx])
+        markerfacecolor = self.config_obj.colors_list[series.idx]
+        if self.config_obj.marker_open_list[series.idx]:
+            markerfacecolor = 'none'
+
+        plot = ax.errorbar(
+            x=x_points_index_adj,
+            y=y_points,
+            label=self.config_obj.user_legends[series.idx],
+            # line style
+            color=self.config_obj.colors_list[series.idx],
+            linewidth=self.config_obj.linewidth_list[series.idx],
+            linestyle=self.config_obj.linestyles_list[series.idx],
+            # marker style
+            marker=self.config_obj.marker_list[series.idx],
+            markersize=self.config_obj.marker_size[series.idx],
+            markeredgecolor=self.config_obj.colors_list[series.idx],
+            markerfacecolor=markerfacecolor,
+            # error bar
+            yerr=yerr,
+            elinewidth=self.config_obj.linewidth_list[series.idx],
+            capsize=5,
+        )
 
         end_time = datetime.now()
         total_time = end_time - start_time

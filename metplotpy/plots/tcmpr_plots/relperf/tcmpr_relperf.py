@@ -200,12 +200,12 @@ class TcmprRelPerf(Tcmpr):
         return plot_obj[0]
 
     def _adjust_titles(self):
-        if self.yaxis_1 is None or len(self.yaxis_1) == 0:
+        if not self.yaxis_1:
             self.yaxis_1 = 'Percent of Cases'
 
-        if self.title is None or len(self.title) == 0:
-            self.title = f"Relative Performance of {self.col['desc']}"
+        if not self.title:
+            self.title = f"Relative Performance of\n{self.col['desc']}"
             if len(np.unique(self.config_obj.rp_diff)) == 1:
-                self.title = f"{self.title} Difference {self.config_obj.rp_diff[0]}{self.col['units']}"
+                self.title = f"{self.title}\nDifference {self.config_obj.rp_diff[0]}{self.col['units']}"
             self.title = f'{self.title} by {self.column_info[self.column_info["COLUMN"] == self.config_obj.series_val_names[0]]["DESCRIPTION"].tolist()[0]}'
 
