@@ -39,9 +39,11 @@ def test_default_plot_images_match(module_setup_env, remove_files):
 
 
 def test_custom_plot_created(module_setup_env, remove_files):
-    if not os.environ.get('METPLOTPY_TEST_INPUT_DIR'):
-        pytest.skip("METPLOTPY_TEST_INPUT_DIR not set."
-                    " This is needed to get large input data file")
+    if not os.environ.get('METPLOTPY_TEST_INPUT'):
+        pytest.skip(
+            "METPLOTPY_TEST_INPUT not set. "
+            "This is needed to get the large input data file to run this test"
+        )
 
     expected_file = "hovmoeller_custom_plot.png"
 
