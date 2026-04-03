@@ -34,20 +34,20 @@ class ScorecardPlot():
         safe_log(logger, "debug", "Initializing ScorecardPlot with parameters")
 
         # For reformatter
-        linetype = str(configs['linetype'])
+        self.linetype = str(configs['linetype'])
         self.reformat_flag = configs['reformat_needed']
         self.reformat_params = {}
         self.reformat_params['input_stats_aggregated'] = configs['has_confidence_stats']
         self.reformat_params['log_directory'] = self.log_dir
         self.reformat_params['output_dir'] = self.output_dir
-        reformat_output_fname_parts = ["reformatted_", linetype, ".txt"]
+        reformat_output_fname_parts = ["reformatted_", self.linetype, ".txt"]
         reformat_output_fname = ''.join(reformat_output_fname_parts)
         self.reformat_params['output_filename'] = os.path.join(self.output_dir, reformat_output_fname)
         self.reformat_params['input_data_dir'] = configs['met_stat_input']
         self.reformat_params['log_directory'] = self.log_dir
         self.reformat_params['log_filename'] = self.log_filename
         self.reformat_params['log_level'] = self.log_level
-        self.reformat_params['line_type'] = linetype
+        self.reformat_params['line_type'] = self.linetype
 
         # For subsetting
         # self.indep_values: list = configs['indep_values']
@@ -158,7 +158,9 @@ class ScorecardPlot():
         # 'OR' all the values corresponding to each key, and 'AND' all of the
         # key "segments" to create a final query.
 
+        # Keep the query tokens ordered by column names
         all_queries_by_cols = {}
+
         # Generate all the query tokens for each
         # column name.  A query token is a combination of
         # the column with each value with form
@@ -186,37 +188,34 @@ class ScorecardPlot():
             all_queries_by_cols[column_name] = all_queries_for_this_column
 
         # Add the appropriate parens and the 'AND'
-        # logical operator to group the token queries by
-        # columns
+        # logical operator between the query tokens based on column
         all_columns = all_queries_by_cols.keys()
         last_column = len(all_columns) -1
         for idx, cur_col in enumerate(all_columns):
             values_for_col = all_queries_by_cols[cur_col]
-            # print(f"values for col: {values_for_col}")
-            # Add the left paren at the start of the string,
-            # append a right paren and the 'AND' logical
-            # operator at the end of the string
+
             if idx != last_column:
                 values_for_col_updated = "(" + values_for_col + " ) & "
             else:
                 values_for_col_updated = "(" + values_for_col + " ) "
 
-            # Update the query for this column
+            # Add this to the "all queries" dictionary
             all_queries_by_cols[cur_col] = values_for_col_updated
 
 
         # Create the full query string
         full_query_str_list = []
-        for k,v in all_queries_by_cols.items():
+        for v in all_queries_by_cols.values():
              # only collect the values into a list to be joined later to create the full query
              full_query_str_list.append(v)
 
         full_query =  "".join(full_query_str_list)
 
-        #DEBUG
         result: pd.DataFrame  = working_df.query(full_query)
 
-        # result.to_csv("/Users/minnawin/Python_Scorecard_Dev/filtered.csv", header=True, index_label=False)
+        # ToDo
+        # Remove only to DEBUG
+        result.to_csv("/Users/minnawin/Python_Scorecard_Dev/filtered.csv", header=True, index_label=False)
 
 
         return result
