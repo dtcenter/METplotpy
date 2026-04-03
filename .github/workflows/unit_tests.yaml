@@ -92,7 +92,7 @@ jobs:
         pytest
 
     - name: Upload output data artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: test_output_${{ matrix.branch }}_${{ matrix.python-version }}
         path: ${{ runner.workspace }}/output/${{ matrix.branch }}/test_output
@@ -108,10 +108,12 @@ jobs:
     # Only run if there are exactly 2 branches to compare
     if: fromJSON(needs.setup-matrix.outputs.branches)[1] != null
     steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: ${{ runner.workspace }}/artifacts
+      - name: Download artifacts
+        run: |
+          mkdir -p "${{ runner.workspace }}/artifacts"
+          gh run download --repo "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" --dir "${{ runner.workspace }}/artifacts"
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Checkout diff_util.py from METplus
         uses: actions/checkout@v6
