@@ -86,9 +86,17 @@ jobs:
         python -m pip install -e METcalcpy
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
+    - name: Download additional input data
+      run: |
+        mkdir -p ${{ runner.workspace }}/test_input
+        wget -P ${{ runner.workspace }}/test_input \
+        https://dtcenter.ucar.edu/dfiles/code/METplus/METplotpy_Data/develop/sample_data_METplotpy.tgz
+        tar -xzf ${{ runner.workspace }}/test_input/sample_data_METplotpy.tgz -C ${{ runner.workspace }}/test_input
+
     - name: Test with pytest
       run: |
         export METPLOTPY_TEST_OUTPUT=${{ runner.workspace }}/output/${{ matrix.branch }}
+        export METPLOTPY_TEST_INPUT=${{ runner.workspace }}/test_input
         pytest
 
     - name: Upload output data artifact
