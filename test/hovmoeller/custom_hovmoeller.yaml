@@ -1,5 +1,5 @@
 plot_filename: !ENV '${TEST_OUTPUT}/hovmoeller_custom_plot.png'
-input_data_file: !ENV '${TEST_INPUT_EXTRA}/precip.erai.sfc.1p0.2x.2014-2016.nc'
+input_data_file: !ENV '${TEST_INPUT_EXTRA}/hovmoeller/precip.erai.sfc.1p0.2x.2014-2016.nc'
 plot_height: 800
 plot_width: 1200
 title: ERAI Precipitation
