@@ -43,7 +43,7 @@ class TcmprPoint(TcmprBoxPoint):
             return
 
         self.title = (
-            f"Point Plots  of {self.col['desc']} by "
+            f"Point Plots of {self.col['desc']} by "
             f"{self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]]['DESCRIPTION'].tolist()[0]}"
         )
 
