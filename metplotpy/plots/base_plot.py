@@ -501,7 +501,7 @@ class BasePlot:
 
         return n_stats
 
-    def _add_x2axis(self, ax, n_stats, fontproperties: FontProperties) -> None:
+    def _add_x2axis(self, ax, fontproperties: FontProperties) -> None:
         """
         Creates x2axis based on the properties from the config file.
 
@@ -519,12 +519,13 @@ class BasePlot:
             return
 
         num_lines = 1
+        n_stats = self._get_nstats()
         if n_stats and isinstance(n_stats, list) and len(n_stats) > 0 and isinstance(n_stats[0], list):
             num_lines = len(n_stats[0])
 
         # Adjust labelpad based on number of n_stats lines to avoid overlap
         # Each line takes approximately fontsize points + some spacing
-        extra_pad = 0
+        extra_pad = 2
         if num_lines > 1:
             extra_pad = num_lines * self.config_obj.x2_tickfont_size * 1.2
 
@@ -569,6 +570,9 @@ class BasePlot:
                 ax_secondary.set_xticks(current_locs, labels=n_stats, size=self.config_obj.x2_tickfont_size)
             return
 
+        self._set_nstat_ticks_multiple(ax, ax_secondary, current_locs, is_vertical, n_stats)
+
+    def _set_nstat_ticks_multiple(self, ax, ax_secondary, current_locs, is_vertical: bool, n_stats):
         # handle n_stat for multiple series that are color coded
         if is_vertical:
             ax_secondary.set_yticks(current_locs)

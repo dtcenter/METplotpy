@@ -164,9 +164,8 @@ class Bar(BasePlot):
         self._add_xaxis(ax, wts_size_styles['xlab'])
         self._add_yaxis(ax, wts_size_styles['ylab'])
 
-        n_stats = self._get_nstats()
         self._add_series(ax)
-        self._add_x2axis(ax, n_stats, wts_size_styles['x2lab'])
+        self._add_x2axis(ax, wts_size_styles['x2lab'])
 
         self._add_legend(ax)
 

@@ -206,7 +206,6 @@ class Line(BasePlot):
         if self.config_obj.parameters['list_stat_2']:
             ax_y2 = self._add_y2axis(ax, wts_size_styles['y2lab'])
 
-        n_stats = self._get_nstats()
         yaxis_min, yaxis_max, handles_and_labels = self._add_series(ax, ax_y2)
 
         xlab_style = wts_size_styles['xlab'] if not self.config_obj.vert_plot else wts_size_styles['ylab']
@@ -216,7 +215,7 @@ class Line(BasePlot):
 
         # add x2 axis
         if wts_size_styles.get('x2lab'):
-            self._add_x2axis(ax, n_stats, wts_size_styles['x2lab'])
+            self._add_x2axis(ax, wts_size_styles['x2lab'])
 
         self._add_legend(ax, handles_and_labels)
 

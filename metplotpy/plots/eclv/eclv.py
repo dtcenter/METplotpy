@@ -169,14 +169,15 @@ class Eclv(Line):
 
         self._add_title(ax, wts_size_styles['title'])
         self._add_caption(plt, wts_size_styles['caption'])
-        n_stats = self._add_series(ax)
+
+        self._add_series(ax)
 
         self._add_xaxis(ax, wts_size_styles['xlab'])
         self._add_yaxis(ax, wts_size_styles['ylab'])
 
         # add x2 axis
         if wts_size_styles.get('x2lab'):
-            self._add_x2axis(ax, n_stats, wts_size_styles['x2lab'])
+            self._add_x2axis(ax, wts_size_styles['x2lab'])
 
         self._add_legend(ax)
 
@@ -188,21 +189,24 @@ class Eclv(Line):
         self.logger.info(f"Finished creating the figure: {datetime.now()}")
 
     def _add_series(self, ax, ax2=None):
-
-        # placeholder for the number of stats
-        n_stats = [0] * len(self.series_list[0].series_points[0]['x_pnt'])
-
-        # add series lines
         for series in self.series_list:
+            if not series.plot_disp:
+                continue
 
-            # Don't generate the plot for this series if
-            # it isn't requested (as set in the config file)
-            if series.plot_disp:
-                self._draw_series(ax, ax2, series)
+            self._draw_series(ax, ax2, series)
 
-                # aggregate number of stats
-                for series_points in series.series_points:
-                    n_stats = list(map(add, n_stats, series_points['nstat']))
+    def _get_nstats(self) -> list:
+        """
+        Calculates n_stats for the x2 axis.
+        """
+        n_stats = [0] * len(self.series_list[0].series_points[0]['x_pnt'])
+        for series in self.series_list:
+            if not series.plot_disp:
+                continue
+
+            # aggregate number of stats
+            for series_points in series.series_points:
+                n_stats = list(map(add, n_stats, series_points['nstat']))
 
         x_points = []
 

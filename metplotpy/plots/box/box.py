@@ -177,7 +177,6 @@ class Box(BasePlot):
         if wts_size_styles.get('y2lab') and self.config_obj.parameters['list_stat_2']:
             ax_y2 = self._add_y2axis(ax, wts_size_styles['y2lab'])
 
-        n_stats = self._get_nstats()
         handles_and_labels, yaxis_min, yaxis_max = self._add_series(ax, ax_y2)
 
         self._add_xaxis(ax, wts_size_styles['xlab'])
@@ -185,7 +184,7 @@ class Box(BasePlot):
 
         # add x2 axis
         if wts_size_styles.get('x2lab'):
-            self._add_x2axis(ax, n_stats, wts_size_styles['x2lab'])
+            self._add_x2axis(ax, wts_size_styles['x2lab'])
 
         self._sync_yaxes(ax, ax_y2, yaxis_min, yaxis_max)
         self._add_legend(ax, handles_and_labels)

@@ -221,7 +221,7 @@ class Tcmpr(BasePlot):
         wts_size_styles = self.get_weights_size_styles()
         super()._add_yaxis(ax, wts_size_styles['ylab'], label=self.yaxis_1)
 
-    def _add_x2axis(self, ax=None, n_stats=None, fontproperties=None) -> None:
+    def _add_x2axis(self, ax=None, fontproperties=None) -> None:
         """
         Creates x2axis based on the properties from the config file
         and attaches it to the initial Figure
@@ -230,10 +230,8 @@ class Tcmpr(BasePlot):
         if not self.config_obj.show_nstats:
             return
 
-        if n_stats is None:
-            n_stats = self._get_nstats()
         wts_size_styles = self.get_weights_size_styles()
-        super()._add_x2axis(self.ax, n_stats, wts_size_styles['x2lab'])
+        super()._add_x2axis(self.ax, wts_size_styles['x2lab'])
 
     def _add_legend(self, ax=None, handles_and_labels=None) -> None:
         """
