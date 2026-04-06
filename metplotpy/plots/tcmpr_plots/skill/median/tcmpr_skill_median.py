@@ -21,7 +21,7 @@ class TcmprSkillMedian(TcmprSkill):
 
         self.skillmd_logger.info("Plot HFIP Baseline:" + self.cur_baseline)
 
-        self._adjust_titles(stat_name)
+        self._adjust_titles(f"Skill for {stat_name}", title_prefix="Median Skill Scores of")
         self.series_list = self._create_series(self.input_df, stat_name)
         self.case_data = None
 
@@ -34,18 +34,6 @@ class TcmprSkillMedian(TcmprSkill):
         if os.path.exists(self.plot_filename):
             os.remove(self.plot_filename)
         self._create_figure(stat_name)
-
-    def _adjust_titles(self, stat_name):
-        if not self.yaxis_1:
-            self.yaxis_1 =  'Skill  for ' + stat_name + ' (' + self.col['units'] + ')'
-
-        if self.title:
-            return
-
-        self.title = (
-            f"Median Skill Scores of\n{self.col['desc']}\nby "
-            f"{self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]]['DESCRIPTION'].tolist()[0]}"
-        )
 
     def _create_series(self, input_data, stat_name):
         """

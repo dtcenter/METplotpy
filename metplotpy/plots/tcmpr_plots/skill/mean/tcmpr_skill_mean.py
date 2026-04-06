@@ -19,7 +19,7 @@ class TcmprSkillMean(TcmprSkill):
         self.skill_logger.info("--------------------------------------------------------")
         self.skill_logger.info(f"Plotting SKILL_MN time series by {self.config_obj.series_val_names[0]}")
 
-        self._adjust_titles(stat_name)
+        self._adjust_titles(f"Skill for {stat_name}", title_prefix="Mean Skill Scores of")
         self.cur_baseline = baseline_data['cur_baseline']
         self.cur_baseline_data = baseline_data['cur_baseline_data']
         self._init_hfip_baseline_for_plot()
@@ -34,18 +34,6 @@ class TcmprSkillMean(TcmprSkill):
         if os.path.exists(self.plot_filename):
             os.remove(self.plot_filename)
         self._create_figure(stat_name)
-
-    def _adjust_titles(self, stat_name):
-        if not self.yaxis_1:
-            self.yaxis_1 = 'Skill for ' + stat_name + ' (' + self.col['units'] + ')'
-
-        if self.title:
-            return
-
-        self.title = (
-            f"Mean Skill Scores of\n{self.col['desc']}\nby "
-            f"{self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]]['DESCRIPTION'].tolist()[0]}"
-        )
 
     def _init_hfip_baseline_for_plot(self):
         if 'Water Only' in self.title:

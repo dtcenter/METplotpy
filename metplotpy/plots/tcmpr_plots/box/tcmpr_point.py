@@ -16,7 +16,7 @@ class TcmprPoint(TcmprBoxPoint):
         self.point_logger.info(f"Plotting POINT time series by {self.config_obj.series_val_names[0]}")
         start = datetime.now()
 
-        self._adjust_titles(stat_name)
+        self._adjust_titles(stat_name, 'Point Plots of')
         self.series_list = self._create_series(self.input_df, stat_name)
         self.case_data = None
         self.cur_baseline = baseline_data['cur_baseline']
@@ -34,18 +34,6 @@ class TcmprPoint(TcmprBoxPoint):
         self._create_figure()
 
         self.point_logger.info(f"Finished generating the TCMPR points  in {datetime.now() - start} ms")
-
-    def _adjust_titles(self, stat_name):
-        if not self.yaxis_1:
-            self.yaxis_1 = stat_name + '(' + self.col['units'] + ')'
-
-        if self.title:
-            return
-
-        self.title = (
-            f"Point Plots of {self.col['desc']} by "
-            f"{self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]]['DESCRIPTION'].tolist()[0]}"
-        )
 
     def _draw_series(self, series: TcmprSeries) -> None:
         """

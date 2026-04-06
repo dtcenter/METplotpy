@@ -323,6 +323,27 @@ class Tcmpr(BasePlot):
 
         return min(yaxis_min, low_range), max(yaxis_max, upper_range)
 
+    def _adjust_titles(self, y_label, title_prefix, title_suffix=None, add_units=True):
+        if not self.yaxis_1:
+            y_label_text = y_label
+            if add_units:
+                y_label_text += f" ({self.col['units']})"
+            self.yaxis_1 = y_label_text
+
+        if self.title:
+            return
+
+        desc = self.col['desc']
+        if title_suffix is None:
+            series_val_name = \
+            self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]][
+                "DESCRIPTION"].tolist()[0]
+            title_suffix = f"by {series_val_name}"
+
+        delimeter = '\n' if len(title_prefix) + len(desc) + len(title_suffix) > 70 else ' '
+        desc = f"{delimeter}{desc}{delimeter}"
+        self.title = f"{title_prefix}{desc}{title_suffix}"
+
 def perform_event_equalization(input_df:pd.DataFrame, is_skill:bool, config_obj:dict) -> pd.DataFrame:
     '''
        Performs event equalization.  The skill_mn and skill_md plots require the skill_ref value to be included.

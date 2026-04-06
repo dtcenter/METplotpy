@@ -108,7 +108,7 @@ class TcmprScatter(Tcmpr):
                 self.config_obj.xaxis = scatter_x_val + " (" + col_x['units'] + ')'
 
             if not self.title:
-                self.title = "Scatter plot of <br>" + col_x['desc'] + '<br>versus ' + col_y['desc']
+                self.title = "Scatter plot of \n" + col_x['desc'] + '\nversus ' + col_y['desc']
 
     def _create_series(self, input_data):
         """

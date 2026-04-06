@@ -199,13 +199,13 @@ class TcmprRelPerf(Tcmpr):
         self.relperf_logger.info(f"Took {total_time} milliseconds to draw the series")
         return plot_obj[0]
 
-    def _adjust_titles(self):
-        if not self.yaxis_1:
-            self.yaxis_1 = 'Percent of Cases'
+    def _adjust_titles(self, y_label=None, title_prefix=None, title_suffix=None, add_units=False):
+        series_val_name = self.column_info[self.column_info["COLUMN"] == self.config_obj.series_val_names[0]]["DESCRIPTION"].tolist()[0]
+        title_suffix = f"by {series_val_name}"
+        if len(np.unique(self.config_obj.rp_diff)) == 1:
+            title_suffix = f"Difference {self.config_obj.rp_diff[0]}{self.col['units']} {title_suffix}"
 
-        if not self.title:
-            self.title = f"Relative Performance of\n{self.col['desc']}"
-            if len(np.unique(self.config_obj.rp_diff)) == 1:
-                self.title = f"{self.title}\nDifference {self.config_obj.rp_diff[0]}{self.col['units']}"
-            self.title = f'{self.title} by {self.column_info[self.column_info["COLUMN"] == self.config_obj.series_val_names[0]]["DESCRIPTION"].tolist()[0]}'
-
+        super()._adjust_titles(y_label="Percent of Cases",
+                               title_prefix="Relative Performance of",
+                               title_suffix=title_suffix,
+                               add_units=False)

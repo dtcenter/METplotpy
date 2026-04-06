@@ -16,7 +16,7 @@ class TcmprBox(TcmprBoxPoint):
 
         self.box_logger.info("--------------------------------------------------------\n")
         self.box_logger.info(f"Plotting BOXPLOT time series by {self.config_obj.series_val_names[0]}")
-        self._adjust_titles(stat_name)
+        self._adjust_titles(stat_name, 'Boxplots of')
         self.series_list = self._create_series(self.input_df, stat_name)
         self.case_data = None
         self.cur_baseline = baseline_data['cur_baseline']
@@ -34,18 +34,6 @@ class TcmprBox(TcmprBoxPoint):
         if os.path.exists(self.plot_filename):
             os.remove(self.plot_filename)
         self._create_figure()
-
-    def _adjust_titles(self, stat_name):
-        if not self.yaxis_1:
-            self.yaxis_1 = stat_name + '(' + self.col['units'] + ')'
-
-        if self.title:
-            return
-
-        self.title = (
-            f"Boxplots of\n{self.col['desc']}\nby "
-            f"{self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]]["DESCRIPTION"].tolist()[0]}"
-        )
 
     def _draw_series(self, series: TcmprSeries):
         """

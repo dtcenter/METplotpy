@@ -74,19 +74,11 @@ class TcmprRank(Tcmpr):
         self.rank_logger.info(f"Creating figure {datetime.datetime.now()}")
         self._create_figure(stat_name)
 
-
-    def _adjust_titles(self, stat_name):
-        if not self.yaxis_1:
-            self.yaxis_1 = f'Percent of Cases for  {stat_name}'
-
-        if self.title:
-            return
-
-        self.title = (
-                f"{self.config_obj.series_vals_1[0][0]} "
-                f"{self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]]['DESCRIPTION'].tolist()[0]}"
-                f"\n{self.col['desc']}\nRank Frequency"
-        )
+    def _adjust_titles(self, y_label, title_prefix=None, title_suffix=None, add_units=True):
+        series_val_name = self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]]["DESCRIPTION"].tolist()[0]
+        title_prefix = f"{self.config_obj.series_vals_1[0][0]} {series_val_name}" if title_prefix is None else title_prefix
+        title_suffix = "Rank Frequency" if title_suffix is None else title_suffix
+        super()._adjust_titles(f"Percent of Cases for {y_label}", title_prefix, title_suffix, add_units=False)
 
     def _create_figure(self, stat_name):
         """ Create a box plot from default and custom parameters"""
