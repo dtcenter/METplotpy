@@ -24,6 +24,7 @@ from matplotlib import pyplot as plt
 
 import yaml
 from typing import Union
+from operator import add
 from metplotpy.plots.util import strtobool
 from .config import Config
 from . import constants
@@ -485,6 +486,20 @@ class BasePlot:
                 pass
 
         return xtick_locs
+
+
+    def _get_nstats(self) -> list:
+        """
+        Calculates n_stats for the x2 axis.
+        Default implementation sums nstat across all active series.
+        """
+        n_stats = [0] * len(self.config_obj.indy_vals)
+        for series in self.series_list:
+            if series.plot_disp:
+                # aggregate number of stats
+                n_stats = list(map(add, n_stats, series.series_points.get('nstat', [])))
+
+        return n_stats
 
     def _add_x2axis(self, ax, n_stats, fontproperties: FontProperties) -> None:
         """

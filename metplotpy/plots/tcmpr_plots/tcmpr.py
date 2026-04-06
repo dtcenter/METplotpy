@@ -231,16 +231,7 @@ class Tcmpr(BasePlot):
             return
 
         if n_stats is None:
-            n_stats = []
-            for ind in range(len(self.config_obj.indy_vals)):
-                tick_stats = []
-                for series in self.series_list:
-                    tick_stats.append({
-                        'val': str(series.series_points['nstat'][ind]),
-                        'color': series.color
-                    })
-                n_stats.append(tick_stats)
-
+            n_stats = self._get_nstats()
         wts_size_styles = self.get_weights_size_styles()
         super()._add_x2axis(self.ax, n_stats, wts_size_styles['x2lab'])
 
@@ -252,6 +243,32 @@ class Tcmpr(BasePlot):
         if ax is None:
             ax = self.ax
         super()._add_legend(ax)
+
+    def _get_nstats(self) -> list:
+        """
+        Calculates n_stats for the x2 axis as a structured list for multi-colored display.
+        Returns a list of lists of dictionaries.
+        """
+        n_stats = []
+        for ind in range(len(self.config_obj.indy_vals)):
+            # if event equalization is used, get count from first series only
+            if self.config_obj.use_ee and len(self.series_list) > 0:
+                n_stats.append(self.series_list[0].series_points["nstat"][ind])
+                continue
+
+            # get color-coded number of stats for each series
+            tick_stats = []
+            for series in self.series_list:
+                if not series.plot_disp:
+                    continue
+                tick_stats.append({
+                    "val": str(series.series_points["nstat"][ind]),
+                    "color": series.color
+                })
+
+            n_stats.append(tick_stats)
+
+        return n_stats
 
     def save_to_file(self, plot_filename: str = None, **kwargs):
         """Saves the image to a file specified in the config file.

@@ -177,7 +177,8 @@ class Box(BasePlot):
         if wts_size_styles.get('y2lab') and self.config_obj.parameters['list_stat_2']:
             ax_y2 = self._add_y2axis(ax, wts_size_styles['y2lab'])
 
-        n_stats, handles_and_labels, yaxis_min, yaxis_max = self._add_series(ax, ax_y2)
+        n_stats = self._get_nstats()
+        handles_and_labels, yaxis_min, yaxis_max = self._add_series(ax, ax_y2)
 
         self._add_xaxis(ax, wts_size_styles['xlab'])
         self._add_yaxis(ax, wts_size_styles['ylab'])
@@ -256,10 +257,8 @@ class Box(BasePlot):
         data_to_plot =  [group_data for name, group_data in
                          series.series_data.groupby(self.config_obj.indy_var)['stat_value']]
         return data_to_plot, x_locs, width
-
     def _add_series(self, ax, ax2):
         handles_and_labels = []
-        n_stats = [0] * len(self.config_obj.indy_vals)
         yaxis_min = None
         yaxis_max = None
 
@@ -274,12 +273,7 @@ class Box(BasePlot):
                 handle = self._draw_series(ax, ax2, series, idx)
                 handles_and_labels.append((handle, handle.get_label()))
 
-                # aggregate number of stats
-                # do not increment n_stats if it is not set, e.g. for revision_box
-                if series.series_points.get('nstat'):
-                    n_stats = list(map(add, n_stats, series.series_points['nstat']))
-
-        return n_stats, handles_and_labels, yaxis_min, yaxis_max
+        return handles_and_labels, yaxis_min, yaxis_max
 
     def _find_min_max(self, series: BoxSeries, yaxis_min: Union[float, None],
                       yaxis_max: Union[float, None]) -> tuple:

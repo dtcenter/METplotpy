@@ -206,7 +206,8 @@ class Line(BasePlot):
         if self.config_obj.parameters['list_stat_2']:
             ax_y2 = self._add_y2axis(ax, wts_size_styles['y2lab'])
 
-        n_stats, yaxis_min, yaxis_max, handles_and_labels = self._add_series(ax, ax_y2)
+        n_stats = self._get_nstats()
+        yaxis_min, yaxis_max, handles_and_labels = self._add_series(ax, ax_y2)
 
         xlab_style = wts_size_styles['xlab'] if not self.config_obj.vert_plot else wts_size_styles['ylab']
         ylab_style = wts_size_styles['ylab'] if not self.config_obj.vert_plot else wts_size_styles['xlab']
@@ -228,12 +229,8 @@ class Line(BasePlot):
         self._sync_yaxes(ax, ax_y2, yaxis_min, yaxis_max)
 
         self.logger.info(f"Finished creating the figure: {datetime.now()}")
-
-    def _add_series(self,ax, ax2):
+    def _add_series(self, ax, ax2):
         handles_and_labels = []
-
-        # placeholder for the number of stats
-        n_stats = [0] * len(self.config_obj.indy_vals)
 
         # placeholder for the min and max values for y-axis
         yaxis_min = None
@@ -253,10 +250,7 @@ class Line(BasePlot):
             handle = self._draw_series(ax, ax2, series)
             handles_and_labels.append((handle, handle.get_label()))
 
-            # aggregate number of stats
-            n_stats = list(map(add, n_stats, series.series_points['nstat']))
-
-        return n_stats, yaxis_min, yaxis_max, handles_and_labels
+        return yaxis_min, yaxis_max, handles_and_labels
 
     def _draw_series(self, ax: plt.Axes, ax2, series: Series):
         """
