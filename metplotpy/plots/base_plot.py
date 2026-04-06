@@ -503,15 +503,34 @@ class BasePlot:
         if not self.config_obj.show_nstats:
             return
 
+        num_lines = 1
+        if n_stats and isinstance(n_stats, list) and len(n_stats) > 0 and isinstance(n_stats[0], list):
+            num_lines = len(n_stats[0])
+
+        # Adjust labelpad based on number of n_stats lines to avoid overlap
+        # Each line takes approximately fontsize points + some spacing
+        extra_pad = 0
+        if num_lines > 1:
+            extra_pad = num_lines * self.config_obj.x2_tickfont_size * 1.2
+
         label_args = {
             'fontproperties': fontproperties,
-            'labelpad': abs(self.config_obj.parameters['x2lab_offset']) * constants.PIXELS_TO_POINTS,
+            'labelpad': (abs(self.config_obj.parameters['x2lab_offset']) * constants.PIXELS_TO_POINTS) + extra_pad,
         }
 
         if not self.config_obj.vert_plot:
             ax_top = ax.secondary_xaxis('top')
             ax_top.set_xlabel('NStats', **label_args)
             self._set_nstat_ticks(ax, ax_top, n_stats, is_vertical=False)
+
+            # adjust title padding if x2 axis is shown on top
+            if num_lines > 1:
+                ax.set_title(ax.get_title(),
+                             fontproperties=ax.title.get_fontproperties(),
+                             color=ax.title.get_color(),
+                             pad=extra_pad + 15,
+                             x=self.config_obj.parameters['title_align'],
+                             y=self.config_obj.title_offset)
 
         else:
             ax_right = ax.secondary_yaxis('right')
@@ -551,21 +570,27 @@ class BasePlot:
                 break
             for j, stat_info in enumerate(n_stats[i]):
                 # Offset position for each series to mimic newlines
+                # Using offset points ensures consistent spacing regardless of plot size
                 if is_vertical:
-                    x = 1.0 + (j * 0.05)
-                    y = loc
+                    x, y = 1.0, loc
+                    offset_x = (j * self.config_obj.x2_tickfont_size * 1.2) + 2
+                    offset_y = 0
                     ha, va = 'left', 'center'
                 else:
-                    x = loc
-                    y = 1.0 + (j * 0.05)
+                    x, y = loc, 1.0
+                    offset_x = 0
+                    offset_y = (j * self.config_obj.x2_tickfont_size * 1.2) + 2
                     ha, va = 'center', 'bottom'
 
-                # Use the main axes 'ax' to add the text
-                ax.text(x, y, stat_info['val'],
-                        color=stat_info['color'],
-                        transform=transform,
-                        ha=ha, va=va,
-                        fontsize=self.config_obj.x2_tickfont_size)
+                # Use the main axes 'ax' to add the text with offset points
+                ax.annotate(stat_info['val'],
+                            xy=(x, y),
+                            xycoords=transform,
+                            xytext=(offset_x, offset_y),
+                            textcoords='offset points',
+                            color=stat_info['color'],
+                            ha=ha, va=va,
+                            fontsize=self.config_obj.x2_tickfont_size)
 
     def _add_y2axis(self, ax: plt.Axes, fontproperties: Union[FontProperties, None]):
         """
