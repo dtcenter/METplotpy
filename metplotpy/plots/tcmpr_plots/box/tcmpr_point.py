@@ -36,13 +36,16 @@ class TcmprPoint(TcmprBoxPoint):
         self.point_logger.info(f"Finished generating the TCMPR points  in {datetime.now() - start} ms")
 
     def _adjust_titles(self, stat_name):
-        if self.yaxis_1 is None or len(self.yaxis_1) == 0:
+        if not self.yaxis_1:
             self.yaxis_1 = stat_name + '(' + self.col['units'] + ')'
 
-        if self.title is None or len(self.title) == 0:
-            self.title = 'Point Plots  of ' + self.col['desc'] + ' by ' \
-                         + self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]][
-                             "DESCRIPTION"].tolist()[0]
+        if self.title:
+            return
+
+        self.title = (
+            f"Point Plots  of {self.col['desc']} by "
+            f"{self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]]['DESCRIPTION'].tolist()[0]}"
+        )
 
     def _draw_series(self, series: TcmprSeries) -> None:
         """
