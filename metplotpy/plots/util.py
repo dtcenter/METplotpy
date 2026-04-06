@@ -96,6 +96,7 @@ def make_plot(config_filename, plot_class):
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
     params = get_params(config_filename)
+    plot = None
     try:
         plot = plot_class(params)
         plot.save_to_file()
@@ -104,8 +105,11 @@ def make_plot(config_filename, plot_class):
         plot.logger.info(f"Finished {name} plot at {datetime.now()}")
         return plot
     except Exception as err:
-        plot.logger.error("Exception occurred in plot: %s", err)
-        plot.logger.debug("Exception details:", exc_info=True)
+        if plot:
+            plot.logger.error("Exception occurred in plot: %s", err)
+            plot.logger.debug("Exception details:", exc_info=True)
+        else:
+            raise
 
     return None
 
