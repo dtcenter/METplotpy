@@ -27,6 +27,7 @@ import sys
 
 import numpy as np
 import xarray as xr
+import pandas as pd
 
 from matplotlib import pyplot as plt
 import matplotlib.dates as mdates
@@ -63,7 +64,8 @@ class Hovmoeller(BasePlot):
         # Read in input data
         dataset = self.read_data_set()
         self.time = self.ds.time.sel(
-            time=slice(self.config_obj.date_start, self.config_obj.date_end))
+            time=slice(pd.Timestamp(self.config_obj.date_start),
+                       pd.Timestamp(self.config_obj.date_end)))
         self.lon = self.ds.lon
         self.data = self.lat_avg(dataset,
                                  self.config_obj.lat_min, self.config_obj.lat_max)
@@ -187,7 +189,8 @@ class Hovmoeller(BasePlot):
         dataset = self.ds[self.config_obj.var_name]
         self.logger.debug(f"Data for {self.config_obj.var_name}")
         dataset = dataset.sel(
-            time=slice(self.config_obj.date_start, self.config_obj.date_end))
+            time=slice(pd.Timestamp(self.config_obj.date_start),
+                       pd.Timestamp(self.config_obj.date_end)))
 
         dataset = dataset * self.config_obj.unit_conversion
         dataset.attrs['units'] = self.config_obj.var_units
