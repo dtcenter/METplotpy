@@ -18,6 +18,7 @@ import logging
 import warnings
 from datetime import datetime
 import numpy as np
+from matplotlib.axes import Axes
 from matplotlib.font_manager import FontProperties
 
 from matplotlib import pyplot as plt
@@ -417,23 +418,29 @@ class BasePlot:
                     linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
             ax.set_axisbelow(True)
 
-        if not is_vert:
-            if len(self.config_obj.parameters.get('xlim', [])) > 0:
-                # TODO: support xlim_step? only used for line plots
-                ax.set_xlim(self.config_obj.parameters['xlim'])
-            elif getattr(self.config_obj, 'start_from_zero', False):
-                xtick_locs = self._get_xtick_locs()
-                if len(xtick_locs) > 0:
-                    ax.set_xlim(min(xtick_locs), max(xtick_locs))
-
-            if self.config_obj.xaxis_reverse:
-                ax.invert_xaxis()
-        else:
+        # if vertical plot is requested, use y-axis settings for x-axis
+        if is_vert:
             if len(self.config_obj.parameters['ylim']) > 0:
                 ax.set_xlim(self.config_obj.parameters['ylim'])
 
             if self.config_obj.yaxis_reverse:
                 ax.invert_xaxis()
+
+            return
+
+        self._set_xlim(ax)
+
+        if self.config_obj.xaxis_reverse:
+            ax.invert_xaxis()
+
+    def _set_xlim(self, ax: Axes):
+        if len(self.config_obj.parameters.get('xlim', [])) > 0:
+            # TODO: support xlim_step? only used for line plots
+            ax.set_xlim(self.config_obj.parameters['xlim'])
+        elif getattr(self.config_obj, 'start_from_zero', False):
+            xtick_locs = self._get_xtick_locs()
+            if len(xtick_locs) > 0:
+                ax.set_xlim(min(xtick_locs), max(xtick_locs))
 
     def _add_yaxis(self, ax: plt.Axes, fontproperties: FontProperties, label=None, grid_on=None) -> None:
         """
@@ -455,14 +462,8 @@ class BasePlot:
             ax.grid(True, which='major', axis='y', color=self.config_obj.blended_grid_col, linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
             ax.set_axisbelow(True)
 
-        if not is_vert:
-            # set y limits if min/max are defined in config
-            if len(self.config_obj.parameters['ylim']) > 0:
-                ax.set_ylim(self.config_obj.parameters['ylim'])
-
-            if self.config_obj.yaxis_reverse:
-                ax.invert_yaxis()
-        else:
+        # if vertical plot is requested, use x-axis settings for y-axis
+        if is_vert:
             if self.config_obj.indy_label:
                 xtick_locs = self._get_xtick_locs()
                 ax.set_yticks(xtick_locs, self.config_obj.indy_label)
@@ -473,6 +474,15 @@ class BasePlot:
 
             if self.config_obj.xaxis_reverse:
                 ax.invert_yaxis()
+
+            return
+
+        # set y limits if min/max are defined in config
+        if len(self.config_obj.parameters['ylim']) > 0:
+            ax.set_ylim(self.config_obj.parameters['ylim'])
+
+        if self.config_obj.yaxis_reverse:
+            ax.invert_yaxis()
 
     def _get_xtick_locs(self):
         # use the indices as tick locations
