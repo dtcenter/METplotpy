@@ -121,7 +121,8 @@ class Hovmoeller(BasePlot):
         plt.tight_layout()
         self.logger.info(f"Finished creating the figure: {datetime.now()}")
 
-    def get_lat_str(self, lat_min, lat_max):
+    @staticmethod
+    def get_lat_str(lat_min, lat_max):
         """
         Generate string describing the latitude band averaged over.
         :param lat_min: southern latitude limit of the average
@@ -146,7 +147,8 @@ class Hovmoeller(BasePlot):
 
         return lat_str
 
-    def lat_avg(self, data, lat_min, lat_max):
+    @staticmethod
+    def lat_avg(data, lat_min, lat_max):
         """
         Compute latitudinal average.
         :param data: input data (time, lat, lon)
