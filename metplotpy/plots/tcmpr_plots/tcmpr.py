@@ -231,16 +231,15 @@ class Tcmpr(BasePlot):
             return
 
         if n_stats is None:
-            n_stats = [''] * len(self.config_obj.indy_vals)
-
-            for ind, val_for_indy in enumerate(n_stats):
-                if self.config_obj.use_ee and len(self.series_list) > 0:
-                    n_stats[ind] = str(self.series_list[0].series_points['nstat'][ind])
-                else:
-                    ns = []
-                    for series in self.series_list:
-                        ns.append(str(series.series_points['nstat'][ind]))
-                    n_stats[ind] = "\n".join(ns)
+            n_stats = []
+            for ind in range(len(self.config_obj.indy_vals)):
+                tick_stats = []
+                for series in self.series_list:
+                    tick_stats.append({
+                        'val': str(series.series_points['nstat'][ind]),
+                        'color': series.color
+                    })
+                n_stats.append(tick_stats)
 
         wts_size_styles = self.get_weights_size_styles()
         super()._add_x2axis(self.ax, n_stats, wts_size_styles['x2lab'])

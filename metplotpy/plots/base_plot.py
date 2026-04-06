@@ -511,16 +511,61 @@ class BasePlot:
         if not self.config_obj.vert_plot:
             ax_top = ax.secondary_xaxis('top')
             ax_top.set_xlabel('NStats', **label_args)
-            current_locs = ax.get_xticks()
-            ax_top.set_xticks(current_locs, n_stats, size=self.config_obj.x2_tickfont_size)
+            self._set_nstat_ticks(ax, ax_top, n_stats, is_vertical=False)
 
-            # this doesn't appear to be working to add ticks at the top
-            ax_top.tick_params(axis="x", direction="in", labelrotation=self.config_obj.x2_tickangle)
         else:
             ax_right = ax.secondary_yaxis('right')
             ax_right.set_ylabel('NStats', **label_args)
+            self._set_nstat_ticks(ax, ax_right, n_stats, is_vertical=True)
+
+    def _set_nstat_ticks(self, ax, ax_secondary, n_stats, is_vertical=False):
+        if not n_stats:
+            return
+
+        if is_vertical:
             current_locs = ax.get_yticks()
-            ax_right.set_yticks(current_locs, n_stats, size=self.config_obj.x2_tickfont_size)
+        else:
+            current_locs = ax.get_xticks()
+
+        # handle single value, single color n_stat (list of strings or ints)
+        if not isinstance(n_stats[0], list):
+            if is_vertical:
+                ax_secondary.set_yticks(current_locs, labels=n_stats, size=self.config_obj.x2_tickfont_size)
+            else:
+                ax_secondary.set_xticks(current_locs, labels=n_stats, size=self.config_obj.x2_tickfont_size)
+            return
+
+        # handle n_stat for multiple series that are color coded
+        if is_vertical:
+            ax_secondary.set_yticks(current_locs)
+            ax_secondary.set_yticklabels([])
+            transform = ax.get_yaxis_transform()  # X=axes coords, Y=data coords
+        else:
+            ax_secondary.set_xticks(current_locs)
+            ax_secondary.set_xticklabels([])
+            transform = ax.get_xaxis_transform()  # X=data coords, Y=axes coords
+
+        for i, loc in enumerate(current_locs):
+            # Avoid IndexError if current_locs has more ticks than n_stats
+            if i >= len(n_stats):
+                break
+            for j, stat_info in enumerate(n_stats[i]):
+                # Offset position for each series to mimic newlines
+                if is_vertical:
+                    x = 1.0 + (j * 0.05)
+                    y = loc
+                    ha, va = 'left', 'center'
+                else:
+                    x = loc
+                    y = 1.0 + (j * 0.05)
+                    ha, va = 'center', 'bottom'
+
+                # Use the main axes 'ax' to add the text
+                ax.text(x, y, stat_info['val'],
+                        color=stat_info['color'],
+                        transform=transform,
+                        ha=ha, va=va,
+                        fontsize=self.config_obj.x2_tickfont_size)
 
     def _add_y2axis(self, ax: plt.Axes, fontproperties: Union[FontProperties, None]):
         """
