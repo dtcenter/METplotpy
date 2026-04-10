@@ -59,7 +59,7 @@ class ScorecardPlot():
         #
         self.subset_params: dict = configs['subset_params']
         subsetted_fname = "filtered.txt"
-        self.subsetted_filename: str = os.path.join(self.output_dir, subsetted_fname)
+        self.subsetted_filename = os.path.join(self.output_dir, subsetted_fname)
 
         #
         #  For calculating CI's
@@ -72,15 +72,23 @@ class ScorecardPlot():
         #
         self.append_sc_runs: bool = configs['append_subsequent']
         self.derived_series: list[list] = configs['derived_series']
-        self.agg_filename = "agg_stat_output.txt"
+        agg_fname = "aggstat_output.txt"
+        self.aggstat_filename = os.path.join(self.output_dir, agg_fname)
 
         sc_stat_fname = "scorecard_stats.txt"
         self.scorecard_stats_output_filename = os.path.join(self.output_dir, sc_stat_fname)
 
         self.scorecard_stats_indy_var = self.subset_params['indep_variable']
         self.scorecard_stats_indy_vals = self.subset_params['indep_values']
+        # remove the fcs_init_beg key from the subset parameters if it
+        # is present. The scorecard doesn't use it and it results in the inability
+        # to correctly create cartesian products.
+        if 'fcst_init_beg' in self.subset_params.keys():
+            self.subset_params.pop('fcst_init_beg')
         self.scorecard_stats_series_val = self.subset_params
-        self.scorecards_stats_statslist = self.subset_params['stats_list']
+        self.scorecard_stats_statslist = self.subset_params['stats_list']
+
+
 
         # num of days, used in bootstrapping
         self.ndays = int(configs['ndays'])
@@ -140,7 +148,7 @@ class ScorecardPlot():
             sys.exit("Error:" + msg)
 
 
-    def subset_data(self, df_filename: str) -> None:
+    def subset_data(self, df_filename: str) -> pd.DataFrame:
         """
             Invoke this prior to invoking METcalcpy agg_stat.
             Subset data based on independent variable and its
@@ -153,8 +161,9 @@ class ScorecardPlot():
                                         all columns labelled
 
            Returns:
-               saves a file that contains only the relevant information as specified in
-               the YAML config file
+               result (pd.DataFrame): a dataframe after filtering/subsetting data based on criteria in the YAML config file
+               Also saves a file that contains only the relevant information as specified in
+               the YAML config file and also
 
         """
         safe_log(self.logger, 'debug', 'Filter data based on subset_params in the config file.')
@@ -236,8 +245,8 @@ class ScorecardPlot():
 
         result: pd.DataFrame = working_df.query(full_query)
 
-        result.to_csv(self.subsetted_filename, header=True, index_label=False)
-
+        result.to_csv(self.subsetted_filename, sep='\t', header=True, index_label=False)
+        return result
 
 
     def insert_char(self, input_string: str, char_to_insert: str, location: int) -> str:
@@ -274,8 +283,6 @@ class ScorecardPlot():
 
         if self.reformat_flag:
             r_df = reformat.read_input(self.reformat_params, self.logger)
-
-
             r_df.to_csv( self.reformat_params['output_filename'],
                         date_format='%Y-%m-%d %H:%M:%S')
             if r_df.size == 0:
@@ -289,8 +296,7 @@ class ScorecardPlot():
             stat_lines_obj.write_stat_ascii(r_df, self.reformat_params)
 
 
-
-    def get_scorecard_stats(self) -> pd.DataFrame:
+    def get_scorecard_stats(self, input_df: pd.DataFrame) -> pd.DataFrame:
         """
               Invoke the METcalcpy scorecard module to calculate the p-values.
               Categorize the p-values into one of the following categories:
@@ -323,12 +329,24 @@ class ScorecardPlot():
         params['log_dir'] = self.log_dir
         params['log_filename'] = self.log_filename
         params['log_level'] = self.log_level
-        params['scorecard_input'] = self.scorecard_stats_input_filename
+        params['scorecard_output'] = self.scorecard_stats_output_filename
+
+        # ToDo put logic for whether agg stat was needed and use that output file
+        # as input (CNT linetype does not require agg_stat.py, there are other linetypes
+        # that also do not require agg_stat.py)
+        if self.linetype == 'CNT':
+            # use the reformatted output for scorecard stats input
+
+            # remove the fcst_init_beg
+            params['scorecard_input'] = self.subsetted_filename
+        else:
+            params['scorecard_input'] = self.aggstat_filename
+
         params['scorecard_output'] = self.scorecard_stats_output_filename
         params['series_val'] = self.scorecard_stats_series_val
         params['indy_var'] = self.scorecard_stats_indy_var
         params['indy_vals'] = self.scorecard_stats_indy_vals
-        params['stats_list'] = self.scorecards_stats_statslist
+        params['stats_list'] = self.scorecard_stats_statslist
 
 
         #
@@ -377,16 +395,15 @@ def main(config_filename=None):
     #  Filter the data based on settings in the YAML config file
     #
     subset_df = sc.subset_data(sc.reformat_params['output_filename'])
-    #
-    # Calculate the aggregation statistics via METcalcpy agg_stat.py
-    # module if needed
-    # ToDo implement support for invoking this
-    if sc.linetype == 'CNT':
-        print(f"Skip running agg_stat.py {sc.linetype} already has CI's calculated  ")
-    else:
-        print(f"ToDo: Invoke  METcalcpy agg_stat.py to calculate the CI's for {sc.linetype} ")
-        # ToDo for now set aggstat_df to subset_df
-        aggstat_df = subset_df.copy(deep=True)
+    # #
+    # # Calculate the aggregation statistics via METcalcpy agg_stat.py
+    # # module if needed
+    # # ToDo implement support for invoking this
+    # aggstat_df = subset_df.copy(deep=True)
+    # if sc.linetype == 'CNT':
+    #     print(f"Skip running agg_stat.py {sc.linetype} already has CI's calculated  ")
+    # else:
+    #     print(f"ToDo: Invoke  METcalcpy agg_stat.py to calculate the CI's for {sc.linetype} ")
 
     #
     # Get the p-values and scorecard categories
@@ -395,10 +412,13 @@ def main(config_filename=None):
     # input is dependent on whether agg_stat.py was used to calculate the CI's
     # CNT line type already has CI's
 
-    if sc.linetype != 'CNT':
-       sc_df: pd.DataFrame = sc.get_scorecard_stats(subset_df)
-    else:
-        sc_df: pd.DataFrame = sc.get_scorecard_stats(aggstat_df)
+    sc_df: pd.DataFrame = sc.get_scorecard_stats(subset_df)
+    # if sc.linetype != 'CNT':
+    #    sc_df: pd.DataFrame = sc.get_scorecard_stats(aggstat_df)
+    # else:
+    #     # ToDo for now use sc_df for development, replace with correct code when
+    #     # aggregation statistics support is added
+    #     sc_df: pd.DataFrame = sc.get_scorecard_stats(subset_df)
 
     # Categorize the p-values
 
