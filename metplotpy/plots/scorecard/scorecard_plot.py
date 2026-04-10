@@ -60,7 +60,10 @@ class ScorecardPlot():
         self.subset_params: dict = configs['subset_params']
         subsetted_fname = "filtered.txt"
         self.subsetted_filename = os.path.join(self.output_dir, subsetted_fname)
-
+        if 'fcst_var ' not in self.subset_params.keys():
+            msg = "Missing fcst var in config file.  This is needed to subset the input data."
+            safe_log(logger, "error", msg)
+            sys.exit(msg)
         #
         #  For calculating CI's
         #
