@@ -19,7 +19,8 @@ log_level: 'DEBUG'
 #
 # if data has unlabelled columns (i.e. a MET .stat file from MET point-stat or
 # MET grid-stat tool) . Set to True to reformat, False otherwise.
-# otherwise.
+# Or if re-running using the same data and reformatting has already been done,
+# then set to False for better performance.
 reformat_needed: False
 met_stat_input: '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_stat_HRRR_RRFS/sample_data/all_dates'
 
@@ -52,9 +53,8 @@ subset_params:
        - 'HRRR_verification_mem000'
        - 'RRFS_verification_mem000'
 
-   'fcst_init_beg':
-     - "2023-07-02 00:00:00"
-     - "2023-07-04 00:00:00"
+   'fcst_var':
+     - 'TMP'
 
 
    # independent variable name and corresponding value(s)
@@ -66,7 +66,6 @@ subset_params:
   # a list of one or more statistics of interest (line type specific)
    stats_list:
       - 'ME'
-      - 'RMSE'
 
 
 #
