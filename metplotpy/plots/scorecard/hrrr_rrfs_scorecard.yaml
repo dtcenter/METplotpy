@@ -1,8 +1,16 @@
 
+#
+#  SOURCE CODE DIRECTORY
+#
+
+# Top directory where the source code for METplotpy resides.
+# Used for locating the images used in the scorecard table
+base_dir: '/Users/minnawin/Python_Scorecard_Dev'
 
 #
 #  OUTPUT and LOG DIRECTORIES
 #
+
 
 # All output will reside in this specified output directory
 output_dir:  '/Users/minnawin/Python_Scorecard_Dev/output'
@@ -13,21 +21,22 @@ log_dir :  '/Users/minnawin/Python_Scorecard_Dev/logs/'
 log_filename:  hrrr_rrfs_full.log
 log_level: 'DEBUG'
 
+# MET .stat input files
+met_stat_input: '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_stat_HRRR_RRFS/sample_data/all_dates'
 
 #
 # REFORMAT
 #
 # if data has unlabelled columns (i.e. a MET .stat file from MET point-stat or
-# MET grid-stat tool) . Set to True to reformat, False otherwise.
+# MET grid-stat tool). Set to True to reformat, False otherwise.
 # Or if re-running using the same data and reformatting has already been done,
 # then set to False for better performance.
 reformat_needed: False
-met_stat_input: '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_stat_HRRR_RRFS/sample_data/all_dates'
 
 
-# If MET .stat file is aggregated using the MET stat-analysis tool, or if line type is CNT
-# (which already has CI stats calculated, e.g.  ntcl, ntcu, btcl, and btcu), then set to
-# True, False if data doesn't have CI stats.
+# Set to 'True'  MET .stat file is aggregated using the MET stat-analysis tool,
+#  or if line type  already has CI stats calculated.
+#  Set to 'False' if data doesn't have CI stats.
 has_confidence_stats: True
 linetype: 'CNT'
 
@@ -55,7 +64,6 @@ subset_params:
 
    'fcst_var':
      - 'TMP'
-
 
    # independent variable name and corresponding value(s)
    indep_variable: 'vx_mask'
