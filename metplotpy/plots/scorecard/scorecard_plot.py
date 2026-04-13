@@ -1,14 +1,10 @@
 import os, sys
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
-from metplotpy.external.plottable import plottable
 from metplotpy.external.plottable.plottable import Table
 from metplotpy.external.plottable.plottable import ColumnDefinition
-from metplotpy.external.plottable.plottable.cmap import normed_cmap
 from metplotpy.external.plottable.plottable.plots import image
 from metplotpy.plots import util as plot_util
-from metplotpy.plots import config as mp_config
 import METdataio.METreformat.write_stat_ascii as reformat
 from METcalcpy.metcalcpy.util.safe_log import safe_log
 from METcalcpy.metcalcpy import logging_config
@@ -32,6 +28,8 @@ class ScorecardPlot():
         self.log_filename = os.path.join(self.log_dir, configs['log_filename'])
         self.log_level = configs['log_level']
         self.logger = logging_config.setup_logging(configs)
+        self.base_dir = configs['base_dir']
+        self.image_dir = os.path.join(self.base_dir, 'METplotpy/metplotpy/plots/scorecard/images')
 
         logger = self.logger
         safe_log(logger, "debug", "Initializing ScorecardPlot with parameters")
@@ -60,10 +58,11 @@ class ScorecardPlot():
         self.subset_params: dict = configs['subset_params']
         subsetted_fname = "filtered.txt"
         self.subsetted_filename = os.path.join(self.output_dir, subsetted_fname)
-        if 'fcst_var ' not in self.subset_params.keys():
+        if 'fcst_var' not in self.subset_params.keys():
             msg = "Missing fcst var in config file.  This is needed to subset the input data."
             safe_log(logger, "error", msg)
             sys.exit(msg)
+
         #
         #  For calculating CI's
         #
@@ -83,6 +82,7 @@ class ScorecardPlot():
 
         self.scorecard_stats_indy_var = self.subset_params['indep_variable']
         self.scorecard_stats_indy_vals = self.subset_params['indep_values']
+
         # remove the fcs_init_beg key from the subset parameters if it
         # is present. The scorecard doesn't use it and it results in the inability
         # to correctly create cartesian products.
@@ -91,19 +91,46 @@ class ScorecardPlot():
         self.scorecard_stats_series_val = self.subset_params
         self.scorecard_stats_statslist = self.subset_params['stats_list']
 
-
-
         # num of days, used in bootstrapping
         self.ndays = int(configs['ndays'])
         self.pval_method: str = configs['pval_method']
 
-        # Plot-related TBD
+        # Plot-related
+        self.base_dir = configs['base_dir']
+        self.ci_map = self.get_category_images(self.base_dir)
+
+
+    def get_category_images(self, base_dir: str) -> dict:
+        """
+           Mapping of categories to their corresponding image.
+           Join the source base directory to the METplotpy directory to get the
+           full directory path.
+
+           Args:
+               base_dir (str): the directory that has the METplotpy source code
+
+          Returns:
+              a dictionary that maps the category to its corresponding image
+
+        """
+
+        ci_map = {
+            'A999better': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/large_green_tri.png'),
+            'A99better': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/small_green_tri.png'),
+            'A95better': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/green_square.png'),
+            'A95worse': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/pink_square.png'),
+            'A99worse': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/small_red_down.png'),
+            'A999worse': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/down_red.png'),
+            'NOTSTATSIG': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/gray_square.png'),
+            'NOTRELEVANT': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/blue_square.png')}
+
+        return ci_map
 
 
     def __repr__(self):
 
         class_name = type(self).__name__
-        return (f"{class_name}(config={self.configs!r},)" )
+        return (f"{class_name}(config={self.configs!r},)")
 
 
     def __str__(self):
@@ -252,24 +279,6 @@ class ScorecardPlot():
         return result
 
 
-    def insert_char(self, input_string: str, char_to_insert: str, location: int) -> str:
-        """
-             Insert a character into a string at a specified index
-
-             Args:
-                 input_str (str): the string to add a character to
-                 char_to_insert (str): the character to add to the string
-                 location (int): the location (index) indicating where to
-                 insert the character r
-
-             Returns:
-                  a new string with the inserted char
-
-        """
-
-        return f"{input_string[:location]}{char_to_insert}{input_string[location:]}"
-
-
     def reformat_met_stat(self) -> None:
         """
              Invoke the METdataio METreformatter's write_stat_ascii module to
@@ -286,7 +295,7 @@ class ScorecardPlot():
 
         if self.reformat_flag:
             r_df = reformat.read_input(self.reformat_params, self.logger)
-            r_df.to_csv( self.reformat_params['output_filename'],
+            r_df.to_csv(self.reformat_params['output_filename'],
                         date_format='%Y-%m-%d %H:%M:%S')
             if r_df.size == 0:
                 safe_log(self.logger, 'ERROR', "ERROR:  Input dataframe is empty.  Exiting")
@@ -299,20 +308,10 @@ class ScorecardPlot():
             stat_lines_obj.write_stat_ascii(r_df, self.reformat_params)
 
 
-    def get_scorecard_stats(self, input_df: pd.DataFrame) -> pd.DataFrame:
+    def get_scorecard_stats(self) -> pd.DataFrame:
         """
               Invoke the METcalcpy scorecard module to calculate the p-values.
-              Categorize the p-values into one of the following categories:
-                  Model A better than Model B at 99.9% confidence
-                  Model A better than Model B at 99% confidence
-                  Model A better than Model B at 95% confidence
 
-                  Model A worse than Model B at 95% confidence
-                  Model A worse than Model B at 99% confidence
-                  Model A worse than Model B at 99.9% confidence
-
-                  No statistically significant difference between Model A and Model B
-                  Not statistically relevant
 
 
               Args:
@@ -351,20 +350,32 @@ class ScorecardPlot():
         params['indy_vals'] = self.scorecard_stats_indy_vals
         params['stats_list'] = self.scorecard_stats_statslist
 
-
-        #
-        # self.scorecard_stats_input_filename = os.path.join(self.output_dir, self.agg_filename)
-        #
-        # self.scorecard_stats_input_filename = os.path.join(self.output_dir, reformat_output_fname)
-
-
         calcpy_sc = scorecard.Scorecard(params)
         calcpy_sc.calculate_scorecard_data()
 
-        # Open the scorecard output from METcalcpy scorecard.py and
-        # assign the categories (based on the categories used in METviewer)
+
+    def categorize_scorecard_results(self) -> pd.DataFrame:
+        """
+           Categorize the scorecard results if the p-value was calculated via the
+           'NCAR' method:
+
+            Categorize each p-value into one of the following categories:
+                   Model A better than Model B at 99.9% confidence
+                   Model A better than Model B at 99% confidence
+                   Model A better than Model B at 95% confidence
+
+                   Model A worse than Model B at 95% confidence
+                   Model A worse than Model B at 99% confidence
+                   Model A worse than Model B at 99.9% confidence
+
+                   No statistically significant difference between Model A and Model B
+                   Not statistically relevant
 
 
+           returns (pd.DataFrame): A dataframe containing the categorization value
+                                               using the criteria in the METviewer scorecard
+
+        """
         categories = {}
         categories['A_better_999'] = [0.999, 1.]
         categories['A_better_99'] = [0.99, 0.999]
@@ -373,8 +384,191 @@ class ScorecardPlot():
         categories['A_worse_99'] = [-.999, -.99]
         categories['A_worse_95'] = [-.99, -.95]
 
+        working_df = pd.read_csv(self.scorecard_stats_output_filename, sep="\t", engine="python")
+        stat_values = working_df['stat_value']
+
+        # Save the categorical values in a list
+        categorized = []
+        # Evaluate whether model A is better than model B
+        for stat in stat_values:
+            result = self.model_a_better(stat, categories)
+            if result == 'NA':
+                # Check if model A is worse than model B
+                result = self.model_a_worse(stat, categories)
+                if result == 'NA':
+                    # Check for no statistical significance
+                    result = self.no_statistical_significance(stat)
+                    if result == 'NA':
+                        # Not statistically relevant
+                        result = 'NOTRELEVANT'
+            categorized.append(result)
+
+        # Add the categorized values to the scorecard dataframe
+        categories: pd.Series = pd.Series(categorized)
+        categorized_df = working_df.assign(category=categories)
+
+        return categorized_df
 
 
+    def model_a_better(self, stat, categories) -> str:
+        """
+            Determine if modelA (first model in config file) is better than modelB
+            at the 99.9, 99, or 95% confidence levels.
+
+            Args:
+                stat_value (float): The p-value calculated by METcalcpy
+                categories (dict): Categories employed in the METviewer scorecard
+
+            Returns:
+                    a string value if modelA is better than modelB.  One of these values
+                      will be returned:
+                      A999better
+                      A99better
+                      A95better
+                      NA if modelA is not better than modelB
+
+        """
+
+        if stat >= categories['A_better_999'][0] and stat < categories['A_better_999'][1]:
+            return "A999better"
+        elif stat >= categories['A_better_99'][0] and stat < categories['A_better_99'][1]:
+            return "A99better"
+        elif stat >= categories['A_better_95'][0] and stat < categories['A_better_95'][1]:
+            return "A95better"
+        else:
+            return "NA"
+
+
+    def model_a_worse(self, stat, categories):
+        """
+                   Determine if modelA (the first model in the config file) is worse than
+                   modelB at the 99.9, 99, or 95% confidence level.
+
+                   Args:
+                       stat_value (float): The p-value calculated by METcalcpy
+                       categories (dict): Categories employed in the METviewer scorecard
+
+                   Returns:
+                      a string value if modelA is worse than modelB.  One of these values
+                      will be returned:
+                      A999worse
+                      A99worse
+                      A95worse
+                      NA if modelA is not worse than modelB
+
+               """
+        if stat >= categories['A_worse_999'][0] and stat < categories['A_worse_999'][1]:
+            return "A999worse"
+        elif stat >= categories['A_worse_99'][0] and stat < categories['A_worse_99'][1]:
+            return "A99worse"
+        elif stat >= categories['A_worse_95'][0] and stat < categories['A_worse_95'][1]:
+            return "A95worse"
+        else:
+            return "NA"
+
+
+    def no_statistical_significance(self, stat) -> str:
+        """
+          Determine if the p-value indicates "no statistical significance" between
+          modelA (first model in config) and modelB.
+
+          Args:
+          stat_value (float): the p-value calculated by METcalcpy
+
+          Returns:
+          a string value, one of the following:
+                    NOTSTATSIG (if not statistically significant)
+                    NA if not applicable
+        """
+        # Criteria for determining "not statistically significant", as used by the METviewer
+        # scorecard
+        min_val = -0.95
+        max_val = 0.95
+        if stat >= min_val and stat < max_val:
+            return "NOTSTATSIG"
+        else:
+            return "NA"
+
+
+    def generate_table(self, categorized_df: pd.DataFrame):
+        """
+        Generate the scorecard table/plot
+
+        Args:
+            categorized_df (pd.Dataframe): The dataframe with the p-values categorized
+
+        Returns:
+            None: Create a plot as a .png file
+
+        """
+
+        # Keep only relevant portions of the input dataframe
+        columns_to_keep = ['fcst_lead', 'fcst_lev', 'fcst_var', 'stat_name', 'stat_value', 'category']
+        scdf = categorized_df[columns_to_keep]
+
+        # Rename the columns
+        s = scdf.rename(columns={"fcst_var": "Variable", 'fcst_lev': 'Level', 'stat_name': 'Stat', 'fcst_lead': 'HmS',
+                                 'category': 'category'})
+
+        # Substitute the category text with images
+        scdf['category'] = scdf['category'].map(self.ci_map)
+        scdf_img = scdf.copy()
+        print(f"scdf with images: {scdf_img}")
+        # Plottable column definitions
+        coldefs = [
+            ColumnDefinition(name="Stat",
+                             textprops={"ha": "right"},
+                             width=0.5,
+                             ),
+            ColumnDefinition(name=" Variable",
+                             textprops={"ha": "center"},
+                             width=1.5,
+                             ),
+            ColumnDefinition(name=" Level",
+                             textprops={"ha": "center"},
+                             width=1.5,
+                             ),
+            ColumnDefinition(name=" HmS",
+                             textprops={"ha": "center"},
+                             width=1.5,
+                             ),
+            ColumnDefinition(name="category",
+                             textprops={"ha": "right"},
+                             width=1.5, plot_fn=image
+                             )
+        ]
+
+        fig, ax = plt.subplots(figsize=(8, 7))
+        print("creating table")
+        table = Table(
+            scdf_img,
+            column_definitions=coldefs,
+            ax=ax,
+            textprops={"fontsize": 12},
+            row_divider_kw={"linewidth": 5, "linestyle": (0, (1, 5))},
+            col_label_divider_kw={"linewidth": 2, "linestyle": "-"},
+            column_border_kw={"linewidth": 11, "linestyle": "-"},
+
+        )
+
+        # Adding the bold header as a text annotation using \n to create a new line
+        print("adding header")
+        header_text = "\n Scorecard HRRR, RRFS"
+        header_props = {'fontsize': 18, 'fontweight': 'bold', 'va': 'center', 'ha': 'center', 'color': 'red'}
+        # Adjusting the y-coordinate to bring the header closer to the table
+        plt.text(0.5, 0.91, header_text, transform=fig.transFigure, **header_props)
+
+        # Adding the subtitle at the top in gray
+        print("adding subtitle")
+        subtitle_text = "\n for HRRR and RRFS \n20230701 00:0000 \n 20230704 00:00:00 \n  "
+        subtitle_props = {'fontsize': 8, 'va': 'center', 'ha': 'center', 'color': 'gray'}
+        # plt.rcParams['axes.titley'] = 1.0    # y is in axes-relative coordinates.
+        # plt.rcParams['axes.titlepad'] = -14  # pad is in points...
+        plt.text(0.5, 0.8, subtitle_text, transform=fig.transFigure, **subtitle_props)
+
+        print("saving plot")
+        plt.savefig("/Users/minnawin/Python_Scorecard_Dev/output/scorecard_plot.png")
+        plt.show()
 
 def main(config_filename=None):
     """
@@ -397,7 +591,8 @@ def main(config_filename=None):
     #
     #  Filter the data based on settings in the YAML config file
     #
-    subset_df = sc.subset_data(sc.reformat_params['output_filename'])
+    sc.subset_data(sc.reformat_params['output_filename'])
+
     # #
     # # Calculate the aggregation statistics via METcalcpy agg_stat.py
     # # module if needed
@@ -415,17 +610,17 @@ def main(config_filename=None):
     # input is dependent on whether agg_stat.py was used to calculate the CI's
     # CNT line type already has CI's
 
-    sc_df: pd.DataFrame = sc.get_scorecard_stats(subset_df)
-    # if sc.linetype != 'CNT':
-    #    sc_df: pd.DataFrame = sc.get_scorecard_stats(aggstat_df)
-    # else:
-    #     # ToDo for now use sc_df for development, replace with correct code when
-    #     # aggregation statistics support is added
-    #     sc_df: pd.DataFrame = sc.get_scorecard_stats(subset_df)
+    _: pd.DataFrame = sc.get_scorecard_stats()
 
     # Categorize the p-values
+    # Open the scorecard output from METcalcpy scorecard.py and
+    # assign the categories (based on the categories used in METviewer)
+    if sc.pval_method == 'NCAR':
+        cat_df: pd.DataFrame = sc.categorize_scorecard_results()
+        cat_df.to_csv("/Users/minnawin/Python_Scorecard_Dev/output/categorized.txt", index=False, header=True)
 
     # Generate the scorecard as a table using plottable
+    sc.generate_table(cat_df)
 
 
 if __name__ == "__main__":
