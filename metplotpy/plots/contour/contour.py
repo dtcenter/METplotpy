@@ -156,23 +156,22 @@ class Contour(BasePlot):
         # - the size of labels is more than 5 and
         # - user did not provide custom labels (the x values and labels array are the same)
 
-        x_points_index = list(range(0, len(self.config_obj.indy_vals)))
         ordered_indy_label = self.config_obj.create_list_by_plot_val_ordering(self.config_obj.indy_label)
-
-        if self.config_obj.xaxis_reverse:
-            ordered_indy_label.reverse()
+        ordered_indy_vals = self.config_obj.create_list_by_plot_val_ordering(self.config_obj.indy_vals)
 
         if (self.config_obj.indy_var in ['fcst_init_beg', 'fcst_valid_beg']
                 and len(self.config_obj.indy_vals) > 5
                 and ordered_indy_label == self.series_list[0].series_points['x']):
             step = int(len(self.config_obj.indy_vals) / 5)
-            ordered_indy_label_new = [''] * len(self.config_obj.indy_vals)
-            for i in range(0, len(ordered_indy_label), step):
-                ordered_indy_label_new[i] = ordered_indy_label[i]
-            ordered_indy_label = ordered_indy_label_new
+            indices_to_keep = list(range(0, len(ordered_indy_label), step))
+            ordered_indy_label = [ordered_indy_label[i] for i in indices_to_keep]
 
-        self.config_obj.indy_label = ordered_indy_label
-        self.config_obj.indy_vals = x_points_index
+            # Use indices as positions if not numeric (e.g. for dates)
+            try:
+                [float(i) for i in ordered_indy_vals]
+                ordered_indy_vals = [ordered_indy_vals[i] for i in indices_to_keep]
+            except (ValueError, TypeError):
+                ordered_indy_vals = indices_to_keep
 
         # add series points
         for series in self.series_list:
@@ -183,6 +182,9 @@ class Contour(BasePlot):
                 continue
 
             self._draw_series(ax, series)
+
+        self.config_obj.indy_label = ordered_indy_label
+        self.config_obj.indy_vals = ordered_indy_vals
 
     def _draw_series(self, ax, series: Series) -> None:
         """

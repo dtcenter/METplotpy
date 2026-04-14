@@ -23,7 +23,7 @@ def test_scatter(module_setup_env, remove_files):
     ]
     remove_files(os.environ['TEST_OUTPUT'], expected_files)
 
-    scatter.main(f"{os.environ['TEST_DIR']}/test_scatter_mpr.yaml")
+    assert scatter.main(f"{os.environ['TEST_DIR']}/test_scatter_mpr.yaml")
 
     for expected_file in expected_files:
         assert os.path.isfile(f"{os.environ['TEST_OUTPUT']}/{expected_file}")

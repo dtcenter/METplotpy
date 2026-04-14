@@ -1,11 +1,11 @@
 from typing import Union
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 from datetime import datetime
 
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 from metcalcpy.util import utils
-import metplotpy.plots.util_plotly as util
+from metplotpy.plots import util as util
 
 
 class TcmprSkill(Tcmpr):
@@ -24,32 +24,13 @@ class TcmprSkill(Tcmpr):
 
 
         """
-
         start_time = datetime.now()
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_legend()
+        handles_and_labels = []
+        super()._create_figure()
 
         # placeholder for the min and max values for y-axis
         yaxis_min = None
         yaxis_max = None
-
-        if self.config_obj.xaxis_reverse is True:
-            self.series_list.reverse()
-        # calculate stag adjustments
-        stag_adjustments = self._calc_stag_adjustments()
-
-        x_points_index = list(range(0, len(self.config_obj.indy_vals)))
-        # add x ticks for line plots
-        odered_indy_label = self.config_obj.create_list_by_plot_val_ordering(self.config_obj.indy_label)
-        self.figure.update_layout(
-            xaxis={
-                'tickmode': 'array',
-                'tickvals': x_points_index,
-                'ticktext': odered_indy_label
-            }
-        )
 
         for series in self.series_list:
             # Don't generate the plot for this series if
@@ -58,43 +39,42 @@ class TcmprSkill(Tcmpr):
                 # collect min-max if we need to sync axis
                 yaxis_min, yaxis_max = self.find_min_max(series, yaxis_min, yaxis_max)
 
-                x_points_index_adj = x_points_index + stag_adjustments[series.idx]
-                self._draw_series(series, x_points_index_adj)
+                x_points_index_adj, _ = self._get_x_locs_and_width(self.config_obj.indy_vals,
+                                                                   series.idx,
+                                                                   stagger_scale=0.1)
+                handle = self._draw_series(series, x_points_index_adj)
+                handles_and_labels.append((handle, handle.get_label()))
 
         self.skill_logger.info(f'Range of {stat_name}: {yaxis_min}, {yaxis_max}')
 
         if self.config_obj.hfip_bsln != 'no':
            # This will be a valid value for hfip_bsln. This has been
            # validated/vetted in the configuration code (tcmpr_config.py).
-           super()._add_hfip_baseline()
+           super()._add_hfip_baseline(self.ax)
 
-        self.figure.update_layout(shapes=[dict(
-            type='line',
-            yref='y', y0=0, y1=0,
-            xref='paper', x0=0, x1=0.95,
-            line={'color': '#727273',
-                  'dash': 'dot',
-                  'width': 1},
-        )])
+        self.ax.axhline(y=0, color='#727273', linestyle=':', linewidth=1)
 
         # add custom lines
         num_series = len(self.series_list)
         if num_series > 0:
             for idx in range(num_series):
-                self._add_lines(self.config_obj,
+                self._add_lines(self.ax, self.config_obj,
                     sorted(self.series_list[idx].series_data[self.config_obj.indy_var].unique())
                 )
-        # apply y axis limits
-        self._yaxis_limits()
+
+
+        self._add_xaxis()
+        self._add_yaxis()
+        self._add_legend(self.ax, handles_and_labels)
 
         # add x2 axis
-        self._add_x2axis(list(range(0, len(self.config_obj.indy_vals))))
+        self._add_x2axis()
 
         end_time = datetime.now()
         total_time = end_time - start_time
         self.skill_logger.info(f"Took {total_time} milliseconds to create the figure for {stat_name}")
 
-    def _draw_series(self, series: TcmprSeries, x_points_index_adj: list) -> None:
+    def _draw_series(self, series: TcmprSeries, x_points_index_adj: list):
         """
         Draws the boxes on the plot
 
@@ -103,25 +83,23 @@ class TcmprSkill(Tcmpr):
 
         y_points = series.series_points['val']
 
-        # create a trace
-        self.figure.add_trace(
-            go.Scatter(x=x_points_index_adj,
-                       y=y_points,
-                       showlegend=True,
-                       mode='lines+markers',
-                       textposition="top right",
-                       name=self.config_obj.user_legends[series.idx],
-                       line={'color': self.config_obj.colors_list[series.idx],
-                             'width': self.config_obj.linewidth_list[series.idx],
-                             'dash': self.config_obj.linestyles_list[series.idx]},
-                       marker_symbol=self.config_obj.marker_list[series.idx],
-                       marker_color=self.config_obj.colors_list[series.idx],
-                       marker_line_color=self.config_obj.colors_list[series.idx],
-                       marker_size=self.config_obj.marker_size[series.idx],
+        ax = self.ax if series.y_axis == 1 else self.ax2
 
-                       ),
-            secondary_y=series.y_axis != 1
+        markerfacecolor = self.config_obj.colors_list[series.idx]
+        if self.config_obj.marker_open_list[series.idx]:
+            markerfacecolor = 'none'
+
+        plot = ax.plot(
+            x_points_index_adj, y_points,
+            label=self.config_obj.user_legends[series.idx],
+            color=self.config_obj.colors_list[series.idx],
+            linewidth=self.config_obj.linewidth_list[series.idx],
+            linestyle=self.config_obj.linestyles_list[series.idx],
+            marker=self.config_obj.marker_list[series.idx],
+            markersize=self.config_obj.marker_size[series.idx],
+            markerfacecolor=markerfacecolor,
         )
+        return plot[0]
 
     def _find_min_max(self, series: TcmprSeries, yaxis_min: Union[float, None],
                       yaxis_max: Union[float, None]) -> tuple:

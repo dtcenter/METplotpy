@@ -21,15 +21,13 @@ from typing import Union
 import pandas as pd
 import numpy as np
 import re
-from pathlib import Path
 
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+from matplotlib import pyplot as plt
+import matplotlib.ticker as mtick
 
-from metplotpy.plots.base_plot_plotly import BasePlot
+from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.wind_rose.wind_rose_config import WindRoseConfig
-from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
-from metplotpy.plots import util_plotly as util
+from metplotpy.plots import util
 
 
 class WindRosePlot(BasePlot):
@@ -46,7 +44,7 @@ class WindRosePlot(BasePlot):
             This class works with MET v.9.1+ output
             """
     def __init__(self, parameters: dict, u_wind_data: Union[pd.DataFrame, None] = None,
-                 v_wind_data: Union[pd.DataFrame, None] = None):
+                 v_wind_data: Union[pd.DataFrame, None] = None, ax: plt.Axes = None):
 
         default_conf_filename = "wind_rose_defaults.yaml"
 
@@ -70,19 +68,7 @@ class WindRosePlot(BasePlot):
             self.u_wind_data = u_wind_data
             self.v_wind_data = v_wind_data
 
-        # wind rose traces
-        self.traces = []
-
-        # create wind rose traces
-        self._create_traces()
-
-        # create figure if needed
-        # pylint:disable=assignment-from-no-return
-        # Need to have a self.figure that we can pass along to
-        # the methods in base_plot.py (BasePlot class methods) to
-        # create binary versions of the plot.
-        if self.config_obj.create_figure:
-            self.figure = self._create_figure()
+        self._create_figure(ax)
 
     def _read_input_data(self):
         """
@@ -98,87 +84,64 @@ class WindRosePlot(BasePlot):
         self.u_wind_data = input_df[input_df['FCST_VAR'] == 'UGRD']
         self.v_wind_data = input_df[input_df['FCST_VAR'] == 'VGRD']
 
-    def _create_figure(self):
+    def _create_figure(self, ax: plt.Axes = None):
         """
         Initialise the figure and add Wnd roses traces
 
         Args:
-
+            ax: existing Axes object to use for the plot
 
         Returns:
-             Wind rose plot as Plotly figure
+             Wind rose plot as Matplotlib figure
         """
-
         self.logger.info(f"Creating figure: {datetime.now()}")
-        fig = make_subplots(specs=[[{"secondary_y": False}]])
-
-        # Set plot height and width in pixel value
-        fig.update_layout(width=self.config_obj.plot_width, height=self.config_obj.plot_height)
-
-        # Add figure title
-        fig.update_layout(
-            title={'text': self.config_obj.title,
-                   'y': 0.95,
-                   'x': 0.5,
-                   'xanchor': "center",
-                   'yanchor': "top"},
-            plot_bgcolor="#FFF"
-
-        )
-
-        fig.update_xaxes(
-            linecolor=PLOTLY_AXIS_LINE_COLOR,
-            linewidth=PLOTLY_AXIS_LINE_WIDTH,
-            showgrid=False,
-            ticks="outside",
-            zeroline=False,
-            automargin=True
-        )
-
-        fig.update_yaxes(
-            secondary_y=False,
-            linecolor=PLOTLY_AXIS_LINE_COLOR,
-            linewidth=PLOTLY_AXIS_LINE_WIDTH,
-            showgrid=False,
-            zeroline=False,
-            ticks="outside",
-            automargin=True
-        )
-
-        if self.config_obj.radialaxis_range is None:
-            fig.update_polars(
-                bgcolor=PLOTLY_PAPER_BGCOOR, hole=0.08, angularaxis_thetaunit="degrees", angularaxis_rotation=90,
-                angularaxis_direction='clockwise', angularaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
-                angularaxis_tickvals=self.config_obj.angularaxis_tickvals,
-                angularaxis_ticktext=self.config_obj.angularaxis_ticktext, angularaxis_tickmode='array',
-                radialaxis_angle=135, radialaxis_tickmode='linear', radialaxis_tickangle=100, radialaxis_tick0=5,
-                radialaxis_dtick=self.config_obj.radialaxis_step, radialaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
-                radialaxis_showticklabels=True,
-                radialaxis_ticksuffix='%', radialaxis_type="-", )
+        if ax is None:
+            fig, ax = plt.subplots(subplot_kw={'projection': 'polar'},
+                                   figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
+            self.figure = fig
         else:
-            fig.update_polars(
-                bgcolor=PLOTLY_PAPER_BGCOOR, hole=0.08, angularaxis_thetaunit="degrees", angularaxis_rotation=90,
-                angularaxis_direction='clockwise', angularaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
-                angularaxis_tickvals=self.config_obj.angularaxis_tickvals,
-                angularaxis_ticktext=self.config_obj.angularaxis_ticktext, angularaxis_tickmode='array',
-                radialaxis_angle=135, radialaxis_tickmode='linear', radialaxis_tickangle=100,
-                radialaxis_tick0=self.config_obj.radialaxis_range[0],
-                radialaxis_dtick=self.config_obj.radialaxis_step, radialaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
-                radialaxis_showticklabels=True,
-                radialaxis_ticksuffix='%', radialaxis_type="-", radialaxis_range=self.config_obj.radialaxis_range, )
+            self.figure = ax.get_figure()
 
-        fig.update_layout(
-            showlegend=self.config_obj.show_legend,
-            plot_bgcolor=PLOTLY_PAPER_BGCOOR,
-        )
+        wts_size_styles = self.get_weights_size_styles()
+        self._add_title(ax, wts_size_styles['title'])
 
-        # add traces
-        for trace in self.traces:
-            fig.add_trace(trace)
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
 
-        return fig
+        # create wind rose traces
+        self._create_traces(ax)
 
-    def _create_traces(self):
+        # set north = 0 degrees
+        ax.set_theta_zero_location('N')
+
+        # clockwise
+        ax.set_theta_direction(-1)
+
+        # add hole in center of plot
+        ax.set_rorigin(-1)
+
+        # set location of radial labels (northwest)
+        ax.set_rlabel_position(-45)
+
+        # add % symbol to radial labels
+        ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%g%%'))
+
+        # add angular axis ticks and labels, (N, E, S, W)
+        ax.set_xticks(np.deg2rad(self.config_obj.angularaxis_tickvals))
+        ax.set_xticklabels(self.config_obj.angularaxis_ticktext, rotation=45, ha='right')
+
+        if self.config_obj.radialaxis_range is not None:
+            ax.set_ylim(self.config_obj.radialaxis_range)
+            start, stop = self.config_obj.radialaxis_range
+            step = self.config_obj.radialaxis_step
+            ax.set_yticks(np.arange(start, stop + step, step))
+
+        # turn off outermost circle (spine)
+        ax.spines['polar'].set_visible(False)
+
+        self._add_legend(ax, loc='upper left')
+
+    def _create_traces(self, ax):
         """
         Creates wind rose traces based on the u and v data.
         Number of traces is equal to the length of wind_rose_breaks
@@ -188,8 +151,8 @@ class WindRosePlot(BasePlot):
         Args:
         Returns:
         """
-
         self.logger.info(f"Creating wind rose traces: {datetime.now()}")
+        self.traces = []
         # init data based on type
         if self.config_obj.type == 'FCST-OBS':
             u_wind_data = (self.u_wind_data['FCST'] - self.u_wind_data['OBS']).tolist()
@@ -210,18 +173,7 @@ class WindRosePlot(BasePlot):
 
         # calculate the wind dir in degrees for each row and bin it to angles
         self.logger.info("Calculating the wind direction.")
-        wind_dir_deg = []
-        for i, v_wind in enumerate(v_wind_data):
-            if wind_speed[i] == 0:
-                wind_dir_deg.append(None)
-            else:
-                # calculate the wind dir
-                wd = math.atan2(u_wind_data[i] / wind_speed[i], v_wind / wind_speed[i]) * 180 / math.pi
-                if wd < 0:
-                    wind_dir_deg.append(None)
-                else:
-                    wind_dir_deg.append(
-                        self.config_obj.wind_rose_angle * math.ceil(wd / self.config_obj.wind_rose_angle - 0.5))
+        wind_dir_deg = self._get_wind_dir_deg(u_wind_data, v_wind_data, wind_speed)
 
         # join wind_speed and wind_dir in one array
         wind_speed_dir = np.vstack((wind_speed, wind_dir_deg)).T
@@ -234,16 +186,7 @@ class WindRosePlot(BasePlot):
 
         # remove rows where wind direction is None
         # and converting data between 348.75 and 360 to negative
-        wind_speed_dir_processed = np.empty((0, 2), float)
-        for i, wspd in enumerate(wind_speed_dir):
-            if wspd[1] is not None:
-                if angles[-1] + step <= wspd[1] and wspd[1] < 360:
-                    wind_speed_dir_processed = np.append(wind_speed_dir_processed, np.array(
-                        [[wspd[0], wspd[1] - 360, ]]), axis=0)
-                else:
-                    wind_speed_dir_processed = np.append(wind_speed_dir_processed,
-                                                         np.array([[wspd[0], wspd[1], ]]),
-                                                         axis=0)
+        wind_speed_dir_processed = self._process_wind_speed_dir(wind_speed_dir, angles, step)
 
         # determining the direction bins
         bin_edges_dir = np.append(angles - step, [angles[-1] + step])
@@ -264,7 +207,6 @@ class WindRosePlot(BasePlot):
             # replace the last break value with the max windspeed
             breaks = breaks[:-1]
             breaks.append(max(wind_speed))
-
 
         # loop selecting given bins and calculate frequencies
         for i in range(len(breaks) - 1):
@@ -289,6 +231,7 @@ class WindRosePlot(BasePlot):
             [speed_bins, angles],
             names=['wind_speed_bins', 'wind_direction_bins']
         )
+
         # create a data frame from permutations of speed_bins
         # and angles with the additional  'frequency' column
         frequencies_df = pd.DataFrame(0, perm_speedbins_angles, ['frequency'])
@@ -296,36 +239,60 @@ class WindRosePlot(BasePlot):
         # updating the frequencies in the dataframe
         frequencies_df.frequency = frequencies * 100  # [%]
 
+        theta = np.deg2rad(angles)
+        width = (2 * np.pi) / len(angles)
+
+        bottom = np.zeros(len(angles))
+
         # create traces
         for i, speed_bin in enumerate(speed_bins):
-            trace = go.Barpolar(
-                r=frequencies_df.loc[(speed_bin), 'frequency'],
-                name=f'Wind {speed_bin}',
-                marker_color=self.config_obj.wind_rose_marker_colors[i]
+            r_values = frequencies_df.loc[speed_bin, 'frequency'].values
+
+            ax.bar(
+                theta,
+                r_values,
+                width=width,
+                bottom=bottom,
+                color=self.config_obj.wind_rose_marker_colors[i],
+                label=f"Wind {speed_bin}",
+                linewidth=0.5,
+                zorder=3,  # above the grid lines
             )
-            self.traces.append(trace)
+
+            bottom += r_values
+
         self.logger.info(f"Finished creating traces: {datetime.now()}")
 
-    def save_to_file(self) -> None:
-        """ Saves the image to a file specified in the config file.
-            Prints a message if fails
+    def _get_wind_dir_deg(self, u_wind_data, v_wind_data, wind_speed):
+        wind_dir_deg = []
+        for i, v_wind in enumerate(v_wind_data):
+            if wind_speed[i] == 0:
+                wind_dir_deg.append(None)
+            else:
+                # calculate the wind dir
+                wd = math.atan2(u_wind_data[i] / wind_speed[i], v_wind / wind_speed[i]) * 180 / math.pi
+                if wd < 0:
+                    wind_dir_deg.append(None)
+                else:
+                    wind_dir_deg.append(
+                        self.config_obj.wind_rose_angle * math.ceil(wd / self.config_obj.wind_rose_angle - 0.5))
 
-            Args:
+        return wind_dir_deg
 
-            Returns:
-        """
-        image_name = self.get_config_value('plot_filename')
-        if self.figure:
-            try:
-                os.makedirs(os.path.dirname(image_name), exist_ok=True)
-                self.figure.write_image(image_name)
+    @staticmethod
+    def _process_wind_speed_dir(wind_speed_dir, angles, step):
+        wind_speed_dir_processed = np.empty((0, 2), float)
+        for i, wspd in enumerate(wind_speed_dir):
+            if wspd[1] is not None:
+                if angles[-1] + step <= wspd[1] and wspd[1] < 360:
+                    wind_speed_dir_processed = np.append(wind_speed_dir_processed, np.array(
+                        [[wspd[0], wspd[1] - 360, ]]), axis=0)
+                else:
+                    wind_speed_dir_processed = np.append(wind_speed_dir_processed,
+                                                         np.array([[wspd[0], wspd[1], ]]),
+                                                         axis=0)
 
-            except FileNotFoundError:
-                self.logger.error("Can't save to file " + image_name)
-            except ValueError as ex:
-                self.logger.error(ex)
-        else:
-            self.logger.error("Oops!  The figure was not created. Can't save.")
+        return wind_speed_dir_processed
 
     @staticmethod
     def _boundary_filter(boundary_lower_speed: float,
@@ -366,7 +333,7 @@ class WindRosePlot(BasePlot):
         # (the input data file) except replace the .data
         # extension with .points1 extension
         # otherwise use points_path path
-        points = dict()
+        points = {}
         for trace in self.traces:
             points[trace.name] = trace.r
 
@@ -397,7 +364,7 @@ class WindRosePlot(BasePlot):
         :param output_file: the name of the output file
         """
         try:
-            all_points_formatted = dict()
+            all_points_formatted = {}
             for key, value in points.items():
                 data_formatted = ''
                 for val in value:
@@ -410,10 +377,9 @@ class WindRosePlot(BasePlot):
             with open(output_file, "w+") as f:
                 for key, value in all_points_formatted.items():
                     f.write('%s:%s\n' % (key, value))
-            f.close()
 
         except TypeError:
-            print('Can\'t save points to a file')
+            print("Can't save points to a file")
 
 
 def main(config_filename=None):
@@ -423,22 +389,7 @@ def main(config_filename=None):
             The location of the input data is defined in either the default or
             custom config file.
         """
-    params = util.get_params(config_filename)
-
-    # point to data file in the test dir
-    if 'stat_input' not in params:
-        params['stat_input'] = str(Path(__file__).parent.parent.parent.parent) + '/test/wind_rose/point_stat_mpr.txt'
-
-    try:
-        plot = WindRosePlot(params)
-        plot.save_to_file()
-        if plot.config_obj.show_in_browser:
-            plot.show_in_browser()
-        plot.write_output_file()
-        plot.logger.info(f"Finished wind rose plot: {datetime.now()}")
-
-    except ValueError as ve:
-        print(ve)
+    util.make_plot(config_filename, WindRosePlot)
 
 
 if __name__ == "__main__":

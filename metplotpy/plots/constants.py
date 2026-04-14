@@ -56,7 +56,7 @@ DEFAULT_TITLE_FONT = 'sans-serif'
 DEFAULT_TITLE_COLOR = 'black'
 DEFAULT_TITLE_FONTSIZE = 10
 
-# Default size used in plotly legend text
+# Default size used in legend text
 DEFAULT_LEGEND_FONTSIZE = 12
 DEFAULT_CAPTION_FONTSIZE = 14
 DEFAULT_CAPTION_Y_OFFSET = 0.01
@@ -80,7 +80,7 @@ PCH_TO_MATPLOTLIB_MARKER = {
     'triangle': '^',
     'rhombus': 'd',
     'ring': 'h',
-    # plotly marker strings
+    # plotly marker strings for backwards compatibility
     'circle-open': 'o', # H?
     'triangle-up': '^',
     'diamond': 'd',

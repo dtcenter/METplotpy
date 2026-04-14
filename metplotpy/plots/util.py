@@ -96,6 +96,7 @@ def make_plot(config_filename, plot_class):
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
     params = get_params(config_filename)
+    plot = None
     try:
         plot = plot_class(params)
         plot.save_to_file()
@@ -103,11 +104,14 @@ def make_plot(config_filename, plot_class):
         name = plot_class.__name__ if not hasattr(plot_class, 'LONG_NAME') else plot_class.LONG_NAME
         plot.logger.info(f"Finished {name} plot at {datetime.now()}")
         return plot
-    except ValueError as val_er:
-        print(val_er)
+    except Exception as err:
+        if plot:
+            plot.logger.error("Exception occurred in plot: %s", err)
+            plot.logger.debug("Exception details:", exc_info=True)
+        else:
+            raise
 
     return None
-
 
 def alpha_blending(hex_color: str, alpha: float) -> str:
     """ Alpha color blending as if on the white background.
@@ -122,28 +126,6 @@ def alpha_blending(hex_color: str, alpha: float) -> str:
     foreground_arr = np.array(foreground_tuple)
     final = tuple((1. - alpha) + foreground_arr * alpha)
     return matplotlib.colors.rgb2hex(final)
-
-
-def get_font_params(weight: int) -> dict:
-    """Convert integer font style/weight value to a dictionary of
-     font properties, fontweight for bold and fontstyle for italic.
-    1=plain text, 2=bold, 3=italic, 4=bold italic
-    REMOVE: Replaces apply_weight_style function used for plotly.
-
-    @param weight integer representation of the style/weight
-    @returns dictionary containing font properties like fontweight and fontstyle
-    """
-    font_params = {
-        'fontweight': 'normal',
-        'fontstyle': 'normal',
-    }
-    if weight in (2, 4):
-        font_params['fontweight'] = 'bold'
-    if weight in (3, 4):
-        font_params['fontstyle'] = 'italic'
-
-    return font_params
-
 
 def nicenumber(x, to_round):
     """
@@ -318,36 +300,39 @@ def get_common_logger(log_level, log_filename):
          common_logger: the logger common to all the METplotpy modules that are
                         currently in use by a plot type.
     '''
-
     # If directory for logfile doesn't exist, create it
     log_dir = os.path.dirname(log_filename)
-    try:
-       os.makedirs(log_dir, exist_ok=True)
-    except OSError:
-        pass
+    if log_dir:
+        os.makedirs(log_dir, exist_ok=True)
 
     # Supported log levels.
     log_level = log_level.upper()
-    log_levels = {'DEBUG': logging.DEBUG, 'INFO': logging.INFO,
-                  'WARNING': logging.WARNING, 'ERROR': logging.ERROR,
-                  'CRITICAL': logging.CRITICAL}
+    log_levels = {
+        'DEBUG': logging.DEBUG,
+        'INFO': logging.INFO,
+        'WARNING': logging.WARNING,
+        'ERROR': logging.ERROR,
+        'CRITICAL': logging.CRITICAL,
+    }
+    log_level = log_levels.get(log_level)
+    if log_level is None:
+        print(f'WARNING: Invalid log level: {log_level}. Using INFO')
+        log_level = logging.INFO
 
+    log_args = {
+        'level': log_level,
+        'format': '%(asctime)s||User:%(user)s||%(funcName)s|| [%(levelname)s]: %(message)s',
+        'datefmt': '%Y-%m-%d %H:%M:%S',
+    }
     if log_filename.lower() == 'stdout':
-        logging.basicConfig(level=log_levels[log_level],
-                            format='%(asctime)s||User:%('
-                                   'user)s||%(funcName)s|| [%(levelname)s]: %('
-                                   'message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S',
-                            stream=sys.stdout)
+        log_args['stream'] = sys.stdout
     else:
+        log_args['filename'] = log_filename
+        log_args['filemode'] = 'w'
 
-        logging.basicConfig(level=log_levels[log_level],
-                            format='%(asctime)s||User:%('
-                                   'user)s||%(funcName)s|| [%(levelname)s]: %('
-                                   'message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S',
-                            filename=log_filename,
-                            filemode='w')
+    # Note: the log level is ignored if logging has already been initialized
+    logging.basicConfig(**log_args)
+
     logging.getLogger(name='matplotlib').setLevel(logging.CRITICAL)
     common_logger = logging.getLogger(__name__)
     f = cf()

@@ -124,6 +124,9 @@ def module_setup_env(request):
     print("Setting up environment")
     os.environ['TEST_DIR'] = test_dir
 
+    # handle optional test input data
+    os.environ['TEST_INPUT_EXTRA'] = os.environ.get('METPLOTPY_TEST_INPUT', test_dir)
+
     # handle multiple test_*.py files in a single directory
     # create a subdirectory named after the test file if it doesn't match the test directory
     test_name = str(request.node.name).replace('test_', '').replace('.py', '')
@@ -201,4 +204,4 @@ def nc_test_file(tmp_path_factory):
 
 @pytest.fixture(autouse=True)
 def setup_logging(caplog):
-    caplog.set_level(logging.INFO)
+    caplog.set_level(logging.DEBUG)

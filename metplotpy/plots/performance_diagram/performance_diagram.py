@@ -66,7 +66,7 @@ class PerformanceDiagram(BasePlot):
         # config file.
         self.config_obj = PerformanceDiagramConfig(self.parameters)
 
-        # Logging in matplotlib plots is different from the plotly plots.  The
+        # For logging in matplotlib plots is different from the plotly plots.
         # ContextFilter cannot be used to add the username/userid to the log.
         # Use the extra={'user':userid} in the log.xyz(msg,...) syntax instead.
         self.logger = self.config_obj.logger

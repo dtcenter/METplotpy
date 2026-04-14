@@ -1,20 +1,21 @@
 # ============================*
- # ** Copyright UCAR (c) 2021
- # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
- # ** Research Applications Lab (RAL)
- # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
- # ============================*
- 
- 
- 
+# ** Copyright UCAR (c) 2021
+# ** University Corporation for Atmospheric Research (UCAR)
+# ** National Center for Atmospheric Research (NCAR)
+# ** Research Applications Lab (RAL)
+# ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
+# ============================*
+
+
 """
 Class Name: wind_rose_config.py
 
 Holds values set in the Wind Rose config file(s)
 """
-from ..config import Config
 
+from pathlib import Path
+
+from ..config import Config
 
 class WindRoseConfig(Config):
     def __init__(self, parameters):
@@ -26,7 +27,7 @@ class WindRoseConfig(Config):
             Returns:
 
         """
-        default_conf_filename = "wind_rose_defaults.yaml"
+        #default_conf_filename = "wind_rose_defaults.yaml"
         # init common layout
         super().__init__(parameters)
 
@@ -34,12 +35,11 @@ class WindRoseConfig(Config):
         self.title = self.get_config_value('title')
         self.wind_rose_breaks = self.get_config_value('wind_rose_breaks')
         self.wind_rose_angle = self.get_config_value('wind_rose_angle')
-        self.wind_rose_marker_colors = self.get_config_value('wind_rose_marker_colors')
+        self.wind_rose_marker_colors = self._get_colors('wind_rose_marker_colors')
 
         if len(self.wind_rose_marker_colors) != len(self.wind_rose_breaks) :
             raise ValueError('wind_rose_marker_colors must have the same size as wind_rose_breaks')
 
-        self.create_figure = self.get_config_value('create_figure')
         self.show_legend = self.get_config_value('show_legend')
         self.angularaxis_tickvals = self.get_config_value('angularaxis_tickvals')
         self.angularaxis_ticktext = self.get_config_value('angularaxis_ticktext')
@@ -51,14 +51,14 @@ class WindRoseConfig(Config):
         self.radialaxis_step = self.get_config_value('radialaxis_step')
 
         self.stat_input = self.get_config_value('stat_input')
-        self.plot_width = self.get_config_value('plot_width')
-        self.plot_height = self.get_config_value('plot_height')
+        # point to data file in the test dir
+        if not self.stat_input:
+            self.stat_input = str(Path(__file__).parent.parent.parent.parent) + '/test/wind_rose/point_stat_mpr.txt'
+
+        self.plot_width = self.calculate_plot_dimension('plot_width')
+        self.plot_height = self.calculate_plot_dimension('plot_height')
         self.dump_points = self.get_config_value('dump_points')
 
         # Optional setting, indicates *where* to save the dump_points_1 file
         # used by METviewer
         self.points_path = self.get_config_value('points_path')
-        self.show_in_browser = self.get_config_value('show_in_browser')
-
-
-

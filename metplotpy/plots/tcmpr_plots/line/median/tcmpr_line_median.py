@@ -3,7 +3,7 @@ from datetime import datetime
 
 from metplotpy.plots.tcmpr_plots.line.median.tcmpr_series_line_median import TcmprSeriesLineMedian
 from metplotpy.plots.tcmpr_plots.line.tcmpr_line import TcmprLine
-import metplotpy.plots.util_plotly as util
+import metplotpy.plots.util as util
 
 
 class TcmprLineMedian(TcmprLine):
@@ -13,11 +13,11 @@ class TcmprLineMedian(TcmprLine):
         # Set up Logging
         self.linemd_logger = util.get_common_logger(self.config_obj.log_level, self.config_obj.log_filename)
 
-        self.linemd_logger.info(f"--------------------------------------------------------")
+        self.linemd_logger.info("--------------------------------------------------------")
         self.linemd_logger.info(f"Plotting MEDIAN time series by {self.config_obj.series_val_names[0]}")
 
         self.linemd_logger.info(f"Plot HFIP Baseline: {self.cur_baseline}")
-        self._adjust_titles(stat_name)
+        self._adjust_titles(stat_name, 'Median of')
         self.series_list = self._create_series(self.input_df, stat_name)
         self.case_data = None
         if self.config_obj.prefix is None or len(self.config_obj.prefix) == 0:
@@ -28,15 +28,6 @@ class TcmprLineMedian(TcmprLine):
         if os.path.exists(self.plot_filename):
             os.remove(self.plot_filename)
         self._create_figure(stat_name)
-
-    def _adjust_titles(self, stat_name):
-        if self.yaxis_1 is None or len(self.yaxis_1) == 0:
-            self.yaxis_1 = stat_name + '(' + self.col['units'] + ')'
-
-        if self.title is None or len(self.title) == 0:
-            self.title = 'Median of ' + self.col['desc'] + ' by ' \
-                         + self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]][
-                             "DESCRIPTION"].tolist()[0]
 
     def _create_series(self, input_data, stat_name):
         """
@@ -89,6 +80,10 @@ class TcmprLineMedian(TcmprLine):
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
+
+        # reverse series list if config is set to reverse x-axis
+        if self.config_obj.xaxis_reverse:
+            series_list.reverse()
 
         end_time = datetime.now()
         total_time = end_time - start_time

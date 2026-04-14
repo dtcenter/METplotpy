@@ -18,6 +18,7 @@ __author__ = 'Minna Win'
 import itertools
 from typing import Union
 from datetime import datetime
+import re
 
 import metcalcpy.util.utils as utils
 import metplotpy.plots.util
@@ -47,6 +48,7 @@ class Config:
         self.title_color = constants.DEFAULT_TITLE_COLOR
         self.xaxis = self.get_config_value('xaxis')
         self.xaxis_reverse = False
+        self.yaxis_reverse = False
         self.vert_plot = False
         self.yaxis_1 = self.get_config_value('yaxis_1')
         self.yaxis_2 = self.get_config_value('yaxis_2')
@@ -60,7 +62,7 @@ class Config:
 
         # Plot figure dimensions should be in inches
         self.plot_width = self.calculate_plot_dimension('plot_width')
-        self.plot_height = self.calculate_plot_dimension('plot_height' )
+        self.plot_height = self.calculate_plot_dimension('plot_height')
         self.plot_caption = self.get_config_value('plot_caption')
         # plain text, bold, italic, bold italic are choices in METviewer UI
         self.caption_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.get_config_value('caption_weight')]
@@ -96,12 +98,17 @@ class Config:
         self.legend_ncol = self.get_config_value('legend_ncol')
         legend_box = self.get_config_value('legend_box')
         self.draw_box = False
+        self.legend_border_width = 0
         if legend_box is not None:
             legend_box = legend_box.lower()
             if legend_box == 'o':
-                # Don't draw a box around legend labels
+                # draw a box around legend labels
                 self.draw_box = True
+                self.legend_border_width = 2
 
+        self.legend_orientation = 'h'
+        if self.parameters['legend_ncol'] == 1:
+            self.legend_orientation = 'v'
 
         # some settings used by some but not all plot types
 
@@ -149,11 +156,16 @@ class Config:
         # re-create the METviewer xlab_weight. Use the
         # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
         # what was requested in METviewer
-        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.get_config_value('xlab_weight')]
-        self.x2lab_weight = self.get_config_value('x2lab_weight')
-        if self.x2lab_weight:
-            self.x2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.x2lab_weight]
+        xlab_weight = self.get_config_value('xlab_weight')
+        if xlab_weight is None:
+            xlab_weight = 1
+        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(xlab_weight)]
 
+        self.x2lab_weight = self.get_config_value('x2lab_weight')
+        if self.x2lab_weight is not None:
+            self.x2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(self.x2lab_weight)]
+
+        self.x_title_font_size = self.parameters['xlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
         self.x_tickangle = self.parameters['xtlab_orient']
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
@@ -184,10 +196,13 @@ class Config:
         # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
         # what was requested in METviewer
         mv_ylab_weight = self.get_config_value('ylab_weight')
-        self.ylab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_ylab_weight]
+        if mv_ylab_weight is None:
+            mv_ylab_weight = 1
+        self.ylab_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(mv_ylab_weight)]
+
         self.y2lab_weight = self.get_config_value('y2lab_weight')
-        if self.y2lab_weight:
-            self.y2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.y2lab_weight]
+        if self.y2lab_weight is not None:
+            self.y2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(self.y2lab_weight)]
 
         # Adjust the caption left/right relative to the y-axis
         # METviewer default is set to 0, corresponds to y=0.05 in Matplotlib
@@ -200,18 +215,16 @@ class Config:
 
         mv_title_weight = self.get_config_value('title_weight')
         # use the same constants dictionary as used for captions
-        self.title_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_title_weight]
+        if mv_title_weight is None:
+            mv_title_weight = 1
+        self.title_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(mv_title_weight)]
 
         # These values can't be used as-is, the only choice for aligning in Matplotlib
         # are center (default), left, and right
         mv_title_align = self.get_config_value('title_align')
         self.title_align = float(mv_title_align)
 
-        # does nothing because the vertical position in Matplotlib is
-        # automatically chosen to avoid labels and ticks on the topmost
-        # x-axis
-        mv_title_offset = self.get_config_value('title_offset')
-        self.title_offset = float(mv_title_offset)
+        self.title_offset = 1.0 + abs(self.parameters['title_offset']) * constants.DEFAULT_TITLE_OFFSET
 
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
@@ -494,7 +507,7 @@ class Config:
 
         return len(permutations)
 
-    def _get_colors(self) -> list:
+    def _get_colors(self, config_name="colors") -> list:
         """
            Retrieves the colors used for lines and markers, from the
            config file (default or custom).
@@ -505,8 +518,17 @@ class Config:
                (and their corresponding marker symbols)
         """
 
-        colors_settings = self.get_config_value('colors')
+        colors_settings = self.get_config_value(config_name)
+        colors_settings = [self._format_color(color) for color in colors_settings]
         return self.create_list_by_series_ordering(list(colors_settings))
+
+    @staticmethod
+    def _format_color(input_color):
+        if not input_color.startswith('rgb('):
+            return input_color
+        numbers = re.findall(r'\d+', input_color)
+        return tuple(int(num) / 255.0 for num in numbers)
+
 
     def _get_con_series(self) -> list:
         """
@@ -725,20 +747,18 @@ class Config:
                 plot resolution in units of dpi (dots per inch)
 
         """
-        # Initialize to the default resolution
-        # set by matplotlib
+        # Initialize to the default resolution set by matplotlib
         dpi = 100
 
         # first check if plot_res is set in config file
         if self.get_config_value('plot_res'):
             resolution = self.get_config_value('plot_res')
 
-            # check if the units value has been set in the config file
-            if self.get_config_value('plot_units'):
-                return self._convert_units_to_inches(resolution, self.get_config_value('plot_units'))
+            # convert mm to inches
+            if self.get_config_value('plot_units') and self.get_config_value('plot_units').lower() == 'mm':
+                return resolution * constants.MM_TO_INCHES
 
-            # units not indicated, assume
-            # we are dealing with inches
+            # units not indicated, assume we are dealing with inches or pixels
             return resolution
 
         # no plot_res value is set, return the default
@@ -774,10 +794,17 @@ class Config:
             return value * constants.MM_TO_INCHES
         if units_lower == 'cm':
             return value * constants.CM_TO_INCHES
+        if units_lower == 'pixels':
+            # convert pixels to inches if resolution is available
+            if self.get_config_value('plot_res'):
+                return value / self.get_config_value('plot_res')
+
+            return value
+
 
         # if unsupported units are specified, log a warning but assume inches
         if units_lower != 'in':
-            self.logger.warning(f"Invalid units specified: {units}. Expected in, mm, or cm. Assuming inches.")
+            self.logger.warning(f"Invalid units specified: {units}. Expected in, mm, cm, or pixels. Assuming inches.")
 
         return value
 

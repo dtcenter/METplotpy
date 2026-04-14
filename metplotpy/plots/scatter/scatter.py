@@ -11,6 +11,7 @@ Class Name: Scatter
  """
 __author__ = 'Minna Win'
 
+import sys
 import os
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -205,9 +206,12 @@ def main(config_filename=None):
         plot = Scatter(docs)
         plot.create_figure(docs)
         plot.logger.info(f"Finished generating scatter plot: {datetime.now()}")
-    except ValueError as ve:
-        print(ve)
+    except Exception as err:
+        plot.logger.error("Exception occurred in scatter plot: %s", err)
+        plot.logger.debug("Exception details:", exc_info=True)
+        return False
+
+    return True
 
 if __name__ == "__main__":
-    main()
-
+    sys.exit(0 if main() else 1)

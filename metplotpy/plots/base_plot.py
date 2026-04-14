@@ -16,13 +16,16 @@ __author__ = 'Tatiana Burek'
 import os
 import logging
 import warnings
+from datetime import datetime
 import numpy as np
+from matplotlib.axes import Axes
 from matplotlib.font_manager import FontProperties
 
 from matplotlib import pyplot as plt
 
 import yaml
 from typing import Union
+from operator import add
 from metplotpy.plots.util import strtobool
 from .config import Config
 from . import constants
@@ -32,8 +35,9 @@ from . import constants
 # Global matplotlib default setting overrides
 ###
 
-# set default for dashed lines to be longer and wider spaced
+# set default for dashed and dotted lines to be longer and wider spaced
 plt.rcParams['lines.dashed_pattern'] = [10, 10]
+plt.rcParams['lines.dotted_pattern'] = [5, 5]
 
 # Turn off spines globally
 plt.rcParams['axes.spines.top'] = False
@@ -63,10 +67,6 @@ class BasePlot:
      To use:
         use as an abstract class for the common plot types
     """
-
-    # image formats supported by plotly
-    IMAGE_FORMATS = ("png", "jpeg", "webp", "svg", "pdf", "eps")
-    DEFAULT_IMAGE_FORMAT = 'png'
 
     def __init__(self, parameters, default_conf_filename):
         """Inits BasePlot with user defined and default dictionaries.
@@ -102,32 +102,6 @@ class BasePlot:
         self.figure = None
         self.remove_file()
         self.config_obj = Config(self.parameters)
-
-    def get_image_format(self):
-        """Reads the image format type from user provided image name.
-        Uses file extension as a type. If the file extension is not valid -
-        returns 'png' as a default
-
-        Args:
-
-        Returns:
-            - image format
-        """
-
-        # get image name from properties
-        image_name = self.get_config_value('image_name')
-        if image_name:
-
-            # extract and validate the file extension
-            strings = image_name.split('.')
-            if strings and strings[-1] in self.IMAGE_FORMATS:
-                return strings[-1]
-
-        # print the message if invalid and return default
-        print('Unrecognised image format. png will be used')
-        return self.DEFAULT_IMAGE_FORMAT
-
-
 
     def get_legend_style(self):
         """
@@ -170,11 +144,11 @@ class BasePlot:
 
     def get_weights_size_styles(self):
         """
-           Set up the font properties for the plot title: style (regular, italic), size,  and
+           Set up the font properties for the plot title: style (regular, italic), size, and
            weight (normal, bold) for the title, captions, x-axis label, and y-axis label.
 
            Returns:
-              weights_size_styles: A dictionary  containing the font property information
+              weights_size_styles: A dictionary containing the font property information
                                              for the title, captions, x-axis label, and y-axis label
         """
         weights_size_styles = {}
@@ -299,13 +273,17 @@ class BasePlot:
 
         return None
 
-    def save_to_file(self, **kwargs) -> None:
+    def save_to_file(self, plot_filename=None, **kwargs) -> None:
         """!Saves the plot to a file.
         Add any arguments passed to the function directly to plt.savefig."""
-        image_name = self.get_config_value('plot_filename')
+        image_name = plot_filename if plot_filename else self.get_config_value('plot_filename')
+
+        self.logger.info(f"Saving to file: {image_name} : {datetime.now()}")
         os.makedirs(os.path.dirname(image_name), exist_ok=True)
+        plot_obj = plt if not self.figure else self.figure
         try:
-            plt.savefig(image_name, dpi=self.get_config_value('plot_res'), **kwargs)
+            plot_obj.savefig(image_name, dpi=self.get_config_value('plot_res'), **kwargs)
+            self.logger.info(f"Finished saving plot {datetime.now()}")
         except Exception as ex:
             self.logger.error(f"Failed to save plot to file: {ex}")
         finally:
@@ -357,9 +335,10 @@ class BasePlot:
         np_array = np.array(data)
         return len(np_array.shape)
 
-    def _add_title(self, ax, font_properties):
+    def _add_title(self, ax, font_properties, title_override=None):
+        title = title_override if title_override else self.config_obj.title
         ax.set_title(
-            self.config_obj.title.replace('<br>', '\n'),
+            title.replace('<br>', '\n'),
             fontproperties=font_properties,
             color=constants.DEFAULT_TITLE_COLOR,
             pad=28,
@@ -376,7 +355,7 @@ class BasePlot:
             color=self.config_obj.parameters['caption_col'],
         )
 
-    def _add_legend(self, ax: plt.Axes, handles_and_labels=None) -> None:
+    def _add_legend(self, ax: plt.Axes, handles_and_labels=None, loc='upper center') -> None:
         """Creates a plot legend based on the properties from the config file.
         Note: This should be called after adding the series, because the plot
         labels need to be created before including them in the legend.
@@ -391,15 +370,20 @@ class BasePlot:
         if not handles:
             print("Warning: No labels found. Use ax.plot(..., label='name')")
 
+        # handle plots that only have a single boolean for show legend
+        show_legend = self.config_obj.show_legend
+        if isinstance(show_legend, bool):
+            show_legend = [show_legend] * len(handles)
+
         # only show legend entries that have show_legend set to True
-        filtered_handles = [h for h, show in zip(handles, self.config_obj.show_legend) if show == 1]
-        filtered_labels = [l for l, show in zip(labels, self.config_obj.show_legend) if show == 1]
+        filtered_handles = [h for h, show in zip(handles, show_legend) if show == 1]
+        filtered_labels = [l for l, show in zip(labels, show_legend) if show == 1]
 
         legend = ax.legend(
             handles=filtered_handles,
             labels=filtered_labels,
             bbox_to_anchor=(self.config_obj.bbox_x, self.config_obj.bbox_y),
-            loc='upper center',
+            loc=loc,
             edgecolor=self.config_obj.legend_border_color,
             frameon=self.config_obj.draw_box,
             ncol=max(1, len(handles)) if orientation == "horizontal" else 1,
@@ -434,20 +418,29 @@ class BasePlot:
                     linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
             ax.set_axisbelow(True)
 
-        if not is_vert:
-            if len(self.config_obj.parameters['xlim']) > 0:
-                # TODO: support xlim_step? only used for line plots
-                ax.set_xlim(self.config_obj.parameters['xlim'])
-            elif getattr(self.config_obj, 'start_from_zero', False):
-                xtick_locs = self._get_xtick_locs()
-                if len(xtick_locs) > 0:
-                    ax.set_xlim(min(xtick_locs), max(xtick_locs))
-
-            if self.config_obj.xaxis_reverse:
-                ax.invert_xaxis()
-        else:
+        # if vertical plot is requested, use y-axis settings for x-axis
+        if is_vert:
             if len(self.config_obj.parameters['ylim']) > 0:
                 ax.set_xlim(self.config_obj.parameters['ylim'])
+
+            if self.config_obj.yaxis_reverse:
+                ax.invert_xaxis()
+
+            return
+
+        self._set_xlim(ax)
+
+        if self.config_obj.xaxis_reverse:
+            ax.invert_xaxis()
+
+    def _set_xlim(self, ax: Axes):
+        if len(self.config_obj.parameters.get('xlim', [])) > 0:
+            # TODO: support xlim_step? only used for line plots
+            ax.set_xlim(self.config_obj.parameters['xlim'])
+        elif getattr(self.config_obj, 'start_from_zero', False):
+            xtick_locs = self._get_xtick_locs()
+            if len(xtick_locs) > 0:
+                ax.set_xlim(min(xtick_locs), max(xtick_locs))
 
     def _add_yaxis(self, ax: plt.Axes, fontproperties: FontProperties, label=None, grid_on=None) -> None:
         """
@@ -464,19 +457,13 @@ class BasePlot:
                       labelpad=abs(self.config_obj.parameters['ylab_offset']) * constants.PIXELS_TO_POINTS)
         ax.tick_params(axis="y", direction="in", which="both", labelrotation=self.config_obj.y_tickangle)
 
-        # set y limits if defined in config or if min/max are provided
-        if not is_vert and len(self.config_obj.parameters['ylim']) > 0:
-            ax.set_ylim(self.config_obj.parameters['ylim'])
-
         # add grid lines if requested
         if grid_on:
             ax.grid(True, which='major', axis='y', color=self.config_obj.blended_grid_col, linestyle='-', linewidth=self.config_obj.parameters['grid_lwd'])
             ax.set_axisbelow(True)
 
-        if not is_vert:
-            if len(self.config_obj.parameters['ylim']) > 0:
-                ax.set_ylim(self.config_obj.parameters['ylim'])
-        else:
+        # if vertical plot is requested, use x-axis settings for y-axis
+        if is_vert:
             if self.config_obj.indy_label:
                 xtick_locs = self._get_xtick_locs()
                 ax.set_yticks(xtick_locs, self.config_obj.indy_label)
@@ -487,6 +474,15 @@ class BasePlot:
 
             if self.config_obj.xaxis_reverse:
                 ax.invert_yaxis()
+
+            return
+
+        # set y limits if min/max are defined in config
+        if len(self.config_obj.parameters['ylim']) > 0:
+            ax.set_ylim(self.config_obj.parameters['ylim'])
+
+        if self.config_obj.yaxis_reverse:
+            ax.invert_yaxis()
 
     def _get_xtick_locs(self):
         # use the indices as tick locations
@@ -501,7 +497,21 @@ class BasePlot:
 
         return xtick_locs
 
-    def _add_x2axis(self, ax, n_stats, fontproperties: FontProperties) -> None:
+
+    def _get_nstats(self) -> list:
+        """
+        Calculates n_stats for the x2 axis.
+        Default implementation sums nstat across all active series.
+        """
+        n_stats = [0] * len(self.config_obj.indy_vals)
+        for series in self.series_list:
+            if series.plot_disp:
+                # aggregate number of stats
+                n_stats = list(map(add, n_stats, series.series_points.get('nstat', [])))
+
+        return n_stats
+
+    def _add_x2axis(self, ax, fontproperties: FontProperties) -> None:
         """
         Creates x2axis based on the properties from the config file.
 
@@ -518,24 +528,98 @@ class BasePlot:
         if not self.config_obj.show_nstats:
             return
 
+        num_lines = 1
+        n_stats = self._get_nstats()
+        if n_stats and isinstance(n_stats, list) and len(n_stats) > 0 and isinstance(n_stats[0], list):
+            num_lines = len(n_stats[0])
+
+        # Adjust labelpad based on number of n_stats lines to avoid overlap
+        # Each line takes approximately fontsize points + some spacing
+        extra_pad = 2
+        if num_lines > 1:
+            extra_pad = num_lines * self.config_obj.x2_tickfont_size * 1.2
+
         label_args = {
             'fontproperties': fontproperties,
-            'labelpad': abs(self.config_obj.parameters['x2lab_offset']) * constants.PIXELS_TO_POINTS,
+            'labelpad': (abs(self.config_obj.parameters['x2lab_offset']) * constants.PIXELS_TO_POINTS) + extra_pad,
         }
 
         if not self.config_obj.vert_plot:
             ax_top = ax.secondary_xaxis('top')
             ax_top.set_xlabel('NStats', **label_args)
-            current_locs = ax.get_xticks()
-            ax_top.set_xticks(current_locs, n_stats, size=self.config_obj.x2_tickfont_size)
+            self._set_nstat_ticks(ax, ax_top, n_stats, is_vertical=False)
 
-            # this doesn't appear to be working to add ticks at the top
-            ax_top.tick_params(axis="x", direction="in", labelrotation=self.config_obj.x2_tickangle)
+            # adjust title padding if x2 axis is shown on top
+            if num_lines > 1:
+                ax.set_title(ax.get_title(),
+                             fontproperties=ax.title.get_fontproperties(),
+                             color=ax.title.get_color(),
+                             pad=extra_pad + 15,
+                             x=self.config_obj.parameters['title_align'],
+                             y=self.config_obj.title_offset)
+
         else:
             ax_right = ax.secondary_yaxis('right')
             ax_right.set_ylabel('NStats', **label_args)
+            self._set_nstat_ticks(ax, ax_right, n_stats, is_vertical=True)
+
+    def _set_nstat_ticks(self, ax, ax_secondary, n_stats, is_vertical=False):
+        if not n_stats:
+            return
+
+        if is_vertical:
             current_locs = ax.get_yticks()
-            ax_right.set_yticks(current_locs, n_stats, size=self.config_obj.x2_tickfont_size)
+        else:
+            current_locs = ax.get_xticks()
+
+        # handle single value, single color n_stat (list of strings or ints)
+        if not isinstance(n_stats[0], list):
+            if is_vertical:
+                ax_secondary.set_yticks(current_locs, labels=n_stats, size=self.config_obj.x2_tickfont_size)
+            else:
+                ax_secondary.set_xticks(current_locs, labels=n_stats, size=self.config_obj.x2_tickfont_size)
+            return
+
+        self._set_nstat_ticks_multiple(ax, ax_secondary, current_locs, is_vertical, n_stats)
+
+    def _set_nstat_ticks_multiple(self, ax, ax_secondary, current_locs, is_vertical: bool, n_stats):
+        # handle n_stat for multiple series that are color coded
+        if is_vertical:
+            ax_secondary.set_yticks(current_locs)
+            ax_secondary.set_yticklabels([])
+            transform = ax.get_yaxis_transform()  # X=axes coords, Y=data coords
+        else:
+            ax_secondary.set_xticks(current_locs)
+            ax_secondary.set_xticklabels([])
+            transform = ax.get_xaxis_transform()  # X=data coords, Y=axes coords
+
+        for i, loc in enumerate(current_locs):
+            # Avoid IndexError if current_locs has more ticks than n_stats
+            if i >= len(n_stats):
+                break
+            for j, stat_info in enumerate(n_stats[i]):
+                # Offset position for each series to mimic newlines
+                # Using offset points ensures consistent spacing regardless of plot size
+                if is_vertical:
+                    x, y = 1.0, loc
+                    offset_x = (j * self.config_obj.x2_tickfont_size * 1.2) + 2
+                    offset_y = 0
+                    ha, va = 'left', 'center'
+                else:
+                    x, y = loc, 1.0
+                    offset_x = 0
+                    offset_y = (j * self.config_obj.x2_tickfont_size * 1.2) + 2
+                    ha, va = 'center', 'bottom'
+
+                # Use the main axes 'ax' to add the text with offset points
+                ax.annotate(stat_info['val'],
+                            xy=(x, y),
+                            xycoords=transform,
+                            xytext=(offset_x, offset_y),
+                            textcoords='offset points',
+                            color=stat_info['color'],
+                            ha=ha, va=va,
+                            fontsize=self.config_obj.x2_tickfont_size)
 
     def _add_y2axis(self, ax: plt.Axes, fontproperties: Union[FontProperties, None]):
         """
@@ -642,3 +726,7 @@ class BasePlot:
         offset = (index - (n - 1) / 2.0) * width
         x_locs = base + offset
         return x_locs, width
+
+    def write_output_file(self) -> None:
+        """To be implemented by child class"""
+        pass

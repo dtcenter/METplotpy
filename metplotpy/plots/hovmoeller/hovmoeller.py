@@ -20,23 +20,25 @@ __version__ = '0.1.0'
 """
 Import standard modules
 """
-import os
+
 from datetime import datetime
 import getpass
 import sys
 
 import numpy as np
 import xarray as xr
-import plotly.graph_objects as go
-from netCDF4 import num2date
+import pandas as pd
+
+from matplotlib import pyplot as plt
+import matplotlib.dates as mdates
+
 from metplotpy.plots import util
 from metplotpy.plots.hovmoeller.hovmoeller_config import HovmoellerConfig
-import metcalcpy
 
 """
 Import BasePlot class
 """
-from metplotpy.plots.base_plot_plotly import BasePlot
+from metplotpy.plots.base_plot import BasePlot
 
 
 class Hovmoeller(BasePlot):
@@ -62,66 +64,65 @@ class Hovmoeller(BasePlot):
         # Read in input data
         dataset = self.read_data_set()
         self.time = self.ds.time.sel(
-            time=slice(self.config_obj.date_start, self.config_obj.date_end))
-        self.time_str = self.get_time_str(self.time)
+            time=slice(pd.Timestamp(self.config_obj.date_start),
+                       pd.Timestamp(self.config_obj.date_end)))
         self.lon = self.ds.lon
         self.data = self.lat_avg(dataset,
                                  self.config_obj.lat_min, self.config_obj.lat_max)
         self.lat_str = self.get_lat_str(
             self.config_obj.lat_min, self.config_obj.lat_max)
-
-        self.figure = go.Figure()
+        self.config_obj.title = f"{self.config_obj.title}    {self.lat_str}"
 
         self.create_figure()
 
     def create_figure(self):
-
         self.logger.info(f"Begin creating the figure: {datetime.now()}")
-        contour_plot = go.Contour(
-            z=self.data.values,
-            x=self.lon,
-            y=self.time_str,
-            colorscale=self.get_config_value('colorscale'),
-            contours=dict(start=self.get_config_value('contour_min'),
-                          end=self.get_config_value('contour_max'),
-                          size=self.get_config_value('contour_del'),
-                          showlines=False),
-            colorbar=dict(title=self.data.attrs['units'],
-                          len=0.6,
-                          lenmode='fraction')
+
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
+
+        wts_size_styles = self.get_weights_size_styles()
+
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
+
+        levels = np.arange(self.config_obj.contour_min,
+                           self.config_obj.contour_max + self.config_obj.contour_del,
+                           self.config_obj.contour_del)
+        contour_filled = ax.contourf(
+            self.lon,
+            self.time,
+            self.data.values,
+            levels=levels,
+            cmap=self.get_config_value('colorscale'),
+            extend='both',
         )
 
-        self.logger.info(f"Adding the contour plot: {datetime.now()}")
-        self.figure.add_trace(contour_plot)
+        # add color bar
+        colorbar = plt.colorbar(contour_filled, ax=ax, shrink=0.6, extend='both')
+        colorbar.set_label(self.data.attrs['units'])
 
-        self.logger.info(f"Update the layout: {datetime.now()}")
-        self.figure.update_layout(
-            height=self.config_obj.plot_height,
-            width=self.config_obj.plot_width,
-            title=self.config_obj.title + '    ' + self.lat_str,
-            font=dict(size=self.config_obj.xy_label_fontsize),
-            title_font_size=self.config_obj.title_size,
-            xaxis_title=self.config_obj.xaxis,
-            yaxis_title=self.config_obj.yaxis,
-        )
 
+        self._add_xaxis(ax, wts_size_styles['xlab'])
+        self._add_yaxis(ax, wts_size_styles['ylab'])
+
+        # auto space time values on y-axis and use dynamic formatting
+        locator = mdates.AutoDateLocator()
+        ax.yaxis.set_major_locator(locator)
+        formatter = mdates.ConciseDateFormatter(locator)
+
+        # change day format to Month Day format
+        formatter.formats[2] = '%b %d'
+
+        # change 1st of the month (zero day) to Month Day format
+        formatter.zero_formats[2] = '%b %d'
+
+        ax.yaxis.set_major_formatter(formatter)
+
+        plt.tight_layout()
         self.logger.info(f"Finished creating the figure: {datetime.now()}")
 
-    def get_time_str(self, time):
-        """
-        Generate time string for y-axis labels.
-        :param time: time coordinate
-        :type time: datetime object
-        :return: time_str
-        :rtype: str
-        """
-        ts = (time - np.datetime64('1970-01-01T00:00:00')) / np.timedelta64(1, 'h')
-        date = num2date(ts, 'hours since 1970-01-01T00:00:00Z')
-        time_str = [i.strftime("%Y-%m-%d %H:%M") for i in date]
-
-        return time_str
-
-    def get_lat_str(self, lat_min, lat_max):
+    @staticmethod
+    def get_lat_str(lat_min, lat_max):
         """
         Generate string describing the latitude band averaged over.
         :param lat_min: southern latitude limit of the average
@@ -146,7 +147,8 @@ class Hovmoeller(BasePlot):
 
         return lat_str
 
-    def lat_avg(self, data, lat_min, lat_max):
+    @staticmethod
+    def lat_avg(data, lat_min, lat_max):
         """
         Compute latitudinal average.
         :param data: input data (time, lat, lon)
@@ -189,7 +191,8 @@ class Hovmoeller(BasePlot):
         dataset = self.ds[self.config_obj.var_name]
         self.logger.debug(f"Data for {self.config_obj.var_name}")
         dataset = dataset.sel(
-            time=slice(self.config_obj.date_start, self.config_obj.date_end))
+            time=slice(pd.Timestamp(self.config_obj.date_start),
+                       pd.Timestamp(self.config_obj.date_end)))
 
         dataset = dataset * self.config_obj.unit_conversion
         dataset.attrs['units'] = self.config_obj.var_units
@@ -197,24 +200,6 @@ class Hovmoeller(BasePlot):
         self.logger.info(f"Finished reading input data: {datetime.now()}")
 
         return dataset
-
-    def write_html(self) -> None:
-        """
-        Is needed - creates and saves the html representation of the plot WITHOUT
-        Plotly.js
-        """
-
-        self.logger.info(f"Begin writing html output: {datetime.now()}")
-        if self.config_obj.create_html is True:
-            # construct the fle name from plot_filename
-            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-            html_name = f"{base_name}.html"
-
-            # save html
-            self.figure.write_html(html_name, include_plotlyjs=False)
-
-        self.logger.info(f"Finished writing html output: {datetime.now()}")
-
 
 def main(config_filename=None):
     """

@@ -15,16 +15,13 @@ __author__ = 'Tatiana Burek'
 from datetime import datetime
 import os
 import re
-from operator import add
 
-import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
 import metcalcpy.util.utils as calc_util
 
 from metplotpy.plots import util
-from metplotpy.plots import constants
 from metplotpy.plots.bar.bar_config import BarConfig
 from metplotpy.plots.bar.bar_series import BarSeries
 from metplotpy.plots.base_plot import BasePlot
@@ -167,8 +164,8 @@ class Bar(BasePlot):
         self._add_xaxis(ax, wts_size_styles['xlab'])
         self._add_yaxis(ax, wts_size_styles['ylab'])
 
-        n_stats = self._add_series(ax)
-        self._add_x2axis(ax, n_stats, wts_size_styles['x2lab'])
+        self._add_series(ax)
+        self._add_x2axis(ax, wts_size_styles['x2lab'])
 
         self._add_legend(ax)
 
@@ -177,11 +174,7 @@ class Bar(BasePlot):
             self._add_lines(ax, self.config_obj, self.config_obj.indy_vals)
 
         plt.tight_layout()
-
     def _add_series(self, ax):
-        # placeholder for the number of stats
-        n_stats = [0] * len(self.config_obj.indy_vals)
-
         # add series lines
         for idx, series in enumerate(self.series_list):
 
@@ -189,11 +182,6 @@ class Bar(BasePlot):
             # it isn't requested (as set in the config file)
             if series.plot_disp:
                 self._draw_series(ax, series, idx)
-
-                # aggregate number of stats
-                n_stats = list(map(add, n_stats, series.series_points['nstat']))
-
-        return n_stats
 
     def _draw_series(self, ax: plt.Axes, series: BarSeries, idx: int) -> None:
         """
