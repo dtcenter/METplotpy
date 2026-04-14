@@ -150,12 +150,16 @@ class Eclv(Line):
         """
         self.logger.info(f"Begin creating the figure: {datetime.now()}")
 
-        # create ticktext array similar to x-axis ticktext
-        for idx, val in enumerate(self.x_axis_ticktext):
-            if val != '':
-                x_points.append(n_stats[idx])
+        # some x points could be very close to each other and the x-axis  ticktext is
+        # bunched up do not print the ticktext for the first points by creating the
+        # custom array of x values
+        for ind, val in enumerate(self.series_list[0].series_points[0]['x_pnt']):
+            var_round = round(val, 2)
+            if ind != 0 and var_round < 0.06:
+                self.x_axis_ticktext.append('')
             else:
                 self.x_axis_ticktext.append(var_round)
+
         self.config_obj.indy_label = self.x_axis_ticktext
         self.config_obj.indy_vals = self.series_list[0].series_points[0]['x_pnt']
 
@@ -183,7 +187,7 @@ class Eclv(Line):
 
         plt.tight_layout()
 
-        return x_points
+        self.logger.info(f"Finished creating the figure: {datetime.now()}")
 
     def _add_series(self, ax, ax2=None):
         for series in self.series_list:
