@@ -47,6 +47,7 @@ class Config:
         self.title_color = constants.DEFAULT_TITLE_COLOR
         self.xaxis = self.get_config_value('xaxis')
         self.xaxis_reverse = False
+        self.vert_plot = False
         self.yaxis_1 = self.get_config_value('yaxis_1')
         self.yaxis_2 = self.get_config_value('yaxis_2')
         self.sync_yaxes = False
@@ -743,6 +744,29 @@ class Config:
         # no plot_res value is set, return the default
         # dpi used by matplotlib
         return dpi
+
+    def _get_plot_disp(self) -> list:
+        """
+        Retrieve the values that determine whether to display a particular series
+        and convert them to bool if needed
+
+        Args:
+
+        Returns:
+                A list of boolean values indicating whether or not to
+                display the corresponding series
+            """
+
+        plot_display_config_vals = self.get_config_value('plot_disp')
+        plot_display_bools = []
+        for val in plot_display_config_vals:
+            if isinstance(val, bool):
+                plot_display_bools.append(val)
+
+            if isinstance(val, str):
+                plot_display_bools.append(val.upper() == 'TRUE')
+
+        return self.create_list_by_series_ordering(plot_display_bools)
 
     def _convert_units_to_inches(self, value, units):
         units_lower = units.lower()

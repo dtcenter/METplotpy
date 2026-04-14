@@ -14,9 +14,9 @@ Holds values set in the RevisionSeries plot config file(s)
 """
 import itertools
 from datetime import datetime
-from ..config_plotly import Config
-from .. import constants_plotly as constants
-from .. import util_plotly as util
+from ..config import Config
+from .. import constants
+from .. import util
 
 import metcalcpy.util.utils as utils
 
@@ -49,7 +49,7 @@ class RevisionSeriesConfig(Config):
         ##############################################
         # title parameters
         self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
-        self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
+        self.title_offset = 1.0 + abs(self.parameters['title_offset']) * constants.DEFAULT_TITLE_OFFSET
         self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
@@ -62,11 +62,11 @@ class RevisionSeriesConfig(Config):
         ##############################################
         # x-axis parameters
         self.x_title_font_size = self.parameters['xlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.x_tickangle = self.parameters['xtlab_orient']
-        if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
-            self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
+        # self.x_tickangle = self.parameters['xtlab_orient']
+        # if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
+        #     self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
+        self.x_tickangle = 90
         self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         ##############################################
         # series parameters
@@ -102,106 +102,6 @@ class RevisionSeriesConfig(Config):
         self.revision_ac = self._get_bool('revision_ac')
         self.revision_run = self._get_bool('revision_run')
         self.indy_stagger = self._get_bool('indy_stagger_1')
-
-    def _get_plot_disp(self) -> list:
-        """
-        Retrieve the values that determine whether to display a particular series
-        and convert them to bool if needed
-
-        Args:
-
-        Returns:
-                A list of boolean values indicating whether or not to
-                display the corresponding series
-            """
-
-        plot_display_config_vals = self.get_config_value('plot_disp')
-        plot_display_bools = []
-        for val in plot_display_config_vals:
-            if isinstance(val, bool):
-                plot_display_bools.append(val)
-
-            if isinstance(val, str):
-                plot_display_bools.append(val.upper() == 'TRUE')
-
-        return self.create_list_by_series_ordering(plot_display_bools)
-
-    def _get_markers(self) -> list:
-        """
-           Retrieve all the markers. Convert marker names from
-           the config file into plotly python's marker names.
-
-           Args:
-
-           Returns:
-               markers: a list of the plotly markers
-        """
-        markers = self.get_config_value('series_symbols')
-        markers_list = []
-        for marker in markers:
-            if marker in constants.AVAILABLE_PLOTLY_MARKERS_LIST:
-                # the recognized plotly marker names:
-                # circle-open (for small circle), circle, triangle-up,
-                # square, diamond, or hexagon
-                markers_list.append(marker)
-            else:
-                markers_list.append(constants.PCH_TO_PLOTLY_MARKER[marker])
-        return self.create_list_by_series_ordering(markers_list)
-
-    def _get_markers_size(self) -> list:
-        """
-           Retrieve all the markers. Convert marker names from
-           the config file into plotly python's marker names.
-
-           Args:
-
-           Returns:
-               markers: a list of the plotly markers
-        """
-        markers = self.get_config_value('series_symbols')
-        markers_size = []
-        for marker in markers:
-            if marker in constants.AVAILABLE_PLOTLY_MARKERS_LIST:
-                markers_size.append(marker)
-            else:
-                markers_size.append(constants.PCH_TO_PLOTLY_MARKER_SIZE[marker])
-
-        return self.create_list_by_series_ordering(markers_size)
-
-    def _config_consistency_check(self) -> bool:
-        """
-            Checks that the number of settings defined for plot_ci,
-            plot_disp, series_order, user_legend colors, and series_symbols
-            are consistent.
-
-            Args:
-
-            Returns:
-                True if the number of settings for each of the above
-                settings is consistent with the number of
-                series (as defined by the cross product of the model
-                and vx_mask defined in the series_val_1 setting)
-
-        """
-
-        self.logger.info(f"Begin consistency checK: {datetime.now()}")
-        # Determine the number of series based on the number of
-        # permutations from the series_var setting in the
-        # config file
-
-        # Numbers of values for other settings for series
-        num_plot_disp = len(self.plot_disp)
-        num_markers = len(self.marker_list)
-        num_series_ord = len(self.series_ordering)
-        num_colors = len(self.colors_list)
-        num_legends = len(self.user_legends)
-        status = False
-
-        if self.num_series == num_plot_disp == \
-                num_markers == num_series_ord == num_colors \
-                == num_legends:
-            status = True
-        return status
 
     def _get_user_legends(self, legend_label_type: str = '') -> list:
         """
@@ -247,8 +147,8 @@ class RevisionSeriesConfig(Config):
         for x in reversed(list(all_fields_values_orig.keys())):
             all_fields_values[x] = all_fields_values_orig.get(x)
 
-        if self._get_fcst_vars(1):
-            all_fields_values['fcst_var'] = list(self._get_fcst_vars(1).keys())
+        if self.get_fcst_vars_keys(1):
+            all_fields_values['fcst_var'] = self.get_fcst_vars_keys(1)
 
         stat_name = self.get_config_value('list_stat_1')
         if stat_name is not None:
@@ -279,10 +179,7 @@ class RevisionSeriesConfig(Config):
         """
         # Retrieve the lists from the series_val_1 dictionary
         series_vals_list = self.series_vals_1.copy()
-        if isinstance(self.fcst_var_val_1, list) is True:
-            fcst_vals = self.fcst_var_val_1
-        elif isinstance(self.fcst_var_val_1, dict) is True:
-            fcst_vals = list(self.fcst_var_val_1.values())
+        fcst_vals = list(self.fcst_var_val_1.values())
         fcst_vals_flat = [item for sublist in fcst_vals for item in sublist]
         series_vals_list.append(fcst_vals_flat)
 

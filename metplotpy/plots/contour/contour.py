@@ -18,15 +18,15 @@ from datetime import datetime
 import re
 import csv
 
+from typing import Union
+
 import pandas as pd
 
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from plotly.graph_objects import Figure
+from matplotlib import pyplot as plt
+from matplotlib.colors import ListedColormap
 
-from metplotpy.plots.constants_plotly import PLOTLY_PAPER_BGCOOR
-from metplotpy.plots.base_plot_plotly import BasePlot
-from metplotpy.plots import util_plotly as util
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots import util
 from metplotpy.plots.contour.contour_config import ContourConfig
 from metplotpy.plots.contour.contour_series import ContourSeries
 from metplotpy.plots.series import Series
@@ -35,8 +35,7 @@ import metcalcpy.util.utils as calc_util
 
 
 class Contour(BasePlot):
-    """  Generates a Plotly contour plot
-    """
+    """Generates a contour plot"""
 
     defaults_name = 'contour_defaults.yaml'
 
@@ -62,21 +61,7 @@ class Contour(BasePlot):
         self.logger.info(f"Start contour plot: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
-        self.logger.info("Consistency checking of config settings for colors,legends, etc.")
-        is_config_consistent = self.config_obj._config_consistency_check()
-        if not is_config_consistent:
-            self.logger.error("ValueError: The number of series defined by "
-                                 "series_val_1 is inconsistent with the number of "
-                                 "settings required for describing each series. "
-                                 "Please check  the number of your configuration"
-                                 " file's  plot_disp, series_order, user_legend,"
-                                 " colors settings. ")
-            raise ValueError("The number of series defined by series_val_1 is"
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check"
-                             " the number of your configuration file's "
-                             " plot_disp, series_order, user_legend,"
-                             " colors settings.")
+        self.config_obj.config_consistency_check()
 
         # Read in input data, location specified in config file
         self.logger.info(f"Begin reading input data: {datetime.now()}")
@@ -89,25 +74,14 @@ class Contour(BasePlot):
             self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
             self.logger.info(f"Event equalization complete: {datetime.now()}")
 
-        # Create a list of series objects.
-        # Each series object contains all the necessary information for plotting,
-        # such as
-        # line width, and criteria needed to subset the input dataframe.
         self.series_list = self._create_series(self.input_df)
 
-        # create figure
-        # pylint:disable=assignment-from-no-return
-        # Need to have a self.figure that we can pass along to
-        # the methods in base_plot.py (BasePlot class methods) to
-        # create binary versions of the plot.
         self._create_figure()
 
     def __repr__(self):
-        """ Implement repr which can be useful for debugging this
-            class.
-        """
+        """Implement repr which can be useful for debugging this class."""
 
-        return f'Counture({self.parameters!r})'
+        return f'Countur({self.parameters!r})'
 
     def _read_input_data(self):
         """
@@ -140,7 +114,6 @@ class Contour(BasePlot):
 
         self.logger.info(f"Generating series objects: {datetime.now()}")
         # add series for y1 axis
-        num_series_y1 = len(self.config_obj.get_series_y())
         for i, name in enumerate(self.config_obj.get_series_y()):
             series_obj = ContourSeries(self.config_obj, i, input_data, series_list, name)
             series_list.append(series_obj)
@@ -158,50 +131,60 @@ class Contour(BasePlot):
 
         self.logger.info(f"Creating the figure: {datetime.now()}")
         # create and draw the plot
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_legend()
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
-        for series in self.series_list:
+        wts_size_styles = self.get_weights_size_styles()
 
-            # Don't generate the plot for this series if
-            # it isn't requested (as set in the config file)
-            if series.plot_disp:
-                self._draw_series(series)
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
+
+        self._add_series(ax)
+
+        xlab_style = wts_size_styles['xlab'] if not self.config_obj.vert_plot else wts_size_styles['ylab']
+        ylab_style = wts_size_styles['ylab'] if not self.config_obj.vert_plot else wts_size_styles['xlab']
+        self._add_xaxis(ax, xlab_style, grid_on=False)
+        self._add_yaxis(ax, ylab_style, grid_on=False)
+
+        plt.tight_layout()
+
+        self.logger.info(f"Figure creating complete: {datetime.now()}")
+
+    def _add_series(self, ax):
+
+        # display only 5 tick labels on the x-axis if
+        # - it is a date and
+        # - the size of labels is more than 5 and
+        # - user did not provide custom labels (the x values and labels array are the same)
 
         x_points_index = list(range(0, len(self.config_obj.indy_vals)))
         ordered_indy_label = self.config_obj.create_list_by_plot_val_ordering(self.config_obj.indy_label)
 
-        # display only 5 tick labels on teh x-axis if
-        # - it is a date and
-        # - the size of labels is more than 5 and
-        # - user did not provide custom  labels (the x values and labels array are the same)
-
-        if self.config_obj.reverse_x is True:
+        if self.config_obj.xaxis_reverse:
             ordered_indy_label.reverse()
 
-        if self.config_obj.indy_var in ['fcst_init_beg', 'fcst_valid_beg'] \
-                and len(self.config_obj.indy_vals) > 5 \
-                and ordered_indy_label == self.series_list[0].series_points['x']:
+        if (self.config_obj.indy_var in ['fcst_init_beg', 'fcst_valid_beg']
+                and len(self.config_obj.indy_vals) > 5
+                and ordered_indy_label == self.series_list[0].series_points['x']):
             step = int(len(self.config_obj.indy_vals) / 5)
             ordered_indy_label_new = [''] * len(self.config_obj.indy_vals)
             for i in range(0, len(ordered_indy_label), step):
                 ordered_indy_label_new[i] = ordered_indy_label[i]
             ordered_indy_label = ordered_indy_label_new
 
-        self.figure.update_layout(
-            xaxis={
-                'tickmode': 'array',
-                'tickvals': x_points_index,
-                'ticktext': ordered_indy_label,
-                'type': 'category',
-                'ticks': "outside"
-            }
-        )
-        self.logger.info(f"Figure creating complete: {datetime.now()}")
+        self.config_obj.indy_label = ordered_indy_label
+        self.config_obj.indy_vals = x_points_index
 
-    def _draw_series(self, series: Series) -> None:
+        # add series points
+        for series in self.series_list:
+
+            # Don't generate the plot for this series if
+            # it isn't requested (as set in the config file)
+            if not series.plot_disp:
+                continue
+
+            self._draw_series(ax, series)
+
+    def _draw_series(self, ax, series: Series) -> None:
         """
         Draws the data
 
@@ -209,180 +192,49 @@ class Contour(BasePlot):
         """
         self.logger.info(f"Drawing the data: {datetime.now()}")
         line_width = self.config_obj.linewidth_list[series.idx]
-        if self.config_obj.add_contour_overlay is False:
+        if not self.config_obj.add_contour_overlay:
             line_width = 0
 
-        # apply y axis limits
-        if len(self.config_obj.parameters['ylim']) > 0:
-            zmin = self.config_obj.parameters['ylim'][0]
-            zmax = self.config_obj.parameters['ylim'][1]
-            zauto = False
-        else:
-            zmin = None
-            zmax = None
-            zauto = True
+        ylim = self.config_obj.parameters.get('ylim', [])
+        z_range = {'vmin': ylim[0], 'vmax': ylim[1]} if len(ylim) > 0 else {'vmin': None,
+                                                                            'vmax': None}
 
-        self.figure.add_trace(
-            go.Contour(
-                z=series.series_points['z'],
-                x=series.series_points['x'],
-                y=series.series_points['y'],
-                showscale=self.config_obj.add_color_bar,
-                ncontours=self.config_obj.contour_intervals,
-                line={'color': self.config_obj.colors_list[series.idx],
-                      'width': line_width,
-                      'dash': self.config_obj.linestyles_list[series.idx],
-                      'smoothing': 0},
-                contours={
-                    # 'size': 10,
-                    'showlabels': True,
-                    'labelfont': {  # label font properties
-                        'size': 10,
-                        'color': self.config_obj.colors_list[series.idx]
-                    }
-                },
-                colorscale=self.config_obj.color_palette,
-                zmin=zmin,
-                zmax=zmax,
-                zauto=zauto
+        # add filled contours
+        contour_filled = ax.contourf(
+            series.series_points['x'],
+            series.series_points['y'],
+            series.series_points['z'],
+            levels=self.config_obj.contour_intervals,
+            cmap=ListedColormap(self.config_obj.color_palette),
+            **z_range
+        )
+
+        # add lines
+        if line_width > 0:
+            contour_lines = ax.contour(
+                series.series_points['x'],
+                series.series_points['y'],
+                series.series_points['z'],
+                levels=self.config_obj.contour_intervals,
+                colors=self.config_obj.colors_list[series.idx],
+                linewidths=line_width,
+                linestyles=self.config_obj.linestyles_list[series.idx],
+                **z_range
             )
-        )
+
+            # add line labels
+            ax.clabel(
+                contour_lines,
+                inline=True,
+                fontsize=10,
+                colors=self.config_obj.colors_list[series.idx]
+            )
+
+        # add color bar
+        if self.config_obj.add_color_bar:
+            plt.colorbar(contour_filled, ax=ax, ticks=contour_filled.levels)
+
         self.logger.info(f"Finished drawing data: {datetime.now()}")
-
-    def _create_layout(self) -> Figure:
-        """
-        Creates a new layout based on the properties from the config file
-        including plots size, annotation and title
-
-        :return: Figure object
-        """
-        # create annotation
-        annotation = [
-            {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-                                             self.config_obj.parameters['caption_weight']),
-             'align': 'left',
-             'showarrow': False,
-             'xref': 'paper',
-             'yref': 'paper',
-             'x': self.config_obj.parameters['caption_align'],
-             'y': self.config_obj.caption_offset,
-             'font': {
-                 'size': self.config_obj.caption_size,
-                 'color': self.config_obj.parameters['caption_col']
-             }
-             }]
-        # create title
-        title = {'text': util.apply_weight_style(self.config_obj.title,
-                                                 self.config_obj.parameters['title_weight']),
-                 'font': {
-                     'size': self.config_obj.title_font_size,
-                 },
-                 'y': self.config_obj.title_offset,
-                 'x': self.config_obj.parameters['title_align'],
-                 'xanchor': 'center',
-                 'xref': 'paper'
-                 }
-
-        # create a layout and allow y2 axis
-        fig = make_subplots(specs=[[{"secondary_y": self.allow_secondary_y}]])
-
-        # add size, annotation, title
-        fig.update_layout(
-            width=self.config_obj.plot_width,
-            height=self.config_obj.plot_height,
-            margin=self.config_obj.plot_margins,
-            paper_bgcolor=PLOTLY_PAPER_BGCOOR,
-            annotations=annotation,
-            title=title,
-            plot_bgcolor=PLOTLY_PAPER_BGCOOR
-        )
-        return fig
-
-    def _add_xaxis(self) -> None:
-        """
-        Configures and adds x-axis to the plot
-        """
-        self.figure.update_xaxes(title_text=self.config_obj.xaxis,
-                                 showgrid=False,
-                                 zeroline=False,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.x_title_font_size
-                                 },
-                                 title_standoff=abs(self.config_obj.parameters['xlab_offset']),
-                                 tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size}
-                                 )
-
-    def _add_yaxis(self) -> None:
-        """
-        Configures and adds y-axis to the plot
-        """
-        self.figure.update_yaxes(title_text=
-                                 util.apply_weight_style(self.config_obj.yaxis_1,
-                                                         self.config_obj.parameters['ylab_weight']),
-                                 secondary_y=False,
-                                 showgrid=False,
-                                 zeroline=False,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.y_title_font_size
-                                 },
-                                 title_standoff=abs(self.config_obj.parameters['ylab_offset']),
-                                 tickangle=self.config_obj.y_tickangle,
-                                 tickfont={'size': self.config_obj.y_tickfont_size}
-                                 )
-
-    def _add_legend(self) -> None:
-        """
-        Creates a plot legend based on the properties from the config file
-        and attaches it to the initial Figure
-        """
-        self.figure.update_layout(legend={'x': self.config_obj.bbox_x,
-                                          'y': self.config_obj.bbox_y,
-                                          'xanchor': 'center',
-                                          'yanchor': 'top',
-                                          'bordercolor': self.config_obj.legend_border_color,
-                                          'borderwidth': self.config_obj.legend_border_width,
-                                          'orientation': self.config_obj.legend_orientation,
-                                          'font': {
-                                              'size': self.config_obj.legend_size,
-                                              'color': "black"
-                                          }
-                                          })
-
-    def remove_file(self):
-        """
-           Removes previously made image file .  Invoked by the parent class before self.output_file
-           attribute can be created, but overridden here.
-        """
-
-        super().remove_file()
-        self._remove_html()
-
-    def _remove_html(self) -> None:
-        """
-        Removes previously made HTML file.
-        """
-
-        base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-        html_name = f"{base_name}.html"
-
-        # remove the old file if it exist
-        if os.path.exists(html_name):
-            os.remove(html_name)
-
-    def write_html(self) -> None:
-        """
-        Is needed - creates and saves the html representation of the plot WITHOUT Plotly.js
-        """
-        if self.config_obj.create_html is True:
-            # construct the file name from plot_filename
-            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-            html_name = f"{base_name}.html"
-
-            # save html
-            self.figure.write_html(html_name, include_plotlyjs=False)
 
     def write_output_file(self) -> None:
         """
@@ -423,7 +275,7 @@ class Contour(BasePlot):
                     writer.writerows(series.series_points['z'])
                     file.writelines('\n')
                     file.writelines('\n')
-                file.close()
+
         self.logger.info(f"Finished writing output file: {datetime.now()}")
 
 

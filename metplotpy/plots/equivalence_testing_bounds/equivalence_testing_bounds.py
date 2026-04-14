@@ -18,19 +18,16 @@ import re
 import csv
 
 import pandas as pd
+import numpy as np
 
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from plotly.graph_objects import Figure
+from matplotlib import pyplot as plt
 
-from metplotpy.plots.constants_plotly import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
-    PLOTLY_PAPER_BGCOOR
 from metplotpy.plots.equivalence_testing_bounds.equivalence_testing_bounds_series \
     import EquivalenceTestingBoundsSeries
 from metplotpy.plots.line.line_config import LineConfig
 from metplotpy.plots.line.line_series import LineSeries
-from metplotpy.plots.base_plot_plotly import BasePlot
-from metplotpy.plots import util_plotly as util
+from metplotpy.plots.base_plot import BasePlot
+from metplotpy.plots import util
 
 import metcalcpy.util.utils as calc_util
 
@@ -61,16 +58,7 @@ class EquivalenceTestingBounds(BasePlot):
         self.logger.info(f"Start equivalence testing bounds:  {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
-        is_config_consistent = self.config_obj._config_consistency_check()
-        if not is_config_consistent:
-            error_msg = ("The number of series defined by series_val_1/2 and derived"
-                        " curves is inconsistent with the number of settings"
-                        " required for describing each series. Please check"
-                        " the number of your configuration file's plot_i,"
-                        " plot_disp, series_order, user_legend,"
-                        " colors, show_legend and series_symbols settings.")
-            self.logger.error(f"ValueError: {error_msg}: {datetime.now()}")
-            raise ValueError(error_msg)
+        self.config_obj.config_consistency_check()
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
@@ -87,11 +75,6 @@ class EquivalenceTestingBounds(BasePlot):
         # line width, and criteria needed to subset the input dataframe.
         self.series_list = self._create_series(self.input_df)
 
-        # create figure
-        # pylint:disable=assignment-from-no-return
-        # Need to have a self.figure that we can pass along to
-        # the methods in met_plot.py (BasePlot class methods) to
-        # create binary versions of the plot.
         self._create_figure()
 
     def __repr__(self):
@@ -184,8 +167,7 @@ class EquivalenceTestingBounds(BasePlot):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
-        self.logger.info(f"Finished creating series object:"
-                         f" {datetime.now()}")
+        self.logger.info(f"Finished creating series object: {datetime.now()}")
         return series_list
 
     def _create_figure(self):
@@ -195,322 +177,122 @@ class EquivalenceTestingBounds(BasePlot):
         self.logger.info(f"Creating the figure: {datetime.now()}")
 
         # create and draw the plot
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_y2axis()
-        self._add_legend()
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
-        # add series lines
+        wts_size_styles = self.get_weights_size_styles()
+
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
+
+        ax_y2 = None
+        if self.config_obj.parameters['list_stat_2']:
+            ax_y2 = self._add_y2axis(ax, wts_size_styles['y2lab'])
+
+        handles_and_labels = self._add_series(ax, ax_y2)
+
+        xlab_style = wts_size_styles['xlab'] if not self.config_obj.vert_plot else wts_size_styles['ylab']
+        ylab_style = wts_size_styles['ylab'] if not self.config_obj.vert_plot else wts_size_styles['xlab']
+        self._add_xaxis(ax, xlab_style)
+        self._add_yaxis(ax, ylab_style, grid_on=False)
+        # if y limits are not set, use -1 to 1
+        if not getattr(self.config_obj, 'vert_plot', False) and not len(self.config_obj.parameters['ylim']):
+            ax.set_ylim(-1, 1)
+
+        self._add_legend(ax, handles_and_labels)
+
+        # add custom lines
+        self._add_lines(ax, self.config_obj, self.config_obj.indy_vals)
+
+        plt.tight_layout()
+
+        self.logger.info(f"Finished creating the figure: {datetime.now()}")
+
+    def _add_series(self, ax, ax2):
+        handles_and_labels = []
         ind = 0
         for series in self.series_list:
 
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
             if series.plot_disp:
-                self._draw_series(series, ind)
+                handle = self._draw_series(ax, ax2, series, ind)
+                handles_and_labels.append((handle, handle.get_label()))
                 ind = ind + 1
 
-        self.logger.info(f"Finished creating the figure: {datetime.now()}")
+        return handles_and_labels
 
-    def _draw_series(self, series: LineSeries, ind: int) -> None:
+    def _draw_series(self, ax, ax2, series: LineSeries, ind: int):
         """
         Draws the formatted ETB line on the plot
 
         :param series: EquivalenceTestingBounds series object with data and parameters
-        :param x_points_index_adj: values for adjusting x-values position
+        :param ind: index of the series
         """
 
         self.logger.info(f"Start drawing the lines on the plot: {datetime.now()}")
         ci_tost_up = series.series_points['ci_tost'][1]
         ci_tost_lo = series.series_points['ci_tost'][0]
         dif = series.series_points['dif']
-        # add the plot
-        self.figure.add_trace(
-            go.Scatter(x=[dif],
-                       y=[ind],
-                       showlegend=self.config_obj.show_legend[series.idx] == 1,
-                       mode=self.config_obj.mode[series.idx],
-                       textposition="top right",
-                       name=self.config_obj.user_legends[series.idx],
-                       connectgaps=self.config_obj.con_series[series.idx] == 1,
-                       line={'color': self.config_obj.colors_list[series.idx],
-                             'width': self.config_obj.linewidth_list[series.idx],
-                             'dash': self.config_obj.linestyles_list[series.idx]},
-                       marker_symbol=self.config_obj.marker_list[series.idx],
-                       marker_color=self.config_obj.colors_list[series.idx],
-                       marker_line_color=self.config_obj.colors_list[series.idx],
-                       marker_size=self.config_obj.marker_size[series.idx],
-                       error_x={'type': 'data',
-                                'symmetric': False,
-                                'array': [ci_tost_up - dif],
-                                'arrayminus': [dif - ci_tost_lo],
-                                'visible': True,
-                                'thickness': self.config_obj.linewidth_list[series.idx],
-                                'width': 0
-                                }
-                       ),
-            secondary_y=series.y_axis != 1
-        )
-        # add bounds lines
-        self.figure.add_shape(type="line",
-                              x0=series.series_points['eqbound'][0],
-                              y0=0,
-                              x1=series.series_points['eqbound'][0],
-                              y1=1,
-                              yref='paper',
-                              xref='x',
-                              line={'color': self.config_obj.colors_list[series.idx],
-                                    'width': 1,
-                                    'dash': 'dash'
-                                    }
-                              )
 
-        self.figure.add_shape(type="line",
-                              x0=series.series_points['eqbound'][1],
-                              y0=0,
-                              x1=series.series_points['eqbound'][1],
-                              y1=1,
-                              yref='paper',
-                              xref='x',
-                              line={'color': self.config_obj.colors_list[series.idx],
-                                    'width': 1,
-                                    'dash': 'dash'
-                                    }
-                              )
+        x_points = [dif]
+        y_points = [ind]
+
+        # add the plot
+        # convert to a numpy array to change None values to NaN
+        asymmetric_error = np.array([
+            ci_tost_up - dif,
+            dif - ci_tost_lo
+        ], dtype=float).reshape(2, 1)
+
+        # determine which y-axis to use for the plot
+        plot_ax = ax if series.y_axis == 1 else ax2
+
+        # plot error bar
+        plot_mode = self.config_obj.mode[series.idx]
+        marker = self.config_obj.marker_list[series.idx] if 'markers' in plot_mode else None
+        line_style = self.config_obj.linestyles_list[series.idx] if 'lines' in plot_mode else 'None'
+
+        # Swap x and y data if vertical plot
+        plot_x = y_points if self.config_obj.vert_plot else x_points
+        plot_y = x_points if self.config_obj.vert_plot else y_points
+
+        # Swap error bars (yerr becomes xerr) if vertical plot
+        x_err_val = asymmetric_error if not self.config_obj.vert_plot else None
+        y_err_val = asymmetric_error if self.config_obj.vert_plot else None
+
+        plot_obj = plot_ax.errorbar(
+            x=plot_x,
+            y=plot_y,
+            label=self.config_obj.user_legends[series.idx],
+            # line style
+            color=self.config_obj.colors_list[series.idx],
+            linestyle=line_style,
+            linewidth=self.config_obj.linewidth_list[series.idx],
+            # marker style
+            marker=marker,
+            markersize=self.config_obj.marker_size[series.idx],
+            markeredgecolor=self.config_obj.colors_list[series.idx],
+            markerfacecolor=self.config_obj.colors_list[series.idx],
+            # error bar
+            xerr=x_err_val,
+            yerr=y_err_val,
+            elinewidth=self.config_obj.linewidth_list[series.idx],
+            capsize=5,
+        )
+
+        # add bounds lines
+        x = [series.series_points['eqbound'][0], series.series_points['eqbound'][0]]
+        if len(self.config_obj.parameters['ylim']) > 0:
+            y = [self.config_obj.parameters['ylim'][0], self.config_obj.parameters['ylim'][1]]
+        else:
+            y = [-1, 1]
+        ax.plot(x, y, color=self.config_obj.colors_list[series.idx], linewidth=1, linestyle='--')
+
+        x = [series.series_points['eqbound'][1], series.series_points['eqbound'][1]]
+        ax.plot(x, y, color=self.config_obj.colors_list[series.idx], linewidth=1, linestyle='--')
 
         self.logger.info(f"Finished drawing the lines on the plot: {datetime.now()}")
-
-    def _create_layout(self) -> Figure:
-        """
-        Creates a new layout based on the properties from the config file
-        including plots size, annotation and title
-
-        :return: Figure object
-        """
-        # create annotation
-        annotation = [
-            {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-                                             self.config_obj.parameters[
-                                                 'caption_weight']),
-             'align': 'left',
-             'showarrow': False,
-             'xref': 'paper',
-             'yref': 'paper',
-             'x': self.config_obj.parameters['caption_align'],
-             'y': self.config_obj.caption_offset,
-             'font': {
-                 'size': self.config_obj.caption_size,
-                 'color': self.config_obj.parameters['caption_col']
-             }
-             }]
-        # create title
-        title = {'text': util.apply_weight_style(self.config_obj.title,
-                                                 self.config_obj.parameters[
-                                                     'title_weight']),
-                 'font': {
-                     'size': self.config_obj.title_font_size,
-                 },
-                 'y': self.config_obj.title_offset,
-                 'x': self.config_obj.parameters['title_align'],
-                 'xanchor': 'center',
-                 'xref': 'paper'
-                 }
-
-        # create a layout and allow y2 axis
-        fig = make_subplots(specs=[[{"secondary_y": True}]])
-
-        # add size, annotation, title
-        fig.update_layout(
-            width=self.config_obj.plot_width,
-            height=self.config_obj.plot_height,
-            margin=self.config_obj.plot_margins,
-            paper_bgcolor=PLOTLY_PAPER_BGCOOR,
-            annotations=annotation,
-            title=title,
-            plot_bgcolor=PLOTLY_PAPER_BGCOOR
-        )
-        return fig
-
-    def _add_xaxis(self) -> None:
-        """
-        Configures and adds x-axis to the plot
-        """
-        self.figure.update_xaxes(title_text=self.config_obj.xaxis,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 ticks="inside",
-                                 zeroline=False,
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.x_title_font_size
-                                 },
-                                 title_standoff=abs(
-                                     self.config_obj.parameters['xlab_offset']),
-                                 tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size}
-                                 )
-
-    def _add_yaxis(self) -> None:
-        """
-        Configures and adds y-axis to the plot
-        """
-        self.figure.update_yaxes(title_text=
-                                 util.apply_weight_style(self.config_obj.yaxis_1,
-                                                         self.config_obj.parameters[
-                                                             'ylab_weight']),
-                                 secondary_y=False,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=False,
-                                 zeroline=False,
-                                 ticks="",
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.y_title_font_size
-                                 },
-                                 title_standoff=abs(
-                                     self.config_obj.parameters['ylab_offset']) + 15,
-                                 tickangle=self.config_obj.y_tickangle,
-                                 tickfont={'size': self.config_obj.y_tickfont_size},
-                                 showticklabels=False
-                                 )
-
-    def _add_y2axis(self) -> None:
-        """
-        Adds y2-axis if needed
-        """
-        if self.config_obj.parameters['list_stat_2']:
-            self.figure.update_yaxes(title_text=
-                                     util.apply_weight_style(self.config_obj.yaxis_2,
-                                                             self.config_obj.parameters[
-                                                                 'y2lab_weight']),
-                                     secondary_y=True,
-                                     linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                     linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                     showgrid=False,
-                                     zeroline=False,
-                                     ticks="inside",
-                                     title_font={
-                                         'size': self.config_obj.y2_title_font_size
-                                     },
-                                     title_standoff=abs(
-                                         self.config_obj.parameters['y2lab_offset']),
-                                     tickangle=self.config_obj.y2_tickangle,
-                                     tickfont={'size': self.config_obj.y2_tickfont_size}
-                                     )
-
-    def _add_legend(self) -> None:
-        """
-        Creates a plot legend based on the properties from the config file
-        and attaches it to the initial Figure
-        """
-        self.figure.update_layout(legend={'x': self.config_obj.bbox_x,
-                                          'y': self.config_obj.bbox_y,
-                                          'xanchor': 'center',
-                                          'yanchor': 'top',
-                                          'bordercolor':
-                                              self.config_obj.legend_border_color,
-                                          'borderwidth':
-                                              self.config_obj.legend_border_width,
-                                          'orientation':
-                                              self.config_obj.legend_orientation,
-                                          'font': {
-                                              'size': self.config_obj.legend_size,
-                                              'color': "black"
-                                          }
-                                          })
-
-    def _add_x2axis(self, n_stats) -> None:
-        """
-        Creates x2axis based on the properties from the config file
-        and attaches it to the initial Figure
-
-        :param n_stats: - labels for the axis
-        """
-        if self.config_obj.show_nstats:
-            x_points_index = list(range(0, len(n_stats)))
-            self.figure.update_layout(xaxis2={'title_text':
-                                                  util.apply_weight_style('NStats',
-                                                                          self.config_obj.parameters[
-                                                                              'x2lab_weight']
-                                                                          ),
-                                              'linecolor': PLOTLY_AXIS_LINE_COLOR,
-                                              'linewidth': PLOTLY_AXIS_LINE_WIDTH,
-                                              'overlaying': 'x',
-                                              'side': 'top',
-                                              'showgrid': False,
-                                              'zeroline': False,
-                                              'ticks': "inside",
-                                              'title_font': {
-                                                  'size':
-                                                      self.config_obj.x2_title_font_size
-                                              },
-                                              'title_standoff': abs(
-                                                  self.config_obj.parameters[
-                                                      'x2lab_offset']
-                                              ),
-                                              'tickmode': 'array',
-                                              'tickvals': x_points_index,
-                                              'ticktext': n_stats,
-                                              'tickangle': self.config_obj.x2_tickangle,
-                                              'tickfont': {
-                                                  'size':
-                                                      self.config_obj.x2_tickfont_size
-                                              },
-                                              'scaleanchor': 'x'
-                                              }
-                                      )
-
-            # need to add an invisible line with all values = None
-            self.figure.add_trace(
-                go.Scatter(y=[None] * len(x_points_index), x=x_points_index,
-                           xaxis='x2', showlegend=False)
-            )
-
-    def remove_file(self):
-        """
-           Removes previously made image file .  Invoked by the parent class before
-           self.output_file
-           attribute can be created, but overridden here.
-        """
-
-        super().remove_file()
-        self._remove_html()
-
-    def _remove_html(self) -> None:
-        """
-        Removes previously made HTML file.
-        """
-        base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-        html_name = f"{base_name}.html"
-
-        # remove the old file if it exist
-        if os.path.exists(html_name):
-            os.remove(html_name)
-
-    def write_html(self) -> None:
-        """
-        Is needed - creates and saves the html representation of the plot WITHOUT
-        Plotly.js
-        """
-
-        self.logger.info(f"Write html file: {datetime.now()}")
-
-        if self.config_obj.create_html is True:
-            # construct the file name from plot_filename
-            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-            html_name = f"{base_name}.html"
-
-            # save html
-            self.figure.write_html(html_name, include_plotlyjs=False)
-
-        self.logger.info(f"Finished writing html file: {datetime.now()}")
+        return plot_obj
 
     def write_output_file(self) -> None:
         """
@@ -558,7 +340,7 @@ class EquivalenceTestingBounds(BasePlot):
             os.makedirs(os.path.dirname(filename), exist_ok=True)
 
             # save points
-            self._save_points(ci_tost_df.values.tolist(), filename)
+            self._save_points(ci_tost_df.to_numpy().tolist(), filename)
 
         self.logger.info(f"Finished writing the output file: {datetime.now()}")
 

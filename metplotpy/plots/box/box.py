@@ -200,19 +200,6 @@ class Box(BasePlot):
         if len(self.series_list) > 0:
             self._add_lines(ax, self.config_obj, self.config_obj.indy_vals)
 
-    def _sync_yaxes(self, ax, ax2, yaxis_min: Union[float, None], yaxis_max: Union[float, None]):
-        if not self.config_obj.sync_yaxes:
-            return
-
-        # set y limits if defined in config or if min/max are provided
-        if len(self.config_obj.parameters['ylim']) > 0:
-            yaxis_min = self.config_obj.parameters['ylim'][0]
-            yaxis_max = self.config_obj.parameters['ylim'][1]
-
-        if yaxis_min is not None and yaxis_max is not None:
-            ax.set_ylim(yaxis_min, yaxis_max)
-            ax2.set_ylim(yaxis_min, yaxis_max)
-
     def _draw_series(self, ax: plt.Axes, ax2, series: BoxSeries, idx: int):
         """
         Draws the boxes on the plot

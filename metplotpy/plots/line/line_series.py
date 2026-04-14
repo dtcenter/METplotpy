@@ -26,7 +26,7 @@ import metcalcpy.util.correlation as pg
 from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
-import metplotpy.plots.util_plotly as util
+import metplotpy.plots.util as util
 from ..series import Series
 from .. import GROUP_SEPARATOR
 

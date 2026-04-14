@@ -138,7 +138,7 @@ class Reliability(BasePlot):
 
         self.logger.info(f"Begin creating the lines on the reliability plot: {datetime.now()}")
 
-        fig, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
         wts_size_styles = self.get_weights_size_styles()
 
@@ -150,17 +150,17 @@ class Reliability(BasePlot):
             # create inset or create 2nd y-axis
             if self.config_obj.inset_hist:
                 ax2 = ax.inset_axes((0.08, 0.7, 0.47, 0.28))
+                self._add_xaxis(ax2, wts_size_styles['xlab'])
+                ax2.set_xlim(0, 1)
             else:
                 ax2 = self._add_y2axis(ax, None)
 
-            self._add_xaxis(ax2, wts_size_styles['xlab'])
-            ax2.set_xlim(0, 1)
             self._add_yaxis(ax2, wts_size_styles['ylab'], label="# Forecasts", grid_on=True)
 
             # format large numbers like 3 million as 3M
             ax2.yaxis.set_major_formatter(ticker.EngFormatter())
 
-        self._add_series(ax, ax2)
+        handles_and_labels = self._add_series(ax, ax2)
 
         self._add_xaxis(ax, wts_size_styles['xlab'])
         ax.set_xlim(0, 1)
@@ -168,7 +168,7 @@ class Reliability(BasePlot):
         ax.set_ylim(0, 1)
         ax.set_yticks(np.linspace(0, 1, 11))
 
-        self._add_legend(ax)
+        self._add_legend(ax, handles_and_labels)
 
         self._add_custom_lines(ax)
 
@@ -183,6 +183,7 @@ class Reliability(BasePlot):
             self._add_lines(ax, self.config_obj, self.config_obj.indy_vals)
 
     def _add_series(self, ax, ax2):
+        handles_and_labels = []
         # calculate stag adjustments
         stag_adjustments = self._calc_stag_adjustments()
 
@@ -199,7 +200,10 @@ class Reliability(BasePlot):
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
             if series.plot_disp:
-                self._draw_series(ax, ax2, series, x_points_index_adj, index)
+                handle = self._draw_series(ax, ax2, series, x_points_index_adj, index)
+                handles_and_labels.append((handle, handle.get_label()))
+
+        return handles_and_labels
 
     def _draw_series(self, ax, ax2, series: ReliabilitySeries, x_points_index_adj: list, idx) -> None:
         """
@@ -213,11 +217,6 @@ class Reliability(BasePlot):
         if series.idx == 0:
             self._add_noskill_polygon(ax, series.series_points['stat_value'][0])
 
-        # determine whether to add to the inset plot or the main plot
-        plot_ax = ax
-        if self.config_obj.inset_hist:
-            plot_ax = ax2
-
         if self.config_obj.rely_event_hist and 'n_i' in series.series_points:
 
             n_visible_series = sum(1 for s in self.series_list if s.plot_disp)
@@ -226,7 +225,7 @@ class Reliability(BasePlot):
             offset = (idx - (n - 1) / 2.0) * width
             x_locs = [item + offset for item in x_points_index_adj]
 
-            plot_ax.bar(x=x_locs, height=series.series_points['n_i'].tolist(), align='center',
+            ax2.bar(x=x_locs, height=series.series_points['n_i'].tolist(), align='center',
                         width=width,
                         color=self.config_obj.colors_list[series.idx],
                         label="Absolute_cases")
@@ -250,7 +249,7 @@ class Reliability(BasePlot):
         marker = self.config_obj.marker_list[series.idx] if 'markers' in plot_mode else None
         line_style = self.config_obj.linestyles_list[series.idx] if 'lines' in plot_mode else 'None'
 
-        ax.errorbar(
+        plot_obj = ax.errorbar(
             x=x_points_index_adj,
             y=y_points,
             label=self.config_obj.user_legends[series.idx],
@@ -269,6 +268,7 @@ class Reliability(BasePlot):
         )
 
         self.logger.info(f"Finished with bar plot and skill lines :{datetime.now()}")
+        return plot_obj
 
     def _add_noskill_polygon(self, ax, o_bar: Union[float, None]) -> None:
         """

@@ -15,9 +15,9 @@ Holds values set in the Contour plot config file(s)
 """
 __author__ = 'Tatiana Burek'
 
-from ..config_plotly import Config
-from .. import constants_plotly as constants
-from .. import util_plotly as util
+from ..config import Config
+from .. import constants
+from .. import util
 
 import metcalcpy.util.utils as utils
 
@@ -45,16 +45,16 @@ class ContourConfig(Config):
         self.log_filename = self.get_config_value('log_filename')
 
         # plot parameters
-        self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
-        self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
-        self.plot_margins = dict(l=0,
-                                 r=self.parameters['mar'][3] + 20,
-                                 t=self.parameters['mar'][2] + 80,
-                                 b=self.parameters['mar'][0] + 80,
-                                 pad=5
-                                 )
+        self.plot_width = self.calculate_plot_dimension('plot_width')
+        self.plot_height = self.calculate_plot_dimension('plot_height')
+        self.plot_margins = {
+            'l': 0,
+            'r': self.parameters['mar'][3] + 20,
+            't': self.parameters['mar'][2] + 80,
+            'b': self.parameters['mar'][0] + 80,
+            'pad': 5,
+        }
         self.dump_points_1 = self._get_bool('dump_points_1')
-        self.create_html = self._get_bool('create_html')
         self.plot_stat = self._get_plot_stat()
 
         ##############################################
@@ -66,7 +66,7 @@ class ContourConfig(Config):
         ##############################################
         # title parameters
         self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
-        self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
+        self.title_offset = 1.0 + abs(self.parameters['title_offset']) * constants.DEFAULT_TITLE_OFFSET
         self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
@@ -84,7 +84,6 @@ class ContourConfig(Config):
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
         self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         ##############################################
 
@@ -120,9 +119,14 @@ class ContourConfig(Config):
         ##############################################
         self.contour_intervals = self.get_config_value('contour_intervals')
         self.color_palette = self._get_colorscale()
+        if self.contour_intervals > len(self.color_palette) - 1:
+            print(f"WARNING: Number of contour intervals ({self.contour_intervals}) "
+                  f"is more than the number of colors in the color palette ({len(self.color_palette)})."
+                  f" Setting contour intervals to {len(self.color_palette) - 1}")
+            self.contour_intervals = len(self.color_palette) - 1
         self.add_color_bar = self._get_bool('add_color_bar')
-        self.reverse_x = self._get_bool('reverse_x')
-        self.reverse_y = self._get_bool('reverse_y')
+        self.xaxis_reverse = self._get_bool('reverse_x') or self._get_bool('xaxis_reverse')
+        self.yaxis_reverse = self._get_bool('reverse_y') or self._get_bool('yaxis_reverse')
         self.add_contour_overlay = self._get_bool('add_contour_overlay')
 
     def _get_colorscale(self):
@@ -135,32 +139,9 @@ class ContourConfig(Config):
         """
         color_palette = self.get_config_value('color_palette')
         if color_palette not in util.COLORSCALES.keys():
-            print(f'WARNING: Color pallet {color_palette} doesn\'t supported. Using default pallet')
+            print(f"WARNING: Color pallet {color_palette} doesn't supported. Using default pallet")
             color_palette = 'green_red'
         return util.COLORSCALES[color_palette]
-
-    def _get_plot_disp(self) -> list:
-        """
-        Retrieve the values that determine whether to display a particular series
-        and convert them to bool if needed
-
-        Args:
-
-        Returns:
-                A list of boolean values indicating whether or not to
-                display the corresponding series
-            """
-
-        plot_display_config_vals = self.get_config_value('plot_disp')
-        plot_display_bools = []
-        for val in plot_display_config_vals:
-            if isinstance(val, bool):
-                plot_display_bools.append(val)
-
-            if isinstance(val, str):
-                plot_display_bools.append(val.upper() == 'TRUE')
-
-        return self.create_list_by_series_ordering(plot_display_bools)
 
     def _get_fcst_vars(self, index):
         """
@@ -188,56 +169,22 @@ class ContourConfig(Config):
 
         return fcst_var_val_dict
 
-    def _get_linestyles(self) -> list:
+    def config_consistency_check(self) -> None:
+        """Checks that the number of settings are consistent with number of series.
+
+           @raises ValueError if any of settings are inconsistent with the
+            number of series (as defined by the cross product of the model
+            and vx_mask defined in the series_val_1 setting)
         """
-           Retrieve all the line styles. Convert line style names from
-           the config file into plotly python's line style names.
-
-           Args:
-
-           Returns:
-               line_styles: a list of the plotly line styles
-        """
-        line_styles = self.get_config_value('series_line_style')
-        line_style_list = []
-        for line_style in line_styles:
-            if line_style in constants.LINE_STYLE_TO_PLOTLY_DASH.keys():
-                line_style_list.append(constants.LINE_STYLE_TO_PLOTLY_DASH[line_style])
-            else:
-                line_style_list.append(None)
-        return self.create_list_by_series_ordering(line_style_list)
-
-    def _config_consistency_check(self) -> bool:
-        """
-            Checks that the number of settings defined for plot_ci,
-            plot_disp, series_order, user_legend colors, and series_symbols
-            are consistent.
-
-            Args:
-
-            Returns:
-                True if the number of settings for each of the above
-                settings is consistent with the number of
-                series (as defined by the cross product of the model
-                and vx_mask defined in the series_val_1 setting)
-
-        """
-        # Determine the number of series based on the number of
-        # permutations from the series_var setting in the
-        # config file
-
-        # Numbers of values for other settings for series
-        num_plot_disp = len(self.plot_disp)
-        num_series_ord = len(self.series_ordering)
-        num_legends = len(self.user_legends)
-        num_line_widths = len(self.linewidth_list)
-        num_linestyles = len(self.linestyles_list)
-        status = False
-
-        if 1 == num_plot_disp == num_series_ord \
-                == num_legends == num_line_widths == num_linestyles:
-            status = True
-        return status
+        lists_to_check = {
+            "plot_disp": self.plot_disp,
+            "series_ordering": self.series_ordering,
+            "colors_list": self.colors_list,
+            "user_legends": self.user_legends,
+            "linewidth_list": self.linewidth_list,
+            "linestyles_list": self.linestyles_list,
+        }
+        self._config_compare_lists_to_num_series(lists_to_check)
 
     def _get_user_legends(self, legend_label_type: str = '') -> list:
         """
@@ -275,8 +222,8 @@ class ContourConfig(Config):
             """
 
         all_fields_values = {}
-        if self._get_fcst_vars(1):
-            all_fields_values['fcst_var'] = list(self._get_fcst_vars(1).keys())
+        if self.get_fcst_vars_keys(1):
+            all_fields_values['fcst_var'] = self.get_fcst_vars_keys(1)
 
         stat_name = self.get_config_value('list_stat_1')
         if stat_name is not None:

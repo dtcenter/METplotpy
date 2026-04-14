@@ -131,29 +131,6 @@ class ReliabilityConfig(Config):
             self.legend_orientation = 'h'
         self.legend_border_color = "black"
 
-    def _get_plot_disp(self) -> list:
-        """
-        Retrieve the values that determine whether to display a particular series
-        and convert them to bool if needed
-
-        Args:
-
-        Returns:
-                A list of boolean values indicating whether or not to
-                display the corresponding series
-            """
-
-        plot_display_config_vals = self.get_config_value('plot_disp')
-        plot_display_bools = []
-        for val in plot_display_config_vals:
-            if isinstance(val, bool):
-                plot_display_bools.append(val)
-
-            if isinstance(val, str):
-                plot_display_bools.append(val.upper() == 'TRUE')
-
-        return self.create_list_by_series_ordering(plot_display_bools)
-
     def _get_fcst_vars(self, index):
         """
            Retrieve a list of the inner keys (fcst_vars) to the fcst_var_val dictionary.

@@ -148,35 +148,11 @@ class BoxConfig(Config):
             self.showfliers = False
             self.boxpoints = 'all'
         elif self._get_bool('box_outline'):
-            self.whis = 2.5
             self.boxpoints = 'outliers'
         else:
             self.whis = [0, 100]
             self.showfliers = False
             self.boxpoints = False
-
-    def _get_plot_disp(self) -> list:
-        """
-        Retrieve the values that determine whether to display a particular series
-        and convert them to bool if needed
-
-        Args:
-
-        Returns:
-                A list of boolean values indicating whether or not to
-                display the corresponding series
-            """
-
-        plot_display_config_vals = self.get_config_value('plot_disp')
-        plot_display_bools = []
-        for val in plot_display_config_vals:
-            if isinstance(val, bool):
-                plot_display_bools.append(val)
-
-            if isinstance(val, str):
-                plot_display_bools.append(val.upper() == 'TRUE')
-
-        return self.create_list_by_series_ordering(plot_display_bools)
 
     def _get_fcst_vars(self, index):
         """

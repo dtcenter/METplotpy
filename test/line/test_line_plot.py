@@ -37,7 +37,6 @@ from metplotpy.plots.line import line
         "line_groups.png",
         "line_groups.points1",
         "line_groups.points2",
-        "line_groups.html",
     ]),
     ("custom_line_groups2.yaml", [
         "line_groups2.png",

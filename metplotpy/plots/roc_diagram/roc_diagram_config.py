@@ -234,30 +234,6 @@ class ROCDiagramConfig(Config):
         series_order_list = list(ordinals)
         return series_order_list
 
-
-    def _get_plot_disp(self):
-        """
-            Retrieve the boolean values that determine whether to display a particular series
-
-            Args:
-
-            Returns:
-                A list of boolean values indicating whether or not to
-                display the corresponding series
-        """
-
-        plot_display_config_vals = self.get_config_value('plot_disp')
-        plot_display_bools = []
-        for p in plot_display_config_vals:
-            if str(p).upper() == "TRUE":
-                plot_display_bools.append(True)
-            else:
-                plot_display_bools.append(False)
-
-        plot_display_bools_ordered = self.create_list_by_series_ordering(plot_display_bools)
-        return plot_display_bools_ordered
-
-
     def _get_point_thresh(self):
         """
             Retrieve the value (true/false) of the add_point_threshold
