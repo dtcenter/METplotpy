@@ -127,6 +127,7 @@ class ContourConfig(Config):
         self.xaxis_reverse = self._get_bool('reverse_x') or self._get_bool('xaxis_reverse')
         self.yaxis_reverse = self._get_bool('reverse_y') or self._get_bool('yaxis_reverse')
         self.add_contour_overlay = self._get_bool('add_contour_overlay')
+        self.contour_density_threshold = self.get_config_value('contour_density_threshold')
 
     def _get_colorscale(self):
         """

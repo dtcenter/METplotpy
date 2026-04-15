@@ -21,9 +21,11 @@ import csv
 from typing import Union
 
 import pandas as pd
+import numpy as np
 
 from matplotlib import pyplot as plt
-from matplotlib.colors import ListedColormap
+import matplotlib.ticker as ticker
+from matplotlib.colors import ListedColormap, BoundaryNorm
 
 from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots import util
@@ -193,25 +195,23 @@ class Contour(BasePlot):
         :param series: Contour series object with data and parameters
         """
         self.logger.info(f"Drawing the data: {datetime.now()}")
-        line_width = self.config_obj.linewidth_list[series.idx]
-        if not self.config_obj.add_contour_overlay:
-            line_width = 0
 
         ylim = self.config_obj.parameters.get('ylim', [])
         z_range = {'vmin': ylim[0], 'vmax': ylim[1]} if len(ylim) > 0 else {'vmin': None,
                                                                             'vmax': None}
 
-        # add filled contours
-        contour_filled = ax.contourf(
-            series.series_points['x'],
-            series.series_points['y'],
-            series.series_points['z'],
-            levels=self.config_obj.contour_intervals,
-            cmap=ListedColormap(self.config_obj.color_palette),
-            **z_range
-        )
+        # use contourf if the number of points is less than the threshold
+        # otherwise use pcolormesh
+        if np.array(series.series_points['z']).size < self.config_obj.contour_density_threshold:
+            self._draw_series_contourf(series=series, ax=ax, z_range=z_range)
+        else:
+            self._draw_series_pcolormesh(series=series, ax=ax)
 
         # add lines
+        line_width = self.config_obj.linewidth_list[series.idx]
+        if not self.config_obj.add_contour_overlay:
+            line_width = 0
+
         if line_width > 0:
             contour_lines = ax.contour(
                 series.series_points['x'],
@@ -232,11 +232,53 @@ class Contour(BasePlot):
                 colors=self.config_obj.colors_list[series.idx]
             )
 
+        self.logger.info(f"Finished drawing data: {datetime.now()}")
+
+    def _draw_series_contourf(self, series: Series, ax, z_range) -> None:
+        # add filled contours
+        contour_filled = ax.contourf(
+            series.series_points['x'],
+            series.series_points['y'],
+            series.series_points['z'],
+            levels=self.config_obj.contour_intervals,
+            cmap=ListedColormap(self.config_obj.color_palette),
+            **z_range,
+        )
+
         # add color bar
         if self.config_obj.add_color_bar:
             plt.colorbar(contour_filled, ax=ax, ticks=contour_filled.levels)
 
-        self.logger.info(f"Finished drawing data: {datetime.now()}")
+    def _draw_series_pcolormesh(self, series: Series, ax) -> None:
+        ylim = self.config_obj.parameters.get('ylim', [])
+
+        # Ensure boundaries cover your desired ylim range
+        # Filter or pad boundaries to stay within [ylim[0], ylim[1]]
+        if len(ylim) > 0:
+            vmin, vmax = float(ylim[0]), float(ylim[1])
+        else:
+            vmin = np.min(series.series_points['z'])
+            vmax = np.max(series.series_points['z'])
+
+        locator = ticker.MaxNLocator(nbins=self.config_obj.contour_intervals, steps=[1, 2, 5, 10])
+        boundaries = locator.tick_values(vmin, vmax)
+
+        cmap = ListedColormap(self.config_obj.color_palette)
+        norm = BoundaryNorm(boundaries, ncolors=cmap.N)
+
+        # add filled contours
+        mesh = ax.pcolormesh(
+            series.series_points['x'],
+            series.series_points['y'],
+            series.series_points['z'],
+            norm=norm,
+            cmap=cmap,
+            shading='auto',
+        )
+
+        # add color bar
+        if self.config_obj.add_color_bar:
+            plt.colorbar(mesh, ax=ax, ticks=boundaries)
 
     def write_output_file(self) -> None:
         """
