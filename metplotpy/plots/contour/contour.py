@@ -257,8 +257,8 @@ class Contour(BasePlot):
         if len(ylim) > 0:
             vmin, vmax = float(ylim[0]), float(ylim[1])
         else:
-            vmin = np.min(series.series_points['z'])
-            vmax = np.max(series.series_points['z'])
+            vmin = np.nanmin(series.series_points['z'])
+            vmax = np.nanmax(series.series_points['z'])
 
         locator = ticker.MaxNLocator(nbins=self.config_obj.contour_intervals, steps=[1, 2, 5, 10])
         boundaries = locator.tick_values(vmin, vmax)
