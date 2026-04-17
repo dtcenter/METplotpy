@@ -29,7 +29,8 @@ class MprPlotConfig(Config):
 
         self.wind_rose_breaks = self.get_config_value('wind_rose_breaks')
         self.wind_rose_angle = self.get_config_value('wind_rose_angle')
-        self.wind_rose_marker_colors = self.get_config_value('wind_rose_marker_colors')
+        marker_colors = self.get_config_value('wind_rose_marker_colors')
+        self.wind_rose_marker_colors = [self._format_color(color) for color in marker_colors]
 
         if len(self.wind_rose_marker_colors) != len(self.wind_rose_breaks):
             raise ValueError('wind_rose_marker_colors must have the same size as wind_rose_breaks')
@@ -44,5 +45,5 @@ class MprPlotConfig(Config):
         self.mpr_file_list = self.get_config_value('mpr_file_list')
         self.width = self.get_config_value('width')
         self.height = self.get_config_value('height')
-        self.marker_color = self.get_config_value('marker_color')
+        self.marker_color = self._format_color(self.get_config_value('marker_color'))
         self.show_in_browser = self.get_config_value('show_in_browser')

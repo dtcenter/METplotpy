@@ -9,11 +9,12 @@
 
 """
 Class Name: revision_box.py
- """
+"""
 import os
 import re
 from datetime import datetime
-import plotly.graph_objects as go
+
+import numpy as np
 
 from metplotpy.plots.base_plot import BasePlot
 
@@ -21,9 +22,10 @@ from metplotpy.plots.box.box import Box
 from metplotpy.plots import util
 
 import metcalcpy.util.utils as calc_util
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH
+
 from metplotpy.plots.revision_box.revision_box_config import RevisionBoxConfig
 from metplotpy.plots.revision_box.revision_box_series import RevisionBoxSeries
+from metplotpy.plots.constants import MPL_DEFAULT_BOX_WIDTH
 
 
 class RevisionBox(Box):
@@ -51,14 +53,7 @@ class RevisionBox(Box):
         self.logger.info(f"Begin revision box plotting: {datetime.now()}")
 
         # Check that we have all the necessary settings for each series
-        is_config_consistent = self.config_obj._config_consistency_check()
-        if not is_config_consistent:
-            raise ValueError("The number of series defined by series_val_1  is"
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check"
-                             " the number of your configuration file's plot_i,"
-                             " plot_disp, series_order, user_legend,"
-                             " colors, show_legend and series_symbols settings.")
+        self.config_obj.config_consistency_check()
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
@@ -107,7 +102,7 @@ class RevisionBox(Box):
         series_list = []
 
         # add series for y1 axis
-        for i, name in enumerate(self.config_obj.get_series_y()):
+        for i, name in enumerate(self.config_obj.get_series_y(1)):
             series_obj = RevisionBoxSeries(self.config_obj, i, input_data, series_list, name)
             series_list.append(series_obj)
 
@@ -121,126 +116,66 @@ class RevisionBox(Box):
         """ Create a box plot from default and custom parameters"""
 
         self.logger.info(f"Begin creating the figure: {datetime.now()}")
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_legend()
+
+        self._create_annotation()
+
+        # set the x-axis labels to match the user legends
+        self.config_obj.indy_label = self.config_obj.user_legends
+
+        super()._create_figure()
+
+        self.logger.info(f"Finished creating figure: {datetime.now()}")
+
+    def _create_annotation(self):
+        if not self.config_obj.revision_run and not self.config_obj.revision_ac:
+            self.config_obj.plot_caption = None
+            return
 
         annotation_text_all = ''
         for inx, series in enumerate(self.series_list):
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
-            if series.plot_disp:
-                self._draw_series(series)
-                # construct annotation text
-                annotation_text = series.user_legends + ': '
-                if self.config_obj.revision_run:
-                    annotation_text = annotation_text + 'WW Runs Test:' + series.series_points['revision_run'] + ' '
+            if not series.plot_disp:
+                continue
 
-                if self.config_obj.revision_ac:
-                    annotation_text = annotation_text + "Auto-Corr Test: p=" \
-                                      + series.series_points['auto_cor_p'] \
-                                      + ", r=" + series.series_points['auto_cor_r']
+            # construct annotation text
+            annotation_text = f"{series.user_legends}: "
+            if self.config_obj.revision_run:
+                annotation_text += f"WW Runs Test: {series.series_points['revision_run']} "
 
-                annotation_text_all = annotation_text_all + annotation_text
-                if inx < len(self.series_list) - 1:
-                    annotation_text_all = annotation_text_all + '<br>'
+            if self.config_obj.revision_ac:
+                annotation_text += (
+                    f"Auto-Corr Test: p={series.series_points['auto_cor_p']}, "
+                    f"r={series.series_points['auto_cor_r']}"
+                )
 
-        # add custom lines
-        if len(self.series_list) > 0:
-            self._add_lines(
-                self.config_obj,
-                sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique())
-            )
+            annotation_text_all += annotation_text
+            if inx < len(self.series_list) - 1:
+                annotation_text_all += '\n'
 
-        # apply y axis limits
-        self._yaxis_limits()
+        self.config_obj.plot_caption = annotation_text_all
 
-        # add Auto-Corr Test and/or WW Runs Test results if needed
-        if self.config_obj.revision_run or self.config_obj.revision_ac:
-            self.figure.add_annotation(text=annotation_text_all,
-                                       align='left',
-                                       showarrow=False,
-                                       xref='paper',
-                                       yref='paper',
-                                       x=0,
-                                       yanchor='bottom',
-                                       xanchor='left',
-                                       y=1,
-                                       font={
-                                           'size': self.config_obj.legend_size,
-                                           'color': "black"
-                                       },
-                                       bordercolor=self.config_obj.legend_border_color,
-                                       borderwidth=0
-                                       )
-
-            self.logger.info(f"Finished creating figure: {datetime.now()}")
-
-    def _draw_series(self, series: RevisionBoxSeries) -> None:
+    def _add_caption(self, plt, font_properties):
         """
-        Draws the boxes on the plot
-
-        :param series: RevisionBoxSeries object with data and parameters
+        Adds a caption to the top left of the plot, just below the title.
+        Always uses the same position regardless of the config file settings.
         """
+        if self.config_obj.plot_caption:
+            plt.figtext(0.06, 0.90, self.config_obj.plot_caption,
+                        fontproperties=font_properties,
+                        color=self.config_obj.parameters['caption_col'],
+                        ha='left')
 
-        self.logger.info(f"Begin drawing series: {datetime.now()}")
-        # defaults markers and colors for the regular box plot
-        line_color = dict(color='rgb(0,0,0)')
-        fillcolor = series.color
-        marker_color = 'rgb(0,0,0)'
-        marker_line_color = 'rgb(0,0,0)'
-        marker_symbol = 'circle-open'
+    def _add_custom_lines(self, ax):
+        return
 
-        # markers and colors for points only  plot
-        if self.config_obj.box_pts:
-            line_color = dict(color='rgba(0,0,0,0)')
-            fillcolor = 'rgba(0,0,0,0)'
-            marker_color = series.color
-            marker_symbol = 'circle'
-            marker_line_color = series.color
+    def _get_data_to_plot(self, series):
+        return series.series_points['points']['stat_value'].dropna().values
 
-        # create a trace
-        self.figure.add_trace(
-            go.Box(  # x=[series.idx],
-                y=series.series_points['points']['stat_value'].tolist(),
-                notched=self.config_obj.box_notch,
-                line=line_color,
-                fillcolor=fillcolor,
-                name=series.user_legends,
-                showlegend=self.config_obj.show_legend[series.idx] == 1,
-                boxmean=self.config_obj.box_avg,
-                boxpoints=self.config_obj.boxpoints,  # outliers, all, False
-                pointpos=0,
-                marker=dict(size=4,
-                            color=marker_color,
-                            line=dict(
-                                width=1,
-                                color=marker_line_color
-                            ),
-                            symbol=marker_symbol,
-                            ),
-                jitter=0
-            )
-        )
-
-        self.logger.info(f"Finished drawing series:{datetime.now()}")
-
-    def _add_xaxis(self) -> None:
-        """
-        Configures and adds x-axis to the plot
-        """
-        self.figure.update_xaxes(title_text=self.config_obj.xaxis,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 title_font={
-                                     'size': self.config_obj.x_title_font_size
-                                 },
-                                 title_standoff=abs(self.config_obj.parameters['xlab_offset']),
-                                 tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size},
-                                 tickmode='linear'
-                                 )
+    def _get_x_locs_and_width(self, x_points, index):
+        base = np.arange(len(self.config_obj.indy_label))
+        x_locs = [base[index]]
+        return x_locs, MPL_DEFAULT_BOX_WIDTH
 
     def write_output_file(self) -> None:
         """

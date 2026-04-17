@@ -26,14 +26,14 @@ class HovmoellerConfig(Config):
             Returns:
 
         """
-
         # init common layout
         super().__init__(parameters)
 
         self.data_dir = self.get_config_value('input_data_dir')
         self.input_data_file = self.get_config_value('input_data_file')
         self.log_level = str(self.get_config_value('log_level')).upper()
-        self.xy_label_fontsize = self.get_config_value('xy_label_font_size')
+        self.x_title_font_size = self.get_config_value('xy_label_font_size')
+        self.y_title_font_size = self.get_config_value('xy_label_font_size')
         self.title_size = self.get_config_value('title_size')
         self.date_start = self.get_config_value('date_start')
         self.date_end = self.get_config_value('date_end')
@@ -47,5 +47,7 @@ class HovmoellerConfig(Config):
         self.contour_del = self.get_config_value('contour_del')
         self.colorscale = self.get_config_value('colorscale')
         self.xaxis = self.get_config_value('xaxis')
-        self.yaxis = self.get_config_value('yaxis')
-        self.create_html = self.get_config_value('create_html')
+        self.yaxis_1 = self.get_config_value('yaxis')
+        self.plot_res = self._get_plot_resolution()
+        self.plot_width = self.calculate_plot_dimension('plot_width')
+        self.plot_height = self.calculate_plot_dimension('plot_height')

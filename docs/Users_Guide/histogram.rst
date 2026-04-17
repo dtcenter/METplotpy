@@ -96,7 +96,7 @@ configuration file, which serves as a starting point for creating a
 will be built.
 
 **NOTE**: This default configuration file is automatically loaded by
-**histogram.py, rank_hist.py, prob_hist.py, and rel_hist.py.**
+**hist.py, rank_hist.py, prob_hist.py, and rel_hist.py.**
 
 
 .. literalinclude:: ../../metplotpy/plots/config/hist_defaults.yaml

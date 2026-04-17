@@ -35,7 +35,8 @@ log_filename: stdout
 
 
 # not used in this plot, but needed by the base config
-plot_units: in
+plot_units: pixels
+plot_res: 100
 xlab_align: 0.5
 xlab_offset: 2
 xlab_size: 1

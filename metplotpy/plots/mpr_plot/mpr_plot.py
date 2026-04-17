@@ -19,12 +19,10 @@ import pandas as pd
 import numpy as np
 import yaml
 
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import plotly.io as pio
+from matplotlib import pyplot as plt
+from matplotlib.gridspec import GridSpec
 
 from metplotpy.plots.base_plot import BasePlot
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, PLOTLY_PAPER_BGCOOR
 
 from metplotpy.plots.mpr_plot.mpr_plot_config import MprPlotConfig
 from metplotpy.plots.wind_rose.wind_rose import WindRosePlot
@@ -33,15 +31,10 @@ from metplotpy.plots import util
 
 class MprPlotInfo():
     """
-    A placeholder for the  plot. Contains a plotly traces and the additional parameters
+    A placeholder for the plot. Contains additional parameters
     """
 
     def __init__(self):
-
-
-        # plotly traces for the plot
-        self.traces = []
-
         # plot't title
         self.title = None
 
@@ -119,19 +112,16 @@ class MprPlot(BasePlot):
             if not self.input_df:
                 self.input_df = filtered
             else:
-                # self.input_df = self.input_df.append(filtered)
                 self.input_df = pd.concat([self.input_df, filtered])
 
         self.logger.info(f"Finished reading input data: {datetime.now()}")
 
-    def _create_figure(self) -> go.Figure:
+    def _create_figure(self) -> plt.Figure:
         """
-            Initialise the figure and add Wnd roses traces
-
-            Args:
+            Initialise the figure and add subplots
 
             Returns:
-                    Multipanel plot as Plotly figure
+                    Multipanel plot as Matplotlib figure
             """
         self.logger.info(f"Begin creating the figure: {datetime.now()}")
 
@@ -151,133 +141,27 @@ class MprPlot(BasePlot):
         # find unique cases
         cases = self.input_df['CASE'].unique()
 
-        # each case has at least 2 rows (4 plots)
-        n_rows = len(cases) * 2
+        # Calculate total rows
+        n_rows = 0
+        for case in cases:
+            n_rows += 2  # for histograms and scatter/qq
+            if self.config_obj.wind_rose:
+                case_subset = self.input_df[self.input_df['CASE'] == case]
+                if case_subset['FCST_VAR'].iloc[0] == 'UGRD':
+                    n_rows += 6  # 3 wind roses * 2 rows each
+
+        fig = plt.figure(figsize=(self.config_obj.width / 100, self.config_obj.height / 100))
+        gs = GridSpec(n_rows, 2, figure=fig)
 
         # Loop through each of the cases and create plots
-        self._create_plots(cases)
-
-        # Initialize figure with subplots
-        subplot_titles = []
-        specs = []
-        for plot_info in self.plot_info_list:
-            # collect titles
-            subplot_titles.append(plot_info.title)
-
-            # add additional specs for the wind rose
-            if plot_info.col == 1:
-                if isinstance(plot_info.traces[0], go.Barpolar):
-                    n_rows = n_rows + 2
-                    specs.append([{'type': 'polar', 'colspan': 2, 'rowspan': 2}, None])
-                    specs.append([None, None])
-                else:
-                    specs.append([{}, {}])
-
-        fig = make_subplots(rows=int(n_rows), cols=2,
-                            subplot_titles=subplot_titles,
-                            shared_yaxes=False, specs=specs)
-
-        fig.update_xaxes(
-            linecolor=PLOTLY_AXIS_LINE_COLOR,
-            linewidth=PLOTLY_AXIS_LINE_WIDTH,
-            showgrid=False,
-            ticks="outside",
-            zeroline=False,
-            automargin=True
-        )
-
-        fig.update_yaxes(
-            secondary_y=False,
-            linecolor=PLOTLY_AXIS_LINE_COLOR,
-            linewidth=PLOTLY_AXIS_LINE_WIDTH,
-            showgrid=False,
-            zeroline=False,
-            ticks="outside",
-            automargin=True
-        )
-
-        # add plots and traces to it's specified locations
-        for plot_info in self.plot_info_list:
-            if not isinstance(plot_info.traces[0], go.Barpolar):
-                # for line plots
-                for trace in plot_info.traces:
-                    fig.add_trace(trace, row=plot_info.row, col=plot_info.col)
-
-                fig.update_xaxes(title_text=plot_info.xaxes['title_text'],
-                                 range=plot_info.xaxes['range'],
-                                 row=plot_info.row, col=plot_info.col)
-                fig.update_yaxes(title_text=plot_info.yaxes['title_text'],
-                                 # range=plot_info.yaxes['range'],
-                                 row=plot_info.row, col=plot_info.col)
-            else:
-                # for wind rose
-                for trace in plot_info.traces:
-                    fig.add_trace(trace, row=plot_info.row, col=plot_info.col)
-
-        # additional setings for the wind rose plots
-        fig.update_polars(
-            bgcolor=PLOTLY_PAPER_BGCOOR,
-            hole=0.08,
-            angularaxis_thetaunit="degrees",
-            angularaxis_rotation=90,
-            angularaxis_direction='clockwise',
-            angularaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
-            angularaxis_tickvals=self.config_obj.angularaxis_tickvals,
-            angularaxis_ticktext=self.config_obj.angularaxis_ticktext,
-            angularaxis_tickmode='array',
-            radialaxis_angle=135,
-            radialaxis_tickmode='linear',
-            radialaxis_tickangle=100,
-            radialaxis_tick0=5,
-            radialaxis_dtick=5,
-
-            radialaxis_gridcolor=PLOTLY_AXIS_LINE_COLOR,
-            radialaxis_showticklabels=True,
-            radialaxis_ticksuffix='%'
-        )
-
-        # general settings
-        fig.update_layout(
-            showlegend=False,
-            plot_bgcolor=PLOTLY_PAPER_BGCOOR,
-            bargap=0,
-            margin=dict(
-                l=50,
-                r=50,
-                b=100,
-                t=100,
-                pad=4
-            ),
-            autosize=False,
-            width=self.config_obj.width,
-            height=self.config_obj.height,
-        )
-
-        self.logger.info(f"Finished creating the figure: {datetime.now()}")
-        return fig
-
-    def _create_plots(self, cases: np.ndarray) -> None:
-        """
-        For the each case create a set of plots:
-        - histogram for forecast
-        - histogram for obs
-        - scatter plot
-        - Q-Q plot
-        - wind rose plots for forecast, obs winds and wind error (if requested)
-        Calculates the position and the title for each plot
-        :param cases:  list of unique cases
-        :return:
-        """
-
-        self.logger.info(f"Creating a plot for each case {datetime.now()}")
-        row_n = 1
-        for case_ind, case in enumerate(cases):
+        curr_row = 0
+        for case in cases:
             # Get the subset for this case
             case_subset = self.input_df[self.input_df['CASE'] == case]
             case_subset.reset_index(inplace=True, drop=True)
             case_name_1 = f"{case_subset['MODEL'][0]}: {case_subset['FCST_VAR'][0]} at {case_subset['FCST_LEV'][0]}"
             case_name_2 = f"{case_subset['OBTYPE'][0]}, {case_subset['VX_MASK'][0]}, {case_subset['INTERP_MTHD'][0]} ({case_subset['INTERP_PNTS'][0]})"
-            case_title = f"{case_name_1}<br>{case_name_2}"
+            case_title = f"{case_name_1}\n{case_name_2}"
             wind_case_title = f"{case_name_1}, {case_name_2}"
 
             fcst_obs_data = pd.concat([case_subset['FCST'], case_subset['OBS']])
@@ -285,31 +169,27 @@ class MprPlot(BasePlot):
             n_bins = util.pretty(min(fcst_obs_data), max(fcst_obs_data), number_of_intervals)
 
             # histogram for forecast
-            info_fcst = self._create_histogtam(case_title, case_subset, n_bins, 'FCST')
-            if info_fcst:
-                info_fcst.row = row_n
-                self.plot_info_list.append(info_fcst)
+            ax_fcst = fig.add_subplot(gs[curr_row, 0])
+            self._create_histogram(ax_fcst, case_title, case_subset, n_bins, 'FCST')
 
             # histogram for obs
-            info_obs = self._create_histogtam(case_title, case_subset, n_bins, 'OBS')
-            if info_obs:
-                info_obs.row = row_n
-                self.plot_info_list.append(info_obs)
+            ax_obs = fig.add_subplot(gs[curr_row, 1])
+            self._create_histogram(ax_obs, case_title, case_subset, n_bins, 'OBS')
 
-            row_n = row_n + 1
-            # create trend line
-            trend_line = self._create_trend_line(case_subset)
+            curr_row += 1
+
+            # create trend line coords
+            x_trend, y_trend = self._create_trend_line(case_subset)
 
             # Create a scatter plot
-            scatter = self._create_scatter_plot(case_title, case_subset, trend_line)
-            scatter.row = row_n
-            self.plot_info_list.append(scatter)
+            ax_scatter = fig.add_subplot(gs[curr_row, 0])
+            self._create_scatter_plot(ax_scatter, case_title, case_subset, x_trend, y_trend)
 
             # Create a Q-Q plot
-            qq_plot = self._create_qq_plot(case_title, case_subset, trend_line)
-            qq_plot.row = row_n
-            self.plot_info_list.append(qq_plot)
-            row_n = row_n + 1
+            ax_qq = fig.add_subplot(gs[curr_row, 1])
+            self._create_qq_plot(ax_qq, case_title, case_subset, x_trend, y_trend)
+
+            curr_row += 1
 
             # Check for UGRD/VGRD vector pairs and plot wind rose
             if self.config_obj.wind_rose and case_subset['FCST_VAR'][0] == \
@@ -319,44 +199,31 @@ class MprPlot(BasePlot):
                 vind = self.input_df[self.input_df['CASE'] == vgrd_case]
                 vind.reset_index(inplace=True, drop=True)
 
-                # in Rscript:  sum(data$OBS_SID[uind] == data$OBS_SID[v_wind_data]) != sum(uind))
                 if len(case_subset) == len(vind):
-
-                    info = self._create_wind_rose_plot(case_subset, vind, wind_case_title, 'FCST')
-                    info.row = row_n
-                    self.plot_info_list.append(info)
-                    row_n = row_n + 2
-
-                    info = self._create_wind_rose_plot(case_subset, vind, wind_case_title, 'OBS')
-                    info.row = row_n
-                    self.plot_info_list.append(info)
-                    row_n = row_n + 2
-
-                    info = self._create_wind_rose_plot(case_subset, vind, wind_case_title, 'FCST-OBS')
-                    info.row = row_n
-                    self.plot_info_list.append(info)
-                    row_n = row_n + 2
+                    for data_type in ['FCST', 'OBS', 'FCST-OBS']:
+                        ax_wr = fig.add_subplot(gs[curr_row:curr_row+2, :], projection='polar')
+                        self._create_wind_rose_plot(ax_wr, case_subset, vind, wind_case_title, data_type)
+                        curr_row += 2
                 else:
-                    self.logger.warning(" WARNINING:: UGRD/VGRD vectors do not "
-                                        "exactly matc ")
-        self.logger.info(f"Finished creating a plot: {datetime.now()}")
+                    self.logger.warning(" WARNING:: UGRD/VGRD vectors do not exactly match ")
 
-    def _create_wind_rose_plot(self, u_wind_data: pd.DataFrame,
+        plt.tight_layout()
+        self.logger.info(f"Finished creating the figure: {datetime.now()}")
+        return fig
+
+    def _create_wind_rose_plot(self, ax: plt.Axes, u_wind_data: pd.DataFrame,
                                v_wind_data: pd.DataFrame, case_title: str,
-                               data_type: str) -> MprPlotInfo:
+                               data_type: str) -> None:
         """
-        Creates  MprPlotInfo for the wind rose plot
-        :param u_wind_data: DataFrame with a requared column named 'FCST_VAR' with values 'UGRD'
-            and  columns 'OBS' and 'FCST' with U data
-        :param v_wind_data: DataFrame with a requared column named 'FCST_VAR' with values 'VGRD'
-            and  columns 'OBS' and 'FCST' with V data
+        Creates  wind rose plot on the provided axes
+        :param ax: axes to plot on
+        :param u_wind_data: DataFrame with U wind data
+        :param v_wind_data: DataFrame with V wind data
         :param case_title: title
-        :param data_type: type of the wind rose.Indicates which data to use for the plot.
-            Can be 'FCST', 'OBS' or 'FCST-OBS'
-        :return: MprPlotInfo object with wind rose traces and title
+        :param data_type: type of the wind rose ('FCST', 'OBS', or 'FCST-OBS')
         """
 
-        self.logger.info('Begin creating a wind rose plot')
+        self.logger.info(f"Begin creating a wind rose plot for {data_type}")
         if data_type == 'FCST-OBS':
             title = 'Wind Errors'
         elif data_type == 'FCST':
@@ -364,37 +231,25 @@ class MprPlot(BasePlot):
         else:
             title = 'Observed'
 
-        # init MprPlotInfo
-        info = MprPlotInfo()
-        info.col = 1
-        info.title = f'{title} winds {len(u_wind_data)} points<br>{case_title}<br>    '
-
         # create custom parameters for the plot
         docs = {
-            'create_figure': False,
             'show_legend': False,
-            'type': data_type
+            'type': data_type,
+            'title': f'{title} winds {len(u_wind_data)} points\n{case_title}'
         }
         # add main parameters
         docs.update(self.config_obj.parameters)
 
-        # create a wind rose
-        plot = WindRosePlot(docs, u_wind_data, v_wind_data)
-
-        # record traces
-        for trace in plot.traces:
-            info.traces.append(trace)
-
+        # create a wind rose on the provided axis
+        WindRosePlot(docs, u_wind_data, v_wind_data, ax=ax)
         self.logger.info(f"Finished creating wind rose: {datetime.now()} ")
 
-        return info
-
-    def _create_trend_line(self, case_subset: pd.DataFrame) -> go.Scatter:
+    def _create_trend_line(self, case_subset: pd.DataFrame) -> tuple:
         """
-        Creates a trend line to use in a scatter and Q-Q plots
+        Creates coordinates for a trend line to use in a scatter and Q-Q plots
         It calculates the intercept and slope for the line using OBS and FCST data
         :param case_subset: DataFrame with data for this case
-        :return: a trend line as a Plotly Scatter
+        :return: x and y coordinates for the trend line
         """
 
         fcst = case_subset['FCST']
@@ -406,197 +261,88 @@ class MprPlot(BasePlot):
         intercept = slope_intercept[1]
 
         if intercept == 0 and slope == 0:
-            x_coords = [-1, 1]
-            y_coords = [-1, 1]
+            x_coords = np.array([-1, 1])
+            y_coords = np.array([-1, 1])
         else:
             y_coords = intercept + slope * x_coords
 
-        trend_line = go.Scatter(x=x_coords,
-                                y=y_coords,
-                                line={'color': 'black',
-                                      'width': 1,
-                                      'dash': 'dash'},
-                                showlegend=False,
-                                mode='lines',
-                                name='Trend Line'
-                                )
-        return trend_line
+        return x_coords, y_coords
 
-    def _create_qq_plot(self, case_title: str, case_subset: pd.DataFrame,
-                        trend_line: go.Scatter) -> MprPlotInfo:
+    def _create_qq_plot(self, ax: plt.Axes, case_title: str, case_subset: pd.DataFrame,
+                        x_trend: np.ndarray, y_trend: np.ndarray) -> None:
         """
-        MprPlotInfo for the Q-Q plot
+        Plots the Q-Q plot on the provided axes
+        :param ax: axes to plot on
         :param case_title: plot title
         :param case_subset:  DataFrame with FCST and OBS data
-        :param trend_line: Scatter for the trend line
-        :return: MprPlotInfo object with Q-Q plot traces and title
+        :param x_trend: x coordinates for the trend line
+        :param y_trend: y coordinates for the trend line
         """
 
         self.logger.info(f"Begin creating qq plot: {datetime.now()}")
         # subset and sort data
-        qq_fcst = case_subset['FCST'].tolist()
-        qq_fcst.sort()
-
-        qq_obs = case_subset['OBS'].tolist()
-        qq_obs.sort()
+        qq_fcst = np.sort(case_subset['FCST'])
+        qq_obs = np.sort(case_subset['OBS'])
 
         # create the plot
-        qq_plot = go.Scatter(
-            x=qq_fcst,
-            y=qq_obs,
-            mode='markers',
-            name='Q-Q Plot',
-            marker=dict(
-                color=self.config_obj.marker_color,
-                line=dict(
-                    color='rgb(174,167,250)'
-                )
-            )
-        )
+        ax.scatter(qq_fcst, qq_obs, color=self.config_obj.marker_color, edgecolors='blue', alpha=0.7)
+        ax.plot(x_trend, y_trend, color='black', linestyle='--', linewidth=1)
 
-        # init MprPlotInfo
-        info = MprPlotInfo()
-        info.col = 2
-        info.traces.append(qq_plot)
-        info.traces.append(trend_line)
-        info.title = f"Q-Q Plot of {len(case_subset)} points<br>{case_title}"
-        info.xaxes['title_text'] = 'Forecast'
-        info.yaxes['title_text'] = 'Observation'
-
+        ax.set_title(f"Q-Q Plot of {len(case_subset)} points\n{case_title}")
+        ax.set_xlabel('Forecast')
+        ax.set_ylabel('Observation')
         self.logger.info(f"Finished creating qq plot: {datetime.now()}")
-        return info
 
-    def _create_scatter_plot(self, case_title: str, case_subset: pd.DataFrame,
-                             trend_line: go.Scatter) -> MprPlotInfo:
+    def _create_scatter_plot(self, ax: plt.Axes, case_title: str, case_subset: pd.DataFrame,
+                             x_trend: np.ndarray, y_trend: np.ndarray) -> None:
         """
-        MprPlotInfo for the Scatter plot
+        Plots the Scatter plot on the provided axes
+        :param ax: axes to plot on
         :param case_title: plot title
         :param case_subset: DataFrame with FCST and OBS data
-        :param trend_line: Scatter for the trend line
-        :return: MprPlotInfo object with Scatter plot traces and title
+        :param x_trend: x coordinates for the trend line
+        :param y_trend: y coordinates for the trend line
         """
 
         self.logger.info(f"Begin creating scatter plot: {datetime.now()}")
         # create the plot
-        scatter = go.Scatter(
-            x=case_subset['FCST'],
-            y=case_subset['OBS'],
-            mode='markers',
-            name='Scatter Plot',
-            marker=dict(
-                color=self.config_obj.marker_color,
-                line=dict(
-                    color='rgb(174,167,250)'
-                )
-            )
-        )
+        ax.scatter(case_subset['FCST'], case_subset['OBS'], color=self.config_obj.marker_color, edgecolors='blue', alpha=0.7)
+        ax.plot(x_trend, y_trend, color='black', linestyle='--', linewidth=1)
 
-        # init MprPlotInfo
-        info = MprPlotInfo()
-        info.col = 1
-        info.traces.append(scatter)
-        info.traces.append(trend_line)
-        info.title = f"Scatter Plot of {len(case_subset)} points<br>{case_title}"
-        info.xaxes['title_text'] = 'Forecast'
-        info.yaxes['title_text'] = 'Observation'
+        ax.set_title(f"Scatter Plot of {len(case_subset)} points\n{case_title}")
+        ax.set_xlabel('Forecast')
+        ax.set_ylabel('Observation')
         self.logger.info(f"Finished creating scatter plot: {datetime.now()}")
-        return info
 
-    def _create_histogtam(self, case_title: str, case_subset: pd.DataFrame,
-                          n_bins: np.ndarray, data_type: str) -> MprPlotInfo:
+    def _create_histogram(self, ax: plt.Axes, case_title: str, case_subset: pd.DataFrame,
+                          n_bins: np.ndarray, data_type: str) -> None:
         """
-        Creates  MprPlotInfo for the histogtam
+        Plots the histogram on the provided axes
+        :param ax: axes to plot on
         :param case_title: plot title
         :param case_subset: DataFrame with FCST and OBS data
         :param n_bins: data bins
-        :param data_type: type for 'FCST' or 'OBS' histogtam
-        :return: MprPlotInfo object with Scatter plot traces and title
+        :param data_type: type for 'FCST' or 'OBS' histogram
         """
 
-        self.logger.info(f"Begin creating the histogram: {datetime.now()}")
-        info = MprPlotInfo()
-        if data_type == 'FCST':
-            title = 'Forecast'
-            info.col = 1
-        else:
-            title = 'Observation'
-            info.col = 2
-
-        # calculate histogram data and bins
-        hist_kwargs = dict()
-        hist_kwargs['range'] = (min(case_subset[data_type]), max(case_subset[data_type]))
-        hist_counts, hist_bins = \
-            np.histogram(case_subset[data_type], n_bins, weights=None, **hist_kwargs)
-
-        hist_bins = 0.5 * (hist_bins[:-1] + hist_bins[1:])
+        self.logger.info(f"Begin creating the histogram for {data_type}: {datetime.now()}")
+        title = 'Forecast' if data_type == 'FCST' else 'Observation'
 
         # create plot
-        histogram = go.Bar(
-            x=hist_bins,
-            y=hist_counts,
-            name=f"{title} Histogram",
-            marker=dict(
-                color='#ffffff',
-                line=dict(
-                    color='rgb(1, 1, 1)',
-                    width=1
-                )
-            )
-        )
+        ax.hist(case_subset[data_type], bins=n_bins, color='white', edgecolor='black', alpha=0.75)
 
-        # init MprPlotInfo
-        info.traces.append(histogram)
-        info.title = f"{title} Histogram of {len(case_subset)} points<br>{case_title}"
-        info.xaxes['title_text'] = title
-        info.xaxes['range'] = [0, n_bins[-1]]
-        info.yaxes['title_text'] = 'Frequency'
+        ax.set_title(f"{title} Histogram of {len(case_subset)} points\n{case_title}")
+        ax.set_xlabel(title)
+        ax.set_ylabel('Frequency')
         self.logger.info(f"Finished creating histogram: {datetime.now()}")
-        return info
-
-    def save_to_file(self) -> None:
-        """Saves the image to a file specified in the config file.
-         Prints a message if fails
-
-        Args:
-
-        Returns:
-
-        """
-        self.logger.info("Saving to file")
-        image_name = self.get_config_value('plot_filename')
-        pio.kaleido.scope.default_format = "png"
-        pio.kaleido.scope.default_height = self.config_obj.height
-        pio.kaleido.scope.default_width = self.config_obj.width
-        if self.figure:
-            try:
-                os.makedirs(os.path.dirname(image_name), exist_ok=True)
-                self.figure.write_image(image_name)
-            except FileNotFoundError:
-                self.logger.error(f"FileNotFoundError: {image_name}")
-            except ValueError as ex:
-                self.logger.error(f"ValueError: {ex}")
-        else:
-            self.logger.warning("WARNING: Oops!  The figure was not created. Can't "
-                                "save.")
-        self.logger.info(f"Finished saving mpr plot {datetime.now()}")
 
 
 def main(config_filename=None):
     """
-        Generates a sample, default, line plot using the
-        default and custom config files on sample data found in this directory.
-        The location of the input data is defined in either the default or
-        custom config file.
-        """
-    params = util.get_params(config_filename)
-    try:
-        plot = MprPlot(params)
-        plot.save_to_file()
-        if plot.config_obj.show_in_browser:
-            plot.show_in_browser()
-        plot.logger.info(f"Finished plotting for mpr: {datetime.now()}")
-    except ValueError as ve:
-        print(ve)
+        Generates a mpr plot using the
+        default and custom config files on sample data.
+    """
+    util.make_plot(config_filename, MprPlot)
 
 
 if __name__ == "__main__":

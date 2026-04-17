@@ -64,8 +64,8 @@ class TaylorDiagramConfig(Config):
         # Convert the plot height and width to inches if units aren't in
         # inches.
         if self.plot_units.lower() != 'in':
-            self.plot_width = self.calculate_plot_dimension('plot_width', 'in')
-            self.plot_height = self.calculate_plot_dimension('plot_height', 'in')
+            self.plot_width = self.calculate_plot_dimension('plot_width')
+            self.plot_height = self.calculate_plot_dimension('plot_height')
         else:
             self.plot_width = self.get_config_value('plot_width')
             self.plot_height = self.get_config_value('plot_height')
@@ -232,54 +232,6 @@ class TaylorDiagramConfig(Config):
         ordinals = self.get_config_value('series_order')
         series_order_list = [ord for ord in ordinals]
         return series_order_list
-
-    def _get_plot_disp(self) -> list:
-        """
-            Retrieve the boolean values that determine whether to display a particular series
-
-            Args:
-
-            Returns:
-                A list of boolean values indicating whether or not to
-                display the corresponding series
-        """
-
-        plot_display_vals = self.get_config_value('plot_disp')
-        plot_display_strings = [pd for pd in plot_display_vals]
-        plot_display_strings_ordered = self.create_list_by_series_ordering(plot_display_strings)
-
-        # Convert each string to the boolean representation
-        plot_display_bools_ordered = []
-        for cur in plot_display_strings_ordered:
-            bool_str = str(cur).lower()
-            if bool_str == 'true':
-                plot_display_bools_ordered.append(True)
-            else:
-                plot_display_bools_ordered.append(False)
-
-        return plot_display_bools_ordered
-
-    def _get_markers(self) -> list:
-        """
-           Retrieve all the markers.
-
-           Args:
-
-           Returns:
-               markers: a list of the markers
-        """
-        markers = self.get_config_value('series_symbols')
-        markers_list = []
-        for marker in markers:
-            if marker in constants.AVAILABLE_MARKERS_LIST:
-                # markers is the matplotlib symbol: .,o, ^, d, H, or s
-                markers_list.append(marker)
-            else:
-                # markers are indicated by name: small circle, circle, triangle,
-                # diamond, hexagon, square
-                markers_list.append(constants.PCH_TO_MATPLOTLIB_MARKER[marker.lower()])
-        markers_list_ordered = self.create_list_by_series_ordering(list(markers_list))
-        return markers_list_ordered
 
     def _config_consistency_check(self) -> bool:
         """

@@ -17,6 +17,8 @@ __author__ = 'Minna Win'
 
 import itertools
 from typing import Union
+from datetime import datetime
+import re
 
 import metcalcpy.util.utils as utils
 import metplotpy.plots.util
@@ -45,8 +47,12 @@ class Config:
         self.title_font = constants.DEFAULT_TITLE_FONT
         self.title_color = constants.DEFAULT_TITLE_COLOR
         self.xaxis = self.get_config_value('xaxis')
+        self.xaxis_reverse = False
+        self.yaxis_reverse = False
+        self.vert_plot = False
         self.yaxis_1 = self.get_config_value('yaxis_1')
         self.yaxis_2 = self.get_config_value('yaxis_2')
+        self.sync_yaxes = False
         self.title = self.get_config_value('title')
         self.use_ee = self._get_bool('event_equal')
         self.indy_vals = self.get_config_value('indy_vals')
@@ -54,15 +60,12 @@ class Config:
         self.indy_var = self.get_config_value('indy_var')
         self.show_plot_in_browser = self.get_config_value('show_plot_in_browser')
 
-        # Plot figure dimensions can be in either inches or pixels
-        pixels = self.get_config_value('plot_units')
-        plot_width = self.get_config_value('plot_width')
-        self.plot_width = self.calculate_plot_dimension(plot_width, pixels)
-        plot_height = self.get_config_value('plot_height')
-        self.plot_height = self.calculate_plot_dimension(plot_height, pixels)
+        # Plot figure dimensions should be in inches
+        self.plot_width = self.calculate_plot_dimension('plot_width')
+        self.plot_height = self.calculate_plot_dimension('plot_height')
         self.plot_caption = self.get_config_value('plot_caption')
         # plain text, bold, italic, bold italic are choices in METviewer UI
-        self.caption_weight = self.get_config_value('caption_weight')
+        self.caption_weight = constants.MV_TO_MPL_CAPTION_STYLE[self.get_config_value('caption_weight')]
         self.caption_color = self.get_config_value('caption_col')
         # relative magnification
         self.caption_size = self.get_config_value('caption_size')
@@ -95,12 +98,17 @@ class Config:
         self.legend_ncol = self.get_config_value('legend_ncol')
         legend_box = self.get_config_value('legend_box')
         self.draw_box = False
+        self.legend_border_width = 0
         if legend_box is not None:
             legend_box = legend_box.lower()
             if legend_box == 'o':
-                # Don't draw a box around legend labels
+                # draw a box around legend labels
                 self.draw_box = True
+                self.legend_border_width = 2
 
+        self.legend_orientation = 'h'
+        if self.parameters['legend_ncol'] == 1:
+            self.legend_orientation = 'v'
 
         # some settings used by some but not all plot types
 
@@ -108,16 +116,17 @@ class Config:
         self.plot_margins = self.get_config_value('mar')
         self.grid_on = self._get_bool('grid_on')
         if self.get_config_value('mar_offset'):
-           self.plot_margins = dict(l=0,
-                                 r=self.parameters['mar'][3] + 20,
-                                 t=self.parameters['mar'][2] + 80,
-                                 b=self.parameters['mar'][0] + 80,
-                                 pad=5
-                                 )
+            self.plot_margins = {
+                'l': 0,
+                'r': self.parameters['mar'][3] + 20,
+                't': self.parameters['mar'][2] + 80,
+                'b': self.parameters['mar'][0] + 80,
+                'pad': 5,
+            }
 
         self.grid_col = self.get_config_value('grid_col')
         if self.grid_col:
-           self.blended_grid_col =  metplotpy.plots.util.alpha_blending(self.grid_col, 0.5)
+            self.blended_grid_col = metplotpy.plots.util.alpha_blending(self.grid_col, 0.5)
         self.show_nstats = self._get_bool('show_nstats')
         self.indy_stagger = self._get_bool('indy_stagger')
 
@@ -147,9 +156,16 @@ class Config:
         # re-create the METviewer xlab_weight. Use the
         # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
         # what was requested in METviewer
-        mv_xlab_weight = self.get_config_value('xlab_weight')
-        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_xlab_weight]
+        xlab_weight = self.get_config_value('xlab_weight')
+        if xlab_weight is None:
+            xlab_weight = 1
+        self.xlab_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(xlab_weight)]
 
+        self.x2lab_weight = self.get_config_value('x2lab_weight')
+        if self.x2lab_weight is not None:
+            self.x2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(self.x2lab_weight)]
+
+        self.x_title_font_size = self.parameters['xlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
         self.x_tickangle = self.parameters['xtlab_orient']
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
@@ -180,7 +196,13 @@ class Config:
         # MV_TO_MPL_CAPTION_STYLE dictionary to map these caption styles to
         # what was requested in METviewer
         mv_ylab_weight = self.get_config_value('ylab_weight')
-        self.ylab_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_ylab_weight]
+        if mv_ylab_weight is None:
+            mv_ylab_weight = 1
+        self.ylab_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(mv_ylab_weight)]
+
+        self.y2lab_weight = self.get_config_value('y2lab_weight')
+        if self.y2lab_weight is not None:
+            self.y2lab_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(self.y2lab_weight)]
 
         # Adjust the caption left/right relative to the y-axis
         # METviewer default is set to 0, corresponds to y=0.05 in Matplotlib
@@ -193,18 +215,16 @@ class Config:
 
         mv_title_weight = self.get_config_value('title_weight')
         # use the same constants dictionary as used for captions
-        self.title_weight = constants.MV_TO_MPL_CAPTION_STYLE[mv_title_weight]
+        if mv_title_weight is None:
+            mv_title_weight = 1
+        self.title_weight = constants.MV_TO_MPL_CAPTION_STYLE[int(mv_title_weight)]
 
         # These values can't be used as-is, the only choice for aligning in Matplotlib
         # are center (default), left, and right
         mv_title_align = self.get_config_value('title_align')
         self.title_align = float(mv_title_align)
 
-        # does nothing because the vertical position in Matplotlib is
-        # automatically chosen to avoid labels and ticks on the topmost
-        # x-axis
-        mv_title_offset = self.get_config_value('title_offset')
-        self.title_offset = float(mv_title_offset)
+        self.title_offset = 1.0 + abs(self.parameters['title_offset']) * constants.DEFAULT_TITLE_OFFSET
 
         # legend style settings as defined in METviewer
         user_settings = self._get_legend_style()
@@ -229,11 +249,9 @@ class Config:
         self.legend_ncol = self.get_config_value('legend_ncol')
 
         # Don't draw a box around legend labels unless an 'o' is set
-        self.draw_box = False
         legend_box = self.get_config_value('legend_box').lower()
-
-        if legend_box == 'o':
-            self.draw_box = True
+        self.draw_box = legend_box == 'o'
+        self.legend_border_color = "black"
 
         # These are the inner keys to the series_val setting, and
         # they represent the series variables of
@@ -325,13 +343,15 @@ class Config:
             legend_bbox_x = legend_inset['x']
             legend_bbox_y = legend_inset['y']
             legend_size = self.get_config_value('legend_size')
-            legend_settings = dict(bbox_x=legend_bbox_x,
-                               bbox_y=legend_bbox_y,
-                               legend_size=legend_size,
-                               legend_ncol=legend_ncol,
-                               legend_box=legend_box)
+            legend_settings = {
+                'bbox_x': legend_bbox_x,
+                'bbox_y': legend_bbox_y,
+                'legend_size': legend_size,
+                'legend_ncol': legend_ncol,
+                'legend_box': legend_box,
+            }
         else:
-            legend_settings = dict()
+            legend_settings = {}
 
         return legend_settings
 
@@ -404,6 +424,43 @@ class Config:
 
         return all_fcst_vars
 
+    def get_fcst_vars_dict(self, index: int) -> dict:
+        """Retrieve a dictionary of the fcst_var_val_{index} variable from the config.
+
+           Args:
+              index: identifier used to differentiate between fcst_var_val_1 and
+                     fcst_var_val_2 config settings
+           Returns:
+               a list containing all the fcst variables requested in the
+               fcst_var_val setting in the config file.  This will be
+               used to subset the input data that corresponds to a particular series.
+
+        """
+        if index not in (1, 2):
+            return {}
+
+        fcst_dict = self.get_config_value(f'fcst_var_val_{index}')
+        if fcst_dict is None:
+            return {}
+        return fcst_dict
+
+    def get_fcst_vars_keys(self, index: int) -> list:
+        """Retrieve a list of keys from the fcst_var_val_{index} variable from the config.
+
+           Args:
+              index: identifier used to differentiate between fcst_var_val_1 and
+                     fcst_var_val_2 config settings
+           Returns:
+               a list containing all the fcst variables requested in the
+               fcst_var_val setting in the config file.  This will be
+               used to subset the input data that corresponds to a particular series.
+
+        """
+        fcst_vars_dict = self.get_fcst_vars_dict(index)
+        if fcst_vars_dict is None:
+            return []
+        return list(fcst_vars_dict.keys())
+
     def _get_series_val_names(self) -> list:
         """
             Get a list of all the variable value names (i.e. inner key of the
@@ -446,11 +503,11 @@ class Config:
         # Utilize itertools' product() to create the cartesian product of all elements
         # in the lists to produce all permutations of the series_val values and the
         # fcst_var_val values.
-        permutations = [p for p in itertools.product(*series_vals_list)]
+        permutations = list(itertools.product(*series_vals_list))
 
         return len(permutations)
 
-    def _get_colors(self) -> list:
+    def _get_colors(self, config_name="colors") -> list:
         """
            Retrieves the colors used for lines and markers, from the
            config file (default or custom).
@@ -461,8 +518,17 @@ class Config:
                (and their corresponding marker symbols)
         """
 
-        colors_settings = self.get_config_value('colors')
+        colors_settings = self.get_config_value(config_name)
+        colors_settings = [self._format_color(color) for color in colors_settings]
         return self.create_list_by_series_ordering(list(colors_settings))
+
+    @staticmethod
+    def _format_color(input_color):
+        if not input_color.startswith('rgb('):
+            return input_color
+        numbers = re.findall(r'\d+', input_color)
+        return tuple(int(num) / 255.0 for num in numbers)
+
 
     def _get_con_series(self) -> list:
         """
@@ -520,11 +586,42 @@ class Config:
                 # markers is the matplotlib symbol: .,o, ^, d, H, or s
                 markers_list.append(marker)
             else:
-                # markers are indicated by name: small circle, circle, triangle,
-                # diamond, hexagon, square
+                # markers are indicated by name or PCH number
                 markers_list.append(constants.PCH_TO_MATPLOTLIB_MARKER[marker.lower()])
         markers_list_ordered = self.create_list_by_series_ordering(list(markers_list))
         return markers_list_ordered
+
+    def _get_markers_size(self) -> list:
+        """Convert marker names from the config file into matplotlib marker sizes.
+        Use the default marker size if the marker size is not a supported value.
+
+           Args:
+
+           Returns:
+               markers_size: a list of the integers that define the size of the markers
+               or None if the marker size is not a supported value.
+        """
+        markers = self.get_config_value('series_symbols')
+        markers_size = []
+        for marker in markers:
+            markers_size.append(constants.PCH_TO_MATPLOTLIB_MARKER_SIZE.get(marker))
+
+        return self.create_list_by_series_ordering(markers_size)
+
+    def _get_markers_open(self) -> list:
+        """Parse info from markers to determine if they should be open or filled.
+
+           Args:
+
+           Returns:
+               a list of the boolean values to indicate if the marker should be open or filled.
+        """
+        markers = self.get_config_value('series_symbols')
+        markers_open = []
+        for marker in markers:
+            markers_open.append('open' in marker.lower() or 'small circle' in marker.lower())
+
+        return self.create_list_by_series_ordering(markers_open)
 
     def _get_linewidths(self) -> Union[list, None]:
         """ Retrieve all the linewidths from the configuration file, if not
@@ -560,6 +657,16 @@ class Config:
            Retrieve the text that is to be displayed in the legend at the bottom of the plot.
            Each entry corresponds to a series.
 
+         For legend labels that aren't set (ie in conf file they are set to '')
+         create a legend label based on the permutation of the series names
+         appended by 'user_legend label'.  For example, for:
+             series_val_1:
+                model:
+                  - NoahMPv3.5.1_d01
+                vx_mask:
+                  - CONUS
+         The constructed legend label will be "NoahMPv3.5.1_d01 CONUS Performance"
+
            Args:
                @parm legend_label_type:  The legend label, such as 'Performance',
                                          used when the user hasn't indicated a legend in the
@@ -569,41 +676,7 @@ class Config:
                a list consisting of the series label to be displayed in the plot legend.
 
         """
-        all_legends = self.get_config_value('user_legend')
-
-        # for legend labels that aren't set (ie in conf file they are set to '')
-        # create a legend label based on the permutation of the series names
-        # appended by 'user_legend label'.  For example, for:
-        #     series_val_1:
-        #        model:
-        #          - NoahMPv3.5.1_d01
-        #        vx_mask:
-        #          - CONUS
-        # The constructed legend label will be "NoahMPv3.5.1_d01 CONUS Performance"
-
-
-        # Check for empty list as setting in the config file
-        legends_list = []
-
-        # set a flag indicating when a legend label is specified
-        legend_label_unspecified = True
-
-        # Check if a stat curve was requested, if so, then the number
-        # of series_val_1 values will be inconsistent with the number of
-        # legend labels 'specified' (either with actual labels or whitespace)
-
-        num_series = self.calculate_number_of_series()
-        if len(all_legends) == 0:
-            for i in range(num_series):
-                legends_list.append(' ')
-        else:
-            for legend in all_legends:
-                if len(legend) == 0:
-                    legend = ' '
-                    legends_list.append(legend)
-                else:
-                    legend_label_unspecified = False
-                    legends_list.append(legend)
+        legends_list, legend_label_unspecified = self._get_legends_list()
 
         ll_list = []
         series_list = self.all_series_vals
@@ -615,8 +688,7 @@ class Config:
             # check if summary_curve is present
             if 'summary_curve' in self.parameters.keys() and self.parameters['summary_curve'] != 'none':
                 return [legend_label_type, self.parameters['summary_curve'] + ' ' + legend_label_type]
-            else:
-                return [legend_label_type]
+            return [legend_label_type]
 
         perms = utils.create_permutations(series_list)
         for idx,ll in enumerate(legends_list):
@@ -635,6 +707,35 @@ class Config:
         legends_list_ordered = self.create_list_by_series_ordering(ll_list)
         return legends_list_ordered
 
+    def _get_legends_list(self):
+        all_legends = self.get_config_value('user_legend')
+
+        # Check for empty list as setting in the config file
+        legends_list = []
+
+        # set a flag indicating when a legend label is specified
+        legend_label_unspecified = True
+
+        # Check if a stat curve was requested, if so, then the number
+        # of series_val_1 values will be inconsistent with the number of
+        # legend labels 'specified' (either with actual labels or whitespace)
+
+        num_series = self.calculate_number_of_series()
+        if len(all_legends) == 0:
+            for _ in range(num_series):
+                legends_list.append(' ')
+        else:
+            for legend in all_legends:
+                if len(legend) == 0:
+                    legend = ' '
+                    legends_list.append(legend)
+                else:
+                    legend_label_unspecified = False
+                    legends_list.append(legend)
+
+        return legends_list, legend_label_unspecified
+
+
     def _get_plot_resolution(self) -> int:
         """
             Retrieve the plot_res and plot_unit to determine the dpi
@@ -646,35 +747,66 @@ class Config:
                 plot resolution in units of dpi (dots per inch)
 
         """
-        # Initialize to the default resolution
-        # set by matplotlib
+        # Initialize to the default resolution set by matplotlib
         dpi = 100
 
         # first check if plot_res is set in config file
         if self.get_config_value('plot_res'):
             resolution = self.get_config_value('plot_res')
 
-            # check if the units value has been set in the config file
-            if self.get_config_value('plot_units'):
-                units = self.get_config_value('plot_units').lower()
-                if units == 'in':
-                    return resolution
+            # convert mm to inches
+            if self.get_config_value('plot_units') and self.get_config_value('plot_units').lower() == 'mm':
+                return resolution * constants.MM_TO_INCHES
 
-                if units == 'mm':
-                    # convert mm to inches so we can
-                    # set dpi value
-                    return resolution * constants.MM_TO_INCHES
-
-                # units not supported, assume inches
-                return resolution
-
-            # units not indicated, assume
-            # we are dealing with inches
+            # units not indicated, assume we are dealing with inches or pixels
             return resolution
 
         # no plot_res value is set, return the default
         # dpi used by matplotlib
         return dpi
+
+    def _get_plot_disp(self) -> list:
+        """
+        Retrieve the values that determine whether to display a particular series
+        and convert them to bool if needed
+
+        Args:
+
+        Returns:
+                A list of boolean values indicating whether or not to
+                display the corresponding series
+            """
+
+        plot_display_config_vals = self.get_config_value('plot_disp')
+        plot_display_bools = []
+        for val in plot_display_config_vals:
+            if isinstance(val, bool):
+                plot_display_bools.append(val)
+
+            if isinstance(val, str):
+                plot_display_bools.append(val.upper() == 'TRUE')
+
+        return self.create_list_by_series_ordering(plot_display_bools)
+
+    def _convert_units_to_inches(self, value, units):
+        units_lower = units.lower()
+        if units_lower == 'mm':
+            return value * constants.MM_TO_INCHES
+        if units_lower == 'cm':
+            return value * constants.CM_TO_INCHES
+        if units_lower == 'pixels':
+            # convert pixels to inches if resolution is available
+            if self.get_config_value('plot_res'):
+                return value / self.get_config_value('plot_res')
+
+            return value
+
+
+        # if unsupported units are specified, log a warning but assume inches
+        if units_lower != 'in':
+            self.logger.warning(f"Invalid units specified: {units}. Expected in, mm, cm, or pixels. Assuming inches.")
+
+        return value
 
     def create_list_by_series_ordering(self, setting_to_order) -> list:
         """
@@ -773,11 +905,10 @@ class Config:
         return ordered_settings_list
 
 
-    def calculate_plot_dimension(self, config_value: str , output_units: str) -> int:
+    def calculate_plot_dimension(self, config_value: str) -> int:
         '''
            To calculate the width or height that defines the size of the plot.
-           Matplotlib defines these values in inches, Python plotly defines these
-           in terms of pixels.  METviewer accepts units of inches or mm for width and
+           Matplotlib defines these values in inches.  METviewer accepts units of inches or mm for width and
            height, so conversion from mm to inches or mm to pixels is necessary, depending
            on the requested output units, output_units.
 
@@ -785,43 +916,18 @@ class Config:
               @param config_value:  The plot dimension to convert, either a width or height,
                     in inches or mm
               @param output_units: pixels or in (inches) to indicate which
-                                   units to use to define plot size. Python plotly uses pixels and
-                                   Matplotlib uses inches.
+                                   units to use to define plot size.    Matplotlib uses inches.
            Returns:
              converted_value : converted value from in/mm to pixels or mm to inches based
                                     on input values
         '''
-
+   
         value2convert = self.get_config_value(config_value)
-        resolution = self.get_config_value('plot_res')
         units = self.get_config_value('plot_units')
 
-        # initialize converted_value to some small value
-        converted_value = 0
-
-        # convert to pixels
-        # plotly uses pixels for setting plot size (width and height)
-        if output_units.lower() == 'pixels':
-            if units.lower() == 'in':
-                # value in pixels
-                converted_value = int(resolution * value2convert)
-            elif units.lower() == 'mm':
-                # Convert mm to pixels
-                converted_value = int(resolution * value2convert * constants.MM_TO_INCHES)
-
         # Matplotlib uses inches (in) for setting plot size (width and height)
-        elif output_units.lower() == 'in':
-            if units.lower() == 'mm':
-                # Convert mm to inches
-                converted_value = value2convert * constants.MM_TO_INCHES
-            else:
-                converted_value = value2convert
+        return self._convert_units_to_inches(value2convert, units)
 
-        # plotly does not allow any value smaller than 10 pixels
-        if output_units.lower() == 'pixels' and converted_value < 10:
-            converted_value = 10
-
-        return converted_value
 
     def _get_bool(self, param: str) -> Union[bool, None]:
         """
@@ -852,46 +958,114 @@ class Config:
          Args:
 
          Returns:
-             :return: list of lines properties  or None
+             :return: list of lines properties or None
          """
 
         # get property value from the parameters
         lines = self.get_config_value('lines')
+        if lines is None:
+            return None
 
         # if the property exists - proceed
-        if lines is not None:
-            # validate data and replace the values
-            for line in lines:
+        # validate data and replace the values
+        for line in lines:
 
-                # validate line_type
-                line_type = line['type']
-                if line_type not in ('horiz_line', 'vert_line') :
-                    print(f'WARNING: custom line type {line["type"]} is not supported')
+            # validate line_type
+            if line['type'] not in ('horiz_line', 'vert_line') :
+                print(f'WARNING: custom line type {line["type"]} is not supported')
+                line['type'] = None
+                continue
+
+            # convert position to float if line_type=horiz_line
+            if line['type'] == 'horiz_line':
+                try:
+                    line['position'] = float(line['position'])
+                except ValueError:
+                    print(f'WARNING: custom line position {line["position"]} is invalid')
                     line['type'] = None
-                else:
-                    # convert position to float if line_type=horiz_line
-                    if line['type'] == 'horiz_line':
-                        try:
-                            line['position'] = float(line['position'])
-                        except ValueError:
-                            print(f'WARNING: custom line position {line["position"]} is invalid')
-                            line['type'] = None
-                    else:
-                        # convert position to string if line_type=vert_line
-                        line['position'] = str(line['position'])
+            else:
+                # convert position to string if line_type=vert_line
+                line['position'] = str(line['position'])
 
-                    # convert line_style
-                    line_style = line['line_style']
-                    if line_style in constants.LINE_STYLE_TO_PLOTLY_DASH.keys():
-                        line['line_style'] = constants.LINE_STYLE_TO_PLOTLY_DASH[line_style]
-                    else:
-                        line['line_style'] = None
+            # convert line_width to float
+            try:
+                line['line_width'] = float(line['line_width'])
+            except ValueError:
+                print(f'WARNING: custom line width {line["line_width"]} is invalid')
+                line['type'] = None
 
-                    # convert line_width to float
-                    try:
-                        line['line_width'] = float(line['line_width'])
-                    except ValueError:
-                        print(f'WARNING: custom line width {line["line_width"]} is invalid')
-                        line['type'] = None
+            # convert line style to matplotlib format if necessary
+            if line['line_style'] in constants.LINESTYLE_BY_NAMES:
+                line['line_style'] = constants.LINESTYLE_BY_NAMES[line['line_style']]
 
         return lines
+
+    def config_consistency_check(self) -> None:
+        """Checks that the number of settings defined for
+            plot_disp, series_ordering, colors_list, user_legends, and show_legend
+           are consistent with number of series.
+
+           @raises ValueError if any of settings are inconsistent with the
+            number of series (as defined by the cross product of the model
+            and vx_mask defined in the series_val_1 setting)
+        """
+        lists_to_check = {
+            "plot_disp": self.plot_disp,
+            "series_ordering": self.series_ordering,
+            "colors_list": self.colors_list,
+            "user_legends": self.user_legends,
+            "show_legend": self.show_legend,
+        }
+        self._config_compare_lists_to_num_series(lists_to_check)
+
+    def _config_compare_lists_to_num_series(self, lists_to_check: dict) -> list:
+        """
+            Checks that the number of settings defined for lists are consistent
+            with the number of series to plot.
+
+            Args:
+                @param lists_to_check: dictionary with name of list as key and
+                actual list to check as value.
+
+            @raises ValueError if any settings are inconsistent with the number of series
+        """
+        self.logger.info(f"Checking consistency of config settings relative to number of series {datetime.now()}")
+
+        # Determine the number of series based on the number of
+        # permutations from the series_var setting in the config file
+        error_messages = []
+        for name, list_to_check in lists_to_check.items():
+
+            if len(list_to_check) == self.num_series:
+                continue
+
+            error_messages.append(f"{name} ({len(list_to_check)}) does not match number of series ({self.num_series})")
+
+        if error_messages:
+            msg = (
+                "The number of series defined by series_val_1/2 and derived curves is "
+                "inconsistent with the number of settings required for describing each series."
+            )
+            msg += "\n" + "\n".join(error_messages)
+            self.logger.error(msg)
+            raise ValueError(msg)
+
+        self.logger.info(f"Config consistency check completed successfully: {datetime.now()}")
+
+    def _get_mode(self) -> list:
+        """Retrieve all the modes. Convert mode names from the config file into
+         strings that will determine which matplotlib settings to use.
+         'both' - use both lines and markers
+         'points' - use linestyle='None' to show only markers
+         'lines' - use marker=None to show only lines
+
+           Args:
+
+           Returns:
+               modes: a list of strings to determine matplotlib settings to use
+        """
+        modes = self.get_config_value('series_type')
+        mode_list = []
+        for mode in modes:
+            mode_list.append(constants.SERIES_TYPE_TO_PLOT_MODE.get(mode, 'lines+markers'))
+        return self.create_list_by_series_ordering(mode_list)

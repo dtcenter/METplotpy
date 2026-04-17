@@ -7,7 +7,6 @@ colors:
   - '#ff0000'
   - '#800080'
   - '#FFA500'
-create_html: 'False'
 derived_series_1: []
 fixed_vars_vals_input:
   BASIN:

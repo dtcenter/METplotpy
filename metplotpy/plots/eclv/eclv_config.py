@@ -60,41 +60,26 @@ class EclvConfig(LineConfig):
 
         return self.create_list_by_series_ordering(legend_list)
 
-    def _config_consistency_check(self) -> bool:
+    def config_consistency_check(self):
+        """Checks that the number of settings are consistent with number of series.
+
+           @raises ValueError if any of settings are inconsistent with the
+            number of series (as defined by the cross product of the model
+            and vx_mask defined in the series_val_1 setting)
         """
-            Checks that the number of settings defined for plot_ci,
-            plot_disp, series_order, user_legend colors, and series_symbols
-            are consistent.
 
-            Args:
-
-            Returns:
-                True if the number of settings for each of the above
-                settings is consistent with the number of
-                series (as defined by the cross product of the model
-                and vx_mask defined in the series_val_1 setting)
-
-        """
-        # Determine the number of series based on the number of
-        # permutations from the series_var setting in the
-        # config file
-
-        # Numbers of values for other settings for series
-        num_ci_settings = len(self.plot_ci)
-        num_plot_disp = len(self.plot_disp)
-        num_markers = len(self.marker_list)
-        num_series_ord = len(self.series_ordering)
-        num_colors = len(self.colors_list)
-        num_legends = len(self.user_legends)
-        num_line_widths = len(self.linewidth_list)
-        num_linestyles = len(self.linestyles_list)
-        status = False
-
-        if self.num_series == num_plot_disp == \
-                num_markers == num_series_ord == num_colors \
-                == num_legends == num_line_widths == num_linestyles == num_ci_settings:
-            status = True
-        return status
+        lists_to_check = {
+            "plot_ci": self.plot_ci,
+            "plot_disp": self.plot_disp,
+            "marker_list": self.marker_list,
+            "series_ordering": self.series_ordering,
+            "colors_list": self.colors_list,
+            "user_legends": self.user_legends,
+            "linewidth_list": self.linewidth_list,
+            "linestyles_list": self.linestyles_list,
+            "show_legend": self.show_legend,
+        }
+        self._config_compare_lists_to_num_series(lists_to_check)
 
     def calculate_number_of_series(self) -> int:
         """

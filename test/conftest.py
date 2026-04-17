@@ -114,6 +114,40 @@ def module_setup_env(request):
     # Optional: cleanup after all tests in the module complete
 
 
+@pytest.fixture(scope="module")
+def module_setup_env(request):
+    """Module-scoped fixture that sets up environment variables once per test module.
+
+    This fixture automatically determines the test directory from the test module's location.
+    """
+    test_dir = str(request.node.path.parent)
+    print("Setting up environment")
+    os.environ['TEST_DIR'] = test_dir
+
+    # handle optional test input data
+    os.environ['TEST_INPUT_EXTRA'] = os.environ.get('METPLOTPY_TEST_INPUT', test_dir)
+
+    # handle multiple test_*.py files in a single directory
+    # create a subdirectory named after the test file if it doesn't match the test directory
+    test_name = str(request.node.name).replace('test_', '').replace('.py', '')
+    if test_name != os.path.basename(test_dir):
+        test_name = os.path.join(os.path.basename(test_dir), test_name)
+
+    # write test output under METPLOTPY_TEST_OUTPUT if set, otherwise write to test/test_output
+    # write to a subdirectory named after the plot type
+    output_dir = os.environ.get('METPLOTPY_TEST_OUTPUT', os.path.join(test_dir, os.pardir))
+    output_dir = os.path.join(output_dir, 'test_output', test_name)
+
+    # remove output directory for plot type if it already exists to ensure clean test environment
+    if os.path.exists(output_dir):
+        print(f"Removing existing output directory: {output_dir}")
+        shutil.rmtree(output_dir)
+
+    os.environ['TEST_OUTPUT'] = output_dir
+    yield
+    # Optional: cleanup after all tests in the module complete
+
+
 @pytest.fixture()
 def remove_files():
     def remove_the_files(test_dir, file_list):
@@ -170,4 +204,4 @@ def nc_test_file(tmp_path_factory):
 
 @pytest.fixture(autouse=True)
 def setup_logging(caplog):
-    caplog.set_level(logging.INFO)
+    caplog.set_level(logging.DEBUG)

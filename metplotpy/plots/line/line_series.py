@@ -26,7 +26,7 @@ import metcalcpy.util.correlation as pg
 from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
-import metplotpy.plots.util
+import metplotpy.plots.util as util
 from ..series import Series
 from .. import GROUP_SEPARATOR
 
@@ -50,8 +50,7 @@ class LineSeries(Series):
         # Retrieve any fixed variables
 
 
-        self.logger = metplotpy.plots.util.get_common_logger(config.log_level,
-                                                             config.log_filename)
+        self.logger = util.get_common_logger(config.log_level, config.log_filename)
 
     def _create_all_fields_values_no_indy(self) -> dict:
         """
@@ -91,8 +90,7 @@ class LineSeries(Series):
         :return:  mean, median or sum of the values from the input list or
             None if the statistic parameter is invalid
         """
-        logger = metplotpy.plots.util.get_common_logger(self.log_level,
-                                                        self.log_filename)
+        logger = util.get_common_logger(self.log_level, self.log_filename)
         logger.info(f"Begin calculating plot_stat parameter: "
                                 f"{datetime.now()}")
         # calculate point stat
@@ -111,8 +109,7 @@ class LineSeries(Series):
         else:
             point_stat = None
 
-        logger = metplotpy.plots.util.get_common_logger(self.log_level,
-                                                        self.log_filename)
+        logger = util.get_common_logger(self.log_level, self.log_filename)
         logger.info(f"Begin calculating plot_stat parameter: "
                                 f"{datetime.now()}")
         return point_stat
@@ -127,8 +124,7 @@ class LineSeries(Series):
         Returns:
                dictionary with CI ,point values and number of stats as keys
         """
-        logger = metplotpy.plots.util.get_common_logger(self.log_level,
-                                                        self.log_filename)
+        logger = util.get_common_logger(self.log_level, self.log_filename)
         logger.info(f"Begin calculating values for each series point: "
                                 f"{datetime.now()}")
         series_data_1 = None
@@ -141,8 +137,8 @@ class LineSeries(Series):
             # @nan_val is substituted for the 'NA' in the list of values
             # that correspond to a column.
 
-            filtered_df = metplotpy.plots.util.filter_by_fixed_vars(self.input_data,
-                                                         self.config.fixed_vars_vals)
+            filtered_df = util.filter_by_fixed_vars(self.input_data,
+                                                    self.config.fixed_vars_vals)
         else:
             # Nothing specified in the fixed_vars_vals_input setting,
             # use the original input data

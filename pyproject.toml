@@ -38,13 +38,14 @@ testpaths = ["test"]
 filterwarnings = ["ignore::RuntimeWarning"]
 
 [tool.coverage.run]
-source = ["metplotpy/plots"]
+source = ["metplotpy/plots" 
+    ]
 omit = [
     "config.py",
-    "config-3.py",
+    "config-3.py", 
     ]
 relative_files = true
-
+    
 [tool.coverage.report]
 exclude_also = [
     "def __repr__",

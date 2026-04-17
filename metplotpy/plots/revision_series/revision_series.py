@@ -17,15 +17,12 @@ from datetime import datetime
 
 from typing import Union
 
-import numpy as np
+from matplotlib import pyplot as plt
 
-import plotly.graph_objects as go
-
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH
 from metplotpy.plots.base_plot import BasePlot
 
 from metplotpy.plots.line.line import Line
-from metplotpy.plots import util
+from metplotpy.plots import util as util
 from metplotpy.plots.series import Series
 
 import metcalcpy.util.utils as calc_util
@@ -62,16 +59,7 @@ class RevisionSeries(Line):
         self.logger.info('Begin revision series plotting.')
 
         # Check that we have all the necessary settings for each series
-        is_config_consistent = self.config_obj._config_consistency_check()
-        if not is_config_consistent:
-            value_error_msg = ("The number of series defined by series_val_1 is"
-                             " inconsistent with the number of settings"
-                             " required for describing each series. Please check "
-                             " the number of your configuration file's plot_i,"
-                             " plot_disp, series_order, user_legend,"
-                             " colors, show_legend and series_symbols settings.")
-            self.logger.error(f"ValueError: {value_error_msg}")
-            raise ValueError(value_error_msg)
+        self.config_obj.config_consistency_check()
 
         # Read in input data, location specified in config file
         self.input_df = self._read_input_data()
@@ -80,17 +68,8 @@ class RevisionSeries(Line):
         if self.config_obj.use_ee is True:
             self.input_df = calc_util.perform_event_equalization(self.parameters, self.input_df)
 
-        # Create a list of series objects.
-        # Each series object contains all the necessary information for plotting,
-        # such as color, marker symbol,
-        # line width, and criteria needed to subset the input dataframe.
         self.series_list = self._create_series(self.input_df)
 
-        # create figure
-        # pylint:disable=assignment-from-no-return
-        # Need to have a self.figure that we can pass along to
-        # the methods in base_plot.py (BasePlot class methods) to
-        # create binary versions of the plot.
         self._create_figure()
 
     def __repr__(self):
@@ -135,124 +114,76 @@ class RevisionSeries(Line):
 
         self.logger.info(f"Begin creating the {self.LONG_NAME} figure: {datetime.now()}")
         # create and draw the plot
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_legend()
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
-        # calculate stag adjustments
-        stag_adjustments = self._calc_stag_adjustments()
+        wts_size_styles = self.get_weights_size_styles()
+
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
+
+        x_points_index = self._add_series(ax)
+
+        xlab_style = wts_size_styles['xlab'] if not self.config_obj.vert_plot else wts_size_styles['ylab']
+        ylab_style = wts_size_styles['ylab'] if not self.config_obj.vert_plot else wts_size_styles['xlab']
+        self._add_xaxis(ax, xlab_style)
+        self._add_yaxis(ax, ylab_style)
+
+        self._add_legend(ax)
+
+        # add custom lines
+        self._add_lines(ax, self.config_obj, x_points_index)
+
+        plt.tight_layout()
+
+        self.logger.info(f"Finish creating {self.LONG_NAME} figure: {datetime.now()}")
+
+    def _add_series(self, ax, ax2=None):
+        x_points_index = []
+        ordered_indy_label = []
         if len(self.series_list) > 0:
             x_points_index = list(range(0, len(self.series_list[0].series_points['points'])))
             ordered_indy_label = self.series_list[0].series_points['points']['fcst_lead'].tolist()
-            self.figure.update_layout(
-                xaxis={
-                    'tickmode': 'array',
-                    'tickvals': x_points_index,
-                    'ticktext': ordered_indy_label,
-                    'tickangle': -90
-                }
-            )
 
-        else:
-            x_points_index = []
+        self.config_obj.indy_label = ordered_indy_label
+        self.config_obj.indy_vals = x_points_index
 
         # add series points
         for series in self.series_list:
 
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
-            if series.plot_disp:
+            if not series.plot_disp:
+                continue
 
-                # apply staggering offset if applicable
-                if stag_adjustments[series.idx] == 0:
-                    x_points_index_adj = x_points_index
-                else:
-                    x_points_index_adj = x_points_index + stag_adjustments[series.idx]
+            x_points_index_adj = x_points_index
+            if self.config_obj.indy_stagger:
+                x_points_index_adj, _ = self._get_x_locs_and_width(x_points_index, series.idx,
+                                                                   stagger_scale=0.1)
+            self._draw_series(ax, None, series, x_points_index_adj)
 
-                self._draw_series(series, x_points_index_adj)
+        return x_points_index
 
-        # add custom lines
-        self._add_lines(self.config_obj, x_points_index)
-
-        # apply y axis limits
-        self._yaxis_limits()
-
-        self.logger.info(f"Finish creating {self.LONG_NAME} figure: {datetime.now()}")
-
-    def _draw_series(self, series: Series, x_points_index_adj: Union[list, None] = None) -> None:
+    def _draw_series(self, ax, ax2, series: Series, x_points_adj: Union[list, None] = None) -> None:
         """
         Draws the formatted series points on the plot
 
         :param series: RevisionSeries  object with data and parameters
-        :param x_points_index_adj: values for adjusting x-values position
+        :param x_points_adj: values for adjusting x-values position
         """
 
         self.logger.info(f"Draw the formatted series: {datetime.now()}")
-        y_points = series.series_points['points']['stat_value'].tolist()
-
-        # add the plot
-        self.figure.add_trace(
-            go.Scatter(x=x_points_index_adj,
-                       y=y_points,
-                       showlegend=self.config_obj.show_legend[series.idx] == 1,
-                       mode='markers',
-                       textposition="top right",
-                       name=series.user_legends,
-                       marker_symbol=self.config_obj.marker_list[series.idx],
-                       marker_color=self.config_obj.colors_list[series.idx],
-                       marker_line_color=self.config_obj.colors_list[series.idx],
-                       marker_size=self.config_obj.marker_size[series.idx],
-                       ),
-            secondary_y=False
+        ax.plot(
+            x_points_adj, series.series_points['points']['stat_value'].tolist(),
+            label=series.user_legends,
+            # marker style
+            marker=self.config_obj.marker_list[series.idx],
+            markersize=self.config_obj.marker_size[series.idx],
+            markeredgecolor=self.config_obj.colors_list[series.idx],
+            markerfacecolor=self.config_obj.colors_list[series.idx],
+            # no lines
+            linestyle='None',
         )
         self.logger.info(f"Finished drawing series: {datetime.now()}")
-
-    def _add_xaxis(self) -> None:
-        """
-        Configures and adds x-axis to the plot
-        """
-        self.figure.update_xaxes(title_text=self.config_obj.xaxis,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 ticks="inside",
-                                 zeroline=False,
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.x_title_font_size
-                                 },
-                                 title_standoff=abs(self.config_obj.parameters['xlab_offset']),
-                                 tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size}
-                                 )
-
-    def _calc_stag_adjustments(self) -> list:
-        """
-        Calculates the x-axis adjustment for each point if requested.
-        It needed so the points  for each x-axis values don't be placed on top of each other
-
-        :return: the list of the adjustment values
-        """
-
-        self.logger.info("Calculating the x-axis adjustment.")
-        # get the total number of series
-        num_stag = len(self.config_obj.all_series_y1)
-
-        # init the result with 0
-        stag_vals = [0] * num_stag
-
-        # calculate staggering values
-        if self.config_obj.indy_stagger is True:
-            dbl_adj_scale = (len(self.config_obj.indy_vals) - 1) / 150
-            stag_vals = np.linspace(-(num_stag / 2) * dbl_adj_scale,
-                                    (num_stag / 2) * dbl_adj_scale,
-                                    num_stag,
-                                    True)
-            stag_vals = stag_vals + dbl_adj_scale / 2
-        return stag_vals
 
     def write_output_file(self) -> None:
         """

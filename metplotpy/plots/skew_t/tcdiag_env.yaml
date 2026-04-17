@@ -19,5 +19,3 @@ dependencies:
   - openssl
   - jupyterlab
   - jupyter
-  - python-kaleido
-  - plotly

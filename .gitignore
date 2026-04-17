@@ -14,3 +14,5 @@ __pycache__/
 # files that are generated when package is installed
 build/
 metplotpy.egg-info/
+
+.DS_Store
