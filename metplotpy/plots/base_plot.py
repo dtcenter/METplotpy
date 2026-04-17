@@ -637,7 +637,7 @@ class BasePlot:
         return ax_right
 
     def _sync_yaxes(self, ax, ax2, yaxis_min: Union[float, None], yaxis_max: Union[float, None]):
-        if not self.config_obj.sync_yaxes or self.config_obj.vert_plot:
+        if not self.config_obj.sync_yaxes or self.config_obj.vert_plot or ax2 is None:
             return
 
         # set y limits if defined in config or if min/max are provided
