@@ -89,7 +89,7 @@ PCH_TO_MATPLOTLIB_MARKER = {
 }
 
 # approximated from plotly marker size to matplotlib marker size
-PCH_TO_MATPLOTLIB_MARKER_SIZE = {'.': 14, 'o': 36, 's': 20, '^': 36, 'd': 20, 'H': 28}
+PCH_TO_MATPLOTLIB_MARKER_SIZE = {'.': 14, 'o': 6, 's': 6, '^': 7, 'd': 8, 'H': 6}
 
 SERIES_TYPE_TO_PLOT_MODE = {'b': 'lines+markers', 'p': 'markers', 'l': 'lines'}
 
