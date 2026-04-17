@@ -730,3 +730,9 @@ class BasePlot:
     def write_output_file(self) -> None:
         """To be implemented by child class"""
         pass
+
+    def write_html(self) -> None:
+        """This function is no longer used after the switch from plotly to matplotlib.
+        However, some external scripts still may call the function.
+        """
+        print("WARNING: write_html() is no longer used in METplotpy")
