@@ -385,8 +385,6 @@ class PerformanceDiagram(BasePlot):
 
         # use plt.tight_layout() to prevent label box from scrolling off the figure
         plt.tight_layout()
-        self.save_to_file()
-        self.logger.info("Finished saving file.")
 
     def write_output_file(self):
         """
@@ -452,13 +450,7 @@ def main(config_filename=None):
             Returns:
 
     """
-    params = util.get_params(config_filename)
-    try:
-        # create a performance diagram
-        PerformanceDiagram(params)
-
-    except ValueError as value_error:
-        print(value_error)
+    util.make_plot(config_filename, PerformanceDiagram)
 
 
 if __name__ == "__main__":
