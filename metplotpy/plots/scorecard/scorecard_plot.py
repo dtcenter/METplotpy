@@ -1,4 +1,5 @@
 import os, sys
+import itertools
 import pandas as pd
 import matplotlib.pyplot as plt
 from metplotpy.external.plottable.plottable import Table
@@ -64,16 +65,18 @@ class ScorecardPlot():
             sys.exit(msg)
 
         #
-        #  For calculating CI's
+        #  For calculating CI's via METcalcpy agg_stat.py
         #
 
-        # ToDo
+        # ToDo create the appropriate config settings for agg_stat.py
 
         #
         # For p-values via METcalcpy scorecard module
         #
         self.append_sc_runs: bool = configs['append_subsequent']
-        self.derived_series: list[list] = configs['derived_series']
+
+        # self.derived_series: list = configs['derived_series']
+        self.derived_series: list[list] = self.create_derived_series()
         agg_fname = "aggstat_output.txt"
         self.aggstat_filename = os.path.join(self.output_dir, agg_fname)
 
@@ -92,13 +95,68 @@ class ScorecardPlot():
         self.scorecard_stats_statslist = self.subset_params['stats_list']
 
         # num of days, used in bootstrapping
-        self.ndays = int(configs['ndays'])
+        self.sample_size = int(configs['sample_size'])
         self.pval_method: str = configs['pval_method']
 
         # Plot-related
         self.base_dir = configs['base_dir']
         self.ci_map = self.get_category_images(self.base_dir)
 
+    def create_derived_series(self ) -> list[list]:
+        """
+           Create all the derived series settings based on the fcst level, model names,
+           fcst hour, fcst variable, statistics
+
+           Args:
+              configs (dict):
+
+          Returns:
+              A list of lists representing the derived series required by METcalcpy's
+              scorecard.py module
+
+        """
+        fcst_leads =   self.subset_params['fcst_lead']
+        models = self.subset_params['model']
+        stats =   self.subset_params['stats_list']
+        fcst_levs =   self.subset_params['fcst_lev']
+        fcst_var =   self.subset_params['fcst_var']
+
+        # Create the Cartesian product of the above
+        result = list(itertools.product(fcst_levs, models, fcst_leads, fcst_var, stats))
+
+        # Make all elements strings, to enable joining the fcst lead, model name, etc
+        # based on model name into the format (level model fcst_hr variable stat:
+        #          Z2 ModelA 60000 TMP RMSE
+        modelA = []
+        modelB = []
+
+        for _ in result:
+            if _[1] == models[0]:
+                modelA_strs = [ (str(i)) for i in _ ]
+                modelA.append(modelA_strs)
+
+            else:
+                modelB_strs = [ (str(i)) for i in _ ]
+                modelB.append(modelB_strs)
+
+        # If models don't have the same number of data points, exit with a message.
+        if len(modelA) != len(modelB):
+            msg= (f"Different number of {models[0]} and {models[1]} data.  Please check your"
+                  f"data.  ")
+            sys.exit(msg)
+
+        # Join the components into one string
+        modelA_strs = [" ".join(i) for i in modelA]
+        modelB_strs = [" ".join(i) for i in modelB ]
+
+        # Group the modelA and modelB strings with the same fcst level, fcst hr,
+        # fcst var, and stat values
+        modelA_B = [list(i) for i in zip(modelA_strs, modelB_strs)]
+
+        # Add the 'DIFF_SIG' directive to each item
+        [ i.append("DIFF_SIG") for i in modelA_B]
+
+        return modelA_B
 
     def get_category_images(self, base_dir: str) -> dict:
         """
@@ -326,7 +384,7 @@ class ScorecardPlot():
         params = {}
         params['append_subsequent'] = self.append_sc_runs
         params['derived_series'] = self.derived_series
-        params['ndays'] = self.ndays
+        params['ndays'] = self.sample_size
         params['pval_method'] = self.pval_method
         params['log_dir'] = self.log_dir
         params['log_filename'] = self.log_filename
