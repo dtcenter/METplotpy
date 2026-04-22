@@ -91,35 +91,11 @@ subset_params:
 # Append to the scorecard output file with successive runs
 append_subsequent: False
 
-# a list of lists (note the first '-'  in line above each block of
-# information)
-derived_series:
-       -
-         - 'Z2 HRRR_verification_mem000 0 TMP ME'
-         - 'Z2 RRFS_verification_mem000 0 TMP ME'
-         - 'DIFF_SIG'
-
-       -
-         - 'Z2 HRRR_verification_mem000 60000 TMP ME'
-         - 'Z2 RRFS_verification_mem000 60000 TMP ME'
-         - 'DIFF_SIG'
-
-       -
-         - 'Z2 HRRR_verification_mem000 120000 TMP ME'
-         - 'Z2 RRFS_verification_mem000 120000 TMP ME'
-         - 'DIFF_SIG'
-
-       -
-         - 'Z2 HRRR_verification_mem000 240000 TMP ME'
-         - 'Z2 RRFS_verification_mem000 240000 TMP ME'
-         - 'DIFF_SIG'
-
-
 # Method to calculate p-values: 'EMC' or 'NCAR' (code currently uses NCAR)
 pval_method: 'NCAR'
 
 # Used in the  EMC method of calculating p-values
-ndays: 10
+sample_size: 10
 
 
 #
