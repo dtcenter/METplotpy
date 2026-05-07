@@ -38,7 +38,7 @@ METplotpy Version 13.0.0-beta2 release notes (20260507)
 
 
 METplotpy Version 13.0.0-beta1 release notes (20260205)
-======================================================
+=======================================================
 
 .. dropdown:: New Plots
 
