@@ -71,4 +71,4 @@ This section summarizes and highlights important changes to METplotpy since vers
   
    Plots that originally utilized the Python Plotly plotting package are now using Matplotlib. As a result, all plots in this repository utilize Matplotlib.  This removes the dependency on chrome by the kaleido module in Plotly. The kaleido/chrome dependency required run-time downloading of chrome and also broke existing functionality.   
 
-   The version numbering for METdataio has been updated to 13.0.0 to provide consistency and clarity with all METplus components.  View the requirements.txt/nco_requirements.txt file at the top level of the repository for version numbers for the corresponding third-party packages.
+   The version numbering for METplotpy has been updated to 13.0.0 to provide consistency and clarity with all METplus components.  View the requirements.txt/nco_requirements.txt file at the top level of the repository for version numbers for the corresponding third-party packages.
