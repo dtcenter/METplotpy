@@ -15,20 +15,16 @@ __author__ = 'Tatiana Burek'
 from datetime import datetime
 import os
 import re
-from operator import add
 
 import pandas as pd
-import plotly.graph_objects as go
-from plotly.graph_objects import Figure
-from plotly.subplots import make_subplots
+from matplotlib import pyplot as plt
 
 import metcalcpy.util.utils as calc_util
+
 from metplotpy.plots import util
 from metplotpy.plots.bar.bar_config import BarConfig
 from metplotpy.plots.bar.bar_series import BarSeries
 from metplotpy.plots.base_plot import BasePlot
-from metplotpy.plots.constants import PLOTLY_AXIS_LINE_COLOR, PLOTLY_AXIS_LINE_WIDTH, \
-    PLOTLY_PAPER_BGCOOR
 
 
 class Bar(BasePlot):
@@ -55,18 +51,7 @@ class Bar(BasePlot):
         self.logger = self.config_obj.logger
         self.logger.info(f"Start bar plot: {datetime.now()}")
         # Check that we have all the necessary settings for each series
-        self.logger.info("Consistency checking of config settings for colors, "
-                         "legends, etc.")
-        is_config_consistent = self.config_obj._config_consistency_check()
-        if not is_config_consistent:
-            value_error_msg = ("ValueError: The number of series defined by series_val_1 and "
-                               "derived curves is inconsistent with the number of "
-                               "settings required for describing each series. Please "
-                               "check the number of your configuration file's "
-                               "plot_i, plot_disp, series_order, user_legend, show_legend and "
-                               "colors settings.")
-            self.logger.error(value_error_msg)
-            raise ValueError(value_error_msg)
+        self.config_obj.config_consistency_check()
 
         # Read in input data, location specified in config file
         self.logger.info(f"Begin reading input data: {datetime.now()}")
@@ -159,6 +144,9 @@ class Bar(BasePlot):
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
 
+        if self.config_obj.xaxis_reverse:
+            series_list.reverse()
+
         return series_list
 
     def _create_figure(self):
@@ -166,43 +154,36 @@ class Bar(BasePlot):
         Create a bar plot from defaults and custom parameters
         """
         # create and draw the plot
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_legend()
+        _, ax = plt.subplots(figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
-        # placeholder for the number of stats
-        n_stats = [0] * len(self.config_obj.indy_vals)
+        wts_size_styles = self.get_weights_size_styles()
 
-        if self.config_obj.xaxis_reverse is True:
-            self.series_list.reverse()
+        self._add_title(ax, wts_size_styles['title'])
+        self._add_caption(plt, wts_size_styles['caption'])
 
+        self._add_xaxis(ax, wts_size_styles['xlab'])
+        self._add_yaxis(ax, wts_size_styles['ylab'])
+
+        self._add_series(ax)
+        self._add_x2axis(ax, wts_size_styles['x2lab'])
+
+        self._add_legend(ax)
+
+        # add custom lines if lines are defined in config
+        if len(self.series_list) > 0:
+            self._add_lines(ax, self.config_obj, self.config_obj.indy_vals)
+
+        plt.tight_layout()
+    def _add_series(self, ax):
         # add series lines
-        for series in self.series_list:
+        for idx, series in enumerate(self.series_list):
 
             # Don't generate the plot for this series if
             # it isn't requested (as set in the config file)
             if series.plot_disp:
-                self._draw_series(series)
+                self._draw_series(ax, series, idx)
 
-                # aggregate number of stats
-                n_stats = list(map(add, n_stats, series.series_points['nstat']))
-
-        # add custom lines
-        if len(self.series_list) > 0:
-            self._add_lines(
-                self.config_obj,
-                sorted(
-                    self.series_list[0].series_data[self.config_obj.indy_var].unique())
-            )
-
-        # apply y axis limits
-        self._yaxis_limits()
-
-        # add x2 axis
-        self._add_x2axis(n_stats)
-
-    def _draw_series(self, series: BarSeries) -> None:
+    def _draw_series(self, ax: plt.Axes, series: BarSeries, idx: int) -> None:
         """
         Draws the formatted Bar on the plot
         :param series: Bar series object with data and parameters
@@ -210,7 +191,8 @@ class Bar(BasePlot):
 
         y_points = series.series_points['dbl_med']
         is_threshold, is_percent_threshold = util.is_threshold_value(
-            series.series_data[self.config_obj.indy_var])
+            series.series_data[self.config_obj.indy_var]
+        )
 
         # If there are any None types in the series_points['dbl_med'] list, then use the
         # indy_vals defined in the config file to ensure that the number of y_points
@@ -218,6 +200,7 @@ class Bar(BasePlot):
         # same number of x_points.
         if None in y_points:
             x_points = self.config_obj.indy_vals
+            y_points = [item if item is not None else 0 for item in y_points]
         elif is_percent_threshold:
             x_points = self.config_obj.indy_var
         elif is_threshold:
@@ -233,244 +216,11 @@ class Bar(BasePlot):
         else:
             x_points = sorted(series.series_data[self.config_obj.indy_var].unique())
 
+        x_locs, width = self._get_x_locs_and_width(x_points, idx)
+
         # add the plot
-        self.figure.add_trace(
-            go.Bar(
-                x=x_points,
-                y=y_points,
-                showlegend=self.config_obj.show_legend[series.idx] == 1,
-                name=self.config_obj.user_legends[series.idx],
-                marker_color=self.config_obj.colors_list[series.idx],
-                marker_line_color=self.config_obj.colors_list[series.idx]
-            )
-        )
-
-    def _create_layout(self) -> Figure:
-        """
-        Creates a new layout based on the properties from the config file
-        including plots size, annotation and title
-
-        :return: Figure object
-        """
-        # create annotation
-        annotation = [
-            {'text': util.apply_weight_style(self.config_obj.parameters['plot_caption'],
-                                             self.config_obj.parameters[
-                                                 'caption_weight']),
-             'align': 'left',
-             'showarrow': False,
-             'xref': 'paper',
-             'yref': 'paper',
-             'x': self.config_obj.parameters['caption_align'],
-             'y': self.config_obj.caption_offset,
-             'font': {
-                 'size': self.config_obj.caption_size,
-                 'color': self.config_obj.parameters['caption_col']
-             }
-             }]
-        # create title
-        title = {'text': util.apply_weight_style(self.config_obj.title,
-                                                 self.config_obj.parameters[
-                                                     'title_weight']),
-                 'font': {
-                     'size': self.config_obj.title_font_size,
-                 },
-                 'y': self.config_obj.title_offset,
-                 'x': self.config_obj.parameters['title_align'],
-                 'xanchor': 'center',
-                 'xref': 'paper'
-                 }
-
-        # create a layout
-        fig = make_subplots(specs=[[{"secondary_y": False}]])
-
-        # add size, annotation, title
-        fig.update_layout(
-            width=self.config_obj.plot_width,
-            height=self.config_obj.plot_height,
-            margin=self.config_obj.plot_margins,
-            paper_bgcolor=PLOTLY_PAPER_BGCOOR,
-            annotations=annotation,
-            title=title,
-            plot_bgcolor=PLOTLY_PAPER_BGCOOR
-        )
-        fig.update_layout(
-            xaxis={
-                'tickmode': 'array',
-                'tickvals': self.config_obj.indy_vals,
-                'ticktext': self.config_obj.indy_label,
-            }
-        )
-
-        return fig
-
-    def _add_xaxis(self) -> None:
-        """
-        Configures and adds x-axis to the plot
-        """
-        self.figure.update_xaxes(title_text=self.config_obj.xaxis,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 ticks="inside",
-                                 zeroline=False,
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.x_title_font_size
-                                 },
-                                 title_standoff=abs(
-                                     self.config_obj.parameters['xlab_offset']),
-                                 tickangle=self.config_obj.x_tickangle,
-                                 tickfont={'size': self.config_obj.x_tickfont_size},
-                                 type='category'
-                                 )
-        # reverse xaxis if needed
-        if self.config_obj.xaxis_reverse is True:
-            self.figure.update_xaxes(autorange="reversed")
-
-    def _add_yaxis(self) -> None:
-        """
-        Configures and adds y-axis to the plot
-        """
-        self.figure.update_yaxes(title_text=
-                                 util.apply_weight_style(self.config_obj.yaxis_1,
-                                                         self.config_obj.parameters[
-                                                             'ylab_weight']),
-                                 secondary_y=False,
-                                 linecolor=PLOTLY_AXIS_LINE_COLOR,
-                                 linewidth=PLOTLY_AXIS_LINE_WIDTH,
-                                 showgrid=self.config_obj.grid_on,
-                                 zeroline=False,
-                                 ticks="inside",
-                                 gridwidth=self.config_obj.parameters['grid_lwd'],
-                                 gridcolor=self.config_obj.blended_grid_col,
-                                 automargin=True,
-                                 title_font={
-                                     'size': self.config_obj.y_title_font_size
-                                 },
-                                 title_standoff=abs(
-                                     self.config_obj.parameters['ylab_offset']),
-                                 tickangle=self.config_obj.y_tickangle,
-                                 tickfont={'size': self.config_obj.y_tickfont_size}
-                                 )
-
-    def _add_legend(self) -> None:
-        """
-        Creates a plot legend based on the properties from the config file
-        and attaches it to the initial Figure
-        """
-        self.figure.update_layout(legend={'x': self.config_obj.bbox_x,
-                                          'y': self.config_obj.bbox_y,
-                                          'xanchor': 'center',
-                                          'yanchor': 'top',
-                                          'bordercolor':
-                                              self.config_obj.legend_border_color,
-                                          'borderwidth':
-                                              self.config_obj.legend_border_width,
-                                          'orientation':
-                                              self.config_obj.legend_orientation,
-                                          'font': {
-                                              'size': self.config_obj.legend_size,
-                                              'color': "black"
-                                          }
-                                          })
-
-    def _yaxis_limits(self) -> None:
-        """
-        Apply limits on y axis if needed
-        """
-        if len(self.config_obj.parameters['ylim']) > 0:
-            self.figure.update_layout(
-                yaxis={'range': [self.config_obj.parameters['ylim'][0],
-                                 self.config_obj.parameters['ylim'][1]],
-                       'autorange': False})
-
-    def _add_x2axis(self, n_stats) -> None:
-        """
-        Creates x2axis based on the properties from the config file
-        and attaches it to the initial Figure
-
-        :param n_stats: - labels for the axis
-        """
-        if self.config_obj.show_nstats:
-            self.figure.update_layout(xaxis2={'title_text':
-                                                  util.apply_weight_style('NStats',
-                                                                          self.config_obj.parameters[
-                                                                              'x2lab_weight']
-                                                                          ),
-                                              'linecolor': PLOTLY_AXIS_LINE_COLOR,
-                                              'linewidth': PLOTLY_AXIS_LINE_WIDTH,
-                                              'overlaying': 'x',
-                                              'side': 'top',
-                                              'showgrid': False,
-                                              'zeroline': False,
-                                              'ticks': "inside",
-                                              'title_font': {
-                                                  'size':
-                                                      self.config_obj.x2_title_font_size
-                                              },
-                                              'title_standoff': abs(
-                                                  self.config_obj.parameters[
-                                                      'x2lab_offset']
-                                              ),
-                                              'tickmode': 'array',
-                                              'tickvals': self.config_obj.indy_vals,
-                                              'ticktext': n_stats,
-                                              'tickangle': self.config_obj.x2_tickangle,
-                                              'tickfont': {
-                                                  'size':
-                                                      self.config_obj.x2_tickfont_size
-                                              },
-                                              'scaleanchor': 'x'
-                                              }
-                                      )
-            # reverse x2axis if needed
-            if self.config_obj.xaxis_reverse is True:
-                self.figure.update_layout(xaxis2={'autorange': "reversed"})
-
-            # need to add an invisible line with all values = None
-            self.figure.add_trace(
-                go.Scatter(y=[None] * len(self.config_obj.indy_vals),
-                           x=self.config_obj.indy_vals,
-                           xaxis='x2', showlegend=False)
-            )
-
-    def remove_file(self):
-        """
-           Removes previously made image file .  Invoked by the parent class before
-           self.output_file
-           attribute can be created, but overridden here.
-        """
-
-        super().remove_file()
-        self._remove_html()
-
-    def _remove_html(self) -> None:
-        """
-        Removes previously made HTML file.
-        """
-
-        base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-        html_name = f"{base_name}.html"
-
-        # remove the old file if it exist
-        if os.path.exists(html_name):
-            os.remove(html_name)
-
-    def write_html(self) -> None:
-        """
-        Is needed - creates and saves the html representation of the plot WITHOUT
-        Plotly.js
-        """
-        if self.config_obj.create_html is True:
-            # construct the file name from plot_filename
-            base_name, _ = os.path.splitext(self.get_config_value('plot_filename'))
-            html_name = f"{base_name}.html"
-
-            # save html
-            self.figure.write_html(html_name, include_plotlyjs=False)
+        ax.bar(x=x_locs, height=y_points, width=width, align='center', color=self.config_obj.colors_list[series.idx],
+               label=self.config_obj.user_legends[series.idx])
 
     def write_output_file(self) -> None:
         """

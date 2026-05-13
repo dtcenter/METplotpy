@@ -13,7 +13,6 @@ Class Name: rank_hist.py
  """
 __author__ = 'Tatiana Burek'
 
-import yaml
 from datetime import datetime
 from metplotpy.plots.histogram.hist import Hist
 from metplotpy.plots import util

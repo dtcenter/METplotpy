@@ -24,7 +24,7 @@ import metcalcpy.util.utils as util
 
 def plot_elbow(K,d,mi,line,curve,plot_title,output_plotname):
 
-    plt.plot(K[int(mi)],d[mi]*-1,'*k')
+    plt.plot(K[int(mi.item())],d[mi.item()]*-1,'*k')
     plt.plot(K, np.array(curve), 'kx-')
     plt.plot(K, line, 'r')
     plt.plot(K, d*-1, 'b')

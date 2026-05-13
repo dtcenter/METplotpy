@@ -115,5 +115,5 @@ stat_input: !ENV '${TEST_DIR}/eclv_ctc.data'
 plot_filename: !ENV '${TEST_OUTPUT}/eclv_ctc.png'
 
 show_legend:
-  -True
-  -True
+- True
+- True

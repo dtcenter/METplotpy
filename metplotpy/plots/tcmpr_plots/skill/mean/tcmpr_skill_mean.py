@@ -2,12 +2,11 @@ import os
 from datetime import datetime
 
 import numpy as np
-import plotly.graph_objects as go
 
 from metcalcpy.util import utils
 from metplotpy.plots.tcmpr_plots.skill.mean.tcmpr_series_skill_mean import TcmprSeriesSkillMean
 from metplotpy.plots.tcmpr_plots.skill.tcmpr_skill import TcmprSkill
-import metplotpy.plots.util as util
+from metplotpy.plots import util as util
 
 
 class TcmprSkillMean(TcmprSkill):
@@ -20,7 +19,7 @@ class TcmprSkillMean(TcmprSkill):
         self.skill_logger.info("--------------------------------------------------------")
         self.skill_logger.info(f"Plotting SKILL_MN time series by {self.config_obj.series_val_names[0]}")
 
-        self._adjust_titles(stat_name)
+        self._adjust_titles(f"Skill for {stat_name}", title_prefix="Mean Skill Scores of")
         self.cur_baseline = baseline_data['cur_baseline']
         self.cur_baseline_data = baseline_data['cur_baseline_data']
         self._init_hfip_baseline_for_plot()
@@ -36,66 +35,45 @@ class TcmprSkillMean(TcmprSkill):
             os.remove(self.plot_filename)
         self._create_figure(stat_name)
 
-    def _adjust_titles(self, stat_name):
-        if self.yaxis_1 is None or len(self.yaxis_1) == 0:
-            self.yaxis_1 = 'Skill for ' + stat_name + ' (' + self.col['units'] + ')'
-
-        if self.title is None or len(self.title) == 0:
-            self.title = 'Mean Skill Scores of ' + self.col['desc'] + ' by ' \
-                         + self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]][
-                             "DESCRIPTION"].tolist()[0]
-
     def _init_hfip_baseline_for_plot(self):
         if 'Water Only' in self.title:
-            self.skill_logge.info(f"Plot HFIP Baseline: {self.cur_baseline}")
+            self.skill_logger.info(f"Plot HFIP Baseline: {self.cur_baseline}")
         else:
             self.cur_baseline = self.cur_baseline.replace('Error', 'Skill')
             self.cur_baseline = self.cur_baseline.replace('HFIP Baseline ', 'HFIP Skill Baseline')
         self.skill_logger.info(f"Plot HFIP Baseline:  {self.cur_baseline.replace('Error ', '')}")
 
-    def _add_hfip_baseline(self):
+    def _add_hfip_baseline(self, ax):
+        if self.cur_baseline_data is None:
+            return
+
         # Add HFIP baseline for each lead time
-        if self.cur_baseline_data is not None:
-            self.skill_logger.info(f"Adding HFIP baseline: {datetime.now()}")
-            baseline_x_values = []
-            baseline_y_values = []
-            lead_times = np.unique(self.series_list[0].series_data[self.config_obj.indy_var].tolist())
-            lead_times.sort()
-            for ind, lead in enumerate(lead_times):
-                if lead != 0:
-                    ocd5_data = self.cur_baseline_data.loc[
-                        (self.cur_baseline_data['LEAD'] == lead) & (self.cur_baseline_data['TYPE'] == "OCD5")][
-                        'VALUE'].tolist()
-                    ocd5_data = ocd5_data[0]
-                    cons_data = self.cur_baseline_data.loc[
-                        (self.cur_baseline_data['LEAD'] == lead) & (self.cur_baseline_data['TYPE'] == "CONS")][
-                        'VALUE'].tolist()
-                    if len(cons_data) > 1:
-                        raise ValueError(
-                            f"ERROR: Can't create HFIP baseline for lead time {lead} : too many values of CONS in .dat file")
-                    cons_data = cons_data[0]
+        self.skill_logger.info(f"Adding HFIP baseline: {datetime.now()}")
+        baseline_x_values = []
+        baseline_y_values = []
+        lead_times = np.unique(self.series_list[0].series_data[self.config_obj.indy_var].tolist())
+        lead_times.sort()
+        for ind, lead in enumerate(lead_times):
+            if not lead:
+                continue
 
-                    baseline_lead = utils.round_half_up(100 * (ocd5_data - cons_data) / ocd5_data, 1)
-                    baseline_x_values.append(ind)
-                    baseline_y_values.append(baseline_lead)
+            ocd5_data = self.cur_baseline_data.loc[
+                (self.cur_baseline_data['LEAD'] == lead) & (self.cur_baseline_data['TYPE'] == "OCD5")][
+                'VALUE'].tolist()
+            ocd5_data = ocd5_data[0]
+            cons_data = self.cur_baseline_data.loc[
+                (self.cur_baseline_data['LEAD'] == lead) & (self.cur_baseline_data['TYPE'] == "CONS")][
+                'VALUE'].tolist()
+            if len(cons_data) > 1:
+                raise ValueError(
+                    f"ERROR: Can't create HFIP baseline for lead time {lead} : too many values of CONS in .dat file")
+            cons_data = cons_data[0]
 
-            self.figure.add_trace(
-                go.Scatter(x=baseline_x_values,
-                           y=baseline_y_values,
-                           showlegend=True,
-                           mode='markers',
-                           textposition="top right",
-                           name=self.cur_baseline,
-                           marker=dict(size=8,
-                                       color='rgb(0,0,255)',
-                                       line=dict(
-                                           width=1,
-                                           color='rgb(0,0,255)'
-                                       ),
-                                       symbol='diamond-cross-open',
-                                       )
-                           )
-            )
+            baseline_lead = utils.round_half_up(100 * (ocd5_data - cons_data) / ocd5_data, 1)
+            baseline_x_values.append(ind)
+            baseline_y_values.append(baseline_lead)
+
+        ax.scatter(baseline_x_values, baseline_y_values, marker='d', facecolors='none', edgecolors='blue', s=30, label=self.cur_baseline)
 
     def _create_series(self, input_data, stat_name):
         """
@@ -154,6 +132,10 @@ class TcmprSkillMean(TcmprSkill):
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
+
+        # reverse series list if config is set to reverse x-axis
+        if self.config_obj.xaxis_reverse:
+            series_list.reverse()
 
         end_time = datetime.now()
         total_time = end_time - start_time

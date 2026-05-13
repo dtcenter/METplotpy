@@ -18,7 +18,7 @@ import numpy as np
 from scipy.stats import norm
 
 import metcalcpy.util.utils as utils
-import metplotpy.plots.util
+import metplotpy.plots.util as util
 from ..line.line_series import LineSeries
 
 
@@ -40,8 +40,7 @@ class EclvSeries(LineSeries):
         Returns:
                dictionary with CI ,point values and number of stats as keys
         """
-        logger = metplotpy.plots.util.get_common_logger(self.log_level,
-                                                        self.log_filename)
+        logger = util.get_common_logger(self.log_level, self.log_filename)
         logger.info(f"Creating series points: {datetime.now()}")
 
         # different ways to subset data for normal and derived series

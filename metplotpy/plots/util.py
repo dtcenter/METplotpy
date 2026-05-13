@@ -23,7 +23,8 @@ import matplotlib
 import numpy as np
 from typing import Union
 import pandas as pd
-from plotly.graph_objects import Figure
+import matplotlib.pyplot as plt
+
 from metplotpy.plots.context_filter import ContextFilter as cf
 import metcalcpy.util.pstd_statistics as pstats
 import metcalcpy.util.ctc_statistics as cstats
@@ -95,21 +96,22 @@ def make_plot(config_filename, plot_class):
     # Retrieve the contents of the custom config file to over-ride
     # or augment settings defined by the default config file.
     params = get_params(config_filename)
+    plot = None
     try:
         plot = plot_class(params)
         plot.save_to_file()
-        #if plot.config_obj.show_in_browser:
-        #    plot.show_in_browser()
-        plot.write_html()
         plot.write_output_file()
         name = plot_class.__name__ if not hasattr(plot_class, 'LONG_NAME') else plot_class.LONG_NAME
         plot.logger.info(f"Finished {name} plot at {datetime.now()}")
         return plot
-    except ValueError as val_er:
-        print(val_er)
+    except Exception as err:
+        if plot:
+            plot.logger.error("Exception occurred in plot: %s", err)
+            plot.logger.debug("Exception details:", exc_info=True)
+        else:
+            raise
 
     return None
-
 
 def alpha_blending(hex_color: str, alpha: float) -> str:
     """ Alpha color blending as if on the white background.
@@ -124,29 +126,6 @@ def alpha_blending(hex_color: str, alpha: float) -> str:
     foreground_arr = np.array(foreground_tuple)
     final = tuple((1. - alpha) + foreground_arr * alpha)
     return matplotlib.colors.rgb2hex(final)
-
-
-def apply_weight_style(text: str, weight: int) -> str:
-    """
-    Applied HTML style weight to text:
-    1 - none
-    2 - bold
-    3 - italic
-    4 - bold italic
-
-    :param text: text to style
-    :param weight: - int representation of the style
-    :return: styled text
-    """
-    if len(text) > 0:
-        if weight == 2:
-            return '<b>' + text + '</b>'
-        if weight == 3:
-            return '<i>' + text + '</b>'
-        if weight == 4:
-            return '<b><i>' + text + '</i></b>'
-    return text
-
 
 def nicenumber(x, to_round):
     """
@@ -198,38 +177,6 @@ def pretty(low, high, number_of_intervals) -> Union[np.ndarray, list]:
     miny = np.floor(low / d) * d
     maxy = np.ceil(high / d) * d
     return np.arange(miny, maxy + 0.5 * d, d)
-
-
-def add_horizontal_line(figure: Figure, y: float, line_properties: dict) -> None:
-    """
-    Adds a horizontal line to the Plotly Figure
-    :param figure: Plotly plot to add a line to
-    :param y: y value for the line
-    :param line_properties: dictionary with line properties like color, width, dash
-    :return:
-    """
-    figure.add_shape(
-        type='line',
-        yref='y', y0=y, y1=y,
-        xref='paper', x0=0, x1=1,
-        line=line_properties,
-    )
-
-
-def add_vertical_line(figure: Figure, x: float, line_properties: dict) -> None:
-    """
-    Adds a vertical line to the Plotly Figure
-    :param figure: Plotly plot to add a line to
-    :param x: x value for the line
-    :param line_properties: dictionary with line properties like color, width, dash
-    :return:
-    """
-    figure.add_shape(
-        type='line',
-        yref='paper', y0=0, y1=1,
-        xref='x', x0=x, x1=x,
-        line=line_properties,
-    )
 
 
 def abline(x_value: float, intercept: float, slope: float) -> float:
@@ -353,36 +300,39 @@ def get_common_logger(log_level, log_filename):
          common_logger: the logger common to all the METplotpy modules that are
                         currently in use by a plot type.
     '''
-
     # If directory for logfile doesn't exist, create it
     log_dir = os.path.dirname(log_filename)
-    try:
-       os.makedirs(log_dir, exist_ok=True)
-    except OSError:
-        pass
+    if log_dir:
+        os.makedirs(log_dir, exist_ok=True)
 
     # Supported log levels.
     log_level = log_level.upper()
-    log_levels = {'DEBUG': logging.DEBUG, 'INFO': logging.INFO,
-                  'WARNING': logging.WARNING, 'ERROR': logging.ERROR,
-                  'CRITICAL': logging.CRITICAL}
+    log_levels = {
+        'DEBUG': logging.DEBUG,
+        'INFO': logging.INFO,
+        'WARNING': logging.WARNING,
+        'ERROR': logging.ERROR,
+        'CRITICAL': logging.CRITICAL,
+    }
+    log_level = log_levels.get(log_level)
+    if log_level is None:
+        print(f'WARNING: Invalid log level: {log_level}. Using INFO')
+        log_level = logging.INFO
 
+    log_args = {
+        'level': log_level,
+        'format': '%(asctime)s||User:%(user)s||%(funcName)s|| [%(levelname)s]: %(message)s',
+        'datefmt': '%Y-%m-%d %H:%M:%S',
+    }
     if log_filename.lower() == 'stdout':
-        logging.basicConfig(level=log_levels[log_level],
-                            format='%(asctime)s||User:%('
-                                   'user)s||%(funcName)s|| [%(levelname)s]: %('
-                                   'message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S',
-                            stream=sys.stdout)
+        log_args['stream'] = sys.stdout
     else:
+        log_args['filename'] = log_filename
+        log_args['filemode'] = 'w'
 
-        logging.basicConfig(level=log_levels[log_level],
-                            format='%(asctime)s||User:%('
-                                   'user)s||%(funcName)s|| [%(levelname)s]: %('
-                                   'message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S',
-                            filename=log_filename,
-                            filemode='w')
+    # Note: the log level is ignored if logging has already been initialized
+    logging.basicConfig(**log_args)
+
     logging.getLogger(name='matplotlib').setLevel(logging.CRITICAL)
     common_logger = logging.getLogger(__name__)
     f = cf()

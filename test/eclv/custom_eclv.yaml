@@ -123,5 +123,5 @@ plot_filename: !ENV '${TEST_OUTPUT}/eclv.png'
 #  Debug and info log level will produce more log output.
 #log_level: WARNING
 show_legend:
-  -True
-  -True
+- True
+- True

@@ -11,18 +11,17 @@ Class Name: Scatter
  """
 __author__ = 'Minna Win'
 
+import sys
 import os
 from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.font_manager import FontProperties
-import yaml
+
 import pandas as pd
 from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.scatter.scatter_config import ScatterConfig
 from metplotpy.plots import util
-from metplotpy.plots.util import get_params
-from metcalcpy.util.read_env_vars_in_config import  parse_config
 
 class Scatter(BasePlot):
     """
@@ -186,7 +185,7 @@ class Scatter(BasePlot):
         # Save the plot
         plot_filename = self.config_obj.plot_filename
         self.logger.info(f"Saving scatter plot as {plot_filename}")
-        plt.savefig(plot_filename)
+        self.save_to_file()
         time_to_plot = datetime.now() - start
         self.logger.info(f"Total time for generating the scatter plot: {time_to_plot} seconds")
 
@@ -201,15 +200,18 @@ def main(config_filename=None):
 
        Returns: None
     """
-    docs = get_params(config_filename)
+    docs = util.get_params(config_filename)
 
     try:
         plot = Scatter(docs)
         plot.create_figure(docs)
         plot.logger.info(f"Finished generating scatter plot: {datetime.now()}")
-    except ValueError as ve:
-        print(ve)
+    except Exception as err:
+        plot.logger.error("Exception occurred in scatter plot: %s", err)
+        plot.logger.debug("Exception details:", exc_info=True)
+        return False
+
+    return True
 
 if __name__ == "__main__":
-    main()
-
+    sys.exit(0 if main() else 1)

@@ -1,18 +1,12 @@
 import os
-from typing import Union
 from datetime import datetime
 import numpy as np
-from pandas import DataFrame
-import plotly.graph_objects as go
-
 
 from metcalcpy.util import utils
-from metplotpy.plots.series import Series
 from metplotpy.plots.tcmpr_plots.tcmpr import Tcmpr
 from metplotpy.plots.tcmpr_plots.tcmpr_series import TcmprSeries
 from metplotpy.plots.tcmpr_plots.tcmpr_util import get_case_data
-import metplotpy.plots.util as util
-
+from metplotpy.plots import util as util
 
 
 class TcmprRelPerf(Tcmpr):
@@ -21,11 +15,11 @@ class TcmprRelPerf(Tcmpr):
 
         # Set up Logging
         self.relperf_logger = util.get_common_logger(self.config_obj.log_level, self.config_obj.log_filename)
-        self.relperf_logger.info(f"--------------------------------------------------------")
+        self.relperf_logger.info("--------------------------------------------------------")
 
         if not self.config_obj.use_ee:
-            self.relpef_logger.error(f"Plotting RELPERF time series by {self.config_obj.series_val_names[0]}")
-            raise Exception("ERROR: Cannot plot relative performance when event equalization is disabled.")
+            self.relperf_logger.error(f"Plotting RELPERF time series by {self.config_obj.series_val_names[0]}")
+            raise ValueError("ERROR: Cannot plot relative performance when event equalization is disabled.")
 
         self.relperf_logger.info(f"Plotting RELPERF time series by {stat_name}")
 
@@ -81,26 +75,10 @@ class TcmprRelPerf(Tcmpr):
 
     def _create_figure(self, stat_name):
         """ Create a box plot from default and custom parameters"""
-
         start_time = datetime.now()
-        self.figure = self._create_layout()
-        self._add_xaxis()
-        self._add_yaxis()
-        self._add_legend()
+        handles_and_labels = []
+        super()._create_figure()
 
-        if self.config_obj.xaxis_reverse is True:
-            self.series_list.reverse()
-
-        x_points_index = list(range(0, len(self.config_obj.indy_vals)))
-        # add x ticks for line plots
-
-        self.figure.update_layout(
-            xaxis={
-                'tickmode': 'array',
-                'tickvals': x_points_index,
-                'ticktext': self.config_obj.indy_label
-            }
-        )
         yaxis_min = None
         yaxis_max = None
 
@@ -110,7 +88,11 @@ class TcmprRelPerf(Tcmpr):
             if series.plot_disp:
                 # collect min-max if we need to sync axis
                 yaxis_min, yaxis_max = self.find_min_max(series, yaxis_min, yaxis_max)
-                self._draw_series(series, x_points_index)
+                x_points_index_adj, _ = self._get_x_locs_and_width(self.config_obj.indy_vals,
+                                                                   series.idx,
+                                                                   stagger_scale=0.1)
+                handle = self._draw_series(series, x_points_index_adj)
+                handles_and_labels.append((handle, handle.get_label()))
 
         series = TcmprSeries(self.config_obj, len(self.series_list), self.input_df, [], ['TIE'], stat_name)
         # Reset some series values.  Series should be grouped by the plot type and not by the series_val
@@ -123,51 +105,40 @@ class TcmprRelPerf(Tcmpr):
             'name': 'TIE',
             'line_width': 1,
             'line_dash': 'solid',
-            'marker_symbol': 'asterisk-open',
+            'marker_symbol': '*',
             'marker_size': self.config_obj.marker_size[-1],
             'series_ci': True
         }
-        self._draw_series(series, x_points_index, tie_conf)
-        self.figure.update_layout(shapes=[dict(
-            type='line',
-            yref='y', y0=0, y1=0,
-            xref='paper', x0=0, x1=0.95,
-            line={'color': '#e5e7e9',
-                  'dash': 'solid',
-                  'width': 1},
-        )])
+        x_points_index_adj, _ = self._get_x_locs_and_width(self.config_obj.indy_vals,
+                                                           series.idx,
+                                                           stagger_scale=0.1)
+        handle = self._draw_series(series, x_points_index_adj, tie_conf)
+        handles_and_labels.append((handle, handle.get_label()))
+        self.ax.axhline(y=0, color='#e5e7e9', linestyle='-', linewidth=1)
 
-        # Draw an invisible line to create a CI legend
-        self.figure.add_trace(
-            go.Scatter(x=[0],
-                       y=[0],
-                       showlegend=True,
-                       mode='lines',
-                       visible='legendonly',
-                       line={'color': '#7b7d7d',
-                             'width': 1,
-                             'dash': 'dot'},
-                       name=str(int(100 * (1 - self.config_obj.alpha))) + '% CI'
-                       )
-        )
+        # add CI legend proxy
+        self.ax.plot([], [], color='#7b7d7d', linestyle=':', linewidth=1, label=str(int(100 * (1 - self.config_obj.alpha))) + '% CI')
 
         # add custom lines
         if len(self.series_list) > 0:
             self._add_lines(
+                self.ax,
                 self.config_obj,
                 sorted(self.series_list[0].series_data[self.config_obj.indy_var].unique())
             )
-        # apply y axis limits
-        self._yaxis_limits()
+
+        self._add_xaxis()
+        self._add_yaxis()
+        self._add_legend(self.ax, handles_and_labels)
 
         # add x2 axis
-        self._add_x2axis(list(range(0, len(self.config_obj.indy_vals))))
+        self._add_x2axis()
 
         end_time = datetime.now()
         total_time = end_time - start_time
         self.relperf_logger.info(f"Took {total_time} milliseconds to create the relative performance figure")
 
-    def _draw_series(self, series: TcmprSeries, x_points_index_adj: list, tie_conf=None) -> None:
+    def _draw_series(self, series: TcmprSeries, x_points_index_adj: list, tie_conf=None):
         """
         Draws the boxes on the plot
 
@@ -191,26 +162,28 @@ class TcmprRelPerf(Tcmpr):
             marker_size = tie_conf['marker_size']
             name = tie_conf['name']
 
+        markerfacecolor = color
+        markeredgecolor = color
+        if tie_conf is None and self.config_obj.marker_open_list[series.idx]:
+            markerfacecolor = 'none'
+            markeredgecolor = self.config_obj.colors_list[series.idx]
+
         y_points = series.series_points['val']
 
-        # create a trace
-        self.figure.add_trace(
-            go.Scatter(x=x_points_index_adj,
-                       y=y_points,
-                       showlegend=True,
-                       mode='lines+markers',
-                       textposition="top right",
-                       name=name,
-                       line={'color': color,
-                             'width': width,
-                             'dash': dash},
-                       marker_symbol=marker_symbol,
-                       marker_color=color,
-                       marker_line_color=color,
-                       marker_size=marker_size
-                       ),
-            secondary_y=series.y_axis != 1
-        )
+        ax = self.ax if series.y_axis == 1 else self.ax2
+
+        plot_obj = ax.plot(x_points_index_adj, y_points,
+                           label=name,
+                           # line style
+                           color=color,
+                           linewidth=width,
+                           linestyle=dash,
+                           # marker style
+                           marker=marker_symbol,
+                           markersize=marker_size,
+                           markeredgecolor=markeredgecolor,
+                           markerfacecolor=markerfacecolor,
+                           )
 
         # Plot relative performance confidence intervals
         if series.idx >= series.series_len:
@@ -218,42 +191,21 @@ class TcmprRelPerf(Tcmpr):
         else:
             idx = series.idx
         if self.config_obj.series_ci[idx]:
-            self.figure.add_trace(
-                go.Scatter(x=x_points_index_adj,
-                           y=series.series_points['ncu'],
-                           showlegend=False,
-                           mode='lines',
-                           line={'color': color,
-                                 'width': width,
-                                 'dash': 'dot'},
-                           ),
-                secondary_y=series.y_axis != 1
-            )
-            self.figure.add_trace(
-                go.Scatter(x=x_points_index_adj,
-                           y=series.series_points['ncl'],
-                           showlegend=False,
-                           mode='lines',
-                           line={'color': color,
-                                 'width': width,
-                                 'dash': 'dot'},
-                           ),
-                secondary_y=series.y_axis != 1
-            )
+             ax.plot(x_points_index_adj, series.series_points['ncl'], color=color, linewidth=width, linestyle=':')
+             ax.plot(x_points_index_adj, series.series_points['ncu'], color=color, linewidth=width, linestyle=':')
 
         end_time = datetime.now()
         total_time = end_time - start_time
         self.relperf_logger.info(f"Took {total_time} milliseconds to draw the series")
+        return plot_obj[0]
 
-    def _adjust_titles(self):
-        if self.yaxis_1 is None or len(self.yaxis_1) == 0:
-            self.yaxis_1 = 'Percent of Cases'
+    def _adjust_titles(self, y_label=None, title_prefix=None, title_suffix=None, add_units=False):
+        series_val_name = self.column_info[self.column_info["COLUMN"] == self.config_obj.series_val_names[0]]["DESCRIPTION"].tolist()[0]
+        title_suffix = f"by {series_val_name}"
+        if len(np.unique(self.config_obj.rp_diff)) == 1:
+            title_suffix = f"Difference {self.config_obj.rp_diff[0]}{self.col['units']} {title_suffix}"
 
-        if self.title is None or len(self.title) == 0:
-            #            self.plot_filename = f"{self.config_obj.plot_dir}{os.path.sep}{self.config_obj.prefix}.png"
-
-            self.title = f"Relative Performance of {self.col['desc']}"
-            if len(np.unique(self.config_obj.rp_diff)) == 1:
-                self.title = f"{self.title} Difference {self.config_obj.rp_diff[0]}{self.col['units']}"
-            self.title = f'{self.title} by {self.column_info[self.column_info["COLUMN"] == self.config_obj.series_val_names[0]]["DESCRIPTION"].tolist()[0]}'
-
+        super()._adjust_titles(y_label="Percent of Cases",
+                               title_prefix="Relative Performance of",
+                               title_suffix=title_suffix,
+                               add_units=False)

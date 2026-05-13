@@ -5,11 +5,7 @@
  # ** Research Applications Lab (RAL)
  # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
  # ============================*
- 
- 
- 
 
-#!/usr/bin/env conda run -n blenny_363 python
 """
 Class Name: performance_diagram_config.py
 
@@ -67,8 +63,8 @@ class PerformanceDiagramConfig(Config):
         self.linewidth_list = self._get_linewidths()
         self.linestyles_list = self._get_linestyles()
         self.user_legends = self._get_user_legends("Performance")
-        self.plot_width = self.calculate_plot_dimension('plot_width', 'in')
-        self.plot_height = self.calculate_plot_dimension('plot_height', 'in')
+        self.plot_width = self.calculate_plot_dimension('plot_width')
+        self.plot_height = self.calculate_plot_dimension('plot_height')
 
         # x-axis labels and x-axis ticks
         self.x_title_font_size = self.parameters['xlab_size'] * constants.DEFAULT_CAPTION_FONTSIZE
@@ -122,24 +118,6 @@ class PerformanceDiagramConfig(Config):
         ordinals = self.get_config_value('series_order')
         series_order_list = [ord for ord in ordinals]
         return series_order_list
-
-
-    def _get_plot_disp(self):
-        """
-            Retrieve the boolean values that determine whether to display a particular series
-
-            Args:
-
-            Returns:
-                A list of boolean values indicating whether or not to
-                display the corresponding series
-        """
-
-        plot_display_vals = self.get_config_value('plot_disp')
-        plot_display_bools = [pd for pd in plot_display_vals]
-        plot_display_bools_ordered = self.create_list_by_series_ordering(plot_display_bools)
-        return plot_display_bools_ordered
-
 
     def _get_plot_stat(self):
         """

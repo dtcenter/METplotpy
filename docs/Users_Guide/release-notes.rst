@@ -7,9 +7,38 @@ describes the bugfix, enhancement, or new feature:
 `METplotpy GitHub issues. <https://github.com/dtcenter/METplotpy/issues>`_
 
 
-METplotpy Version 4.0.0-beta1 release notes (20260205)
-======================================================
+METplotpy Version 13.0.0-beta2 release notes (20260507)
+=======================================================
 
+.. dropdown:: New Plots
+
+   None
+
+.. dropdown:: Enhancements
+
+   * **Remove plotly dependency** (`#555 <https://github.com/dtcenter/METplotpy/issues/555>`_)
+   * Remove plotly: Create copy of base/common functionality using matplotlib  (`#556 <https://github.com/dtcenter/METplotpy/issues/556>`_)
+   * Remove scikit-image package from nco_requirements.txt and requirements.txt  (`#565 <https://github.com/dtcenter/METplotpy/issues/565>`_)
+   * Remove plotly: Update bar, box, and histogramm plot (`#558 <https://github.com/dtcenter/METplotpy/issues/558>`_)
+   * Remove plotly: Update ROC diagram, Reliability diagram, and ens_ss plots  (`#569 <https://github.com/dtcenter/METplotpy/issues/569>`_)
+   * Remove plotly: Update contour plot  (`#572 <https://github.com/dtcenter/METplotpy/issues/572>`_)
+   * Remove plotly: Wind Rose, MPR, Hovmoeller, TCMPR, 2D Histogram  (`#574 <https://github.com/dtcenter/METplotpy/issues/574>`_)
+   * Remove plotly: Update line, eclv, equivalence testing bounds, and revision series (`#557 <https://github.com/dtcenter/METplotpy/issues/557>`_)
+
+.. dropdown:: Bugfixes
+
+
+.. dropdown:: Documentation
+
+   * None
+
+.. dropdown:: Repository, build, and test
+
+   * None
+
+
+METplotpy Version 13.0.0-beta1 release notes (20260205)
+=======================================================
 
 .. dropdown:: New Plots
 
@@ -39,25 +68,7 @@ METplotpy Upgrade Instructions
 This section summarizes and highlights important changes to METplotpy since version 3.1.0, including:
 
 .. note::
+  
+   Plots that originally utilized the Python Plotly plotting package are now using Matplotlib. As a result, all plots in this repository utilize Matplotlib.  This removes the dependency on chrome by the kaleido module in Plotly. The kaleido/chrome dependency required run-time downloading of chrome and also broke existing functionality.   
 
-  In the METplotpy-3.1.0-beta2 release, METplotpy switched from development with Python 3.10.4 to
-  development with Python 3.12. View the requirements.txt/nco_requirements.txt file at the top
-  level of the repository for version numbers for the corresponding third-party packages.
-
-.. note::
-
-  In June 2025, Plotly made significant updates to the kaleido package with the 1.0.0
-  release by removing Google Chrome code.  Now, users will need to have Google Chrome
-  installed in directories specified in this Plotly documentation (based on operating
-  system):
-  https://plotly.com/python/static-image-export/
-
-The METplotpy code downloads Chrome at runtime by invoking the kaleido.get_chrome_sync()
-method call.
-
-If users do not wish to have Chrome downloaded at run time and already have Chrome installed
-in one of the expected locations (specified in the Plotly link above), then the PRE_LOAD_CHROME environment variable
-will need to be set to 'True' (case insensitive string).
-
-Refer to the Kaleido  README for more information on the changes:
-https://github.com/plotly/Kaleido
+   The version numbering for METplotpy has been updated to 13.0.0 to provide consistency and clarity with all METplus components.  View the requirements.txt/nco_requirements.txt file at the top level of the repository for version numbers for the corresponding third-party packages.

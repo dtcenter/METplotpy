@@ -132,7 +132,6 @@ plot_type_list:
   - 'median'
   - 'rank'
 
-
 rp_diff:
 #  - '>=1'
   - '>=100'

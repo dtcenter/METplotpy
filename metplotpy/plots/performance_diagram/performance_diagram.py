@@ -66,7 +66,7 @@ class PerformanceDiagram(BasePlot):
         # config file.
         self.config_obj = PerformanceDiagramConfig(self.parameters)
 
-        # Logging in matplotlib plots is different from the plotly plots.  The
+        # For logging in matplotlib plots is different from the plotly plots.
         # ContextFilter cannot be used to add the username/userid to the log.
         # Use the extra={'user':userid} in the log.xyz(msg,...) syntax instead.
         self.logger = self.config_obj.logger
@@ -148,14 +148,6 @@ class PerformanceDiagram(BasePlot):
             series_list.append(series_obj)
         self.logger.info(f"Finished creating series objects: {datetime.now()}")
         return series_list
-
-    def save_to_file(self):
-        """
-          This is the matplotlib-friendly implementation, which overrides the parent class'
-          version (which is a Python Plotly implementation).
-
-        """
-        plt.savefig(self.config_obj.output_image)
 
     def remove_file(self):
         """
@@ -389,12 +381,10 @@ class PerformanceDiagram(BasePlot):
         if self.config_obj.yaxis_2:
             ax2.set_ylabel(self.config_obj.yaxis_2, fontsize=9)
 
+        self.logger.info(f"Finished drawing CSI lines: {datetime.now()}")
+
         # use plt.tight_layout() to prevent label box from scrolling off the figure
         plt.tight_layout()
-        plt.savefig(self.get_config_value('plot_filename'))
-        self.logger.info(f"Finished drawing CSI lines: {datetime.now()}")
-        self.save_to_file()
-        self.logger.info("Finished saving file.")
 
     def write_output_file(self):
         """
@@ -460,13 +450,7 @@ def main(config_filename=None):
             Returns:
 
     """
-    params = util.get_params(config_filename)
-    try:
-        # create a performance diagram
-        PerformanceDiagram(params)
-
-    except ValueError as value_error:
-        print(value_error)
+    util.make_plot(config_filename, PerformanceDiagram)
 
 
 if __name__ == "__main__":

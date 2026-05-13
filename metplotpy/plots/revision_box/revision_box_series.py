@@ -164,7 +164,8 @@ class RevisionBoxSeries(BoxSeries):
             'revision_run': None,
             'auto_cor_r': None,
             'auto_cor_p': None,
-            'points': result}
+            'points': result
+        }
 
         # calculate revision_run (WW Runs Test) if needed
         if self.config.revision_run:

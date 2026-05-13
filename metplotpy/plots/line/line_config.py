@@ -70,7 +70,6 @@ class LineConfig(Config):
         ##############################################
         # title parameters
         self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
-        self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
         self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
@@ -100,7 +99,6 @@ class LineConfig(Config):
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
         self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         ##############################################
         # x2-axis parameters
@@ -146,29 +144,6 @@ class LineConfig(Config):
             self.legend_orientation = 'h'
         self.legend_border_color = "black"
         self.points_path = self.get_config_value('points_path')
-
-    def _get_plot_disp(self) -> list:
-        """
-        Retrieve the values that determine whether to display a particular series
-        and convert them to bool if needed
-
-        Args:
-
-        Returns:
-                A list of boolean values indicating whether or not to
-                display the corresponding series
-            """
-
-        plot_display_config_vals = self.get_config_value('plot_disp')
-        plot_display_bools = []
-        for val in plot_display_config_vals:
-            if isinstance(val, bool):
-                plot_display_bools.append(val)
-
-            if isinstance(val, str):
-                plot_display_bools.append(val.upper() == 'TRUE')
-
-        return self.create_list_by_series_ordering(plot_display_bools)
 
     def _get_fcst_vars(self, index):
         """
@@ -272,90 +247,6 @@ class LineConfig(Config):
 
             return updated_fixed_vars_vals_dict
 
-
-    def _get_mode(self) -> list:
-        """
-           Retrieve all the modes. Convert mode names from
-           the config file into plotly python's mode names.
-
-           Args:
-
-           Returns:
-               markers: a list of the plotly markers
-        """
-        modes = self.get_config_value('series_type')
-        mode_list = []
-        for mode in modes:
-            if mode in constants.TYPE_TO_PLOTLY_MODE.keys():
-                # the recognized plotly marker names:
-                # circle-open (for small circle), circle, triangle-up,
-                # square, diamond, or hexagon
-                mode_list.append(constants.TYPE_TO_PLOTLY_MODE[mode])
-            else:
-                mode_list.append('lines+markers')
-        return self.create_list_by_series_ordering(mode_list)
-
-    def _get_linestyles(self) -> list:
-        """
-           Retrieve all the line styles. Convert line style names from
-           the config file into plotly python's line style names.
-
-           Args:
-
-           Returns:
-               line_styles: a list of the plotly line styles
-        """
-        line_styles = self.get_config_value('series_line_style')
-        line_style_list = []
-        for line_style in line_styles:
-            if line_style in constants.LINE_STYLE_TO_PLOTLY_DASH.keys():
-                line_style_list.append(constants.LINE_STYLE_TO_PLOTLY_DASH[line_style])
-            else:
-                line_style_list.append(None)
-        return self.create_list_by_series_ordering(line_style_list)
-
-    def _get_markers(self) -> list:
-        """
-           Retrieve all the markers. Convert marker names from
-           the config file into plotly python's marker names.
-
-           Args:
-
-           Returns:
-               markers: a list of the plotly markers
-        """
-        markers = self.get_config_value('series_symbols')
-        markers_list = []
-        for marker in markers:
-            if marker in constants.AVAILABLE_PLOTLY_MARKERS_LIST:
-                # the recognized plotly marker names:
-                # circle-open (for small circle), circle, triangle-up,
-                # square, diamond, or hexagon
-                markers_list.append(marker)
-            else:
-                markers_list.append(constants.PCH_TO_PLOTLY_MARKER[marker])
-        return self.create_list_by_series_ordering(markers_list)
-
-    def _get_markers_size(self) -> list:
-        """
-           Retrieve all the markers. Convert marker names from
-           the config file into plotly python's marker names.
-
-           Args:
-
-           Returns:
-               markers: a list of the plotly markers
-        """
-        markers = self.get_config_value('series_symbols')
-        markers_size = []
-        for marker in markers:
-            if marker in constants.AVAILABLE_PLOTLY_MARKERS_LIST:
-                markers_size.append(marker)
-            else:
-                markers_size.append(constants.PCH_TO_PLOTLY_MARKER_SIZE[marker])
-
-        return self.create_list_by_series_ordering(markers_size)
-
     def _get_plot_stat(self) -> str:
         """
             Retrieves the plot_stat setting from the config file.
@@ -380,24 +271,13 @@ class LineConfig(Config):
                 " Supported values are sum, mean, and median.")
         return stat_to_plot
 
-    def _config_consistency_check(self) -> bool:
+    def config_consistency_check(self) -> bool:
+        """Checks that the number of settings are consistent with number of series.
+
+           @raises ValueError if any of settings are inconsistent with the
+            number of series (as defined by the cross product of the model
+            and vx_mask defined in the series_val_1 setting)
         """
-            Checks that the number of settings defined for plot_ci,
-            plot_disp, series_order, user_legend, colors, and series_symbols
-            are consistent.
-
-            Args:
-
-            Returns:
-                True if the number of settings for each of the above
-                settings is consistent with the number of
-                series (as defined by the cross product of the model
-                and vx_mask defined in the series_val_1 setting)
-
-        """
-        # Determine the number of series based on the number of
-        # permutations from the series_var setting in the
-        # config file
 
         lists_to_check = {
             "plot_ci": self.plot_ci,
@@ -411,18 +291,7 @@ class LineConfig(Config):
             "show_legend": self.show_legend,
             "con_series": self.con_series,
         }
-        status = True
-        for name, list_to_check in lists_to_check.items():
-
-            if len(list_to_check) == self.num_series:
-                continue
-
-            self.logger.error(
-                f"number of series ({self.num_series}) does not match {name} ({len(list_to_check)})"
-            )
-            status = False
-
-        return status
+        self._config_compare_lists_to_num_series(lists_to_check)
 
     def _get_plot_ci(self) -> list:
         """

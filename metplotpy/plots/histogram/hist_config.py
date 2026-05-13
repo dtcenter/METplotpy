@@ -39,8 +39,8 @@ class HistogramConfig(Config):
 
         # plot parameters
         self.grid_on = self._get_bool('grid_on')
-        self.plot_width = self.calculate_plot_dimension('plot_width', 'pixels')
-        self.plot_height = self.calculate_plot_dimension('plot_height', 'pixels')
+        self.plot_width = self.calculate_plot_dimension('plot_width')
+        self.plot_height = self.calculate_plot_dimension('plot_height')
         self.dump_points_1 = self._get_bool('dump_points_1')
         self.create_html = self._get_bool('create_html')
 
@@ -48,12 +48,11 @@ class HistogramConfig(Config):
         # caption parameters
         self.caption_size = int(constants.DEFAULT_CAPTION_FONTSIZE
                                 * self.get_config_value('caption_size'))
-        self.caption_offset = self.parameters['caption_offset'] - 3.1
+        self.caption_offset = self.parameters['caption_offset'] * constants.DEFAULT_CAPTION_Y_OFFSET
 
         ##############################################
         # title parameters
         self.title_font_size = self.parameters['title_size'] * constants.DEFAULT_TITLE_FONT_SIZE
-        self.title_offset = self.parameters['title_offset'] * constants.DEFAULT_TITLE_OFFSET
         self.y_title_font_size = self.parameters['ylab_size'] + constants.DEFAULT_TITLE_FONTSIZE
 
         ##############################################
@@ -70,7 +69,6 @@ class HistogramConfig(Config):
         if self.x_tickangle in constants.XAXIS_ORIENTATION.keys():
             self.x_tickangle = constants.XAXIS_ORIENTATION[self.x_tickangle]
         self.x_tickfont_size = self.parameters['xtlab_size'] + constants.DEFAULT_TITLE_FONTSIZE
-        self.xaxis = util.apply_weight_style(self.xaxis, self.parameters['xlab_weight'])
 
         ##############################################
         # ser parameters
@@ -98,67 +96,11 @@ class HistogramConfig(Config):
             self.legend_orientation = 'v'
         else:
             self.legend_orientation = 'h'
-        self.legend_border_color = "black"
 
         self.normalized_histogram = self._get_bool('normalized_histogram')
         self.fixed_vars_vals_input = self.parameters['fixed_vars_vals_input']
 
         self.points_path = self.get_config_value('points_path')
-
-    def _get_plot_disp(self) -> list:
-        """
-        Retrieve the values that determine whether to display a particular ser
-        and convert them to bool if needed
-
-        Args:
-
-        Returns:
-                A list of boolean values indicating whether or not to
-                display the corresponding ser
-            """
-
-        plot_display_config_vals = self.get_config_value('plot_disp')
-        plot_display_bools = []
-        for val in plot_display_config_vals:
-            if isinstance(val, bool):
-                plot_display_bools.append(val)
-
-            if isinstance(val, str):
-                plot_display_bools.append(val.upper() == 'TRUE')
-
-        return self.create_list_by_series_ordering(plot_display_bools)
-
-    def _config_consistency_check(self) -> bool:
-        """
-            Checks that the number of settings defined for plot_ci,
-            plot_disp, series_order, user_legend colors, and series_symbols
-            are consistent.
-
-            Args:
-
-            Returns:
-                True if the number of settings for each of the above
-                settings is consistent with the number of
-                ser (as defined by the cross product of the model
-                and vx_mask defined in the series_val_1 setting)
-
-        """
-        # Determine the number of ser based on the number of
-        # permutations from the series_var setting in the
-        # config file
-
-        # Numbers of values for other settings for ser
-        num_plot_disp = len(self.plot_disp)
-        num_series_ord = len(self.series_ordering)
-        num_colors = len(self.colors_list)
-        num_legends = len(self.user_legends)
-        status = False
-
-        if self.num_series == num_plot_disp == \
-                num_series_ord == num_colors \
-                == num_legends:
-            status = True
-        return status
 
     def get_series_y(self) -> list:
         """

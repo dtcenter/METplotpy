@@ -1,4 +1,5 @@
 alpha: 0.05
+plot_caption: 'test_caption'
 caption_align: 0.0
 caption_col: '#333333'
 caption_offset: 3.0
@@ -55,7 +56,6 @@ mgp:
 - 0
 num_iterations: 1
 num_threads: -1
-plot_caption: ''
 plot_disp:
 - 'True'
 - 'True'
@@ -142,5 +142,5 @@ plot_filename: !ENV '${TEST_OUTPUT}/bar.png'
 #  Debug and info log level will produce more log output.
 #log_level: WARNING
 show_legend:
-  -True
-  -True
+- True
+- True

@@ -1,15 +1,17 @@
 import os
 from datetime import datetime
 
+import matplotlib.pyplot as plt
+
 from metcalcpy.util import utils
 from metplotpy.plots.tcmpr_plots.skill.median.tcmpr_series_skill_median import TcmprSeriesSkillMedian
 from metplotpy.plots.tcmpr_plots.skill.tcmpr_skill import TcmprSkill
-import metplotpy.plots.util as util
+from metplotpy.plots import util as util
 
 
 class TcmprSkillMedian(TcmprSkill):
-    def __init__(self, config_obj, column_info, col, case_data, input_df, stat_name):
-        super().__init__(config_obj, column_info, col, case_data, input_df, stat_name, None)
+    def __init__(self, config_obj, column_info, col, case_data, input_df, stat_name, baseline_data=None):
+        super().__init__(config_obj, column_info, col, case_data, input_df, baseline_data, stat_name)
 
         # Set up Logging
         self.skillmd_logger = util.get_common_logger(self.config_obj.log_level, self.config_obj.log_filename)
@@ -19,7 +21,7 @@ class TcmprSkillMedian(TcmprSkill):
 
         self.skillmd_logger.info("Plot HFIP Baseline:" + self.cur_baseline)
 
-        self._adjust_titles(stat_name)
+        self._adjust_titles(f"Skill for {stat_name}", title_prefix="Median Skill Scores of")
         self.series_list = self._create_series(self.input_df, stat_name)
         self.case_data = None
 
@@ -32,15 +34,6 @@ class TcmprSkillMedian(TcmprSkill):
         if os.path.exists(self.plot_filename):
             os.remove(self.plot_filename)
         self._create_figure(stat_name)
-
-    def _adjust_titles(self, stat_name):
-        if self.yaxis_1 is None or len(self.yaxis_1) == 0:
-            self.yaxis_1 =  'Skill  for ' + stat_name + ' (' + self.col['units'] + ')'
-
-        if self.title is None or len(self.title) == 0:
-            self.title = 'Median Skill Scores of ' + self.col['desc'] + ' by ' \
-                         + self.column_info[self.column_info['COLUMN'] == self.config_obj.series_val_names[0]][
-                             "DESCRIPTION"].tolist()[0]
 
     def _create_series(self, input_data, stat_name):
         """
@@ -99,6 +92,11 @@ class TcmprSkillMedian(TcmprSkill):
 
         # reorder series
         series_list = self.config_obj.create_list_by_series_ordering(series_list)
+
+        # reverse series list if config is set to reverse x-axis
+        if self.config_obj.xaxis_reverse:
+            series_list.reverse()
+
         end_time = datetime.now()
         total_time = end_time - start_time
         self.skillmd_logger.info(f"Took {total_time} milliseconds to create series for {stat_name}")

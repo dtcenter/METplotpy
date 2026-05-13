@@ -14,7 +14,7 @@ def dict_to_yaml(data_dict, output_yaml):
     return output_yaml
 
 
-@pytest.mark.skip()
+@pytest.mark.skip("Test data unavailable")
 def test_default_plot_images_match(module_setup_env, remove_files):
     '''
         Compare an expected plot with the
@@ -31,15 +31,14 @@ def test_default_plot_images_match(module_setup_env, remove_files):
     config_file = os.path.join(cwd, "minimal_hovmoeller.yaml")
     hov.main(config_file)
 
-    # default_plot = os.path.join(os.environ['TEST_OUTPUT'], default_plot)
-    # expected_file = 'hovmoeller_expected_default.png'
-    # actual_file = os.path.join(cwd, expected_file)
-    # comparison = CompareImages(default_plot, actual_file)
-    # assert comparison.mssim == 1
 
-
-@pytest.mark.skip("needs large netCDF file to run")
 def test_custom_plot_created(module_setup_env, remove_files):
+    if not os.environ.get('METPLOTPY_TEST_INPUT'):
+        pytest.skip(
+            "METPLOTPY_TEST_INPUT not set. "
+            "This is needed to get the large input data file to run this test"
+        )
+
     expected_file = "hovmoeller_custom_plot.png"
 
     remove_files(os.environ['TEST_OUTPUT'], [expected_file])
@@ -48,12 +47,6 @@ def test_custom_plot_created(module_setup_env, remove_files):
     hov.main(config_file)
 
     assert os.path.isfile(os.path.join(os.environ['TEST_OUTPUT'], expected_file))
-
-    # This plot should be different from the default-it has different dimensions
-    # so the comparison should raise a ValueError
-    # default_plot = os.path.join(cwd, 'hovmoeller_expected_default.png')
-    # with pytest.raises(ValueError):
-    #     CompareImages(default_plot, expected_file)
 
 
 def make_config(nc_file, out_file):
@@ -67,14 +60,13 @@ def make_config(nc_file, out_file):
         "date_end": "2024-09-26",
         "contour_min": 0.1,
         "contour_max": 10,
-        "unit_converion": 1,
+        "unit_conversion": 250,
         "title": "test plot",
-        "create_html": "true",
     }
     return config
 
 
-def test_hovmoeller(module_setup_env, remove_files, nc_test_file, assert_json_equal, tmp_path_factory):
+def test_hovmoeller(module_setup_env, remove_files, nc_test_file, tmp_path_factory):
     output_dir = os.environ['TEST_OUTPUT']
     out_file = os.path.join(output_dir, "hovmoeller_test.png")
 
@@ -97,18 +89,6 @@ def test_hovmoeller(module_setup_env, remove_files, nc_test_file, assert_json_eq
 
     plot_obj.save_to_file()
     assert os.path.isfile(out_file)
-
-    # check html write out
-    plot_obj.write_html()
-    base_name, _ = os.path.splitext(config['plot_filename'])
-    out_html = f"{base_name}.html"
-    assert os.path.isfile(out_html)
-
-    # finally check json plot values
-    # to regenerate json file run:
-    json_output = os.path.join(output_dir, "hovmoeller_test.json")
-    plot_obj.figure.write_json(json_output)
-    assert_json_equal(plot_obj.figure, json_output)
 
 
 def test_get_lat_str(module_setup_env, nc_test_file, tmp_path_factory):

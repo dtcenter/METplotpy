@@ -13,7 +13,6 @@ Class Name: rel_hist.py
  """
 __author__ = 'Tatiana Burek'
 
-import yaml
 from datetime import datetime
 
 from metplotpy.plots import util
