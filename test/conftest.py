@@ -27,32 +27,6 @@ os.environ['METPLOTPY_BASE'] = metplotpy_dir
 def change_test_dir(request, monkeypatch):
     monkeypatch.chdir(request.fspath.dirname)
 
-
-@pytest.fixture(autouse=True)
-def patch_CompareImages(request):
-    """This fixture controls the use of CompareImages in the
-    test suite. By default, all calls to CompareImages will
-    result in the test skipping. To change this behaviour set
-    an env var METPLOTPY_COMPAREIMAGES
-    """
-    if bool(os.getenv("METPLOTPY_COMPAREIMAGES")):
-        yield
-    else:
-        class mock_CompareImages:
-            def __init__(self, img1, img2):
-                # TODO: rather than skip we could inject an alternative
-                # comparison that is more relaxed. To do this, extend
-                # this this class to generate a self.mssim value.
-                pytest.skip("CompareImages not enabled in pytest. "
-                            "To enable `export METPLOTPY_COMPAREIMAGES=$true`")
-        try:
-            with patch.object(request.module, 'CompareImages', mock_CompareImages) as mock_ci:
-                yield mock_ci
-        except AttributeError:
-            # test module doesn't import CompareImages. Do nothing.
-            yield
-
-
 def ordered(obj):
     """Recursive function to sort JSON, even lists of dicts with the same keys"""
     if isinstance(obj, dict):

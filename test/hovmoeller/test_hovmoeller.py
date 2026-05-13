@@ -31,12 +31,6 @@ def test_default_plot_images_match(module_setup_env, remove_files):
     config_file = os.path.join(cwd, "minimal_hovmoeller.yaml")
     hov.main(config_file)
 
-    # default_plot = os.path.join(os.environ['TEST_OUTPUT'], default_plot)
-    # expected_file = 'hovmoeller_expected_default.png'
-    # actual_file = os.path.join(cwd, expected_file)
-    # comparison = CompareImages(default_plot, actual_file)
-    # assert comparison.mssim == 1
-
 
 def test_custom_plot_created(module_setup_env, remove_files):
     if not os.environ.get('METPLOTPY_TEST_INPUT'):
@@ -53,12 +47,6 @@ def test_custom_plot_created(module_setup_env, remove_files):
     hov.main(config_file)
 
     assert os.path.isfile(os.path.join(os.environ['TEST_OUTPUT'], expected_file))
-
-    # This plot should be different from the default-it has different dimensions
-    # so the comparison should raise a ValueError
-    # default_plot = os.path.join(cwd, 'hovmoeller_expected_default.png')
-    # with pytest.raises(ValueError):
-    #     CompareImages(default_plot, expected_file)
 
 
 def make_config(nc_file, out_file):
