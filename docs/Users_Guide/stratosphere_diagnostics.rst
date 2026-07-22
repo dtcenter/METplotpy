@@ -68,11 +68,11 @@ Example
 Sample Data
 -----------
 
-The sample dataset is a netCDF file:
+The sample dataset is a NetCDF file:
 **SSWC_v1.0_varFull_ERAi_d20130106_s20121107_e20130307_c20160701.nc**
 
-To obtain this data follow these steps, based on the instructions from the `section 2.6 of the METplus installation
-section <https://metplus.readthedocs.io/en/develop/Users_Guide/installation.html>`_ :
+To obtain this data follow these steps, based on the instructions from the `METplus installation
+section <https://metplus.readthedocs.io/en/latest/Users_Guide/installation.html#obtain-sample-input-data>`_ :
 
 * Create a directory where you will save the sample data, hereafter referred to as $INPUT_DATA_DIR.
 
