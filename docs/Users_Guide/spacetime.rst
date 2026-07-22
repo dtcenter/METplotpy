@@ -7,7 +7,7 @@ Description
 
 Please refer to the
 `METplus use case
-<https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsPrecip_obsOnly_CrossSpectraPlot.html#sphx-glr-generated-model-applications-s2s-userscript-obsprecip-obsonly-crossspectraplot-py>`_
+<https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s/UserScript_fcstS2S_obsERAI_CrossSpectra.html#userscript-compute-cross-spectra-and-make-a-plot>`_
 for a description of the spacetime (cross-spectra) plot and for
 instructions on creating a spacetime (cross-spectra)  plot.
 
