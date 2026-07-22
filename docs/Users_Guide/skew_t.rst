@@ -10,7 +10,7 @@ For more information on the skew-T log-P plot, please refer to the following:
 
 https://en.wikipedia.org/wiki/Skew-T_log-P_diagram
 
-https://www.e-education.psu.edu/meteo300/node/638
+https://courses.ems.psu.edu/meteo300/node/638
 
 
 
