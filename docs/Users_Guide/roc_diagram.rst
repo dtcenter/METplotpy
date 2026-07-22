@@ -1,5 +1,5 @@
 ***********
-ROC diagram
+ROC Diagram
 ***********
 
 Description
@@ -24,7 +24,7 @@ Data
 The ROC diagram utilizes MET CTC or PCT linetype data.  The MET .stat output files must
 first be reformatted into a format recognized by the ROC diagram code.  The METdataio METreformat
 module provides reformatting support for these linetypes.  Please refer to the
-`METdataio User's Guide <https://metdataio.readthedocs.io/en/v3.0.0-beta3/Users_Guide/reformat_stat_data.html>`_
+`METdataio User's Guide <https://metplus.readthedocs.io/projects/metdataio/en/latest/Users_Guide/reformat_stat_data.html>`_
 for instructions on reformatting the MET .stat output.
 
 Sample Data
