@@ -1,5 +1,5 @@
 *****************
-S2S Blocking plot
+S2S Blocking Plot
 *****************
 
 Description

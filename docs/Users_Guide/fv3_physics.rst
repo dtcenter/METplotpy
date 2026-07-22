@@ -1,5 +1,5 @@
 **********************
-FV3 physics tendencies
+FV3 Physics Tendencies
 **********************
 
 Description

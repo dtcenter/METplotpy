@@ -1,5 +1,5 @@
 **************************
-Ensemble spread-skill plot
+Ensemble Spread-Skill Plot
 **************************
 
 Description

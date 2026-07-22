@@ -1,5 +1,5 @@
 *****************
-Histogram_2d plot
+Histogram 2D Plot
 *****************
 
 Description
