@@ -8,9 +8,9 @@ Description
 The output from the MET grid_diag tool can be visualized as a 2D-histogram
 by invoking the **histogram_2d.py** plotting script from the command line.
 
-For more information about the MET grid_diag tool, please refer to the
+For more information about the MET Grid-Diag tool, please refer to the
 `documentation
-<https://met.readthedocs.io/en/latest/Users_Guide/grid-diag.html>`_.
+<https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/grid-diag.html>>`_.
 
 
 Example
@@ -19,7 +19,7 @@ Example
 Sample Data
 -----------
 
-The data is in netCDF format.  The sample data used to create an example 2d histogram is available in the
+The data is in NetCDF format.  The sample data used to create an example 2d histogram is available in the
 METplotpy repository, where the **histogram_2d.py** code is located:
 
 *$METPLOTPY_BASE/test/histogram_2d/grid_diag_temperature.nc*
@@ -195,7 +195,7 @@ Run from the Command Line
 =========================
 
 The **histogram_2d_defaults.yaml** configuration file, in combination with the
-**grid_diag_temperature.nc** netCDF data file (generated from the MET
+**grid_diag_temperature.nc** NetCDF data file (generated from the MET
 tool grid_diag), generates a 2D-histogram plot of the hist_TMP_Z2_TMP_P500
 variable:
 
@@ -206,7 +206,7 @@ Perform the following:
 * If using a conda environment, verify that the conda environment is
   running and has the required Python packages outlined in the
   `Python Requirements section
-  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_:
+  <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_:
 
 * Clone the METplotpy repository from GitHub.  First, make the directory:
 
