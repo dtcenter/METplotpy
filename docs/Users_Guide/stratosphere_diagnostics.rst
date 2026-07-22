@@ -34,7 +34,7 @@ The **directional_means.py** module in the METcalcpy repository
 is used to calculate the zonal and meridional means from the input data.  The **stratosphere_diagnostics.py** module
 is based on code provided by Zach D. Lawrence (CIRES/CU, NOAA/PSL) and the **directional_means.py** module is based
 on the pyzome package (also provided by Zach Lawrence).
-A `METplus use case <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_Stratosphere.html#sphx-glr-generated-model-applications-s2s-userscript-obsera-obsonly-stratosphere-py>`_
+A `METplus use case <https://metplus.readthedocs.io/en/main_v5.1/generated/model_applications/s2s/UserScript_obsERA_obsOnly_Stratosphere.html#userscript-make-zonal-and-meridonial-means>`_
 illustrates how to use the **directional_means** module to calculate zonal and meridional means on sample data.
 
 
