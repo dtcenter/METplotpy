@@ -5,9 +5,10 @@ TCMPR Plots
 Description
 ===========
 
-The TCMPR plots were originally available under the MET repository: https://github.com/dtcenter/MET
-and written in R script.  The code has been rewritten in Python and is now located in the METplotpy repository:
-https://github.com/dtcenter/METplotpy/metplotpy/plots/tcmpr_plots
+The TCMPR plots were originally available under the `MET repository <https://github.com/dtcenter/MET>`_
+and written in R script.  The code has been rewritten in Python and is now located in the
+`tcmpr_plots directory <https://github.com/dtcenter/METplotpy/tree/HEAD/metplotpy/plots/tcmpr_plots>`_ of the
+`METplotpy repository <https://github.com/dtcenter/METplotpy>`_. 
 
 The TCMPR plots require TCMPR line type data produced by the MET TC-pairs tool. The data
 must have all header names consistent with those in the MET User's Guide, section 24.2.
@@ -15,7 +16,7 @@ must have all header names consistent with those in the MET User's Guide, sectio
 In addition, the METcalcpy
 source code will be needed to perform event equalization and other necessary calculations.
 
-The METcalcpy repository is located:
+The METcalcpy repository is located at
 https://github.com/dtcenter/METcalcpy
 
 Use the same release versions for METplotpy and METcalcpy (i.e. if using a vx.y.z of METplotpy, use the
@@ -50,7 +51,7 @@ Sample Data
 
 The data is columnar text output from the MET TC-Pairs tool for the TCMPR line type (saved as .tcst files).
 The sample data used to create various TCMPR plots is available in the
-`METplotpy <https://github.com/dtcenter/METplotpy>`_ repository, where the TCMPR plot tests are located:
+`METplotpy repository <https://github.com/dtcenter/METplotpy>`_, where the TCMPR plot tests are located:
 
 *$METPLOTPY_BASE/test/tcmpr_plots/Data*
 
