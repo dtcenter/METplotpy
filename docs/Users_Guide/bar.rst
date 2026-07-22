@@ -1,5 +1,5 @@
 ********
-Bar plot
+Bar Plot
 ********
 
 Description
@@ -21,7 +21,7 @@ categorical and one numeric.
 Bar plots often represent counts or frequencies, however, bar plots can
 represent means, medians, standard deviations, or any other statistic.
 Refer to the
-`METviewer documentation <https://metviewer.readthedocs.io/en/latest/Users_Guide/barplots.html>`_
+`METviewer documentation <https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/barplots.html>`_
 for details on how this plot is utilized.
 
 Example
