@@ -10,7 +10,7 @@ by invoking the **histogram_2d.py** plotting script from the command line.
 
 For more information about the MET Grid-Diag tool, please refer to the
 `documentation
-<https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/grid-diag.html>>`_.
+<https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/grid-diag.html>`_.
 
 
 Example
