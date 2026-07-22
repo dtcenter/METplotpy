@@ -13,7 +13,7 @@ table statistics (CTS)  output.  This output can be produced by many of
 the MET tools (Point-Stat, Grid-Stat, etc.)
 For more information on Performance diagrams, please refer to the
 `METviewer documentation
-<https://metviewer.readthedocs.io/en/latest/Users_Guide/perfdiag.html>`_.
+<https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/perfdiag.html>`_.
 
 There are several reference lines on the performance diagram.  The dashed
 lines that radiate from the origin are lines of equal frequency bias.
@@ -238,7 +238,7 @@ perform the following:
 *  If using the conda environment, verify the conda environment
    is running and has has the required Python packages outlined in the
    `requirements section.
-   <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation-requirements.html>`_
+   <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html>`_
 
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_BASE*.

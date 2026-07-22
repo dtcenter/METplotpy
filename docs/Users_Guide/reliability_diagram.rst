@@ -7,7 +7,7 @@ Description
 Reliability diagrams are useful in displaying the conditional bias of
 probabilistic forecasts.
 For more information about reliability diagrams, refer to the
-`METviewer documentation <https://metviewer.readthedocs.io/en/latest/Users_Guide/reliabilityplots.html>`_.
+`METviewer documentation <https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/reliabilityplots.html>`_.
 
 Example
 =======
