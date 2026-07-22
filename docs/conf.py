@@ -110,7 +110,7 @@ linkcheck_ignore = [
     # r'https://dtcenter\.org/.*',   # if this site blocks automated requests
     # r'https://matplotlib\.org/.*',        # occasionally rate-limits automated clients
     # r'https://scitools\.org\.uk/cartopy/.*',  # occasionally slow
-    # r'https://doi\.org/.*',               # DOI redirectors often 403 non-browser requests
+    r'https://doi\.org/.*',               # DOI redirectors often 403 non-browser requests
 ]
 
 linkcheck_allowed_redirects = {
