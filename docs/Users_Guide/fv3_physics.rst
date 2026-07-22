@@ -49,8 +49,9 @@ Click here to access the METplus releases page and download sample data for the 
 
 Untar and copy files in *model_applications/short_range/UserScript_fcstFV3_fcstOnly_PhysicsTendency/* to *$DATA_DIR* directory where you have read and write permissions.
 
-For additional details see 
-`grid description in UFS Short Range Weather App user manual <https://ufs-srweather-app.readthedocs.io/en/latest/LAMGrids.html?highlight=grid#limited-area-model-lam-grids-predefined-and-user-generated-options>`_
+For additional details see the 
+`Limited Area Model (LAM) Grids: Predefined and User-Generated Options <https://ufs-srweather-app.readthedocs.io/en/latest/UsersGuide/CustomizingTheWorkflow/LAMGrids.html>`_ in the
+UFS Short-Range Weather App User's Guide.
 
 
 Default tendency variable names
