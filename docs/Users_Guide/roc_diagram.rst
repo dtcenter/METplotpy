@@ -13,7 +13,7 @@ from the source code in the METplotpy repository, ROC diagrams can be
 generated through METviewer.  For more information on ROC diagrams, please
 refer to the
 `METviewer documentation
-<https://metviewer.readthedocs.io/en/latest/Users_Guide/rocplot.html>`_.
+<https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/rocplot.html>`_.
 
 Example
 =======
