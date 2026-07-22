@@ -1,6 +1,6 @@
-*******************
-Stratosphere plots
-*******************
+******************
+Stratosphere Plots
+******************
 
 Description
 ===========
@@ -10,7 +10,7 @@ three Stratosphere use cases.  One use case creates a ME plot in latitude and pr
 another which creates ME and RMSE plots for lead time and pressure, and a third which 
 creates two phase diagrams and a time series of U for at 50mb and 30mb.
 The three METplus use cases, illustrate how to use these plotting scripts for `zonal mean biases
-<https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratosphereBias.html#sphx-glr-generated-model-applications-s2s-stratosphere-userscript-fcstgfs-obsera-stratospherebias-py>`_ , creating bias and RMSE for `polar cap temperature and polar vortex U <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratospherePolar.html#sphx-glr-generated-model-applications-s2s-stratosphere-userscript-fcstgfs-obsera-stratospherepolar-py>`_ and creating `phase diagrams and time series for QBO <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratosphereQBO.html#sphx-glr-generated-model-applications-s2s-stratosphere-userscript-fcstgfs-obsera-stratosphereqbo-py>`_
+<https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratosphereBias.html#sphx-glr-generated-model-applications-s2s-stratosphere-userscript-fcstgfs-obsera-stratospherebias-py>`_, creating bias and RMSE for `polar cap temperature and polar vortex U <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratospherePolar.html#sphx-glr-generated-model-applications-s2s-stratosphere-userscript-fcstgfs-obsera-stratospherepolar-py>`_, and creating `phase diagrams and time series for QBO <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratosphereQBO.html#sphx-glr-generated-model-applications-s2s-stratosphere-userscript-fcstgfs-obsera-stratosphereqbo-py>`_.
 
 These files are used by the image comparison test:
 
@@ -68,7 +68,7 @@ Required Packages
 
 
 How to Use
-===========
+==========
 
 Import stratosphere_plots into the script:
 
