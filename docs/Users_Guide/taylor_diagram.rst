@@ -5,7 +5,7 @@ Taylor Diagram
 Description
 ===========
 
-The `Taylor diagram <https://metplotpy.readthedocs.io/en/develop/Users_Guide/references.html>`_  was invented by
+The `Taylor diagram <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/references.html>`_ was invented by
 Karl E. Taylor in 1994 and is useful in quantifying the correspondence between
 models and a "reference" based on the Pearson correlation coefficient, the root-mean-square
 error (RMSE), and the standard deviation. Taylor diagrams have been widely used for climate and other
@@ -16,7 +16,7 @@ point and grid lines for the RMS.
 
 For more information on Taylor diagrams, please refer to the
 `METviewer documentation
-<https://metviewer.readthedocs.io/en/develop/Users_Guide/taylordiag.html>`_.
+<https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/taylordiag.html>`_.
 
 Examples of Taylor diagrams are shown below.
 
@@ -217,8 +217,8 @@ perform the following:
 
 *  If using the conda environment, verify the conda environment
    is running and has has the required Python packages outlined in the
-   `requirements section.
-   <https://metplotpy.readthedocs.io/en/develop/Users_Guide/installation.html>`_
+   `requirements section
+   <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html>`_.
 
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_BASE*.
