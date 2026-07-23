@@ -213,9 +213,8 @@ Perform the following:
 
 * To use the conda environment, verify the conda environment
   is running and has has the required
-  Python packages outlined in the `Python Requirements section
-  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_ (and
-  from the Requirements Packages section above):
+  Python packages outlined in the `Python Requirements section <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_
+  (and from the Requirements Packages section above).
 
 * Set the PYTHONPATH environment variable:
 
