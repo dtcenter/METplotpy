@@ -210,9 +210,9 @@ Run from the Command Line
 Perform the following to generate the plots:
 
 * If using the conda environment, verify the conda environment
-  is running and has the required Python packages as outlined in the
-  Python Requirements section of the 
-  `Installation guide <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html>`_.
+  is running and has the required
+  `Python packages <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_
+  outlined in the requirements section.
 
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_BASE*.
