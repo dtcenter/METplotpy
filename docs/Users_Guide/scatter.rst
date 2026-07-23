@@ -199,7 +199,7 @@ To generate the above plot using the **scatter_defaults.yaml** and
 
 * If using the conda environment, verify the conda environment
   is running and has the required
-  `Python packages <jects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_
+  `Python packages <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_
   outlined in the requirements section.
 
 * Set the METPLOTPY_BASE environment variable to point to
