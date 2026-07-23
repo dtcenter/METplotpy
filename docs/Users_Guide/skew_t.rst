@@ -109,8 +109,7 @@ To generate a skew-T plot from the sample data and your
 
 * If using the conda environment,
   verify the conda environment is running and has the required
-  Python packages outlined in the `requirements section
-  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_.
+  Python packages outlined in the `requirements section <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_.
 
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_BASE*
