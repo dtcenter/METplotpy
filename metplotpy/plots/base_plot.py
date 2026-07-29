@@ -369,6 +369,7 @@ class BasePlot:
 
         if not handles:
             print("Warning: No labels found. Use ax.plot(..., label='name')")
+            return
 
         # handle plots that only have a single boolean for show legend
         show_legend = self.config_obj.show_legend
@@ -379,6 +380,10 @@ class BasePlot:
         filtered_handles = [h for h, show in zip(handles, show_legend) if show == 1]
         filtered_labels = [l for l, show in zip(labels, show_legend) if show == 1]
 
+        # Check if there are any handles left to plot
+        if not filtered_handles:
+           return
+        
         legend = ax.legend(
             handles=filtered_handles,
             labels=filtered_labels,

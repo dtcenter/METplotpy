@@ -240,7 +240,7 @@ class Tcmpr(BasePlot):
         """
         if ax is None:
             ax = self.ax
-        super()._add_legend(ax)
+        super()._add_legend(ax, handles_and_labels=handles_and_labels)
 
     def _get_nstats(self) -> list:
         """
