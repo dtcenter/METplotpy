@@ -1,16 +1,21 @@
 import os, sys
 import itertools
+import re
 import pandas as pd
 import matplotlib.pyplot as plt
+from datetime import datetime
 from metplotpy.external.plottable.plottable import Table
 from metplotpy.external.plottable.plottable import ColumnDefinition
 from metplotpy.external.plottable.plottable.plots import image
 from metplotpy.plots import util as plot_util
-import METdataio.METreformat.write_stat_ascii as reformat
+import METdataio.METreformat.write_stat_ascii
+from METdbLoad.ush.read_data_files import ReadDataFiles
+from METdbLoad.ush.read_load_xml import XmlLoadFile
+from write_stat_ascii import WriteStatAscii
 from METcalcpy.metcalcpy.util.safe_log import safe_log
 from METcalcpy.metcalcpy import logging_config
 from METcalcpy.metcalcpy import scorecard
-from write_stat_ascii import WriteStatAscii
+from METcalcpy.metcalcpy.agg_stat import AggStat
 
 
 class ScorecardPlot():
@@ -34,6 +39,19 @@ class ScorecardPlot():
 
         logger = self.logger
         safe_log(logger, "debug", "Initializing ScorecardPlot with parameters")
+
+        #
+        # Input data
+        #
+        self.input_dir = configs['met_stat_input']
+        self.ymd_start = configs['ymd_start']
+        self.ymd_end = configs['ymd_end']
+
+        # increment datetime in days
+        self.increment = configs['increment']
+        self.init = configs['init']
+
+        self.get_all_statfiles = True
 
         #
         # For reformatter
@@ -62,13 +80,7 @@ class ScorecardPlot():
         if 'fcst_var' not in self.subset_params.keys():
             msg = "Missing fcst var in config file.  This is needed to subset the input data."
             safe_log(logger, "error", msg)
-            sys.exit(msg)
 
-        #
-        #  For calculating CI's via METcalcpy agg_stat.py
-        #
-
-        # ToDo create the appropriate config settings for agg_stat.py
 
         #
         # For p-values via METcalcpy scorecard module
@@ -102,7 +114,112 @@ class ScorecardPlot():
         self.base_dir = configs['base_dir']
         self.ci_map = self.get_category_images(self.base_dir)
 
-    def create_derived_series(self ) -> list[list]:
+
+    def read_input(self) -> pd.DataFrame:
+
+        """
+          Retrieve all the input data from directories specified in the YAML config
+          file from the input_dir, start date, end date, and increment.
+
+          Args:
+
+          Returns:
+
+         a pandas dataframe containing the data
+
+        """
+        # Get all the dates of interest
+        increment = int(self.increment)
+        date_start = datetime.strptime(self.ymd_start, self.init)
+        date_end = datetime.strptime(self.ymd_end, self.init)
+
+        all_dates = []
+        while date_start <= date_end:
+            all_dates.append(date_start.strftime(self.init))
+            date_start = date_start + pd.Timedelta(days=increment)
+
+        # Substitute variables that aren't "init"
+
+        # keep track of the index of variable names, to be used later when creating
+        # relevant file directories
+        matches = re.finditer(r'\$\{([^}^{]+)\}', self.input_dir)
+        yaml_var_vals = {}
+        var_index = {}
+
+        for idx, curr_match in enumerate(matches):
+            curr_matchobj = curr_match[0]
+            var = re.match(r'.*{(.*)\}', curr_matchobj)
+            # user's "variable" name in the input_dir setting
+            match = var.group(1)
+
+            # evaluate the non-init variables from  'init'
+            if match != 'init':
+                if isinstance(self.configs[match], list):
+                    # variable's value is a list of settings
+                    var_index[idx] = match
+                    yaml_var_vals[match] = self.configs[match]
+                else:
+                    # variable's value is a single value
+                    var_index[idx] = match
+                    yaml_var_vals[match] = [self.configs[match]]
+            else:
+                # init variable, defines date directories
+                var_index[idx] = match
+                yaml_var_vals[match] = all_dates
+
+        all_var_vals = yaml_var_vals.values()
+        all_values = []
+
+        # Get cartesian product of the variable values (pass in the unpacked all_var_vals
+        # to get the desired cartesian product)
+        for _ in itertools.product(*all_var_vals):
+            all_values.append(_)
+
+        # Create the full input directories with all variables substituted with actual values
+        final_list = []
+
+        for curr_value in all_values:
+            string = self.input_dir
+            for v_idx in var_index:
+                pattern = var_index[v_idx]
+                repl = curr_value[v_idx]
+                if v_idx > 0:
+                    string = result
+                result = re.sub(pattern, repl, string)
+
+                # Remove the $, {, and } from each directory path
+                result = re.sub('\\$', '', result)
+                result = re.sub('{', '', result)
+                result = re.sub('}', '', result)
+
+            final_list.append(result)
+
+        # Create a list of all the files in every directory
+        all_files = []
+        if self.get_all_statfiles:
+            for curr_dir in final_list:
+                for file in os.listdir(curr_dir):
+                    if file.endswith(".stat"):
+                        all_files.append(os.path.join(curr_dir, file))
+
+        else:
+            # Get the specific filenames by filename pattern
+            print("Not yet implemented, retrieving all .stat files from each directory")
+
+        # Read in the files into a dataframe using METdataio's METdbLoad modules
+
+        # Replacing the need for an XML specification file, pass in the XMLLoadFile and
+        # ReadDataFile parameters
+        rdf_obj: ReadDataFiles = ReadDataFiles(self.logger)
+        xml_loadfile_obj: XmlLoadFile = XmlLoadFile(None)
+        flags = xml_loadfile_obj.flags
+        line_types = xml_loadfile_obj.line_types
+        flags["load_stat"] = True
+        rdf_obj.read_data(flags, all_files, line_types)
+        return rdf_obj.stat_data
+
+
+    def create_derived_series(self) -> list[list]:
         """
            Create all the derived series settings based on the fcst level, model names,
            fcst hour, fcst variable, statistics
@@ -115,11 +232,11 @@ class ScorecardPlot():
               scorecard.py module
 
         """
-        fcst_leads =   self.subset_params['fcst_lead']
+        fcst_leads = self.subset_params['fcst_lead']
         models = self.subset_params['model']
-        stats =   self.subset_params['stats_list']
-        fcst_levs =   self.subset_params['fcst_lev']
-        fcst_var =   self.subset_params['fcst_var']
+        stats = self.subset_params['stats_list']
+        fcst_levs = self.subset_params['fcst_lev']
+        fcst_var = self.subset_params['fcst_var']
 
         # Create the Cartesian product of the above
         result = list(itertools.product(fcst_levs, models, fcst_leads, fcst_var, stats))
@@ -132,31 +249,32 @@ class ScorecardPlot():
 
         for _ in result:
             if _[1] == models[0]:
-                modelA_strs = [ (str(i)) for i in _ ]
+                modelA_strs = [(str(i)) for i in _]
                 modelA.append(modelA_strs)
 
             else:
-                modelB_strs = [ (str(i)) for i in _ ]
+                modelB_strs = [(str(i)) for i in _]
                 modelB.append(modelB_strs)
 
         # If models don't have the same number of data points, exit with a message.
         if len(modelA) != len(modelB):
-            msg= (f"Different number of {models[0]} and {models[1]} data.  Please check your"
-                  f"data.  ")
+            msg = (f"Different number of {models[0]} and {models[1]} data.  Please check your"
+                   f"data.  ")
             sys.exit(msg)
 
         # Join the components into one string
         modelA_strs = [" ".join(i) for i in modelA]
-        modelB_strs = [" ".join(i) for i in modelB ]
+        modelB_strs = [" ".join(i) for i in modelB]
 
         # Group the modelA and modelB strings with the same fcst level, fcst hr,
         # fcst var, and stat values
         modelA_B = [list(i) for i in zip(modelA_strs, modelB_strs)]
 
         # Add the 'DIFF_SIG' directive to each item
-        [ i.append("DIFF_SIG") for i in modelA_B]
+        [i.append("DIFF_SIG") for i in modelA_B]
 
         return modelA_B
+
 
     def get_category_images(self, base_dir: str) -> dict:
         """
@@ -352,7 +470,7 @@ class ScorecardPlot():
         """
 
         if self.reformat_flag:
-            r_df = reformat.read_input(self.reformat_params, self.logger)
+            r_df = self.read_input()
             r_df.to_csv(self.reformat_params['output_filename'],
                         date_format='%Y-%m-%d %H:%M:%S')
             if r_df.size == 0:
@@ -364,6 +482,62 @@ class ScorecardPlot():
 
             stat_lines_obj: WriteStatAscii = WriteStatAscii(self.reformat_params, self.logger)
             stat_lines_obj.write_stat_ascii(r_df, self.reformat_params)
+        else:
+            safe_log(self.logger, self.log_level, "Reformatting not requested")
+
+
+    def calculate_agg_stats(self):
+        """
+            Calculate the CI's using METcalcpy agg_stat.py
+
+        """
+        fname = "reformatted_" + self.configs['linetype'] + ".txt"
+        input_file = os.path.join(self.configs['output_dir'], fname)
+        agg_stat_configs = {}
+
+        # Generate the configuration settings needed by METcalcpy's agg_stat
+        # module from the scorecard yaml config file.
+        agg_stat_configs['agg_stat_input'] = input_file
+        outname = self.configs['linetype'] + "_aggregated.data"
+        agg_stat_configs['agg_stat_output'] = os.path.join(self.configs['output_dir'], outname )
+        agg_stat_configs['alpha'] = 0.05
+        agg_stat_configs['append_to_file'] = "null"
+        agg_stat_configs['circular_block_bootstrap'] = True
+        agg_stat_configs['derived_series_1'] = []
+        agg_stat_configs['derived_series_2'] = []
+        agg_stat_configs['event_equal'] = False
+
+        # fcst_var_val_1 is the fcst_var and the stat (stat name is pre-fixed with
+        # the linetype e.g. RMSE becomes ECNT_RMSE for linetype ECNT and
+        # stat in the stat_list of the scorecard YAML).
+        fcst_var = self.configs['subset_params']['fcst_var'][0]
+        stats_list = self.configs['subset_params']['stats_name']
+
+        # Pre-fix the linetype (upper case) to each stat name
+        aggstat_stats = []
+        # for stat in stats_list:
+        #     aggstat_stats.append(str(self.configs['linetype']).upper() + "_" + stat)
+
+        agg_stat_configs['fcst_var_val_1']= {fcst_var:aggstat_stats}
+        agg_stat_configs['fcst_var_val_2'] = {}
+        agg_stat_configs['indy_vals'] = self.configs['subset_params']['fcst_lead']
+        agg_stat_configs['indy_var'] = 'fcst_lead'
+        agg_stat_configs['line_type'] = str(self.configs['linetype']).lower()
+        agg_stat_configs['list_stat_1'] = aggstat_stats
+        agg_stat_configs['list_stat_2'] = []
+        agg_stat_configs['method'] = 'perc'
+        agg_stat_configs['num_iterations'] = 1
+        agg_stat_configs['num_threads'] = -1
+        agg_stat_configs['random_seed'] =  None
+        agg_stat_configs['series_val_1'] = {'model':self.configs['subset_params']['model']}
+        agg_stat_configs['series_val_2'] = []
+
+        msg = "Calculating CI for "+ self.configs['linetype'] +" with agg_stat"
+        safe_log(self.logger, self.log_level, msg)
+        AGG_STAT = AggStat(agg_stat_configs)
+        AGG_STAT.calculate_stats_and_ci()
+        safe_log(self.logger, self.log_level, "Finished calculating CI with agg_stat")
+
 
 
     def get_scorecard_stats(self) -> pd.DataFrame:
@@ -593,7 +767,7 @@ class ScorecardPlot():
             ColumnDefinition(name="category",
                              textprops={"ha": "right"},
                              width=1.5, plot_fn=image
-                             )
+                             ),
         ]
 
         fig, ax = plt.subplots(figsize=(8, 7))
@@ -628,6 +802,7 @@ class ScorecardPlot():
         plt.savefig("/Users/minnawin/Python_Scorecard_Dev/output/scorecard_plot.png")
         plt.show()
 
+
 def main(config_filename=None):
     """
         Read in the YAML config file and perform steps needed
@@ -651,15 +826,16 @@ def main(config_filename=None):
     #
     sc.subset_data(sc.reformat_params['output_filename'])
 
-    # #
-    # # Calculate the aggregation statistics via METcalcpy agg_stat.py
-    # # module if needed
-    # # ToDo implement support for invoking this
-    # aggstat_df = subset_df.copy(deep=True)
-    # if sc.linetype == 'CNT':
-    #     print(f"Skip running agg_stat.py {sc.linetype} already has CI's calculated  ")
-    # else:
-    #     print(f"ToDo: Invoke  METcalcpy agg_stat.py to calculate the CI's for {sc.linetype} ")
+    #
+    # Calculate the aggregation statistics via METcalcpy agg_stat.py
+    # module if needed
+    if confs['has_confidence_stats']:
+        print(f"Skip running agg_stat.py {sc.linetype} already has CI's calculated  ")
+    else:
+        print(f" Invoke  METcalcpy agg_stat.py to calculate the CI's for {sc.linetype} ")
+        sc.calculate_agg_stats()
+        sys.exit()
+
 
     #
     # Get the p-values and scorecard categories
