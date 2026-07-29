@@ -1,0 +1,116 @@
+
+#
+#  SOURCE CODE DIRECTORY
+#
+
+# Top directory where the source code for METplotpy resides.
+# Used for locating the images used in the scorecard table
+base_dir: '/Users/minnawin/Python_Scorecard_Dev'
+
+#
+#  OUTPUT and LOG DIRECTORIES
+#
+
+
+# All output will reside in this specified output directory
+output_dir:  '/Users/minnawin/Python_Scorecard_Dev/output'
+
+# A single log file will be generated, capturing logging information from
+# all intermediate steps
+log_dir :  '/Users/minnawin/Python_Scorecard_Dev/logs/'
+log_filename:  noaa_gefs.log
+log_level: 'DEBUG'
+
+# MET .stat input files
+#met_stat_input: '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_stat_HRRR_RRFS/sample_data/all_dates'
+met_stat_input: '${base}/${model}.${init}'
+base:  '/Users/minnawin/Python_Scorecard_Dev/GEFS_data'
+model:
+  - gefs
+  - aigefs
+init: "%Y%m%d"
+increment: 1
+ymd_start: '20260301'
+ymd_end: '20260302'
+
+#
+# REFORMAT
+#
+# if data has unlabelled columns (i.e. a MET .stat file from MET point-stat or
+# MET grid-stat tool). Set to True to reformat, False otherwise.
+# Or if re-running using the same data and reformatting has already been done,
+# then set to False for better performance.
+reformat_needed: False
+
+# Set to 'True'  MET .stat file is aggregated using the MET stat-analysis tool,
+#  or if line type  already has CI stats columns (ncu/ncl and/or btcu/btcl).
+#  Set to 'False' if data doesn't have CI stats.
+has_confidence_stats: False
+linetype: 'ECNT'
+
+#
+# SUBSETTING
+#
+# Filtering data based on model, masking regions, stat names, levels, variable of
+# interest (and its values), and fcst_lead
+subset_params:
+
+   # Column names in the MET output file
+   'fcst_lead':
+     - '0'
+     - '60000'
+     - '120000'
+     - '240000'
+
+   'fcst_lev':
+     - 'P850'
+
+   'model':
+       - 'AIGEFS'
+       - 'GEFS'
+
+   'fcst_var':
+     - 'TMP'
+
+   # independent variable name and corresponding value(s)
+   indep_variable: 'vx_mask'
+
+   indep_values:
+      - 'CONUS'
+
+  # a list of one or more statistics of interest (line type specific)
+   stats_list:
+      - 'ME'
+
+
+#
+#  CONFIDENCE INTERVALS via agg_stat.py
+#
+# Python code will generate the necessary config information to pass to
+# the METcalcpy agg_stat.py module.  Some line types do not require this step.
+# If the MET output does not have btcu/btcl or ncu/ncl columns, then set
+# this value to True
+calculate_confidence_intervals: True
+
+#
+# SCORECARD STATISTICS  (p-values)
+#
+
+# Append to the scorecard output file with successive runs
+append_subsequent: False
+
+# Method to calculate p-values: 'EMC' or 'NCAR' (code currently uses NCAR)
+pval_method: 'NCAR'
+
+# Used in the EMC method of calculating p-values
+sample_size: 10
+
+
+#
+# SCORECARD PLOT
+#
+
+# Title for scorecard (this can be automatically generated in the code if
+# this is left unspecified)
+scorecard_title: 'Scorecard HRRR and RRFS'
+
