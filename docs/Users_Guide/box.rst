@@ -1,5 +1,5 @@
 ********
-Box plot
+Box Plot
 ********
 
 Description
@@ -20,7 +20,7 @@ that do not fall inside the whiskers. Outliers are extreme values.
 It is used by METviewer for generating box plots.
 Refer to the 
 `METviewer documentation
-<https://metviewer.readthedocs.io/en/latest/Users_Guide/boxplot.html>`_
+<https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/boxplot.html>`_
 for details on how this plot is utilized.
 
 
@@ -211,8 +211,7 @@ Perform the following to generate the plots:
 
 * If using the conda environment, verify the conda environment
   is running and has the required
-  `Python packages
-  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_
+  `Python packages <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_
   outlined in the requirements section.
 
 * Set the METPLOTPY_BASE environment variable to point to

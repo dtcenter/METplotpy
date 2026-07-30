@@ -1,5 +1,5 @@
 *******************
-Weather Regime plot
+Weather Regime Plot
 *******************
 
 Description
@@ -9,7 +9,7 @@ The **plot_weather_regime.py** script contains the plotting portion for
 three scripts (**elbow.py, Calc_EOF.py**, and **K_means.py**)
 These were originally created by Doug Miller at the University of Illinois.
 A `METplus use case
-<https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_WeatherRegime.html#sphx-glr-generated-model-applications-s2s-userscript-obsera-obsonly-weatherregime-py>`_
+<https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s_mid_lat/UserScript_obsERA_obsOnly_WeatherRegime.html#sphx-glr-generated-model-applications-s2s-mid-lat-userscript-obsera-obsonly-weatherregime-py>`_
 illustrates how to use this plot.
 
 These files are used by the image comparison test:
@@ -53,7 +53,7 @@ Required Packages
 
 
 How to Use
-===========
+==========
 
 Import plot_weather_regime into the script:
 

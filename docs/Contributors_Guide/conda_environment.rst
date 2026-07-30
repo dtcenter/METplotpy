@@ -10,5 +10,5 @@ in the METplus Contributor’s Guide to set up a similar environment to METplus.
 
 Refer to the
 `METplotpy User’s Guide
-<https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_
+<https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_
 to obtain the appropriate packages and specific versions (when specified).

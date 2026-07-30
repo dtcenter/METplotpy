@@ -1,5 +1,5 @@
 *****************
-S2S Blocking plot
+S2S Blocking Plot
 *****************
 
 Description
@@ -10,7 +10,7 @@ The **CBL_plot.py** is plotting only a portion of the original **CBL.py**
 script created by Doug Miller at the University of Illinois.
 
 For more background on this plot, please refer to the `METplus use case
-documentation <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_fcstGFS_obsERA_Blocking.html#sphx-glr-generated-model-applications-s2s-userscript-fcstgfs-obsera-blocking-py>`_.
+documentation <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s_mid_lat/UserScript_fcstGFS_obsERA_Blocking.html>`_.
 
 
 Required Packages

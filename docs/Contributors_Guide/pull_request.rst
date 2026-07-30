@@ -2,8 +2,8 @@
 Pull Requests in Github
 ***********************
 
-Please refer to the `Open a pull request using a browser
-<https://metplus.readthedocs.io/en/latest/Contributors_Guide/github_workflow.html#open-a-pull-request-using-a-browse>`_
+Please refer to the `Open a Pull Request
+<https://metplus.readthedocs.io/en/latest/Contributors_Guide/github_workflow.html#open-a-pull-request>`_
 section of the METplus Contributor’s Guide, replacing “METplus” references
 with “METplotpy”. However, if external contributors are unsure who to
 assign as a reviewer, a post should still be created in the
