@@ -18,11 +18,21 @@ output_dir:  '/Users/minnawin/Python_Scorecard_Dev/output'
 # A single log file will be generated, capturing logging information from
 # all intermediate steps
 log_dir :  '/Users/minnawin/Python_Scorecard_Dev/logs/'
-log_filename:  hrrr_rrfs_full.log
+log_filename:  noaa_gefs.log
 log_level: 'DEBUG'
 
 # MET .stat input files
-met_stat_input: '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_stat_HRRR_RRFS/sample_data/all_dates'
+#met_stat_input: '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_stat_HRRR_RRFS/sample_data/all_dates'
+#met_stat_input: '${base}/${model}.${init}'
+met_stat_input: '${base}'
+base:  '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_stat_HRRR_RRFS/avail_dates'
+model:
+  - RRFS 
+  - HRRR
+init: "%Y%m%d"
+increment: 1
+ymd_start: '20230702'
+ymd_end: '20230704'
 
 #
 # REFORMAT
@@ -31,29 +41,34 @@ met_stat_input: '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_sta
 # MET grid-stat tool). Set to True to reformat, False otherwise.
 # Or if re-running using the same data and reformatting has already been done,
 # then set to False for better performance.
-reformat_needed: False
-
+reformat_needed: True
 
 # Set to 'True'  MET .stat file is aggregated using the MET stat-analysis tool,
-#  or if line type  already has CI stats calculated.
+#  or if line type  already has CI stats columns (ncu/ncl and/or btcu/btcl).
 #  Set to 'False' if data doesn't have CI stats.
 has_confidence_stats: True
-linetype: 'CNT'
+linetype: 'ECNT'
 
 #
 # SUBSETTING
 #
 # Filtering data based on model, masking regions, stat names, levels, variable of
-# interest (and its values), and times
-# (i.e. fcst_lead, fcst_init_beg, etc)
+# interest (and its values), and fcst_lead
 subset_params:
 
    # Column names in the MET output file
    'fcst_lead':
      - '0'
      - '60000'
+     - '90000'
+     - '100000'
      - '120000'
+     - '150000'
+     - '180000'
      - '240000'
+     - '360000'
+     - '410000'
+     - '430000'
 
    'fcst_lev':
      - 'Z2'
@@ -79,10 +94,11 @@ subset_params:
 #
 #  CONFIDENCE INTERVALS via agg_stat.py
 #
-# TO BE DONE
 # Python code will generate the necessary config information to pass to
 # the METcalcpy agg_stat.py module.  Some line types do not require this step.
-
+# If the MET output does not have btcu/btcl or ncu/ncl columns, then set
+# this value to True
+calculate_confidence_intervals: True
 
 #
 # SCORECARD STATISTICS  (p-values)
@@ -94,7 +110,7 @@ append_subsequent: False
 # Method to calculate p-values: 'EMC' or 'NCAR' (code currently uses NCAR)
 pval_method: 'NCAR'
 
-# Used in the  EMC method of calculating p-values
+# Used in the EMC method of calculating p-values
 sample_size: 10
 
 
