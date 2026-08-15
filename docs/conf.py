@@ -97,7 +97,35 @@ numfig = True
 numfig_format = {
         'figure': 'Figure %s',
         }
-    
+
+# -- linkcheck builder configuration ----------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-the-linkcheck-builder
+
+linkcheck_timeout = 10
+linkcheck_retries = 2
+linkcheck_workers = 8
+
+linkcheck_ignore = [
+    # add regex patterns for URLs that should be skipped, e.g.:
+    # r'https://dtcenter\.org/.*',   # if this site blocks automated requests
+    # r'https://matplotlib\.org/.*',        # occasionally rate-limits automated clients
+    # r'https://scitools\.org\.uk/cartopy/.*',  # occasionally slow
+    r'https://doi\.org/.*', # DOI redirectors often 403 non-browser requests
+    # bmcnoldy.rsmas.miami.edu sends an incomplete SSL certificate chain
+    # (missing intermediate cert). Browsers work around this via AIA
+    # fetching; curl/Python do not. Confirmed 2026-07 via curl -v
+    # ("SSL certificate problem: unable to get local issuer certificate").
+    # Re-check periodically and remove once fixed server-side.
+    r'https://bmcnoldy\.rsmas\.miami\.edu/.*',
+]
+
+linkcheck_allowed_redirects = {
+    # map of regex -> regex for redirects that are fine to follow
+}
+
+linkcheck_anchors = True
+linkcheck_anchors_ignore = ['^!']
+
 # -- Export variables --------------------------------------------------------
 
 rst_epilog = """                                                                                                                                    
@@ -109,4 +137,5 @@ rst_epilog = """
            author_liststr  = author_list,
            release_datestr = release_date,
            release_yearstr = release_year)
+
 

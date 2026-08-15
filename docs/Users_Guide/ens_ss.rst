@@ -1,5 +1,5 @@
 **************************
-Ensemble spread-skill plot
+Ensemble Spread-Skill Plot
 **************************
 
 Description
@@ -164,8 +164,8 @@ Perform the following:
 
 * If the conda environment is being used,
   verify the conda environment is running and has has the required
-  Python packages outlined in the `requirements section.
-  <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation.html#python-requirements>`_
+  Python packages outlined in the `requirements section
+  <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_.
   
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_BASE*.

@@ -9,7 +9,7 @@ contains packages for plotting in METplus as stand-alone, or part of METplus
 use case, METplus wrappers, METexpress, or METviewer. It is also a component
 of the unified METplus verification framework. More details about METplus can
 be found on the
-`METplus website <http://dtcenter.org/community-code/metplus>`_.
+`METplus website <https://dtcenter.org/software-tools/metplus>`_.
 
 It is important to note here that METplotpy is an evolving software package.
 This documentation describes the |release| release dated |release_date|.
@@ -29,7 +29,7 @@ You may not use this file except in compliance with the License.
 
 You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+https://www.apache.org/licenses/LICENSE-2.0
 
 
 Unless required by applicable law or agreed to in writing, software distributed under

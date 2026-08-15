@@ -174,7 +174,7 @@ class TaylorDiagram(BasePlot):
 
         # in Matplotlib 3.10, the default for apply_theta_transforms=True has been deprecated, explicitly set this
         # to True
-        tr = PolarAxes.PolarTransform(apply_theta_transforms=False)
+        tr = PolarAxes.PolarTransform()
 
         # Correlation labels
         rlocs = np.array([0, 0.2, 0.4, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1])

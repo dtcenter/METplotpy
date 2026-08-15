@@ -12,7 +12,7 @@ table along with the expected cost-to-loss ratio.
 
 For more information on Economic Cost/Loss Value Plots, please refer to the
 `METviewer documentation
-<https://metviewer.readthedocs.io/en/develop/Users_Guide/eclvplots.html>`_.
+<https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/eclvplots.html>`_.
 
 
 The ECLV score can range from -:math:`\infty` to 1.
@@ -178,8 +178,8 @@ perform the following:
 
 *  If using the conda environment, verify the conda environment
    is running and has has the required Python packages outlined in the
-   `requirements section.
-   <https://metplotpy.readthedocs.io/en/latest/Users_Guide/installation-requirements.html>`_
+   `requirements section
+   <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_.
 
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_BASE*.

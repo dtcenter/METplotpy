@@ -34,7 +34,7 @@ The **directional_means.py** module in the METcalcpy repository
 is used to calculate the zonal and meridional means from the input data.  The **stratosphere_diagnostics.py** module
 is based on code provided by Zach D. Lawrence (CIRES/CU, NOAA/PSL) and the **directional_means.py** module is based
 on the pyzome package (also provided by Zach Lawrence).
-A `METplus use case <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s/UserScript_obsERA_obsOnly_Stratosphere.html#sphx-glr-generated-model-applications-s2s-userscript-obsera-obsonly-stratosphere-py>`_
+A `METplus use case <https://metplus.readthedocs.io/en/main_v5.1/generated/model_applications/s2s/UserScript_obsERA_obsOnly_Stratosphere.html#userscript-make-zonal-and-meridonial-means>`_
 illustrates how to use the **directional_means** module to calculate zonal and meridional means on sample data.
 
 
@@ -68,11 +68,11 @@ Example
 Sample Data
 -----------
 
-The sample dataset is a netCDF file:
+The sample dataset is a NetCDF file:
 **SSWC_v1.0_varFull_ERAi_d20130106_s20121107_e20130307_c20160701.nc**
 
-To obtain this data follow these steps, based on the instructions from the `section 2.6 of the METplus installation
-section <https://metplus.readthedocs.io/en/develop/Users_Guide/installation.html>`_ :
+To obtain this data follow these steps, based on the instructions from the `METplus installation
+section <https://metplus.readthedocs.io/en/latest/Users_Guide/installation.html#obtain-sample-input-data>`_ :
 
 * Create a directory where you will save the sample data, hereafter referred to as $INPUT_DATA_DIR.
 
