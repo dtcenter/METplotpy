@@ -5,7 +5,7 @@
 
 # Top directory where the source code for METplotpy resides.
 # Used for locating the images used in the scorecard table
-base_dir: '/Users/minnawin/Python_Scorecard_Dev'
+base_dir: '/Users/minnawin/Test_Scorecard'
 
 #
 #  OUTPUT and LOG DIRECTORIES
@@ -13,17 +13,15 @@ base_dir: '/Users/minnawin/Python_Scorecard_Dev'
 
 
 # All output will reside in this specified output directory
-output_dir:  '/Users/minnawin/Python_Scorecard_Dev/output'
+output_dir:  '/Users/minnawin/Test_Scorecard/output'
 
 # A single log file will be generated, capturing logging information from
 # all intermediate steps
-log_dir :  '/Users/minnawin/Python_Scorecard_Dev/logs/'
+log_dir :  '/Users/minnawin/Test_Scorecard/logs/'
 log_filename:  noaa_gefs.log
 log_level: 'DEBUG'
 
 # MET .stat input files
-#met_stat_input: '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_stat_HRRR_RRFS/sample_data/all_dates'
-#met_stat_input: '${base}/${model}.${init}'
 met_stat_input: '${base}'
 base:  '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_stat_HRRR_RRFS/avail_dates'
 model:
@@ -47,7 +45,7 @@ reformat_needed: True
 #  or if line type  already has CI stats columns (ncu/ncl and/or btcu/btcl).
 #  Set to 'False' if data doesn't have CI stats.
 has_confidence_stats: True
-linetype: 'ECNT'
+linetype: 'CNT'
 
 #
 # SUBSETTING
@@ -98,7 +96,7 @@ subset_params:
 # the METcalcpy agg_stat.py module.  Some line types do not require this step.
 # If the MET output does not have btcu/btcl or ncu/ncl columns, then set
 # this value to True
-calculate_confidence_intervals: True
+calculate_confidence_intervals: False
 
 #
 # SCORECARD STATISTICS  (p-values)
