@@ -24,14 +24,14 @@ log_level: 'DEBUG'
 # MET .stat input files
 #met_stat_input: '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_stat_HRRR_RRFS/sample_data/all_dates'
 met_stat_input: '${base}/${model}.${init}'
-base:  '/Users/minnawin/Python_Scorecard_Dev/GEFS_data'
+base:  '/Users/minnawin/Python_Scorecard_Dev/NOAA_data'
 model:
   - gefs
   - aigefs
 init: "%Y%m%d"
 increment: 1
 ymd_start: '20260301'
-ymd_end: '20260302'
+ymd_end: '20260331'
 
 #
 # REFORMAT
@@ -40,12 +40,12 @@ ymd_end: '20260302'
 # MET grid-stat tool). Set to True to reformat, False otherwise.
 # Or if re-running using the same data and reformatting has already been done,
 # then set to False for better performance.
-reformat_needed: False
+reformat_needed: True
 
 # Set to 'True'  MET .stat file is aggregated using the MET stat-analysis tool,
 #  or if line type  already has CI stats columns (ncu/ncl and/or btcu/btcl).
 #  Set to 'False' if data doesn't have CI stats.
-has_confidence_stats: False
+has_confidence_stats: True
 linetype: 'ECNT'
 
 #
@@ -61,16 +61,18 @@ subset_params:
      - '60000'
      - '120000'
      - '240000'
+     - '360000'
+     - '480000'
 
    'fcst_lev':
-     - 'P850'
+     - 'A6'
 
    'model':
        - 'AIGEFS'
        - 'GEFS'
 
    'fcst_var':
-     - 'TMP'
+     - 'APCP_06'
 
    # independent variable name and corresponding value(s)
    indep_variable: 'vx_mask'

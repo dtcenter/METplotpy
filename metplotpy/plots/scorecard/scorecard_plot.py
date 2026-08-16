@@ -1,5 +1,7 @@
 import os, sys
 import itertools
+import requests
+import json
 import re
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -8,14 +10,14 @@ from metplotpy.external.plottable.plottable import Table
 from metplotpy.external.plottable.plottable import ColumnDefinition
 from metplotpy.external.plottable.plottable.plots import image
 from metplotpy.plots import util as plot_util
-import METdataio.METreformat.write_stat_ascii
+from METreformat import write_stat_ascii
 from METdbLoad.ush.read_data_files import ReadDataFiles
 from METdbLoad.ush.read_load_xml import XmlLoadFile
 from write_stat_ascii import WriteStatAscii
-from METcalcpy.metcalcpy.util.safe_log import safe_log
-from METcalcpy.metcalcpy import logging_config
-from METcalcpy.metcalcpy import scorecard
-from METcalcpy.metcalcpy.agg_stat import AggStat
+from metcalcpy.util.safe_log import safe_log
+from metcalcpy import logging_config
+from metcalcpy import scorecard
+from metcalcpy.agg_stat import AggStat
 
 
 class ScorecardPlot():
@@ -30,6 +32,8 @@ class ScorecardPlot():
         self.output_dir = configs['output_dir']
         os.makedirs(self.output_dir, exist_ok=True)
         self.log_dir = configs['log_dir']
+        # self.event_equalize = configs['event_equalize']
+        self.event_equalize = False
         os.makedirs(self.log_dir, exist_ok=True)
         self.log_filename = os.path.join(self.log_dir, configs['log_filename'])
         self.log_level = configs['log_level']
@@ -75,6 +79,7 @@ class ScorecardPlot():
         # For subsetting
         #
         self.subset_params: dict = configs['subset_params']
+
         subsetted_fname = "filtered.txt"
         self.subsetted_filename = os.path.join(self.output_dir, subsetted_fname)
         if 'fcst_var' not in self.subset_params.keys():
@@ -89,7 +94,7 @@ class ScorecardPlot():
 
         # self.derived_series: list = configs['derived_series']
         self.derived_series: list[list] = self.create_derived_series()
-        agg_fname = "aggstat_output.txt"
+        agg_fname = self.linetype.upper() + "_aggregated.data"
         self.aggstat_filename = os.path.join(self.output_dir, agg_fname)
 
         sc_stat_fname = "scorecard_stats.txt"
@@ -103,6 +108,7 @@ class ScorecardPlot():
         # to correctly create cartesian products.
         if 'fcst_init_beg' in self.subset_params.keys():
             self.subset_params.pop('fcst_init_beg')
+
         self.scorecard_stats_series_val = self.subset_params
         self.scorecard_stats_statslist = self.subset_params['stats_list']
 
@@ -239,7 +245,7 @@ class ScorecardPlot():
         fcst_var = self.subset_params['fcst_var']
 
         # Create the Cartesian product of the above
-        result = list(itertools.product(fcst_levs, models, fcst_leads, fcst_var, stats))
+        result = list(itertools.product(fcst_levs,  models, fcst_leads, fcst_var, stats))
 
         # Make all elements strings, to enable joining the fcst lead, model name, etc
         # based on model name into the format (level model fcst_hr variable stat:
@@ -354,7 +360,7 @@ class ScorecardPlot():
             sys.exit("Error:" + msg)
 
 
-    def subset_data(self, df_filename: str) -> pd.DataFrame:
+    def subset_data(self, subset_df:pd.DataFrame) -> pd.DataFrame:
         """
             Invoke this prior to invoking METcalcpy agg_stat.
             Subset data based on independent variable and its
@@ -363,7 +369,7 @@ class ScorecardPlot():
 
             Args:
 
-                df filename (str): The filename of the  dataframe containing the MET stat data with
+                subset_df (pd.DataFrame): The  dataframe containing the MET stat data with
                                         all columns labelled
 
            Returns:
@@ -373,9 +379,10 @@ class ScorecardPlot():
 
         """
         safe_log(self.logger, 'debug', 'Filter data based on subset_params in the config file.')
-        working_df = pd.read_csv(df_filename, sep='\t+', engine='python')
-        working_df.to_csv(os.path.join(self.output_dir, "working.txt"), header=True, index_label=None, sep=',',
-                          index=False, date_format="%Y-%m-%d %H:%M:%S")
+        # working_df = pd.read_csv(df_filename, engine='python')
+        working_df = subset_df.copy()
+        # working_df.to_csv(os.path.join(self.output_dir, "working.txt"), header=True, index_label=None, sep=',',
+        #                   index=False, date_format="%Y-%m-%d %H:%M:%S")
 
         # Exit if there are any requested columns that don't exist in the data
         self.check_for_invalid_columns(working_df)
@@ -387,7 +394,16 @@ class ScorecardPlot():
         indep_variable = filter_keys['indep_variable']
         indep_var_vals = filter_keys['indep_values']
         filter_keys[indep_variable] = indep_var_vals
-        filter_keys['stat_name'] = filter_keys['stats_list']
+        if self.configs['has_confidence_stats']  == False:
+            # update the stats names in stats list with the linetype prefixed to the
+            # stat name
+            linetyped_stats = []
+            for curr in filter_keys['stats_list']:
+                lt_stat_name = "".join(self.linetype + "_" + curr)
+                linetyped_stats.append(lt_stat_name)
+            filter_keys['stat_name'] = linetyped_stats
+        else:
+            filter_keys['stat_name'] = filter_keys['stats_list']
         del filter_keys['indep_variable']
         del filter_keys['indep_values']
         del filter_keys['stats_list']
@@ -451,11 +467,11 @@ class ScorecardPlot():
 
         result: pd.DataFrame = working_df.query(full_query)
 
-        result.to_csv(self.subsetted_filename, sep='\t', header=True, index_label=False)
+        result.to_csv(self.subsetted_filename, header=True, index_label=False)
         return result
 
 
-    def reformat_met_stat(self) -> None:
+    def reformat_met_stat(self) -> pd.DataFrame:
         """
              Invoke the METdataio METreformatter's write_stat_ascii module to
              label all the headers in the MET .stat file based on linetype (specified in
@@ -464,15 +480,15 @@ class ScorecardPlot():
              Args:
 
              Returns:
-                 Saves the reformatted data  to the output
-                 directory specified in the YAML config file.
+
+                 reformatted_df (pd.DataFrame): The pandas dataframe containing the
+                           reformatted data.
+
 
         """
 
         if self.reformat_flag:
             r_df = self.read_input()
-            r_df.to_csv(self.reformat_params['output_filename'],
-                        date_format='%Y-%m-%d %H:%M:%S')
             if r_df.size == 0:
                 safe_log(self.logger, 'ERROR', "ERROR:  Input dataframe is empty.  Exiting")
                 sys.exit()
@@ -481,22 +497,91 @@ class ScorecardPlot():
                 os.remove(self.reformat_params['output_filename'])
 
             stat_lines_obj: WriteStatAscii = WriteStatAscii(self.reformat_params, self.logger)
-            stat_lines_obj.write_stat_ascii(r_df, self.reformat_params)
+            reformatted_df = stat_lines_obj.write_stat_ascii(r_df, self.reformat_params)
+            return reformatted_df
         else:
             safe_log(self.logger, self.log_level, "Reformatting not requested")
 
 
-    def calculate_agg_stats(self):
+
+    def set_dtypes(self, reformatted_df:pd.DataFrame) -> pd.DataFrame:
+        """
+             Explicitly set the dtypes for all the columns in the reformatted dataframe
+             to avoid dtype errors and avoid relying on the soon-to-be deprecated
+             low_memory=False when reading data.
+
+             Use the MET met_column_types.json file to retrieve the appropriate
+             dtypes.
+
+             Args:
+                reformatted_df (pd.DataFrame): The pandas dataframe containing  data with reformatted MET
+                                                            data (i.e. all stat columns are split between
+                                                            the stat_name and stat_val columns, and
+                                                            all other unlabelled columns are
+                                                            appropriately labelled).
+
+             Returns:
+                 dtype_df (pd.DataFrame): A dataframe that has had all the column
+                 dtypes explicitly set.
+
+        """
+
+        # Retrieve the met_column_types.json file from the MET repository's
+        # develop branch
+        url = "https://raw.githubusercontent.com/dtcenter/MET/refs/heads/develop/data/table_files/met_column_types.json"
+        response = requests.get(url)
+        dtypes_file = os.path.join(os.getcwd(), "dtypes.txt")
+        with open(dtypes_file, "w") as f:
+            f.write(response.text)
+
+        with open(dtypes_file) as dtf:
+           met_types:dict = json.load(dtf)
+
+        linetype = self.linetype.upper()
+        dtype_df = reformatted_df.copy(deep=True)
+        all_df_dtypes = dtype_df.dtypes
+
+        # The dtype index corresponds to the name of the column
+        idx = all_df_dtypes.index
+
+        # Columns that are added and not part of the original MET input
+        ignore_cols = ['fcst_init_beg', 'stat_name', 'stat_value']
+
+        # Assign the dtypes from the MET json file to the corresponding column in
+        # the dataframe (of the reformatted data).
+        accepted = ["str", "int64", "float64"]
+        for i in idx:
+            # column names in json file are upper case, need to convert the dataframe's
+            # columns to upper case
+            met_col = str(i).upper()
+
+            if i not in ignore_cols:
+                if dtype_df[i].dtype not in accepted:
+                    print(f"WARNING {i}: {dtype_df[i].dtype}, converting to {dtype_df[i].astype("str")}")
+
+                dtype_df.astype({i:met_types[linetype][met_col]}).dtypes
+
+        return dtype_df
+
+    def calculate_agg_stats(self, subset_df:pd.DataFrame):
         """
             Calculate the CI's using METcalcpy agg_stat.py
 
+            Args:
+                subset_df (pd.DataFrame): The dataframe containing subsetted data.
+
+            Returns:
+                aggregated_df (pd.DataFrame): Dataframe with the CI's calculated
+
         """
-        fname = "reformatted_" + self.configs['linetype'] + ".txt"
+        # fname = "reformatted_" + self.configs['linetype'] + ".txt"
+        fname = "filtered.txt"
         input_file = os.path.join(self.configs['output_dir'], fname)
         agg_stat_configs = {}
 
         # Generate the configuration settings needed by METcalcpy's agg_stat
         # module from the scorecard yaml config file.
+        # subset_df.to_csv(input_file)
         agg_stat_configs['agg_stat_input'] = input_file
         outname = self.configs['linetype'] + "_aggregated.data"
         agg_stat_configs['agg_stat_output'] = os.path.join(self.configs['output_dir'], outname )
@@ -505,49 +590,47 @@ class ScorecardPlot():
         agg_stat_configs['circular_block_bootstrap'] = True
         agg_stat_configs['derived_series_1'] = []
         agg_stat_configs['derived_series_2'] = []
-        agg_stat_configs['event_equal'] = False
+        agg_stat_configs['event_equal']  = self.event_equalize
 
         # fcst_var_val_1 is the fcst_var and the stat (stat name is pre-fixed with
         # the linetype e.g. RMSE becomes ECNT_RMSE for linetype ECNT and
         # stat in the stat_list of the scorecard YAML).
         fcst_var = self.configs['subset_params']['fcst_var'][0]
-        stats_list = self.configs['subset_params']['stats_name']
-
-        # Pre-fix the linetype (upper case) to each stat name
-        aggstat_stats = []
-        # for stat in stats_list:
-        #     aggstat_stats.append(str(self.configs['linetype']).upper() + "_" + stat)
-
-        agg_stat_configs['fcst_var_val_1']= {fcst_var:aggstat_stats}
+        stats_list = self.configs['subset_params']['stat_name']
+        agg_stat_configs['fcst_var_val_1']= {fcst_var:stats_list}
         agg_stat_configs['fcst_var_val_2'] = {}
         agg_stat_configs['indy_vals'] = self.configs['subset_params']['fcst_lead']
         agg_stat_configs['indy_var'] = 'fcst_lead'
         agg_stat_configs['line_type'] = str(self.configs['linetype']).lower()
-        agg_stat_configs['list_stat_1'] = aggstat_stats
+        agg_stat_configs['list_stat_1'] = stats_list
         agg_stat_configs['list_stat_2'] = []
         agg_stat_configs['method'] = 'perc'
         agg_stat_configs['num_iterations'] = 1
         agg_stat_configs['num_threads'] = -1
         agg_stat_configs['random_seed'] =  None
-        agg_stat_configs['series_val_1'] = {'model':self.configs['subset_params']['model']}
+        # agg_stat_configs['series_val_1'] = {'model':self.configs['subset_params']['model']}
+        agg_stat_configs['series_val_1'] = self.configs['subset_params']
         agg_stat_configs['series_val_2'] = []
 
         msg = "Calculating CI for "+ self.configs['linetype'] +" with agg_stat"
         safe_log(self.logger, self.log_level, msg)
         AGG_STAT = AggStat(agg_stat_configs)
         AGG_STAT.calculate_stats_and_ci()
+        self.agg_stat_outfile =  agg_stat_configs['agg_stat_output']
         safe_log(self.logger, self.log_level, "Finished calculating CI with agg_stat")
 
+        return pd.read_csv(self.agg_stat_outfile, sep='\\s+')
 
 
-    def get_scorecard_stats(self) -> pd.DataFrame:
+    def get_scorecard_stats(self, input_df:pd.DataFrame) -> pd.DataFrame:
         """
               Invoke the METcalcpy scorecard module to calculate the p-values.
 
 
 
               Args:
-
+                  input_df (pd.DataFrame): The dataframe containing the reformated,
+                  filtered, and aggregated (if applicable) data.
               Returns:
                  a dataframe that will be used to generate the
                  scorecard plot.
@@ -574,7 +657,11 @@ class ScorecardPlot():
             # remove the fcst_init_beg
             params['scorecard_input'] = self.subsetted_filename
         else:
-            params['scorecard_input'] = self.aggstat_filename
+            # params['scorecard_input'] = self.aggstat_filename
+            print("METcalcpy agg_stat necessary")
+            aggstat_filename = os.path.join(os.getcwd(), self.aggstat_filename)
+            # aggstat_filename = input_df.to_csv(os.path.join(os.getcwd(), self.aggstat_filename))
+            params['scorecard_input'] = aggstat_filename
 
         params['scorecard_output'] = self.scorecard_stats_output_filename
         params['series_val'] = self.scorecard_stats_series_val
@@ -583,6 +670,7 @@ class ScorecardPlot():
         params['stats_list'] = self.scorecard_stats_statslist
 
         calcpy_sc = scorecard.Scorecard(params)
+        calcpy_sc.input_data= input_df
         calcpy_sc.calculate_scorecard_data()
 
 
@@ -758,15 +846,15 @@ class ScorecardPlot():
                              ),
             ColumnDefinition(name=" Level",
                              textprops={"ha": "center"},
-                             width=1.5,
+                             width=3.5,
                              ),
             ColumnDefinition(name=" HmS",
                              textprops={"ha": "center"},
-                             width=1.5,
+                             width=3.5,
                              ),
             ColumnDefinition(name="category",
                              textprops={"ha": "right"},
-                             width=1.5, plot_fn=image
+                             width=3.5, plot_fn=image
                              ),
         ]
 
@@ -778,8 +866,8 @@ class ScorecardPlot():
             ax=ax,
             textprops={"fontsize": 12},
             row_divider_kw={"linewidth": 5, "linestyle": (0, (1, 5))},
-            col_label_divider_kw={"linewidth": 2, "linestyle": "-"},
-            column_border_kw={"linewidth": 11, "linestyle": "-"},
+            # col_label_divider_kw={"linewidth": 2, "linestyle": "-"},
+            # column_border_kw={"linewidth": 11, "linestyle": "-"},
 
         )
 
@@ -793,14 +881,14 @@ class ScorecardPlot():
         # Adding the subtitle at the top in gray
         print("adding subtitle")
         subtitle_text = "\n for HRRR and RRFS \n20230701 00:0000 \n 20230704 00:00:00 \n  "
-        subtitle_props = {'fontsize': 8, 'va': 'center', 'ha': 'center', 'color': 'gray'}
-        # plt.rcParams['axes.titley'] = 1.0    # y is in axes-relative coordinates.
-        # plt.rcParams['axes.titlepad'] = -14  # pad is in points...
-        plt.text(0.5, 0.8, subtitle_text, transform=fig.transFigure, **subtitle_props)
+        # subtitle_props = {'fontsize': 8, 'va': 'center', 'ha': 'center', 'color': 'gray'}
+        plt.rcParams['axes.titley'] = 1.0    # y is in axes-relative coordinates.
+        plt.rcParams['axes.titlepad'] = -14  # pad is in points...
+        # plt.text(0.5, 0.8, subtitle_text, transform=fig.transFigure, **subtitle_props)
 
         print("saving plot")
         plt.savefig("/Users/minnawin/Python_Scorecard_Dev/output/scorecard_plot.png")
-        plt.show()
+        # plt.show()
 
 
 def main(config_filename=None):
@@ -820,31 +908,33 @@ def main(config_filename=None):
     #
     #  Reformat the MET .stat file(s)
     #
-    sc.reformat_met_stat()
+    reformatted_df =  sc.reformat_met_stat()
+
+    #
+    # Explicitly set the dtype for each column using the MET json file
+    #
+    # dtype_df = sc.set_dtypes(reformatted_df)
     #
     #  Filter the data based on settings in the YAML config file
     #
-    sc.subset_data(sc.reformat_params['output_filename'])
-
+    subset_df = sc.subset_data(reformatted_df)
     #
     # Calculate the aggregation statistics via METcalcpy agg_stat.py
     # module if needed
     if confs['has_confidence_stats']:
         print(f"Skip running agg_stat.py {sc.linetype} already has CI's calculated  ")
+        aggregated_df = subset_df.copy()
+        sc.aggstat_filename = sc.subsetted_filename
     else:
         print(f" Invoke  METcalcpy agg_stat.py to calculate the CI's for {sc.linetype} ")
-        sc.calculate_agg_stats()
-        sys.exit()
-
-
+        aggregated_df = sc.calculate_agg_stats(subset_df)
     #
     # Get the p-values and scorecard categories
     #
 
     # input is dependent on whether agg_stat.py was used to calculate the CI's
     # CNT line type already has CI's
-
-    _: pd.DataFrame = sc.get_scorecard_stats()
+    _: pd.DataFrame = sc.get_scorecard_stats(aggregated_df)
 
     # Categorize the p-values
     # Open the scorecard output from METcalcpy scorecard.py and
@@ -855,7 +945,7 @@ def main(config_filename=None):
 
     # Generate the scorecard as a table using plottable
     sc.generate_table(cat_df)
-
+    print("Finished")
 
 if __name__ == "__main__":
     # print("Scorecard plotting")
