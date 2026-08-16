@@ -1,0 +1,3 @@
+[submodule "metplotpy/external/plottable"]
+	path = metplotpy/external/plottable
+	url = https://github.com/znstrider/plottable/
