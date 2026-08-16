@@ -468,6 +468,7 @@ class ScorecardPlot():
         result: pd.DataFrame = working_df.query(full_query)
 
         result.to_csv(self.subsetted_filename, header=True, index_label=False, index=False)
+
         return result
 
 
@@ -620,6 +621,7 @@ class ScorecardPlot():
         safe_log(self.logger, self.log_level, "Finished calculating CI with agg_stat")
 
         return pd.read_csv(self.agg_stat_outfile, sep='\\s+', index_col=False)
+
 
 
     def get_scorecard_stats(self, input_df:pd.DataFrame) -> pd.DataFrame:
@@ -867,8 +869,8 @@ class ScorecardPlot():
             ax=ax,
             textprops={"fontsize": 12},
             row_divider_kw={"linewidth": 5, "linestyle": (0, (1, 5))},
-            col_label_divider_kw={"linewidth": 2, "linestyle": "-"},
-            column_border_kw={"linewidth": 11, "linestyle": "-"},
+            # col_label_divider_kw={"linewidth": 2, "linestyle": "-"},
+            # column_border_kw={"linewidth": 11, "linestyle": "-"},
 
         )
 
@@ -882,11 +884,12 @@ class ScorecardPlot():
         # Adding the subtitle at the top in gray
         print("adding subtitle")
         subtitle_text = "\n for HRRR and RRFS \n20230701 00:0000 \n 20230704 00:00:00 \n  "
-        subtitle_props = {'fontsize': 8, 'va': 'center', 'ha': 'center', 'color': 'gray'}
+
+        # subtitle_props = {'fontsize': 8, 'va': 'center', 'ha': 'center', 'color': 'gray'}
         plt.rcParams['axes.titley'] = 1.0    # y is in axes-relative coordinates.
         plt.rcParams['axes.titlepad'] = -14  # pad is in points...
-        plt.text(0.5, 0.8, subtitle_text, transform=fig.transFigure, **subtitle_props)
-        plt.legend(bbox_to_anchor=(1.05, 1), loc='lower left', borderaxespad=0.)
+        # plt.text(0.5, 0.8, subtitle_text, transform=fig.transFigure, **subtitle_props)
+
         print("saving plot")
         plt.savefig("/Users/minnawin/Python_Scorecard_Dev/output/scorecard_plot.png")
         # plt.show()
