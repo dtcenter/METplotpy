@@ -92,8 +92,7 @@ class ScorecardPlot():
         #
         self.append_sc_runs: bool = configs['append_subsequent']
 
-        # self.derived_series: list = configs['derived_series']
-        self.derived_series: list[list] = self.create_derived_series()
+        self.derived_series_1: list[list] = self.create_derived_series()
         agg_fname = self.linetype.upper() + "_aggregated.data"
         self.aggstat_filename = os.path.join(self.output_dir, agg_fname)
 
@@ -642,13 +641,14 @@ class ScorecardPlot():
         # Create the params expected by METcalcpy scorecard.py
         params = {}
         params['append_subsequent'] = self.append_sc_runs
-        params['derived_series'] = self.derived_series
+        params['derived_series_1'] = self.derived_series_1
         params['ndays'] = self.sample_size
         params['pval_method'] = self.pval_method
         params['log_dir'] = self.log_dir
         params['log_filename'] = self.log_filename
         params['log_level'] = self.log_level
         params['scorecard_output'] = self.scorecard_stats_output_filename
+        params['list_stat_1'] = self.scorecard_stats_statslist
 
         # ToDo put logic for whether agg stat was needed and use that output file
         # as input (CNT linetype does not require agg_stat.py, there are other linetypes
@@ -656,19 +656,20 @@ class ScorecardPlot():
         if self.linetype == 'CNT':
             # use the reformatted output for scorecard stats input
             # remove the fcst_init_beg
-            params['scorecard_input'] = self.subsetted_filename
+            params['sum_stat_input'] = self.subsetted_filename
         else:
             # params['scorecard_input'] = self.aggstat_filename
             print("METcalcpy agg_stat necessary")
             aggstat_filename = os.path.join(os.getcwd(), self.aggstat_filename)
             # aggstat_filename = input_df.to_csv(os.path.join(os.getcwd(), self.aggstat_filename))
-            params['scorecard_input'] = aggstat_filename
+            params['sum_stat_input'] = aggstat_filename
 
-        params['scorecard_output'] = self.scorecard_stats_output_filename
-        params['series_val'] = self.scorecard_stats_series_val
+        params['sum_stat_output'] = self.scorecard_stats_output_filename
+        params['series_val_1'] = self.scorecard_stats_series_val
         params['indy_var'] = self.scorecard_stats_indy_var
         params['indy_vals'] = self.scorecard_stats_indy_vals
         params['stats_list'] = self.scorecard_stats_statslist
+        params['stat_flag'] = self.pval_method
 
         calcpy_sc = scorecard.Scorecard(params)
         calcpy_sc.input_data= input_df
@@ -883,7 +884,8 @@ class ScorecardPlot():
 
         # Adding the subtitle at the top in gray
         print("adding subtitle")
-        subtitle_text = "\n for HRRR and RRFS \n20230701 00:0000 \n 20230704 00:00:00 \n  "
+        subtitle_text = f"{self.subset_params['model'][0]} self.subset_params['model'][1] \n  {self.ymd_start} to {self.ymd_end} "
+
 
         # subtitle_props = {'fontsize': 8, 'va': 'center', 'ha': 'center', 'color': 'gray'}
         plt.rcParams['axes.titley'] = 1.0    # y is in axes-relative coordinates.
