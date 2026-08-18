@@ -378,10 +378,7 @@ class ScorecardPlot():
 
         """
         safe_log(self.logger, 'debug', 'Filter data based on subset_params in the config file.')
-        # working_df = pd.read_csv(df_filename, engine='python', index_col=False)
         working_df = subset_df.copy()
-        # working_df.to_csv(os.path.join(self.output_dir, "working.txt"), header=True, index_label=None, sep=',',
-        #                   index=False, date_format="%Y-%m-%d %H:%M:%S")
 
         # Exit if there are any requested columns that don't exist in the data
         self.check_for_invalid_columns(working_df)
@@ -466,7 +463,7 @@ class ScorecardPlot():
 
         result: pd.DataFrame = working_df.query(full_query)
 
-        result.to_csv(self.subsetted_filename, header=True, index_label=False, index=False)
+        result.to_csv(self.subsetted_filename, header=True, index_label=False, index=False, sep='\t')
 
         return result
 
@@ -619,7 +616,7 @@ class ScorecardPlot():
         self.agg_stat_outfile =  agg_stat_configs['agg_stat_output']
         safe_log(self.logger, self.log_level, "Finished calculating CI with agg_stat")
 
-        return pd.read_csv(self.agg_stat_outfile, sep='\\s+', index_col=False)
+        return pd.read_csv(self.agg_stat_outfile, sep='\t', index_col=False)
 
 
 
@@ -658,10 +655,8 @@ class ScorecardPlot():
             # remove the fcst_init_beg
             params['sum_stat_input'] = self.subsetted_filename
         else:
-            # params['scorecard_input'] = self.aggstat_filename
             print("METcalcpy agg_stat necessary")
             aggstat_filename = os.path.join(os.getcwd(), self.aggstat_filename)
-            # aggstat_filename = input_df.to_csv(os.path.join(os.getcwd(), self.aggstat_filename))
             params['sum_stat_input'] = aggstat_filename
 
         params['sum_stat_output'] = self.scorecard_stats_output_filename
@@ -672,7 +667,7 @@ class ScorecardPlot():
         params['stat_flag'] = self.pval_method
 
         calcpy_sc = scorecard.Scorecard(params)
-        calcpy_sc.input_data= input_df
+        # calcpy_sc.input_data= input_df
         calcpy_sc.calculate_scorecard_data()
 
 
@@ -827,7 +822,8 @@ class ScorecardPlot():
         # Keep only relevant portions of the input dataframe
         columns_to_keep = ['fcst_lead', 'fcst_lev', 'fcst_var', 'stat_name', 'stat_value', 'category']
         scdf = categorized_df[columns_to_keep]
-        scdf.set_index('fcst_lead')
+        # DEBUG
+        scdf.set_index(columns_to_keep)
 
         # Rename the columns
         s = scdf.rename(columns={"fcst_var": "Variable", 'fcst_lev': 'Level', 'stat_name': 'Stat', 'fcst_lead': 'HmS',
@@ -835,9 +831,10 @@ class ScorecardPlot():
 
         # Substitute the category text with images
         scdf['category'] = scdf['category'].map(self.ci_map)
+        scdf.set_index('fcst_lead')
         scdf_img = scdf.copy(deep=False)
         scdf_img.set_index('fcst_lead')
-        print(f"scdf with images: {scdf_img}")
+
         # Plottable column definitions
         coldefs = [
             ColumnDefinition(name="Stat",
@@ -854,24 +851,24 @@ class ScorecardPlot():
                              ),
             ColumnDefinition(name=" HmS",
                              textprops={"ha": "center"},
-                             width=3.5,
+                             width=2.5,
                              ),
             ColumnDefinition(name="category",
-                             textprops={"ha": "right"},
-                             width=3.5, plot_fn=image
+                             textprops={"ha": "center"},
+                             width=1.5, plot_fn=image
                              ),
         ]
 
-        fig, ax = plt.subplots(figsize=(8, 7))
+        fig, ax = plt.subplots(figsize=(11, 11))
         print("creating table")
         table = Table(
             scdf_img,
             column_definitions=coldefs,
             ax=ax,
-            textprops={"fontsize": 12},
-            row_divider_kw={"linewidth": 5, "linestyle": (0, (1, 5))},
-            # col_label_divider_kw={"linewidth": 2, "linestyle": "-"},
-            # column_border_kw={"linewidth": 11, "linestyle": "-"},
+            textprops={"fontsize": 7},
+            row_divider_kw={"linewidth": .5, "linestyle": (0, (1, 5))},
+            col_label_divider_kw={"linewidth": 2, "linestyle": "-"},
+            column_border_kw={"linewidth": 11, "linestyle": "-"},
 
         )
 
@@ -884,17 +881,16 @@ class ScorecardPlot():
 
         # Adding the subtitle at the top in gray
         print("adding subtitle")
-        subtitle_text = f"{self.subset_params['model'][0]} self.subset_params['model'][1] \n  {self.ymd_start} to {self.ymd_end} "
+        subtitle_text = f"{self.subset_params['model'][0]} vs {self.subset_params['model'][1]} \n  {self.ymd_start} to {self.ymd_end} "
 
 
-        # subtitle_props = {'fontsize': 8, 'va': 'center', 'ha': 'center', 'color': 'gray'}
+        subtitle_props = {'fontsize': 7, 'va': 'center', 'ha': 'center', 'color': 'gray'}
         plt.rcParams['axes.titley'] = 1.0    # y is in axes-relative coordinates.
         plt.rcParams['axes.titlepad'] = -14  # pad is in points...
-        # plt.text(0.5, 0.8, subtitle_text, transform=fig.transFigure, **subtitle_props)
+        plt.text(0.5, 0.8, subtitle_text, transform=fig.transFigure, **subtitle_props)
 
         print("saving plot")
         plt.savefig("/Users/minnawin/Python_Scorecard_Dev/output/scorecard_plot.png")
-        # plt.show()
 
 
 def main(config_filename=None):
@@ -947,9 +943,10 @@ def main(config_filename=None):
     # assign the categories (based on the categories used in METviewer)
     if sc.pval_method == 'NCAR':
         cat_df: pd.DataFrame = sc.categorize_scorecard_results()
-        cat_df.to_csv("/Users/minnawin/Python_Scorecard_Dev/output/categorized.txt", index=False, header=True)
+        cat_df.to_csv("/Users/minnawin/Python_Scorecard_Dev/output/categorized.txt", index=False, header=True, sep="\t")
 
     # Generate the scorecard as a table using plottable
+    cat_df.drop('Idx', axis=1)
     sc.generate_table(cat_df)
     print("Finished")
 
