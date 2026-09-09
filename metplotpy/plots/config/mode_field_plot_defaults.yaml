@@ -1,0 +1,82 @@
+# Configuration file for generating the mode field plot
+
+# Reads MODE netCDF files and generates a plot for each file in the directory
+input_dir: /path/to/mode_ncdata
+
+# plot specific file
+mode_obj_file: ' '
+
+output_dir: ' '
+output_filename: ' '
+
+# Logging level: DEBUG, INFO, WARN, ERROR
+log_level: WARN
+log_filename: 'stdout'
+
+# Field to plot: objects or raw
+field_to_plot: objects
+
+# Title for each panel
+title: 'Your Title goes here'
+
+# Super title (title at the very top)
+super_title: 'Your super-title goes here'
+super_title_font_size: 12
+
+# Download via Natural Earth downloader
+# *Note* Requires internet access to the
+# naturalearthdata.com/S3 mirror
+# If False, use the provided Natural Earth shapefile
+download_natural_earth_shapefile: False
+
+# Plot settings
+plot_height: 8.5
+plot_width: 11.0
+
+# padding around the bbox,
+# omit/comment this setting to use default value of 5.0 degrees
+bbox_padding_degrees: 5.0
+
+# resolution in dpi,  omit/comment this setting to use the default value of 200
+#dots-per-inch
+resolution_dpi: 200
+
+# object id labels, omit/comment this setting to use default value of True
+show_obj_id_labels: True
+
+# vertical spacing between panels, omit/comment this setting to use
+# default value of 0.06
+vert_spacing: 0.06
+
+# colormap, omit/comment this setting to use default value of "turbo"
+colormap: turbo
+
+# colorbar max for field, omit/comment this setting to use default of 99th
+# percentile
+colorbar_max: 99.0
+
+colorbar_label: 'colorbar label goes here'
+colorbar_label_fontsize: 9
+
+# for plotting raw field
+# data range that the colormap covers
+vmin: 0.0
+vmax:
+# used to compute vmax if it is None
+vmax_pctile: 99.0
+
+# title spacing between panels
+title_space: 0.45
+
+# for positioning the super title
+top_bottom_margin: 0.35
+
+
+
+
+
+
+
+
+
+
