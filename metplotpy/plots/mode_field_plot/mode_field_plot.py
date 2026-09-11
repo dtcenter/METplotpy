@@ -11,17 +11,15 @@ Class Name: ModeFieldPlot
  """
 __author__ = 'Minna Win'
 
-
-import glob
 import os
 import sys
 from datetime import datetime
-import argparse
 import yaml
 
 import numpy as np
 import netCDF4 as nc
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patheffects  # noqa: F401  (used inside add_object_labels)
@@ -29,13 +27,9 @@ from matplotlib.colors import ListedColormap, BoundaryNorm
 import cartopy.crs as ccrs
 import cartopy.io.shapereader as shpreader
 from cartopy.feature import ShapelyFeature
-import metcalcpy.util.read_env_vars_in_config as readconfig
-from metplotpy.plots.base_plot import BasePlot
 from metplotpy.plots.mode_field_plot.mode_field_plot_config import ModeFieldPlotConfig
 from metplotpy.plots import util
-from metplotpy.plots.mode_field_plot import mode_field_util
 from metplotpy.plots.util import get_common_logger as logging
-
 
 
 class ModeFieldPlot:
@@ -49,7 +43,8 @@ class ModeFieldPlot:
 
     """
 
-    def __init__(self,  params:dict) -> None:
+
+    def __init__(self, params: dict) -> None:
         default_conf_filename = "mode_field_plot_defaults.yaml"
 
         # Determine location of the default YAML config files and then
@@ -57,7 +52,7 @@ class ModeFieldPlot:
         if 'METPLOTPY_BASE' in os.environ:
             location = os.path.join(os.environ['METPLOTPY_BASE'], 'metplotpy/plots/config')
         else:
-            location = os.path.abspath(os.path.join(os.path.dirname(__file__),'..', 'config'))
+            location = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'config'))
 
         with open(os.path.join(location, default_conf_filename), 'r') as stream:
             try:
@@ -87,7 +82,7 @@ class ModeFieldPlot:
             # use existing shapefile
             srcdir = os.path.dirname(__file__)
             parent = os.path.join(srcdir, "shapefile")
-            local_shapefile = os.path.join(parent,  "ne_50m_coastline.shp")
+            local_shapefile = os.path.join(parent, "ne_50m_coastline.shp")
             reader = shpreader.Reader(local_shapefile)
 
         geoms = list(reader.geometries())
@@ -110,7 +105,7 @@ class ModeFieldPlot:
         out_path = self.config_obj.output_filename
         pad = self.config_obj.padding
         dpi = int(self.config_obj.resolution_dpi)
-        label_objects:bool = self.config_obj.labels_on
+        label_objects: bool = self.config_obj.labels_on
         fig_width = self.config_obj.plot_width
         hspace = self.config_obj.vert_spacing
         super_title_text = self.config_obj.super_title_text
@@ -123,14 +118,14 @@ class ModeFieldPlot:
 
         d = self.load_mode_obj(nc_path)
 
-        lon, (fcst_id, fcst_clus, obs_id, obs_clus, fcst_raw, obs_raw) = mode_field_util.roll_to_pm180(
+        lon, (fcst_id, fcst_clus, obs_id, obs_clus, fcst_raw, obs_raw) = self.roll_to_pm180(
             d["lon"], d["fcst_obj_id"], d["fcst_clus_id"], d["obs_obj_id"],
             d["obs_clus_id"], d["fcst_raw"], d["obs_raw"],
         )
 
         lat = d["lat"]
 
-        extent = mode_field_util.get_extent(lat, lon, fcst_id, obs_id, pad=pad)
+        extent = self.get_extent(lat, lon, fcst_id, obs_id, pad=pad)
 
         ids, color_map = self.build_cluster_cmap([fcst_clus, obs_clus])
         fcst_rgba = self.build_rgba(fcst_id, fcst_clus, color_map)
@@ -154,7 +149,8 @@ class ModeFieldPlot:
             2, 1, figsize=(fig_width, fig_height), subplot_kw={"projection": proj},
         )
 
-        fig.subplots_adjust(hspace=hspace, top=subplot_top, bottom=subplot_bottom, left=subplot_left, right=subplot_right)
+        fig.subplots_adjust(hspace=hspace, top=subplot_top, bottom=subplot_bottom, left=subplot_left,
+                            right=subplot_right)
         fcst_init_str = util.parse_met_time(d["fcst_init_time"])
         fcst_valid_str = util.parse_met_time(d["fcst_valid_time"])
         obs_valid_str = util.parse_met_time(d["obs_valid_time"])
@@ -194,15 +190,13 @@ class ModeFieldPlot:
             ax.set_title(title, fontsize=11, fontweight="bold")
 
         if label_objects:
-
             self.add_object_labels(axes[0], fcst_id, lat, lon, proj)
             self.add_object_labels(axes[1], obs_id, lat, lon, proj)
 
         fig.suptitle(
             super_title_text,
-            fontsize= super_title_fontsize,
+            fontsize=super_title_fontsize,
         )
-
 
         fig.savefig(out_path, dpi=dpi, bbox_inches="tight")
         plt.tight_layout()
@@ -223,19 +217,19 @@ class ModeFieldPlot:
         super_title_text = self.config_obj.super_title_text
         super_title_fontsize = self.config_obj.super_title_font_size
         cmap_name = self.config_obj.cmap
-        vmin =  self.config_obj.vmin
+        vmin = self.config_obj.vmin
         vmax = self.config_obj.vmax
 
         d = self.load_mode_obj(nc_path)
 
-        lon, (fcst_id, obs_id, fcst_raw, obs_raw) = mode_field_util.roll_to_pm180(
+        lon, (fcst_id, obs_id, fcst_raw, obs_raw) = self.roll_to_pm180(
             d["lon"], d["fcst_obj_id"], d["obs_obj_id"], d["fcst_raw"], d["obs_raw"],
         )
         lat = d["lat"]
 
         # Reuse the same object-derived bounding box so the raw-field plot lines
         # up with the object plot at the same zoom level.
-        extent = mode_field_util.get_extent(lat, lon, fcst_id, obs_id, pad=pad)
+        extent = self.get_extent(lat, lon, fcst_id, obs_id, pad=pad)
 
         fcst_plot = np.ma.masked_less(np.ma.masked_invalid(fcst_raw), 0)
         obs_plot = np.ma.masked_less(np.ma.masked_invalid(obs_raw), 0)
@@ -305,14 +299,14 @@ class ModeFieldPlot:
             ax.set_title(title, fontsize=11, fontweight="bold")
 
         cbar = fig.colorbar(im, ax=axes, shrink=0.75, pad=0.02, extend="max")
-        if len( self.config_obj.colorbar_label) == 0:
+        if len(self.config_obj.colorbar_label) == 0:
             cbar.set_label(f"{d['fcst_var']} ({d['fcst_units']})", fontsize=self.config_obj.colorbar_label_fontsize)
         else:
             cbar.set_label(self.config_obj.colorbar_label, fontsize=self.config_obj.colorbar_label_fontsize)
 
         fig.suptitle(super_title_text,
-            fontsize=super_title_fontsize
-        )
+                     fontsize=super_title_fontsize
+                     )
 
         fig.savefig(out_path, dpi=dpi, bbox_inches="tight")
         print(f"Wrote {out_path}")
@@ -347,7 +341,7 @@ class ModeFieldPlot:
                 transform=proj, fontsize=fontsize, fontweight="bold",
                 ha="center", va="center", color="black",
                 path_effects=[
-                    matplotlib.patheffects.withStroke(linewidth=2, foreground="white")
+                    matplotlib.patheffects.withStroke(linewidth=2, foreground="white"),
                 ],
             )
 
@@ -418,19 +412,44 @@ class ModeFieldPlot:
         return rgba
 
 
+    def roll_to_pm180(self, lon, *fields):
+        """Roll a 0-360 lon axis (and matching 2D fields) to -180..180."""
+        lon = np.asarray(lon)
+        lon_adj = np.where(lon > 180, lon - 360, lon)
+        order = np.argsort(lon_adj)
+        lon_out = lon_adj[order]
+        fields_out = [f[:, order] for f in fields]
+        return lon_out, fields_out
+
+
+    def get_extent(self, lat, lon, *id_fields, pad=5.0):
+        """Bounding box (lon-lat) covering all non-missing object pixels, padded."""
+        mask = np.zeros(id_fields[0].shape, dtype=bool)
+        for f in id_fields:
+            mask |= ~np.ma.getmaskarray(f)
+        rows = np.where(mask.any(axis=1))[0]
+        cols = np.where(mask.any(axis=0))[0]
+        lat_min, lat_max = lat[rows.min()], lat[rows.max()]
+        lon_min, lon_max = lon[cols.min()], lon[cols.max()]
+        return [
+            max(lon_min - pad, -180),
+            min(lon_max + pad, 180),
+            max(lat_min - pad, -90),
+            min(lat_max + pad, 90),
+        ]
+
+
 def main(config_filename=None):
+    # Read in the YAML configuration file.  Environment variables in
+    # the configuration file are supported.
+    settings = util.get_params(config_filename)
 
-        # Read in the YAML configuration file.  Environment variables in
-        # the configuration file are supported.
-        settings = util.get_params(config_filename)
-
-        mfp = ModeFieldPlot(settings)
-        if mfp.config_obj.field_to_plot == "raw":
-            mfp.plot_mode_raw()
-        else:
-            mfp.plot_mode_objects()
+    mfp = ModeFieldPlot(settings)
+    if mfp.config_obj.field_to_plot == "raw":
+        mfp.plot_mode_raw()
+    else:
+        mfp.plot_mode_objects()
 
 
 if __name__ == "__main__":
-       main()
-
+    main()
