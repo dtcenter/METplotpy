@@ -69,7 +69,7 @@ of interest (i.e. marker colors, marker styles, trendline styles, etc.).
 
 **Default configuration file:**
 
-.. dropdown:: mode_field_plot_defaults.yaml
+.. dropdown:: mode_field_plot_defaults.yaml (click to expand)
 
     .. literalinclude:: ../../metplotpy/plots/config/mode_field_plot_defaults.yaml
 
@@ -92,11 +92,11 @@ used to customize the settings to the mode field plot. The **test_mode_field_plo
 
 
 
-.. dropdown:: **Example config to plot MODE objects fields**
+.. dropdown:: **Example config to plot MODE objects fields** (click to expand)
 
    .. literalinclude:: ../../test/mode_field_plot/test_mode_field_plot_objects.yaml
 
-.. dropdown::  **Example config to plot MODE raw field**
+.. dropdown::  **Example config to plot MODE raw field** (click to expand)
 
   .. literalinclude:: ../../test/mode_field_plot/test_mode_field_plot_raw.yaml
 
