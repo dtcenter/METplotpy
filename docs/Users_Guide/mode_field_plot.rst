@@ -302,8 +302,6 @@ To generate the above plot using the **mode_field_plot_defaults.yaml** and
 * An **apcp_example_mode_objects.png** MODE objects plot file will be created in the directory specified in the *plot_filename* configuration setting in the **custom_mode_field_obj_plot.yaml** config file.
 
 
-  .. image:: figure/apcp_example_mode_objects.png
-
 
 **MODE field raw plot**
 
