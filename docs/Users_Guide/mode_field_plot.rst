@@ -310,8 +310,7 @@ To generate the above plot using the **mode_field_plot_defaults.yaml** and
 The **custom_mode_field_raw_plot.yaml** configuration file, in combination with the
 **mode_field_plot_defaults.yaml** configuration file, generates a figure of the MODE raw field.
 
-The MODE raw figure has two stacked plots, the upper plot is the first model
-and the lower plot is the second model in the raw data:
+The MODE raw figure has two stacked plots for the raw field.
 
 .. image:: figure/apcp_example_mode_raw.png
 
@@ -350,6 +349,4 @@ To generate the above plot using the **mode_field_plot_defaults.yaml** and
 
 * An **apcp_example_mode_raw.png** MODE objects plot file will be created in the directory specified in the *plot_filename* configuration setting in the **custom_mode_field_raw_plot.yaml** config file.
 
-
-  .. image:: figure/apcp_example_mode_raw.png
 
