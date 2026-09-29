@@ -5,16 +5,16 @@
 #
 
 # Reads MODE netCDF files and generates a plot for the specified file
-mode_obj_file: 'your-full-path-to/sample-data/mode_KWBC_APCP_24_vs_IMERG_APCP_24_960000L_20240207_000000V_240000A_R1_T2_obj.nc'
+mode_obj_file: '/Users/minnawin/MODE_test_data/data/KWBC_v_IMERG/2024020300/mode_KWBC_APCP_24_vs_IMERG_APCP_24_960000L_20240207_000000V_240000A_R1_T2_obj.nc'
 
-output_dir: 'your-path-to-output'
+output_dir: '/Users/minnawin/feature_560_mode_field_plot/METplotpy/metplotpy/plots/mode_field_plot'
 output_filename: 'dev_mode_raw.png'
 
 # Logging level: DEBUG, INFO, WARN, ERROR
 log_level: DEBUG
 
 # Log file, include full path
-log_filename: 'your-log-dir/raw_log.txt'
+log_filename: '/Users/minnawin/feature_560_mode_field_plot/METplotpy/metplotpy/plots/mode_field_plot/raw_log.txt'
 
 # Field to plot: objects or raw
 field_to_plot: raw
@@ -33,11 +33,7 @@ download_natural_earth_shapefile: False
 #
 # Plotting specific settings
 # To specify custom values, uncomment setting name
-# and add your value, otherwise leave commented to
-# use default values in the mode_field_plot_defaults.yaml
-# config file under metplotpy/plots/mode_field_plot/config
-#
-
+# and add your value
 #plot_width: 11
 #plot_height: 8
 
@@ -54,7 +50,7 @@ show_obj_id_labels: True
 #vert_spacing: 0.06
 
 # colormap
-colormap_name: rainbow
+colormap_name: turbo
 
 # colorbar max for field, omit/comment this setting to use default of 99th
 # percentile

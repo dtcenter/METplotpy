@@ -16,9 +16,6 @@ log_filename: 'stdout'
 # Field to plot: objects or raw
 field_to_plot: objects
 
-# Title for each panel
-title: 'Your Title goes here'
-
 # Super title (title at the very top)
 super_title: 'Your super-title goes here'
 super_title_font_size: 12
@@ -30,7 +27,7 @@ super_title_font_size: 12
 download_natural_earth_shapefile: False
 
 # Plot settings
-plot_height: 8.5
+plot_height: 8
 plot_width: 11.0
 
 # padding around the bbox,
@@ -49,7 +46,7 @@ show_obj_id_labels: True
 vert_spacing: 0.06
 
 # colormap, omit/comment this setting to use default value of "turbo"
-colormap: turbo
+colormap_name: turbo
 
 # colorbar max for field, omit/comment this setting to use default of 99th
 # percentile
@@ -61,8 +58,9 @@ colorbar_label_fontsize: 9
 # for plotting raw field
 # data range that the colormap covers
 vmin: 0.0
-vmax:
-# used to compute vmax if it is None
+# vmax is None by default (i.e. not specified)
+
+# used to compute vmax if it vmax is not specified
 vmax_pctile: 99.0
 
 # title spacing between panels
