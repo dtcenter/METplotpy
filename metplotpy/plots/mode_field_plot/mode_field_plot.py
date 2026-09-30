@@ -9,7 +9,7 @@
 """
 Class Name: ModeFieldPlot
  """
-__author__ = 'Minna Win'
+__author__ = 'Michelle Harrold, Minna Win'
 
 import os
 import sys
@@ -44,7 +44,7 @@ class ModeFieldPlot:
     """
 
 
-    def __init__(self, params: dict) -> None:
+    def __init__(self, params: str) -> None:
         default_conf_filename = "mode_field_plot_defaults.yaml"
 
         # Determine location of the default YAML config files and then
@@ -54,15 +54,13 @@ class ModeFieldPlot:
         else:
             location = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'config'))
 
-        with open(os.path.join(location, default_conf_filename), 'r') as stream:
-            try:
-                defaults = yaml.load(stream, Loader=yaml.FullLoader)
-            except yaml.YAMLError as exc:
-                print(exc)
+        defaults = util.parse_config(os.path.join(location, default_conf_filename))
 
         # merge user defined parameters into defaults
+        params_dict = util.parse_config(params)
         if params:
-            self.settings = {**defaults, **params}
+
+            self.settings = {**defaults, **params_dict}
         else:
             self.settings = defaults
 
