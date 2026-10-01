@@ -39,6 +39,7 @@ def test_compare_figures(module_setup_env, remove_files, input_yaml, generated_f
 
    for cur_file in generated_files:
       plot_file = os.path.join(test_outputdir, cur_file)
+      tolerance:int = int(1)
       if mfp.config_obj.field_to_plot == "raw":
           mfp.plot_mode_raw()
           assert os.path.exists(plot_file)
@@ -46,11 +47,11 @@ def test_compare_figures(module_setup_env, remove_files, input_yaml, generated_f
           # 1 pixel tolerance (color value difference, 255 is max value)
           # None is returned when there are no differences for the specified tolerance
           assert Path.is_file(plot_file)
-          raw_comp_result = matplotlib.testing.compare.compare_images(ref_raw, plot_file, 1,True)
+          raw_comp_result = matplotlib.testing.compare.compare_images(ref_raw, plot_file, tolerance,True)
           assert raw_comp_result is None
       else:
           mfp.plot_mode_objects()
           assert Path.is_file(plot_file)
-          obj_comp_result = matplotlib.testing.compare.compare_images(ref_objects, plot_file, 1, True)
+          obj_comp_result = matplotlib.testing.compare.compare_images(ref_objects, plot_file,  tolerance, True)
           assert obj_comp_result is None
 
