@@ -5,16 +5,16 @@
 #
 
 # Reads MODE netCDF files and generates a plot for the specified file
-mode_obj_file: '/path-to-data/mode_KWBC_APCP_24_vs_IMERG_APCP_24_960000L_20240207_000000V_240000A_R1_T2_obj.nc'
+mode_obj_file: !ENV '${TEST_DIR}/mode_KWBC_APCP_24_vs_IMERG_APCP_24_960000L_20240207_000000V_240000A_R1_T2_obj.nc'
 
-output_dir: '/path-to-output-dir/mode_field_plot'
+output_dir: !ENV '${TEST_OUTPUT}/mode_field_plot'
 output_filename: 'apcp_example_mode_objects.png'
 
 # Logging level: DEBUG, INFO, WARN, ERROR
 log_level: DEBUG
 
 # Log file, include full path
-log_filename: 'path-to-log-directory/objects_log.txt'
+log_filename: !ENV '${TEST_DIR}/objects_log.txt'
 
 # Field to plot: objects or raw
 field_to_plot: objects
