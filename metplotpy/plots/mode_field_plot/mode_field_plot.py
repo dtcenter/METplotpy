@@ -44,7 +44,7 @@ class ModeFieldPlot:
     """
 
 
-    def __init__(self, params: str) -> None:
+    def __init__(self, params: dict) -> None:
         default_conf_filename = "mode_field_plot_defaults.yaml"
 
         # Determine location of the default YAML config files and then
@@ -54,19 +54,20 @@ class ModeFieldPlot:
         else:
             location = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'config'))
 
-        defaults = util.parse_config(os.path.join(location, default_conf_filename))
+        defaults:dict = util.parse_config(os.path.join(location, default_conf_filename))
 
         # merge user defined parameters into defaults
-        params_dict = util.parse_config(params)
         if params:
-
-            self.settings = {**defaults, **params_dict}
+            self.settings = {**defaults, **params}
         else:
             self.settings = defaults
 
         # instantiate the config object
         self.config_obj = ModeFieldPlotConfig(self.settings)
         self.logger = self.config_obj.logger
+
+        # Make the output directory in the event it doesn't already exist
+        os.makedirs(self.settings['output_dir'], exist_ok=True)
 
         # Retrieve the Natural Earth shapefile either
         # online, or use the shapefile in the mode_field_plot
@@ -440,7 +441,7 @@ class ModeFieldPlot:
 def main(config_filename=None):
     # Read in the YAML configuration file.  Environment variables in
     # the configuration file are supported.
-    settings = util.get_params(config_filename)
+    settings:dict = util.get_params(config_filename)
 
     mfp = ModeFieldPlot(settings)
     if mfp.config_obj.field_to_plot == "raw":
