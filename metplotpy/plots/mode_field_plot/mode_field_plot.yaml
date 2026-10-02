@@ -1,0 +1,71 @@
+# Configuration file for generating the mode field plot
+
+# Reads MODE netCDF files and generates a plot for each file in the directory
+input_path: /path/to/mode_ncdata
+
+# plot specific file(s)
+input_files: []
+
+output_dir: ''
+
+output_filename:
+
+log_dir:
+
+# Logging level: DEBUG, INFO, WARN, ERROR
+log_level: DEBUG
+
+# Field to plot: objects or raw
+field: objects
+
+# use full extent of data
+use_full_extent: True
+
+#Map extent, used only if use_full_extent is False
+north_lat: ''
+south_lat: ''
+east_lon: ''
+west_lon: ''
+
+# Title, if empty, create one based on data and plotting criteria
+title: ''
+
+# Sub title
+sub_title: ''
+
+# Fields of interest
+fields: []
+
+# Plot settings
+
+# padding around the bbox,
+# omit/comment this setting to use default value of 5.0 degrees
+padding_degrees: 5.0
+
+# resolution in dpi,  omit/comment this setting to use the default value of 200
+#dots-per-inch
+resolution_dpi: 200
+
+# object id labels, omit/comment this setting to use default value of True
+show_obj_id_labels: True
+
+# vertical spacing between panels, omit/comment this setting to use
+# default value of 0.06
+vert_spacing: 0.06
+
+# colormap, omit/comment this setting to use default value of "turbo"
+colormap: turbo
+
+# colorbar max for field, omit/comment this setting to use default of 99th
+# percentile
+colorbar_max: 99.0
+
+
+
+
+
+
+
+
+
+

@@ -85,6 +85,7 @@ Atmospheric Research (NCAR), sponsored by National Science Foundation.
    hovmoeller
    spacetime
    make_maki_enso
+   mode_field_plot
    mjo_rmm_omi
    taylor_diagram
    tcrmw_cross_section
