@@ -5,7 +5,7 @@ MJO Plots
 Description
 ===========
 
-The **compute_mjo_indices.py** code (found in the METplotpy repository)
+The **compute_mjo_indices.py** code (found in the METcalcpy repository, in metcalcpy/contributed/rmm_omi)
 supports the generation of RMM (Real-time Multivariate MJO),
 OMI (OLR based MJO Index), and phase diagrams from MJO
 (Madden-Julian Oscillation) indices.

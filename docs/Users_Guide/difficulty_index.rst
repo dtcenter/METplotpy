@@ -20,7 +20,7 @@ Naval Research Lab (NRL) and modified by NCAR.
 
 
 For more information on calculating the difficulty index, please refer to this METplus use case:
-`METviewer documentation
+`UserScript_fcstGEFS_Difficulty_Index use case
 <https://metplus.readthedocs.io/en/develop/generated/model_applications/medium_range/UserScript_fcstGEFS_Difficulty_Index.html#sphx-glr-generated-model-applications-medium-range-userscript-fcstgefs-difficulty-index-py>`_.
 
 Example

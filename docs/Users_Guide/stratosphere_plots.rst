@@ -14,7 +14,7 @@ The three METplus use cases illustrate how to use these plotting scripts for `zo
 
 These files are used by the image comparison test:
 
-* **GFS_ERA_ME_2018_02_zonal_mean_T.png**:  Run "plot_zonal_bias" in **stratosphere_plots.py.py**
+* **GFS_ERA_ME_2018_02_zonal_mean_T.png**:  Run "plot_zonal_bias" in **stratosphere_plots.py**
   to create this plot.
 
 * **GFS_ERA_ME_2018_02_zonal_mean_U.png**:  Run "plot_zonal_bias" in **stratosphere_plots.py**
@@ -88,8 +88,8 @@ arrays (except outfile, ptitle, and plevs).
 
 **bias:**  A numpy array containing the bias.
 
-**obar:**  A numpy array of the size wrnum containing the frequency of
-occurrence of each cluster.
+**obar:**  A numpy array containing the observed mean, plotted as
+contour lines over the bias.
 
 **outfile:**  The full path and filename of the output plot
 file, a **.png** version will be written.
