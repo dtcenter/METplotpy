@@ -248,7 +248,7 @@ To generate the above plot using the **line_defaults.yaml** and
 
 
 * A **line.png** output file will be created in the directory specified in
-  the *plot_filename* configuration setting in the **line.yaml** config file.
+  the *plot_filename* configuration setting in the **custom_line.yaml** config file.
 
 
   To generate the **"defaults"** plot below (i.e. using default configuration
@@ -264,7 +264,7 @@ To generate the above plot using the **line_defaults.yaml** and
 
 * A **line_default.png** output file will be created in the
   directory specified in the *plot_filename* configuration setting
-  in the **line_defaults.yaml** config file.
+  in the **minimal_line.yaml** config file.
 
   .. image:: figure/line_default.png
 

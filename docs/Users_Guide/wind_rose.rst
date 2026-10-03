@@ -30,7 +30,7 @@ line type.
 The sample data used to create these plots is available in the METplotpy
 repository, where the wind rose diagram test scripts are located:
 
-*$METPLOTPY_BASE/test/wind rose_diagram/point_stat_mpr.txt*
+*$METPLOTPY_BASE/test/wind_rose/point_stat_mpr.txt*
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
@@ -56,7 +56,7 @@ recursive acronym for "YAML Ain't Markup Language" and according to
 it is a "human-friendly data serialization language". It is commonly used for
 configuration files and in applications where data is being stored or
 transmitted. Two configuration files are required. The first is a
-default configuration file, **wind_rose_diagram_defaults.yaml**,
+default configuration file, **wind_rose_defaults.yaml**,
 which is found in the
 *$METPLOTPY_BASE/metplotpy/plots/config* directory.
 *$METPLOTPY_BASE* indicates the directory where the METplotpy
@@ -84,7 +84,7 @@ configuration file, which serves as a starting point for creating a
 wind rose diagram plot.
 
 **NOTE**: This default configuration file is automatically loaded by
-**wind_rose_diagram.py.**
+**wind_rose.py**.
 
 
 .. literalinclude:: ../../metplotpy/plots/config/wind_rose_defaults.yaml
@@ -110,7 +110,7 @@ code was saved to the working directory:
 
   cp $METPLOTPY_BASE/test/wind_rose/wind_rose_custom.yaml $WORKING_DIR/wind_rose_custom.yaml
 
-Notice that this has many of the same settings found in the wind_rose_default.yaml file. We will simply change
+Notice that this has many of the same settings found in the wind_rose_defaults.yaml file. We will simply change
 the title of the custom plot to customize the plot.  **NOTE**: You do not need to include all the configuration
 settings in your custom configuration file. You only need to include the settings you wish to override.
 
@@ -181,7 +181,7 @@ Using Defaults
 To use the *default* settings defined in the
 **wind_rose_defaults.yaml**
 file, specify a minimal custom configuration file
-(**minimal_wind_rose_defaults.yaml**), which consists of only
+(**minimal_wind_rose.yaml**), which consists of only
 a comment block, but it can be any empty file (write permissions for the
 output filename path corresponding to the *plot_filename* setting in
 the default configuration file will be needed. Otherwise, specify
@@ -282,5 +282,5 @@ perform the following:
 
 * A **wind_rose_custom.png** output file will be created in
   the directory that was specified in the *plot_filename* config setting
-  in the **custom_performance_diagram.yaml** config file.  The title will match what you set in the
-  *title* setting of your custom_performance_diagram.yaml file.
+  in the **wind_rose_custom.yaml** config file.  The title will match what you set in the
+  *title* setting of your wind_rose_custom.yaml file.

@@ -265,4 +265,4 @@ Perform the following to generate the plots:
 
 * A **box_default.png** output file will be created in the
   directory specified in the *plot_filename* configuration setting in
-  the **box_minimal.yaml** config file.
+  the **minimal_box.yaml** config file.

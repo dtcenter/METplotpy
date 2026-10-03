@@ -45,7 +45,7 @@ the FSTDEV, OSTDEV, and PR_CORR statistics are available for plotting.
 The sample data used to create these plots is available in the METplotpy
 repository, where the Taylor diagram scripts are located:
 
-*$METPLOTPY_BASE/test/taylor_diagram/dlwr_sample.data*
+*$METPLOTPY_BASE/test/taylor_diagram/plot_dlwr_sample.data*
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
@@ -131,11 +131,11 @@ code was saved to the working directory:
 Modify the *stat_input* setting in the
 *$METPLOTPY_BASE/test/taylor_diagram/taylor_diagram_custom.yaml*
 file to explicitly point to the
-*$METPLOTPY_BASE/test/taylor_diagram/taylor_diagram*
+*$METPLOTPY_BASE/test/taylor_diagram*
 directory (where the custom config files and sample data reside).
-Replace the relative path *./dlwr_sample.data*
+Replace the relative path *./plot_dlwr_sample.data*
 with the full path
-*$METPLOTPY_BASE/test/taylor_diagram/dlwr_sample.data*
+*$METPLOTPY_BASE/test/taylor_diagram/plot_dlwr_sample.data*
 (including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
 installation on the system).
 Modify the *plot_filename* setting to point to the output path where the
@@ -143,7 +143,7 @@ plot will be saved, including the name of the plot.
 
 For example:
 
-*stat_input: /username/myworkspace/METplotpy/test/taylor_diagram/dlwr_sample.data*
+*stat_input: /username/myworkspace/METplotpy/test/taylor_diagram/plot_dlwr_sample.data*
 
 *plot_filename: /username/working_dir/output_plots/taylor_diagram_custom.png*
 
@@ -173,7 +173,7 @@ Using Defaults
 To use the *default* settings defined in the
 **taylor_diagram_defaults.yaml**
 file, specify a minimal custom configuration file
-(**minimal_taylor_diagram_defaults.yaml**), which consists of only
+(**minimal_taylor_diagram.yaml**), which consists of only
 a comment block, but it can be any empty file (write permissions for the
 output filename path corresponding to the *plot_filename* setting in
 the default configuration file will be needed. Otherwise, specify
@@ -192,11 +192,11 @@ these settings to the *$WORKING_DIR/minimal_taylor_diagram.yaml*
 file (anywhere below the comment block).  The *stat_input* setting
 explicitly indicates where the sample data and custom configuration
 files are located.  Set the *stat_input* to
-*$METPLOTPY_BASE/test/taylor_diagram/dlwr_sample.data* and set the
+*$METPLOTPY_BASE/test/taylor_diagram/plot_dlwr_sample.data* and set the
 *plot_filename* to
 *$WORKING_DIR/output_plots/taylor_diagram_default.png*:
 
-*stat_input: $METPLOTPY_BASE/test/taylor_diagram/dlwr_sample.data*
+*stat_input: $METPLOTPY_BASE/test/taylor_diagram/plot_dlwr_sample.data*
 
 *plot_filename: $WORKING_DIR/output_plots/taylor_diagram_default.png*
 

@@ -122,7 +122,7 @@ This is where */username/myworkspace/METplotpy* is *$METPLOTPY_BASE* and
 read and write permissions.  The path listed for *plot_filename* may
 be changed to the output directory of one's choosing.  If this is not set,
 then the *plot_filename* setting specified in the
-*$METPLOTPY_BASE/metplotpy/plots/config/reliability_diagram_defaults.yaml*
+*$METPLOTPY_BASE/metplotpy/plots/config/reliability_defaults.yaml*
 configuration file will be used.
 
 To save the intermediate **.points1** file (used by METviewer and useful
@@ -158,7 +158,7 @@ If the user wishes to use all the default settings defined in the
 as the user has write permissions for the output filename path
 corresponding to the *plot_filename* setting in the default
 configuration file. Otherwise, this will need to be specified in
-*plot_filename* in the **minimal_box.yaml** file):
+*plot_filename* in the **minimal_reliability.yaml** file):
 
 .. literalinclude:: ../../test/reliability_diagram/minimal_reliability.yaml
 

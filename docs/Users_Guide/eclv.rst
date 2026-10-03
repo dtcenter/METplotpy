@@ -113,7 +113,7 @@ Modify the *stat_input* setting in the
 file to explicitly point to the
 *$METPLOTPY_BASE/test/eclv/*
 directory (where the custom config files and sample data reside).
-Replace the relative path *.eclv.data*
+Replace the relative path *./eclv.data*
 with the full path
 *$METPLOTPY_BASE/test/eclv/eclv.data*
 (including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
@@ -165,7 +165,7 @@ Using Defaults
 --------------
 
 There isn't a set of "default" values to create a meaningful ECLV plot. Use the combination of the
-default_eclv.yaml and custom_eclv.yaml file to create a sample ECLV plot.
+eclv_defaults.yaml and custom_eclv.yaml file to create a sample ECLV plot.
 
 
 Run from the Command Line

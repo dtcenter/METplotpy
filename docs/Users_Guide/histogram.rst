@@ -110,7 +110,7 @@ Custom Configuration File
 
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to generate each of the specialized histograms.
-The **rank_hist.yaml** , **rank_hist.yaml**, and **rank_hist.yaml** files are included with the
+The **rank_hist.yaml**, **prob_hist.yaml**, and **rel_hist.yaml** files are included with the
 source code and look like the following:
 
 **Rank histogram config file:**
@@ -290,7 +290,7 @@ perform the following:
 
   This will create a PNG file, **rank_hist.png**,
   in the directory that was specified in the *plot_filename*
-  setting of the **minimal_histogram.yaml** config file:
+  setting of the **rank_hist.yaml** config file:
 
   .. image:: figure/rank_hist.png
 

@@ -177,7 +177,7 @@ Using Defaults
 To use the *default* settings defined in the
 **performance_diagram_defaults.yaml**
 file, specify a minimal custom configuration file
-(**minimal_performance_diagram_defaults.yaml**), which consists of only
+(**minimal_performance_diagram.yaml**), which consists of only
 a comment block, but it can be any empty file (write permissions for the
 output filename path corresponding to the *plot_filename* setting in
 the default configuration file will be needed. Otherwise, specify
@@ -223,7 +223,7 @@ for debugging), add the following lines to the
 
 
 Replace the */dir_to_save_points1_file* with the same directory where
-the **.points** file is saved. Make sure that this directory exists
+the **.points1** file is saved. Make sure that this directory exists
 and has the appropriate read and write permissions.
 
 

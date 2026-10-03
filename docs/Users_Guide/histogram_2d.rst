@@ -135,7 +135,7 @@ The *points_path*, *dump_points_1*, and *dump_points_2* settings are
 intermediate files that are used by METviewer are currently not being
 generated (this plot type is currently not integrated into the METviewer
 tool which is why these intermediate files are not being
-generated).  The *points_path*, *dump_points_1*, and *dump_points2*
+generated).  The *points_path*, *dump_points_1*, and *dump_points_2*
 settings can be commented out (i.e. line begins with a '#'):
 
 *# points_path: /path/to/your/directory*

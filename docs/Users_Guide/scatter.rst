@@ -128,11 +128,11 @@ saved to the working directory:
 
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_BASE/test/scatter/custom_scatter.yaml* file to
+*$WORKING_DIR/custom_scatter.yaml* file to
 explicitly point to the *$METPLOTPY_BASE/test/scatter*
 directory (where the custom config files and sample data reside).
-Replace the relative path *./scatter.data* with the full path
-*$METPLOTPY_BASE/test/scatter/scatter.data*
+Replace the relative path *./reformatted_data_for_scatter.data* with the full path
+*$METPLOTPY_BASE/test/scatter/reformatted_data_for_scatter.data*
 (including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
 installation on the system).
 
@@ -228,7 +228,7 @@ To generate the above plot using the **scatter_defaults.yaml** and
 
 
 * A **scatter_mpr_tmp_obs_lat.png** output file will be created in the directory specified in
-  the *plot_filename* configuration setting in the **scatter.yaml** config file.
+  the *plot_filename* configuration setting in the **custom_scatter.yaml** config file.
 
 
   .. image:: figure/scatter_mpr_tmp_obs_lat.png
