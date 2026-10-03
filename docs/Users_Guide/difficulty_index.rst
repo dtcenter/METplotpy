@@ -100,7 +100,7 @@ Run from the Command Line
 To generate the sample difficulty index plots, perform the following:
 
 *  If using the conda environment, verify the conda environment
-   is running and has has the required Python packages outlined in the **Required Packages** section above.
+   is running and has the required Python packages outlined in the **Required Packages** section above.
 
 
 Where $METPLOTPY_BASE is the directory where you saved the METplotpy source code and $WORKING_DIR is the directory

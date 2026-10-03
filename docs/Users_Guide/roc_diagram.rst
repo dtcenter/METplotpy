@@ -141,7 +141,7 @@ For example:
 This is where */username/myworkspace/METplotpy* is *$METPLOTPY_BASE* and
 */username/working_dir* is *$WORKING_DIR*.  Make sure that the
 *$WORKING_DIR* directory that is specified exists and has the appropriate
-read and write permissions.The path listed for *plot_filename* may be
+read and write permissions. The path listed for *plot_filename* may be
 changed to the output directory of one’s choosing.  If this is not set,
 then the *plot_filename* setting specified in the
 *$METPLOTPY_BASE/metplotpy/plots/config/roc_diagram_defaults.yaml*
@@ -155,7 +155,7 @@ add (if it doesn't exist) the *points_path* setting.
 
 *points_path: '/dir_to_save_points1_file'*
 
-Replace the */dir_to_save_points1_file* to the directory where
+Replace the */dir_to_save_points1_file* with the directory where
 the **.points1** file is saved.  If points_path is commented out (indicated
 by a '#' symbol in front of it), remove the '#' symbol to uncomment
 the points_path so that it will be used by the code.  Make sure that
@@ -166,7 +166,7 @@ be defined in the configuration file unless saving the intermediate
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -223,7 +223,7 @@ useful for debugging), add the following lines to the
 *points_path: '/dir_to_save_points1_file'*
 
 
-Replace the */dir_to_save_points1_file* to the same directory where
+Replace the */dir_to_save_points1_file* with the same directory where
 the **.points1** file is saved. Make sure that this directory exists
 and has the appropriate read and write permissions. **NOTE**: the
 *points_path* setting is **optional** and does not need to be defined
@@ -242,7 +242,7 @@ the **roc_diagram_defaults.yaml** configuration file looks like the following:
 Perform the following:
 
 * To use the conda environment, verify the conda environment
-  is running and has has the required
+  is running and has the required
   Python packages outlined in the `Python Requirements section <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_.
 
 
@@ -265,7 +265,7 @@ Perform the following:
   METplotpy source code was saved.
 
 
-  To generate the above **"defaults"** plot (i.e using default
+  To generate the above **"defaults"** plot (i.e. using default
   configuration settings), use the "minimal" custom configuration file,
   **minimal_roc_diagram.yaml**.
 

@@ -142,7 +142,7 @@ For example:
 
 This is where */username/working_dir* is *$WORKING_DIR*.  Make sure that the
 *$WORKING_DIR* directory that is specified exists and has the appropriate
-read and write permissions.The path listed for *plot_filename* may be
+read and write permissions. The path listed for *plot_filename* may be
 changed to the output directory of one’s choosing.  If this is not set,
 then the *plot_filename* setting specified in the
 *$METPLOTPY_BASE/metplotpy/plots/config/hovmoeller_defaults.yaml*
@@ -150,7 +150,7 @@ configuration file will be used.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -212,7 +212,7 @@ the **hovmoeller_defaults.yaml** configuration file looks like the following:
 Perform the following:
 
 * To use the conda environment, verify the conda environment
-  is running and has has the required
+  is running and has the required
   Python packages outlined in the `Python Requirements section <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_
   (and from the Requirements Packages section above).
 
@@ -254,7 +254,7 @@ downloaded/cloned METplotpy code.
   METplotpy source code was saved.
 
 
-  To generate the above **"defaults"** plot (i.e using default configuration settings), use the "minimal" custom
+  To generate the above **"defaults"** plot (i.e. using default configuration settings), use the "minimal" custom
   configuration file, **minimal_hovmoeller.yaml**.
 
 * Enter the following command:

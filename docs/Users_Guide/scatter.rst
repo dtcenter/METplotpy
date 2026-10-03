@@ -64,7 +64,7 @@ configuration file, **scatter_defaults.yaml**, which is found in the
 *$METPLOTPY_BASE/metplotpy/plots/config* directory. All default
 configuration files are located in the
 *$METPLOTPY_BASE/metplotpy/plots/config* directory.
-*$METPLOTPY_BASE* is base directory where the
+*$METPLOTPY_BASE* is the base directory where the
 METplotpy source code has been saved. **Default configuration files are
 automatically loaded by the plotting code and do not need to be explicitly
 specified when generating a plot**. In addition, the default configuration file
@@ -165,7 +165,7 @@ Modify the *points_path* setting or add it (if it doesn't exist).
 
 *points_path: '/dir_to_save_plot_points_file'*
 
-Replace the */dir_to_save_plot_points_file* to the same directory where
+Replace the */dir_to_save_plot_points_file* with the same directory where
 the **plot_points.txt** file is saved.
 Make sure that this directory has the appropriate read and write permissions.
 
@@ -173,7 +173,7 @@ To save the log output to a file, uncomment the *log_filename* entry and specify
 name of the log file.  Select a directory with the appropriate read and write
 privileges.
 
-To modify the verbosity of logging than what is set in the default config
+To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 

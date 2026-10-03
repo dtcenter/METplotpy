@@ -99,7 +99,7 @@ To generate the example Polar Ice plot (i.e. using settings in the
 **polar_ice.yaml** configuration file) perform the following:
 
 *  If using the conda environment, verify the conda environment
-   is running and has has the required Python packages specified in the
+   is running and has the required Python packages specified in the
    **Required Packages** section above.
 
 * Set the METPLOTPY_BASE environment variable to point to

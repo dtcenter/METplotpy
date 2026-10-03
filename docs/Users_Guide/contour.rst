@@ -51,7 +51,7 @@ input data is located and to set plot attributes. These plot attributes
 correspond to values that can be set via the METviewer tool. YAML is a
 recursive acronym for "YAML Ain't Markup Language" and according to
 `yaml.org <https://yaml.org>`_,
-it is a "human-friendly data serialization language. It is commonly used for
+it is a "human-friendly data serialization language". It is commonly used for
 configuration files and in applications where data is being stored or
 transmitted. Two configuration files are required. The first is a
 default configuration file, **contour_defaults.yaml**,
@@ -143,7 +143,7 @@ Uncomment or add (if it doesn't exist) the *points_path* setting:
 
 *points_path: '/dir_to_save_points1_file'*
 
-Replace the */dir_to_save_points1_file* to the same directory where the
+Replace the */dir_to_save_points1_file* with the same directory where the
 **.points1** file is saved.
 If *points_path* is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment
@@ -155,7 +155,7 @@ file unless saving the intermediate **.points1** file is desired.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -170,7 +170,7 @@ perform the following:
 
 
 *  If using the conda environment, verify the conda environment
-   is running and has has the required Python packages outlined in the
+   is running and has the required Python packages outlined in the
    `requirements section
    <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_.
 

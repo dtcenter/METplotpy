@@ -146,7 +146,7 @@ settings can be commented out (i.e. line begins with a '#'):
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -239,7 +239,7 @@ Perform the following:
 
   Replace *$METPLOTPY_BASE* with the directory where the source code is saved.
 
-  To generate the above **"defaults"** plot (i.e using default configuration
+  To generate the above **"defaults"** plot (i.e. using default configuration
   settings), use the "minimal" custom configuration file,
   **minimal_histogram_2d.yaml**.
 

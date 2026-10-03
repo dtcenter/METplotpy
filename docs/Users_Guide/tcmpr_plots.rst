@@ -285,7 +285,7 @@ For this example, the only settings requiring changes are: **tcst_dir**, **plot_
 
       plot_dir: '/path/to/output_dir'
 
-   Replace */path/to/output_dir* to an existing directory that has the appropriate read and write privileges.
+   Replace */path/to/output_dir* with an existing directory that has the appropriate read and write privileges.
 
 
 .. dropdown:: **Specify the log level and log file** (optional):
@@ -298,7 +298,7 @@ For this example, the only settings requiring changes are: **tcst_dir**, **plot_
 
       log_filename: /path/to/output/tcmpr_log.out
 
-   Replace */path/to/output* to an existing directory with the appropriate read and write permissions.
+   Replace */path/to/output* with an existing directory with the appropriate read and write permissions.
    By default, the log level is set to ERROR (the least verbose) and logging is directed to STDOUT.  The following
    log levels are available (from most verbose to least): INFO, DEBUG, WARNING, ERROR.
 
@@ -698,7 +698,7 @@ Run from the Command Line
 
      setenv METPLOTPY_BASE /path/to/METplotpy_source_cod
 
-Replace /path/to/METplotpy_source_code to the directory path where the METplotpy source code is saved.
+Replace /path/to/METplotpy_source_code with the directory path where the METplotpy source code is saved.
 
 * Set the METCALCPY_BASE environment variable to point to where the METcalcpy source code resides, for example:
 
@@ -723,7 +723,7 @@ For the csh environment:
 
     setenv METCALCPY_BASE /path/to/METcalcpy_source_code
 
-Replace /path/to/METcalcpy_source_code to the directory path where the METcalcpy source code is saved, for
+Replace /path/to/METcalcpy_source_code with the directory path where the METcalcpy source code is saved, for
 example:
 
     .. code-block:: ini

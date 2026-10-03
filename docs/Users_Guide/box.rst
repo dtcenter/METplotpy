@@ -144,7 +144,7 @@ setting to True. Uncomment or add (if it doesn't exist) the
 *points_path: '/dir_to_save_points1_file'*
 
 
-Replace the **/dir_to_save_points1_file** to the same directory where
+Replace the **/dir_to_save_points1_file** with the same directory where
 the **.points1** file is saved.
 If *points_path* is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment the points_path so that it will be used
@@ -155,7 +155,7 @@ unless saving the intermediate **.points1** file is desired.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -253,7 +253,7 @@ Perform the following to generate the plots:
 
   .. image:: figure/box_default.png
 
-  To generate the above *"defaults"* plot (i.e using default configuration
+  To generate the above *"defaults"* plot (i.e. using default configuration
   settings), use the "minimal" custom configuration file, **minimal_box.yaml**.
 
 

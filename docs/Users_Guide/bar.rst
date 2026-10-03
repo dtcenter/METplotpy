@@ -62,7 +62,7 @@ required. The first is a default configuration file, **bar_defaults.yaml**,
 which is found in the
 *$METPLOTPY_BASE/metplotpy/plots/config* directory. All default
 configuration files are located in the
-*$METPLOTPY_BASE/metplotpy/plots/config* directory.  *$METPLOTPY_BASE* is base directory where the
+*$METPLOTPY_BASE/metplotpy/plots/config* directory.  *$METPLOTPY_BASE* is the base directory where the
 METplotpy source code has been saved.  **Default configuration files are
 automatically loaded by the plotting code and do not need to be explicitly
 specified when generating a plot**.
@@ -143,7 +143,7 @@ the *points_path* setting.
 
 *points_path: '/dir_to_save_points1_file'*
 
-Replace the */dir_to_save_points1_file* to the same directory where
+Replace the */dir_to_save_points1_file* with the same directory where
 the **.points1** file is saved.
 If points_path is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment
@@ -155,7 +155,7 @@ file is desired.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -171,7 +171,7 @@ The **custom_bar.yaml** configuration file, in combination with the
 To generate the above bar plot, perform the following:
 
 * If using the conda environment,
-  verify the conda environment is running and has has the required
+  verify the conda environment is running and has the required
   Python packages outlined in the `requirements section
   <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_.
 
