@@ -194,7 +194,7 @@ a *plot_filename* in the **minimal_wind_rose.yaml** file):
 Copy this file to the working directory:
 
 .. code-block:: ini
-		
+
   cp $METPLOTPY_BASE/test/wind_rose/minimal_wind_rose.yaml $WORKING_DIR/minimal_wind_rose.yaml
 
 Add the *stat_input* (input data) and *plot_filename*
@@ -249,13 +249,13 @@ perform the following:
   For the ksh environment:
 
   .. code-block:: ini
-		
+
     export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
-		
+
     setenv METPLOTPY_BASE $METPLOTPY_BASE
 
   Replacing the $METPLOTPY_BASE with the directory where the
@@ -277,7 +277,7 @@ perform the following:
   command using the **wind_rose_custom.yaml** file:
 
   .. code-block:: ini
-		
+
     python $METPLOTPY_BASE/metplotpy/plots/wind_rose/wind_rose.py $WORKING_DIR/wind_rose_custom.yaml
 
   .. image:: figure/wind_rose_custom.png

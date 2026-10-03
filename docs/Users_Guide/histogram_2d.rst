@@ -211,14 +211,14 @@ Perform the following:
 * Clone the METplotpy repository from GitHub.  First, make the directory:
 
   .. code-block:: ini
-		
+
      mkdir $METPLOTPY_BASE
 
 * *$METPLOTPY_BASE* is the directory where the source code is66TAW saved.
   Enter the following:
 
   .. code-block:: ini
-		
+
       cd $METPLOTPY_BASE
       git clone https://github.com/dtcenter/METplotpy
 
