@@ -300,7 +300,7 @@ For this example, the only settings requiring changes are: **tcst_dir**, **plot_
 
    Replace */path/to/output* with an existing directory with the appropriate read and write permissions.
    By default, the log level is set to ERROR (the least verbose) and logging is directed to STDOUT.  The following
-   log levels are available (from most verbose to least): INFO, DEBUG, WARNING, ERROR.
+   log levels are available (from most verbose to least): DEBUG, INFO, WARNING, ERROR.
 
 .. dropdown:: **Specify the baseline_file and column_info_file**:
 
@@ -321,7 +321,7 @@ For this example, the only settings requiring changes are: **tcst_dir**, **plot_
        - 'green'
 
     .. note ::
-      Make sure the number of columns specified corresponds to the number of series
+      Make sure the number of colors specified corresponds to the number of series
       being generated.
 
 .. dropdown :: *Specify the appearance of the symbols, lines, etc.*
@@ -690,13 +690,13 @@ Run from the Command Line
 
   .. code-block:: ini
 
-     export METPLOTPY_BASE=/path/to/METplotpy_source_cod
+     export METPLOTPY_BASE=/path/to/METplotpy_source_code
 
   For the csh environment:
 
   .. code-block:: ini
 
-     setenv METPLOTPY_BASE /path/to/METplotpy_source_cod
+     setenv METPLOTPY_BASE /path/to/METplotpy_source_code
 
 Replace /path/to/METplotpy_source_code with the directory path where the METplotpy source code is saved.
 
@@ -704,11 +704,11 @@ Replace /path/to/METplotpy_source_code with the directory path where the METplot
 
   .. code-block:: ini
 
-     export METPLOTPY_BASE=/home/username/METplotpy
+     export METCALCPY_BASE=/home/username/METcalcpy
 
   .. code-block:: ini
 
-     setenv METPLOTPY_BASE=/home/username/METplotpy
+     setenv METCALCPY_BASE /home/username/METcalcpy
 
 
 For the ksh environment:
