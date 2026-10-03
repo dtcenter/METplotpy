@@ -288,7 +288,7 @@ Perform the following:
 * Enter the following command:
 
   .. code-block:: ini
-		
+
     python $METPLOTPY_BASE/metplotpy/plots/roc_diagram/roc_diagram.py $WORKING_DIR/custom_roc_diagram.yaml
 
   In this example, this custom config file changes the title and axis

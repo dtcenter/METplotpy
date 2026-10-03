@@ -197,7 +197,7 @@ To generate the above bar plot, perform the following:
 * Enter the following command:
 
   .. code-block:: ini
-		
+
     python $METPLOTPY_BASE/metplotpy/plots/bar/bar.py $WORKING_DIR/custom_bar.yaml
 
 *  A **bar.png** output file will be created in the directory that was

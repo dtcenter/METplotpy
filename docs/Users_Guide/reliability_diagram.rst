@@ -267,7 +267,7 @@ Perform the following:
 * Enter the following command:
 
   .. code-block:: ini
-		
+
     python $METPLOTPY_BASE/metplotpy/plots/reliability_diagram/reliability.py $WORKING_DIR/custom_reliability_diagram.yaml
 
   In this example, this custom config file changes the color of the boxes.
