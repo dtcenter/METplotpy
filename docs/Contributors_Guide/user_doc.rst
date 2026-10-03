@@ -1,6 +1,6 @@
-*********************
-Add User Documenation
-*********************
+**********************
+Add User Documentation
+**********************
 
 Documentation should be added in the *docs/Users_Guide* directory.
 
