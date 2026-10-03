@@ -28,7 +28,7 @@ The METplotpy source code can be retrieved using the web browser. Begin by enter
 https://github.com/dtcenter/METplotpy in
 the web browser's navigation bar.  On the right-hand side of the web page for the METplotpy repository, click on
 the `Releases` link.  This leads to a page where all available releases are available.  The latest release will be
-located at the top of the page.  Scroll to the release of interest and below it's title is an `Assets` link in small
+located at the top of the page.  Scroll to the release of interest and below its title is an `Assets` link in small
 text.  Click on the inverted triangle to the left of the `Assets` text to access the menu. To download the source code,
 click on either the zip or tar.gz version of the source code and save it to a directory where the METplotpy source code
 will reside (e.g. /home/someuser/).
@@ -47,11 +47,11 @@ base directory, then run the following commands.
   $ conda activate metplotpy
   (metplotpy)$ pip install -e .
 
-This will install METplotpy into the conda env, along with all the dependancies
+This will install METplotpy into the conda env, along with all the dependencies
 listed above in **requirements.txt**.
 
-If you already have an environment setup, or want to install METplotpy without
-the dependancies, add the `--no-deps` argument to pip.
+If you already have an environment set up, or want to install METplotpy without
+the dependencies, add the `--no-deps` argument to pip.
 
 .. code-block:: ini
 
@@ -89,10 +89,10 @@ code.
 Setting up the PYTHONPATH
 -------------------------
 
-This is a workaround for users who can not or do not have permission to
+This is a workaround for users who cannot or do not have permission to
 create conda environments.
 
-*$METCALCPY_SOURCE* is the path downloaded/cloned METcalcpy code. *$METPLOTPY_SOURCE* is the path of the
+*$METCALCPY_SOURCE* is the path of the downloaded/cloned METcalcpy code. *$METPLOTPY_SOURCE* is the path of the
 downloaded/cloned METplotpy code.
 
 **Command for csh:** 

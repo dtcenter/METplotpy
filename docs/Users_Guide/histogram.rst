@@ -172,7 +172,7 @@ In the *$METPLOTPY_BASE/test/histogram/rank_hist.yaml* file, replace the
 relative path *./rank_hist.data* with the full path
 *$METPLOTPY_BASE/test/histogram/rank_hist.data* for the rank histogram config file
 (including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
-installation on the system)..
+installation on the system).
 
 In the *$METPLOTPY_BASE/test/histogram/prob_hist.yaml* file, replace the
 relative path *./prob_hist.data* with the full path
@@ -190,7 +190,7 @@ for the relative frequency histogram config file.
 Modify the *plot_filename* setting to point to the output path where the
 plot will be saved, including the name of the plot.
 
-For example
+For example:
 
 For the **rank histogram**:
 

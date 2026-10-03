@@ -10,7 +10,7 @@ statistics, with  axes representing detection and success (1 - false alarm)
 rates (:ref:`Roebber, 2009<Roebber>`).  
 The simplest input to the performance diagram is the MET contingency
 table statistics (CTS)  output.  This output can be produced by many of
-the MET tools (Point-Stat, Grid-Stat, etc.)
+the MET tools (Point-Stat, Grid-Stat, etc.).
 For more information on Performance diagrams, please refer to the
 `METviewer documentation
 <https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/perfdiag.html>`_.

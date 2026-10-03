@@ -53,7 +53,7 @@ Available `here <https://github.com/dtcenter/METplotpy/releases>`_.
 We thank all of the METplus sponsors including: Developmental Testbed
 Center (DTC) partners (NOAA, NCAR, USAF, and NSF), along with
 NOAA/Office of Atmospheric Research (OAR), NOAA/National Weather Service,
-NOAA/Joint Technology Transfer Program (JTTI),
+NOAA/Joint Technology Transfer Initiative (JTTI),
 NOAA/Subseasonal to Seasonal (S2S) Project, NOAA/Unified Forecast System
 Research to Operations Project (UFS R2O), Met Office and the Naval Research
 Laboratory (NRL). Thanks also go to the staff at the DTC for their help,

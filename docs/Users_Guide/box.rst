@@ -83,7 +83,7 @@ Default Configuration File
 --------------------------
 
 The following is the *mandatory*, **box_defaults.yaml** configuration file,
-which serves as a good starting point for creating a line
+which serves as a good starting point for creating a box
 plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/box_defaults.yaml
@@ -191,7 +191,7 @@ files are located.  Set the *stat_input* to
 
 *plot_filename: $WORKING_DIR/output_plots/box_default.png*
 
-Where *$WORKING_DIR* is the working directory where where all the custom
+Where *$WORKING_DIR* is the working directory where all the custom
 configuration files are being saved. **NOTE**: If the *plot_filename*
 (output directory) is specified to a directory other than the
 *$WORKING_DIR/output_plots*, the user must have read and write permissions

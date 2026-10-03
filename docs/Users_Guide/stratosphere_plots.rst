@@ -6,10 +6,10 @@ Description
 ===========
 
 The **stratosphere_plots.py** script contains the plotting portion for
-three Stratosphere use cases.  One use case creates a ME plot in latitude and pressure,
+three Stratosphere use cases.  One use case creates an ME plot in latitude and pressure,
 another which creates ME and RMSE plots for lead time and pressure, and a third which 
-creates two phase diagrams and a time series of U for at 50mb and 30mb.
-The three METplus use cases, illustrate how to use these plotting scripts for `zonal mean biases
+creates two phase diagrams and a time series of U at 50mb and 30mb.
+The three METplus use cases illustrate how to use these plotting scripts for `zonal mean biases
 <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratosphereBias.html#sphx-glr-generated-model-applications-s2s-stratosphere-userscript-fcstgfs-obsera-stratospherebias-py>`_, creating bias and RMSE for `polar cap temperature and polar vortex U <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratospherePolar.html#sphx-glr-generated-model-applications-s2s-stratosphere-userscript-fcstgfs-obsera-stratospherepolar-py>`_, and creating `phase diagrams and time series for QBO <https://metplus.readthedocs.io/en/develop/generated/model_applications/s2s_stratosphere/UserScript_fcstGFS_obsERA_StratosphereQBO.html#sphx-glr-generated-model-applications-s2s-stratosphere-userscript-fcstgfs-obsera-stratosphereqbo-py>`_.
 
 These files are used by the image comparison test:
@@ -23,7 +23,7 @@ These files are used by the image comparison test:
 * **ME_2018_02_polar_cap_T.png**:  Run "plot_polar_bias" in **stratosphere_plots.py**
   to create this plot.
 
-* **ME_2018_02_polar_vortex_U.png**: Rn "plot_polar_bias" in **stratosphere_plots.py**
+* **ME_2018_02_polar_vortex_U.png**: Run "plot_polar_bias" in **stratosphere_plots.py**
   to create this plot.
 
 * **RMSE_2018_02_polar_cap_T.png**:  Run "plot_polar_rmse" in **stratosphere_plots.py**
@@ -211,7 +211,7 @@ Invoke the plotting functions:
 
    plot_u_timeseries(obs_dt,obs_u,fcst_dt,fcst_u,ptitle,outfile)
 
-The output will be **.png** version of all requested plots and will
+The output will be a **.png** version of all requested plots and will
 be located based on what was specified (path and name) in the
 **outfile**.
 

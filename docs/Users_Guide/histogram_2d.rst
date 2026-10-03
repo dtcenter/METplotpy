@@ -44,7 +44,7 @@ input data is located and to set plot attributes. **NOTE**: The
 histogram_2d plot is currently **not** integrated into the METviewer tool,
 and as a result the configuration file has fewer settings than the
 other plot types that are available through the METviewer tool.  YAML is
-a recursive acroynym for "YAML Ain't Markup Language" and according to
+a recursive acronym for "YAML Ain't Markup Language" and according to
 `yaml.org <https://yaml.org>`_, it is a "human-friendly data serialization
 language". It is commonly used for configuration files and in applications
 where data is being stored or transmitted.  Two configuration files are
@@ -214,7 +214,7 @@ Perform the following:
 		
      mkdir $METPLOTPY_BASE
 
-* *$METPLOTPY_BASE* is the directory where the source code is66TAW saved.
+* *$METPLOTPY_BASE* is the directory where the source code is saved.
   Enter the following:
 
   .. code-block:: ini

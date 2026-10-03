@@ -214,11 +214,11 @@ Perform the following:
 * To use the conda environment, verify the conda environment
   is running and has the required
   Python packages outlined in the `Python Requirements section <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_
-  (and from the Requirements Packages section above).
+  (and from the Required Packages section above).
 
 * Set the PYTHONPATH environment variable:
 
-*$METCALCPY_SOURCE* is the path downloaded/cloned METcalcpy code. *$METPLOTPY_SOURCE* is the path of the
+*$METCALCPY_SOURCE* is the path of the downloaded/cloned METcalcpy code. *$METPLOTPY_SOURCE* is the path of the
 downloaded/cloned METplotpy code.
 
 **Command for csh:**

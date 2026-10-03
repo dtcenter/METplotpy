@@ -5,7 +5,7 @@ Ensemble Spread-Skill Plot
 Description
 ===========
 The theory is that RMSE of the ensemble mean should have roughly a 1-1
-relationship with the ensemble spread (I.e. standard deviation of the
+relationship with the ensemble spread (i.e. standard deviation of the
 ensemble member values). Ensemble spread-skill plot measures that relationship.
 
 Example
@@ -70,7 +70,7 @@ Default Configuration File
 --------------------------
 
 The following is the *mandatory*, **ens_ss_defaults.yaml** configuration
-file, which serves as a good starting point for creating a line
+file, which serves as a good starting point for creating an ensemble spread-skill
 plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/ens_ss_defaults.yaml

@@ -11,7 +11,7 @@ This plot was developed to support plotting MPR (matched pair) data from the MET
 
   This MET output data must first be reformatted into a format that can be read in by the scatter plot code.
   This reformatting was accomplished through the METdataio METreformat module. The reformatted data
-  consists solely of MPR linetype data and all the column headers are labelled according to the
+  consists solely of MPR linetype data and all the column headers are labeled according to the
   MPR linetype column names specified in the Point-Stat section of the MET User's Guide in 
   `Table 11.20 <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/point-stat.html#table-ps-format-info-seeps>`_ 
   "Format information for SEEPS (Stable Equitable Error in Probability Space) output line type".
@@ -186,7 +186,7 @@ The **custom_scatter.yaml** configuration file, in combination with the
 **scatter_defaults.yaml** configuration file, generates a plot of the matched
 pair (MPR) linetype data for the TMP variable and the two continuous variables FCST and OBS.
 
-The data has been further filtered based on the interpolation method and forecast level ( via the
+The data has been further filtered based on the interpolation method and forecast level (via the
 *fixed_vars_vals_input* setting).
 
 The grid lines and trendline are turned on, the FCST, OBS, and OBS_LAT points are saved to a text file, and the

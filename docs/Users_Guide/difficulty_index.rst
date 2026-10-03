@@ -16,7 +16,7 @@ will not address here is undiagnosed systematic error, which adds uncertainty in
 The challenge is combining these factors into a continuous function that allows the user to assess relative risk.
 
 The code for calculating and plotting the difficulty index was developed by Bill Campbell and Liz Satterfield of the
-Navy Research Lab (NRL) and modified by NCAR.
+Naval Research Lab (NRL) and modified by NCAR.
 
 
 For more information on calculating the difficulty index, please refer to this METplus use case:
@@ -61,7 +61,7 @@ Configuration Files
 
 All the settings for the example difficulty index plot are incorporated in
 the mycolormaps.py and plot_difficulty_index.py code.  The example_difficulty_index.py script imports these modules to
-create six sample plots.  The location of where these plots are saved are determined by settings in the
+create six sample plots.  The location of where these plots are saved is determined by settings in the
 example_difficulty_index.yaml configuration file:
 
 .. literalinclude:: ../../test/difficulty_index/example_difficulty_index.yaml

@@ -1,5 +1,5 @@
 *************************************
-Economic Cost/Lost Value (ECLV) Plots
+Economic Cost/Loss Value (ECLV) Plots
 *************************************
 
 Description

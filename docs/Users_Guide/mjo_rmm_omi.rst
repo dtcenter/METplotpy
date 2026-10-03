@@ -8,7 +8,7 @@ Description
 The **compute_mjo_indices.py** code (found in the METplotpy repository)
 supports the generation of RMM (Real-time Multivariate MJO),
 OMI (OLR based MJO Index), and phase diagrams from MJO
-(Madden-Julien Oscillation) indices.
+(Madden-Julian Oscillation) indices.
 These indices are calculated by **compute_mjo_indices.py** in the METcalcpy
 repository. These modules are used as part of METplus use cases
 on generating these three diagrams.

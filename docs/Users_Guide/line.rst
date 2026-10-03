@@ -206,7 +206,7 @@ Run from the Command Line
 =========================
 
 The **custom_line.yaml** configuration file, in combination with the
-**line_defaults.yaml** configuration file, generate a plot of
+**line_defaults.yaml** configuration file, generates a plot of
 five series:
 
 .. image:: figure/line.png

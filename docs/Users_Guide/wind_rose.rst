@@ -11,7 +11,7 @@ time.  The diagram consists of radiating spokes that represent the wind
 direction in terms of the cardinal wind
 directions of North, East, South, and West.  Each spoke indicates how often
 the wind blows from each direction and
-the color bands on each spoke represents the wind speed range (bins).
+the color bands on each spoke represent the wind speed range (bins).
 The wind rose diagram is based on
 a polar coordinate system, with data plotted at a distance away from the
 origin at an angle that is relative to North.
@@ -31,8 +31,6 @@ The sample data used to create these plots is available in the METplotpy
 repository, where the wind rose diagram test scripts are located:
 
 *$METPLOTPY_BASE/test/wind rose_diagram/point_stat_mpr.txt*
-
-*$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
@@ -233,7 +231,7 @@ and has the appropriate read and write permissions.
 Run from the Command Line
 =========================
 
-To generate a default performance diagram (i.e. using settings in the 
+To generate a default wind rose diagram (i.e. using settings in the 
 **wind_rose_defaults.yaml** configuration file),
 perform the following:
 

@@ -59,7 +59,7 @@ acronym for "YAML Ain't Markup Language" and according to
 `yaml.org <https://yaml.org>`_, it is a "human-friendly data serialization
 language". It is commonly used for configuration files and in applications
 where data is being stored or transmitted.   Two configuration files are
-required. The first is a default configuration file, the first is a
+required. The first is a
 default configuration file, **roc_diagram_defaults.yaml** that is found in the
 *$METPLOTPY_BASE/metplotpy/plots/config* directory.  All default
 configuration files are located in the

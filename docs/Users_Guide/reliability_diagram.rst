@@ -52,7 +52,7 @@ configuration files are located in the
 **Note**: *$METPLOTPY_BASE* is the user-specified directory where the
 METplotpy source code has been saved.  **Default configuration files
 are automatically loaded by the plotting code and do not need to
-be explicitly specified when generating a plot**
+be explicitly specified when generating a plot**.
 
 The second required configuration file is a user-supplied “custom”
 configuration file. This  file is used to customize/override the default
@@ -77,7 +77,7 @@ plot as it represents the default values set in METviewer.
 
 In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
-not specified in the custom configuration file, these settings will be used
+not specified in the custom configuration file, these settings will be used.
 
 
 Custom Configuration File
@@ -86,7 +86,7 @@ Custom Configuration File
 A second, *mandatory* configuration file is required, which is
 used to customize the settings to the reliability diagram plot.
 The **custom_reliability.yaml**
-file is included with the source code an looks like the following:
+file is included with the source code and looks like the following:
 
 .. literalinclude:: ../../test/reliability_diagram/custom_reliability_diagram.yaml
 
@@ -219,7 +219,7 @@ the "empty" custom configuration file and the
 Perform the following:
 
 * Clone the code from the `METplotpy repository
-  <https://github.com/dtcenter/METplotpy>`_ (To see the page, login to GitHub):
+  <https://github.com/dtcenter/METplotpy>`_ (To see the page, log in to GitHub):
 
   .. code-block:: ini
 

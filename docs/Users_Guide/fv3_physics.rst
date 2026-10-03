@@ -43,7 +43,7 @@ Required input:
 
 #. FV3 3-D history file with physics and dynamics tendencies (fv3_history.nc)
 
-#. FV3 2-D grid specification file with latititude and longitude of each grid point (grid_spec.nc)
+#. FV3 2-D grid specification file with latitude and longitude of each grid point (grid_spec.nc)
 
 Click here to access the METplus releases page and download sample data for the appropriate release: https://github.com/dtcenter/METplus/releases. Links to input data directories are in the description of each release. The file to download is named *sample_data\-short_range-x.y.tgz* (where x.y represents the version).
 
@@ -60,7 +60,7 @@ Default tendency variable names
 Default tendency variable names are below. The tendencies that are available depend on the 
 physics suite that the user selects when running FV3; more specifically, its contents are 
 determined by the diag_table file that the user sets up. The history file that we
-use our example is for a specific diag_table and so may change with different FV3 configurations. 
+use in our example is for a specific diag_table and so may change with different FV3 configurations. 
 The user must make sure the names in the configuration file 
 *$METPLOTPY_BASE/test/fv3_physics_tend/fv3_physics_tend_defaults.yaml*
 match the names used in fv3_history.nc for their case.
@@ -120,7 +120,7 @@ If time window overlaps initialization time
 -------------------------------------------
 
 The history file does not necessarily have the temperature, moisture, or wind at the exact
-time of model initialization. It is usally the next timestep (e.g. 180 seconds later). 
+time of model initialization. It is usually the next timestep (e.g. 180 seconds later). 
 This means you cannot derive the actual change in temperature starting at the model initialization
 time. You must choose a later valid time and/or a shorter time window that does not overlap
 the initialization time. In other words, it is a problem if your model initialization time is 0z, your
