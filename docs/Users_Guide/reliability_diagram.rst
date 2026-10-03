@@ -25,12 +25,12 @@ in the METplotpy repository, where the reliability diagram code is located:
 
 e.g.
 
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 
 
@@ -219,7 +219,7 @@ the "empty" custom configuration file and the
 Perform the following:
 
 * Clone the code from the `METplotpy repository
-  <https://github.com/dtcenter/METplotpy>`_ (To see the page, login to Github):
+  <https://github.com/dtcenter/METplotpy>`_ (To see the page, login to GitHub):
 
   .. code-block:: ini
 

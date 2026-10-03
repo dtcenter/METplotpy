@@ -1,5 +1,5 @@
 ****************************************
-Generate Tests and Add to Github Actions
+Generate Tests and Add to GitHub Actions
 ****************************************
 
 Create a subdirectory under the *test* directory
