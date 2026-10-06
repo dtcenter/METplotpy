@@ -19,7 +19,7 @@ source code will be needed to perform event equalization and other necessary cal
 The METcalcpy repository is located at
 https://github.com/dtcenter/METcalcpy
 
-Use the same release versions for METplotpy and METcalcpy (i.e. if using a vx.y.z of METplotpy, use the
+Use the same release versions for METplotpy and METcalcpy (i.e., if using a vx.y.z of METplotpy, use the
 same version for METcalcpy).
 
 
@@ -38,7 +38,7 @@ times the TCMPR plotter code is invoked from the command line.
 
 When more specific titles and plot customizations are desired for particular plot types,
 each plot type can be defined with a corresponding configuration file
-(e.g. a box plot will have a config file specifying settings specific to the
+(e.g., a box plot will have a config file specifying settings specific to the
 boxplot, a reliability plot will have a corresponding config file with settings relevant to a reliability plot, etc.).
 However, the TCMPR plotter code will now need to be invoked for each of these special plot type/config file
 combinations.
@@ -57,7 +57,7 @@ The sample data used to create various TCMPR plots is available in the
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
 */usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
@@ -91,8 +91,8 @@ label based on the plot type and requested statistics specified in the config fi
 
 If particular plot types require specific/custom titles and/or
 x- and y-axis labels, then each plot type can have a corresponding configuration file with values specific to this plot
-type, statistics of interest (e.g. ABS(AMSLP-BMSLP), TK_ERR, etc.), fixed variables
-(e.g. BASIN:AL, LEVEL:[SS, HU, TS]), and series (e.g. AMODEL:[H221, M221]).
+type, statistics of interest (e.g., ABS(AMSLP-BMSLP), TK_ERR, etc.), fixed variables
+(e.g., BASIN:AL, LEVEL:[SS, HU, TS]), and series (e.g., AMODEL:[H221, M221]).
 
 .. note::
 
@@ -310,9 +310,9 @@ For this example, the only settings requiring changes are: **tcst_dir**, **plot_
       column_info_file: '$METPLOTPY_BASE/metplotpy/plots/tcmpr_plots/plot_tcmpr_hdr.dat'
 
    Replace $METPLOTPY_BASE with the full path to where the METplotpy source code was saved
-   (i.e. /home/username/METplotpy).
+   (i.e., /home/username/METplotpy).
 
-.. dropdown :: *Specify the colors for each "series" (i.e. line, box in a boxplot, etc.)*
+.. dropdown :: *Specify the colors for each "series" (i.e., line, box in a boxplot, etc.)*
 
    .. code-block:: ini
 
@@ -359,7 +359,7 @@ Below are descriptions of the settings used in this example:
           - H221
           - M221
 
-   Specify a key (AMODEL) and a list of one or more values of interest (e.g. the H221 and M221 models).
+   Specify a key (AMODEL) and a list of one or more values of interest (e.g., the H221 and M221 models).
    The above example will produce a plot with **two** lines/series, one for each AMODEL.  The number of series/lines
    dictates the number of required plot settings. In this case,  **two** values are needed for plot settings such as
    colors, symbols, series order, plot display (on/off), line widths, line styles, symbol appearance
@@ -370,7 +370,7 @@ Below are descriptions of the settings used in this example:
 The following settings are necessary for generating the plot types for this data set.
 The settings will override the defaults in the tcmpr_defaults.yaml.
 
-.. dropdown:: **Specify the independent (i.e. x-axis) variable, series, values and labels**:
+.. dropdown:: **Specify the independent (i.e., x-axis) variable, series, values and labels**:
 
   .. code-block:: ini
 
@@ -813,7 +813,7 @@ Plots with separate, corresponding config files:
 
 Two plot types, boxplot and relative performance will be generated using the same settings as
 the tcmpr_multi_plots.yaml file with some changes to the title, y-axis, and plot filename. All the
-other settings (i.e. color, symbol settings, series, variables) will be the same.
+other settings (i.e., color, symbol settings, series, variables) will be the same.
 
 
 **Boxplot**

@@ -39,7 +39,7 @@ repository, where the performance diagram scripts are located:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
 */usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
@@ -95,7 +95,7 @@ performance diagram plot,  as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/performance_diagram_defaults.yaml
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -230,7 +230,7 @@ and has the appropriate read and write permissions.
 Run from the Command Line
 =========================
 
-To generate a default performance diagram (i.e. using settings in the 
+To generate a default performance diagram (i.e., using settings in the 
 **performance_diagram_defaults.yaml** configuration file),
 perform the following:
 

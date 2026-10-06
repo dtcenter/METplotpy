@@ -62,7 +62,7 @@ There is a YAML config file located in
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
 */usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
@@ -83,7 +83,7 @@ have read and write permissions.
 Modify *input_file* setting in the $WORKING_DIR/polar_ice.yaml config file to point to the directory
 where you saved your sample data from above:
 
-e.g.
+e.g.,
 
 replace *input_file: "~/grid_stat_north_000000L_20210305_120000V_pairs.nc"*
 with *input_file: "/path/to/data/grid_stat_north_000000L_20210305_120000V_pairs.nc"*
@@ -95,7 +95,7 @@ sample data.
 Run from the Command Line
 =========================
 
-To generate the example Polar Ice plot (i.e. using settings in the
+To generate the example Polar Ice plot (i.e., using settings in the
 **polar_ice.yaml** configuration file) perform the following:
 
 *  If using the conda environment, verify the conda environment
@@ -104,7 +104,7 @@ To generate the example Polar Ice plot (i.e. using settings in the
 
 * Set the METPLOTPY_BASE environment variable to point to
   *$METPLOTPY_BASE*, where $METPLOTPY_BASE is the directory where you saved the
-  METplotpy source code (e.g. /home/someuser).
+  METplotpy source code (e.g., /home/someuser).
 
   For the ksh environment:
 

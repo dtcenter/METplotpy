@@ -62,7 +62,7 @@ There is a YAML config file located in
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
 */usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
@@ -99,7 +99,7 @@ a Hovmoeller plot.
 .. literalinclude:: ../../metplotpy/plots/config/hovmoeller_defaults.yaml
 
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -195,7 +195,7 @@ configuration files are being saved.  **NOTE**: Specifying the
 *$WORKING_DIR/output_plots* can be done as long as it is an
 existing directory where the user has read and write permissions.
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -254,7 +254,7 @@ downloaded/cloned METplotpy code.
   METplotpy source code was saved.
 
 
-  To generate the above **"defaults"** plot (i.e. using default configuration settings), use the "minimal" custom
+  To generate the above **"defaults"** plot (i.e., using default configuration settings), use the "minimal" custom
   configuration file, **minimal_hovmoeller.yaml**.
 
 * Enter the following command:
@@ -268,7 +268,7 @@ downloaded/cloned METplotpy code.
   directory specified in the *plot_filename* configuration setting
   in the **minimal_hovmoeller.yaml** config file.
 
-  To generate a **customized** Hovmoeller plot (i.e. some or all default
+  To generate a **customized** Hovmoeller plot (i.e., some or all default
   configuration settings are to be overridden), use the
   **custom_hovmoeller.yaml** config file.
 

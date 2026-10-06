@@ -5,7 +5,7 @@ Ensemble Spread-Skill Plot
 Description
 ===========
 The theory is that RMSE of the ensemble mean should have roughly a 1-1
-relationship with the ensemble spread (i.e. standard deviation of the
+relationship with the ensemble spread (i.e., standard deviation of the
 ensemble member values). Ensemble spread-skill plot measures that relationship.
 
 Example
@@ -23,7 +23,7 @@ repository, where the Ensemble spread-skill plot tests are located:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
 */usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
@@ -75,7 +75,7 @@ plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/ens_ss_defaults.yaml
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 

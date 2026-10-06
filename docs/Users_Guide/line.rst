@@ -25,7 +25,7 @@ create an example line plot is available in the
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
 */usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
@@ -82,7 +82,7 @@ plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/line_defaults.yaml
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. any log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., any log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -236,7 +236,7 @@ To generate the above plot using the **line_defaults.yaml** and
 
   Recall that *$METPLOTPY_BASE* is the directory path indicating where the METplotpy source code was saved.
 
-  To generate the above **"custom"** plot (i.e. using some custom
+  To generate the above **"custom"** plot (i.e., using some custom
   configuration settings), use the custom configuration file,
   **custom_line.yaml**.
 
@@ -251,7 +251,7 @@ To generate the above plot using the **line_defaults.yaml** and
   the *plot_filename* configuration setting in the **custom_line.yaml** config file.
 
 
-  To generate the **"defaults"** plot below (i.e. using default configuration
+  To generate the **"defaults"** plot below (i.e., using default configuration
   settings), use the "minimal" custom configuration file,
   **minimal_line.yaml**.
 

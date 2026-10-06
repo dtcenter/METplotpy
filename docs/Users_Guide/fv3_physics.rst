@@ -66,7 +66,7 @@ The user must make sure the names in the configuration file
 match the names used in fv3_history.nc for their case.
 Some tendencies do not apply to all four state variables, so these cells are left blank.
 
-**NOTE**: *$METPLOTPY_BASE* is the directory where the METplotpy code is saved (e.g. */path/to/user/dir/METplotpy*).
+**NOTE**: *$METPLOTPY_BASE* is the directory where the METplotpy code is saved (e.g., */path/to/user/dir/METplotpy*).
 
 
 +-----------------------------+-------------+-------------------+-------------+-------------+
@@ -120,7 +120,7 @@ If time window overlaps initialization time
 -------------------------------------------
 
 The history file does not necessarily have the temperature, moisture, or wind at the exact
-time of model initialization. It is usually the next timestep (e.g. 180 seconds later). 
+time of model initialization. It is usually the next timestep (e.g., 180 seconds later). 
 This means you cannot derive the actual change in temperature starting at the model initialization
 time. You must choose a later valid time and/or a shorter time window that does not overlap
 the initialization time. In other words, it is a problem if your model initialization time is 0z, your

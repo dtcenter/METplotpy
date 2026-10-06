@@ -23,7 +23,7 @@ in the METplotpy repository, where the reliability diagram code is located:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
 */usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
@@ -75,7 +75,7 @@ plot as it represents the default values set in METviewer.
 .. literalinclude:: ../../metplotpy/plots/config/reliability_defaults.yaml
 
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -260,7 +260,7 @@ Perform the following:
   The filename is specified by the *plot_filename* value in the
   **reliability_defaults.yaml** config file.
 
-  To generate a **customized** reliability diagram (i.e. some or all
+  To generate a **customized** reliability diagram (i.e., some or all
   default configuration settings are to be overridden), use the
   **custom_reliability_diagram.yaml** config file.
 

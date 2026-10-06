@@ -38,7 +38,7 @@ METplotpy repository, where the bar plot tests are located:
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved.
 The data is text output from MET in columnar format.
 
-e.g.
+e.g.,
 
 */usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
@@ -87,7 +87,7 @@ plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/bar_defaults.yaml
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -112,7 +112,7 @@ saved to the working directory:
 Modify the *stat_input* setting in the
 **$METPLOTPY_BASE/test/bar/custom_bar.yaml**
 file to explicitly point to the $METPLOTPY_BASE/test/bar
-directory by replacing the relative paths (e.g. *./bar.data*) with the full path
+directory by replacing the relative paths (e.g., *./bar.data*) with the full path
 *$METPLOTPY_BASE/test/bar/bar.data* (including replacing *$METPLOTPY_BASE*
 with the full path to the METplotpy installation on the system).  Modify the
 *plot_filename* setting to explicitly point to the directory of the plot,

@@ -37,9 +37,9 @@ code is located:
 *$METPLOTPY_BASE/test/roc_diagram/plot_20200507_074426.data*
 
 *$METPLOTPY_BASE* is the directory where the METplotpy source code
-is installed. (e.g. */username/myworkspace*):
+is installed. (e.g., */username/myworkspace*):
 
-e.g.
+e.g.,
 
 */usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
@@ -89,7 +89,7 @@ a ROC diagram plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/roc_diagram_defaults.yaml
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -265,7 +265,7 @@ Perform the following:
   METplotpy source code was saved.
 
 
-  To generate the above **"defaults"** plot (i.e. using default
+  To generate the above **"defaults"** plot (i.e., using default
   configuration settings), use the "minimal" custom configuration file,
   **minimal_roc_diagram.yaml**.
 
@@ -280,7 +280,7 @@ Perform the following:
   directory specified in the *plot_filename* configuration setting
   in the **minimal_roc_diagram.yaml** config file.
 
-  To generate a **customized** ROC diagram (i.e. some or all default
+  To generate a **customized** ROC diagram (i.e., some or all default
   configuration settings are to be overridden), use the
   **custom_roc_diagram.yaml** config file.
 

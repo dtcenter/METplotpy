@@ -34,7 +34,7 @@ The sample data for creating the example scatter plot is available in the
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
 */usr/path/to/METplotpy* if the source code was cloned or forked from the GitHub repository
 
@@ -92,7 +92,7 @@ The following is the *mandatory*, **scatter_defaults.yaml** configuration file,
 which serves as a good starting point for creating a scatter
 plot.  This default config file **SHOULD NOT** be modified.
 The custom configuration file is used to override the settings
-of interest (i.e. marker colors, marker styles, trendline styles, etc.).
+of interest (i.e., marker colors, marker styles, trendline styles, etc.).
 
 
 .. note::
@@ -101,7 +101,7 @@ of interest (i.e. marker colors, marker styles, trendline styles, etc.).
 
 .. literalinclude:: ../../metplotpy/plots/config/scatter_defaults.yaml
 
-In the default config file, logging is set to *stdout* and the log level is *ERROR* (i.e. any log messages
+In the default config file, logging is set to *stdout* and the log level is *ERROR* (i.e., any log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 

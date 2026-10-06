@@ -17,7 +17,7 @@ Place all code in the appropriate locations:
 
   b.
   Sample data for testing should be placed in *test/<plotname>* directory,
-  where **<plotname>** is replaced with the name of the plot (e.g. bar, box,
+  where **<plotname>** is replaced with the name of the plot (e.g., bar, box,
   etc.). The size of the sample data must be **under 50 MB.**
 
   c.
@@ -28,7 +28,7 @@ Place all code in the appropriate locations:
 
   d.
   Test code should be placed in the *test/<plotname>* directory,
-  where **<plotname>** is replaced with the name of the plot (e.g. bar, box,
+  where **<plotname>** is replaced with the name of the plot (e.g., bar, box,
   etc.). The test code should be created using the pytest framework,
   utilizing sample data that can be readily run.
 
@@ -48,12 +48,12 @@ a default configuration file and a custom config file.
 The default configuration files are used by METviewer and are located in
 *metplotpy/plots/config*. The default config file should be named using the
 naming convention **<plotname>_defaults.yaml**, where **<plotname>** is replaced
-with the name of the plot (e.g. bar, box, etc.).
+with the name of the plot (e.g., bar, box, etc.).
 
 The custom configuration file is required. It can be an empty file if the
 default settings are to be applied. Custom configuration files are located
 in the *test/<plotname>* directory, where **<plotname>** is replaced with the name
-of the plot (e.g. box, bar, etc.).  In addition to being used for testing,
+of the plot (e.g., box, bar, etc.).  In addition to being used for testing,
 these custom configuration files are used in the user documentation to
 illustrate how to generate the plot.
 

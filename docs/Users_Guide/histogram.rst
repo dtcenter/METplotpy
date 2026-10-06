@@ -46,7 +46,7 @@ repository, where the histogram test scripts are located:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
 */usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
@@ -101,7 +101,7 @@ will be built.
 
 .. literalinclude:: ../../metplotpy/plots/config/hist_defaults.yaml
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -252,7 +252,7 @@ are lower verbosity).
 Run from the Command Line
 =========================
 
-To generate the three specialized histogram plots (i.e. using settings in the
+To generate the three specialized histogram plots (i.e., using settings in the
 **hist_defaults.yaml** configuration file),
 perform the following:
 

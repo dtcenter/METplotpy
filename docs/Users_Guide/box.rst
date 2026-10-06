@@ -10,7 +10,7 @@ of values using Tukey's 5-number summary
 (:ref:`Hoaglin et al., 1983<Hoaglin>`). The dark
 line in the middle of the boxes (sometimes called the 'waist') is the
 median of data. Half of the data values have a value greater than the
-median, and half have a value lower. The actual box (i.e. the central
+median, and half have a value lower. The actual box (i.e., the central
 rectangle) spans the first quartile to the third quartile (or the
 interquartile range or IQR). Whiskers extend to 1.5 times the height
 of the box or, if closer to the median, the minimum or maximum values
@@ -41,7 +41,7 @@ METplotpy repository, where the box plot tests are located:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved
 
-e.g.
+e.g.,
 
 */usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
@@ -200,7 +200,7 @@ to that directory.
 **NOTE**: This file does not plot any data, its purpose is to provide a
 template for setting the margins, plot size, labels, etc.
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -253,7 +253,7 @@ Perform the following to generate the plots:
 
   .. image:: figure/box_default.png
 
-  To generate the above *"defaults"* plot (i.e. using default configuration
+  To generate the above *"defaults"* plot (i.e., using default configuration
   settings), use the "minimal" custom configuration file, **minimal_box.yaml**.
 
 

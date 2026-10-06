@@ -8,7 +8,7 @@ Description
 The difficulty index plot is a graphical representation of the expected difficulty of a decision based on a set of
 forecasts (ensemble) of, e.g., significant wave height as a function of space and time. There are two basic factors
 that can make a decision difficult. The first factor is the proximity of the ensemble mean forecast to a decision
-threshold, e.g. 12 ft seas. If the ensemble mean is either much lower or much higher than the threshold, the
+threshold, e.g., 12 ft seas. If the ensemble mean is either much lower or much higher than the threshold, the
 decision is easier; if it is closer to the threshold, the decision is harder. The second factor is the forecast
 precision, or ensemble spread. The greater the spread around the ensemble mean, the more likely it is that there will
 be ensemble members both above and below the decision threshold, making the decision harder. (A third factor that we
@@ -112,7 +112,7 @@ you created earlier to store the sample input data.
 
       cd $WORKING_DIR
 
-where *$WORKING_DIR* is the directory where you copied all the necessary files (e.g. /home/users/someuser/working_dir).
+where *$WORKING_DIR* is the directory where you copied all the necessary files (e.g., /home/users/someuser/working_dir).
 
 
 * Run the following on the command line:
