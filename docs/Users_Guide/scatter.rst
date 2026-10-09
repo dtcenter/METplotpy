@@ -123,7 +123,7 @@ Copy this custom config file from the directory where the source code was
 saved to the working directory:
 
 .. code-block:: ini
-		
+
   cp $METPLOTPY_BASE/test/scatter/test_scatter_mpr.yaml $WORKING_DIR/custom_scatter.yaml
 
 
@@ -208,7 +208,7 @@ To generate the above plot using the **scatter_defaults.yaml** and
   For the ksh environment:
 
   .. code-block:: ini
-		
+
     export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:

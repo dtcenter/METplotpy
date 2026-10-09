@@ -268,13 +268,13 @@ perform the following:
   For the ksh environment:
 
   .. code-block:: ini
-		
+
     export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
-		
+
     setenv METPLOTPY_BASE $METPLOTPY_BASE
 
   Recall that *$METPLOTPY_BASE* is the directory path indicating where the METplotpy source code was saved.
@@ -298,7 +298,7 @@ perform the following:
   command using the **prob_hist.yaml** file:
 
   .. code-block:: ini
-		
+
     python $METPLOTPY_BASE/metplotpy/plots/histogram/prob_hist.py $WORKING_DIR/prob_hist.yaml
 
   .. image:: figure/prob_hist.png

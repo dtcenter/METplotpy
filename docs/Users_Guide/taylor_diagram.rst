@@ -184,7 +184,7 @@ a *plot_filename* in the **minimal_taylor_diagram.yaml** file):
 Copy this file to the working directory:
 
 .. code-block:: ini
-		
+
   cp $METPLOTPY_BASE/test/taylor_diagram/minimal_taylor_diagram.yaml $WORKING_DIR/minimal_taylor_diagram.yaml
 
 If the *stat_input* and *plot_filename* settings (output file/plot path) are missing, add
@@ -226,13 +226,13 @@ perform the following:
   For the ksh environment:
 
   .. code-block:: ini
-		
+
     export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
-		
+
     setenv METPLOTPY_BASE $METPLOTPY_BASE
 
   Replacing the $METPLOTPY_BASE with the directory where the
@@ -254,7 +254,7 @@ perform the following:
   command (below) using the **taylor_diagram_custom.yaml** file:
 
   .. code-block:: ini
-		
+
     python $METPLOTPY_BASE/metplotpy/plots/taylor_diagram/taylor_diagram.py $WORKING_DIR/taylor_diagram_custom.yaml
 
 
