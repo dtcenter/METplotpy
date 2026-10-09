@@ -1,5 +1,5 @@
 *************************************
-Economic Cost/Lost Value (ECLV) Plots
+Economic Cost/Loss Value (ECLV) Plots
 *************************************
 
 Description
@@ -34,14 +34,14 @@ repository, where the ECLV plot scripts are located:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
@@ -52,7 +52,7 @@ input data is located and to set plot attributes. These plot attributes
 correspond to values that can be set via the METviewer tool. YAML is a
 recursive acronym for "YAML Ain't Markup Language" and according to
 `yaml.org <https://yaml.org>`_,
-it is a "human-friendly data serialization language. It is commonly used for
+it is a "human-friendly data serialization language". It is commonly used for
 configuration files and in applications where data is being stored or
 transmitted. Two configuration files are required. The first is a
 default configuration file, **eclv_defaults.yaml**,
@@ -87,7 +87,7 @@ serve as a starting point for creating an eclv plot.
 .. literalinclude:: ../../metplotpy/plots/config/eclv_defaults.yaml
 
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -113,7 +113,7 @@ Modify the *stat_input* setting in the
 file to explicitly point to the
 *$METPLOTPY_BASE/test/eclv/*
 directory (where the custom config files and sample data reside).
-Replace the relative path *.eclv.data*
+Replace the relative path *./eclv.data*
 with the full path
 *$METPLOTPY_BASE/test/eclv/eclv.data*
 (including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
@@ -145,7 +145,7 @@ Uncomment or add (if it doesn't exist) the *points_path* setting:
 
 *points_path: '/dir_to_save_points1_file'*
 
-Replace the */dir_to_save_points1_file* to the same directory where the
+Replace the */dir_to_save_points1_file* with the same directory where the
 **.points1** file is saved.
 If *points_path* is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment
@@ -157,7 +157,7 @@ files unless saving the intermediate **.points1** file is desired.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -165,19 +165,19 @@ Using Defaults
 --------------
 
 There isn't a set of "default" values to create a meaningful ECLV plot. Use the combination of the
-default_eclv.yaml and custom_eclv.yaml file to create a sample ECLV plot.
+eclv_defaults.yaml and custom_eclv.yaml file to create a sample ECLV plot.
 
 
 Run from the Command Line
 =========================
 
-To generate a *meaningful* ECLV plot (i.e. using settings in the
+To generate a *meaningful* ECLV plot (i.e., using settings in the
 **eclv_defaults.yaml** and **custom_eclv.yaml** configuration files),
 perform the following:
 
 
 *  If using the conda environment, verify the conda environment
-   is running and has has the required Python packages outlined in the
+   is running and has the required Python packages outlined in the
    `requirements section
    <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_.
 

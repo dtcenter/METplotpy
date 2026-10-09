@@ -8,7 +8,7 @@ A bar plot shows comparisons among discrete categories. One axis of the
 chart shows the specific categories being compared, while the other
 represents some measured value. The heights or lengths are proportional to
 the values that they represent. Bar plots are simple and flexible, unlike
-some other METview plot types. Rather than using prescribed statistics in
+some other METviewer plot types. Rather than using prescribed statistics in
 a specific way, the user can select both axes.
 
 Bar plots are distinct from histograms and the two are not interchangeable.
@@ -38,14 +38,14 @@ METplotpy repository, where the bar plot tests are located:
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved.
 The data is text output from MET in columnar format.
 
-e.g.
+e.g.,
 
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
@@ -62,7 +62,7 @@ required. The first is a default configuration file, **bar_defaults.yaml**,
 which is found in the
 *$METPLOTPY_BASE/metplotpy/plots/config* directory. All default
 configuration files are located in the
-*$METPLOTPY_BASE/metplotpy/plots/config* directory.  *$METPLOTPY_BASE* is base directory where the
+*$METPLOTPY_BASE/metplotpy/plots/config* directory.  *$METPLOTPY_BASE* is the base directory where the
 METplotpy source code has been saved.  **Default configuration files are
 automatically loaded by the plotting code and do not need to be explicitly
 specified when generating a plot**.
@@ -79,7 +79,7 @@ Default Configuration File
 --------------------------
 
 The following is the *mandatory*, **bar_defaults.yaml** configuration file,
-which serves as a good starting point for creating a line
+which serves as a good starting point for creating a bar
 plot as it represents the default values set in METviewer.
 
 **NOTE**: This default configuration file is automatically loaded by
@@ -87,7 +87,7 @@ plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/bar_defaults.yaml
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -112,7 +112,7 @@ saved to the working directory:
 Modify the *stat_input* setting in the
 **$METPLOTPY_BASE/test/bar/custom_bar.yaml**
 file to explicitly point to the $METPLOTPY_BASE/test/bar
-directory by replacing the relative paths (e.g. *./bar.data*) with the full path
+directory by replacing the relative paths (e.g., *./bar.data*) with the full path
 *$METPLOTPY_BASE/test/bar/bar.data* (including replacing *$METPLOTPY_BASE*
 with the full path to the METplotpy installation on the system).  Modify the
 *plot_filename* setting to explicitly point to the directory of the plot,
@@ -126,7 +126,7 @@ For example:
 
 This is where */username/myworkspace/METplotpy* corresponds to $METPLOTPY_BASE and
 */username/working_dir* corresponds to $WORKING_DIR.  Make sure that the
-$WORKING_DIR directory that is specifed exists and has the appropriate
+$WORKING_DIR directory that is specified exists and has the appropriate
 read and write permissions.
 The path listed for *plot_filename* may be changed to the output directory
 of one’s choosing. If this is not set, then the *plot_filename* setting
@@ -143,7 +143,7 @@ the *points_path* setting.
 
 *points_path: '/dir_to_save_points1_file'*
 
-Replace the */dir_to_save_points1_file* to the same directory where
+Replace the */dir_to_save_points1_file* with the same directory where
 the **.points1** file is saved.
 If points_path is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment
@@ -155,7 +155,7 @@ file is desired.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -171,7 +171,7 @@ The **custom_bar.yaml** configuration file, in combination with the
 To generate the above bar plot, perform the following:
 
 * If using the conda environment,
-  verify the conda environment is running and has has the required
+  verify the conda environment is running and has the required
   Python packages outlined in the `requirements section
   <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_.
 

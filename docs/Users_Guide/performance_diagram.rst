@@ -10,7 +10,7 @@ statistics, with  axes representing detection and success (1 - false alarm)
 rates (:ref:`Roebber, 2009<Roebber>`).  
 The simplest input to the performance diagram is the MET contingency
 table statistics (CTS)  output.  This output can be produced by many of
-the MET tools (Point-Stat, Grid-Stat, etc.)
+the MET tools (Point-Stat, Grid-Stat, etc.).
 For more information on Performance diagrams, please refer to the
 `METviewer documentation
 <https://metplus.readthedocs.io/projects/metviewer/en/latest/Users_Guide/perfdiag.html>`_.
@@ -39,14 +39,14 @@ repository, where the performance diagram scripts are located:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 
 
@@ -59,7 +59,7 @@ input data is located and to set plot attributes. These plot attributes
 correspond to values that can be set via the METviewer tool. YAML is a
 recursive acronym for "YAML Ain't Markup Language" and according to
 `yaml.org <https://yaml.org>`_,
-it is a "human-friendly data serialization language. It is commonly used for
+it is a "human-friendly data serialization language". It is commonly used for
 configuration files and in applications where data is being stored or
 transmitted. Two configuration files are required. The first is a
 default configuration file, **performance_diagram_defaults.yaml**,
@@ -95,7 +95,7 @@ performance diagram plot,  as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/performance_diagram_defaults.yaml
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -154,7 +154,7 @@ Uncomment or add (if it doesn't exist) the *points_path* setting:
 
 *points_path: '/dir_to_save_points1_file'*
 
-Replace the */dir_to_save_points1_file* to the same directory where the
+Replace the */dir_to_save_points1_file* with the same directory where the
 **.points1** file is saved.
 If *points_path* is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment
@@ -166,7 +166,7 @@ file unless saving the intermediate **.points1** file is desired.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -177,7 +177,7 @@ Using Defaults
 To use the *default* settings defined in the
 **performance_diagram_defaults.yaml**
 file, specify a minimal custom configuration file
-(**minimal_performance_diagram_defaults.yaml**), which consists of only
+(**minimal_performance_diagram.yaml**), which consists of only
 a comment block, but it can be any empty file (write permissions for the
 output filename path corresponding to the *plot_filename* setting in
 the default configuration file will be needed. Otherwise, specify
@@ -211,7 +211,7 @@ Replace *$METPLOTPY_BASE* with the full path to the METplotpy
 installation on the system.
 **NOTE**: The *plot_filename* (output directory) may be specified
 to a directory other than the *$WORKING_DIR/output_plots*, as long as
-it is an existing directory where the author has read and write permissions.
+it is an existing directory where the user has read and write permissions.
 
 To save the intermediate **.points1** file (used by METviewer and useful
 for debugging), add the following lines to the
@@ -222,21 +222,21 @@ for debugging), add the following lines to the
 *points_path: '/dir_to_save_points1_file'*
 
 
-Replace the */dir_to_save_points1_file* to the same directory where
-the **.points** file is saved. Make sure that this directory exists
+Replace the */dir_to_save_points1_file* with the same directory where
+the **.points1** file is saved. Make sure that this directory exists
 and has the appropriate read and write permissions.
 
 
 Run from the Command Line
 =========================
 
-To generate a default performance diagram (i.e. using settings in the 
+To generate a default performance diagram (i.e., using settings in the 
 **performance_diagram_defaults.yaml** configuration file),
 perform the following:
 
 
 *  If using the conda environment, verify the conda environment
-   is running and has has the required Python packages outlined in the
+   is running and has the required Python packages outlined in the
    `requirements section <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_.
 
 * Set the METPLOTPY_BASE environment variable to point to

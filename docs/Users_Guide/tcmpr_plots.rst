@@ -19,11 +19,11 @@ source code will be needed to perform event equalization and other necessary cal
 The METcalcpy repository is located at
 https://github.com/dtcenter/METcalcpy
 
-Use the same release versions for METplotpy and METcalcpy (i.e. if using a vx.y.z of METplotpy, use the
+Use the same release versions for METplotpy and METcalcpy (i.e., if using a vx.y.z of METplotpy, use the
 same version for METcalcpy).
 
 
-There are numerous TCMPR plots that can be generated within **one** YAML configuration files:
+There are numerous TCMPR plots that can be generated within **one** YAML configuration file:
 
   * mean line plot
   * median line plot
@@ -38,7 +38,7 @@ times the TCMPR plotter code is invoked from the command line.
 
 When more specific titles and plot customizations are desired for particular plot types,
 each plot type can be defined with a corresponding configuration file
-(e.g. a box plot will have a config file specifying settings specific to the
+(e.g., a box plot will have a config file specifying settings specific to the
 boxplot, a reliability plot will have a corresponding config file with settings relevant to a reliability plot, etc.).
 However, the TCMPR plotter code will now need to be invoked for each of these special plot type/config file
 combinations.
@@ -57,14 +57,14 @@ The sample data used to create various TCMPR plots is available in the
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
@@ -91,8 +91,8 @@ label based on the plot type and requested statistics specified in the config fi
 
 If particular plot types require specific/custom titles and/or
 x- and y-axis labels, then each plot type can have a corresponding configuration file with values specific to this plot
-type, statistics of interest (e.g. ABS(AMSLP-BMSLP), TK_ERR, etc.), fixed variables
-(e.g. BASIN:AL, LEVEL:[SS, HU, TS]), and series (e.g. AMODEL:[H221, M221]).
+type, statistics of interest (e.g., ABS(AMSLP-BMSLP), TK_ERR, etc.), fixed variables
+(e.g., BASIN:AL, LEVEL:[SS, HU, TS]), and series (e.g., AMODEL:[H221, M221]).
 
 .. note::
 
@@ -285,7 +285,7 @@ For this example, the only settings requiring changes are: **tcst_dir**, **plot_
 
       plot_dir: '/path/to/output_dir'
 
-   Replace */path/to/output_dir* to an existing directory that has the appropriate read and write privileges.
+   Replace */path/to/output_dir* with an existing directory that has the appropriate read and write privileges.
 
 
 .. dropdown:: **Specify the log level and log file** (optional):
@@ -298,11 +298,11 @@ For this example, the only settings requiring changes are: **tcst_dir**, **plot_
 
       log_filename: /path/to/output/tcmpr_log.out
 
-   Replace */path/to/output* to an existing directory with the appropriate read and write permissions.
+   Replace */path/to/output* with an existing directory with the appropriate read and write permissions.
    By default, the log level is set to ERROR (the least verbose) and logging is directed to STDOUT.  The following
-   log levels are available (from most verbose to least): INFO, DEBUG, WARNING, ERROR.
+   log levels are available (from most verbose to least): DEBUG, INFO, WARNING, ERROR.
 
-.. dropdown:: *Specify the baseline_file and column_info_file**:
+.. dropdown:: **Specify the baseline_file and column_info_file**:
 
    .. code-block:: ini
 
@@ -310,9 +310,9 @@ For this example, the only settings requiring changes are: **tcst_dir**, **plot_
       column_info_file: '$METPLOTPY_BASE/metplotpy/plots/tcmpr_plots/plot_tcmpr_hdr.dat'
 
    Replace $METPLOTPY_BASE with the full path to where the METplotpy source code was saved
-   (i.e. /home/username/METplotpy).
+   (i.e., /home/username/METplotpy).
 
-.. dropdown :: *Specify the colors for each "series" (i.e. line, box in a boxplot, etc.)*
+.. dropdown :: *Specify the colors for each "series" (i.e., line, box in a boxplot, etc.)*
 
    .. code-block:: ini
 
@@ -321,7 +321,7 @@ For this example, the only settings requiring changes are: **tcst_dir**, **plot_
        - 'green'
 
     .. note ::
-      Make sure the number of columns specified corresponds to the number of series
+      Make sure the number of colors specified corresponds to the number of series
       being generated.
 
 .. dropdown :: *Specify the appearance of the symbols, lines, etc.*
@@ -359,7 +359,7 @@ Below are descriptions of the settings used in this example:
           - H221
           - M221
 
-   Specify a key (AMODEL) and a list of one or more values of interest (e.g. the H221 and M221 models)
+   Specify a key (AMODEL) and a list of one or more values of interest (e.g., the H221 and M221 models).
    The above example will produce a plot with **two** lines/series, one for each AMODEL.  The number of series/lines
    dictates the number of required plot settings. In this case,  **two** values are needed for plot settings such as
    colors, symbols, series order, plot display (on/off), line widths, line styles, symbol appearance
@@ -368,9 +368,9 @@ Below are descriptions of the settings used in this example:
    produced.
 
 The following settings are necessary for generating the plot types for this data set.
-The settings will override the defaults in the tcmpr_defaults.yaml
+The settings will override the defaults in the tcmpr_defaults.yaml.
 
-.. dropdown:: **Specify the independent (i.e. x-axis) variable, series, values and labels**:
+.. dropdown:: **Specify the independent (i.e., x-axis) variable, series, values and labels**:
 
   .. code-block:: ini
 
@@ -545,14 +545,14 @@ The settings will override the defaults in the tcmpr_defaults.yaml
      xaxis: 'Lead Time(h)'
 
   The *xaxis* setting is absent in the custom config file, tcmpr_multi_plots.yaml.  When a setting is absent in
-  the custom config file. the default value is used.
+  the custom config file, the default value is used.
   If a different setting is desired,  add the xaxis setting in the custom config file (anywhere in the file),
   tcmpr_multi_plots.yaml and set it to the desired text (surrounded by single or double quotes).
 
 
   The above settings define the creation of a boxplot, mean line plot, median line plot, rank plot, median skill
   plot, and mean skill plot for ABS(AMAX_WIND-BMAX_WIND) and TK_ERR.  Each plot contains the lines/boxes for
-  the AMODEL M221 and H221, resulting in a total of fourteen plots. The plot titles, y-axis label,and  output
+  the AMODEL M221 and H221, resulting in a total of fourteen plots. The plot titles, y-axis label, and output
   filenames are generated by the code.
 
 
@@ -597,7 +597,7 @@ The **tcmpr_multi_plots.yaml** configuration file, in combination with the
 Generate plots with separate, specific configuration files:
 -----------------------------------------------------------
 
-This is an example of generating single plot types with titles axis labels specific to
+This is an example of generating single plot types with titles and axis labels specific to
 that plot type.  Two plot types will be generated, a boxplot and a relative performance plot.
 The line colors, series, independent values and labels, etc. are the same as those used in the
 tcmpr_multi_plots.yaml custom config file.
@@ -690,25 +690,25 @@ Run from the Command Line
 
   .. code-block:: ini
 
-     export METPLOTPY_BASE=/path/to/METplotpy_source_cod
+     export METPLOTPY_BASE=/path/to/METplotpy_source_code
 
   For the csh environment:
 
   .. code-block:: ini
 
-     setenv METPLOTPY_BASE /path/to/METplotpy_source_cod
+     setenv METPLOTPY_BASE /path/to/METplotpy_source_code
 
-Replace /path/to/METplotpy_source_code to the directory path where the METplotpy source code is saved.
+Replace /path/to/METplotpy_source_code with the directory path where the METplotpy source code is saved.
 
 * Set the METCALCPY_BASE environment variable to point to where the METcalcpy source code resides, for example:
 
   .. code-block:: ini
 
-     export METPLOTPY_BASE=/home/username/METplotpy
+     export METCALCPY_BASE=/home/username/METcalcpy
 
   .. code-block:: ini
 
-     setenv METPLOTPY_BASE=/home/username/METplotpy
+     setenv METCALCPY_BASE /home/username/METcalcpy
 
 
 For the ksh environment:
@@ -723,7 +723,7 @@ For the csh environment:
 
     setenv METCALCPY_BASE /path/to/METcalcpy_source_code
 
-Replace /path/to/METcalcpy_source_code to the directory path where the METcalcpy source code is saved, for
+Replace /path/to/METcalcpy_source_code with the directory path where the METcalcpy source code is saved, for
 example:
 
     .. code-block:: ini
@@ -796,7 +796,7 @@ To generate the seven plot types using the **tcmpr_defaults.yaml** and
 
   * TK_ERR_skill_mn.png
 
-NOTE: Some of the titles are cut-off in some of the plots.  The default title_size can be overridden by adding the
+NOTE: Some of the titles are cut off in some of the plots.  The default title_size can be overridden by adding the
 title_size setting to the tcmpr_multi_plots.yaml file (anywhere in the file) and reducing it from the
 default value of 1.4:
 
@@ -813,7 +813,7 @@ Plots with separate, corresponding config files:
 
 Two plot types, boxplot and relative performance will be generated using the same settings as
 the tcmpr_multi_plots.yaml file with some changes to the title, y-axis, and plot filename. All the
-other settings (i.e. color, symbol settings, series, variables) will be the same.
+other settings (i.e., color, symbol settings, series, variables) will be the same.
 
 
 **Boxplot**

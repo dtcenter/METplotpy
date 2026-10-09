@@ -11,7 +11,7 @@ This plot was developed to support plotting MPR (matched pair) data from the MET
 
   This MET output data must first be reformatted into a format that can be read in by the scatter plot code.
   This reformatting was accomplished through the METdataio METreformat module. The reformatted data
-  consists solely of MPR linetype data and all the column headers are labelled according to the
+  consists solely of MPR linetype data and all the column headers are labeled according to the
   MPR linetype column names specified in the Point-Stat section of the MET User's Guide in 
   `Table 11.20 <https://metplus.readthedocs.io/projects/met/en/latest/Users_Guide/point-stat.html#table-ps-format-info-seeps>`_ 
   "Format information for SEEPS (Stable Equitable Error in Probability Space) output line type".
@@ -34,14 +34,14 @@ The sample data for creating the example scatter plot is available in the
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
-*/usr/path/to/METplotpy* if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy* if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z* if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 
 .. note::
@@ -64,7 +64,7 @@ configuration file, **scatter_defaults.yaml**, which is found in the
 *$METPLOTPY_BASE/metplotpy/plots/config* directory. All default
 configuration files are located in the
 *$METPLOTPY_BASE/metplotpy/plots/config* directory.
-*$METPLOTPY_BASE* is base directory where the
+*$METPLOTPY_BASE* is the base directory where the
 METplotpy source code has been saved. **Default configuration files are
 automatically loaded by the plotting code and do not need to be explicitly
 specified when generating a plot**. In addition, the default configuration file
@@ -92,7 +92,7 @@ The following is the *mandatory*, **scatter_defaults.yaml** configuration file,
 which serves as a good starting point for creating a scatter
 plot.  This default config file **SHOULD NOT** be modified.
 The custom configuration file is used to override the settings
-of interest (i.e. marker colors, marker styles, trendline styles, etc.).
+of interest (i.e., marker colors, marker styles, trendline styles, etc.).
 
 
 .. note::
@@ -101,7 +101,7 @@ of interest (i.e. marker colors, marker styles, trendline styles, etc.).
 
 .. literalinclude:: ../../metplotpy/plots/config/scatter_defaults.yaml
 
-In the default config file, logging is set to *stdout* and the log level is *ERROR* (i.e. any log messages
+In the default config file, logging is set to *stdout* and the log level is *ERROR* (i.e., any log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -128,11 +128,11 @@ saved to the working directory:
 
 
 Modify the *stat_input* setting in the
-*$METPLOTPY_BASE/test/scatter/custom_scatter.yaml* file to
+*$WORKING_DIR/custom_scatter.yaml* file to
 explicitly point to the *$METPLOTPY_BASE/test/scatter*
 directory (where the custom config files and sample data reside).
-Replace the relative path *./scatter.data* with the full path
-*$METPLOTPY_BASE/test/scatter/scatter.data*
+Replace the relative path *./reformatted_data_for_scatter.data* with the full path
+*$METPLOTPY_BASE/test/scatter/reformatted_data_for_scatter.data*
 (including replacing *$METPLOTPY_BASE* with the full path to the METplotpy
 installation on the system).
 
@@ -165,7 +165,7 @@ Modify the *points_path* setting or add it (if it doesn't exist).
 
 *points_path: '/dir_to_save_plot_points_file'*
 
-Replace the */dir_to_save_plot_points_file* to the same directory where
+Replace the */dir_to_save_plot_points_file* with the same directory where
 the **plot_points.txt** file is saved.
 Make sure that this directory has the appropriate read and write permissions.
 
@@ -173,7 +173,7 @@ To save the log output to a file, uncomment the *log_filename* entry and specify
 name of the log file.  Select a directory with the appropriate read and write
 privileges.
 
-To modify the verbosity of logging than what is set in the default config
+To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -186,7 +186,7 @@ The **custom_scatter.yaml** configuration file, in combination with the
 **scatter_defaults.yaml** configuration file, generates a plot of the matched
 pair (MPR) linetype data for the TMP variable and the two continuous variables FCST and OBS.
 
-The data has been further filtered based on the interpolation method and forecast level ( via the
+The data has been further filtered based on the interpolation method and forecast level (via the
 *fixed_vars_vals_input* setting).
 
 The grid lines and trendline are turned on, the FCST, OBS, and OBS_LAT points are saved to a text file, and the
@@ -228,7 +228,7 @@ To generate the above plot using the **scatter_defaults.yaml** and
 
 
 * A **scatter_mpr_tmp_obs_lat.png** output file will be created in the directory specified in
-  the *plot_filename* configuration setting in the **scatter.yaml** config file.
+  the *plot_filename* configuration setting in the **custom_scatter.yaml** config file.
 
 
   .. image:: figure/scatter_mpr_tmp_obs_lat.png

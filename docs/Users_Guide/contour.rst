@@ -7,7 +7,7 @@ Description
 
 Contour plots are a very general plot type somewhat similar to a scatter
 plot. The axes are specified by the user, and any will do so long as the
-entire set of x and y locations has some value (i.e. not missing data). The
+entire set of x and y locations has some value (i.e., not missing data). The
 value is then contoured. This type of plot is often used to examine
 statistics over a series of time or heights.
 For more information on Contour plots, please refer to the
@@ -32,14 +32,14 @@ repository:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 
 
@@ -51,7 +51,7 @@ input data is located and to set plot attributes. These plot attributes
 correspond to values that can be set via the METviewer tool. YAML is a
 recursive acronym for "YAML Ain't Markup Language" and according to
 `yaml.org <https://yaml.org>`_,
-it is a "human-friendly data serialization language. It is commonly used for
+it is a "human-friendly data serialization language". It is commonly used for
 configuration files and in applications where data is being stored or
 transmitted. Two configuration files are required. The first is a
 default configuration file, **contour_defaults.yaml**,
@@ -85,7 +85,7 @@ contour plot,  as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/contour_defaults.yaml
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -143,7 +143,7 @@ Uncomment or add (if it doesn't exist) the *points_path* setting:
 
 *points_path: '/dir_to_save_points1_file'*
 
-Replace the */dir_to_save_points1_file* to the same directory where the
+Replace the */dir_to_save_points1_file* with the same directory where the
 **.points1** file is saved.
 If *points_path* is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment
@@ -155,7 +155,7 @@ file unless saving the intermediate **.points1** file is desired.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -164,13 +164,13 @@ are lower verbosity).
 Run from the Command Line
 =========================
 
-To generate a contour plot (i.e. using settings in the
+To generate a contour plot (i.e., using settings in the
 **custom_contour.yaml** configuration file),
 perform the following:
 
 
 *  If using the conda environment, verify the conda environment
-   is running and has has the required Python packages outlined in the
+   is running and has the required Python packages outlined in the
    `requirements section
    <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_.
 

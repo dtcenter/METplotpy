@@ -10,7 +10,7 @@ of values using Tukey's 5-number summary
 (:ref:`Hoaglin et al., 1983<Hoaglin>`). The dark
 line in the middle of the boxes (sometimes called the 'waist') is the
 median of data. Half of the data values have a value greater than the
-median, and half have a value lower. The actual box (i.e. the central
+median, and half have a value lower. The actual box (i.e., the central
 rectangle) spans the first quartile to the third quartile (or the
 interquartile range or IQR). Whiskers extend to 1.5 times the height
 of the box or, if closer to the median, the minimum or maximum values
@@ -41,14 +41,14 @@ METplotpy repository, where the box plot tests are located:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved
 
-e.g.
+e.g.,
 
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
@@ -83,7 +83,7 @@ Default Configuration File
 --------------------------
 
 The following is the *mandatory*, **box_defaults.yaml** configuration file,
-which serves as a good starting point for creating a line
+which serves as a good starting point for creating a box
 plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/box_defaults.yaml
@@ -144,7 +144,7 @@ setting to True. Uncomment or add (if it doesn't exist) the
 *points_path: '/dir_to_save_points1_file'*
 
 
-Replace the **/dir_to_save_points1_file** to the same directory where
+Replace the **/dir_to_save_points1_file** with the same directory where
 the **.points1** file is saved.
 If *points_path* is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment the points_path so that it will be used
@@ -155,7 +155,7 @@ unless saving the intermediate **.points1** file is desired.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -191,7 +191,7 @@ files are located.  Set the *stat_input* to
 
 *plot_filename: $WORKING_DIR/output_plots/box_default.png*
 
-Where *$WORKING_DIR* is the working directory where where all the custom
+Where *$WORKING_DIR* is the working directory where all the custom
 configuration files are being saved. **NOTE**: If the *plot_filename*
 (output directory) is specified to a directory other than the
 *$WORKING_DIR/output_plots*, the user must have read and write permissions
@@ -200,7 +200,7 @@ to that directory.
 **NOTE**: This file does not plot any data, its purpose is to provide a
 template for setting the margins, plot size, labels, etc.
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -253,7 +253,7 @@ Perform the following to generate the plots:
 
   .. image:: figure/box_default.png
 
-  To generate the above *"defaults"* plot (i.e using default configuration
+  To generate the above *"defaults"* plot (i.e., using default configuration
   settings), use the "minimal" custom configuration file, **minimal_box.yaml**.
 
 
@@ -265,4 +265,4 @@ Perform the following to generate the plots:
 
 * A **box_default.png** output file will be created in the
   directory specified in the *plot_filename* configuration setting in
-  the **box_minimal.yaml** config file.
+  the **minimal_box.yaml** config file.

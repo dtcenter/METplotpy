@@ -26,14 +26,14 @@ METplotpy repository, where the **histogram_2d.py** code is located:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 
 Configuration File
@@ -44,7 +44,7 @@ input data is located and to set plot attributes. **NOTE**: The
 histogram_2d plot is currently **not** integrated into the METviewer tool,
 and as a result the configuration file has fewer settings than the
 other plot types that are available through the METviewer tool.  YAML is
-a recursive acroynym for "YAML Ain't Markup Language" and according to
+a recursive acronym for "YAML Ain't Markup Language" and according to
 `yaml.org <https://yaml.org>`_, it is a "human-friendly data serialization
 language". It is commonly used for configuration files and in applications
 where data is being stored or transmitted.  Two configuration files are
@@ -79,7 +79,7 @@ set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/histogram_2d_defaults.yaml
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -135,8 +135,8 @@ The *points_path*, *dump_points_1*, and *dump_points_2* settings are
 intermediate files that are used by METviewer are currently not being
 generated (this plot type is currently not integrated into the METviewer
 tool which is why these intermediate files are not being
-generated).  The *points_path*, *dump_points_1*, and *dump_points2*
-settings can be commented out (i.e. line begins with a '#'):
+generated).  The *points_path*, *dump_points_1*, and *dump_points_2*
+settings can be commented out (i.e., line begins with a '#'):
 
 *# points_path: /path/to/your/directory*
 
@@ -146,7 +146,7 @@ settings can be commented out (i.e. line begins with a '#'):
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -214,7 +214,7 @@ Perform the following:
 		
      mkdir $METPLOTPY_BASE
 
-* *$METPLOTPY_BASE* is the directory where the source code is66TAW saved.
+* *$METPLOTPY_BASE* is the directory where the source code is saved.
   Enter the following:
 
   .. code-block:: ini
@@ -239,7 +239,7 @@ Perform the following:
 
   Replace *$METPLOTPY_BASE* with the directory where the source code is saved.
 
-  To generate the above **"defaults"** plot (i.e using default configuration
+  To generate the above **"defaults"** plot (i.e., using default configuration
   settings), use the "minimal" custom configuration file,
   **minimal_histogram_2d.yaml**.
 
@@ -254,7 +254,7 @@ Perform the following:
   directory specified in the *plot_filename* configuration setting
   in the **minimal_histogram_2d.yaml** config file.
 
-  To generate a **customized** histogram_2d plot (i.e. some or all
+  To generate a **customized** histogram_2d plot (i.e., some or all
   default configuration settings are to be overridden), use the
   **custom_histogram_2d.yaml** config file.
 

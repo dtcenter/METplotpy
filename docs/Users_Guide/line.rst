@@ -25,14 +25,14 @@ create an example line plot is available in the
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 
 Configuration Files
@@ -51,7 +51,7 @@ configuration file, **line_defaults.yaml**, which is found in the
 *$METPLOTPY_BASE/metplotpy/plots/config* directory. All default
 configuration files are located in the
 *$METPLOTPY_BASE/metplotpy/plots/config* directory.
-*$METPLOTPY_BASE* is base directory where the
+*$METPLOTPY_BASE* is the base directory where the
 METplotpy source code has been saved. **Default configuration files are
 automatically loaded by the plotting code and do not need to be explicitly
 specified when generating a plot**.
@@ -82,7 +82,7 @@ plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/line_defaults.yaml
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. any log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., any log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -142,7 +142,7 @@ setting to True. Uncomment or add (if it doesn't exist) the
 
 *points_path: '/dir_to_save_points1_file'*
 
-Replace the */dir_to_save_points1_file* to the same directory where
+Replace the */dir_to_save_points1_file* with the same directory where
 the **.points1** file is saved.
 If *points_path* is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment the points_path so that it will be
@@ -153,7 +153,7 @@ unless saving the intermediate **.points1** file is desired.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -206,7 +206,7 @@ Run from the Command Line
 =========================
 
 The **custom_line.yaml** configuration file, in combination with the
-**line_defaults.yaml** configuration file, generate a plot of
+**line_defaults.yaml** configuration file, generates a plot of
 five series:
 
 .. image:: figure/line.png
@@ -236,7 +236,7 @@ To generate the above plot using the **line_defaults.yaml** and
 
   Recall that *$METPLOTPY_BASE* is the directory path indicating where the METplotpy source code was saved.
 
-  To generate the above **"custom"** plot (i.e using some custom
+  To generate the above **"custom"** plot (i.e., using some custom
   configuration settings), use the custom configuration file,
   **custom_line.yaml**.
 
@@ -248,10 +248,10 @@ To generate the above plot using the **line_defaults.yaml** and
 
 
 * A **line.png** output file will be created in the directory specified in
-  the *plot_filename* configuration setting in the **line.yaml** config file.
+  the *plot_filename* configuration setting in the **custom_line.yaml** config file.
 
 
-  To generate the **"defaults"** plot below (i.e using default configuration
+  To generate the **"defaults"** plot below (i.e., using default configuration
   settings), use the "minimal" custom configuration file,
   **minimal_line.yaml**.
 
@@ -264,7 +264,7 @@ To generate the above plot using the **line_defaults.yaml** and
 
 * A **line_default.png** output file will be created in the
   directory specified in the *plot_filename* configuration setting
-  in the **line_defaults.yaml** config file.
+  in the **minimal_line.yaml** config file.
 
   .. image:: figure/line_default.png
 

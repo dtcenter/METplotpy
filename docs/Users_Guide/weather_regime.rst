@@ -6,7 +6,7 @@ Description
 ===========
 
 The **plot_weather_regime.py** script contains the plotting portion for
-three scripts (**elbow.py, Calc_EOF.py**, and **K_means.py**)
+three scripts (**elbow.py, Calc_EOF.py**, and **K_means.py**).
 These were originally created by Doug Miller at the University of Illinois.
 A `METplus use case
 <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s_mid_lat/UserScript_obsERA_obsOnly_WeatherRegime.html#sphx-glr-generated-model-applications-s2s-mid-lat-userscript-obsera-obsonly-weatherregime-py>`_
@@ -65,7 +65,7 @@ For plot_elbow
 --------------
 
 In the code, generate the following as numpy
-arrays (except K, pot_title, and output_plotname).
+arrays (except K, plot_title, and output_plotname).
 
 **K:**  A range beginning at 1 and ending with the number of clusters used
 in the weather regime analysis.
@@ -143,7 +143,7 @@ Invoke the plotting functions:
 
    pwr.plot_K_means(kmeans,wrnum,lons,lats,perc,plot_outname,plevels)
 
-The output will be **.png** version of the elbow line plot, eof contour map
+The output will be a **.png** version of the elbow line plot, eof contour map
 plots, and weather regime map plots, if all three are requested. The output
 will be located based on what was specified (path and name) in the
 **output_plotname**.
