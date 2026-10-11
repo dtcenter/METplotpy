@@ -1,7 +1,7 @@
 # ============================*
- # ** Copyright UCAR (c) 2020
+ # ** Copyright UCAR (c) 2025
  # ** University Corporation for Atmospheric Research (UCAR)
- # ** National Center for Atmospheric Research (NCAR)
+ # ** National Science Foundation National Center for Atmospheric Research (NSF NCAR)
  # ** Research Applications Lab (RAL)
  # ** P.O.Box 3000, Boulder, Colorado, 80307-3000, USA
  # ============================*
@@ -188,7 +188,6 @@ def read_tcrmw_levels(filename, levels=['L0']):
     file_id.close()
 
     return valid_time, lat_grid, lon_grid, wind_data, scalar_data
-   
-   
+
 if __name__ == '__main__':
     print(format_valid_time(2019050123))

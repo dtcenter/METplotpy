@@ -85,44 +85,19 @@ Save and close the *test_plot_cross_section.sh* script.
 
 To generate the plot, perform the following:
 
-* Make sure you have the following Python packages installed:
-   * **Python 3.7** or above
 
-   * METcalcpy (use the same version number as this METplotpy)
-
-   * matplotlib 3.4.3
-
-   * metpy 1.1.0
-
-   * netcdf4 1.5.7 or above
-
-   * numpy
-
-   * pandas
-
-   * pint 0.17
-
-   * xarray
-
-   * yaml
-
-
-
-*Specific version numbers are specified when necessary.  If versions are not specified, use a
-compatible version number for your operating system and existing packages.*
-
-* If you are running in a conda environment, verify that you are running the conda environment that has the above Python packages installed.
+* If  you are running in a conda environment, verify that your conda environment that has the Python packages specified in the requirements.txt file located in the $METPLOTPY_BASE directory.
 
 * cd to the $METPLOTPY_BASE/metplotpy/contributed/tc_rmw directory
 
-``cd $METPLOTPY_BASE/metplotpy/contributed/tc_rmw``
+   ``cd $METPLOTPY_BASE/metplotpy/contributed/tc_rmw``
 
 replacing the $METPLOTPY_BASE with the directory where you saved the METplotpy
 source code.
 
 * run the test_plot_cross_section.sh script:
 
-``sh test_plot_cross_section.sh``
+   ``sh test_plot_cross_section.sh``
 
 Two files will be created, *example.png* and *example.pdf* (if you used the *plot_filename* value
 of 'example' in the *plot_cross_section.yaml* configuration file).  They will be located in

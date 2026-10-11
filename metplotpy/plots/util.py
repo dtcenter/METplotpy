@@ -20,6 +20,7 @@ import gc
 import re
 from datetime import datetime
 import matplotlib
+import matplotlib.colors as colors
 import numpy as np
 from typing import Union
 import pandas as pd
@@ -646,3 +647,63 @@ def strtobool(env_var:str)->bool:
            raise ValueError(msg)
 
 
+def customize_colormap(colormap_triplet_list:list, method:str, rgb_quant_levels=256) -> matplotlib.colors.LinearSegmentedColormap:
+    """
+        From a configuration file (dictionary representation of settings and values),
+        create a custom colormap from either hexidecimal triplet or RGB triplets.
+
+        Args:
+            colormap_triplet_list: a list of triplet values either RGB values (0-255) or hexadecimal
+            method: either via RGB triplets or hexadecimal triplets
+                         default is via RGB triplets
+            rgb_quant_levels [optional]: number of RGB quantization levels, default used by Matplotlib is 256
+
+
+        Returns:
+            colormap:  A LinearSegmentedColormap
+
+
+    """
+
+    colormap_name = 'custom'
+
+    # Do some checking of the input list
+    if colormap_triplet_list is None:
+        raise ValueError("The input list of colors does not exist. ")
+
+    if len(colormap_triplet_list) == 0:
+        raise ValueError("The input list of colors (RGB or hex) is empty.")
+
+    if method == 'by_rgb':
+          #convert to hex
+          rgb_as_hex = convert_rgb_to_hex(colormap_triplet_list)
+          colormap = colors.LinearSegmentedColormap.from_list(colormap_name, rgb_as_hex)
+
+    else:
+        # by_hex
+        # convert hexadecimal strings to actual hexidecimal values
+        colormap = colors.LinearSegmentedColormap.from_list(colormap_name, colormap_triplet_list)
+
+    return colormap
+
+def convert_rgb_to_hex(rgb_list:list) -> list:
+    """
+           Convert a list of RGB triplet values to a list of hexadecimal triplets
+
+       Args
+
+          rgb_list: a list of RGB triplets (integers)
+
+      Returns
+         a list of hex triplets
+
+    '"""
+
+    hex_list = []
+
+    for cur_rgb in rgb_list:
+        triplet = (cur_rgb[0], cur_rgb[1], cur_rgb[2])
+        hex_value = "#" + '%02x%02x%02x' % triplet
+        hex_list.append(hex_value)
+
+    return hex_list
