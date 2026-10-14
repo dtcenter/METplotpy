@@ -103,7 +103,7 @@ Copy this custom config file from the directory where the source code was
 saved to the working directory:
 
 .. code-block:: ini
-		
+
   cp $METPLOTPY_BASE/test/box/custom_box.yaml $WORKING_DIR/custom_box.yaml
 
 Modify the *stat_input* setting in the

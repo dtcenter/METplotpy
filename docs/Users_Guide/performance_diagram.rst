@@ -188,7 +188,7 @@ a *plot_filename* in the **minimal_performance_diagram.yaml** file):
 Copy this file to the working directory:
 
 .. code-block:: ini
-		
+
   cp $METPLOTPY_BASE/test/performance_diagram/minimal_performance_diagram.yaml $WORKING_DIR/minimal_performance_diagram.yaml
 
 Add the *stat_input* (input data) and *plot_filename*
@@ -245,13 +245,13 @@ perform the following:
   For the ksh environment:
 
   .. code-block:: ini
-		
+
     export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
-		
+
     setenv METPLOTPY_BASE $METPLOTPY_BASE
 
   Replacing the $METPLOTPY_BASE with the directory where the
@@ -273,7 +273,7 @@ perform the following:
   command using the **custom_performance_diagram.yaml** file:
 
   .. code-block:: ini
-		
+
     python $METPLOTPY_BASE/metplotpy/plots/performance_diagram/performance_diagram.py $WORKING_DIR/custom_performance_diagram.yaml
 
   .. image:: figure/performance_diagram_custom.png

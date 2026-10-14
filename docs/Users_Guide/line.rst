@@ -103,7 +103,7 @@ Copy this custom config file from the directory where the source code was
 saved to the working directory:
 
 .. code-block:: ini
-		
+
   cp $METPLOTPY_BASE/test/line/custom_line.yaml $WORKING_DIR/custom_line.yaml
 
 
@@ -225,7 +225,7 @@ To generate the above plot using the **line_defaults.yaml** and
   For the ksh environment:
 
   .. code-block:: ini
-		
+
     export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:

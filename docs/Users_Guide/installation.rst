@@ -75,7 +75,7 @@ find the **setup.py** script.
 From the command line run:
 
 .. code-block:: ini
-		
+
   pip install -e .
 
 Do NOT forget the ending period **'.'**  This indicates the **setup.py**

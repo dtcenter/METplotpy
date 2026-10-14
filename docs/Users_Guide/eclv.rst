@@ -187,13 +187,13 @@ perform the following:
   For the ksh environment:
 
   .. code-block:: ini
-		
+
     export METPLOTPY_BASE=$METPLOTPY_BASE
 
   For the csh environment:
 
   .. code-block:: ini
-		
+
     setenv METPLOTPY_BASE $METPLOTPY_BASE
 
   Recall that *$METPLOTPY_BASE* is the directory path indicating where the METplotpy source code was saved.

@@ -248,7 +248,7 @@ Copy this custom config file from the directory where the source code was
 saved to the working directory:
 
 .. code-block:: ini
-		
+
   cp $METPLOTPY_BASE/test/tcmpr_plots/tcmpr_multi_plots.yaml $WORKING_DIR/tcmpr_multi_plots.yaml
 
 Set up the custom configuration file:
