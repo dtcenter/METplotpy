@@ -10,7 +10,7 @@
 """
     Collection of utility functions used by multiple plotting classes
 """
-__author__ = 'Minna Win'
+__author__ = 'Minna Win, Michelle Harrold'
 
 import argparse
 import sys
@@ -645,4 +645,22 @@ def strtobool(env_var:str)->bool:
            msg = "Value does not represent a truth value (i.e. true or false)"
            raise ValueError(msg)
 
+#
+#  re-usable code taken From Michelle Harrold's plot_mode_objects_new.py:
+#   1) decode_char_var(var)
+#   2) parse_met_time(t)
+#
+def decode_char_var(var):
+    """Decode a MET NetCDF char array (e.g. fcst_variable) to a string."""
+    arr = var[:]
+    data = arr.data if hasattr(arr, "data") else arr
+    return b"".join(data).decode(errors="ignore").strip()
+
+
+def parse_met_time(t:str):
+    """Parse a MET 'YYYYMMDD_HHMMSS' time string into a display string."""
+    if not t:
+        return None
+    dt = datetime.strptime(t, "%Y%m%d_%H%M%S")
+    return dt.strftime("%Y-%m-%d %H:%M UTC")
 
