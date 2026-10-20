@@ -5,7 +5,7 @@ Ensemble Spread-Skill Plot
 Description
 ===========
 The theory is that RMSE of the ensemble mean should have roughly a 1-1
-relationship with the ensemble spread (I.e. standard deviation of the
+relationship with the ensemble spread (i.e., standard deviation of the
 ensemble member values). Ensemble spread-skill plot measures that relationship.
 
 Example
@@ -23,14 +23,14 @@ repository, where the Ensemble spread-skill plot tests are located:
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 
 
@@ -70,12 +70,12 @@ Default Configuration File
 --------------------------
 
 The following is the *mandatory*, **ens_ss_defaults.yaml** configuration
-file, which serves as a good starting point for creating a line
+file, which serves as a good starting point for creating an ensemble spread-skill
 plot as it represents the default values set in METviewer.
 
 .. literalinclude:: ../../metplotpy/plots/config/ens_ss_defaults.yaml
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -136,7 +136,7 @@ For example:
 
 *points_path: '/dir_to_save_points1_file'*
 
-Replace the */dir_to_save_points1_file* to the directory where
+Replace the */dir_to_save_points1_file* with the directory where
 the **.points1** file is saved.
 If points_path is commented out (indicated by a '#' symbol in front of it),
 remove the '#' symbol to uncomment
@@ -147,7 +147,7 @@ to be defined unless saving the intermediate **.points1** file is desired.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -163,7 +163,7 @@ The **custom_ens_ss.yaml** configuration file, in combination with the
 Perform the following:
 
 * If the conda environment is being used,
-  verify the conda environment is running and has has the required
+  verify the conda environment is running and has the required
   Python packages outlined in the `requirements section
   <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_.
   

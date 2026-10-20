@@ -10,7 +10,7 @@ from the METcalcpy vertical interpolation module, *vertical_interpolation.py*:
 
 https://metplus.readthedocs.io/projects/metcalcpy/en/latest/Users_Guide/vertical_interpolation.html
 
-**NOTE**:Data must have the following **required fields**: **temperature**, **relative humidity**, and **surface pressure**.  These are required by the METcalcpy vertical_interpolation module to compute pressure indices.
+**NOTE**: Data must have the following **required fields**: **temperature**, **relative humidity**, and **surface pressure**.  These are required by the METcalcpy vertical_interpolation module to compute pressure indices.
 
 Example
 =======
@@ -55,7 +55,7 @@ file, the plot that will be created will be named example.png and example.pdf.
 There are configuration settings to set the labels to the x-axis and y-axis, the plot size, plot
 resolution, contour colors, etc.
 
-To generate a cross-section plot for a different field, replace the 'TMP' with the any other
+To generate a cross-section plot for a different field, replace the 'TMP' with any other
 available field name from the input file (*tc_rmw_example_vertical_interp.nc*).
 
 

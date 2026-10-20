@@ -18,7 +18,7 @@ There are `METplus use cases
 <https://metplus.readthedocs.io/en/latest/generated/model_applications/index.html#subseasonal-to-seasonal>`_
 which illustrate how to generate the MaKE MaKI plot:
 
-* To generate a MaKE MaKI, follow the instructions in the METplus users guide on the UserScript_obsCFSR_obsOnly_MJO_ENSO use case:
+* To generate a MaKE MaKI plot, follow the instructions in the METplus User's Guide on the `UserScript_obsCFSR_obsOnly_MJO_ENSO <https://metplus.readthedocs.io/en/latest/generated/model_applications/s2s_mjo/UserScript_obsCFSR_obsOnly_MJO_ENSO.html>`__ use case.
 
 
 Instructions for obtaining sample data and all necessary configuration files

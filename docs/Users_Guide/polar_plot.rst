@@ -6,7 +6,7 @@ Description
 ===========
 A Polar Ice plot is a 2D plot using a polar stereographic projection.
 There is a specific example found in the polar_ice_plot which plots
-sea ice area averages
+sea ice area averages.
 
 To generate the polar_ice_plot edit the polar_ice.yaml and have your input
 file point to either the example or one of your choosing and then run
@@ -62,14 +62,14 @@ There is a YAML config file located in
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 Copy this configuration file from where you saved the METplotpy source code to your working directory:
 
@@ -83,7 +83,7 @@ have read and write permissions.
 Modify *input_file* setting in the $WORKING_DIR/polar_ice.yaml config file to point to the directory
 where you saved your sample data from above:
 
-e.g.
+e.g.,
 
 replace *input_file: "~/grid_stat_north_000000L_20210305_120000V_pairs.nc"*
 with *input_file: "/path/to/data/grid_stat_north_000000L_20210305_120000V_pairs.nc"*
@@ -95,16 +95,16 @@ sample data.
 Run from the Command Line
 =========================
 
-To generate the example Polar Ice plot (i.e. using settings in the
+To generate the example Polar Ice plot (i.e., using settings in the
 **polar_ice.yaml** configuration file) perform the following:
 
 *  If using the conda environment, verify the conda environment
-   is running and has has the required Python packages specified in the
+   is running and has the required Python packages specified in the
    **Required Packages** section above.
 
 * Set the METPLOTPY_BASE environment variable to point to
-  *$METPLOTPY_BASE*. where $METPLOTPY_BASE is the directory where you saved the
-  METplotpy source code (e.g. /home/someuser).
+  *$METPLOTPY_BASE*, where $METPLOTPY_BASE is the directory where you saved the
+  METplotpy source code (e.g., /home/someuser).
 
   For the ksh environment:
 
@@ -131,7 +131,7 @@ copied the config file.  The polar_ice_plot.py script looks for the polar_ice.ya
 directory.
 
 
-Three plots named **20210305_120000_fcst_ice_north.png**  **20210305_120000_ice_diff_north.png**  **20210305_120000_observation_ice_north.png** will be generated in the sub directory ice_plots from where you ran the above command:
+Three plots named **20210305_120000_fcst_ice_north.png**  **20210305_120000_ice_diff_north.png**  **20210305_120000_observation_ice_north.png** will be generated in the subdirectory ice_plots from where you ran the above command:
 
 .. image:: figure/fcst_ice_north.png
 .. image:: figure/ice_diff_north.png

@@ -131,7 +131,7 @@ Run from the Command Line
 Perform the following:
 
 * To use the conda environment, verify the conda environment
-  is running and has has the required
+  is running and has the required
   Python packages specified in the **Required Packages** section above.
 
 * Set the METPLOTPY_BASE environment variable to point to

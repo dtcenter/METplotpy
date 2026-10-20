@@ -1,5 +1,5 @@
 ***************************************************************
-Add Additional Third-Party Packages to the Github actions tests
+Add Additional Third-Party Packages to the GitHub Actions tests
 ***************************************************************
 
 If necessary, modify the **requirements.txt** file

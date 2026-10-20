@@ -8,7 +8,7 @@ Description
 The difficulty index plot is a graphical representation of the expected difficulty of a decision based on a set of
 forecasts (ensemble) of, e.g., significant wave height as a function of space and time. There are two basic factors
 that can make a decision difficult. The first factor is the proximity of the ensemble mean forecast to a decision
-threshold, e.g. 12 ft seas. If the ensemble mean is either much lower or much higher than the threshold, the
+threshold, e.g., 12 ft seas. If the ensemble mean is either much lower or much higher than the threshold, the
 decision is easier; if it is closer to the threshold, the decision is harder. The second factor is the forecast
 precision, or ensemble spread. The greater the spread around the ensemble mean, the more likely it is that there will
 be ensemble members both above and below the decision threshold, making the decision harder. (A third factor that we
@@ -16,11 +16,11 @@ will not address here is undiagnosed systematic error, which adds uncertainty in
 The challenge is combining these factors into a continuous function that allows the user to assess relative risk.
 
 The code for calculating and plotting the difficulty index was developed by Bill Campbell and Liz Satterfield of the
-Navy Research Lab (NRL) and modified by NCAR.
+Naval Research Lab (NRL) and modified by NCAR.
 
 
 For more information on calculating the difficulty index, please refer to this METplus use case:
-`METviewer documentation
+`UserScript_fcstGEFS_Difficulty_Index use case
 <https://metplus.readthedocs.io/en/develop/generated/model_applications/medium_range/UserScript_fcstGEFS_Difficulty_Index.html#sphx-glr-generated-model-applications-medium-range-userscript-fcstgefs-difficulty-index-py>`_.
 
 Example
@@ -61,7 +61,7 @@ Configuration Files
 
 All the settings for the example difficulty index plot are incorporated in
 the mycolormaps.py and plot_difficulty_index.py code.  The example_difficulty_index.py script imports these modules to
-create six sample plots.  The location of where these plots are saved are determined by settings in the
+create six sample plots.  The location of where these plots are saved is determined by settings in the
 example_difficulty_index.yaml configuration file:
 
 .. literalinclude:: ../../test/difficulty_index/example_difficulty_index.yaml
@@ -100,7 +100,7 @@ Run from the Command Line
 To generate the sample difficulty index plots, perform the following:
 
 *  If using the conda environment, verify the conda environment
-   is running and has has the required Python packages outlined in the **Required Packages** section above.
+   is running and has the required Python packages outlined in the **Required Packages** section above.
 
 
 Where $METPLOTPY_BASE is the directory where you saved the METplotpy source code and $WORKING_DIR is the directory
@@ -112,7 +112,7 @@ you created earlier to store the sample input data.
 
       cd $WORKING_DIR
 
-where *$WORKING_DIR* is the directory where you copied all the necessary files (e.g. /home/users/someuser/working_dir).
+where *$WORKING_DIR* is the directory where you copied all the necessary files (e.g., /home/users/someuser/working_dir).
 
 
 * Run the following on the command line:
