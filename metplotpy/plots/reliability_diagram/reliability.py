@@ -91,7 +91,7 @@ class Reliability(BasePlot):
         """
         self.logger.info("Reading input data")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
-                           header='infer', float_precision='round_trip')
+                           header='infer')
 
     def _create_series(self, input_data):
         """

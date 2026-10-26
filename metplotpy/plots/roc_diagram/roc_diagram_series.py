@@ -13,7 +13,6 @@ Class Name: ROCDiagramSeries
  """
 __author__ = 'Minna Win'
 
-import warnings
 import pandas as pd
 import metcalcpy.util.utils as utils
 from ..series import Series
@@ -49,8 +48,6 @@ class ROCDiagramSeries(Series):
 
 
         """
-        warnings.filterwarnings("error")
-
         # Subset data based on self.all_series_vals that we acquired from the
         # config file
         input_df = self.input_data
