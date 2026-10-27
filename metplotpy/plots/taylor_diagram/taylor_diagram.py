@@ -172,9 +172,14 @@ class TaylorDiagram(BasePlot):
         fig = plt.figure(
             figsize=(self.config_obj.plot_width, self.config_obj.plot_height))
 
-        # in Matplotlib 3.10, the default for apply_theta_transforms=True has been deprecated, explicitly set this
-        # to True
-        tr = PolarAxes.PolarTransform()
+        # Matplotlib 3.10 warns unless apply_theta_transforms=False is set, including each
+        # time the transform is inverted (e.g. by clabel). Matplotlib 3.11 made False the
+        # default and warns once here because the argument is set. Ignore that warning.
+        # Remove the argument and this filter once the minimum supported Matplotlib is 3.11.
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", message=".*apply_theta_transforms",
+                                    category=DeprecationWarning)
+            tr = PolarAxes.PolarTransform(apply_theta_transforms=False)
 
         # Correlation labels
         rlocs = np.array([0, 0.2, 0.4, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1])

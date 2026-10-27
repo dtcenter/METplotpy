@@ -103,7 +103,7 @@ class MprPlot(BasePlot):
         for mpr_file in self.config_obj.mpr_file_list:
             # read data to the DataFrame
             input_data = pd.read_csv(mpr_file, delimiter=r"\s+",
-                                     header='infer', float_precision='round_trip',
+                                     header='infer',
                                      dtype=dtypes)
             # filter MPR data
             filtered = input_data[input_data['LINE_TYPE'] == 'MPR']
@@ -158,7 +158,7 @@ class MprPlot(BasePlot):
         for case in cases:
             # Get the subset for this case
             case_subset = self.input_df[self.input_df['CASE'] == case]
-            case_subset.reset_index(inplace=True, drop=True)
+            case_subset = case_subset.reset_index(drop=True)
             case_name_1 = f"{case_subset['MODEL'][0]}: {case_subset['FCST_VAR'][0]} at {case_subset['FCST_LEV'][0]}"
             case_name_2 = f"{case_subset['OBTYPE'][0]}, {case_subset['VX_MASK'][0]}, {case_subset['INTERP_MTHD'][0]} ({case_subset['INTERP_PNTS'][0]})"
             case_title = f"{case_name_1}\n{case_name_2}"
@@ -197,7 +197,7 @@ class MprPlot(BasePlot):
                 # Store UGRD/VGRD indices
                 vgrd_case = case.replace("UGRD", "VGRD")
                 vind = self.input_df[self.input_df['CASE'] == vgrd_case]
-                vind.reset_index(inplace=True, drop=True)
+                vind = vind.reset_index(drop=True)
 
                 if len(case_subset) == len(vind):
                     for data_type in ['FCST', 'OBS', 'FCST-OBS']:

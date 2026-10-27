@@ -94,7 +94,7 @@ class Box(BasePlot):
         self.config_obj.logger.info(f"Begin reading input data: {datetime.now()}")
         file = self.config_obj.parameters['stat_input']
         self.config_obj.logger.info(f"Finish reading input data: {datetime.now()}")
-        return pd.read_csv(file, sep='\t', header='infer', float_precision='round_trip')
+        return pd.read_csv(file, sep='\t', header='infer')
 
     def _create_series(self, input_data):
         """

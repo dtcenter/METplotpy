@@ -284,7 +284,7 @@ def sort_threshold_values(thresh_values: pd.core.series.Series) -> list:
 
     # cols is the list of columns upon which we should sort
     twocols = ['thresh_values', 'op_wts']
-    sorted_val_wt = df.sort_values(by=twocols, inplace=False, ascending=True,
+    sorted_val_wt = df.sort_values(by=twocols, ascending=True,
                                    ignore_index=True)
 
     # now the dataframe has the xyz_thresh values sorted appropriately
