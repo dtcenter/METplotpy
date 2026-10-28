@@ -1,23 +1,42 @@
+"""
+Command-line (no database) scorecard.
+
+One YAML file drives the whole pipeline:
+
+    1. reformat   MET .stat files into per-line-type tables        (METdataio)
+    2. subset     rows using subset_params in the YAML
+    3. per-case   statistics (SumStat) or aggregation (AggStat)    (METcalcpy)
+    4. p-values   scorecard_stats.txt, one DIFF_SIG value per cell (METcalcpy)
+    5. render     the scorecard with scorecard_render.py           (matplotlib)
+
+Usage (from the METplotpy repo root):
+    python -m metplotpy.plots.scorecard.scorecard_plot <config.yaml>
+
+Look and feel (title, palette, labels, formats...) are set in the optional
+`scorecard_style` block of the YAML; see scorecard_render.render_from_config.
+"""
 import os, sys
+import fnmatch
 import itertools
 import requests
 import json
 import re
 import pandas as pd
-import matplotlib.pyplot as plt
 from datetime import datetime
-from metplotpy.external.plottable.plottable import Table
-from metplotpy.external.plottable.plottable import ColumnDefinition
-from metplotpy.external.plottable.plottable.plots import image
 from metplotpy.plots import util as plot_util
 from METreformat import write_stat_ascii
 from METdbLoad.ush.read_data_files import ReadDataFiles
 from METdbLoad.ush.read_load_xml import XmlLoadFile
-from write_stat_ascii import WriteStatAscii
+from METreformat.write_stat_ascii import WriteStatAscii
 from metcalcpy.util.safe_log import safe_log
 from metcalcpy import logging_config
 from metcalcpy import scorecard
 from metcalcpy.agg_stat import AggStat
+from metcalcpy.sum_stat import SumStat
+try:
+    from metplotpy.plots.scorecard.scorecard_render import render_from_config
+except ImportError:  # e.g. run from inside the scorecard directory
+    from scorecard_render import render_from_config
 
 
 class ScorecardPlot():
@@ -38,8 +57,6 @@ class ScorecardPlot():
         self.log_filename = os.path.join(self.log_dir, configs['log_filename'])
         self.log_level = configs['log_level']
         self.logger = logging_config.setup_logging(configs)
-        self.base_dir = configs['base_dir']
-        self.image_dir = os.path.join(self.base_dir, 'METplotpy/metplotpy/plots/scorecard/images')
 
         logger = self.logger
         safe_log(logger, "debug", "Initializing ScorecardPlot with parameters")
@@ -55,7 +72,28 @@ class ScorecardPlot():
         self.increment = configs['increment']
         self.init = configs['init']
 
-        self.get_all_statfiles = True
+        # Optional glob pattern(s) selecting which .stat files to read from each
+        # date directory, e.g. '*grid2obs*.stat'.  Default: every .stat file.
+        patterns = configs.get('stat_file_pattern', ['*.stat'])
+        if isinstance(patterns, str):
+            patterns = [patterns]
+        self.stat_file_patterns = patterns
+
+        # What to do when a date directory (or the files in it) is missing:
+        #   'skip'  - drop that date for ALL models (keeps the model comparison
+        #             paired), carry on, and report what was skipped
+        #   'error' - stop at the first missing directory or file
+        self.on_missing_input = str(configs.get('on_missing_input', 'skip')).lower()
+        if self.on_missing_input not in ('skip', 'error'):
+            raise ValueError("on_missing_input must be 'skip' or 'error', "
+                             f"got {configs.get('on_missing_input')!r}")
+        self.missing_input = []     # (date, model/variable label, reason)
+        self.dates_total = None
+        self.dates_used = None
+
+        # Stop with an error if a statistic listed in stats_list never makes it
+        # into scorecard_stats.txt (otherwise it silently disappears).
+        self.fail_on_missing_stats = bool(configs.get('fail_on_missing_stats', True))
 
         #
         # For reformatter
@@ -115,10 +153,92 @@ class ScorecardPlot():
         self.sample_size = int(configs['sample_size'])
         self.pval_method: str = configs['pval_method']
 
-        # Plot-related
-        self.base_dir = configs['base_dir']
-        self.ci_map = self.get_category_images(self.base_dir)
 
+
+    def find_input_files(self, final_list, all_values, var_index, all_dates) -> list:
+        """
+        Find the .stat files matching stat_file_pattern in every input directory.
+
+        A date is only used if EVERY directory for that date (i.e. every model) has
+        matching files.  Otherwise the date is dropped for all models, so the models
+        are compared on the same sample, and what was skipped is recorded in
+        self.missing_input (printed at the end by report_missing_input()).
+        With on_missing_input: error the first missing directory/file stops the run.
+
+        Args:
+            final_list: input directories, one per combination of the ${...} variables
+            all_values: the variable values behind each directory (same order)
+            var_index:  position -> variable name for the values in all_values
+            all_dates:  every date requested (strings in the 'init' format)
+
+        Returns:
+            list of file paths
+        """
+        date_pos = [i for i, n in var_index.items() if n == 'init']
+        # variables that differ between directories (besides the date), e.g. model
+        label_pos = [i for i, n in var_index.items()
+                     if n != 'init' and len({v[i] for v in all_values}) > 1]
+
+        files_by_dir, problem_by_dir, info_by_dir = {}, {}, {}
+        for curr_dir, curr_value in zip(final_list, all_values):
+            date = curr_value[date_pos[0]] if date_pos else None
+            label = ", ".join(f"{var_index[i]}={curr_value[i]}" for i in label_pos)
+            info_by_dir[curr_dir] = (date, label)
+            if not os.path.isdir(curr_dir):
+                problem_by_dir[curr_dir] = "directory not found"
+                continue
+            stat_files = sorted(f for f in os.listdir(curr_dir) if f.endswith(".stat"))
+            matched = [f for f in stat_files
+                       if any(fnmatch.fnmatch(f, p) for p in self.stat_file_patterns)]
+            if matched:
+                files_by_dir[curr_dir] = [os.path.join(curr_dir, f) for f in matched]
+            else:
+                problem_by_dir[curr_dir] = (f"no files matching {self.stat_file_patterns} "
+                                            f"(found: {stat_files if stat_files else 'no .stat files'})")
+
+        if problem_by_dir and (self.on_missing_input == 'error' or not date_pos):
+            bad_dir = next(iter(problem_by_dir))
+            raise FileNotFoundError(f"{bad_dir}: {problem_by_dir[bad_dir]}")
+
+        # A date is complete only if every one of its directories has files
+        bad_dates = {}
+        for curr_dir, reason in problem_by_dir.items():
+            date, label = info_by_dir[curr_dir]
+            bad_dates.setdefault(date, []).append((label, reason))
+        used_dates = [d for d in all_dates if d not in bad_dates]
+        for date in all_dates:
+            for label, reason in bad_dates.get(date, []):
+                self.missing_input.append((date, label, reason))
+                safe_log(self.logger, 'warning',
+                         f"Skipping {date} for all models: {label}: {reason}")
+        self.dates_total, self.dates_used = len(all_dates), len(used_dates)
+        if not used_dates:
+            raise FileNotFoundError(
+                f"No date has matching files for every model ({len(all_dates)} dates "
+                f"checked, patterns {self.stat_file_patterns}); first problem: "
+                f"{self.missing_input[0]}")
+
+        all_files = []
+        for curr_dir in final_list:
+            if info_by_dir[curr_dir][0] in used_dates:
+                all_files.extend(files_by_dir[curr_dir])
+        safe_log(self.logger, 'info',
+                 f"Reading {len(all_files)} .stat file(s) matching "
+                 f"{self.stat_file_patterns} for {len(used_dates)} of {len(all_dates)} date(s)")
+        return all_files
+
+    def report_missing_input(self) -> None:
+        """Print (and log) which dates were skipped because input was missing."""
+        if not self.missing_input:
+            return
+        lines = [f"WARNING: {len(self.missing_input)} input problem(s); "
+                 f"used {self.dates_used} of {self.dates_total} date(s).",
+                 "Skipped for ALL models so the comparison stays paired:"]
+        for date, label, reason in self.missing_input:
+            lines.append(f"  {date}  {label}: {reason}")
+        msg = "\n".join(lines)
+        print("\n" + msg)
+        safe_log(self.logger, 'warning', msg)
 
     def read_input(self) -> pd.DataFrame:
 
@@ -199,17 +319,7 @@ class ScorecardPlot():
 
             final_list.append(result)
 
-        # Create a list of all the files in every directory
-        all_files = []
-        if self.get_all_statfiles:
-            for curr_dir in final_list:
-                for file in os.listdir(curr_dir):
-                    if file.endswith(".stat"):
-                        all_files.append(os.path.join(curr_dir, file))
-
-        else:
-            # Get the specific filenames by filename pattern
-            print("Not yet implemented, retrieving all .stat files from each directory")
+        all_files = self.find_input_files(final_list, all_values, var_index, all_dates)
 
         # Read in the files into a dataframe using METdataio's METdbLoad modules
 
@@ -243,8 +353,20 @@ class ScorecardPlot():
         fcst_levs = self.subset_params['fcst_lev']
         fcst_var = self.subset_params['fcst_var']
 
+        # Any additional fixed filter dimensions in subset_params (e.g. obtype)
+        # have to be embedded into the derived-series comparison string too, or
+        # METcalcpy's _get_derived_points() will intersect them away to an empty
+        # list and silently produce zero derived points. Inserted between
+        # fcst_var and stats so model stays at index 1 (used below) and stat
+        # stays last (used by METcalcpy as the stat name).
+        # If we know all the additional dims, should we just add to known_keyS?
+        known_keys = {'fcst_lead', 'model', 'stats_list', 'fcst_lev', 'fcst_var',
+                      'indep_variable', 'indep_values'}
+        extra_dims = [v for k, v in self.subset_params.items()
+                      if k not in known_keys and isinstance(v, list)]
+
         # Create the Cartesian product of the above
-        result = list(itertools.product(fcst_levs,  models, fcst_leads, fcst_var, stats))
+        result = list(itertools.product(fcst_levs, models, fcst_leads, fcst_var, *extra_dims, stats))
 
         # Make all elements strings, to enable joining the fcst lead, model name, etc
         # based on model name into the format (level model fcst_hr variable stat:
@@ -279,33 +401,6 @@ class ScorecardPlot():
         [i.append("DIFF_SIG") for i in modelA_B]
 
         return modelA_B
-
-
-    def get_category_images(self, base_dir: str) -> dict:
-        """
-           Mapping of categories to their corresponding image.
-           Join the source base directory to the METplotpy directory to get the
-           full directory path.
-
-           Args:
-               base_dir (str): the directory that has the METplotpy source code
-
-          Returns:
-              a dictionary that maps the category to its corresponding image
-
-        """
-
-        ci_map = {
-            'A999better': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/large_green_tri.png'),
-            'A99better': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/small_green_tri.png'),
-            'A95better': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/green_square.png'),
-            'A95worse': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/pink_square.png'),
-            'A99worse': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/small_red_down.png'),
-            'A999worse': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/down_red.png'),
-            'NOTSTATSIG': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/gray_square.png'),
-            'NOTRELEVANT': os.path.join(base_dir, 'METplotpy/metplotpy/plots/scorecard/images/blue_square.png')}
-
-        return ci_map
 
 
     def __repr__(self):
@@ -618,6 +713,89 @@ class ScorecardPlot():
 
         return pd.read_csv(self.agg_stat_outfile, sep='\t', index_col=False)
 
+    def calculate_sum_stats(self, subset_df: pd.DataFrame):
+        """
+            Calculate per-case/per-day statistics using METcalcpy's sum_stat.py,
+            the same building block METviewer's own scorecard pipeline uses
+            (see edu.ucar.metviewer.scorecard.rscript.SumPythonManager in
+            METviewer, which runs sum_stat.py before scorecard.py -- agg_stat.py
+            is a different METviewer feature, not part of the scorecard chain).
+
+            Unlike calculate_agg_stats()/AggStat, this does NOT collapse multiple
+            cases into one bootstrapped point estimate. It computes the requested
+            statistic (e.g. MAE) independently for each row of the input data,
+            preserving one row per case/valid-date -- which is what the scorecard's
+            own DIFF_SIG significance calculation (_calculate_diff_sig_ncar/_emc)
+            actually needs multiple values per (model, lead) group to compute.
+
+            Args:
+                subset_df (pd.DataFrame): The dataframe containing subsetted data,
+                    as produced by process_X_for_agg() -- i.e. one row per case,
+                    already filtered down to the requested stat (e.g. one row per
+                    case tagged 'SAL1L2_MAE'), with stat_value left as NaN, to be
+                    filled in here.
+
+            Returns:
+                summary_df (pd.DataFrame): Dataframe with stat_value populated,
+                    one row per case, ready to feed into get_scorecard_stats().
+
+        """
+        fname = "filtered.txt"
+        input_file = os.path.join(self.configs['output_dir'], fname)
+
+        # sum_stat.py's calculate_statistic() dispatches to calculate_<stat_name>
+        # using the *bare* stat name (e.g. 'mae', not 'sal1l2_mae') -- its own
+        # line_type == 'sal1l2' special case renames columns to match SL1L2's
+        # naming specifically so it can reuse the bare calculate_mae/etc.
+        # functions. Our process_X_for_agg() output uses the LINETYPE_STATNAME
+        # convention (matching AggStat's needs), so it has to be stripped back
+        # to bare form here before sum_stat.py sees it.
+        linetype_upper = str(self.configs['linetype']).upper()
+        prefix = linetype_upper + '_'
+        sum_stat_input_df = subset_df.copy()
+        sum_stat_input_df['stat_name'] = sum_stat_input_df['stat_name'].apply(
+            lambda s: s[len(prefix):] if isinstance(s, str) and s.startswith(prefix) else s)
+
+        sum_stat_input_file = os.path.join(self.configs['output_dir'], "filtered_for_sum_stat.txt")
+        sum_stat_input_df.to_csv(sum_stat_input_file, index=None, header=True, sep='\t', na_rep="NA")
+
+        sum_stat_configs = {}
+
+        # Generate the configuration settings needed by METcalcpy's sum_stat
+        # module from the scorecard yaml config file. Deliberately NOT including
+        # the bootstrap-specific keys AggStat needs (alpha, circular_block_bootstrap,
+        # method, num_iterations, num_threads, random_seed) -- sum_stat.py doesn't
+        # use them; it computes one value per row, no resampling.
+        sum_stat_configs['sum_stat_input'] = sum_stat_input_file
+        outname = self.configs['linetype'] + "_summary.data"
+        sum_stat_configs['sum_stat_output'] = os.path.join(self.configs['output_dir'], outname)
+        sum_stat_configs['event_equal'] = self.event_equalize
+        sum_stat_configs['line_type'] = str(self.configs['linetype']).lower()
+
+        fcst_var = self.configs['subset_params']['fcst_var'][0]
+        stats_list = self.configs['subset_params']['stat_name']
+        sum_stat_configs['fcst_var_val_1'] = {fcst_var: stats_list}
+        sum_stat_configs['fcst_var_val_2'] = {}
+        sum_stat_configs['indy_vals'] = self.configs['subset_params']['fcst_lead']
+        sum_stat_configs['indy_var'] = 'fcst_lead'
+        sum_stat_configs['list_stat_1'] = stats_list
+        sum_stat_configs['list_stat_2'] = []
+        sum_stat_configs['series_val_1'] = self.configs['subset_params']
+        sum_stat_configs['series_val_2'] = {}
+        sum_stat_configs['derived_series_1'] = []
+        sum_stat_configs['derived_series_2'] = []
+        sum_stat_configs['log_filename'] = self.configs.get('log_filename', '-')
+        sum_stat_configs['log_level'] = self.configs.get('log_level', 'ERROR')
+
+        msg = "Calculating per-case statistics for " + self.configs['linetype'] + " with sum_stat"
+        safe_log(self.logger, self.log_level, msg)
+        SUM_STAT = SumStat(sum_stat_configs)
+        SUM_STAT.calculate_stats()
+        self.sum_stat_outfile = sum_stat_configs['sum_stat_output']
+        safe_log(self.logger, self.log_level, "Finished calculating per-case statistics with sum_stat")
+
+        return pd.read_csv(self.sum_stat_outfile, sep='\t', index_col=False)
+
 
 
     def get_scorecard_stats(self, input_df:pd.DataFrame) -> pd.DataFrame:
@@ -671,226 +849,64 @@ class ScorecardPlot():
         calcpy_sc.calculate_scorecard_data()
 
 
-    def categorize_scorecard_results(self) -> pd.DataFrame:
+    def check_requested_stats(self) -> None:
         """
-           Categorize the scorecard results if the p-value was calculated via the
-           'NCAR' method:
+        Make sure every statistic in stats_list actually reached scorecard_stats.txt.
 
-            Categorize each p-value into one of the following categories:
-                   Model A better than Model B at 99.9% confidence
-                   Model A better than Model B at 99% confidence
-                   Model A better than Model B at 95% confidence
-
-                   Model A worse than Model B at 95% confidence
-                   Model A worse than Model B at 99% confidence
-                   Model A worse than Model B at 99.9% confidence
-
-                   No statistically significant difference between Model A and Model B
-                   Not statistically relevant
-
-
-           returns (pd.DataFrame): A dataframe containing the categorization value
-                                               using the criteria in the METviewer scorecard
-
+        A statistic can be lost without any error (a name the reformatter never
+        creates, a filter that matches nothing, ...), which leaves a scorecard that
+        looks fine but is missing rows.  Raise an error, or only log one when
+        fail_on_missing_stats is False.
         """
-        categories = {}
-        categories['A_better_999'] = [0.999, 1.]
-        categories['A_better_99'] = [0.99, 0.999]
-        categories['A_better_95'] = [0.95, 0.99]
-        categories['A_worse_999'] = [-1, -0.999]
-        categories['A_worse_99'] = [-.999, -.99]
-        categories['A_worse_95'] = [-.99, -.95]
+        stats_file = self.scorecard_stats_output_filename
+        if not os.path.isfile(stats_file):
+            raise FileNotFoundError(
+                f"{stats_file} was not created; METcalcpy scorecard.py produced no output")
+        stats_df = pd.read_csv(stats_file, sep="\t", dtype=str, keep_default_na=False)
+        prefix = f"{self.linetype.upper()}_"
+        found = {n.upper()[len(prefix):] if n.upper().startswith(prefix) else n.upper()
+                 for n in stats_df['stat_name']}
+        missing = [s for s in self.scorecard_stats_statslist if str(s).upper() not in found]
+        if missing:
+            msg = (f"Requested statistic(s) {missing} are not in {stats_file} "
+                   f"(found: {sorted(found)}). They were filtered out or could not be "
+                   f"computed upstream (reformat, subset or per-case step).")
+            safe_log(self.logger, 'error', msg)
+            if self.fail_on_missing_stats:
+                raise RuntimeError(msg)
 
-        working_df = pd.read_csv(self.scorecard_stats_output_filename, sep="\t", engine="python", index_col=False)
-        stat_values = working_df['stat_value']
-
-        # Save the categorical values in a list
-        categorized = []
-        # Evaluate whether model A is better than model B
-        for stat in stat_values:
-            result = self.model_a_better(stat, categories)
-            if result == 'NA':
-                # Check if model A is worse than model B
-                result = self.model_a_worse(stat, categories)
-                if result == 'NA':
-                    # Check for no statistical significance
-                    result = self.no_statistical_significance(stat)
-                    if result == 'NA':
-                        # Not statistically relevant
-                        result = 'NOTRELEVANT'
-            categorized.append(result)
-
-        # Add the categorized values to the scorecard dataframe
-        categories: pd.Series = pd.Series(categorized)
-        categorized_df = working_df.assign(category=categories)
-
-        return categorized_df
-
-
-    def model_a_better(self, stat, categories) -> str:
+    def render_scorecard(self) -> list:
         """
-            Determine if modelA (first model in config file) is better than modelB
-            at the 99.9, 99, or 95% confidence levels.
+        Draw the scorecard with scorecard_render.py (matplotlib only).  Reads the
+        scorecard_stats.txt written by METcalcpy and derives the significance
+        categories itself, for both the NCAR and EMC p-value methods.
 
-            Args:
-                stat_value (float): The p-value calculated by METcalcpy
-                categories (dict): Categories employed in the METviewer scorecard
-
-            Returns:
-                    a string value if modelA is better than modelB.  One of these values
-                      will be returned:
-                      A999better
-                      A99better
-                      A95better
-                      NA if modelA is not better than modelB
-
-        """
-
-        if stat >= categories['A_better_999'][0] and stat < categories['A_better_999'][1]:
-            return "A999better"
-        elif stat >= categories['A_better_99'][0] and stat < categories['A_better_99'][1]:
-            return "A99better"
-        elif stat >= categories['A_better_95'][0] and stat < categories['A_better_95'][1]:
-            return "A95better"
-        else:
-            return "NA"
-
-
-    def model_a_worse(self, stat, categories):
-        """
-                   Determine if modelA (the first model in the config file) is worse than
-                   modelB at the 99.9, 99, or 95% confidence level.
-
-                   Args:
-                       stat_value (float): The p-value calculated by METcalcpy
-                       categories (dict): Categories employed in the METviewer scorecard
-
-                   Returns:
-                      a string value if modelA is worse than modelB.  One of these values
-                      will be returned:
-                      A999worse
-                      A99worse
-                      A95worse
-                      NA if modelA is not worse than modelB
-
-               """
-        if stat >= categories['A_worse_999'][0] and stat < categories['A_worse_999'][1]:
-            return "A999worse"
-        elif stat >= categories['A_worse_99'][0] and stat < categories['A_worse_99'][1]:
-            return "A99worse"
-        elif stat >= categories['A_worse_95'][0] and stat < categories['A_worse_95'][1]:
-            return "A95worse"
-        else:
-            return "NA"
-
-
-    def no_statistical_significance(self, stat) -> str:
-        """
-          Determine if the p-value indicates "no statistical significance" between
-          modelA (first model in config) and modelB.
-
-          Args:
-          stat_value (float): the p-value calculated by METcalcpy
-
-          Returns:
-          a string value, one of the following:
-                    NOTSTATSIG (if not statistically significant)
-                    NA if not applicable
-        """
-        # Criteria for determining "not statistically significant", as used by the METviewer
-        # scorecard
-        min_val = -0.95
-        max_val = 0.95
-        if stat >= min_val and stat < max_val:
-            return "NOTSTATSIG"
-        else:
-            return "NA"
-
-
-    def generate_table(self, categorized_df: pd.DataFrame):
-        """
-        Generate the scorecard table/plot
-
-        Args:
-            categorized_df (pd.Dataframe): The dataframe with the p-values categorized
+        Look and feel come from the YAML: scorecard_title plus an optional
+        scorecard_style block (title, subtitle, palette, show_values, markers,
+        formats, dpi, label_map, model_names).  See scorecard_render.render_from_config.
 
         Returns:
-            None: Create a plot as a .png file
-
+            list of the files written (<output_dir>/scorecard.<format>)
         """
-
-        # Keep only relevant portions of the input dataframe
-        columns_to_keep = ['fcst_lead', 'fcst_lev', 'fcst_var', 'stat_name', 'stat_value', 'category']
-        scdf = categorized_df[columns_to_keep]
-        # DEBUG
-        scdf.set_index(columns_to_keep)
-
-        # Rename the columns
-        s = scdf.rename(columns={"fcst_var": "Variable", 'fcst_lev': 'Level', 'stat_name': 'Stat', 'fcst_lead': 'HmS',
-                                 'category': 'category'})
-
-        # Substitute the category text with images
-        scdf['category'] = scdf['category'].map(self.ci_map)
-        scdf.set_index('fcst_lead')
-        scdf_img = scdf.copy(deep=False)
-        scdf_img.set_index('fcst_lead')
-
-        # Plottable column definitions
-        coldefs = [
-            ColumnDefinition(name="Stat",
-                             textprops={"ha": "right"},
-                             width=0.4,
-                             ),
-            ColumnDefinition(name=" Variable",
-                             textprops={"ha": "center"},
-                             width=0.9,
-                             ),
-            ColumnDefinition(name=" Level",
-                             textprops={"ha": "center"},
-                             width=0.5,
-                             ),
-            ColumnDefinition(name=" HmS",
-                             textprops={"ha": "center"},
-                             width=2.5,
-                             ),
-            ColumnDefinition(name="category",
-                             textprops={"ha": "center"},
-                             width=1.5, plot_fn=image
-                             ),
-        ]
-
-        fig, ax = plt.subplots(figsize=(11, 11))
-        print("creating table")
-        table = Table(
-            scdf_img,
-            column_definitions=coldefs,
-            ax=ax,
-            textprops={"fontsize": 7},
-            row_divider_kw={"linewidth": .5, "linestyle": (0, (1, 5))},
-            col_label_divider_kw={"linewidth": 2, "linestyle": "-"},
-            column_border_kw={"linewidth": 11, "linestyle": "-"},
-
-        )
-
-        # Adding the bold header as a text annotation using \n to create a new line
-        print("adding header")
-        header_text = "\n Scorecard HRRR, RRFS"
-        header_props = {'fontsize': 18, 'fontweight': 'bold', 'va': 'center', 'ha': 'center', 'color': 'red'}
-        # Adjusting the y-coordinate to bring the header closer to the table
-        plt.text(0.5, 0.91, header_text, transform=fig.transFigure, **header_props)
-
-        # Adding the subtitle at the top in gray
-        print("adding subtitle")
-        subtitle_text = f"{self.subset_params['model'][0]} vs {self.subset_params['model'][1]} \n  {self.ymd_start} to {self.ymd_end} "
+        models = self.subset_params.get('model', [])
+        names = [models[0], models[1]] if len(models) >= 2 else None
+        extra = None
+        if self.dates_total and self.dates_used < self.dates_total:
+            extra = f"{self.dates_used} of {self.dates_total} days"  # some dates skipped
+        written = render_from_config(
+            self.scorecard_stats_output_filename,
+            os.path.join(self.output_dir, "scorecard"),
+            style=self.configs.get('scorecard_style'),
+            model_names=names,
+            date_range=(self.ymd_start, self.ymd_end),
+            title=self.configs.get('scorecard_title'),
+            subtitle_extra=extra)
+        safe_log(self.logger, 'info', f"Scorecard written: {', '.join(written)}")
+        return written
 
 
-        subtitle_props = {'fontsize': 7, 'va': 'center', 'ha': 'center', 'color': 'gray'}
-        plt.rcParams['axes.titley'] = 1.0    # y is in axes-relative coordinates.
-        plt.rcParams['axes.titlepad'] = -14  # pad is in points...
-        plt.text(0.5, 0.8, subtitle_text, transform=fig.transFigure, **subtitle_props)
-
-        print("saving plot")
-        plt.savefig("/Users/minnawin/Python_Scorecard_Dev/output/scorecard_plot.png")
+# Should consider adding a step to remove all files associated with the run to make
+# sure the current run isn't using old or stale files to generate the scorecard.
 
 
 def main(config_filename=None):
@@ -928,8 +944,9 @@ def main(config_filename=None):
         aggregated_df = subset_df.copy()
         sc.aggstat_filename = sc.subsetted_filename
     else:
-        print(f" Invoke  METcalcpy agg_stat.py to calculate the CI's for {sc.linetype} ")
-        aggregated_df = sc.calculate_agg_stats(subset_df)
+        print(f" Invoke  METcalcpy sum_stat.py to calculate per-case statistics for {sc.linetype} ")
+        aggregated_df = sc.calculate_sum_stats(subset_df)
+        sc.aggstat_filename = sc.sum_stat_outfile
     #
     # Get the p-values and scorecard categories
     #
@@ -938,16 +955,10 @@ def main(config_filename=None):
     # CNT line type already has CI's
     _: pd.DataFrame = sc.get_scorecard_stats(aggregated_df)
 
-    # Categorize the p-values
-    # Open the scorecard output from METcalcpy scorecard.py and
-    # assign the categories (based on the categories used in METviewer)
-    if sc.pval_method == 'NCAR':
-        cat_df: pd.DataFrame = sc.categorize_scorecard_results()
-        cat_df.to_csv("/Users/minnawin/Python_Scorecard_Dev/output/categorized.txt", index=False, header=True, sep="\t")
-
-    # Generate the scorecard as a table using plottable
-    cat_df.drop('Idx', axis=1)
-    sc.generate_table(cat_df)
+    # Every requested statistic must be present, then draw the scorecard.
+    sc.check_requested_stats()
+    sc.render_scorecard()
+    sc.report_missing_input()
     print("Finished")
 
 if __name__ == "__main__":

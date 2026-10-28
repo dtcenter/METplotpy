@@ -1,0 +1,204 @@
+#
+#  GEFS vs. AIGEFS SAL1L2 scorecard  (command-line, no database)
+#
+#  Run from the METplotpy repo root:
+#     python -m metplotpy.plots.scorecard.scorecard_plot <this file>
+#
+#  Pipeline: reformat .stat files -> subset -> per-case statistics -> p-values
+#            -> draw scorecard (scorecard_render.py, matplotlib)
+#
+
+#
+#  OUTPUT and LOG DIRECTORIES
+#
+
+# All output will reside in this specified output directory, including the
+# intermediate files and the finished scorecard (<output_dir>/scorecard.png).
+output_dir:  '/glade/derecho/scratch/harrold/scorecard/minnas_work/output'
+
+# A single log file will be generated, capturing logging information from
+# all intermediate steps
+log_dir :  '/glade/derecho/scratch/harrold/scorecard/minnas_work/logs/'
+log_filename:  noaa_gefs.log
+log_level: 'DEBUG'
+
+#
+#  INPUT FILES
+#
+
+# Where the MET .stat files live.  One directory is read for every combination of
+# the ${...} variables below: ${base} (top directory), ${model} (each entry of
+# 'model') and ${init} (each date from ymd_start to ymd_end, formatted with 'init').
+# NOTE: the words "base", "model" and "init" are substituted as plain text, so
+# they must not appear anywhere else in the paths (e.g. a folder called "init_data").
+#met_stat_input: '/Users/minnawin/Python_Scorecard_Dev/Data_Reformatter/point_stat_HRRR_RRFS/sample_data/all_dates'
+met_stat_input: '${base}/${model}.${init}'
+base:  '/glade/derecho/scratch/harrold/scorecard/test_data/GEFS_data'
+
+# Which files to read from each directory: one glob pattern or a list of them,
+# matched against the file name.  Optional: if left out, every *.stat file is read.
+# Use this to keep grid-to-grid, grid-to-obs and precip files apart.  The run stops
+# with an error if a directory is missing or nothing matches.
+stat_file_pattern:
+  - '*grid2obs*.stat'
+
+# What to do when a date directory, or the files you asked for, are missing for
+# some model/date.  Optional, default 'skip'.
+#   skip  : drop that date for ALL models (so every model is compared on the same
+#           days), carry on, and print a warning at the end listing what was skipped.
+#           The scorecard subtitle then shows e.g. "30 of 31 days".
+#   error : stop at the first missing directory or file.
+on_missing_input: 'skip'
+
+# Directory-name prefixes for ${model}, i.e. the folders gefs.YYYYMMDD and
+# aigefs.YYYYMMDD.  These are folder names (lower case) and are NOT the same
+# thing as the MODEL column values listed under subset_params below.
+model:
+  - gefs
+  - aigefs
+
+# Date format of the date directories (Python strftime), the first and last date
+# (inclusive, written in that same format) and the step between dates in days.
+init: "%Y%m%d"
+increment: 1
+ymd_start: '20260301'
+ymd_end: '20260331'
+
+#
+# REFORMAT
+#
+# if data has unlabelled columns (i.e. a MET .stat file from MET point-stat or
+# MET grid-stat tool). Set to True to reformat, False otherwise.
+# Or if re-running using the same data and reformatting has already been done,
+# then set to False for better performance.
+reformat_needed: True
+
+# Set to 'True' if the .stat data was already aggregated with the MET stat_analysis
+# tool, or if the line type already has confidence-interval columns (ncu/ncl and/or
+# btcu/btcl), as CNT does.  Set to 'False' for raw point-stat/grid-stat output;
+# the statistic is then calculated for every case (valid time) with METcalcpy
+# sum_stat, and the significance test compares those cases.
+has_confidence_stats: True
+
+# MET line type of the input data (SAL1L2, SL1L2, CNT, ...)
+linetype: 'CNT'
+
+#
+# SUBSETTING
+#
+# Filtering data based on model, masking regions, stat names, levels, variable of
+# interest (and its values), and fcst_lead
+subset_params:
+
+   # Column names in the MET output file.  Values are kept only if they match.
+
+   # Forecast lead times in HHMMSS ('60000' is 6 h, '1200000' is 120 h).
+   # These become the scorecard columns.
+   'fcst_lead':
+     - '0'
+     - '60000'
+     - '120000'
+     - '240000'
+     - '360000'
+     - '480000'
+     - '600000'
+     - '720000'
+     - '840000'
+     - '960000'
+     - '1080000'
+     - '1200000'
+
+   # Vertical levels, e.g. P250 = 250 hPa.  Each becomes a scorecard row.
+   'fcst_lev':
+     - 'P850'
+     - 'P500'
+     - 'P250' 
+
+   # Values of the MODEL column.  ORDER MATTERS: the first model is "series 1"
+   # (model A) and the second is "series 2" (model B).  A green up-triangle means
+   # model A is better than model B.
+   'model':
+       - 'AIGEFS'
+       - 'GEFS'
+
+   # Forecast variables.  Each becomes a scorecard row group.
+   'fcst_var':
+     - 'UGRD'
+     - 'VGRD'
+
+   # Observation type.  Use exactly one (e.g. ADPUPA = upper-air, ADPSFC = surface,
+   # GDAS for grid-to-grid).  Mixing types in one scorecard is not supported.
+   'obtype':
+     - 'ADPUPA'
+
+   # Independent variable name and corresponding value(s): the verification region.
+   indep_variable: 'vx_mask'
+
+   indep_values:
+      - 'CONUS'
+
+  # A list of one or more statistics of interest (line type specific).
+  # SAL1L2: MAE works today.  ANOM_CORR (and ANOM_CORR_RAW, RMSFA, RMSOA) are derived
+  # from partial sums and need the METcalcpy/METdataio derive-step fixes first; with
+  # fail_on_missing_stats: True the run stops with a clear error if one is listed
+  # before those fixes are in.
+   stats_list:
+      - 'MAE'
+      - 'ANOM_CORR'
+
+# Stop with an error if a statistic in stats_list is missing from the results
+# (it was filtered out or could not be computed).  Set to False to log the error
+# and still draw whatever is available.  Optional, default True.
+fail_on_missing_stats: True
+
+#
+#  CONFIDENCE INTERVALS via agg_stat.py
+#
+# NOTE: this setting is not read by scorecard_plot.py at present; it is kept so
+# existing configs stay valid.  Which route is used is set by has_confidence_stats.
+calculate_confidence_intervals: True
+
+#
+# SCORECARD STATISTICS  (p-values)
+#
+
+# Append to the scorecard output file with successive runs
+append_subsequent: False
+
+# Method to calculate p-values: 'NCAR' (t-test on the per-case differences, same as
+# METviewer) or 'EMC'.  Use NCAR.  The EMC method decides which model is better from
+# the statistic's NAME, and MAE is not among the names it knows (ME, BIAS, RMSE,
+# RMSVE), so its better/worse direction for MAE should be treated as unverified.
+pval_method: 'EMC'
+
+# Number of days used by the EMC method only (ignored with NCAR)
+sample_size: 120
+
+
+#
+# SCORECARD PLOT
+#
+# The scorecard is drawn with matplotlib (scorecard_render.py) and written to
+# <output_dir>/scorecard.<format>.  The default colors follow METviewer: green =
+# model A better, pink = model B better, gray = no significant difference,
+# hatched = no data; darker shades are 95 / 99 / 99.9 % significance.
+
+# Title for scorecard (generated automatically as "<model A> vs. <model B> Scorecard"
+# if this is left unspecified)
+scorecard_title: 'Scorecard GEFS and AIGEFS'
+
+# Optional look-and-feel settings.  Every key is optional; anything left out uses
+# the default shown.  Unknown keys give a warning.
+#scorecard_style:
+#  title: 'AIGEFS vs. GEFS: Winds at 250 hPa'   # overrides scorecard_title
+#  subtitle: 'March 2026, CONUS upper-air'      # default: line type, region, obs type, dates
+#  palette: metviewer                           # metviewer | colorblind (blue/orange)
+#  show_values: false                           # print the signed confidence (1 - p) in each cell
+#  markers: true                                # triangles showing significance level
+#  formats: [png]                               # any of png, pdf, svg
+#  dpi: 200
+#  label_map:                                   # display names for the row labels
+#    UGRD: 'U wind'
+#    VGRD: 'V wind'
+#    P250: '250 hPa'
+#  model_names: ['AIGEFS', 'GEFS']              # default: the two entries of subset_params model
