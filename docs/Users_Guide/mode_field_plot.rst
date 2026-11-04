@@ -4,7 +4,7 @@ Mode Field Plot
 
 Description
 ===========
-The mode field plot replaces the deprecated MET MODE plotting utility plot_mode_field.
+The MODE field plot replaces the deprecated MET MODE plotting utility plot_mode_field.
 
 Example
 =======
