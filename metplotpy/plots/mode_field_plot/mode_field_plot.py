@@ -9,7 +9,7 @@
 """
 Class Name: ModeFieldPlot
  """
-__author__ = 'Michelle Harrold, Minna Win'
+__author__ = 'Minna Win'
 
 import os
 import sys
@@ -166,9 +166,9 @@ class ModeFieldPlot:
         obs_time_line = f"  |  Valid: {obs_valid_str}" if obs_valid_str else ""
 
         titles = [
-            f"Forecast objects  |  {d['model']}  {d['fcst_var']} {d['fcst_level']}  "
+            f"Forecast objects  |  {d['model']}  {d['fcst_var']} ({d['fcst_units']}) {d['fcst_level']}  "
             f"({d['fcst_thresh']}){fcst_time_line}",
-            f"Observation objects  |  {d['obtype']}  {d['obs_var']} {d['obs_level']}  "
+            f"Observation objects  |  {d['obtype']}  {d['obs_var']} ({d['obs_units']}) {d['obs_level']}  "
             f"({d['obs_thresh']}){obs_time_line}",
         ]
         rgba_fields = [fcst_rgba, obs_rgba]
@@ -267,14 +267,13 @@ class ModeFieldPlot:
                 parts.append(f"Valid: {fcst_valid_str}")
             fcst_time_line = "  |  " + "   ".join(parts)
         obs_time_line = f"  |  Valid: {obs_valid_str}" if obs_valid_str else ""
-
         titles = [
-            f"{d['model']}  {d['fcst_var']} {d['fcst_level']}  "
+            f"{d['model']}  {d['fcst_var']} ({d['fcst_units']}) {d['fcst_level']}  "
             #        f"({d['fcst_units']}){fcst_time_line}",
             f"(mm){fcst_time_line}",
             f"{d['obtype']}  {d['obs_var']} {d['obs_level']}  "
             #        f"({d['obs_units']}){obs_time_line}",
-            f"(mm)",
+            f"({d['fcst_units']})",
         ]
         fields = [fcst_plot, obs_plot]
 
@@ -436,7 +435,6 @@ class ModeFieldPlot:
             max(lat_min - pad, -90),
             min(lat_max + pad, 90),
         ]
-
 
 def main(config_filename=None):
     # Read in the YAML configuration file.  Environment variables in
