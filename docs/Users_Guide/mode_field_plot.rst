@@ -152,9 +152,9 @@ To generate a plot of the MODE raw field, copy this custom config file to the wo
 
       - MODE netCDF file
 
-      - full path to the file, replace  *path-to-data* with full path
+      - full path to the file
 
-           ex:  $METplotpy_BASE/test/mode_field_plot/mode_KWBC_APCP_24_vs_IMERG_APCP_24_960000L_20240207_000000V_240000A_R1_T2_obj.nc
+           ex:  $METPLOTPY_BASE/test/mode_field_plot/mode_KWBC_APCP_24_vs_IMERG_APCP_24_960000L_20240207_000000V_240000A_R1_T2_obj.nc
 
              where *$METPLOTPY_BASE* is the path to the METplotpy source directory
 
@@ -166,6 +166,18 @@ To generate a plot of the MODE raw field, copy this custom config file to the wo
 
     - **mandatory**
 
+ .. dropdown:: log_level
+
+    - logging level: *DEBUG*, *INFO*, *WARN*, or *ERROR*
+
+    - default is *WARN*
+
+ .. dropdown:: log_filename
+
+    - full path to the log file
+
+    - default is *stdout*
+
  .. dropdown:: field_to_plot
 
     - options are *objects*  or *raw*
@@ -174,8 +186,6 @@ To generate a plot of the MODE raw field, copy this custom config file to the wo
 
 
  .. dropdown:: super_title
-
-     - **mandatory**
 
      - the super title (at the very top of the plot figure)
 
@@ -210,7 +220,7 @@ To generate a plot of the MODE raw field, copy this custom config file to the wo
 
     - default value set to 11.0
 
-  .. dropdown:: bbox_padding_degrees
+ .. dropdown:: bbox_padding_degrees
 
     - padding around the bounding box
 
@@ -223,7 +233,7 @@ To generate a plot of the MODE raw field, copy this custom config file to the wo
 
     - default value is 200
 
-  .. dropdown:: show_obj_id_labels
+ .. dropdown:: show_obj_id_labels
 
    - shows object id labels
 
@@ -236,7 +246,7 @@ To generate a plot of the MODE raw field, copy this custom config file to the wo
 
    - default value is 0.06
 
-  .. dropdown:: colormap_name
+ .. dropdown:: colormap_name
 
    - colormap used for plotting MODE raw field
 
@@ -269,7 +279,7 @@ To generate a plot of the MODE raw field, copy this custom config file to the wo
 
    - default value is 0.45
 
- .. dropdown:: top_bottom_marging
+ .. dropdown:: top_bottom_margin
 
    - positioning the super title
 
@@ -346,7 +356,7 @@ To generate the above plot using the **mode_field_plot_defaults.yaml** and
     python $METPLOTPY_BASE/metplotpy/plots/mode_field_plot/mode_field_plot.py $WORKING_DIR/custom_mode_field_obj_plot.yaml
 
 
-* An **apcp_example_mode_objects.png** MODE objects plot file will be created in the directory specified in the *plot_filename* configuration setting in the **custom_mode_field_obj_plot.yaml** config file.
+* An **apcp_example_mode_objects.png** MODE objects plot file (the *output_filename* configuration setting) will be created in the directory specified in the *output_dir* configuration setting in the **custom_mode_field_obj_plot.yaml** config file.
 
 
 
@@ -398,6 +408,6 @@ To generate the above plot using the **mode_field_plot_defaults.yaml** and
     python $METPLOTPY_BASE/metplotpy/plots/mode_field_plot/mode_field_plot.py $WORKING_DIR/custom_mode_field_raw_plot.yaml
 
 
-* An **apcp_example_mode_raw.png** MODE objects plot file will be created in the directory specified in the *plot_filename* configuration setting in the **custom_mode_field_raw_plot.yaml** config file.
+* An **apcp_example_mode_raw.png** MODE raw plot file (the *output_filename* configuration setting) will be created in the directory specified in the *output_dir* configuration setting in the **custom_mode_field_raw_plot.yaml** config file.
 
 
