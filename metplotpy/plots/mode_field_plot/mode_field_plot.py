@@ -197,8 +197,8 @@ class ModeFieldPlot:
             fontsize=super_title_fontsize,
         )
 
-        fig.savefig(out_path, dpi=dpi, bbox_inches="tight")
         plt.tight_layout()
+        fig.savefig(out_path, dpi=dpi, bbox_inches="tight")
         self.logger.info(f"Wrote {out_path}")
 
 
