@@ -1,9 +1,6 @@
 # Configuration file for generating the mode field plot
 
-# Reads MODE netCDF files and generates a plot for each file in the directory
-input_dir: /path/to/mode_ncdata
-
-# plot specific file
+# Reads MODE netCDF files and generates a plot for the specified file
 mode_obj_file: ' '
 
 output_dir: ' '

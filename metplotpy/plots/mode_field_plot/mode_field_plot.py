@@ -11,6 +11,7 @@ Class Name: ModeFieldPlot
  """
 __author__ = 'Minna Win'
 
+import colorsys
 import os
 import sys
 from datetime import datetime
@@ -320,6 +321,9 @@ class ModeFieldPlot:
         ids = sorted(all_ids)
 
         base_colors = plt.get_cmap("tab20").colors + plt.get_cmap("tab20b").colors
+        # drop blues so matched clusters aren't confused with unmatched (blue) objects
+        base_colors = [c for c in base_colors
+                       if not 190 <= colorsys.rgb_to_hls(*c)[0] * 360 <= 260]
         color_map = {cid: base_colors[i % len(base_colors)] for i, cid in enumerate(ids)}
         return ids, color_map
 

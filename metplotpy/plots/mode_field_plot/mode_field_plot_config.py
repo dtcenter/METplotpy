@@ -31,9 +31,8 @@ class ModeFieldPlotConfig():
         log_filename = self.get_config_value('log_filename')
         self.logger = util.get_common_logger(log_level, log_filename)
 
-        input_dir = self.get_config_value('input_dir')
-        input_data = self.get_config_value('mode_obj_file')
-        self.input_file = os.path.join(input_dir, input_data)
+        # full path to the MODE netCDF file
+        self.input_file = self.get_config_value('mode_obj_file')
         self.field_to_plot: str = self.get_config_value('field_to_plot')
 
         output_dir = self.get_config_value('output_dir')
