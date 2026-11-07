@@ -269,12 +269,8 @@ class ModeFieldPlot:
             fcst_time_line = "  |  " + "   ".join(parts)
         obs_time_line = f"  |  Valid: {obs_valid_str}" if obs_valid_str else ""
         titles = [
-            f"{d['model']}  {d['fcst_var']} ({d['fcst_units']}) {d['fcst_level']}  "
-            #        f"({d['fcst_units']}){fcst_time_line}",
-            f"(mm){fcst_time_line}",
-            f"{d['obtype']}  {d['obs_var']} {d['obs_level']}  "
-            #        f"({d['obs_units']}){obs_time_line}",
-            f"({d['fcst_units']})",
+            f"{d['model']}  {d['fcst_var']} ({d['fcst_units']}) {d['fcst_level']}{fcst_time_line}",
+            f"{d['obtype']}  {d['obs_var']} ({d['obs_units']}) {d['obs_level']}",
         ]
         fields = [fcst_plot, obs_plot]
 
