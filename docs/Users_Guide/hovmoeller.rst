@@ -62,14 +62,14 @@ There is a YAML config file located in
 
 *$METPLOTPY_BASE* is the directory where the METplotpy code is saved:
 
-e.g.
+e.g.,
 
-*/usr/path/to/METplotpy*  if the source code was cloned or forked from the Github repository
+*/usr/path/to/METplotpy*  if the source code was cloned or forked from the GitHub repository
 
 or
 
 */usr/path/to/METplotpy-x.y.z*  if the source code was downloaded as a zip or gzip'd tar file from the Release link of
-the Github repository.  The *x.y.z* is the release number.
+the GitHub repository.  The *x.y.z* is the release number.
 
 The Hovmoeller plot utilizes YAML configuration files to indicate where input data is located and to set plot attributes,
 and logging preferences.
@@ -99,7 +99,7 @@ a Hovmoeller plot.
 .. literalinclude:: ../../metplotpy/plots/config/hovmoeller_defaults.yaml
 
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -142,7 +142,7 @@ For example:
 
 This is where */username/working_dir* is *$WORKING_DIR*.  Make sure that the
 *$WORKING_DIR* directory that is specified exists and has the appropriate
-read and write permissions.The path listed for *plot_filename* may be
+read and write permissions. The path listed for *plot_filename* may be
 changed to the output directory of one’s choosing.  If this is not set,
 then the *plot_filename* setting specified in the
 *$METPLOTPY_BASE/metplotpy/plots/config/hovmoeller_defaults.yaml*
@@ -150,7 +150,7 @@ configuration file will be used.
 
 To save the log output to a file, uncomment the *log_filename* entry and specify the path and
 name of the log file.  Select a directory with the appropriate read and write
-privileges.  To modify the verbosity of logging than what is set in the default config
+privileges.  To modify the verbosity of logging from what is set in the default config
 file, uncomment the *log_level* entry and specify the log level  (debug and info are higher verbosity, warning and error
 are lower verbosity).
 
@@ -195,7 +195,7 @@ configuration files are being saved.  **NOTE**: Specifying the
 *$WORKING_DIR/output_plots* can be done as long as it is an
 existing directory where the user has read and write permissions.
 
-In the default config file, logging is set to stdout and the log level is ERROR (i.e. only log messages
+In the default config file, logging is set to stdout and the log level is ERROR (i.e., only log messages
 of type ERROR will be logged).  If the log_filename and log_level are
 not specified in the custom configuration file, these settings will be used.
 
@@ -212,13 +212,13 @@ the **hovmoeller_defaults.yaml** configuration file looks like the following:
 Perform the following:
 
 * To use the conda environment, verify the conda environment
-  is running and has has the required
+  is running and has the required
   Python packages outlined in the `Python Requirements section <https://metplus.readthedocs.io/projects/metplotpy/en/latest/Users_Guide/installation.html#python-requirements>`_
-  (and from the Requirements Packages section above).
+  (and from the Required Packages section above).
 
 * Set the PYTHONPATH environment variable:
 
-*$METCALCPY_SOURCE* is the path downloaded/cloned METcalcpy code. *$METPLOTPY_SOURCE* is the path of the
+*$METCALCPY_SOURCE* is the path of the downloaded/cloned METcalcpy code. *$METPLOTPY_SOURCE* is the path of the
 downloaded/cloned METplotpy code.
 
 **Command for csh:**
@@ -254,7 +254,7 @@ downloaded/cloned METplotpy code.
   METplotpy source code was saved.
 
 
-  To generate the above **"defaults"** plot (i.e using default configuration settings), use the "minimal" custom
+  To generate the above **"defaults"** plot (i.e., using default configuration settings), use the "minimal" custom
   configuration file, **minimal_hovmoeller.yaml**.
 
 * Enter the following command:
@@ -268,7 +268,7 @@ downloaded/cloned METplotpy code.
   directory specified in the *plot_filename* configuration setting
   in the **minimal_hovmoeller.yaml** config file.
 
-  To generate a **customized** Hovmoeller plot (i.e. some or all default
+  To generate a **customized** Hovmoeller plot (i.e., some or all default
   configuration settings are to be overridden), use the
   **custom_hovmoeller.yaml** config file.
 

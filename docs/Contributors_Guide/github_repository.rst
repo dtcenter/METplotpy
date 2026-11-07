@@ -1,5 +1,5 @@
 *********************************************
-Organization of Code in the Github Repository
+Organization of Code in the GitHub Repository
 *********************************************
 
 The relevant plotting code resides in one of two directories

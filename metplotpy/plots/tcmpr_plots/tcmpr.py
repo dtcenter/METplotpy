@@ -465,10 +465,10 @@ def create_plot(config_obj) -> bool:
             output_result = perform_event_equalization(orig_input_df, is_skill, config_obj)
             input_df = output_result
 
-        input_df.rename({'equalize': 'CASE'}, axis=1, inplace=True)
+        input_df = input_df.rename({'equalize': 'CASE'}, axis=1)
         # Sort the data by the CASE column
         input_df = input_df.sort_values(by=['CASE', 'AMODEL'])
-        input_df.reset_index(drop=True, inplace=True)
+        input_df = input_df.reset_index(drop=True)
 
         for cur_stat in config_obj.list_stat_1:
             logger.info(f"Statistic of interest: {cur_stat}")

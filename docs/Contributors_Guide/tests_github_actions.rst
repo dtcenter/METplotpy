@@ -1,9 +1,9 @@
 ****************************************
-Generate Tests and Add to Github Actions
+Generate Tests and Add to GitHub Actions
 ****************************************
 
 Create a subdirectory under the *test* directory
-(e.g. *test/<newplot>* where **<newplot>** is replaced with the
+(e.g., *test/<newplot>* where **<newplot>** is replaced with the
 name of the plot type that is being added to the repository.)
 
 Add sample data (see applicable information in the
@@ -11,9 +11,8 @@ Add sample data (see applicable information in the
 <https://metplus.readthedocs.io/projects/metplotpy/en/develop/Contributors_Guide/new_plot.html#adding-a-new-plot>`_
 section).
 
-Use the pytest framework to generate tests. For more information review
-this `pytest documentation <https://docs.pytest.org/en/7.2.x>`_ for
-more information.
+Use the pytest framework to generate tests. For more information, review
+this `pytest documentation <https://docs.pytest.org/en/7.2.x>`_.
 
 Add an entry for the test in the
 *.github/workflows/unit_tests.yaml* file.

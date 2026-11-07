@@ -100,7 +100,7 @@ class Bar(BasePlot):
         self.logger.info(f"Finished reading input data: "
                                     f"{datetime.now()}")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
-                           header='infer', float_precision='round_trip')
+                           header='infer')
 
     def _create_series(self, input_data):
         """

@@ -148,7 +148,7 @@ class ReliabilitySeries(Series):
             series_points_results = calibration_data.copy()
             series_points_results['thresh_ii'] = series_points_results['thresh_i'].tolist()
             series_points_results['n_i'] = n_i_data['stat_value'].tolist()
-            series_points_results.reset_index(drop=True, inplace=True)
+            series_points_results = series_points_results.reset_index(drop=True)
 
             for i in range(1, len(series_points_results)):
                 series_points_results.loc[i - 1, 'thresh_i'] = 0.5 * (

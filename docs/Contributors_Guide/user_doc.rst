@@ -1,6 +1,6 @@
-*********************
-Add User Documenation
-*********************
+**********************
+Add User Documentation
+**********************
 
 Documentation should be added in the *docs/Users_Guide* directory.
 
@@ -29,10 +29,10 @@ Add images.
 Review and check for errors in the automatically generated documentation.
 
   Once the documentation has been committed and pushed to GitHub,
-  GitHub actions will automatically create the online documentation. 
+  GitHub Actions will automatically create the online documentation. 
 
   Contributors will be able to view the run for the build of the documentation
-  in the GitHub actions section of the METplotpy repository, which will
+  in the GitHub Actions section of the METplotpy repository, which will
   be named with the text of the last commit message and the
   text “Documentation” underneath.  
 

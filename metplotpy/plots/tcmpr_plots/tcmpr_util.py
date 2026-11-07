@@ -38,7 +38,7 @@ def get_case_data(series_data, series_vals, indy_vals, rp_diff, total):
     case_data['RANK_RANDOM'] = [None] * len(series_data)
     case_data['RANK_MIN'] = [None] * len(series_data)
     case_data = case_data.drop_duplicates()
-    case_data.reset_index(inplace=True, drop=True)
+    case_data = case_data.reset_index(drop=True)
 
     # Check for equal numbers of entries for each case
     list_of_counts = series_data['CASE'].value_counts().tolist()

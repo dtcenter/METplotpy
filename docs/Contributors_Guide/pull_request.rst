@@ -1,5 +1,5 @@
 ***********************
-Pull Requests in Github
+Pull Requests in GitHub
 ***********************
 
 Please refer to the `Open a Pull Request

@@ -106,16 +106,8 @@ linkcheck_retries = 2
 linkcheck_workers = 8
 
 linkcheck_ignore = [
-    # add regex patterns for URLs that should be skipped, e.g.:
-    # r'https://dtcenter\.org/.*',   # if this site blocks automated requests
-    # r'https://matplotlib\.org/.*',        # occasionally rate-limits automated clients
-    # r'https://scitools\.org\.uk/cartopy/.*',  # occasionally slow
-    r'https://doi\.org/.*', # DOI redirectors often 403 non-browser requests
-    # bmcnoldy.rsmas.miami.edu sends an incomplete SSL certificate chain
-    # (missing intermediate cert). Browsers work around this via AIA
-    # fetching; curl/Python do not. Confirmed 2026-07 via curl -v
-    # ("SSL certificate problem: unable to get local issuer certificate").
-    # Re-check periodically and remove once fixed server-side.
+    # incomplete TLS certificate chain that browsers tolerate but Python does not,
+    # and often unreachable; check by hand
     r'https://bmcnoldy\.rsmas\.miami\.edu/.*',
 ]
 
