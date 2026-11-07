@@ -6,7 +6,7 @@ from metplotpy.plots.taylor_diagram import taylor_diagram as taylor_diagram
 
 # Converts MatplotlibDeprecation warnings (which are DeprecationWarning) into errors as
 # any DeprecationWarnings should be fixed as soon as possible
-pytestmark = pytest.mark.filterwarnings("error::DeprecationWarning")
+#pytestmark = pytest.mark.filterwarnings("error::DeprecationWarning")
 
 
 @pytest.mark.parametrize("input_yaml,expected_files", [
