@@ -104,7 +104,7 @@ class Line(BasePlot):
         """
         self.config_obj.logger.info(f"Reading input data: {datetime.now()}")
         return pd.read_csv(self.config_obj.parameters['stat_input'], sep='\t',
-                           header='infer', float_precision='round_trip',
+                           header='infer',
                            low_memory=False)
 
     def _create_series(self, input_data):

@@ -1,5 +1,3 @@
-import warnings
-
 import pytest
 import os
 
@@ -132,6 +130,7 @@ def test_ee_returns_empty_df(module_setup_env, capsys, remove_files):
     assert expected in captured.out
 
 
+@pytest.mark.filterwarnings("error::FutureWarning")
 def test_pct_no_warnings(module_setup_env, remove_files):
     '''
         Verify that the ROC diagram is generated without FutureWarnings
@@ -140,10 +139,4 @@ def test_pct_no_warnings(module_setup_env, remove_files):
     remove_files(os.environ['TEST_OUTPUT'], ['PCT_ROC.png'])
 
     custom_config_filename = f"{cwd}/PCT_ROC.yaml"
-    print("\n Testing for FutureWarning..")
-    try:
-        roc.main(custom_config_filename)
-    except FutureWarning:
-        print("FutureWarning generated")
-        # FutureWarning generated, test fails
-        assert False
+    roc.main(custom_config_filename)

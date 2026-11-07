@@ -121,13 +121,10 @@ class RevisionBoxSeries(BoxSeries):
         labels_for_x = []
         result = None
 
-        # suppress the warning by changing the default behavior
-        pd.set_option('mode.chained_assignment', None)
-
         # for each fcst_valid_beg calculate the differences
         for valid in unique_fcst_valid_beg:
             data_for_valid = self.series_data.loc[self.series_data['fcst_valid_beg'] == valid]
-            data_for_valid.reset_index(drop=True, inplace=True)
+            data_for_valid = data_for_valid.reset_index(drop=True)
             # make sure that the data is valid
             # each valid date/time should have a unique list of lead times
             # if the list is not unique - throw an error
