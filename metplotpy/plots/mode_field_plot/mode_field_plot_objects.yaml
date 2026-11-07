@@ -1,0 +1,63 @@
+# Configuration file for generating the mode field plot
+
+#
+# Comment setting values if using default values set in the default config file
+#
+
+# Reads MODE netCDF files and generates a plot for the specified file
+mode_obj_file: 'your-full-path-to/sample-data/mode_KWBC_APCP_24_vs_IMERG_APCP_24_960000L_20240207_000000V_240000A_R1_T2_obj.nc'
+
+output_dir: 'your-output-dir'
+output_filename: 'dev_mode_objects.png'
+
+# Logging level: DEBUG, INFO, WARN, ERROR
+log_level: DEBUG
+
+# Log file, include full path
+log_filename: 'your-path-to-log-dir/objects_log.txt'
+
+# Field to plot: objects or raw
+field_to_plot: objects
+
+# Super title
+super_title:  "MODE Object Field:  Matched Forecast vs. Observation"
+super_title_font_size: 12
+
+
+# Download via Natural Earth downloader
+# *Note* Requires internet access to the
+# naturalearthdata.com/S3 mirror
+# If False, use the provided Natural Earth shapefile
+download_natural_earth_shapefile: False
+
+#
+# Plotting specific settings
+# To specify custom values, uncomment setting name
+# and add your value
+#plot_width: 11
+#plot_height: 8
+
+# padding around the bbox,
+#bbox_padding_degrees: 5.0
+
+# resolution in dpi
+#resolution_dpi: 200
+
+# turn on/off displaying object id labels
+show_obj_id_labels: True
+
+# vertical spacing between panels
+#vert_spacing: 0.06
+
+# colormap
+colormap_name: turbo
+
+# colorbar max for field, omit/comment this setting to use default of 99th
+# percentile
+#colorbar_max: 99.0
+
+colorbar_label: "Accum precip (mm)"
+
+
+
+
