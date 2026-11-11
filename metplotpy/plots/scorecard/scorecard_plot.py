@@ -558,10 +558,54 @@ class ScorecardPlot():
 
         result: pd.DataFrame = working_df.query(full_query)
 
+        # Pair the models case by case (event equalization), otherwise the
+        # significance test subtracts arrays of different lengths.
+        result = self.equalize_cases(result, list(filter_keys.keys()))
+
         result.to_csv(self.subsetted_filename, header=True, index_label=False, index=False, sep='\t')
 
         return result
 
+
+    def equalize_cases(self, df: pd.DataFrame, filter_columns: list) -> pd.DataFrame:
+        """
+        Event equalization: keep only the cases that every model has.
+
+        A case is one valid time for one scorecard cell (lead, level, variable,
+        region, stat, ...).  If one model is missing a valid time (e.g. GEFS has
+        116 cases and AIGEFS 120), the other model's extra rows are dropped so the
+        per-case differences used for the p-values line up.  This is what
+        METviewer does before computing a scorecard.
+
+        Args:
+            df: the subsetted data
+            filter_columns: the subset_params column names used for filtering
+
+        Returns:
+            the data with unpaired cases removed
+        """
+        date_col = next((c for c in ('fcst_valid_beg', 'fcst_valid', 'fcst_init_beg', 'fcst_init')
+                         if c in df.columns), None)
+        if date_col is None or 'model' not in df.columns or df.empty:
+            safe_log(self.logger, 'debug', 'No date or model column; skipping event equalization.')
+            return df
+
+        key_cols = [date_col] + [c for c in filter_columns
+                                 if c in df.columns and c not in ('model', date_col)]
+        n_models = df['model'].nunique()
+        models_per_case = df.groupby(key_cols, dropna=False)['model'].transform('nunique')
+        keep = models_per_case == n_models
+        n_dropped = int((~keep).sum())
+        if n_dropped:
+            dropped = df.loc[~keep]
+            per_model = dropped['model'].value_counts().to_dict()
+            dates = sorted(dropped[date_col].astype(str).unique())
+            shown = ", ".join(dates[:10]) + (" ..." if len(dates) > 10 else "")
+            msg = (f"Event equalization: dropped {n_dropped} row(s) with no matching case in "
+                   f"the other model ({per_model}); {len(dates)} {date_col} value(s): {shown}")
+            print(msg)
+            safe_log(self.logger, 'warning', msg)
+        return df.loc[keep]
 
     def reformat_met_stat(self) -> pd.DataFrame:
         """
