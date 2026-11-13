@@ -6,6 +6,35 @@ When applicable, release notes are followed by the GitHub issue number which
 describes the bugfix, enhancement, or new feature:
 `METplotpy GitHub issues. <https://github.com/dtcenter/METplotpy/issues>`_
 
+METplotpy Version 13.0.0-rc12 release notes (20261113)
+=======================================================
+
+.. dropdown:: New Plots
+
+   * **Create Python-based scorecard** (`#567 <https://github.com/dtcenter/METplotpy/issues/567>`_)
+
+.. dropdown:: Enhancements
+
+   * **Remove plotly dependency** (`#555 <https://github.com/dtcenter/METplotpy/issues/555>`_)
+
+   * **Enhance METplotpy to plot NetCDF output from MODE to replace MET's deprecated plot_mode_field utility** (`#560 <https://github.com/dtcenter/METplotpy/issues/560>`_)
+
+.. dropdown:: Bugfixes
+
+.. dropdown:: Documentation
+
+   * None
+
+.. dropdown:: Repository, build, and test
+
+   * Clean up plots after plotly to matplotlib transition (`#577 <https://github.com/dtcenter/METplotpy/issues/577>`_)
+
+   * Update the modulefiles  (`#582 <https://github.com/dtcenter/METplotpy/issues/582>`_)
+
+   * Enhance the documentation by correcting broken links and typos  (`#584 <https://github.com/dtcenter/METplotpy/issues/584>`_)
+
+   * Remove unused dependencies and resolve pandas 3.1 and Matplotlib deprecation warnings  (`#591 <https://github.com/dtcenter/METplotpy/issues/591>`_)
+
 
 METplotpy Version 13.0.0-beta2 release notes (20260507)
 =======================================================
