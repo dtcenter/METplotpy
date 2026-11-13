@@ -13,13 +13,16 @@ METplotpy Version 13.0.0-rc12 release notes (20261113)
 
    * **Create Python-based scorecard** (`#567 <https://github.com/dtcenter/METplotpy/issues/567>`_)
 
+   * **Enhance METplotpy to plot NetCDF output from MODE to replace MET's deprecated plot_mode_field utility** (`#560 <https://github.com/dtcenter/METplotpy/issues/560>`_)
+
+
 .. dropdown:: Enhancements
 
    * **Remove plotly dependency** (`#555 <https://github.com/dtcenter/METplotpy/issues/555>`_)
 
-   * **Enhance METplotpy to plot NetCDF output from MODE to replace MET's deprecated plot_mode_field utility** (`#560 <https://github.com/dtcenter/METplotpy/issues/560>`_)
-
 .. dropdown:: Bugfixes
+
+   * None
 
 .. dropdown:: Documentation
 
