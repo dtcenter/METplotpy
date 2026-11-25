@@ -1,5 +1,5 @@
 imageio>=2.37.0
-matplotlib>=3.10.8
+matplotlib>=3.10.8, <3.11
 metpy>=1.7.1
 netcdf4>=1.7.4
 numpy>=2.4.3
