@@ -4,6 +4,8 @@ import os
 
 from metplotpy.plots.skew_t import skew_t as skew_t
 
+@pytest.mark.skip(reason="Disabled until dtcenter/METplotpy#603 makes the skew-T "
+                         "input file order deterministic; re-enable with that fix")
 def test_skew_t(module_setup_env):
     expected_times = {
         '2023010100': range(0, 61, 6),

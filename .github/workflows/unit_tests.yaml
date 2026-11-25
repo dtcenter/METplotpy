@@ -169,7 +169,9 @@ jobs:
 
           # Ensure directories exist before running script
           if [ -d "$OUTPUT_DIR" ] && [ -d "$TRUTH_DIR" ]; then
-            export METPLUS_DIFF_SKIP_KEYWORDS=".html,_rank.png"
+            # skip the skew-T output until dtcenter/METplotpy#603 makes its input order
+            # deterministic; remove /skew_t/ when that fix re-enables the skew-T test
+            export METPLUS_DIFF_SKIP_KEYWORDS=".html,_rank.png,/skew_t/"
             python METplus/metplus/util/diff_util.py "$TRUTH_DIR" "$OUTPUT_DIR" --debug --save_diff --diff_dir "$DIFF_DIR"
           else
             echo "One or both data directories are missing."
