@@ -91,6 +91,9 @@ jobs:
         fi
 
         python -m pip install $CONSTRAINTS -e METcalcpy
+        # also install requirements.txt directly so that a compared branch whose
+        # pyproject.toml does not yet list its dependencies or the test extra still works
+        python -m pip install $CONSTRAINTS -r requirements.txt
         python -m pip install $CONSTRAINTS -e ".[test]"
 
     - name: Download additional input data
