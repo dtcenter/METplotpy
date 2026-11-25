@@ -90,6 +90,11 @@ jobs:
           CONSTRAINTS="-c ${{ runner.temp }}/constraints.txt"
         fi
 
+        # until main_v13.0 and develop have the matplotlib<3.11 cap from #593, apply it to
+        # every compared branch so the image comparison uses the same matplotlib version
+        echo "matplotlib<3.11" > ${{ runner.temp }}/matplotlib_cap.txt
+        CONSTRAINTS="$CONSTRAINTS -c ${{ runner.temp }}/matplotlib_cap.txt"
+
         python -m pip install $CONSTRAINTS -e METcalcpy
         # also install requirements.txt directly so that a compared branch whose
         # pyproject.toml does not yet list its dependencies or the test extra still works
