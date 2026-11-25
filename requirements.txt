@@ -4,7 +4,6 @@ metpy>=1.7.1
 netcdf4>=1.7.4
 numpy>=2.4.3
 pandas>=3.0.2
-pytest>=9.0.3
 pyyaml>=6.0.3
 scipy>=1.17.1 
 xarray>=2026.4.0

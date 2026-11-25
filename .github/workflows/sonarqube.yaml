@@ -64,7 +64,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        # install METplotpy with its requirements.txt dependencies and the test tools
+        python -m pip install -e ".[test]"
+        # install the coverage.py code coverage tool
         python -m pip install pytest-cov
 
     - name: Run Pytests
