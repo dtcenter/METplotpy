@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "metplotpy"
-dynamic = ["version"]  #, "dependencies"]
+dynamic = ["version", "dependencies"]
 description = "plotting package for METplus"
 authors = [
     {name = "METplus"},
 ]
-requires-python = ">=3.10.4"
+requires-python = ">=3.12"
 readme = "README.md"
 license = {text = "MIT"}
 classifiers = [
@@ -18,12 +18,16 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 
+[project.optional-dependencies]
+# explicitly pin pip version for dependabot
+test = ['pip>=26.0', 'pytest>=9.0.3']
+
 [project.urls]
 Homepage = "https://github.com/dtcenter/METplotpy"
 
 [tool.setuptools.dynamic]
 version = {attr = "metplotpy.__version__"}
-#dependencies = {file = ["requirements.txt"]}
+dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.packages]
 find = {include = ["metplotpy*"]}

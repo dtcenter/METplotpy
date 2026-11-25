@@ -15,8 +15,13 @@ additional packages that are not listed below.
 Python Requirements
 -------------------
 
-The requirements below come directly from the **requirements.txt** 
-file at the top level of the repository.
+**Python 3.12+** - Python 3.12 or higher must be installed.
+
+The runtime requirements below are listed in the **requirements.txt**
+file at the top level of the repository. They are installed automatically
+with METplotpy through **pyproject.toml**. The test tools (pytest and pip)
+are installed separately with the optional ``[test]`` extra described in
+:ref:`Installing the test tools <installation_test_tools>` below.
 
 .. literalinclude:: ../../requirements.txt
 
@@ -56,6 +61,18 @@ the dependencies, add the `--no-deps` argument to pip.
 .. code-block:: ini
 
   $ pip install -e . --no-deps
+
+.. _installation_test_tools:
+
+To also install the test tools (pytest and pip) needed to run the unit tests,
+add the optional ``[test]`` extra:
+
+.. code-block:: ini
+
+  (metplotpy)$ pip install -e ".[test]"
+
+METcalcpy is not installed by these commands. Install it as described in
+:ref:`METcalcpy_conda` below before using METplotpy or running the tests.
 
 .. _METcalcpy_conda:
 
