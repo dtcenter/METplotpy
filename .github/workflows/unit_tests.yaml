@@ -91,7 +91,6 @@ jobs:
         fi
 
         python -m pip install $CONSTRAINTS -e METcalcpy
-        # install METplotpy with its requirements.txt dependencies and the test tools
         python -m pip install $CONSTRAINTS -e ".[test]"
 
     - name: Download additional input data
