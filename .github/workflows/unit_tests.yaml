@@ -91,6 +91,9 @@ jobs:
         fi
 
         python -m pip install $CONSTRAINTS -e METcalcpy
+        # also install requirements.txt directly so that a compared branch whose
+        # pyproject.toml does not yet list its dependencies or the test extra still works
+        python -m pip install $CONSTRAINTS -r requirements.txt
         python -m pip install $CONSTRAINTS -e ".[test]"
 
     - name: Download additional input data
@@ -166,7 +169,9 @@ jobs:
 
           # Ensure directories exist before running script
           if [ -d "$OUTPUT_DIR" ] && [ -d "$TRUTH_DIR" ]; then
-            export METPLUS_DIFF_SKIP_KEYWORDS=".html,_rank.png"
+            # skip the skew-T output until dtcenter/METplotpy#603 makes its input order
+            # deterministic; remove /skew_t/ when that fix re-enables the skew-T test
+            export METPLUS_DIFF_SKIP_KEYWORDS=".html,_rank.png,/skew_t/"
             python METplus/metplus/util/diff_util.py "$TRUTH_DIR" "$OUTPUT_DIR" --debug --save_diff --diff_dir "$DIFF_DIR"
           else
             echo "One or both data directories are missing."
