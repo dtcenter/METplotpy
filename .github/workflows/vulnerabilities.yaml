@@ -1,6 +1,7 @@
 # This workflow will check third-party Python packages for vulnerabilities using pip-audit.
 # pip-audit finds vulnerabilities from packages that are dependencies of
-# the packages in the requirements.txt file. A summary is generated at the end of the action.
+# the packages in the requirements.txt file, which are installed with METplotpy through
+# pyproject.toml. A summary is generated at the end of the action.
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: Python vulnerability check
@@ -23,10 +24,16 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
       - name: install
         run: |
           python -m venv env/
           source env/bin/activate
+          python -m pip install --upgrade pip
+          # install METplotpy with the runtime dependencies listed in requirements.txt
           python -m pip install .
       - uses: pypa/gh-action-pip-audit@v1.1.0
         with:
